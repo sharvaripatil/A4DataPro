@@ -68,15 +68,9 @@ public class FileUpload {
 	            	if (fileBean.getFile().getOriginalFilename().endsWith("xls")) {
 	                workbook = new HSSFWorkbook(bis);
 	            	} else if (fileBean.getFile().getOriginalFilename().endsWith("xlsx")) {
-	            		long startTime = System.currentTimeMillis();
 	                workbook = new XSSFWorkbook(bis);
 	                long endTime1 = System.currentTimeMillis();
-	                _LOGGER.info("converting file into workbook time>>>"+(endTime1-startTime));
 	                numOfProducts = productService.excelProducts(workbook);
-	                long endTime = System.currentTimeMillis();
-	                _LOGGER.info("converting file into workbook time>>>"+(endTime1-startTime));
-	                _LOGGER.info("total products execution time>>>"+(endTime-endTime1));
-	                _LOGGER.info("start to end"+(endTime-startTime));
 	                model.addAttribute("fileName", numOfProducts);
 	                return "success";
 	            	} else {

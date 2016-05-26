@@ -969,8 +969,7 @@ public class ExcelMapping {
 				
 				//productExcelObj.setProductConfigurations(productConfigObj);l
 			}  // end inner while loop
-			//if((!listOfPrices.toString().isEmpty() && priceQurFlag.isEmpty()) || (listOfPrices.toString().isEmpty() && !priceQurFlag.isEmpty())){
-			if((!listOfPrices.toString().isEmpty() || priceQurFlag.equalsIgnoreCase("Y"))){
+			if(( (listOfPrices != null && !listOfPrices.toString().isEmpty()) || (priceQurFlag != null && priceQurFlag.equalsIgnoreCase("Y")))){
 				priceGrids = priceGridParser.getPriceGrids(listOfPrices.toString(), listOfQuantity.toString(), listOfDiscount.toString(), currencyType,
 						priceIncludes, true, priceQurFlag, basePriceName,basePriceCriteria.toString(),priceGrids);	
 			}
