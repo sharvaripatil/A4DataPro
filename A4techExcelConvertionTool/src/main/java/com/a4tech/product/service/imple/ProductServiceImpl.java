@@ -8,8 +8,8 @@ import com.a4tech.product.service.ProductService;
 public class ProductServiceImpl implements ProductService{
 
 	public ExcelMapping excelMapping  = new ExcelMapping();
-	public int excelProducts(Workbook workBook) {
+	public int excelProducts(String AccessToken,Workbook workBook ) {
 		// TODO Auto-generated method stub
-		return excelMapping.readExcel(workBook);
+		return excelMapping.readExcel(AccessToken,workBook);
 	}
 }

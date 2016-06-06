@@ -14,16 +14,23 @@ public class Price implements Comparator<Price> {
 
     @JsonProperty("Sequence")
     private Integer    sequence;
+
     @JsonProperty("Qty")
     private Integer    qty;
-    @JsonProperty("Price")
+
+    @JsonProperty("ListPrice")
     private String    price;
+
+    @JsonProperty("NetCost")
+    private String netCost;
+
     @JsonProperty("DiscountCode")
     private String    discountCode;
+
     @JsonProperty("PriceUnit")
     private PriceUnit priceUnit;
-
-    @JsonProperty("Sequence")
+    
+	@JsonProperty("Sequence")
     public Integer getSequence() {
         return sequence;
     }
@@ -43,12 +50,10 @@ public class Price implements Comparator<Price> {
         this.qty = qty;
     }
 
-    @JsonProperty("Price")
     public String getPrice() {
         return price;
     }
 
-    @JsonProperty("Price")
     public void setPrice(String price) {
         this.price = price;
     }
@@ -72,6 +77,15 @@ public class Price implements Comparator<Price> {
     public void setPriceUnit(PriceUnit priceUnit) {
         this.priceUnit = priceUnit;
     }
+    
+    public String getNetCost() {
+		return netCost;
+	}
+
+	public void setNetCost(String netCost) {
+		this.netCost = netCost;
+	}
+
 
     @Override
     public String toString() {

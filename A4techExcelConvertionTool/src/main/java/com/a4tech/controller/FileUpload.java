@@ -28,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
 import com.a4tech.product.service.ProductService;
+import com.a4tech.service.loginImpl.LoginServiceImpl;
 import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
 
 @Controller
@@ -38,6 +39,7 @@ public class FileUpload {
 	ProductService productService;
 	@Autowired
 	FileValidator fileValidator;
+	private static String accessToken = null;
 	
 	private static Logger _LOGGER = Logger.getLogger(Class.class);
 	@InitBinder
@@ -54,32 +56,50 @@ public class FileUpload {
 	public String fileUpload(@ModelAttribute("fileBean") @Valid FileBean fileBean , BindingResult result ,
 			final RedirectAttributes redirectAttributes , Model model){
 		_LOGGER.info("Enter Controller Class");
+		LoginServiceImpl loginService  = new LoginServiceImpl();
 		int numOfProducts =0;
-		 ByteArrayInputStream bis;
+		 ByteArrayInputStream bis1 = null;
+		 _LOGGER.info("ASI Number::"+fileBean.getAsiNumber());
+		 _LOGGER.info("User Name ::"+fileBean.getUserName());
+		 _LOGGER.info("Password  ::"+fileBean.getPassword());
+		 String asiNumber = fileBean.getAsiNumber();
 		 if(result.hasErrors()){
 			 result.rejectValue("file","missing.file");
 			 FileBean fileBean1 = new FileBean();
 			 model.addAttribute("filebean", fileBean1);
 			 return "Index";
 		 }
-		try {
-			bis = new ByteArrayInputStream(fileBean.getFile().getBytes());
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBean.getFile().getBytes())){
+			//bis = new ByteArrayInputStream(fileBean.getFile().getBytes());
 	        Workbook workbook;
 	            	if (fileBean.getFile().getOriginalFilename().endsWith("xls")) {
 	                workbook = new HSSFWorkbook(bis);
 	            	} else if (fileBean.getFile().getOriginalFilename().endsWith("xlsx")) {
 	                workbook = new XSSFWorkbook(bis);
-	                long endTime1 = System.currentTimeMillis();
-	                numOfProducts = productService.excelProducts(workbook);
+	                if(accessToken == null){
+	                	accessToken = loginService.doLogin(asiNumber,  fileBean.getUserName(),
+	                													fileBean.getPassword());
+	                			                                                   
+	                }
+	                switch (asiNumber) {
+					case "55201":
+						numOfProducts = productService.excelProducts(accessToken,workbook);
+		                model.addAttribute("fileName", numOfProducts);
+		                return "success";
+						//break;
+
+					default:
+						break;
+					}
+	               /* numOfProducts = productService.excelProducts(accessToken,workbook);
 	                model.addAttribute("fileName", numOfProducts);
-	                return "success";
+	                return "success";*/
 	            	} else {
 	               _LOGGER.info("Invlid upload excel file,Please try one more time");
 	            	}
 	        }catch(IOException e1){
 	        	
-	        }
-	        catch (Exception e) {
+	        }catch (Exception e) {
 				// TODO: handle exception
 			}
 		FileBean file = new FileBean();

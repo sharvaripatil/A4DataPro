@@ -30,7 +30,9 @@ public class PriceGrid implements Comparator<PriceGrid>{
     private Integer                  sequence;
     @JsonProperty("Currency")
     private String                   currency;
-    @JsonProperty("ProductNumber")
+    @JsonProperty("ServiceCharge")
+    private String					 serviceCharge;
+   	@JsonProperty("ProductNumber")
     private String                   productNumber;
     @JsonProperty("UpchargeType")
     private String                   upchargeType;
@@ -177,6 +179,14 @@ public class PriceGrid implements Comparator<PriceGrid>{
 
 	public void setCustomerOrderCode(String customerOrderCode) {
 		this.customerOrderCode = customerOrderCode;
+	}
+	
+	public String getServiceCharge() {
+		return serviceCharge;
+	}
+
+	public void setServiceCharge(String serviceCharge) {
+		this.serviceCharge = serviceCharge;
 	}
 
 	@Override

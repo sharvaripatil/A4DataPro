@@ -1,4 +1,4 @@
-package com.a4tech.core.excelMapping;
+package com.a4tech.usbProducts.excelMapping;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -53,21 +53,19 @@ import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
-import com.a4tech.service.loginImpl.LoginServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.LookupData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ExcelMapping {
+public class UsbProductsExcelMapping {
 	
-	private static final Logger _LOGGER = Logger.getLogger(ExcelMapping.class);
+	private static final Logger _LOGGER = Logger.getLogger(UsbProductsExcelMapping.class);
 	PostServiceImpl postServiceImpl = new PostServiceImpl();
 	@SuppressWarnings("finally")
-	public int readExcel(String accessToken,Workbook workbook){
+	public int readExcel(Workbook workbook, String asiNumber,String userName,String password){
 		
 		List<String> numOfProducts = new ArrayList<String>();
 		FileInputStream inputStream = null;
-		LoginServiceImpl loginService = new LoginServiceImpl();
 		//Workbook workbook = null;
 		List<String>  productXids = new ArrayList<String>();
 		  Product productExcelObj = new Product();   
@@ -215,7 +213,7 @@ public class ExcelMapping {
 							 	productExcelObj.setProductRelationSkus(productsku);
 							 	productExcelObj.setProductNumbers(pnumberList);
 							 	//productList.add(productExcelObj);
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj);
+							 	int num = postServiceImpl.postProduct("", productExcelObj);
 							 	if(num ==1){
 							 		numOfProducts.add("1");
 							 	}
@@ -1039,7 +1037,7 @@ public class ExcelMapping {
 		 	productExcelObj.setProductRelationSkus(productsku);
 		 	productExcelObj.setProductNumbers(pnumberList);
 		 	//productList.add(productExcelObj);
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj);
+		 	int num = postServiceImpl.postProduct("", productExcelObj);
 		 	if(num ==1){
 		 		numOfProducts.add("1");
 		 	}

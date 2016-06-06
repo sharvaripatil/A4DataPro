@@ -55,7 +55,21 @@ public class Product {
     @JsonProperty("SEOFlag")
     @XmlElement(name = "SEOFlag")
     private boolean seoFlag;
-    
+    @JsonProperty("DistributorViewOnly")
+    @XmlElement(name="DistributorViewOnly")
+    private boolean distributorViewOnly;
+    @JsonProperty("ItemAssembled")
+    @XmlElement(name="ItemAssembled")
+    private boolean assembledFlag;
+    /*
+     * STORY: VELOEXTAPI-1387
+     * Author: ZAhmed, Date: 04/06/2016, Fix Version: 1.5.17
+     * Description: Addition of SupplierContact field.
+     */
+    @JsonProperty("SupplierContact")
+    @XmlElement(name = "SupplierContact")
+    private boolean supplierContact = true;
+
     @JsonProperty("LineNames")
     @XmlElementWrapper(name = "LineNames")
     @XmlElement(name = "LineName")
@@ -72,16 +86,24 @@ public class Product {
     private String                additionalProductInfo   = null;
     @JsonProperty("AdditionalShippingInfo")
     private String                additionalShippingInfo  = null;
-    @JsonProperty("PriceConfirmedThru")
+    @JsonProperty("AdditionalImprintInfo")
+    private String                additionalImprintInfo  = null;
+ 	@JsonProperty("PriceConfirmedThru")
     private String                priceConfirmedThru;
     @JsonProperty("CanOrderLessThanMinimum")
     private boolean               canOrderLessThanMinimum = false;
-    @JsonProperty("Availability")
+    @JsonProperty("UpcCode")
+    private String                upcCode                 = null;
+    @JsonProperty("DeliveryOption")
+    private String               deliveryOption      				  = null;
+	@JsonProperty("IndustrySegment")
+    private String                industrySegment         = null;
+	@JsonProperty("Availability")
     private List<Availability>    availability;
     @JsonProperty("FOBPoints")
     @XmlElementWrapper(name = "FOBPoints")
     @XmlElement(name = "FOBPoint")
-    private List<String>          fobPoints               = null;
+    private List<FOBPoint>          fobPoints               = null;
     @JsonProperty("ProductKeywords")
     @XmlElementWrapper(name = "ProductKeywords")
     @XmlElement(name = "ProductKeyword")
@@ -117,17 +139,6 @@ public class Product {
     @JsonProperty("PriceType")
     @XmlElement(name="PriceType")
     private String priceType;
-     @JsonProperty("DistributorViewOnly")
-    @XmlElement(name="DistributorViewOnly")
-    private boolean distributorViewOnly;
-    public boolean isDistributorViewOnly() {
-    return distributorViewOnly;
-   }
-
-     public void setDistributorViewOnly(boolean distributorViewOnly) {
-    this.distributorViewOnly = distributorViewOnly;
-    }
-   
     
 	public Inventory getInventory() {
 		return inventory;
@@ -135,6 +146,15 @@ public class Product {
 
 	public void setInventory(Inventory inventory) {
 		this.inventory = inventory;
+	}
+	
+	
+	public boolean isDistributorViewOnly() {
+		return distributorViewOnly;
+	}
+
+	public void setDistributorViewOnly(boolean distributorViewOnly) {
+		this.distributorViewOnly = distributorViewOnly;
 	}
 
 	public String getProductLevelSku() {
@@ -236,7 +256,7 @@ public class Product {
     public String getExternalProductId() {
         return externalProductId;
     }
-    
+
     public void setExternalProductId(String externalProductId) {
         this.externalProductId = externalProductId;
     }
@@ -376,32 +396,9 @@ public class Product {
     }
 
     @Override
-	public String toString() {
-		return "Product [externalProductId=" + externalProductId + ", name="
-				+ name + ", description=" + description + ", summary="
-				+ summary + ", asiProdNo=" + asiProdNo + ", productLevelSku="
-				+ productLevelSku + ", inventory=" + inventory
-				+ ", productDataSheet=" + productDataSheet
-				+ ", shipperBillsBy=" + shipperBillsBy + ", productBreakoutBy="
-				+ productBreakoutBy + ", breakOutByPrice=" + breakOutByPrice
-				+ ", canShipInPlainBox=" + canShipInPlainBox + ", seoFlag="
-				+ seoFlag + ", lineNames=" + lineNames + ", catalogs="
-				+ catalogs + ", distributorOnlyComments="
-				+ distributorOnlyComments + ", productDisclaimer="
-				+ productDisclaimer + ", additionalProductInfo="
-				+ additionalProductInfo + ", additionalShippingInfo="
-				+ additionalShippingInfo + ", priceConfirmedThru="
-				+ priceConfirmedThru + ", canOrderLessThanMinimum="
-				+ canOrderLessThanMinimum + ", availability=" + availability
-				+ ", fobPoints=" + fobPoints + ", productKeywords="
-				+ productKeywords + ", categories=" + categories
-				+ ", complianceCerts=" + complianceCerts + ", safetyWarnings="
-				+ safetyWarnings + ", images=" + images + ", priceGrids="
-				+ priceGrids + ", productNumbers=" + productNumbers
-				+ ", productRelationSkus=" + productRelationSkus
-				+ ", priceType=" + priceType + ", productConfigurations="
-				+ productConfigurations + "]";
-	}
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 
     @Override
     public int hashCode() {
@@ -413,11 +410,11 @@ public class Product {
         return EqualsBuilder.reflectionEquals(this, other);
     }
 
-    public List<String> getFobPoints() {
+    public List<FOBPoint> getFobPoints() {
         return fobPoints;
     }
 
-    public void setFobPoints(List<String> fobPoints) {
+    public void setFobPoints(List<FOBPoint> fobPoints) {
         this.fobPoints = fobPoints;
     }
 
@@ -466,5 +463,51 @@ public class Product {
         this.priceType = priceType;
     }
 
-    
+    public boolean isSupplierContact() {
+        return supplierContact;
+    }
+
+    public void setSupplierContact(boolean supplierContact) {
+        this.supplierContact = supplierContact;
+    }
+
+    public String getAdditionalImprintInfo() {
+		return additionalImprintInfo;
+	}
+
+	public void setAdditionalImprintInfo(String additionalImprintInfo) {
+		this.additionalImprintInfo = additionalImprintInfo;
+	}
+	public boolean isAssembledFlag() {
+		return assembledFlag;
+	}
+
+	public void setAssembledFlag(boolean assembledFlag) {
+		this.assembledFlag = assembledFlag;
+	}
+	public String getUpcCode() {
+		return upcCode;
+	}
+
+	public void setUpcCode(String upcCode) {
+		this.upcCode = upcCode;
+	}
+    public String getIndustrySegment() {
+		return industrySegment;
+	}
+
+	public void setIndustrySegment(String industrySegment) {
+		this.industrySegment = industrySegment;
+	}
+	
+	public String getDeliveryOption() {
+		return deliveryOption;
+	}
+
+	public void setDeliveryOption(String deliveryOption) {
+		this.deliveryOption = deliveryOption;
+	}
+
+
+
 }

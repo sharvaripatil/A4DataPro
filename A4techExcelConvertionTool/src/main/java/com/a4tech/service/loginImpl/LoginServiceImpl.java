@@ -35,7 +35,7 @@ public class LoginServiceImpl implements LoginService {
     private String loginApiURL = "https://sandbox-productservice.asicentral.com/v2/Login";
 
 	@Override
-	public String doLogin() {
+	public String doLogin(String asiNumber,String userName,String password) {
 		ObjectMapper mapper = new ObjectMapper();
         mapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -48,9 +48,9 @@ public class LoginServiceImpl implements LoginService {
             
             Map<String, String> body = new HashMap<String, String>();     
             
-            body.put(ApplicationConstants.CONST_ASI_NUMBER, "55201");
-            body.put(ApplicationConstants.CONST_USERNAME,"ARizvi");
-            body.put(ApplicationConstants.CONST_PASSWORD, "password1");
+            body.put(ApplicationConstants.CONST_ASI_NUMBER, asiNumber);
+            body.put(ApplicationConstants.CONST_USERNAME,userName);
+            body.put(ApplicationConstants.CONST_PASSWORD, password);
 
             
             HttpEntity<?> httpEntity = new HttpEntity<Object>(body, header);

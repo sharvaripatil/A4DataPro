@@ -1,23 +1,38 @@
 package com.a4tech.core.model;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 public class FileBean {
-	//@NotNull(message="File should not be empty")
-	MultipartFile file ;
 	
-	//CommonsMultipartFile files;
+	private MultipartFile file ;
+	private String asiNumber;
+	private String userName;
+	private String password;
+	
 
-	/*public String getName() {
-		return name;
+	public String getAsiNumber() {
+		return asiNumber;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}*/
+	public void setAsiNumber(String asiNumber) {
+		this.asiNumber = asiNumber;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
 	public MultipartFile getFile() {
 		return file;

@@ -48,13 +48,47 @@
            </div>
         </div> --%>
          <!-- <h3 style="margin: 0px 27%;">Please select a file to upload :</h3><br/><input type="file" name="file"> -->
-        
-        <h3 style="margin: 0px 27%;">Please select a file to upload :</h3><br/><form:input path="file" type="file"/>
+         <table>
+         		<tr>
+         			<td>ASI Number :</td>
+         			<td><form:input path="asiNumber" id="asiNumber" /></td>
+         			<td><form:errors path="asiNumber" cssClass="error"/></td>
+         		</tr>
+         		<tr>
+         			<td>UserName :</td>
+         			<td><form:input path="userName" id="userName"/></td>
+         			<td><form:errors path="userName" cssClass="error"/></td>
+         		</tr>
+         		<tr>
+         			<td>Password :</td>
+         			<td><form:input path="password" id="password"/></td>
+         			<td><form:errors path="password" cssClass="error"/></td>
+         		</tr> 		
+         		<tr>
+         		<td>Please select a file to upload :</td>
+         		<td colspan="2"><form:input path="file" type="file"/>
         <!-- <input id="uploadFile" placeholder="0 files selected" disabled="disabled" /> -->
         <!-- <input type="submit" value="Upload" /> -->
-        <button type="submit" class="btn btn-primary btn-lg pull-right"  style="margin:-48px 126px;" value="Upload" id="load" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Processing Excel">Upload Excel</button>
+        </td>
+         		</tr>
+         		<tr>
+         		<td></td>
+         		<%-- <td>
+         		<button type="submit" class="btn btn-primary btn-lg pull-right" style="margin: 1px 37px; float: left !important;" value="Upload" id="load"  data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Processing Excel">Upload Excel</button>
+        <span><form:errors path="file" cssClass="error"/></span></td> --%>
+              <td>
+ 					<form:button value="submit" class="btn btn-primary btn-lg pull-right" style="margin: 1px 37px; float: left !important;">Submit</form:button>             
+              </td>
+         		</tr>
+         		
+         </table>
+       
+        <%-- <h3 style="margin: 0px 27%;">Please select a file to upload :</h3><br/><form:input path="file" type="file"/>
+        <!-- <input id="uploadFile" placeholder="0 files selected" disabled="disabled" /> -->
+        <!-- <input type="submit" value="Upload" /> -->
+        <button type="submit" class="btn btn-primary btn-lg pull-right"  style="margin:-48px 126px;" value="Upload" id="load"  data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Processing Excel">Upload Excel</button>
         <span><form:errors path="file" cssClass="error"/>
-        </span>
+        </span> --%>
       </div>
     </div>
   </div>
@@ -97,6 +131,27 @@ function validateForm() {
         document.myForm.file.focus() ;
         return false;
      }
+}
+
+function validateFields(){
+	var asiNumber = document.getElementById('asiNumber').value;
+	var userName = document.getElementById('userName').value;
+	var password = document.getElementById('password').value;
+	if(asiNumber == ""){
+		alert("Please enter ASI number");
+		document.getElementById('asiNumber').focus();
+		return false;
+	}
+	if(userName == ""){
+		alert("Please enter userName");
+		document.getElementById('userName').focus();
+		return false;
+	}
+	if(password == ""){
+		alert("Please enter password");
+		document.getElementById('password').focus();
+		return false;
+	}
 }
 </script>
 

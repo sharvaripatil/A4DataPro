@@ -5,32 +5,21 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(Include.NON_NULL)
-public class Personalization {
-
-    @JsonProperty("Type")
-	private String type ;
-
-    @JsonProperty("Alias")
-	private String alias ;
+public class ImprintLocation {
+    
+    @JsonProperty("Value")
+    private String value;
     
     @JsonProperty("CustomerOrderCode")
     private String customerOrderCode;
-	
-	public String getType() {
-		return type;
-	}
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public String getAlias() {
-		return alias;
-	}
-
-	public void setAlias(String alias) {
-		this.alias = alias;
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
     public String getCustomerOrderCode() {
         return customerOrderCode;
@@ -39,6 +28,7 @@ public class Personalization {
     public void setCustomerOrderCode(String customerOrderCode) {
         this.customerOrderCode = customerOrderCode;
     }
-	
+    
+    
 
 }

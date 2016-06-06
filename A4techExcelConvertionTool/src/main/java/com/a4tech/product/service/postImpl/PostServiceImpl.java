@@ -52,11 +52,11 @@ public class PostServiceImpl implements PostService{
 				}
 	            
 	            if(authToken == null || authToken.isEmpty()){
-	            	authToken = loginServiceImp.doLogin();
+	            	//authToken = loginServiceImp.doLogin();
 	            	//authToken = loginService.doLogin();
 	            }
 	        	HttpHeaders headers = new HttpHeaders();
-	        	headers.add("AuthToken", authToken);
+	        	headers.add("AuthToken", authTokens);
 	        	//headers.setContentType(MediaType.APPLICATION_JSON);
 	        	headers .add("Content-Type", "application/json ; charset=utf-8");
 	            ObjectMapper mapper1 = new ObjectMapper();

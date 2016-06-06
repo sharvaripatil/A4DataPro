@@ -72,9 +72,26 @@ public class ProductConfigurations {
     @JsonProperty("AdditionalColors")
     private List<String>              additionalColors     = null;
     @JsonProperty("AdditionalLocations")
-    private List<String>              additionalLocations  = null;
-    @JsonProperty("ImprintSizeLocations")
-    private List<ImprintSizeLocation> imprintSizeLocations = null;
+    private List<AdditionalLocation>              additionalLocations  = null;
+
+    // Story: VELOEXTAPI-1254
+    // Author: ZAhmed, Date: 01/18/2016, Fix Version: 1.5.1
+    // Changes: Changing from Imprint Size & Location to individual fields.
+    @JsonProperty("ImprintSize")
+    private List<ImprintSize> imprintSize = null;
+    
+    @JsonProperty("ItemWeight")
+    private Volume itemWeight = null;
+
+    @JsonProperty("ImprintLocation")
+    private List<ImprintLocation> imprintLocation = null;
+
+    @JsonProperty("Carrier")
+    private List<CarrierInformation> carrier = null;
+    
+    @JsonProperty("Warranty")
+    private List<WarrantyInformation> warranty = null; 
+
     @JsonProperty("ShippingEstimates")
     private ShippingEstimate    shippingEstimates    = null;
 
@@ -231,13 +248,45 @@ public class ProductConfigurations {
     @JsonProperty("AdditionalLocations")
     @XmlElementWrapper(name = "AdditionalLocations")
     @XmlElement(name = "AdditionalLocation")
-    public List<String> getAdditionalLocations() {
+    public List<AdditionalLocation> getAdditionalLocations() {
         return additionalLocations;
     }
 
     @JsonProperty("AdditionalLocations")
-    public void setAdditionalLocations(List<String> additionalLocations) {
+    public void setAdditionalLocations(List<AdditionalLocation> additionalLocations) {
         this.additionalLocations = additionalLocations;
+    }
+
+    public List<ImprintSize> getImprintSize() {
+        return imprintSize;
+    }
+
+    public void setImprintSize(List<ImprintSize> imprintSize) {
+        this.imprintSize = imprintSize;
+    }
+
+    public List<ImprintLocation> getImprintLocation() {
+        return imprintLocation;
+    }
+
+    public void setImprintLocation(List<ImprintLocation> imprintLocation) {
+        this.imprintLocation = imprintLocation;
+    }
+
+    public List<CarrierInformation> getCarrier() {
+        return carrier;
+    }
+
+    public void setCarrier(List<CarrierInformation> carrier) {
+        this.carrier = carrier;
+    }
+
+    public List<WarrantyInformation> getWarranty() {
+        return warranty;
+    }
+
+    public void setWarranty(List<WarrantyInformation> warranty) {
+        this.warranty = warranty;
     }
 
     @JsonProperty("ImprintColors")
@@ -248,18 +297,6 @@ public class ProductConfigurations {
     @JsonProperty("ImprintColors")
     public void setImprintColors(ImprintColor imprintColors) {
         this.imprintColors = imprintColors;
-    }
-
-    @JsonProperty("ImprintSizeLocations")
-    @XmlElementWrapper(name = "ImprintSizeLocations")
-    @XmlElement(name = "ImprintSizeLocation")
-    public List<ImprintSizeLocation> getImprintSizeLocations() {
-        return imprintSizeLocations;
-    }
-
-    @JsonProperty("ImprintSizeLocations")
-    public void setImprintSizeLocations(List<ImprintSizeLocation> imprintSizeLocations) {
-        this.imprintSizeLocations = imprintSizeLocations;
     }
 
     /**
@@ -299,7 +336,14 @@ public class ProductConfigurations {
 	public void setPersonalization(List<Personalization> personalization) {
 		this.personalization = personalization;
 	}
-
+    
+    @XmlElement(name = "ItemWeight")
+    public Volume getItemWeight() {
+        return itemWeight;
+    }
+    public void setItemWeight(Volume itemWeight) {
+        this.itemWeight = itemWeight;
+    }
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
