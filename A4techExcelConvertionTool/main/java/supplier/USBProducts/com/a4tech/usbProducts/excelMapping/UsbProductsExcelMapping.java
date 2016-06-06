@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.product.criteria.parser.CatalogParser;
 import com.a4tech.product.criteria.parser.PersonlizationParser;
 import com.a4tech.product.criteria.parser.PriceGridParser;
 import com.a4tech.product.criteria.parser.ProductArtworkProcessor;
@@ -34,7 +35,9 @@ import com.a4tech.product.criteria.parser.ProductTradeNameParser;
 import com.a4tech.product.criteria.parser.ProductionTimeParser;
 import com.a4tech.product.criteria.parser.ShippingEstimationParser;
 import com.a4tech.product.model.Artwork;
+import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.Material;
@@ -62,7 +65,7 @@ public class UsbProductsExcelMapping {
 	private static final Logger _LOGGER = Logger.getLogger(UsbProductsExcelMapping.class);
 	PostServiceImpl postServiceImpl = new PostServiceImpl();
 	@SuppressWarnings("finally")
-	public int readExcel(Workbook workbook, String asiNumber,String userName,String password){
+	public int readExcel(String accessToken,Workbook workbook){
 		
 		List<String> numOfProducts = new ArrayList<String>();
 		FileInputStream inputStream = null;
@@ -160,6 +163,7 @@ public class UsbProductsExcelMapping {
 			ProductSameDayParser sameDayParser=new ProductSameDayParser();
 			ProductSampleParser sampleParser =new ProductSampleParser();
 			PersonlizationParser personalizationParser=new PersonlizationParser();
+			CatalogParser catlogparser=new CatalogParser();
 			ShippingEstimationParser shipinestmt = new ShippingEstimationParser();
 			ProductSizeParser sizeParser=new ProductSizeParser();
 			ProductPackagingParser packagingParser=new ProductPackagingParser();
@@ -170,6 +174,10 @@ public class UsbProductsExcelMapping {
 			ProductionTimeParser productionTimeParser =new ProductionTimeParser();
 			ProductThemeParser themeParser=new ProductThemeParser();
 			ProductMaterialParser materialParser=new ProductMaterialParser();
+			 List<Image> imgList = new ArrayList<Image>();
+			 List<Catalog> catalogList = new ArrayList<Catalog>();
+		        
+		    Image imgObj =new Image(); 
 			
 			Inventory inventoryObj = new Inventory();
 	        Size sizeObj = null;
@@ -213,7 +221,7 @@ public class UsbProductsExcelMapping {
 							 	productExcelObj.setProductRelationSkus(productsku);
 							 	productExcelObj.setProductNumbers(pnumberList);
 							 	//productList.add(productExcelObj);
-							 	int num = postServiceImpl.postProduct("", productExcelObj);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj);
 							 	if(num ==1){
 							 		numOfProducts.add("1");
 							 	}
@@ -329,6 +337,46 @@ public class UsbProductsExcelMapping {
 						productExcelObj.setSummary(ApplicationConstants.CONST_STRING_EMPTY);
 					}
 					break;
+					
+					
+				case 10:
+
+					
+					String image = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(image)){
+					String imgArr[] = image.split(",");
+					for(int i =0;i<=imgArr.length-1;i++)
+					{
+						if(imgArr[0] != null){
+					imgObj.setImageURL(imgArr[0]);
+					imgObj.setRank(i++);
+					imgObj.setIsPrimary(true);
+						}
+						else if (imgArr[1] != null){
+						 imgObj.setImageURL(imgArr[1]);
+						 imgObj.setRank(i++);
+						 imgObj.setIsPrimary(false);
+					}
+						imgList.add(imgObj);
+					}
+					}else{
+						productExcelObj.setImages(imgList);					
+				}
+					
+					break;
+					
+				case 11:
+					String catalogValue = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(catalogValue)){
+					catalogList=catlogparser.getCatalogs(catalogValue);
+					}
+					else{
+						productExcelObj.setCatalogs(catalogList);				
+				}
+					
+					break;
+					
+					
 				
 				case 12:
 					String category = cell.getStringCellValue();
@@ -1037,7 +1085,7 @@ public class UsbProductsExcelMapping {
 		 	productExcelObj.setProductRelationSkus(productsku);
 		 	productExcelObj.setProductNumbers(pnumberList);
 		 	//productList.add(productExcelObj);
-		 	int num = postServiceImpl.postProduct("", productExcelObj);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj);
 		 	if(num ==1){
 		 		numOfProducts.add("1");
 		 	}
