@@ -3,15 +3,20 @@ package com.a4tech.product.criteria.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.a4tech.product.model.Catalog;
 
 
 
 public class CatalogParser {
-	public static List<Catalog> getCatalogs(String catalogValue) {
+	private Logger              _LOGGER              = Logger.getLogger(getClass());
+	public List<Catalog> getCatalogs(String catalogValue) {
+		List<Catalog> catalogList = new ArrayList<Catalog>();
+		try{
 		Catalog catalog = null;
 		String catalogArr[] = catalogValue.split(",");
-		List<Catalog> catalogList = new ArrayList<Catalog>();
+	
 
 		for (int i = 0; i <= catalogArr.length - 1; i++) {
 			catalog = new Catalog();
@@ -25,6 +30,10 @@ public class CatalogParser {
 				catalog.setCatalogPage("");
 			}
 			catalogList.add(catalog);
+		}
+		}
+		catch(Exception e){
+			_LOGGER.error("Error while processing catalog :"+e.getMessage());
 		}
 
 		return catalogList;

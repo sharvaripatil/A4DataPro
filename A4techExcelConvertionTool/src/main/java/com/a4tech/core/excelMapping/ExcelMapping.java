@@ -163,6 +163,7 @@ public class ExcelMapping {
 			ProductSameDayParser sameDayParser=new ProductSameDayParser();
 			ProductSampleParser sampleParser =new ProductSampleParser();
 			PersonlizationParser personalizationParser=new PersonlizationParser();
+			CatalogParser catlogparser=new CatalogParser();
 			ShippingEstimationParser shipinestmt = new ShippingEstimationParser();
 			ProductSizeParser sizeParser=new ProductSizeParser();
 			ProductPackagingParser packagingParser=new ProductPackagingParser();
@@ -342,7 +343,8 @@ public class ExcelMapping {
 
 					
 					String image = cell.getStringCellValue();
-					String imgArr[] = null;
+					if(!StringUtils.isEmpty(image)){
+					String imgArr[] = image.split(",");
 					for(int i =0;i<=imgArr.length-1;i++)
 					{
 						if(imgArr[0] != null){
@@ -357,15 +359,21 @@ public class ExcelMapping {
 					}
 						imgList.add(imgObj);
 					}
-					productExcelObj.setImages(imgList);
-					
+					}else{
+						productExcelObj.setImages(imgList);					
+				}
 					
 					break;
 					
 				case 11:
-					String catalogValue = cell.getStringCellValue();	
-					catalogList=CatalogParser.getCatalogs(catalogValue);
-					productExcelObj.setCatalogs(catalogList);
+					String catalogValue = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(catalogValue)){
+					catalogList=catlogparser.getCatalogs(catalogValue);
+					}
+					else{
+						productExcelObj.setCatalogs(catalogList);				
+				}
+					
 					break;
 					
 					
