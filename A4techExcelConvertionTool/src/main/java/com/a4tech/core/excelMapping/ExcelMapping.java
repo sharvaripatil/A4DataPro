@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.product.criteria.parser.CatalogParser;
 import com.a4tech.product.criteria.parser.PersonlizationParser;
 import com.a4tech.product.criteria.parser.PriceGridParser;
 import com.a4tech.product.criteria.parser.ProductArtworkProcessor;
@@ -34,7 +35,9 @@ import com.a4tech.product.criteria.parser.ProductTradeNameParser;
 import com.a4tech.product.criteria.parser.ProductionTimeParser;
 import com.a4tech.product.criteria.parser.ShippingEstimationParser;
 import com.a4tech.product.model.Artwork;
+import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.Material;
@@ -170,6 +173,10 @@ public class ExcelMapping {
 			ProductionTimeParser productionTimeParser =new ProductionTimeParser();
 			ProductThemeParser themeParser=new ProductThemeParser();
 			ProductMaterialParser materialParser=new ProductMaterialParser();
+			 List<Image> imgList = new ArrayList<Image>();
+			 List<Catalog> catalogList = new ArrayList<Catalog>();
+		        
+		    Image imgObj =new Image(); 
 			
 			Inventory inventoryObj = new Inventory();
 	        Size sizeObj = null;
@@ -329,6 +336,39 @@ public class ExcelMapping {
 						productExcelObj.setSummary(ApplicationConstants.CONST_STRING_EMPTY);
 					}
 					break;
+					
+					
+				case 10:
+
+					
+					String image = cell.getStringCellValue();
+					String imgArr[] = null;
+					for(int i =0;i<=imgArr.length-1;i++)
+					{
+						if(imgArr[0] != null){
+					imgObj.setImageURL(imgArr[0]);
+					imgObj.setRank(i++);
+					imgObj.setIsPrimary(true);
+						}
+						else if (imgArr[1] != null){
+						 imgObj.setImageURL(imgArr[1]);
+						 imgObj.setRank(i++);
+						 imgObj.setIsPrimary(false);
+					}
+						imgList.add(imgObj);
+					}
+					productExcelObj.setImages(imgList);
+					
+					
+					break;
+					
+				case 11:
+					String catalogValue = cell.getStringCellValue();	
+					catalogList=CatalogParser.getCatalogs(catalogValue);
+					productExcelObj.setCatalogs(catalogList);
+					break;
+					
+					
 				
 				case 12:
 					String category = cell.getStringCellValue();
