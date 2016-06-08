@@ -29,6 +29,7 @@ import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
 import com.a4tech.product.service.ProductService;
 import com.a4tech.service.loginImpl.LoginServiceImpl;
+import com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping;
 import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
 
 @Controller
@@ -39,6 +40,7 @@ public class FileUpload {
 	ProductService productService;
 	@Autowired
 	FileValidator fileValidator;
+	FileValidator validate = new FileValidator();
 	private static String accessToken = null;
 	
 	private static Logger _LOGGER = Logger.getLogger(Class.class);
@@ -53,37 +55,35 @@ public class FileUpload {
 		return "Index";
 	}
 	@RequestMapping(method= RequestMethod.POST)
-	public String fileUpload(@ModelAttribute("fileBean") @Valid FileBean fileBean , BindingResult result ,
+	public String fileUpload(@ModelAttribute("filebean") @Valid FileBean fileBean , BindingResult result ,
 			final RedirectAttributes redirectAttributes , Model model){
 		_LOGGER.info("Enter Controller Class");
 		LoginServiceImpl loginService  = new LoginServiceImpl();
+		UsbProductsExcelMapping usbExcelMapping = new UsbProductsExcelMapping();
 		int numOfProducts =0;
-		 ByteArrayInputStream bis1 = null;
-		 _LOGGER.info("ASI Number::"+fileBean.getAsiNumber());
-		 _LOGGER.info("User Name ::"+fileBean.getUserName());
-		 _LOGGER.info("Password  ::"+fileBean.getPassword());
 		 String asiNumber = fileBean.getAsiNumber();
 		 if(result.hasErrors()){
-			 result.rejectValue("file","missing.file");
-			 FileBean fileBean1 = new FileBean();
-			 model.addAttribute("filebean", fileBean1);
-			 return "Index";
+			 return "Index"; 
 		 }
+		 if(accessToken == null){
+         	accessToken = loginService.doLogin(asiNumber,  fileBean.getUserName(),
+         													fileBean.getPassword());
+         	if(accessToken.equalsIgnoreCase("unAuthorized")){
+         		accessToken = null;
+         		model.addAttribute("invalidDetails", "");
+         		 return "Index";
+         	}
+         }
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBean.getFile().getBytes())){
-			//bis = new ByteArrayInputStream(fileBean.getFile().getBytes());
 	        Workbook workbook;
 	            	if (fileBean.getFile().getOriginalFilename().endsWith("xls")) {
 	                workbook = new HSSFWorkbook(bis);
 	            	} else if (fileBean.getFile().getOriginalFilename().endsWith("xlsx")) {
 	                workbook = new XSSFWorkbook(bis);
-	                if(accessToken == null){
-	                	accessToken = loginService.doLogin(asiNumber,  fileBean.getUserName(),
-	                													fileBean.getPassword());
-	                			                                                   
-	                }
 	                switch (asiNumber) {
 					case "55201":
-						numOfProducts = productService.excelProducts(accessToken,workbook);
+						numOfProducts = usbExcelMapping.readExcel(accessToken, workbook);
+						//numOfProducts = productService.excelProducts(accessToken,workbook);
 		                model.addAttribute("fileName", numOfProducts);
 		                return "success";
 						//break;
@@ -91,9 +91,6 @@ public class FileUpload {
 					default:
 						break;
 					}
-	               /* numOfProducts = productService.excelProducts(accessToken,workbook);
-	                model.addAttribute("fileName", numOfProducts);
-	                return "success";*/
 	            	} else {
 	               _LOGGER.info("Invlid upload excel file,Please try one more time");
 	            	}
@@ -102,53 +99,6 @@ public class FileUpload {
 	        }catch (Exception e) {
 				// TODO: handle exception
 			}
-		FileBean file = new FileBean();
-		model.addAttribute("fileBean", file);
-		if(result.hasErrors()){
-			return "Index";
-		}
-		/*try {
-			ByteArrayInputStream bis = new ByteArrayInputStream(bean.getBytes());
-			Workbook workBook;
-			if(!bean.isEmpty()){
-				workBook = new XSSFWorkbook(bis);
-				 numOfProducts = productService.excelProducts(workBook);
-			}
-			return "You successfully uploaded files=" + numOfProducts;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		     
-	//}
-	/*@RequestMapping(value="/uploadFile" ,method= RequestMethod.POST)
-	public String fileUpload(@RequestParam("file") MultipartFile bean){
-		System.out.println("controller");
-		String name = "test";
-		int numOfProducts =0;
-		
-		try {
-			ByteArrayInputStream bis = new ByteArrayInputStream(bean.getBytes());
-			Workbook workBook;
-			if(!bean.isEmpty()){
-				workBook = new XSSFWorkbook(bis);
-				 numOfProducts = productService.excelProducts(workBook);
-			}
-			return "You successfully uploaded files=" + numOfProducts;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-				return "index";
-	}*/
-	
-		ModelAndView mav = new ModelAndView();
-        String message = "Excel file was successfully uploaded";
-         
-        mav.setViewName("redirect:/index.jsp");
-                 
-        redirectAttributes.addFlashAttribute("message", message);   
         return "Index";
 }
 	public FileValidator getFileValidator() {

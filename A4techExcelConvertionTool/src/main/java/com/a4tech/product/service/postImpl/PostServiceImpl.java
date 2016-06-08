@@ -35,7 +35,7 @@ public class PostServiceImpl implements PostService{
 		}
 
 		private RestTemplate restTemplate = new RestTemplate();
-		private String postApiURL = "https://sandbox-productservice.asicentral.com/v2/product/";
+		private String postApiURL = "https://sandbox-productservice.asicentral.com/v3/product/";
 		private static String authToken = null;
 		
 		LoginServiceImpl loginServiceImp = new LoginServiceImpl();

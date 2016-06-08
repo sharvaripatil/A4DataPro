@@ -459,7 +459,7 @@ public class ExcelMapping {
 					if(!StringUtils.isEmpty(tradeValue)){
 					tradeName=tradeNameParser.getTradeNameCriteria(tradeValue);
 					if(tradeName!=null){
-					productConfigObj.setTradeNames(tradeName);
+					//productConfigObj.setTradeNames(tradeName);
 					}
 					}
 					//System.out.println(columnIndex + "tradeName " + tradeName);
@@ -470,7 +470,7 @@ public class ExcelMapping {
 					if(!StringUtils.isEmpty(originValue)){
 					origin=originParser.getOriginCriteria(originValue);
 					if(origin!=null){
-					productConfigObj.setOrigins(origin);
+					//productConfigObj.setOrigins(origin);
 					}
 					}
 					break;

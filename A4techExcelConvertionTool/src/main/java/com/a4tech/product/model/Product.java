@@ -61,11 +61,6 @@ public class Product {
     @JsonProperty("ItemAssembled")
     @XmlElement(name="ItemAssembled")
     private boolean assembledFlag;
-    /*
-     * STORY: VELOEXTAPI-1387
-     * Author: ZAhmed, Date: 04/06/2016, Fix Version: 1.5.17
-     * Description: Addition of SupplierContact field.
-     */
     @JsonProperty("SupplierContact")
     @XmlElement(name = "SupplierContact")
     private boolean supplierContact = true;
