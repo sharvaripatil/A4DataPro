@@ -29,6 +29,7 @@ import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
 import com.a4tech.product.service.ProductService;
 import com.a4tech.service.loginImpl.LoginServiceImpl;
+import com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping;
 import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
 
 @Controller
@@ -57,6 +58,7 @@ public class FileUpload {
 			final RedirectAttributes redirectAttributes , Model model){
 		_LOGGER.info("Enter Controller Class");
 		LoginServiceImpl loginService  = new LoginServiceImpl();
+		UsbProductsExcelMapping usbProductMappingObj=new UsbProductsExcelMapping();
 		int numOfProducts =0;
 		 ByteArrayInputStream bis1 = null;
 		 _LOGGER.info("ASI Number::"+fileBean.getAsiNumber());
@@ -83,7 +85,8 @@ public class FileUpload {
 	                }
 	                switch (asiNumber) {
 					case "55201":
-						numOfProducts = productService.excelProducts(accessToken,workbook);
+						//numOfProducts = productService.excelProducts(accessToken,workbook);
+						numOfProducts=	usbProductMappingObj.readExcel(accessToken, workbook);
 		                model.addAttribute("fileName", numOfProducts);
 		                return "success";
 						//break;

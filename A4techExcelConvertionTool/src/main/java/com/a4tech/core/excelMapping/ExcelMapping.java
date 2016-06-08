@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.product.criteria.parser.ProductImprintColorParser;
 import com.a4tech.product.criteria.parser.CatalogParser;
 import com.a4tech.product.criteria.parser.PersonlizationParser;
 import com.a4tech.product.criteria.parser.PriceGridParser;
@@ -38,6 +39,7 @@ import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
+import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.Material;
@@ -67,7 +69,7 @@ public class ExcelMapping {
 	PostServiceImpl postServiceImpl = new PostServiceImpl();
 	@SuppressWarnings("finally")
 	public int readExcel(String accessToken,Workbook workbook){
-		
+		ImprintColor imprintColors = new ImprintColor();
 		List<String> numOfProducts = new ArrayList<String>();
 		FileInputStream inputStream = null;
 		LoginServiceImpl loginService = new LoginServiceImpl();
@@ -176,6 +178,7 @@ public class ExcelMapping {
 			ProductionTimeParser productionTimeParser =new ProductionTimeParser();
 			ProductThemeParser themeParser=new ProductThemeParser();
 			ProductMaterialParser materialParser=new ProductMaterialParser();
+			ProductImprintColorParser imprintColorParser =new ProductImprintColorParser();
 			 List<Image> imgList = new ArrayList<Image>();
 			 List<Catalog> catalogList = new ArrayList<Catalog>();
 		        
@@ -533,6 +536,17 @@ public class ExcelMapping {
 					if(artworkList!=null){
 					productConfigObj.setArtwork(artworkList);
 					}}
+					break;
+					
+				case 31:
+					String imprintColor = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(imprintColor)){
+					imprintColors=imprintColorParser.getImprintColorCriteria(imprintColor);
+					if(imprintColors!=null){
+					productConfigObj.setImprintColors(imprintColors);
+					//System.out.println(columnIndex + "imprintColors " + imprintColors);
+					}}
+					 
 					break;
 					
 				case 33:
