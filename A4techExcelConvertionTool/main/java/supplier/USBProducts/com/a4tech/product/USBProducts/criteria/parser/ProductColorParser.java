@@ -47,8 +47,8 @@ public class ProductColorParser {
             isCombo = isComboColors(value);
             
             if(!isCombo){
-            	colorObj.setName(value);
-            	colorObj.setAlias(value);
+            	colorObj.setName(value.trim());
+            	colorObj.setAlias(value.trim());
             	colorList.add(colorObj);
             }else{ 
         		String colorArray[]=value.split("/");//ApplicationConstants.CONST_DELIMITER_FSLASH);
@@ -58,11 +58,11 @@ public class ProductColorParser {
         		String alias=value.replaceAll("/","-");//ApplicationConstants.CONST_DELIMITER_FSLASH, ApplicationConstants.CONST_DELIMITER_HYPHEN);
                 
                 	// Color colorObj1=new Color();
-        		colorObj.setName(colorArray[0]);
+        		colorObj.setName(colorArray[0].trim());
         		colorObj.setAlias(alias);
                 	 
                 	 Combo combotemp=new Combo();
-                	 combotemp.setName(colorArray[1]);
+                	 combotemp.setName(colorArray[1].trim());
                 	 combotemp.setType("Secondary");
                 	 
                 	 comboList.add(combotemp);

@@ -25,7 +25,7 @@ public class ProductImprintColorParser {
 		
 		for (String tempImpint : imprintArr) {
  			impclrObj=new ImprintColorValue();
- 			impclrObj.setName(tempImpint);
+ 			impclrObj.setName(tempImpint.trim());
  			impcolorValuesList.add(impclrObj);
 		}
  		 

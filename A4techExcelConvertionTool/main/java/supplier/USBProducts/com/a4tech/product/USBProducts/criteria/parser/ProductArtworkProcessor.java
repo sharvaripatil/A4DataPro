@@ -25,10 +25,10 @@ public class ProductArtworkProcessor {
 			String tempValues[]=tempArt.split(ApplicationConstants.CONST_DELIMITER_COLON);
 			
 			if(tempValues.length==2){
-				artObj.setValue(tempValues[0]);
-				artObj.setComments(tempValues[1]);
+				artObj.setValue(tempValues[0].trim());
+				artObj.setComments(tempValues[1].trim());
 			}else if(tempValues.length==1){
-				artObj.setValue(tempValues[0]);
+				artObj.setValue(tempValues[0].trim());
 				artObj.setComments(ApplicationConstants.CONST_STRING_EMPTY);
 			}
 			
