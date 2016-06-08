@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page session="false" %>
 <html lang="en">
 <head>
@@ -22,8 +23,7 @@
 		<![endif]-->
 </head>
 <body style="overflow:hidden;">
-<!-- <form method="POST" action="uploadFile" enctype="multipart/form-data"> -->
-<form:form   name="myForm" enctype="multipart/form-data" commandName="filebean" action="uploadFile.htm"  >
+<form:form   name="myForm" enctype="multipart/form-data" modelAttribute="filebean" >
 <div class="wrapper">
   <div class="container">
     <div class="col-md-6 col-xs-offset-2 col-lg-8 col-lg-offset-2">
@@ -31,64 +31,40 @@
         <h1>A<sup>4</sup>-ASI <span> Connect</span></h1>
         </span> </div>
       <div class="panel-body">
-      
-        <!-- <div role="alert" class="alert alert-success alert-icon alert-border-color alert-dismissible">
-          <div class="icon"><i class="fa fa-check"></i></div>
-          <div class="message"> <strong>Good!</strong> Better check yourself, you're not looking too good. </div>
-        </div> -->
-        <!-- <div role="alert" class="alert alert-primary alert-icon alert-border-color alert-dismissible">
-          <div class="icon"><i class="fa fa-times-circle"></i></div>
-          <div class="message"> <strong>Good news!</strong> Better check yourself, you're not looking too good. </div>
-        </div> -->
-        <%-- <div class="fileUpload"> <span class="custom-span">+</span>
-          <p class="custom-para">Upload File</p>
-          <form:input path="file" />
-           <div class="has-error">
-           	  <form:errors path="file" cssStyle="color: red;"></form:errors>
-           </div>
-        </div> --%>
-         <!-- <h3 style="margin: 0px 27%;">Please select a file to upload :</h3><br/><input type="file" name="file"> -->
          <table>
+                <c:if test="${invalidDetails == ''}">
+                 <div style="color:red">
+                    <h2>Please enter correct details</h2> 
+            </div>
+                </c:if>
          		<tr>
          			<td>ASI Number :</td>
          			<td><form:input path="asiNumber" id="asiNumber" /></td>
-         			<td><form:errors path="asiNumber" cssClass="error"/></td>
+         			<td style="width:185px;"><form:errors path="asiNumber" cssClass="error" /></td>
          		</tr>
          		<tr>
          			<td>UserName :</td>
          			<td><form:input path="userName" id="userName"/></td>
-         			<td><form:errors path="userName" cssClass="error"/></td>
+         			<td style="width:185px;"><form:errors path="userName" cssClass="error" /></td>
          		</tr>
          		<tr>
          			<td>Password :</td>
          			<td><form:input path="password" id="password"/></td>
-         			<td><form:errors path="password" cssClass="error"/></td>
+         			<td style="width:185px;"><form:errors path="password" cssClass="error" /></td>
          		</tr> 		
          		<tr>
          		<td>Please select a file to upload :</td>
-         		<td colspan="2"><form:input path="file" type="file"/>
-        <!-- <input id="uploadFile" placeholder="0 files selected" disabled="disabled" /> -->
-        <!-- <input type="submit" value="Upload" /> -->
-        </td>
+         		<td><form:input path="file" type="file"/></td>
+         		<td style="width:185px; margin-left:10px"><form:errors path="file" cssClass="error" style="margin-left:50px"/></td>
          		</tr>
          		<tr>
          		<td></td>
-         		<%-- <td>
-         		<button type="submit" class="btn btn-primary btn-lg pull-right" style="margin: 1px 37px; float: left !important;" value="Upload" id="load"  data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Processing Excel">Upload Excel</button>
-        <span><form:errors path="file" cssClass="error"/></span></td> --%>
               <td>
  					<form:button value="submit" class="btn btn-primary btn-lg pull-right" style="margin: 1px 37px; float: left !important;">Submit</form:button>             
               </td>
          		</tr>
          		
          </table>
-       
-        <%-- <h3 style="margin: 0px 27%;">Please select a file to upload :</h3><br/><form:input path="file" type="file"/>
-        <!-- <input id="uploadFile" placeholder="0 files selected" disabled="disabled" /> -->
-        <!-- <input type="submit" value="Upload" /> -->
-        <button type="submit" class="btn btn-primary btn-lg pull-right"  style="margin:-48px 126px;" value="Upload" id="load"  data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Processing Excel">Upload Excel</button>
-        <span><form:errors path="file" cssClass="error"/>
-        </span> --%>
       </div>
     </div>
   </div>
@@ -123,36 +99,6 @@ $(document).ready(function () {
 document.getElementById("uploadBtn").onchange = function () {
 document.getElementById("uploadFile").value = this.value;
 };
-
-function validateForm() {
-	 if( document.myForm.file.value == "" )
-     {
-        alert( "Please provide your name!" );
-        document.myForm.file.focus() ;
-        return false;
-     }
-}
-
-function validateFields(){
-	var asiNumber = document.getElementById('asiNumber').value;
-	var userName = document.getElementById('userName').value;
-	var password = document.getElementById('password').value;
-	if(asiNumber == ""){
-		alert("Please enter ASI number");
-		document.getElementById('asiNumber').focus();
-		return false;
-	}
-	if(userName == ""){
-		alert("Please enter userName");
-		document.getElementById('userName').focus();
-		return false;
-	}
-	if(password == ""){
-		alert("Please enter password");
-		document.getElementById('password').focus();
-		return false;
-	}
-}
 </script>
 
  <!-- </form> -->

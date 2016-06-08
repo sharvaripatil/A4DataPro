@@ -34,11 +34,11 @@ public class ProductConfigurations {
     @JsonProperty("Options")
     private List<Option>              options              = null;
     @JsonProperty("Origins")
-    private List<String>              origins              = null;
+    private List<Origin>              origins              = null;
     @JsonProperty("Packaging")
     private List<String>              packaging            = null;
     @JsonProperty("TradeNames")
-    private List<String>              tradeNames           = null;
+    private List<TradeName>              tradeNames           = null;
     @JsonProperty("ImprintMethods")
     private List<ImprintMethod>       imprintMethods       = null;
     @JsonProperty("Artwork")
@@ -73,10 +73,6 @@ public class ProductConfigurations {
     private List<String>              additionalColors     = null;
     @JsonProperty("AdditionalLocations")
     private List<AdditionalLocation>              additionalLocations  = null;
-
-    // Story: VELOEXTAPI-1254
-    // Author: ZAhmed, Date: 01/18/2016, Fix Version: 1.5.1
-    // Changes: Changing from Imprint Size & Location to individual fields.
     @JsonProperty("ImprintSize")
     private List<ImprintSize> imprintSize = null;
     
@@ -166,12 +162,12 @@ public class ProductConfigurations {
     @JsonProperty("Origins")
     @XmlElementWrapper(name = "Origins")
     @XmlElement(name = "Origin")
-    public List<String> getOrigins() {
+    public List<Origin> getOrigins() {
         return origins;
     }
 
     @JsonProperty("Origins")
-    public void setOrigins(List<String> origins) {
+    public void setOrigins(List<Origin> origins) {
         this.origins = origins;
     }
 
@@ -190,12 +186,12 @@ public class ProductConfigurations {
     @JsonProperty("TradeNames")
     @XmlElementWrapper(name = "TradeNames")
     @XmlElement(name = "TradeName")
-    public List<String> getTradeNames() {
+    public List<TradeName> getTradeNames() {
         return tradeNames;
     }
 
     @JsonProperty("TradeNames")
-    public void setTradeNames(List<String> tradeNames) {
+    public void setTradeNames(List<TradeName> tradeNames) {
         this.tradeNames = tradeNames;
     }
 

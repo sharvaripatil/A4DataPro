@@ -76,8 +76,6 @@
        <!--  <property name="maxUploadSize" value="100000"/> -->
     </bean>
   <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-  	<property name="basename">
-  		<value>error</value>
-  	</property>
+  	<property name="basename" value="error"/>
   </bean>
 </beans>

@@ -36,10 +36,17 @@ public class ApplicationConstants {
 	public static final String 	CONST_ASI_NUMBER 							= "Asi";
 	public static final String 	CONST_USERNAME 								= "Username";
 	public static final String 	CONST_PASSWORD 								= "Password";
-	public static final String  CONST_DELIMITER_PIPE 					    = "|";
+	
+	public static final String  CONST_DELIMITER_PIPE                 		= "|";
+	public static final String  CONST_DELIMITER_SPLITTING_PIPE              = "\\|";
+	public static final String  CONST_DELIMITER_AMPERSAND    				= "&"; 
+	public static final String  CONST_DELIMITER_COMMA						= ",";
 	public static final String  CONST_DELIMITER_FSLASH 					    = "/";
 	//public static final String  CONST_DELIMITER_BSLASH 					    = "\\";
 	public static final String  CONST_DELIMITER_HYPHEN 					    = "-";
+	
+	//public static final String  
+    
     
     
     

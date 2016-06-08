@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.a4tech.core.model.AccessBean;
@@ -69,8 +70,12 @@ public class LoginServiceImpl implements LoginService {
             
             
         
+        }catch(HttpClientErrorException hce){
+        	if(hce.getMessage().equalsIgnoreCase("400 Bad Request")){
+        		return "unAuthorized";	
+        	}
         } catch (Exception e) {
-          //  e.printStackTrace();
+        	
         	_LOGGER.error("Error while doing login "+e.getMessage(),e);
         }
         
