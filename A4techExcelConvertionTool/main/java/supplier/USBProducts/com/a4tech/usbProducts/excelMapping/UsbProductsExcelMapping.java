@@ -14,32 +14,35 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.product.criteria.parser.CatalogParser;
-import com.a4tech.product.criteria.parser.PersonlizationParser;
-import com.a4tech.product.criteria.parser.PriceGridParser;
-import com.a4tech.product.criteria.parser.ProductArtworkProcessor;
-import com.a4tech.product.criteria.parser.ProductColorParser;
-import com.a4tech.product.criteria.parser.ProductImprintMethodParser;
-import com.a4tech.product.criteria.parser.ProductMaterialParser;
-import com.a4tech.product.criteria.parser.ProductNumberParser;
-import com.a4tech.product.criteria.parser.ProductOptionParser;
-import com.a4tech.product.criteria.parser.ProductOriginParser;
-import com.a4tech.product.criteria.parser.ProductPackagingParser;
-import com.a4tech.product.criteria.parser.ProductRushTimeParser;
-import com.a4tech.product.criteria.parser.ProductSameDayParser;
-import com.a4tech.product.criteria.parser.ProductSampleParser;
-import com.a4tech.product.criteria.parser.ProductShapeParser;
-import com.a4tech.product.criteria.parser.ProductSizeParser;
-import com.a4tech.product.criteria.parser.ProductSkuParser;
-import com.a4tech.product.criteria.parser.ProductThemeParser;
-import com.a4tech.product.criteria.parser.ProductTradeNameParser;
-import com.a4tech.product.criteria.parser.ProductionTimeParser;
-import com.a4tech.product.criteria.parser.ShippingEstimationParser;
+import com.a4tech.product.USBProducts.criteria.parser.CatalogParser;
+import com.a4tech.product.USBProducts.criteria.parser.PersonlizationParser;
+import com.a4tech.product.USBProducts.criteria.parser.PriceGridParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductArtworkProcessor;
+import com.a4tech.product.USBProducts.criteria.parser.ProductColorParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductImprintColorParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductImprintMethodParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductMaterialParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductNumberParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductOptionParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductOriginParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductPackagingParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductRushTimeParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductSameDayParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductSampleParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductShapeParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductSizeParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductSkuParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductThemeParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductTradeNameParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductionTimeParser;
+import com.a4tech.product.USBProducts.criteria.parser.ShippingEstimationParser;
 import com.a4tech.product.criteria.parser.UsbProductsPriceGridParser;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
+import com.a4tech.product.model.ImprintColor;
+import com.a4tech.product.model.ImprintColorValue;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.Material;
@@ -86,7 +89,6 @@ public class UsbProductsExcelMapping {
 		  String basePriceName = null;
 		  String priceIncludes = null;
 		  PriceGridParser priceGridParser = new PriceGridParser();
-		  UsbProductsPriceGridParser usbPriceParser = new UsbProductsPriceGridParser();
 		  String upChargeName = null;
 		  String upChargeQur = null;
 		  String upchargeType = null;
@@ -135,6 +137,55 @@ public class UsbProductsExcelMapping {
 		String optionadditionalinfo =null;
 		String canorder =null;
 		String reqfororder =null;
+		String shippingWeightValue=null;
+		String colorValue=null;
+		String imprintValue=null;
+		ImprintColor imprintColors = new ImprintColor();
+		String imprintColorValue=null;
+		Color colorObj=new Color();
+		ShippingEstimationParser shipinestmt = new ShippingEstimationParser();
+		RushTime rushTime =new RushTime();
+		SameDayRush sameDayObj=new SameDayRush();
+		Samples samples=new Samples();
+		
+		List<Color> color = new ArrayList<Color>();
+		List<String> origin = new ArrayList<String>();
+		List<String> lineNames = new ArrayList<String>();
+		List<String> categories = new ArrayList<String>();
+		List<String> productKeywords = new ArrayList<String>();
+		List<String> complianceCerts = new ArrayList<String>();
+		List<String> safetyWarnings = new ArrayList<String>();
+		List<Personalization> personalizationlist = new ArrayList<Personalization>();
+		List<String> packaging = new ArrayList<String>();
+		List<String> themes = new ArrayList<String>();
+		List<String> tradeName = new ArrayList<String>();
+		List<ImprintMethod> imprintMethods = new ArrayList<ImprintMethod>();
+		List<Artwork> artworkList = new ArrayList<Artwork>();
+		List<Shape> shapeList=new ArrayList<Shape>();
+		List<ProductionTime> productionTimeList = new ArrayList<ProductionTime>();
+		List<Material> materialList=new ArrayList<Material>();
+		List<ImprintColorValue> imprintColorsValueList = new ArrayList<ImprintColorValue>();
+		
+		
+		ProductColorParser colorparser=new ProductColorParser();
+		ProductOriginParser originParser=new ProductOriginParser();
+		ProductRushTimeParser rushTimeParser=new ProductRushTimeParser();
+		ProductSameDayParser sameDayParser=new ProductSameDayParser();
+		ProductSampleParser sampleParser =new ProductSampleParser();
+		PersonlizationParser personalizationParser=new PersonlizationParser();
+		CatalogParser catlogparser=new CatalogParser();
+		 
+		ProductSizeParser sizeParser=new ProductSizeParser();
+		ProductPackagingParser packagingParser=new ProductPackagingParser();
+		ProductTradeNameParser tradeNameParser=new ProductTradeNameParser();
+		ProductImprintMethodParser imprintMethodParser=new ProductImprintMethodParser();
+		ProductArtworkProcessor artworkProcessor=new ProductArtworkProcessor();
+		ProductShapeParser shapeParser=new ProductShapeParser();
+		ProductionTimeParser productionTimeParser =new ProductionTimeParser();
+		ProductThemeParser themeParser=new ProductThemeParser();
+		ProductMaterialParser materialParser=new ProductMaterialParser();
+		ProductImprintColorParser imprintColorParser =new ProductImprintColorParser();
+		String productName = null;
 		while (iterator.hasNext()) {
 			
 			try{
@@ -145,10 +196,22 @@ public class UsbProductsExcelMapping {
 			
 			
 			List<Image> imgList = new ArrayList<Image>();
-			String productName = null;
+			
 			 productXids.add(productId);
+			 //String productName = null;
 			 boolean checkXid  = false;
-			 
+			 ShippingEstimate ShipingItem = null;
+				
+				String shippingitemValue = null;
+				String shippingdimensionValue = null;
+				String sizeGroup=null;
+				String rushService=null;
+				String prodSample=null;
+				
+				
+				 
+				 
+				 imprintColors.setType("COLR");
 			
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
@@ -608,21 +671,413 @@ public class UsbProductsExcelMapping {
 						
 					}*/
 					 break; // upcharge quanytity
+					 
+					 
+					 
+				case 108:
+					 int shipval= (int) cell.getNumericCellValue();
+					 shippingitemValue=Integer.toString(shipval);
+					shippingitemValue=shippingitemValue+ApplicationConstants.CONST_DELIMITER_COLON+"per Case";
+					break;
+					
+				case 109:
+					int shipwtval= (int) cell.getNumericCellValue();
+					shippingWeightValue=Integer.toString(shipwtval);
+					  
+					break;
+					
+				case 110:
+					String weightinLBS=cell.getStringCellValue();
+					shippingWeightValue=weightinLBS+ApplicationConstants.CONST_DELIMITER_COLON+shippingWeightValue;
+					ShipingItem = shipinestmt.getShippingEstimates(shippingitemValue, shippingdimensionValue,shippingWeightValue);
+					if(ShipingItem.getDimensions()!=null || ShipingItem.getNumberOfItems()!=null || ShipingItem.getWeight()!=null ){
+					productConfigObj.setShippingEstimates(ShipingItem);
+					}
+					break;
+				case 111:
+					//Weight per Item
+					System.out.println(111);
+					break;
+	
+				case 112:
+					//Unit of Measure
+					break;
+				case 113:
+					//Sizes
+
+					break;
+				case 114:
+					//Size Name
+
+					break;
+					
+				case 115:
+					//Size Width
+
+					break;
+					
+				case 116:
+					//Size Length
+
+					break;
+					
+				case 117:
+					//Size Height
+
+					break;
+					
+				case 118:
+					//Lead Time relates to Production Time
+
+					break;
+			
+				case 119:
+					//Rush Lead Time relates to Rush Time
+					break;
+				
+				case 120:
+					//Item Type1
+					break;
+					
+				case 121:
+					//Item Colors1
+					colorValue=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(colorValue)){
+						color=colorparser.getColorCriteria(colorValue);
+				    
+					if(color!=null){
+					productConfigObj.setColors(color);
+					}
+					}
+					break;
+					
+				
+				
+			case 122:
+				//Item Type2
+				System.out.println(122);
+				break;
+				
+			case 123:
+				//Item Colors2
+				colorValue=cell.getStringCellValue();
+				if(!StringUtils.isEmpty(colorValue)){
+					color=colorparser.getColorCriteria(colorValue);
+				    
+				if(color!=null){
+				productConfigObj.setColors(color);
+				}
+				}
+				break;
+				
+			case 124:
+				//Item Type3
+				System.out.println(124);
+				break;
+				
+			case 125:
+				//Item Colors3
+				colorValue=cell.getStringCellValue();
+				if(!StringUtils.isEmpty(colorValue)){
+					color=colorparser.getColorCriteria(colorValue);
+				    
+				if(color!=null){
+				productConfigObj.setColors(color);
+				}
+				}
+				break;
+				
+			case 126:
+				//Item Type4
+				System.out.println(126);
+				break;
+				
+			case 127:
+				//Item Colors4
+				colorValue=cell.getStringCellValue();
+				if(!StringUtils.isEmpty(colorValue)){
+					color=colorparser.getColorCriteria(colorValue);
+				    
+				if(color!=null){
+				productConfigObj.setColors(color);
+				}
+				}
+				break;
+				
+			case 128:
+				//imprint Method1
+				imprintValue=cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintValue)){
+				imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
+				if(imprintMethods!=null){
+				productConfigObj.setImprintMethods(imprintMethods);
+				}
+				}
+				break;
+
+			case 129:
+				//Imprint Location1
+				break;
+				
+				
+				
+			case 130:
+				//Imprint Colors1
+				imprintColorValue = cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintColorValue)){
+					imprintColorsValueList=imprintColorParser.getImprintColorCriteria(imprintColorValue);
+				if(imprintColorsValueList!=null){
+			    imprintColors.setValues(imprintColorsValueList);
+				productConfigObj.setImprintColors(imprintColors);
+				
+				}
+				}
+				break;
+				
+			case 131:
+				//imprint method2
+				imprintValue=cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintValue)){
+				imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
+				if(imprintMethods!=null){
+				productConfigObj.setImprintMethods(imprintMethods);
+				}
+				}
+				 break;
+				
+			case 132:
+				//Imprint Location2
+				break;
+				
+			case 133:
+				//Imprint colors2
+				imprintColorValue = cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintColorValue)){
+					imprintColorsValueList=imprintColorParser.getImprintColorCriteria(imprintColorValue);
+				if(imprintColorsValueList!=null){
+			    imprintColors.setValues(imprintColorsValueList);
+				productConfigObj.setImprintColors(imprintColors);
+				
+				}
+				}
+				break;
+				
+				
+			case 134:
+				//Imprint method3
+				imprintValue=cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintValue)){
+				imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
+				if(imprintMethods!=null){
+				productConfigObj.setImprintMethods(imprintMethods);
+				}
+				}
+				break;
+				
+				
+				
+			case 135:
+				//Imprint location3
+				break;
+				
+				
+				
+			case 136:
+				//Imprint Colors3
+				imprintColorValue = cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintColorValue)){
+					imprintColorsValueList=imprintColorParser.getImprintColorCriteria(imprintColorValue);
+				if(imprintColorsValueList!=null){
+			    imprintColors.setValues(imprintColorsValueList);
+				productConfigObj.setImprintColors(imprintColors);
+				
+				}
+				}
+				break;
+				
+			case 137:
+				//Imprint method 4
+				imprintValue=cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintValue)){
+				imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
+				if(imprintMethods!=null){
+				productConfigObj.setImprintMethods(imprintMethods);
+				}
+				}
+				break;
+				
+			case 138:
+				//Imprint location4
+				break;
+				
+				
+				
+			case 139:
+				//Imprint Colors4
+				imprintColorValue = cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintColorValue)){
+					imprintColorsValueList=imprintColorParser.getImprintColorCriteria(imprintColorValue);
+				if(imprintColorsValueList!=null){
+			    imprintColors.setValues(imprintColorsValueList);
+				productConfigObj.setImprintColors(imprintColors);
+				
+				}
+				}
+				break;
+				
+				
+			case 140:
+				//Imprint method 5
+				imprintValue=cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintValue)){
+				imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
+				if(imprintMethods!=null){
+				productConfigObj.setImprintMethods(imprintMethods);
+				}
+				}
+				break;
+				
+			case 141:
+				//Imprint location5
+				break;
+				
+				
+				
+			case 142:
+				//Imprint Colors5
+				imprintColorValue = cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintColorValue)){
+					imprintColorsValueList=imprintColorParser.getImprintColorCriteria(imprintColorValue);
+				if(imprintColorsValueList!=null){
+			    imprintColors.setValues(imprintColorsValueList);
+				productConfigObj.setImprintColors(imprintColors);
+				
+				}
+				}
+				break;
+				
+				
+				
+			case 143:
+				//Imprint method 6
+				imprintValue=cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintValue)){
+				imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
+				if(imprintMethods!=null){
+				productConfigObj.setImprintMethods(imprintMethods);
+				}
+				}
+				break;
+				
+			case 144:
+				//Imprint location6
+				break;
+				
+				
+				
+			case 145:
+				//Imprint Colors6
+				imprintColorValue = cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintColorValue)){
+					imprintColorsValueList=imprintColorParser.getImprintColorCriteria(imprintColorValue);
+				if(imprintColorsValueList!=null){
+			    imprintColors.setValues(imprintColorsValueList);
+				productConfigObj.setImprintColors(imprintColors);
+				
+				}
+				}
+				break;
+				
+				
+			case 146:
+				//Imprint method 7
+				imprintValue=cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintValue)){
+				imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
+				if(imprintMethods!=null){
+				productConfigObj.setImprintMethods(imprintMethods);
+				}
+				}
+				break;
+				
+			case 147:
+				//Imprint location7
+				break;
+				
+				
+				
+			case 148:
+				//Imprint Colors7
+				imprintColorValue = cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintColorValue)){
+					imprintColorsValueList=imprintColorParser.getImprintColorCriteria(imprintColorValue);
+				if(imprintColorsValueList!=null){
+			    imprintColors.setValues(imprintColorsValueList);
+				productConfigObj.setImprintColors(imprintColors);
+				
+				}
+				}
+				break;
+				
+			case 149:
+				//Selections
+
+				break;
+				
+			case 150:
+				String artwork = cell.getStringCellValue();
+				if(!StringUtils.isEmpty(artwork)){
+				artworkList=artworkProcessor.getArtworkCriteria(artwork);
+				if(artworkList!=null){
+				productConfigObj.setArtwork(artworkList);
+				}}
+				break;
+				
+				
+			case 151:
+				break;
+				
+			case 152:
+				
+			//Option Charges
+				break;
+				//productExcelObj.setProductConfigurations(productConfigObj);l
+				
+			case 153:
+				//Additional Product Information
+				String artworK = cell.getStringCellValue();
+				if(!StringUtils.isEmpty(artworK)){
+				artworkList=artworkProcessor.getArtworkCriteria(artworK);
+				if(artworkList!=null){
+				productConfigObj.setArtwork(artworkList);
+				}}
+				break;
+			
+			case 154:
+				//FOB Ship From Zip
+				break;
+				
+			case 155:
+				//FOB Bill From Zip
+				break;
+			}  // end inner while loop
+					 
 					  
 		        
 				}
 				
+				
 				//productExcelObj.setProductConfigurations(productConfigObj);l
-			}  // end inner while loop
+			 // end inner while loop
 			if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
-				priceGrids = usbPriceParser.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
+				priceGrids = priceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
 						         listOfQuantity.toString(), listOfDiscount.toString(), "USD",
 						         priceIncludes, true, "N", productName,"",priceGrids);	
 			}
 			
 			 
 				if(UpCharCriteria != null && !UpCharCriteria.toString().isEmpty()){
-					priceGrids = usbPriceParser.getUpchargePriceGrid(UpCharQuantity.toString(), UpCharPrices.toString(), UpCharDiscount.toString(), UpCharCriteria.toString(), 
+					priceGrids = priceGridParser.getUpchargePriceGrid(UpCharQuantity.toString(), UpCharPrices.toString(), UpCharDiscount.toString(), UpCharCriteria.toString(), 
 							 upChargeQur, currencyType, upChargeName, upchargeType, upChargeLevel, new Integer(1), priceGrids);
 				}
 				
@@ -680,8 +1135,8 @@ public class UsbProductsExcelMapping {
 		   // Add repeatable sets here
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
-		 	productExcelObj.setProductRelationSkus(productsku);
-		 	productExcelObj.setProductNumbers(pnumberList);
+		 	/*productExcelObj.setProductRelationSkus(productsku);
+		 	productExcelObj.setProductNumbers(pnumberList);*/
 		 	//productList.add(productExcelObj);
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj);
 		 	if(num ==1){
@@ -689,7 +1144,7 @@ public class UsbProductsExcelMapping {
 		 	}
 		 	_LOGGER.info("list size>>>>>>"+numOfProducts.size());
 			//System.out.println(mapper1.writeValueAsString(productExcelObj));
-
+	
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet ");
 			return 0;
