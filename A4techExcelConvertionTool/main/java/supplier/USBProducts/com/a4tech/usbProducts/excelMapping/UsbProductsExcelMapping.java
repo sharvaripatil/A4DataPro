@@ -296,8 +296,8 @@ public class UsbProductsExcelMapping {
 				case 4:
 					String categoryName = cell.getStringCellValue();
 					List<String> listOfCategories = new ArrayList<String>();
-					//listOfCategories.add(categoryName);
-					listOfCategories.add("USB/FLASH DRIVES");
+					listOfCategories.add(categoryName);
+					//listOfCategories.add("USB/FLASH DRIVES");
 					productExcelObj.setCategories(listOfCategories);
 				    break;
 					

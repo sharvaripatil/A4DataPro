@@ -66,7 +66,7 @@ public class FileUpload {
 			 return "Index"; 
 		 }
 		 if(accessToken == null){
-         	accessToken = loginService.doLogin(asiNumber,  fileBean.getUserName(),
+         	accessToken = loginService.doLogin("55201",  fileBean.getUserName(),
          													fileBean.getPassword());
          	if(accessToken.equalsIgnoreCase("unAuthorized")){
          		accessToken = null;
@@ -82,13 +82,15 @@ public class FileUpload {
 	                workbook = new XSSFWorkbook(bis);
 	                switch (asiNumber) {
 					case "55201":
-						numOfProducts = usbExcelMapping.readExcel(accessToken, workbook);
-						//numOfProducts = productService.excelProducts(accessToken,workbook);
-
+				        numOfProducts = productService.excelProducts(accessToken,workbook);
 		                model.addAttribute("fileName", numOfProducts);
 		                return "success";
 						//break;
-
+					case "55202":
+						
+							numOfProducts = usbExcelMapping.readExcel(accessToken, workbook);
+							model.addAttribute("fileName", numOfProducts);
+							return "success";
 					default:
 						break;
 					}
