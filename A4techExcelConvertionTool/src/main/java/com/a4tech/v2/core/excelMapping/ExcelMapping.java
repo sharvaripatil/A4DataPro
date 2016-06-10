@@ -73,8 +73,8 @@ public class ExcelMapping {
 	PostServiceImpl postServiceImpl = new PostServiceImpl();
 	@SuppressWarnings("finally")
 	public int readExcel(String accessToken,Workbook workbook){
-		ImprintColor imprintColors1 = new ImprintColor();
-		 List<ImprintColorValue> imprintColors = new ArrayList<ImprintColorValue>();
+		ImprintColor imprintColorsObj = new ImprintColor();
+		 //List<ImprintColorValue> imprintColors = new ArrayList<ImprintColorValue>();
 		List<String> numOfProducts = new ArrayList<String>();
 		FileInputStream inputStream = null;
 		LoginServiceImpl loginService = new LoginServiceImpl();
@@ -618,9 +618,9 @@ public class ExcelMapping {
 				case 31:
 					String imprintColor = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintColor)){
-					imprintColors=imprintColorParser.getImprintColorCriteria(imprintColor);
-					if(imprintColors!=null){
-					//productConfigObj.setImprintColors(imprintColors); 
+						imprintColorsObj=imprintColorParser.getImprintColorCriteria(imprintColor);
+					if(imprintColorsObj!=null){
+					productConfigObj.setImprintColors(imprintColorsObj); 
 					
 					}}
 					 
