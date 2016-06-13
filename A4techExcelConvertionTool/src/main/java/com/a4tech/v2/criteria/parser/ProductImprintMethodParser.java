@@ -21,8 +21,8 @@ public class ProductImprintMethodParser {
 		ImprintMethod imprintObj=null;
 		for (String tempImpint : imprintArr) {
  			imprintObj=new ImprintMethod();
- 			imprintObj.setType(imprintValue.trim());
- 			imprintObj.setAlias(imprintValue.trim());
+ 			imprintObj.setType(tempImpint.trim());
+ 			imprintObj.setAlias(tempImpint.trim());
  			impmthdList.add(imprintObj);
 		}
 		

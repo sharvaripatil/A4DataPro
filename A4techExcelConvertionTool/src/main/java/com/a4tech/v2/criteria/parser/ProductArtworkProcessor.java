@@ -1,12 +1,18 @@
 package com.a4tech.v2.criteria.parser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+
+import javax.smartcardio.ATR;
 
 import org.apache.log4j.Logger;
 
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.v2.core.model.Artwork;
+import com.a4tech.v2.core.model.ImprintColorValue;
 
 public class ProductArtworkProcessor {
 
@@ -14,9 +20,8 @@ public class ProductArtworkProcessor {
 	
 	public List<Artwork> getArtworkCriteria(String artwork){
 		List<Artwork> artworkList=new  ArrayList<Artwork>();
+		Set<Artwork> artworkOfSet =  new HashSet<Artwork>();
 		try{
-		
-		
 		Artwork artObj=null;
 		String artArr[]= artwork.split("\\|");
 		
@@ -31,11 +36,10 @@ public class ProductArtworkProcessor {
 				artObj.setValue(tempValues[0].trim());
 				artObj.setComments(ApplicationConstants.CONST_STRING_EMPTY);
 			}
-			
-			artworkList.add(artObj);
+			artworkOfSet.add(artObj);
 			
 		}
-
+			artworkList.addAll(artworkOfSet);
            }catch(Exception e){
         	   _LOGGER.error("Error while processing Artwork :"+e.getMessage());
         	   return null;

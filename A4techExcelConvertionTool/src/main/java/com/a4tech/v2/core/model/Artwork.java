@@ -30,5 +30,23 @@ public class Artwork {
     public void setComments(String comments) {
         this.comments = comments;
     }
+    
+    public int hashCode(){
+        int hashcode = 0;
+        hashcode = value.hashCode();
+        hashcode = hashcode + comments.hashCode();
+        return hashcode;
+    }
+     
+    public boolean equals(Object obj){
+        if (obj instanceof Artwork) {
+        	Artwork artwork = (Artwork) obj;
+            //return (pp.item.equals(this.item));
+        	return (artwork.getComments().equalsIgnoreCase(this.comments) && 
+        			                             artwork.getValue().equalsIgnoreCase(this.value));
+        } else {
+            return false;
+        }
+    }
   
 }

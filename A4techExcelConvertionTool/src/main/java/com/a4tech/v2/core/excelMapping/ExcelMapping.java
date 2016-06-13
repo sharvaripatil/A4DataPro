@@ -1,6 +1,5 @@
 package com.a4tech.v2.core.excelMapping;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +13,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.service.loginImpl.LoginServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.LookupData;
 import com.a4tech.v2.core.model.Artwork;
@@ -22,7 +20,6 @@ import com.a4tech.v2.core.model.Catalog;
 import com.a4tech.v2.core.model.Color;
 import com.a4tech.v2.core.model.Image;
 import com.a4tech.v2.core.model.ImprintColor;
-import com.a4tech.v2.core.model.ImprintColorValue;
 import com.a4tech.v2.core.model.ImprintMethod;
 import com.a4tech.v2.core.model.Inventory;
 import com.a4tech.v2.core.model.Material;
@@ -76,15 +73,12 @@ public class ExcelMapping {
 		ImprintColor imprintColorsObj = new ImprintColor();
 		 //List<ImprintColorValue> imprintColors = new ArrayList<ImprintColorValue>();
 		List<String> numOfProducts = new ArrayList<String>();
-		FileInputStream inputStream = null;
-		LoginServiceImpl loginService = new LoginServiceImpl();
 		//Workbook workbook = null;
 		List<String>  productXids = new ArrayList<String>();
 		String productId = null;
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  ProductSkuParser skuparserobj=new ProductSkuParser();
-		  boolean isProduct = false;
 		  String externalProductId = null;
 		  String currencyType = null;
 		  String priceQurFlag = null;
@@ -308,69 +302,30 @@ public class ExcelMapping {
 					break;
 			
 				case 4:
-					/*String productLevelSku = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(productLevelSku)){
-					productExcelObj.setProductLevelSku(productLevelSku);
-					}else{
-						productExcelObj.setProductLevelSku(ApplicationConstants.CONST_STRING_EMPTY);
-					}*/
+					
 				    break;
 					
 				case 5:
-					/*String inventoryLink = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(inventoryLink)){
-					inventoryObj.setInventoryLink(inventoryLink);
-					productExcelObj.setInventory(inventoryObj);
-					}*/
+					
 					break;
 					
 				case 6:
-					/*String inventoryStatus = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(inventoryStatus)){
-					inventoryObj.setInventoryStatus(inventoryStatus);
-					productExcelObj.setInventory(inventoryObj);
-					}*/
+					
 					break;
 					
 				case 7:
-					/*int inventoryQuantity =0;
-					if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						inventoryQuantity = (int) cell.getNumericCellValue();
-					}else if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						try{
-							inventoryQuantity = Integer.parseInt(cell.getStringCellValue());
-						}catch(NumberFormatException nfe){
-							_LOGGER.error("Product Level Inventory Quantity::Invalid value");
-						}
-						
-					}
-					if(!StringUtils.isEmpty(Integer.toString(inventoryQuantity))){
-					inventoryObj.setInventoryQuantity(Integer.toString(inventoryQuantity));
-					productExcelObj.setInventory(inventoryObj);
-					}*/
+					
 					break;
 					
 				case 8:
-					/*String description = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(description)){
-					productExcelObj.setDescription(description);
-					}else{
-						productExcelObj.setDescription(ApplicationConstants.CONST_STRING_EMPTY);
-					}*/
+					
 					String productDescription = cell.getStringCellValue();
-					//productExcelObj.setDescription(productDescription);
-					productExcelObj.setDescription(productName);
+					productDescription = productName;
+					productExcelObj.setDescription(productDescription);
 					break;
 					
 				case 9:
 					
-					// summery is not available
-					/*String summary = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(summary)){
-					productExcelObj.setSummary(summary);
-					}else{
-						productExcelObj.setSummary(ApplicationConstants.CONST_STRING_EMPTY);
-					}*/
 					break;
 					
 					
@@ -402,44 +357,21 @@ public class ExcelMapping {
 					
 				case 11:
 					
-					// data is not available
-					/*String catalogValue = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(catalogValue)){
-					catalogList=catlogparser.getCatalogs(catalogValue);
-					}
-					else{
-						productExcelObj.setCatalogs(catalogList);				
-				}*/
 					
 					break;
 					
 					
 				
 				case 12:
-					/*String category = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(category)){
-					String categoryArr[] = category.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-					for (String string : categoryArr) {
-						categories.add(string);
-					}
-					productExcelObj.setCategories(categories);
-					}*/
+
 					String categoryName = cell.getStringCellValue();
 					List<String> listOfCategories = new ArrayList<String>();
-					listOfCategories.add(categoryName);
-					//listOfCategories.add("USB/FLASH DRIVES");
+					//listOfCategories.add(categoryName);
+					listOfCategories.add("USB/FLASH DRIVES");
 					productExcelObj.setCategories(listOfCategories);
 					break;
 
 				case 13:
-					/*String productKeyword = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(productKeyword)){
-					String productKeywordArr[] = productKeyword.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-					for (String string : productKeywordArr) {
-						productKeywords.add(string);
-					}
-					productExcelObj.setProductKeywords(productKeywords);
-					}*/
 					String Keywords = cell.getStringCellValue();
 					List<String> listOfKeywords = new ArrayList<String>();
 					if(Keywords.contains(ApplicationConstants.CONST_DELIMITER_AMPERSAND)){
@@ -469,13 +401,7 @@ public class ExcelMapping {
 					break;
 					
 				case 15:
-					/*String materialValue=cell.getStringCellValue();
-					if(!StringUtils.isEmpty(materialValue)){
-					materialList= materialParser.getMaterialCriteria(materialValue);
-					if(materialList!=null){
-					productConfigObj.setMaterials(materialList);
-					}
-					}*/
+					
 					String material=cell.getStringCellValue();
 					List<Material> listOfMaterialList =  new ArrayList<Material>();
 					String[] materials = material.split(ApplicationConstants.CONST_DELIMITER_COMMA);
@@ -522,15 +448,7 @@ public class ExcelMapping {
 					break;
 					
 				case 20:
-					/*String tradeValue=cell.getStringCellValue();
-					if(!StringUtils.isEmpty(tradeValue)){
-					tradeName=tradeNameParser.getTradeNameCriteria(tradeValue);
-					if(tradeName!=null){
-					//productConfigObj.setTradeNames(tradeName);
-					}
-					}
-					//System.out.println(columnIndex + "tradeName " + tradeName);
-					 *    */					
+					
 					String brandName = cell.getStringCellValue();
 					List<String> listOfBrands = new ArrayList<String>();
 					TradeName tradeName1 = new TradeName();
@@ -540,13 +458,7 @@ public class ExcelMapping {
 					break;
 					
 				case 21:
-					/*String originValue=cell.getStringCellValue();
-					if(!StringUtils.isEmpty(originValue)){
-					origin=originParser.getOriginCriteria(originValue);
-					if(origin!=null){
-					//productConfigObj.setOrigins(origin);
-					}
-					}*/
+				
 					String origin1 = cell.getStringCellValue();
 					List<String> listOfOrigins = new ArrayList<String>();
 					Origin origins = new Origin();

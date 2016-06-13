@@ -1,8 +1,8 @@
 package com.a4tech.v2.core.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(Include.NON_NULL)
 public class ImprintColorValue {
@@ -32,4 +32,19 @@ public class ImprintColorValue {
 		return "{\"Name\": \"" + this.getName() + "\", \"CustomerOrderCode\": \"" + this.getCustomerOrderCode() + "\"},";
 	}
 
+	public int hashCode(){
+        int hashcode = 0;
+        hashcode = name.hashCode();
+        return hashcode;
+    }
+     
+    public boolean equals(Object obj){
+        if (obj instanceof ImprintColorValue) {
+        	ImprintColorValue color = (ImprintColorValue) obj;
+            //return (pp.item.equals(this.item));
+        	return (color.getName().equalsIgnoreCase(this.name));
+        } else {
+            return false;
+        }
+    }
 }
