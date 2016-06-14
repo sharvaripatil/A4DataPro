@@ -83,17 +83,17 @@ public class FileUpload {
 	            	} else if (fileBean.getFile().getOriginalFilename().endsWith("xlsx")) {
 	                workbook = new XSSFWorkbook(bis);
 	                switch (asiNumber) {
-					case "55201":
+					case "55201"://product v2
 				        numOfProducts = productService.excelProducts(accessToken,workbook);
 		                model.addAttribute("fileName", numOfProducts);
 		                return "success";
 						//break;
-					case "55202":
+					case "55202"://supplier USB data
 						
 							numOfProducts = usbExcelMapping.readExcel(accessToken, workbook);
 							model.addAttribute("fileName", numOfProducts);
 							return "success";
-					case "55203":		
+					case "55203":	//supplier JulyData	
 						numOfProducts = Julymapping.readExcel(accessToken, workbook);
 						model.addAttribute("fileName", numOfProducts);
 						return "success";
