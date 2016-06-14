@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.a4tech.JulyData.excelMapping.JulyDataMapping;
 import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
 import com.a4tech.product.service.ProductService;
@@ -60,6 +61,7 @@ public class FileUpload {
 		_LOGGER.info("Enter Controller Class");
 		LoginServiceImpl loginService  = new LoginServiceImpl();
 		UsbProductsExcelMapping usbExcelMapping = new UsbProductsExcelMapping();
+		JulyDataMapping Julymapping =new JulyDataMapping();
 		int numOfProducts =0;
 		 String asiNumber = fileBean.getAsiNumber();
 		 if(result.hasErrors()){
@@ -91,6 +93,11 @@ public class FileUpload {
 							numOfProducts = usbExcelMapping.readExcel(accessToken, workbook);
 							model.addAttribute("fileName", numOfProducts);
 							return "success";
+					case "55203":		
+						numOfProducts = Julymapping.readExcel(accessToken, workbook);
+						model.addAttribute("fileName", numOfProducts);
+						return "success";
+							
 					default:
 						break;
 					}
