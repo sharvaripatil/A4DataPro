@@ -183,7 +183,7 @@ public class ExcelMapping {
 			 List<Image> imgList = new ArrayList<Image>();
 			 List<Catalog> catalogList = new ArrayList<Catalog>();
 		        
-		    Image imgObj =new Image(); 
+		    //Image imgObj =new Image(); 
 			
 			Inventory inventoryObj = new Inventory();
 	        Size sizeObj = null;
@@ -331,27 +331,27 @@ public class ExcelMapping {
 					
 				case 10:
 
-					
+					 Image imgObj = null;
 					String image = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(image)){
 					String imgArr[] = image.split(",");
-					for(int i =0;i<=imgArr.length-1;i++)
+					for(int i =0, num=1;i<=imgArr.length-1;i++)
 					{
-						if(imgArr[0] != null){
-					imgObj.setImageURL(imgArr[0]);
-					imgObj.setRank(i++);
-					imgObj.setIsPrimary(true);
+						imgObj = new Image();
+						if(i==0){
+							imgObj.setImageURL(imgArr[0]);
+							imgObj.setRank(num++);
+							imgObj.setIsPrimary(true);
+						}else {
+							imgObj.setImageURL(imgArr[1]);
+							 imgObj.setRank(num++);
+							 imgObj.setIsPrimary(false);
 						}
-						else if (imgArr[1] != null){
-						 imgObj.setImageURL(imgArr[1]);
-						 imgObj.setRank(i++);
-						 imgObj.setIsPrimary(false);
-					}
 						imgList.add(imgObj);
 					}
-					}else{
-						productExcelObj.setImages(imgList);					
+					}else{				
 				}
+					productExcelObj.setImages(imgList);		
 					
 					break;
 					
