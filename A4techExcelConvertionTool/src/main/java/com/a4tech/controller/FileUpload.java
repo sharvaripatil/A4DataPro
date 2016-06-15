@@ -60,6 +60,7 @@ public class FileUpload {
 			final RedirectAttributes redirectAttributes , Model model){
 		_LOGGER.info("Enter Controller Class");
 		LoginServiceImpl loginService  = new LoginServiceImpl();
+		 Workbook workbook = null;
 		UsbProductsExcelMapping usbExcelMapping = new UsbProductsExcelMapping();
 		JulyDataMapping Julymapping =new JulyDataMapping();
 		int numOfProducts =0;
@@ -77,11 +78,16 @@ public class FileUpload {
          	}
          }
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBean.getFile().getBytes())){
-	        Workbook workbook;
+	       
 	            	if (fileBean.getFile().getOriginalFilename().endsWith("xls")) {
 	                workbook = new HSSFWorkbook(bis);
+	                
 	            	} else if (fileBean.getFile().getOriginalFilename().endsWith("xlsx")) {
-	                workbook = new XSSFWorkbook(bis);
+	            		workbook = new XSSFWorkbook(bis);
+	            	}else{
+	 	               _LOGGER.info("Invlid upload excel file,Please try one more time");
+	            	}
+	                
 	                switch (asiNumber) {
 					case "55201"://product v2
 				        numOfProducts = productService.excelProducts(accessToken,workbook);
@@ -101,9 +107,7 @@ public class FileUpload {
 					default:
 						break;
 					}
-	            	} else {
-	               _LOGGER.info("Invlid upload excel file,Please try one more time");
-	            	}
+	            	
 	        }catch(IOException e1){
 	        	
 	        }catch (Exception e) {

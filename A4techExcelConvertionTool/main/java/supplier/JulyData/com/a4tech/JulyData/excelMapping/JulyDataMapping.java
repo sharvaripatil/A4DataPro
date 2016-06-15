@@ -118,18 +118,18 @@ public class JulyDataMapping {
                               int columnIndex = cell.getColumnIndex();
                               if(columnIndex + 1 == 1){
                                     if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-                                          
+                                    	xid=cell.getStringCellValue();
                                     }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
                                           xid = String.valueOf((int)cell.getNumericCellValue());
                                     }else{
                                           
                                     }
                                     //xid = cell.getStringCellValue();
-                                    if(productXids.contains(xid)){
+                                    /*if(productXids.contains(xid)){
                                           productXids.add(xid);
-                                    }else{
+                                    }else{*/
                                           productXids = new ArrayList<String>();
-                                    }
+                                    //}
                                     
                                     checkXid = true;
                               }else{
@@ -174,7 +174,7 @@ public class JulyDataMapping {
                         switch (columnIndex + 1) {
                         case 1:
                               if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-                                    productId = String.valueOf((int)cell.getNumericCellValue());
+                                    productId = cell.getStringCellValue();//String.valueOf((int)cell.getNumericCellValue());
                               }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
                                     productId = String.valueOf((int)cell.getNumericCellValue());
                               }else{
