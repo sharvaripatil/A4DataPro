@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.a4tech.JulyData.excelMapping.JulyDataMapping;
 import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
 import com.a4tech.product.service.ProductService;
@@ -52,18 +53,20 @@ public class FileUpload {
 	public String welcomePage(Map<String, Object> model){
 		FileBean fileBean = new FileBean();
 		model.put("filebean", fileBean);
-		return "Index";
+		return "Home";
 	}
 	@RequestMapping(method= RequestMethod.POST)
 	public String fileUpload(@ModelAttribute("filebean") @Valid FileBean fileBean , BindingResult result ,
 			final RedirectAttributes redirectAttributes , Model model){
 		_LOGGER.info("Enter Controller Class");
 		LoginServiceImpl loginService  = new LoginServiceImpl();
+		 Workbook workbook = null;
 		UsbProductsExcelMapping usbExcelMapping = new UsbProductsExcelMapping();
+		JulyDataMapping Julymapping =new JulyDataMapping();
 		int numOfProducts =0;
 		 String asiNumber = fileBean.getAsiNumber();
 		 if(result.hasErrors()){
-			 return "Index"; 
+			 return "Home"; 
 		 }
 		 if(accessToken == null){
          	accessToken = loginService.doLogin("55201",  fileBean.getUserName(),
@@ -71,38 +74,46 @@ public class FileUpload {
          	if(accessToken.equalsIgnoreCase("unAuthorized")){
          		accessToken = null;
          		model.addAttribute("invalidDetails", "");
-         		 return "Index";
+         		 return "Home";
          	}
          }
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBean.getFile().getBytes())){
-	        Workbook workbook;
+	       
 	            	if (fileBean.getFile().getOriginalFilename().endsWith("xls")) {
 	                workbook = new HSSFWorkbook(bis);
+	                
 	            	} else if (fileBean.getFile().getOriginalFilename().endsWith("xlsx")) {
-	                workbook = new XSSFWorkbook(bis);
+	            		workbook = new XSSFWorkbook(bis);
+	            	}else{
+	 	               _LOGGER.info("Invlid upload excel file,Please try one more time");
+	            	}
+	                
 	                switch (asiNumber) {
-					case "55201":
+					case "55201"://product v2
 				        numOfProducts = productService.excelProducts(accessToken,workbook);
 		                model.addAttribute("fileName", numOfProducts);
 		                return "success";
 						//break;
-					case "55202":
+					case "55202"://supplier USB data
 						
 							numOfProducts = usbExcelMapping.readExcel(accessToken, workbook);
 							model.addAttribute("fileName", numOfProducts);
 							return "success";
+					case "55203":	//supplier JulyData	
+						numOfProducts = Julymapping.readExcel(accessToken, workbook);
+						model.addAttribute("fileName", numOfProducts);
+						return "success";
+							
 					default:
 						break;
 					}
-	            	} else {
-	               _LOGGER.info("Invlid upload excel file,Please try one more time");
-	            	}
+	            	
 	        }catch(IOException e1){
 	        	
 	        }catch (Exception e) {
 				// TODO: handle exception
 			}
-        return "Index";
+        return "Home";
 }
 	public FileValidator getFileValidator() {
 		return fileValidator;
