@@ -53,7 +53,7 @@ public class FileUpload {
 	public String welcomePage(Map<String, Object> model){
 		FileBean fileBean = new FileBean();
 		model.put("filebean", fileBean);
-		return "Index";
+		return "Home";
 	}
 	@RequestMapping(method= RequestMethod.POST)
 	public String fileUpload(@ModelAttribute("filebean") @Valid FileBean fileBean , BindingResult result ,
@@ -66,7 +66,7 @@ public class FileUpload {
 		int numOfProducts =0;
 		 String asiNumber = fileBean.getAsiNumber();
 		 if(result.hasErrors()){
-			 return "Index"; 
+			 return "Home"; 
 		 }
 		 if(accessToken == null){
          	accessToken = loginService.doLogin("55201",  fileBean.getUserName(),
@@ -74,7 +74,7 @@ public class FileUpload {
          	if(accessToken.equalsIgnoreCase("unAuthorized")){
          		accessToken = null;
          		model.addAttribute("invalidDetails", "");
-         		 return "Index";
+         		 return "Home";
          	}
          }
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBean.getFile().getBytes())){
@@ -113,7 +113,7 @@ public class FileUpload {
 	        }catch (Exception e) {
 				// TODO: handle exception
 			}
-        return "Index";
+        return "Home";
 }
 	public FileValidator getFileValidator() {
 		return fileValidator;
