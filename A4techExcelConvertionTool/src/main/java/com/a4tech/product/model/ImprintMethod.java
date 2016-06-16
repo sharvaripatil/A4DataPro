@@ -44,6 +44,23 @@ public class ImprintMethod {
 	public void setCustomerOrderCode(String customerOrderCode) {
 		this.customerOrderCode = customerOrderCode;
 	} 
-
+    public int hashCode(){
+        int hashcode = 0;
+        hashcode = type.hashCode();
+        hashcode = hashcode + alias.hashCode();
+        return hashcode;
+    }
+     
+    public boolean equals(Object obj){
+        if (obj instanceof ImprintMethod) {
+        	ImprintMethod artwork = (ImprintMethod) obj;
+            //return (pp.item.equals(this.item));
+        	return (artwork.getType().equalsIgnoreCase(this.type) && 
+        			                             artwork.getAlias().equalsIgnoreCase(this.alias));
+        } else {
+            return false;
+        }
+    }
+  
 
 }

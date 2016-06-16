@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.a4tech.product.model.BlendMaterial;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Material;
 import com.a4tech.util.ApplicationConstants;
@@ -16,7 +15,7 @@ public class ProductMaterialParser {
 
 	 private Logger              _LOGGER              = Logger.getLogger(getClass());
 	 
-	 public List<Material> getMaterialCriteria(String material){//Cotton,Other=othertest,
+	 /*public List<Material> getMaterialCriteria(String material){//Cotton,Other=othertest,
 		//material="Acrylic Plastic:Combo:Polyethylene (PE)=Acrylic Plastic,Blend:Wool:70:Canvas:30=Blend: Wool/Canvas (70/30);
 		
 			List<Material> mtrlList=new ArrayList<Material>();
@@ -103,7 +102,7 @@ public class ProductMaterialParser {
 			   }
 			return mtrlList;
 		}
-	
+*/	
 	
 	private boolean isComboMaterial(String value) {
     	boolean result = false;
@@ -126,6 +125,32 @@ public class ProductMaterialParser {
     	}
     	return result;
    }   
+	 public List<Material> getMaterialValues(String materials){
+			
+				List<Material> materialList=new ArrayList<Material>();
+				try{
+					Material material = null;
+					if(materials.contains(ApplicationConstants.CONST_STRING_COMMA_SEP)){
+						material = new Material();
+						String[] arrayOfMaterial = materials.split(ApplicationConstants.CONST_DELIMITER_COMMA);
+						material.setName(arrayOfMaterial[0]);
+						material.setAlias(arrayOfMaterial[0]);
+						Combo materialCombo = new Combo();
+						materialCombo.setName(arrayOfMaterial[1]);
+						material.setCombo(materialCombo);
+					}else{
+						material = new Material();
+						material.setName(materials);
+						material.setAlias(materials);
+					}
+					materialList.add(material);
+				}catch(Exception e){
+					_LOGGER.error("Error while processing Material :"+e.getMessage());             
+				   	return null;
+				   	
+				   }
+				return materialList;
+			}
 	
 	
 }
