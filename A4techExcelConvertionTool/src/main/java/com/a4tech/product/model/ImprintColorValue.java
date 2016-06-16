@@ -31,5 +31,20 @@ public class ImprintColorValue {
 	public String toString() {
 		return "{\"Name\": \"" + this.getName() + "\", \"CustomerOrderCode\": \"" + this.getCustomerOrderCode() + "\"},";
 	}
+	
+	 public int hashCode(){
+	        int hashcode = 0;
+	        hashcode = name.hashCode();
+	        return hashcode;
+	    }
+	     
+	    public boolean equals(Object obj){
+	        if (obj instanceof ImprintColorValue) {
+	        	ImprintColorValue imprintColor = (ImprintColorValue) obj;
+	        	return (imprintColor.getName().equalsIgnoreCase(this.name));
+	        } else {
+	            return false;
+	        }
+	    }
 
 }

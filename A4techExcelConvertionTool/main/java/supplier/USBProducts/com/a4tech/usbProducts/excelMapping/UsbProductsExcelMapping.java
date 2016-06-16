@@ -4,8 +4,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -34,12 +36,14 @@ import com.a4tech.product.USBProducts.criteria.parser.ProductSizeParser;
 import com.a4tech.product.USBProducts.criteria.parser.ProductSkuParser;
 import com.a4tech.product.USBProducts.criteria.parser.ProductThemeParser;
 import com.a4tech.product.USBProducts.criteria.parser.ProductTradeNameParser;
+import com.a4tech.product.USBProducts.criteria.parser.ProductWarrantyParser;
 import com.a4tech.product.USBProducts.criteria.parser.ProductionTimeParser;
 import com.a4tech.product.USBProducts.criteria.parser.ShippingEstimationParser;
 import com.a4tech.product.criteria.parser.UsbProductsPriceGridParser;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintColorValue;
@@ -99,6 +103,8 @@ public class UsbProductsExcelMapping {
 		  
 		  ProductNumberParser pnumberParser=new ProductNumberParser();
 		try{
+			 
+		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 	    Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
@@ -119,15 +125,9 @@ public class UsbProductsExcelMapping {
 		String Inlink  =null;
 		String Instatus  =null;
 		String InQuantity=null;
-		ProductSkus skuObj= new ProductSkus();
-		List<ProductSkus> productsku=new ArrayList<ProductSkus>();
-		
 		String productNumberCriteria1=null;
 		String productNumberCriteria2=null;
 		String productNumber=null;
-		ProductNumber		pnumObj=new ProductNumber();
-		List<ProductNumber> pnumberList=new ArrayList<ProductNumber>();
-		
 		List<Option> option=new ArrayList<Option>();
 		Option optionobj= new Option();
 		ProductOptionParser optionparserobj=new ProductOptionParser();
@@ -142,50 +142,23 @@ public class UsbProductsExcelMapping {
 		String imprintValue=null;
 		ImprintColor imprintColors = new ImprintColor();
 		String imprintColorValue=null;
-		Color colorObj=new Color();
 		ShippingEstimationParser shipinestmt = new ShippingEstimationParser();
-		RushTime rushTime =new RushTime();
-		SameDayRush sameDayObj=new SameDayRush();
-		Samples samples=new Samples();
 		
 		List<Color> color = new ArrayList<Color>();
-		List<String> origin = new ArrayList<String>();
-		List<String> lineNames = new ArrayList<String>();
-		List<String> categories = new ArrayList<String>();
-		List<String> productKeywords = new ArrayList<String>();
-		List<String> complianceCerts = new ArrayList<String>();
-		List<String> safetyWarnings = new ArrayList<String>();
-		List<Personalization> personalizationlist = new ArrayList<Personalization>();
-		List<String> packaging = new ArrayList<String>();
-		List<String> themes = new ArrayList<String>();
-		List<String> tradeName = new ArrayList<String>();
 		List<ImprintMethod> imprintMethods = new ArrayList<ImprintMethod>();
 		List<Artwork> artworkList = new ArrayList<Artwork>();
-		List<Shape> shapeList=new ArrayList<Shape>();
-		List<ProductionTime> productionTimeList = new ArrayList<ProductionTime>();
-		List<Material> materialList=new ArrayList<Material>();
 		List<ImprintColorValue> imprintColorsValueList = new ArrayList<ImprintColorValue>();
 		
 		
 		ProductColorParser colorparser=new ProductColorParser();
-		ProductOriginParser originParser=new ProductOriginParser();
-		ProductRushTimeParser rushTimeParser=new ProductRushTimeParser();
-		ProductSameDayParser sameDayParser=new ProductSameDayParser();
-		ProductSampleParser sampleParser =new ProductSampleParser();
-		PersonlizationParser personalizationParser=new PersonlizationParser();
-		CatalogParser catlogparser=new CatalogParser();
-		 
-		ProductSizeParser sizeParser=new ProductSizeParser();
-		ProductPackagingParser packagingParser=new ProductPackagingParser();
-		ProductTradeNameParser tradeNameParser=new ProductTradeNameParser();
 		ProductImprintMethodParser imprintMethodParser=new ProductImprintMethodParser();
 		ProductArtworkProcessor artworkProcessor=new ProductArtworkProcessor();
-		ProductShapeParser shapeParser=new ProductShapeParser();
-		ProductionTimeParser productionTimeParser =new ProductionTimeParser();
-		ProductThemeParser themeParser=new ProductThemeParser();
 		ProductMaterialParser materialParser=new ProductMaterialParser();
 		ProductImprintColorParser imprintColorParser =new ProductImprintColorParser();
+		ProductWarrantyParser warrantyParser = new ProductWarrantyParser();
 		String productName = null;
+		StringBuilder imprintMethodValues = new StringBuilder();
+		StringBuilder imprintColorValues = new StringBuilder();
 		while (iterator.hasNext()) {
 			
 			try{
@@ -204,13 +177,6 @@ public class UsbProductsExcelMapping {
 				
 				String shippingitemValue = null;
 				String shippingdimensionValue = null;
-				String sizeGroup=null;
-				String rushService=null;
-				String prodSample=null;
-				
-				
-				 
-				 
 				 imprintColors.setType("COLR");
 			
 			while (cellIterator.hasNext()) {
@@ -244,8 +210,6 @@ public class UsbProductsExcelMapping {
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	//productConfigObj.setOptions(option);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
-							 	productExcelObj.setProductRelationSkus(productsku);
-							 	productExcelObj.setProductNumbers(pnumberList);
 							 	//productList.add(productExcelObj);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj);
 							 	if(num ==1){
@@ -257,8 +221,6 @@ public class UsbProductsExcelMapping {
 								// reset for repeateable set 
 								priceGrids = new ArrayList<PriceGrid>();
 								productConfigObj = new ProductConfigurations();
-								productsku = new ArrayList<ProductSkus>();
-								pnumberList = new ArrayList<ProductNumber>();
 								option=new ArrayList<Option>();
 								
 						 }
@@ -296,8 +258,8 @@ public class UsbProductsExcelMapping {
 				case 4:
 					String categoryName = cell.getStringCellValue();
 					List<String> listOfCategories = new ArrayList<String>();
-					listOfCategories.add(categoryName);
-					//listOfCategories.add("USB/FLASH DRIVES");
+					//listOfCategories.add(categoryName);
+					listOfCategories.add("USB/FLASH DRIVES");
 					productExcelObj.setCategories(listOfCategories);
 				    break;
 					
@@ -318,14 +280,14 @@ public class UsbProductsExcelMapping {
 				case 7:
 					    // product description
 					String productDescription = cell.getStringCellValue();
-					productDescription = "Phone Holder USB 2.0 Flash Drive";
+					//productDescription = "Phone Holder USB 2.0 Flash Drive";
 					productExcelObj.setDescription(productDescription);
 					break;
 					
 				case 8: // pricegrid related
 					 priceIncludes = cell.getStringCellValue();
 					productExcelObj.setPriceType("L"); 
-					productExcelObj.setDescription(productName);
+					//productExcelObj.setDescription(productName);
 					break;
 					
 				case 9:
@@ -367,29 +329,8 @@ public class UsbProductsExcelMapping {
 
 				case 13: //Features
 					String productFeatures = cell.getStringCellValue();
-					List<WarrantyInformation> listOfWarrantyInfo = new ArrayList<WarrantyInformation>();
-					WarrantyInformation warranty = null;
-					if(productFeatures.contains(ApplicationConstants.CONST_DELIMITER_PIPE)){
-						 String[] features = productFeatures.split(ApplicationConstants.CONST_DELIMITER_SPLITTING_PIPE);
-						 for (String feature : features) {
-							  warranty = new WarrantyInformation();
-							  if(feature.contains("*")){
-								  feature = feature.replace("*", "");
-							  }
-							  warranty.setName(feature);
-							 listOfWarrantyInfo.add(warranty);
-						}
-						
-					}else{
-						 warranty = new WarrantyInformation();
-						 warranty.setName(productFeatures);
-						listOfWarrantyInfo.add(warranty);
-					}
-					
-					warranty = new WarrantyInformation();
-					warranty.setName("WARRANTY AVAILABLE");
-					listOfWarrantyInfo.add(warranty);
-					productConfigObj.setWarranty(listOfWarrantyInfo);
+					productExcelObj = warrantyParser.getWarrantyAndDescriptionProduct(productExcelObj, productConfigObj,
+							                      productFeatures);
 					
 					break;
 					
@@ -433,15 +374,9 @@ public class UsbProductsExcelMapping {
 					break;
 				
 				 case 18: 
-					String material=cell.getStringCellValue();
-					List<Material> listOfMaterialList =  new ArrayList<Material>();
-					String[] materials = material.split(ApplicationConstants.CONST_DELIMITER_COMMA);
-					for (String matr : materials) {
-						Material matl = new Material();
-						matl.setName(matr);
-						matl.setAlias(matr);
-						listOfMaterialList.add(matl);
-					}
+					String materials=cell.getStringCellValue();
+					
+					List<Material> listOfMaterialList = materialParser.getMaterialValues(materials);
 					productConfigObj.setMaterials(listOfMaterialList);
 					
 					break;
@@ -807,12 +742,9 @@ public class UsbProductsExcelMapping {
 			case 128:
 				//imprint Method1
 				imprintValue=cell.getStringCellValue();
-				if(!StringUtils.isEmpty(imprintValue)){
-				imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
-				if(imprintMethods!=null){
-				productConfigObj.setImprintMethods(imprintMethods);
-				}
-				}
+				  if(!StringUtils.isEmpty(imprintValue)){
+					  imprintMethodValues.append(imprintValue + ",");
+				  }
 				break;
 
 			case 129:
@@ -825,24 +757,17 @@ public class UsbProductsExcelMapping {
 				//Imprint Colors1
 				imprintColorValue = cell.getStringCellValue();
 				if(!StringUtils.isEmpty(imprintColorValue)){
-					imprintColorsValueList=imprintColorParser.getImprintColorCriteria(imprintColorValue);
-				if(imprintColorsValueList!=null){
-			    imprintColors.setValues(imprintColorsValueList);
-				productConfigObj.setImprintColors(imprintColors);
-				
-				}
+					imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);
 				}
 				break;
 				
 			case 131:
 				//imprint method2
 				imprintValue=cell.getStringCellValue();
-				if(!StringUtils.isEmpty(imprintValue)){
-				imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
-				if(imprintMethods!=null){
-				productConfigObj.setImprintMethods(imprintMethods);
-				}
-				}
+				
+				 if(!StringUtils.isEmpty(imprintValue)){
+					  imprintMethodValues.append(imprintValue + ",");
+				  }
 				 break;
 				
 			case 132:
@@ -850,15 +775,13 @@ public class UsbProductsExcelMapping {
 				break;
 				
 			case 133:
-				//Imprint colors2
+				//Imprint colors2 (it is related imprint method values)
 				imprintColorValue = cell.getStringCellValue();
 				if(!StringUtils.isEmpty(imprintColorValue)){
-					imprintColorsValueList=imprintColorParser.getImprintColorCriteria(imprintColorValue);
-				if(imprintColorsValueList!=null){
-			    imprintColors.setValues(imprintColorsValueList);
-				productConfigObj.setImprintColors(imprintColors);
-				
-				}
+					/*imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);*/
+					if(imprintColorValue.equalsIgnoreCase("Laser Engraved")){
+						imprintMethodValues.append(imprintColorValue + ",");
+					}	
 				}
 				break;
 				
@@ -866,12 +789,9 @@ public class UsbProductsExcelMapping {
 			case 134:
 				//Imprint method3
 				imprintValue=cell.getStringCellValue();
-				if(!StringUtils.isEmpty(imprintValue)){
-				imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
-				if(imprintMethods!=null){
-				productConfigObj.setImprintMethods(imprintMethods);
-				}
-				}
+				 if(!StringUtils.isEmpty(imprintValue)){
+					  imprintMethodValues.append(imprintValue + ",");
+				  }
 				break;
 				
 				
@@ -886,24 +806,16 @@ public class UsbProductsExcelMapping {
 				//Imprint Colors3
 				imprintColorValue = cell.getStringCellValue();
 				if(!StringUtils.isEmpty(imprintColorValue)){
-					imprintColorsValueList=imprintColorParser.getImprintColorCriteria(imprintColorValue);
-				if(imprintColorsValueList!=null){
-			    imprintColors.setValues(imprintColorsValueList);
-				productConfigObj.setImprintColors(imprintColors);
-				
-				}
+					imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);
 				}
 				break;
 				
 			case 137:
 				//Imprint method 4
 				imprintValue=cell.getStringCellValue();
-				if(!StringUtils.isEmpty(imprintValue)){
-				imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
-				if(imprintMethods!=null){
-				productConfigObj.setImprintMethods(imprintMethods);
-				}
-				}
+				 if(!StringUtils.isEmpty(imprintValue)){
+					  imprintMethodValues.append(imprintValue + ",");
+				  }
 				break;
 				
 			case 138:
@@ -916,12 +828,7 @@ public class UsbProductsExcelMapping {
 				//Imprint Colors4
 				imprintColorValue = cell.getStringCellValue();
 				if(!StringUtils.isEmpty(imprintColorValue)){
-					imprintColorsValueList=imprintColorParser.getImprintColorCriteria(imprintColorValue);
-				if(imprintColorsValueList!=null){
-			    imprintColors.setValues(imprintColorsValueList);
-				productConfigObj.setImprintColors(imprintColors);
-				
-				}
+					imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);
 				}
 				break;
 				
@@ -929,12 +836,9 @@ public class UsbProductsExcelMapping {
 			case 140:
 				//Imprint method 5
 				imprintValue=cell.getStringCellValue();
-				if(!StringUtils.isEmpty(imprintValue)){
-				imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
-				if(imprintMethods!=null){
-				productConfigObj.setImprintMethods(imprintMethods);
-				}
-				}
+				 if(!StringUtils.isEmpty(imprintValue)){
+					  imprintMethodValues.append(imprintValue + ",");
+				  }
 				break;
 				
 			case 141:
@@ -947,12 +851,7 @@ public class UsbProductsExcelMapping {
 				//Imprint Colors5
 				imprintColorValue = cell.getStringCellValue();
 				if(!StringUtils.isEmpty(imprintColorValue)){
-					imprintColorsValueList=imprintColorParser.getImprintColorCriteria(imprintColorValue);
-				if(imprintColorsValueList!=null){
-			    imprintColors.setValues(imprintColorsValueList);
-				productConfigObj.setImprintColors(imprintColors);
-				
-				}
+					imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);
 				}
 				break;
 				
@@ -961,12 +860,9 @@ public class UsbProductsExcelMapping {
 			case 143:
 				//Imprint method 6
 				imprintValue=cell.getStringCellValue();
-				if(!StringUtils.isEmpty(imprintValue)){
-				imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
-				if(imprintMethods!=null){
-				productConfigObj.setImprintMethods(imprintMethods);
-				}
-				}
+				 if(!StringUtils.isEmpty(imprintValue)){
+					  imprintMethodValues.append(imprintValue + ",");
+				  }
 				break;
 				
 			case 144:
@@ -979,25 +875,17 @@ public class UsbProductsExcelMapping {
 				//Imprint Colors6
 				imprintColorValue = cell.getStringCellValue();
 				if(!StringUtils.isEmpty(imprintColorValue)){
-					imprintColorsValueList=imprintColorParser.getImprintColorCriteria(imprintColorValue);
-				if(imprintColorsValueList!=null){
-			    imprintColors.setValues(imprintColorsValueList);
-				productConfigObj.setImprintColors(imprintColors);
-				
-				}
-				}
+					imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);
+     			}
 				break;
 				
 				
 			case 146:
 				//Imprint method 7
 				imprintValue=cell.getStringCellValue();
-				if(!StringUtils.isEmpty(imprintValue)){
-				imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
-				if(imprintMethods!=null){
-				productConfigObj.setImprintMethods(imprintMethods);
-				}
-				}
+				 if(!StringUtils.isEmpty(imprintValue)){
+					  imprintMethodValues.append(imprintValue + ",");
+				  }
 				break;
 				
 			case 147:
@@ -1010,12 +898,7 @@ public class UsbProductsExcelMapping {
 				//Imprint Colors7
 				imprintColorValue = cell.getStringCellValue();
 				if(!StringUtils.isEmpty(imprintColorValue)){
-					imprintColorsValueList=imprintColorParser.getImprintColorCriteria(imprintColorValue);
-				if(imprintColorsValueList!=null){
-			    imprintColors.setValues(imprintColorsValueList);
-				productConfigObj.setImprintColors(imprintColors);
-				
-				}
+					imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);
 				}
 				break;
 				
@@ -1066,7 +949,14 @@ public class UsbProductsExcelMapping {
 		        
 				}
 				
-				
+			imprintMethods = imprintMethodParser.getImprintCriteria(imprintMethodValues.toString());
+			productConfigObj.setImprintMethods(imprintMethods); 
+			
+			imprintColorsValueList = imprintColorParser.getImprintColorCriteria(imprintColorValues.toString());
+			imprintColors.setType("COLR");
+			imprintColors.setValues(imprintColorsValueList);
+			productConfigObj.setImprintColors(imprintColors);
+			
 				//productExcelObj.setProductConfigurations(productConfigObj);l
 			 // end inner while loop
 			if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
@@ -1079,18 +969,6 @@ public class UsbProductsExcelMapping {
 				if(UpCharCriteria != null && !UpCharCriteria.toString().isEmpty()){
 					priceGrids = priceGridParser.getUpchargePriceGrid(UpCharQuantity.toString(), UpCharPrices.toString(), UpCharDiscount.toString(), UpCharCriteria.toString(), 
 							 upChargeQur, currencyType, upChargeName, upchargeType, upChargeLevel, new Integer(1), priceGrids);
-				}
-				
-				if(!StringUtils.isEmpty(skuvalue)){
-					skuObj=skuparserobj.getProductRelationSkus(SKUCriteria1, SKUCriteria2, skuvalue, Inlink, Instatus,InQuantity);
-					productsku.add(skuObj);
-				}
-				
-				if(!StringUtils.isEmpty(productNumber)){
-					pnumObj=pnumberParser.getProductNumer(productNumberCriteria1, productNumberCriteria2, productNumber);
-					if(pnumObj!=null){
-					pnumberList.add(pnumObj);
-					}
 				}
 				
 				if(!StringUtils.isEmpty(optionname) && !StringUtils.isEmpty(optiontype) && !StringUtils.isEmpty(optionvalues) ){
@@ -1129,9 +1007,6 @@ public class UsbProductsExcelMapping {
 		}
 		workbook.close();
 		//inputStream.close();
-		ObjectMapper mapper = new ObjectMapper();
-		//System.out.println("Final product JSON, written to file");
-		 ObjectMapper mapper1 = new ObjectMapper();
 		   // Add repeatable sets here
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
