@@ -78,4 +78,34 @@
   <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
   	<property name="basename" value="error"/>
   </bean>
+  <bean id="fileUpload" class="com.a4tech.controller.FileUpload">
+      <property name="usbExcelMapping"  ref="usbExcelMapping"/>
+      <property name="julymapping"  ref="julymapping"/>
+    <property name="loginService"  ref="loginService"/> 
+   </bean>
+   <bean id="usbExcelMapping" class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping"/>
+   <bean id="julymapping" class="com.a4tech.JulyData.excelMapping.JulyDataMapping"/>
+
+   <bean id="UsbProductsExcelMapping" class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
+   <property name="colorparser"  ref="colorparser"/>
+   <property name="imprintMethodParser"  ref="imprintMethodParser"/>
+    <property name="artworkProcessor"  ref="artworkProcessor"/>
+   <property name="materialParser"  ref="materialParser"/>
+   <property name="imprintColorParser"  ref="imprintColorParser"/>
+   <property name="warrantyParser"  ref="warrantyParser"/>
+   <property name="imprintColors"  ref="imprintColors"/>
+   <property name="shipinestmt"  ref="shipinestmt"/>
+   
+   </bean>
+   <bean id="colorparser" class="com.a4tech.product.USBProducts.criteria.parser.ProductColorParser"/>
+   <bean id="imprintMethodParser" class="com.a4tech.product.USBProducts.criteria.parser.ProductImprintMethodParser"/>
+    <bean id="artworkProcessor" class="com.a4tech.product.USBProducts.criteria.parser.ProductArtworkProcessor"/>
+   <bean id="materialParser" class="com.a4tech.product.USBProducts.criteria.parser.ProductMaterialParser"/>
+    <bean id="imprintColorParser" class="com.a4tech.product.USBProducts.criteria.parser.ProductImprintColorParser"/>
+     <bean id="warrantyParser" class="com.a4tech.product.USBProducts.criteria.parser.ProductWarrantyParser"/>
+    <bean id="imprintColors" class="com.a4tech.product.model.ImprintColor"/>
+    <bean id="shipinestmt" class="com.a4tech.product.USBProducts.criteria.parser.ShippingEstimationParser"/>
+      
+      
+      
 </beans>
