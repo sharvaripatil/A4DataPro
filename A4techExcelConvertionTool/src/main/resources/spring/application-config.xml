@@ -16,20 +16,96 @@
 
   <mvc:annotation-driven/>
   <context:component-scan base-package="com.a4tech.controller"/>
-  
-  <!--  <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="suffix">
-            <value>.jsp</value>
-        </property>
-    </bean> -->
-   <bean id="viewResolver"
+  <mvc:resources mapping="/resources/**" location="/resources/" />
+  <context:annotation-config/>
+ 
+ 	<bean id="viewResolver"
         class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/views/" />
         <property name="suffix" value=".jsp" />
     </bean>
+    <bean id="fileValidator" class="com.a4tech.core.validator.FileValidator"/>
+    <bean id="productService" class="com.a4tech.product.service.imple.ProductServiceImpl"/>
+    <bean id="product" class="com.a4tech.product.model.Product"/>
+      <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+			<property name="messageConverters">
+				<list>
+					<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+						<property name="supportedMediaTypes">
+							<list>
+								<bean class="org.springframework.http.MediaType">
+									<constructor-arg name="type" value="application"/>
+									<constructor-arg name="subtype" value="json"/>
+									<constructor-arg name="charset" value="UTF-8" />
+								</bean>
+							</list>
+						</property>
+					</bean>
+					<bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter">
+						<property name="supportedMediaTypes">
+							<list>
+								<bean class="org.springframework.http.MediaType">
+									<constructor-arg name="type" value="application"/>
+									<constructor-arg name="subtype" value="xml"/>
+									<constructor-arg name="charset" value="UTF-8" />
+								</bean>
+							</list>
+						</property>
+					</bean> 
+					<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+						<constructor-arg name="defaultCharset" value="UTF-8" />
+					</bean> 
+				</list>
+			</property>
+		</bean> 
+ 
+         <bean id="postService"  class="com.a4tech.product.service.postImpl.PostServiceImpl">
+			<property name="product1" ref="product"></property>
+			<!-- <property name="restTemplateClass" ref="restTemplate"></property> -->
+			<!-- <property name="postApiURL" value="${product.post.v2}"></property> -->
+			<property name="loginService" ref="loginServiceImpl"></property>
+		</bean>
+		
+		<bean id="loginServiceImpl"  class="com.a4tech.service.loginImpl.LoginServiceImpl" autowire="byName">
+		<!-- <property name="restTemplateClass" ref="restTemplate"></property> -->
+		<!-- <property name="loginApiURL" value="${login.endpoint.v2}"></property> -->
+		</bean>
+   <bean id="loginService"  class="com.a4tech.service.loginImpl.LoginServiceImpl" autowire="byName"> </bean>
+     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- one of the properties available; the maximum file size in bytes -->
+       <!--  <property name="maxUploadSize" value="100000"/> -->
+    </bean>
   <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-  	<property name="basename">
-  		<value>error</value>
-  	</property>
+  	<property name="basename" value="error"/>
   </bean>
+  <bean id="fileUpload" class="com.a4tech.controller.FileUpload">
+      <property name="usbExcelMapping"  ref="usbExcelMapping"/>
+      <property name="julymapping"  ref="julymapping"/>
+    <property name="loginService"  ref="loginService"/> 
+   </bean>
+   <bean id="usbExcelMapping" class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping"/>
+   <bean id="julymapping" class="com.a4tech.JulyData.excelMapping.JulyDataMapping"/>
+
+   <bean id="UsbProductsExcelMapping" class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
+   <property name="colorparser"  ref="colorparser"/>
+   <property name="imprintMethodParser"  ref="imprintMethodParser"/>
+    <property name="artworkProcessor"  ref="artworkProcessor"/>
+   <property name="materialParser"  ref="materialParser"/>
+   <property name="imprintColorParser"  ref="imprintColorParser"/>
+   <property name="warrantyParser"  ref="warrantyParser"/>
+   <property name="imprintColors"  ref="imprintColors"/>
+   <property name="shipinestmt"  ref="shipinestmt"/>
+   
+   </bean>
+   <bean id="colorparser" class="com.a4tech.product.USBProducts.criteria.parser.ProductColorParser"/>
+   <bean id="imprintMethodParser" class="com.a4tech.product.USBProducts.criteria.parser.ProductImprintMethodParser"/>
+    <bean id="artworkProcessor" class="com.a4tech.product.USBProducts.criteria.parser.ProductArtworkProcessor"/>
+   <bean id="materialParser" class="com.a4tech.product.USBProducts.criteria.parser.ProductMaterialParser"/>
+    <bean id="imprintColorParser" class="com.a4tech.product.USBProducts.criteria.parser.ProductImprintColorParser"/>
+     <bean id="warrantyParser" class="com.a4tech.product.USBProducts.criteria.parser.ProductWarrantyParser"/>
+    <bean id="imprintColors" class="com.a4tech.product.model.ImprintColor"/>
+    <bean id="shipinestmt" class="com.a4tech.product.USBProducts.criteria.parser.ShippingEstimationParser"/>
+      
+      
+      
 </beans>

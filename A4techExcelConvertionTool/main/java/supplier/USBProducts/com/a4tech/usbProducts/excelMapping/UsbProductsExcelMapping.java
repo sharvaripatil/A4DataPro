@@ -4,7 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -76,7 +76,70 @@ public class UsbProductsExcelMapping {
 	
 	private static final Logger _LOGGER = Logger.getLogger(UsbProductsExcelMapping.class);
 	PostServiceImpl postServiceImpl = new PostServiceImpl();
+	
 	@SuppressWarnings("finally")
+	private ProductColorParser colorparser;
+	private ProductImprintMethodParser imprintMethodParser;
+	private ProductArtworkProcessor artworkProcessor;
+	private ProductMaterialParser materialParser;
+	private ProductImprintColorParser imprintColorParser;
+	private ProductWarrantyParser warrantyParser;
+	private ImprintColor imprintColors;
+	private ShippingEstimationParser shipinestmt;
+	
+	public ProductColorParser getColorparser() {
+		return colorparser;
+	}
+	public void setColorparser(ProductColorParser colorparser) {
+		this.colorparser = colorparser;
+	}
+	
+	public ProductImprintMethodParser getImprintMethodParser() {
+		return imprintMethodParser;
+	}
+	public void setImprintMethodParser(
+			ProductImprintMethodParser imprintMethodParser) {
+		this.imprintMethodParser = imprintMethodParser;
+	}
+	public ProductArtworkProcessor getArtworkProcessor() {
+		return artworkProcessor;
+	}
+	public void setArtworkProcessor(ProductArtworkProcessor artworkProcessor) {
+		this.artworkProcessor = artworkProcessor;
+	}
+	public ProductMaterialParser getMaterialParser() {
+		return materialParser;
+	}
+	public void setMaterialParser(ProductMaterialParser materialParser) {
+		this.materialParser = materialParser;
+	}
+	
+	public ProductImprintColorParser getImprintColorParser() {
+		return imprintColorParser;
+	}
+	public void setImprintColorParser(ProductImprintColorParser imprintColorParser) {
+		this.imprintColorParser = imprintColorParser;
+	}
+	public ProductWarrantyParser getWarrantyParser() {
+		return warrantyParser;
+	}
+	public void setWarrantyParser(ProductWarrantyParser warrantyParser) {
+		this.warrantyParser = warrantyParser;
+	}
+	
+	public ImprintColor getImprintColors() {
+		return imprintColors;
+	}
+	public void setImprintColors(ImprintColor imprintColors) {
+		this.imprintColors = imprintColors;
+	}
+	
+	public ShippingEstimationParser getShipinestmt() {
+		return shipinestmt;
+	}
+	public void setShipinestmt(ShippingEstimationParser shipinestmt) {
+		this.shipinestmt = shipinestmt;
+	}
 	public int readExcel(String accessToken,Workbook workbook){
 		
 		List<String> numOfProducts = new ArrayList<String>();
@@ -108,6 +171,8 @@ public class UsbProductsExcelMapping {
 	    Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
+		
+		
 		StringBuilder listOfQuantity = new StringBuilder();
 		StringBuilder listOfPrices = new StringBuilder();
 		StringBuilder listOfNetPrice = new StringBuilder();
@@ -140,22 +205,12 @@ public class UsbProductsExcelMapping {
 		String shippingWeightValue=null;
 		String colorValue=null;
 		String imprintValue=null;
-		ImprintColor imprintColors = new ImprintColor();
 		String imprintColorValue=null;
-		ShippingEstimationParser shipinestmt = new ShippingEstimationParser();
 		
 		List<Color> color = new ArrayList<Color>();
 		List<ImprintMethod> imprintMethods = new ArrayList<ImprintMethod>();
 		List<Artwork> artworkList = new ArrayList<Artwork>();
 		List<ImprintColorValue> imprintColorsValueList = new ArrayList<ImprintColorValue>();
-		
-		
-		ProductColorParser colorparser=new ProductColorParser();
-		ProductImprintMethodParser imprintMethodParser=new ProductImprintMethodParser();
-		ProductArtworkProcessor artworkProcessor=new ProductArtworkProcessor();
-		ProductMaterialParser materialParser=new ProductMaterialParser();
-		ProductImprintColorParser imprintColorParser =new ProductImprintColorParser();
-		ProductWarrantyParser warrantyParser = new ProductWarrantyParser();
 		String productName = null;
 		StringBuilder imprintMethodValues = new StringBuilder();
 		StringBuilder imprintColorValues = new StringBuilder();

@@ -3,9 +3,7 @@ package com.a4tech.controller;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map;
-
 import javax.validation.Valid;
-
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -19,19 +17,13 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.a4tech.JulyData.excelMapping.JulyDataMapping;
 import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
 import com.a4tech.product.service.ProductService;
 import com.a4tech.service.loginImpl.LoginServiceImpl;
 import com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping;
-import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
 
 @Controller
 @RequestMapping({"/","/uploadFile.htm"})
@@ -41,9 +33,13 @@ public class FileUpload {
 	ProductService productService;
 	@Autowired
 	FileValidator fileValidator;
-	FileValidator validate = new FileValidator();
+	//FileValidator validate = new FileValidator();
 	private static String accessToken = null;
+	private UsbProductsExcelMapping usbExcelMapping;
+	private JulyDataMapping julymapping;
 	
+	@Autowired
+	private LoginServiceImpl loginService;
 	private static Logger _LOGGER = Logger.getLogger(Class.class);
 	@InitBinder
 	private void initBinder(WebDataBinder binder){
@@ -55,14 +51,14 @@ public class FileUpload {
 		model.put("filebean", fileBean);
 		return "Home";
 	}
+	
 	@RequestMapping(method= RequestMethod.POST)
 	public String fileUpload(@ModelAttribute("filebean") @Valid FileBean fileBean , BindingResult result ,
 			final RedirectAttributes redirectAttributes , Model model){
 		_LOGGER.info("Enter Controller Class");
-		LoginServiceImpl loginService  = new LoginServiceImpl();
+		//LoginServiceImpl loginService  = new LoginServiceImpl();
 		 Workbook workbook = null;
-		UsbProductsExcelMapping usbExcelMapping = new UsbProductsExcelMapping();
-		JulyDataMapping Julymapping =new JulyDataMapping();
+
 		int numOfProducts =0;
 		 String asiNumber = fileBean.getAsiNumber();
 		 if(result.hasErrors()){
@@ -100,7 +96,7 @@ public class FileUpload {
 							model.addAttribute("fileName", numOfProducts);
 							return "success";
 					case "55203":	//supplier JulyData	
-						numOfProducts = Julymapping.readExcel(accessToken, workbook);
+						numOfProducts = julymapping.readExcel(accessToken, workbook);
 						model.addAttribute("fileName", numOfProducts);
 						return "success";
 							
@@ -121,4 +117,24 @@ public class FileUpload {
 	public void setFileValidator(FileValidator fileValidator) {
 		this.fileValidator = fileValidator;
 	}
+	public UsbProductsExcelMapping getUsbExcelMapping() {
+		return usbExcelMapping;
+	}
+	public void setUsbExcelMapping(UsbProductsExcelMapping usbExcelMapping) {
+		this.usbExcelMapping = usbExcelMapping;
+	}
+	public JulyDataMapping getJulymapping() {
+		return julymapping;
+	}
+	public void setJulymapping(JulyDataMapping julymapping) {
+		this.julymapping = julymapping;
+	}
+	public LoginServiceImpl getLoginService() {
+		return loginService;
+	}
+	public void setLoginService(LoginServiceImpl loginService) {
+		this.loginService = loginService;
+	}
+	
+	
 }
