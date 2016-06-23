@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.a4tech.core.model.ExternalAPIResponse;
+import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.service.LoginService;
 import com.a4tech.product.service.PostService;
@@ -20,7 +21,7 @@ public class PostServiceImpl implements PostService {
 
 	private Logger _LOGGER = Logger.getLogger(getClass());
 	private Product product1;
-
+    private ProductDao productDao;
 	public Product getProduct1() {
 		return product1;
 	}
@@ -59,6 +60,7 @@ public class PostServiceImpl implements PostService {
 				// authToken = loginServiceImp.doLogin();
 				// authToken = loginService.doLogin();
 			}
+			productDao.save(product);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("AuthToken", authTokens);
 			// headers.setContentType(MediaType.APPLICATION_JSON);
@@ -102,6 +104,13 @@ public class PostServiceImpl implements PostService {
 
 	public void setPostApiURL(String postApiURL) {
 		this.postApiURL = postApiURL;
+	}
+	public ProductDao getProductDao() {
+		return productDao;
+	}
+
+	public void setProductDao(ProductDao productDao) {
+		this.productDao = productDao;
 	}
 
 }

@@ -62,6 +62,7 @@
          <bean id="postService"  class="com.a4tech.product.service.postImpl.PostServiceImpl">
 			<property name="product1" ref="product"></property>
 			<property name="restTemplate" ref="restTemplate"></property>
+			<property name="productDao" ref="productDao"></property>
 			<!-- <property name="postApiURL" value="${product.post.v2}"></property> -->
 			<property name="loginService" ref="loginServiceImpl"></property>
 		</bean>
@@ -95,9 +96,6 @@
    <property name="postServiceImpl" ref="postService"></property>
    </bean>
    <bean id="julymapping" class="com.a4tech.JulyData.excelMapping.JulyDataMapping"/>
-<!--    <bean id="UsbProductsExcelMapping" class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
- -->  
-
    <bean id="colorparser" class="com.a4tech.product.USBProducts.criteria.parser.ProductColorParser"/>
    <bean id="imprintMethodParser" class="com.a4tech.product.USBProducts.criteria.parser.ProductImprintMethodParser"/>
     <bean id="artworkProcessor" class="com.a4tech.product.USBProducts.criteria.parser.ProductArtworkProcessor"/>
@@ -108,10 +106,10 @@
     <bean id="shipinestmt" class="com.a4tech.product.USBProducts.criteria.parser.ShippingEstimationParser"/>
       
    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-  		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-  		<property name="url" value="jdbc:mysql://127.0.0.1:3306/Hibernate" />
-  		<property name="username" value="root" />
-  		<property name="password" value="Yamuna55n" />
+  		<property name="driverClassName" value="${mysql.db.driverClassName}" />
+  		<property name="url" value="${mysql.db.url}" />
+  		<property name="username" value="${mysql.db.username}" />
+  		<property name="password" value="${mysql.db.password}" />
    </bean>   
    
    <bean id="hibernate3AnnotatedSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
@@ -126,7 +124,6 @@
       <props>
          <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
          <prop key="hibernate.current_session_context_class">thread</prop>
-         
       </props>
       </property>
    
