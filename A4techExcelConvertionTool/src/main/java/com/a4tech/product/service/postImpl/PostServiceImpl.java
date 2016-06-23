@@ -30,7 +30,16 @@ public class PostServiceImpl implements PostService {
 		this.product1 = product1;
 	}
 
-	private RestTemplate restTemplate = new RestTemplate();
+	public RestTemplate getRestTemplate() {
+		return restTemplate;
+	}
+
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
+
+	//private RestTemplate restTemplate = new RestTemplate();
+	RestTemplate restTemplate;
 	private String postApiURL = "https://sandbox-productservice.asicentral.com/v3/product/";
 	private static String authToken = null;
 

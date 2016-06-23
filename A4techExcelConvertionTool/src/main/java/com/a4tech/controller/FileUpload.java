@@ -91,7 +91,6 @@ public class FileUpload {
 		                return "success";
 						//break;
 					case "55202"://supplier USB data
-						
 							numOfProducts = usbExcelMapping.readExcel(accessToken, workbook);
 							model.addAttribute("fileName", numOfProducts);
 							return "success";
