@@ -75,8 +75,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class UsbProductsExcelMapping {
 	
 	private static final Logger _LOGGER = Logger.getLogger(UsbProductsExcelMapping.class);
-	PostServiceImpl postServiceImpl = new PostServiceImpl();
-	
+	//PostServiceImpl postServiceImpl = new PostServiceImpl();
+	PostServiceImpl postServiceImpl;
 	@SuppressWarnings("finally")
 	private ProductColorParser colorparser;
 	private ProductImprintMethodParser imprintMethodParser;
@@ -84,62 +84,17 @@ public class UsbProductsExcelMapping {
 	private ProductMaterialParser materialParser;
 	private ProductImprintColorParser imprintColorParser;
 	private ProductWarrantyParser warrantyParser;
+	
+	public PostServiceImpl getPostServiceImpl() {
+		return postServiceImpl;
+	}
+
+	public void setPostServiceImpl(PostServiceImpl postServiceImpl) {
+		this.postServiceImpl = postServiceImpl;
+	}
 	private ImprintColor imprintColors;
 	private ShippingEstimationParser shipinestmt;
 	
-	public ProductColorParser getColorparser() {
-		return colorparser;
-	}
-	public void setColorparser(ProductColorParser colorparser) {
-		this.colorparser = colorparser;
-	}
-	
-	public ProductImprintMethodParser getImprintMethodParser() {
-		return imprintMethodParser;
-	}
-	public void setImprintMethodParser(
-			ProductImprintMethodParser imprintMethodParser) {
-		this.imprintMethodParser = imprintMethodParser;
-	}
-	public ProductArtworkProcessor getArtworkProcessor() {
-		return artworkProcessor;
-	}
-	public void setArtworkProcessor(ProductArtworkProcessor artworkProcessor) {
-		this.artworkProcessor = artworkProcessor;
-	}
-	public ProductMaterialParser getMaterialParser() {
-		return materialParser;
-	}
-	public void setMaterialParser(ProductMaterialParser materialParser) {
-		this.materialParser = materialParser;
-	}
-	
-	public ProductImprintColorParser getImprintColorParser() {
-		return imprintColorParser;
-	}
-	public void setImprintColorParser(ProductImprintColorParser imprintColorParser) {
-		this.imprintColorParser = imprintColorParser;
-	}
-	public ProductWarrantyParser getWarrantyParser() {
-		return warrantyParser;
-	}
-	public void setWarrantyParser(ProductWarrantyParser warrantyParser) {
-		this.warrantyParser = warrantyParser;
-	}
-	
-	public ImprintColor getImprintColors() {
-		return imprintColors;
-	}
-	public void setImprintColors(ImprintColor imprintColors) {
-		this.imprintColors = imprintColors;
-	}
-	
-	public ShippingEstimationParser getShipinestmt() {
-		return shipinestmt;
-	}
-	public void setShipinestmt(ShippingEstimationParser shipinestmt) {
-		this.shipinestmt = shipinestmt;
-	}
 	public int readExcel(String accessToken,Workbook workbook){
 		
 		List<String> numOfProducts = new ArrayList<String>();
@@ -1090,7 +1045,62 @@ public class UsbProductsExcelMapping {
 				_LOGGER.info("Total no of product:"+numOfProducts.size() );
 				return numOfProducts.size();
 		}
+		
 	
+	}
+
+	public ProductColorParser getColorparser() {
+		return colorparser;
+	}
+	public void setColorparser(ProductColorParser colorparser) {
+		this.colorparser = colorparser;
+	}
+	
+	public ProductImprintMethodParser getImprintMethodParser() {
+		return imprintMethodParser;
+	}
+	public void setImprintMethodParser(
+			ProductImprintMethodParser imprintMethodParser) {
+		this.imprintMethodParser = imprintMethodParser;
+	}
+	public ProductArtworkProcessor getArtworkProcessor() {
+		return artworkProcessor;
+	}
+	public void setArtworkProcessor(ProductArtworkProcessor artworkProcessor) {
+		this.artworkProcessor = artworkProcessor;
+	}
+	public ProductMaterialParser getMaterialParser() {
+		return materialParser;
+	}
+	public void setMaterialParser(ProductMaterialParser materialParser) {
+		this.materialParser = materialParser;
+	}
+	
+	public ProductImprintColorParser getImprintColorParser() {
+		return imprintColorParser;
+	}
+	public void setImprintColorParser(ProductImprintColorParser imprintColorParser) {
+		this.imprintColorParser = imprintColorParser;
+	}
+	public ProductWarrantyParser getWarrantyParser() {
+		return warrantyParser;
+	}
+	public void setWarrantyParser(ProductWarrantyParser warrantyParser) {
+		this.warrantyParser = warrantyParser;
+	}
+	
+	public ImprintColor getImprintColors() {
+		return imprintColors;
+	}
+	public void setImprintColors(ImprintColor imprintColors) {
+		this.imprintColors = imprintColors;
+	}
+	
+	public ShippingEstimationParser getShipinestmt() {
+		return shipinestmt;
+	}
+	public void setShipinestmt(ShippingEstimationParser shipinestmt) {
+		this.shipinestmt = shipinestmt;
 	}
 
 }
