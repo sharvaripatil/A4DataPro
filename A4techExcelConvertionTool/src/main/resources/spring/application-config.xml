@@ -106,6 +106,31 @@
     <bean id="imprintColors" class="com.a4tech.product.model.ImprintColor"/>
     <bean id="shipinestmt" class="com.a4tech.product.USBProducts.criteria.parser.ShippingEstimationParser"/>
       
-      
-      
+   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+  		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+  		<property name="url" value="jdbc:mysql://127.0.0.1:3306/Hibernate" />
+  		<property name="username" value="root" />
+  		<property name="password" value="Yamuna55n" />
+   </bean>   
+   
+   <bean id="hibernate3AnnotatedSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+      <property name="dataSource" ref="dataSource"></property>
+      <property name="annotatedClasses">
+				<list>
+					<value>com.a4tech.product.dao.entity.ProductEntity</value>
+					<value>com.a4tech.product.dao.entity.ErrorEntity</value>
+				</list>
+			</property>
+      <property name="hibernateProperties">
+      <props>
+         <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+         <prop key="hibernate.current_session_context_class">thread</prop>
+         
+      </props>
+      </property>
+   
+   </bean>
+   <bean id="productDao" class="com.a4tech.product.dao.service.ProductDao">
+   <property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory"></property>
+   </bean>
 </beans>
