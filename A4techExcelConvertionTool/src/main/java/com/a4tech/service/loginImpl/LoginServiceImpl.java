@@ -31,9 +31,9 @@ public class LoginServiceImpl implements LoginService {
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SZ";
     
 	AccessBean accessBean = null;
-	private RestTemplate restTemplate = new RestTemplate();
+	private RestTemplate restTemplate ;
 
-    private String loginApiURL = "https://sandbox-productservice.asicentral.com/v2/Login";
+	private String loginApiURL ;
 
 	@Override
 	public String doLogin(String asiNumber,String userName,String password) {
@@ -82,14 +82,6 @@ public class LoginServiceImpl implements LoginService {
         return accessBean.getAccessToken();
 	}
 
-	public RestTemplate getRestTemplateClass() {
-		return restTemplate;
-	}
-
-	public void setRestTemplateClass(RestTemplate restTemplateClass) {
-		this.restTemplate = restTemplateClass;
-	}
-
 	public String getLoginApiURL() {
 		return loginApiURL;
 	}
@@ -97,5 +89,14 @@ public class LoginServiceImpl implements LoginService {
 	public void setLoginApiURL(String loginApiURL) {
 		this.loginApiURL = loginApiURL;
 	}
+	
+	 public RestTemplate getRestTemplate() {
+			return restTemplate;
+		}
+
+		public void setRestTemplate(RestTemplate restTemplate) {
+			this.restTemplate = restTemplate;
+		}
+
 
 }

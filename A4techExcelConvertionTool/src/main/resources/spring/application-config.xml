@@ -24,6 +24,9 @@
         <property name="prefix" value="/WEB-INF/views/" />
         <property name="suffix" value=".jsp" />
     </bean>
+    
+    <context:property-placeholder location="classpath:application.properties,classpath:database.properties"/>
+    
     <bean id="fileValidator" class="com.a4tech.core.validator.FileValidator"/>
     <bean id="productService" class="com.a4tech.product.service.imple.ProductServiceImpl"/>
     <bean id="product" class="com.a4tech.product.model.Product"/>
@@ -60,29 +63,24 @@
 		</bean> 
  
          <bean id="postService"  class="com.a4tech.product.service.postImpl.PostServiceImpl">
-			<property name="product1" ref="product"></property>
 			<property name="restTemplate" ref="restTemplate"></property>
 			<property name="productDao" ref="productDao"></property>
-			<!-- <property name="postApiURL" value="${product.post.v2}"></property> -->
-			<property name="loginService" ref="loginServiceImpl"></property>
+			<property name="postApiURL" value="${product.post.v3.URL}"></property>
 		</bean>
 		
 		<bean id="loginServiceImpl"  class="com.a4tech.service.loginImpl.LoginServiceImpl" autowire="byName">
-		<!-- <property name="restTemplateClass" ref="restTemplate"></property> -->
-		<!-- <property name="loginApiURL" value="${login.endpoint.v2}"></property> -->
+		 	<property name="restTemplate" ref="restTemplate"/>
+		 	<property name="loginApiURL" value="${login.endpoint.URL}"/>
 		</bean>
-   <bean id="loginService"  class="com.a4tech.service.loginImpl.LoginServiceImpl" autowire="byName"> </bean>
      <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <!-- one of the properties available; the maximum file size in bytes -->
        <!--  <property name="maxUploadSize" value="100000"/> -->
     </bean>
-  <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-  	<property name="basename" value="error"/>
-  </bean>
+  
   <bean id="fileUpload" class="com.a4tech.controller.FileUpload">
       <property name="usbExcelMapping"  ref="usbExcelMapping"/>
       <property name="julymapping"  ref="julymapping"/>
-    <property name="loginService"  ref="loginService"/> 
+    <property name="loginService"  ref="loginServiceImpl"/> 
    </bean>
    <bean id="usbExcelMapping" class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
     <property name="colorparser"  ref="colorparser"/>
@@ -131,4 +129,8 @@
    <bean id="productDao" class="com.a4tech.product.dao.service.ProductDao">
    <property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory"></property>
    </bean>
+   
+   <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+  	<property name="basename" value="error"/>
+  </bean>
 </beans>

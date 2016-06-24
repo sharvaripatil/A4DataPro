@@ -20,46 +20,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PostServiceImpl implements PostService {
 
 	private Logger _LOGGER = Logger.getLogger(getClass());
-	private Product product1;
     private ProductDao productDao;
-	public Product getProduct1() {
-		return product1;
-	}
-
-	@Required
-	public void setProduct1(Product product1) {
-		this.product1 = product1;
-	}
-
-	public RestTemplate getRestTemplate() {
-		return restTemplate;
-	}
-
-	public void setRestTemplate(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-	}
-
-	//private RestTemplate restTemplate = new RestTemplate();
-	RestTemplate restTemplate;
-	private String postApiURL = "https://sandbox-productservice.asicentral.com/v3/product/";
-	private static String authToken = null;
-
-	LoginServiceImpl loginServiceImp = new LoginServiceImpl();
-	LoginService loginService;
+	private RestTemplate restTemplate;
+	private String postApiURL ;
 
 	public int postProduct(String authTokens, Product product) {
 
 		try {
-			if (product1 != null) {
-				// _LOGGER.info("after setter method"+product1);
-			} else {
-				// _LOGGER.info("object not created>>"+product1);
-			}
 
-			if (authToken == null || authToken.isEmpty()) {
-				// authToken = loginServiceImp.doLogin();
-				// authToken = loginService.doLogin();
-			}
 			productDao.save(product);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("AuthToken", authTokens);
@@ -81,23 +49,14 @@ public class PostServiceImpl implements PostService {
 		}
 	}
 
-	public LoginService getLoginService() {
-		return loginService;
-	}
-
-	@Autowired
-	public void setLoginService(LoginService loginService) {
-		this.loginService = loginService;
-	}
-
-	public RestTemplate getRestTemplateClass() {
+	public RestTemplate getRestTemplate() {
 		return restTemplate;
 	}
 
-	public void setRestTemplateClass(RestTemplate restTemplateClass) {
-		this.restTemplate = restTemplateClass;
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
 	}
-
+	
 	public String getPostApiURL() {
 		return postApiURL;
 	}
