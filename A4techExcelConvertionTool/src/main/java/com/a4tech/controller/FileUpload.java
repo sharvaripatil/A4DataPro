@@ -3,7 +3,9 @@ package com.a4tech.controller;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map;
+
 import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -18,10 +20,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.a4tech.JulyData.excelMapping.JulyDataMapping;
 import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
 import com.a4tech.product.service.ProductService;
+import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.service.loginImpl.LoginServiceImpl;
 import com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping;
 
@@ -37,6 +41,7 @@ public class FileUpload {
 	private static String accessToken = null;
 	private UsbProductsExcelMapping usbExcelMapping;
 	private JulyDataMapping julymapping;
+	private SageProductsExcelMapping sageExcelMapping;
 	
 	@Autowired
 	private LoginServiceImpl loginService;
@@ -98,6 +103,10 @@ public class FileUpload {
 						numOfProducts = julymapping.readExcel(accessToken, workbook);
 						model.addAttribute("fileName", numOfProducts);
 						return "success";
+				    case "55204":	//supplier Sage
+				    	numOfProducts = sageExcelMapping.readExcel(accessToken, workbook, Integer.valueOf(asiNumber));
+						model.addAttribute("fileName", numOfProducts);
+						return "success";
 							
 					default:
 						break;
@@ -134,6 +143,11 @@ public class FileUpload {
 	public void setLoginService(LoginServiceImpl loginService) {
 		this.loginService = loginService;
 	}
-	
+	public SageProductsExcelMapping getSageExcelMapping() {
+		return sageExcelMapping;
+	}
+	public void setSageExcelMapping(SageProductsExcelMapping sageExcelMapping) {
+		this.sageExcelMapping = sageExcelMapping;
+	}
 	
 }
