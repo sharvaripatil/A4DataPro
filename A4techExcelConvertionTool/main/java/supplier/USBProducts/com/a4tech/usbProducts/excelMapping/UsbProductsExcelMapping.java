@@ -95,7 +95,7 @@ public class UsbProductsExcelMapping {
 	private ImprintColor imprintColors;
 	private ShippingEstimationParser shipinestmt;
 	
-	public int readExcel(String accessToken,Workbook workbook){
+	public int readExcel(String accessToken,Workbook workbook ,Integer asiNumber){
 		
 		List<String> numOfProducts = new ArrayList<String>();
 		FileInputStream inputStream = null;
@@ -221,7 +221,7 @@ public class UsbProductsExcelMapping {
 							 	//productConfigObj.setOptions(option);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	//productList.add(productExcelObj);
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber);
 							 	if(num ==1){
 							 		numOfProducts.add("1");
 							 	}
@@ -268,8 +268,8 @@ public class UsbProductsExcelMapping {
 				case 4:
 					String categoryName = cell.getStringCellValue();
 					List<String> listOfCategories = new ArrayList<String>();
-					//listOfCategories.add(categoryName);
-					listOfCategories.add("USB/FLASH DRIVES");
+					listOfCategories.add(categoryName);
+					//listOfCategories.add("USB/FLASH DRIVES");
 					productExcelObj.setCategories(listOfCategories);
 				    break;
 					
@@ -1023,7 +1023,7 @@ public class UsbProductsExcelMapping {
 		 	/*productExcelObj.setProductRelationSkus(productsku);
 		 	productExcelObj.setProductNumbers(pnumberList);*/
 		 	//productList.add(productExcelObj);
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber);
 		 	if(num ==1){
 		 		numOfProducts.add("1");
 		 	}

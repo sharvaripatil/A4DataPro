@@ -9,19 +9,19 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-@Table(name="Errors")
+@Table(name="error_log")
 @Entity
 public class ErrorEntity {
 	@Id
-	@Column(name="ErrorId",nullable=false)
+	@Column(name="ERROR_ID")
 	@GeneratedValue
 	private Integer id;
-	@Column(name="productNo",nullable=false,insertable=false ,updatable=false)
-	private String productNo;
-	@Column(name="Error")
+	@Column(name="PRODUCT_NUMBER",nullable=false)
+	private String productNumber;
+	@Column(name="ERRORS")
 	private String Error;
-	@ManyToOne(fetch = FetchType.LAZY ,optional=false)
-	@JoinColumn(name="productNo")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="PRODUCT_NUMBER",insertable=false,updatable=false)
 	private ProductEntity product;
 	
 	public Integer getId() {
@@ -31,11 +31,12 @@ public class ErrorEntity {
 		
 		this.id = id;
 	}
-	public String getProductNo() {
-		return productNo;
+	
+	public String getProductNumber() {
+		return productNumber;
 	}
-	public void setProductNo(String productNo) {
-		this.productNo = productNo;
+	public void setProductNumber(String productNumber) {
+		this.productNumber = productNumber;
 	}
 	public String getError() {
 		return Error;

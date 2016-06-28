@@ -1,6 +1,7 @@
 package com.a4tech.product.dao.entity;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,30 +9,34 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-@Table(name="Product")
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+@Table(name="product_log")
 @Entity
 public class ProductEntity {
 	
-	@Column(name="productNo" ,nullable=false)
+	@Column(name="PRODUCT_NUMBER" ,nullable=false,unique=true)
 	@Id
 	private String productNo;
-	@Column(name="companyId")
-	private String companyId;
-	@Column(name="productStatus")
+	@Column(name="COMPANY_ID")
+	private Integer companyId;
+	@Column(name="PRODUCT_STATUS")
 	private boolean productStatus;
 	
-	@OneToMany(mappedBy="product")
-	private List<ErrorEntity> errors;
+	@OneToMany(mappedBy="product" )
+	@Cascade({CascadeType.SAVE_UPDATE})
+	private Set<ErrorEntity> errors = new HashSet<ErrorEntity>();
 	public String getProductNo() {
 		return productNo;
 	}
 	public void setProductNo(String productNo) {
 		this.productNo = productNo;
 	}
-	public String getCompanyId() {
+	public Integer getCompanyId() {
 		return companyId;
 	}
-	public void setCompanyId(String companyId) {
+	public void setCompanyId(Integer companyId) {
 		this.companyId = companyId;
 	}
 	public boolean isProductStatus() {
@@ -40,10 +45,11 @@ public class ProductEntity {
 	public void setProductStatus(boolean productStatus) {
 		this.productStatus = productStatus;
 	}
-	public List<ErrorEntity> getErrors() {
+	public Set<ErrorEntity> getErrors() {
 		return errors;
 	}
-	public void setErrors(List<ErrorEntity> errors) {
+	public void setErrors(Set<ErrorEntity> errors) {
 		this.errors = errors;
 	}
+	
 }

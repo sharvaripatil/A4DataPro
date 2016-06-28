@@ -68,6 +68,7 @@
 			<property name="postApiURL" value="${product.post.v3.URL}"></property>
 		</bean>
 		
+		<bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
 		<bean id="loginServiceImpl"  class="com.a4tech.service.loginImpl.LoginServiceImpl" autowire="byName">
 		 	<property name="restTemplate" ref="restTemplate"/>
 		 	<property name="loginApiURL" value="${login.endpoint.URL}"/>
@@ -122,6 +123,8 @@
       <props>
          <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
          <prop key="hibernate.current_session_context_class">thread</prop>
+         <prop key="hibernate.show_sql">true</prop>
+         <prop key="hbm2ddl.auto">update</prop>
       </props>
       </property>
    

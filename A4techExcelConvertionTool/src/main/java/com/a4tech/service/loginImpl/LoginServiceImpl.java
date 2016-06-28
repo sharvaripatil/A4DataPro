@@ -9,7 +9,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.DeserializationConfig.Feature;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -32,14 +33,15 @@ public class LoginServiceImpl implements LoginService {
     
 	AccessBean accessBean = null;
 	private RestTemplate restTemplate ;
-
+	@Autowired
+	ObjectMapper mapper;
 	private String loginApiURL ;
 
 	@Override
 	public String doLogin(String asiNumber,String userName,String password) {
-		ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
+		//ObjectMapper mapper = new ObjectMapper();
+        //mapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+       
         AccessBean accessBean = null;
         try {
         	HttpHeaders header = new HttpHeaders();

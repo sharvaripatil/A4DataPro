@@ -91,7 +91,7 @@ public class FileUpload {
 		                return "success";
 						//break;
 					case "55202"://supplier USB data
-							numOfProducts = usbExcelMapping.readExcel(accessToken, workbook);
+							numOfProducts = usbExcelMapping.readExcel(accessToken, workbook, Integer.valueOf(asiNumber));
 							model.addAttribute("fileName", numOfProducts);
 							return "success";
 					case "55203":	//supplier JulyData	
