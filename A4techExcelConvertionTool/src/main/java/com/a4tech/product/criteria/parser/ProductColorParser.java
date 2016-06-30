@@ -26,7 +26,9 @@ public class ProductColorParser {
 		 boolean isCombo=false;
 		 List<Combo> comboList=null;
 		 Combo comboObj=new Combo();
-		for (String value : colorArr) {
+		for (String value : colorArr) 
+		{
+			
 			colorObj=new Color();
 			//String tempColor=value;
 			comboList	=new ArrayList<Combo>();
