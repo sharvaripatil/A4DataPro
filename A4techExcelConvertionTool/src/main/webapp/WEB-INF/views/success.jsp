@@ -33,7 +33,14 @@
         <br/><br/>
       <a class="btn btn-home btn-lg" style="margin: 0px 41% auto;" href="<c:url value='/uploadFile.htm' />"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
     </div>
+        <br>
+        <br>
+        <br>
+        <div class="filedownload" align="left">
+        <h4>Click on the link to download Product Error File:
+	<a href="DownloadServlet"><u>Download a File</u></a></h4>
         
+        </div>
     
       </div>
     </div>

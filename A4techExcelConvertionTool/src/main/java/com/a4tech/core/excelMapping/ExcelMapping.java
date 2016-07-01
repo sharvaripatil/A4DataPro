@@ -35,6 +35,7 @@ import com.a4tech.product.criteria.parser.ProductThemeParser;
 import com.a4tech.product.criteria.parser.ProductTradeNameParser;
 import com.a4tech.product.criteria.parser.ProductionTimeParser;
 import com.a4tech.product.criteria.parser.ShippingEstimationParser;
+import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
@@ -68,8 +69,9 @@ public class ExcelMapping {
 	
 	private static final Logger _LOGGER = Logger.getLogger(ExcelMapping.class);
 	PostServiceImpl postServiceImpl = new PostServiceImpl();
+	ProductDao productDaoObj;
 	@SuppressWarnings("finally")
-	public int readExcel(String accessToken,Workbook workbook){
+	public int readExcel(String accessToken,Workbook workbook,int asiNumber){
 		ImprintColor imprintColors = new ImprintColor();
 		List<String> numOfProducts = new ArrayList<String>();
 		FileInputStream inputStream = null;
@@ -227,7 +229,7 @@ public class ExcelMapping {
 							 	productExcelObj.setProductRelationSkus(productsku);
 							 	productExcelObj.setProductNumbers(pnumberList);
 							 	//productList.add(productExcelObj);
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber);
 							 	if(num ==1){
 							 		numOfProducts.add("1");
 							 	}
@@ -1102,17 +1104,20 @@ public class ExcelMapping {
 		 	productExcelObj.setProductRelationSkus(productsku);
 		 	productExcelObj.setProductNumbers(pnumberList);
 		 	//productList.add(productExcelObj);
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber);
 		 	if(num ==1){
 		 		numOfProducts.add("1");
 		 	}
 		 	_LOGGER.info("list size>>>>>>"+numOfProducts.size());
-			//System.out.println(mapper1.writeValueAsString(productExcelObj));
-
+			System.out.println(mapper1.writeValueAsString(productExcelObj));
+		 	
+		 	
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet ");
 			return 0;
 		}finally{
+			
+			productDaoObj.getErrorLog(asiNumber);
 			try {
 				workbook.close();
 			//inputStream.close();
@@ -1120,11 +1125,25 @@ public class ExcelMapping {
 				_LOGGER.error("Error while Processing excel sheet");
 	
 			}
-				_LOGGER.info("Complted processing of excel sheet ");
-				_LOGGER.info("Total no of product:"+numOfProducts.size() );
+			_LOGGER.info("Complted processing of excel sheet ");
+			_LOGGER.info("Total no of product:"+numOfProducts.size() );
 				return numOfProducts.size();
 		}
 	
 	}
+	public PostServiceImpl getPostServiceImpl() {
+		return postServiceImpl;
+	}
+	public void setPostServiceImpl(PostServiceImpl postServiceImpl) {
+		this.postServiceImpl = postServiceImpl;
+	}
+	public ProductDao getProductDaoObj() {
+		return productDaoObj;
+	}
+	public void setProductDaoObj(ProductDao productDaoObj) {
+		this.productDaoObj = productDaoObj;
+	}
 
+	
+	
 }

@@ -25,7 +25,7 @@ public class JulyDataMapping {
       private static final Logger _LOGGER = Logger.getLogger(JulyDataMapping.class);
       PostServiceImpl postServiceImpl = new PostServiceImpl();
       @SuppressWarnings("finally")
-      public int readExcel(String accessToken,Workbook workbook){
+      public int readExcel(String accessToken,Workbook workbook,Integer asiNumber){
             
             List<String> numOfProducts = new ArrayList<String>();
       

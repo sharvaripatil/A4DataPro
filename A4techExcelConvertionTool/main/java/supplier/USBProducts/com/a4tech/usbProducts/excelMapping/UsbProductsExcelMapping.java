@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +39,7 @@ import com.a4tech.product.USBProducts.criteria.parser.ProductWarrantyParser;
 import com.a4tech.product.USBProducts.criteria.parser.ProductionTimeParser;
 import com.a4tech.product.USBProducts.criteria.parser.ShippingEstimationParser;
 import com.a4tech.product.criteria.parser.UsbProductsPriceGridParser;
+import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
@@ -77,7 +77,7 @@ public class UsbProductsExcelMapping {
 	private static final Logger _LOGGER = Logger.getLogger(UsbProductsExcelMapping.class);
 	//PostServiceImpl postServiceImpl = new PostServiceImpl();
 	PostServiceImpl postServiceImpl;
-	@SuppressWarnings("finally")
+	ProductDao productDaoObj;
 	private ProductColorParser colorparser;
 	private ProductImprintMethodParser imprintMethodParser;
 	private ProductArtworkProcessor artworkProcessor;
@@ -95,6 +95,7 @@ public class UsbProductsExcelMapping {
 	private ImprintColor imprintColors;
 	private ShippingEstimationParser shipinestmt;
 	
+	@SuppressWarnings("finally")
 	public int readExcel(String accessToken,Workbook workbook ,Integer asiNumber){
 		
 		List<String> numOfProducts = new ArrayList<String>();
@@ -1034,6 +1035,7 @@ public class UsbProductsExcelMapping {
 			_LOGGER.error("Error while Processing excel sheet ");
 			return 0;
 		}finally{
+			productDaoObj.getErrorLog(asiNumber);
 			try {
 				workbook.close();
 			//inputStream.close();
@@ -1047,6 +1049,16 @@ public class UsbProductsExcelMapping {
 		}
 		
 	
+	}
+
+	
+	
+	public ProductDao getProductDaoObj() {
+		return productDaoObj;
+	}
+
+	public void setProductDaoObj(ProductDao productDaoObj) {
+		this.productDaoObj = productDaoObj;
 	}
 
 	public ProductColorParser getColorparser() {

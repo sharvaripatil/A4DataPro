@@ -11,8 +11,10 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.LookupData;
 import com.a4tech.v2.core.model.Artwork;
@@ -67,9 +69,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ExcelMapping {
 	
 	private static final Logger _LOGGER = Logger.getLogger(ExcelMapping.class);
-	PostServiceImpl postServiceImpl = new PostServiceImpl();
+	@Autowired
+	PostServiceImpl postServiceImplV2 ;//= new PostServiceImpl();
+	
+	ProductDao productDaoObj;
 	@SuppressWarnings("finally")
-	public int readExcel(String accessToken,Workbook workbook){
+	public int readExcel(String accessToken,Workbook workbook,int asiNumber){
 		ImprintColor imprintColorsObj = new ImprintColor();
 		 //List<ImprintColorValue> imprintColors = new ArrayList<ImprintColorValue>();
 		List<String> numOfProducts = new ArrayList<String>();
@@ -234,7 +239,7 @@ public class ExcelMapping {
 							 	productExcelObj.setProductRelationSkus(productsku);
 							 	productExcelObj.setProductNumbers(pnumberList);
 							 	//productList.add(productExcelObj);
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj);
+							 	int num = postServiceImplV2.postProduct(accessToken, productExcelObj,asiNumber);
 							 	if(num ==1){
 							 		numOfProducts.add("1");
 							 	}
@@ -262,7 +267,7 @@ public class ExcelMapping {
 				switch (columnIndex + 1) {
 				case 1:
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						
+						productId = cell.getStringCellValue();
 					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 						productId = String.valueOf((int)cell.getNumericCellValue());
 					}else{
@@ -367,7 +372,7 @@ public class ExcelMapping {
 					String categoryName = cell.getStringCellValue();
 					List<String> listOfCategories = new ArrayList<String>();
 					//listOfCategories.add(categoryName);
-					listOfCategories.add("USB/FLASH DRIVES");
+					listOfCategories.add("USB/FLASH DRIVES123");
 					productExcelObj.setCategories(listOfCategories);
 					break;
 
@@ -1093,7 +1098,7 @@ public class ExcelMapping {
 		 	productExcelObj.setProductRelationSkus(productsku);
 		 	productExcelObj.setProductNumbers(pnumberList);
 		 	//productList.add(productExcelObj);
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj);
+		 	int num = postServiceImplV2.postProduct(accessToken, productExcelObj,asiNumber);
 		 	if(num ==1){
 		 		numOfProducts.add("1");
 		 	}
@@ -1104,6 +1109,7 @@ public class ExcelMapping {
 			_LOGGER.error("Error while Processing excel sheet ");
 			return 0;
 		}finally{
+			productDaoObj.getErrorLog(asiNumber);
 			try {
 				workbook.close();
 			//inputStream.close();
@@ -1117,5 +1123,20 @@ public class ExcelMapping {
 		}
 	
 	}
+	
+	public PostServiceImpl getPostServiceImplV2() {
+		return postServiceImplV2;
+	}
+	public void setPostServiceImplV2(PostServiceImpl postServiceImplV2) {
+		this.postServiceImplV2 = postServiceImplV2;
+	}
+	public ProductDao getProductDaoObj() {
+		return productDaoObj;
+	}
+	public void setProductDaoObj(ProductDao productDaoObj) {
+		this.productDaoObj = productDaoObj;
+	}
+	
+	
 
 }
