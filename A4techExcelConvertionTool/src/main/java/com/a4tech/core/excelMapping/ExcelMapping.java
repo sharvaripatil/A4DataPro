@@ -44,6 +44,7 @@ import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Option;
+import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.Personalization;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
@@ -152,7 +153,7 @@ public class ExcelMapping {
 			List<String> complianceCerts = new ArrayList<String>();
 			List<String> safetyWarnings = new ArrayList<String>();
 			List<Personalization> personalizationlist = new ArrayList<Personalization>();
-			List<String> packaging = new ArrayList<String>();
+			List<Packaging> packaging = new ArrayList<Packaging>();
 			List<String> themes = new ArrayList<String>();
 			List<String> tradeName = new ArrayList<String>();
 			List<ImprintMethod> imprintMethods = new ArrayList<ImprintMethod>();

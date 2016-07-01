@@ -27,6 +27,18 @@ public class ApplicationConstants {
     public static final String  CONST_VALUE_TYPE_OTHER 						= "Other";
     public static final String  CONST_VALUE_TYPE_SPACE 						= " ";
     public static final String 	DATE_FORMAT 								= "yyyy-MM-dd'T'HH:mm:ss.SZ";
+    public static final String  CONST_STRING_UNIMPRINTED					= "UNIMPRINTED";
+    public static final String  CONST_STRING_HOT_STAMPED					= "Hot Stamped";
+    public static final String  CONST_STRING_HOT_FOIL_STAMPED			    = "Hot/foil stamped";
+    public static final String  CONST_STRING_TRUE							= "True";
+    public static final String  CONST_STRING_COUNTRY_CODE_CH                = "CH";
+    public static final String  CONST_STRING_COUNTRY_CODE_US                = "US";
+    public static final String  CONST_STRING_COUNTRY_NAME_USA			    = "U.S.A.";
+    public static final String  CONST_STRING_COUNTRY_NAME_CHINA			    = "CHINA";
+    public static final String  CONST_STRING_ZERO                           = "0";
+    public static final String  CONST_STRING_INCHES							= "in";
+    public static final String  CONST_STRING_SHIPPING_WEIGHT                = "lbs";
+    public static final String	CONST_STRING_SHIPPING_NUMBER_UNIT_CARTON    = "per Carton";
     
     public final static String  COMBO_VALUES_SEPARATOR 					    = ":";
     public final static Integer COMBO_TEXT_VALUE_INDEX 					    = 1;
@@ -44,6 +56,8 @@ public class ApplicationConstants {
 	public static final String  CONST_DELIMITER_FSLASH 					    = "/";
 	//public static final String  CONST_DELIMITER_BSLASH 					    = "\\";
 	public static final String  CONST_DELIMITER_HYPHEN 					    = "-";
+	
+	public static final int     CONST_NUMBER_ZERO                           = 0;
 	
 	//public static final String  
     

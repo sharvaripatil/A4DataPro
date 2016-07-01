@@ -21,16 +21,16 @@ public class ShippingEstimationParser {
 		ShippingEstimate ItemObject = new ShippingEstimate();
 		
 		try{
-		List<Object> shipingEstObj1 = new ArrayList<Object>();
-		List<Object> shipingEstObj2 = new ArrayList<Object>();
+		List<NumberOfItems> listOfNumberOfItems = new ArrayList<NumberOfItems>();
+		List<Weight> listOfWeight = new ArrayList<Weight>();
 
 		NumberOfItems itemObj = new NumberOfItems();
 		if (shippingitemValue != null && !shippingitemValue.isEmpty()) {
 			String shipItemArr[] = shippingitemValue.split(ApplicationConstants.CONST_DELIMITER_COLON);
 			itemObj.setUnit(shipItemArr[1]);
 			itemObj.setValue(shipItemArr[0]);
-			shipingEstObj1.add(itemObj);
-			ItemObject.setNumberOfItems(shipingEstObj1);
+			listOfNumberOfItems.add(itemObj);
+			ItemObject.setNumberOfItems(listOfNumberOfItems);
 		}
 
 		if (shippingWeightValue != null && !shippingWeightValue.isEmpty()) {
@@ -38,8 +38,8 @@ public class ShippingEstimationParser {
 			String shipweightArr[] = shippingWeightValue.split(ApplicationConstants.CONST_DELIMITER_COLON);
 			weightObj.setUnit(shipweightArr[1]);
 			weightObj.setValue(shipweightArr[0]);
-			shipingEstObj2.add(weightObj);
-			ItemObject.setWeight(shipingEstObj2);
+			listOfWeight.add(weightObj);
+			ItemObject.setWeight(listOfWeight);
 		}
 
 		if (shippingdimensionValue != null && !shippingdimensionValue.isEmpty()) {

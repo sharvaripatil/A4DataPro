@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.a4tech.JulyData.excelMapping.JulyDataMapping;
@@ -80,6 +82,7 @@ public class FileUpload {
          }
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBean.getFile().getBytes())){
 	       
+			  
 	            	if (fileBean.getFile().getOriginalFilename().endsWith("xls")) {
 	                workbook = new HSSFWorkbook(bis);
 	                

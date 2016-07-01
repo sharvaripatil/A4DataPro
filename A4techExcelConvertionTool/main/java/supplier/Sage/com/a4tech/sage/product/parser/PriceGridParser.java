@@ -17,9 +17,9 @@ public class PriceGridParser {
 
 	private Logger              _LOGGER              = Logger.getLogger(getClass());
 	public List<PriceGrid> getPriceGrids(String listOfPrices,
-			String listOfNetcost, String listOfQuan, String listOfDisc,
+		    String listOfQuan, String discountCodes,
 			String currency, String priceInclude, boolean isBasePrice,
-			String isQur, String priceName, String criterias,
+			String qurFlag, String priceName, String criterias,
 			List<PriceGrid> existingPriceGrid) {
 		_LOGGER.info("Enter Price Grid Parser class");
 		Integer sequence = 1;
@@ -27,23 +27,20 @@ public class PriceGridParser {
 		PriceGrid priceGrid = new PriceGrid();
 		String[] prices = listOfPrices
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		String[] netCost = listOfNetcost
-				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] quantity = listOfQuan
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		String[] discount = listOfDisc
-				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+		
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(priceName);
+		priceGrid.setPriceIncludes(priceInclude);
 		priceGrid
-				.setIsQUR(isQur.equalsIgnoreCase("Y") ? ApplicationConstants.CONST_BOOLEAN_TRUE
-						: ApplicationConstants.CONST_BOOLEAN_FALSE);
+				.setIsQUR(qurFlag.equalsIgnoreCase("False") ? ApplicationConstants.CONST_BOOLEAN_FALSE
+						: ApplicationConstants.CONST_BOOLEAN_TRUE);
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(prices, netCost, quantity, discount);
+			listOfPrice = getPrices(prices, quantity, discountCodes);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
@@ -57,24 +54,22 @@ public class PriceGridParser {
 
 	}
 
-	public List<Price> getPrices(String[] prices, String[] netCost,
-			String[] quantity, String[] discount) {
+	public List<Price> getPrices(String[] prices, String[] quantity, String discount) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
-		for (int i = 0, j = 1; i < prices.length && i < netCost.length
-				&& i < quantity.length && i < discount.length; i++, j++) {
+		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length && PriceNumber < quantity.length
+				      && PriceNumber < discount.length(); PriceNumber++, sequenceNum++) {
 
 			Price price = new Price();
 			PriceUnit priceUnit = new PriceUnit();
-			price.setSequence(j);
+			price.setSequence(sequenceNum);
 			try {
-				price.setQty(Integer.valueOf(quantity[i]));
+				price.setQty(Integer.valueOf(quantity[PriceNumber]));
 			} catch (NumberFormatException nfe) {
-				price.setQty(0);
+				price.setQty(ApplicationConstants.CONST_NUMBER_ZERO);
 			}
-			price.setPrice(prices[i]);
-			price.setNetCost(netCost[i]);
-			price.setDiscountCode(discount[i]);
+			price.setPrice(prices[PriceNumber]);
+			price.setDiscountCode(Character.toString(discount.charAt(PriceNumber)));
 			priceUnit
 					.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
 			price.setPriceUnit(priceUnit);

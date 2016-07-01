@@ -3,9 +3,10 @@ package com.a4tech.sage.product.mapping;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -17,20 +18,26 @@ import org.springframework.util.StringUtils;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
-import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintColorValue;
+import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
-import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Option;
 import com.a4tech.product.model.Origin;
+import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductionTime;
+import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
-import com.a4tech.product.model.TradeName;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.sage.product.parser.CatalogParser;
+import com.a4tech.sage.product.parser.ImprintMethodParser;
+import com.a4tech.sage.product.parser.OriginParser;
+import com.a4tech.sage.product.parser.PackagingParser;
 import com.a4tech.sage.product.parser.PriceGridParser;
+import com.a4tech.sage.product.parser.RushTimeParser;
+import com.a4tech.sage.product.parser.ShippingEstimateParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.LookupData;
 
@@ -41,13 +48,19 @@ public class SageProductsExcelMapping {
 	private PostServiceImpl postServiceImpl;
 	private CatalogParser   catalogParser;
 	private PriceGridParser priceGridParser;
+	private ImprintMethodParser imprintMethodParser;
+	private OriginParser       originParser;
+	private RushTimeParser    rushTimeParser;
+	private PackagingParser	packagingParser;
+	private ShippingEstimateParser shippingEstimateParser;
 
 	public int readExcel(String accessToken,Workbook workbook ,Integer asiNumber){
 		
 		List<String> numOfProducts = new ArrayList<String>();
 		FileInputStream inputStream = null;
 		//Workbook workbook = null;
-		List<String>  productXids = new ArrayList<String>();
+		//List<String>  productXids = new ArrayList<String>();
+		Set<String>  productXids = new HashSet<String>();
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  //ProductSkuParser skuparserobj=new ProductSkuParser();
@@ -56,7 +69,7 @@ public class SageProductsExcelMapping {
 		  String priceQurFlag = null;
 		  String priceType    = null;
 		  String basePriceName = null;
-		  String priceIncludes = null;
+		  //String priceIncludes = null;
 		  //PriceGridParser priceGridParser = new PriceGridParser();
 		  String upChargeName = null;
 		  String upChargeQur = null;
@@ -85,6 +98,10 @@ public class SageProductsExcelMapping {
 		StringBuilder UpchargeNetPrice = new StringBuilder();
 		StringBuilder UpCharDiscount = new StringBuilder();
 		StringBuilder UpCharCriteria = new StringBuilder();
+		String		priceCode = null;
+		StringBuilder pricesPerUnit = new StringBuilder();
+		String quoteUponRequest  = null;
+		StringBuilder priceIncludes = new StringBuilder();
 		String quantity = null;
 		String SKUCriteria1 =null;
 		String SKUCriteria2 =null;
@@ -108,14 +125,22 @@ public class SageProductsExcelMapping {
 		String colorValue=null;
 		String imprintValue=null;
 		String imprintColorValue=null;
+		String cartonL = null;
+		String cartonW = null;
+		String cartonH = null;
+		String weightPerCarton = null;
+		String unitsPerCarton = null;
 		
 		List<Color> color = new ArrayList<Color>();
-		List<ImprintMethod> imprintMethods = new ArrayList<ImprintMethod>();
 		List<Artwork> artworkList = new ArrayList<Artwork>();
 		List<ImprintColorValue> imprintColorsValueList = new ArrayList<ImprintColorValue>();
 		String productName = null;
 		StringBuilder imprintMethodValues = new StringBuilder();
 		StringBuilder imprintColorValues = new StringBuilder();
+		List<ImprintLocation> listImprintLocation = new ArrayList<ImprintLocation>();
+		List<ImprintMethod> listOfImprintMethods = new ArrayList<ImprintMethod>();
+		List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
+		RushTime rushTime  = new RushTime();
 		while (iterator.hasNext()) {
 			
 			try{
@@ -127,7 +152,9 @@ public class SageProductsExcelMapping {
 			
 			List<Image> imgList = new ArrayList<Image>();
 			
-			 productXids.add(productId);
+			if(productId != null){
+				productXids.add(productId);
+			}
 			 //String productName = null;
 			 boolean checkXid  = false;
 			 ShippingEstimate ShipingItem = null;
@@ -142,26 +169,19 @@ public class SageProductsExcelMapping {
 				int columnIndex = cell.getColumnIndex();
 				if(columnIndex + 1 == 1){
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						
+						xid = cell.getStringCellValue();
 					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 						xid = String.valueOf((int)cell.getNumericCellValue());
 					}else{
 						
 					}
-					 //xid = cell.getStringCellValue();
-					 if(productXids.contains(xid)){
-						 productXids.add(xid);
-					 }else{
-						 productXids = new ArrayList<String>();
-					 }
-					 
 					checkXid = true;
 				}else{
 					checkXid = false;
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 1){
+						 if(nextRow.getRowNum() != 10){
 							 System.out.println("Java object converted to JSON String, written to file");
 							   // Add repeatable sets here
 							 	productExcelObj.setPriceGrids(priceGrids);
@@ -194,7 +214,7 @@ public class SageProductsExcelMapping {
 				switch (columnIndex + 1) {
 				case 1:
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						
+						productId = cell.getStringCellValue();
 					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 						productId = String.valueOf((int)cell.getNumericCellValue());
 					}else{
@@ -213,11 +233,11 @@ public class SageProductsExcelMapping {
      					break;
 			
 				case 4:
-					String categoryName = cell.getStringCellValue();
+					/*String categoryName = cell.getStringCellValue();
 					List<String> listOfCategories = new ArrayList<String>();
 					listOfCategories.add(categoryName);
 					//listOfCategories.add("USB/FLASH DRIVES");
-					productExcelObj.setCategories(listOfCategories);
+					productExcelObj.setCategories(listOfCategories);*/
 				    break;
 					
 				case 5:
@@ -226,25 +246,23 @@ public class SageProductsExcelMapping {
 					
 				case 6: // brand name
 					
-					String brandName = cell.getStringCellValue();
+					/*String brandName = cell.getStringCellValue();
 					List<TradeName> listOfBrands = new ArrayList<TradeName>();
 					TradeName tradeName1 = new TradeName();
 					tradeName1.setName(brandName);
 					listOfBrands.add(tradeName1);
-					productConfigObj.setTradeNames(listOfBrands);
+					productConfigObj.setTradeNames(listOfBrands);*/
 					break;
 					
 				case 7:
 					    // product description
-					String productDescription = cell.getStringCellValue();
+					/*String productDescription = cell.getStringCellValue();
 					//productDescription = "Phone Holder USB 2.0 Flash Drive";
-					productExcelObj.setDescription(productDescription);
+					productExcelObj.setDescription(productDescription);*/
 					break;
 					
 				case 8: // pricegrid related
-					 priceIncludes = cell.getStringCellValue();
-					productExcelObj.setPriceType("L"); 
-					//productExcelObj.setDescription(productName);
+					 
 					break;
 					
 				case 9:
@@ -257,7 +275,7 @@ public class SageProductsExcelMapping {
 					
 				case 11:  //Keywords
 					String Keywords = cell.getStringCellValue();
-					List<String> listOfKeywords = new ArrayList<String>();
+					/*List<String> listOfKeywords = new ArrayList<String>();
 					if(Keywords.contains(ApplicationConstants.CONST_DELIMITER_AMPERSAND)){
 						listOfKeywords.addAll(Arrays.asList(Keywords.split(ApplicationConstants.CONST_DELIMITER_AMPERSAND)));
 					}else if(Keywords.contains("USBs")){
@@ -270,17 +288,17 @@ public class SageProductsExcelMapping {
 							    }
 						}
 					}
-					productExcelObj.setProductKeywords(listOfKeywords);
+					productExcelObj.setProductKeywords(listOfKeywords);*/
 					break;
 				
 				case 12:  // origin
 					
-					String origin1 = cell.getStringCellValue();
+					/*String origin1 = cell.getStringCellValue();
 					List<Origin> listOfOrigins = new ArrayList<Origin>();
 					Origin origins = new Origin();
 					origins.setName(origin1);
 					listOfOrigins.add(origins);
-					productConfigObj.setOrigins(listOfOrigins);
+					productConfigObj.setOrigins(listOfOrigins);*/
 					
 					break;
 
@@ -292,42 +310,42 @@ public class SageProductsExcelMapping {
 					break;
 					
 				case 14: // small image url
-					String smallImageUrl=cell.getStringCellValue();
+					/*String smallImageUrl=cell.getStringCellValue();
 					Image image = new Image();
 					      image.setImageURL(smallImageUrl);
 					      image.setIsPrimary(true);
 					      image.setRank(1);
-					     imgList.add(image);
+					     imgList.add(image);*/
 					
 					break;
 					
 				case 15:
 					String mediumImageUrl=cell.getStringCellValue();
-					 image = new Image();
+					 /*image = new Image();
 				      image.setImageURL(mediumImageUrl);
 				      image.setIsPrimary(false);
 				      image.setRank(2);
-				     imgList.add(image);
+				     imgList.add(image);*/
 					
 					break;
 				case 16: 
-					  String largeImageUrl = cell.getStringCellValue();
+					 /* String largeImageUrl = cell.getStringCellValue();
 					  image = new Image();
 				      image.setImageURL(largeImageUrl);
 				      image.setIsPrimary(false);
 				      image.setRank(3);
 				     imgList.add(image);
-					  break;
+					  break;*/
 				
 				case 17: 
 					
 					String zoomImageUrl = cell.getStringCellValue();
-					 image = new Image();
+					 /*image = new Image();
 				      image.setImageURL(zoomImageUrl);
 				      image.setIsPrimary(false);
 				      image.setRank(4);
 				     imgList.add(image);
-				    productExcelObj.setImages(imgList);
+				    productExcelObj.setImages(imgList);*/
 					break;
 				
 				 case 18: 
@@ -364,57 +382,97 @@ public class SageProductsExcelMapping {
 					
 				   break;
 				   
-				case 24: 
-					String latePriceStartDate=cell.getStringCellValue();
-					break;
-					
-				case 25: //Late Quantities
-					
-					String lateQuantities=cell.getStringCellValue();
-					
-					break;
-					
-				case 26:
-					String lateNetPrices=cell.getStringCellValue();
-					
-					break;
-					
+				case 24:  // Quantities
+				case 25: 
+				case 26: 
 				case 27: 
-					String lateCodes=cell.getStringCellValue();
-					
-					break;
 				case 28:
 				case 29:
-				case 30:
+					try{
+						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+							quantity = cell.getStringCellValue();
+					         if(!StringUtils.isEmpty(quantity) && !quantity.equals("0")){
+					        	 listOfQuantity.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
+						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							int quantity1 = (int)cell.getNumericCellValue();
+					         if(!StringUtils.isEmpty(quantity1) && quantity1 !=0){
+					        	 listOfQuantity.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
+						}else{
+						}
+					}catch (Exception e) {
+						_LOGGER.info("Error in base price Quantity field");
+					}
+					
+					   	break;
+				case 30:  // prices --list price
 				case 31:
 				case 32:
 				case 33:
 				case 34:
 				case 35:
-				case 36:
-				case 37:       
-					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-					quantity = cell.getStringCellValue();
-			         if(!StringUtils.isEmpty(quantity)){
-			        	 listOfPrices.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-			         }
-				}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-					double quantity1 = (double)cell.getNumericCellValue();
-			         if(!StringUtils.isEmpty(quantity1)){
-			        	 listOfPrices.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-			         }
-				}else{
+				 try{
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+							quantity = cell.getStringCellValue();
+					         if(!StringUtils.isEmpty(quantity)&& !quantity.equals("0")){
+					        	 listOfPrices.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
+						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							double quantity1 = (double)cell.getNumericCellValue();
+					         if(!StringUtils.isEmpty(quantity1)){
+					        	 listOfPrices.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
+						}else{
+						}  
+				 }catch (Exception e) {
+					_LOGGER.info("Error in base price prices field");
 				}
-				  break;
+					
+					    break; 
+				case 36: // price code -- discount
+					    
+						priceCode = cell.getStringCellValue();
+					     break;
+				case 37:       // pricesPerUnit
 				case 38:
 				case 39:
 				case 40:
 				case 41:
 				case 42:
+					try{
+						
+					}catch (Exception e) {
+						_LOGGER.info("Error in pricePerUnit field");
+					}
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+						quantity = cell.getStringCellValue();
+				         if(!StringUtils.isEmpty(quantity) && !quantity.equals("0")){
+				        	 pricesPerUnit.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
+					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						double quantity1 = (double)cell.getNumericCellValue();
+				         if(!StringUtils.isEmpty(quantity1)){
+				        	 pricesPerUnit.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
+					}else{
+					}  
+					      break;
 				case 43:
-				case 44:
-				case 45:
-				case 46:
+					     quoteUponRequest = cell.getStringCellValue();
+					      break;
+				case 44:  // priceIncludeClr
+					    
+					      priceIncludes.append(cell.getStringCellValue()).append(" ");
+					     break;
+				case 45: // priceIncludeSide
+						
+						priceIncludes.append(cell.getStringCellValue()).append(" ");
+						break;
+				case 46: // priceIncludeLoc
+						priceIncludes.append(cell.getStringCellValue());
+						break;
+						
 				case 47:       
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 					quantity = cell.getStringCellValue();
@@ -430,43 +488,45 @@ public class SageProductsExcelMapping {
 				}
 				  break;
 				case 48:
+							break;
 				case 49:
+							break;
 				case 50:
+							break;
 				case 51:
+							break;
 				case 52:
+							break;
 				case 53:
+							break;
 				case 54:
+							break;
 				case 55:
+							break;
 				case 56:
+							break;
 				case 57:	
-					quantity = cell.getStringCellValue();
-			         if(!StringUtils.isEmpty(quantity)){
-			        	 listOfDiscount.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-			         }
-				break; 
+							break; 
 				case 58:
+							break;
 				case 59:
+							break;
 				case 60:
+							break;
 				case 61:
+							break;
 				case 62:
+							break;
 				case 63:
+							break;
 				case 64:
+							break;
 				case 65:
+							break;
 				case 66:
+							break;
 				case 67:
-					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						quantity = cell.getStringCellValue();
-				         if(!StringUtils.isEmpty(quantity)){
-				        	 listOfQuantity.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-				         }
-					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						int quantity1 = (int)cell.getNumericCellValue();
-				         if(!StringUtils.isEmpty(quantity1)){
-				        	 listOfQuantity.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-				         }
-					}else{
-					}
-			          break; 
+			          		break; 
 				case 68:
 				case 69:
 				case 70:
@@ -474,183 +534,219 @@ public class SageProductsExcelMapping {
 				case 72:
 				case 73:
 				case 74:
-				case 75:
-				case 76:
-				case 77:       
-					/*if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-					quantity = cell.getStringCellValue();
-			         if(!StringUtils.isEmpty(quantity)){
-			        	 UpCharPrices.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-			         }
-				}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-					double quantity1 = (double)cell.getNumericCellValue();
-			         if(!StringUtils.isEmpty(quantity1)){
-			        	 UpCharPrices.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-			         }
-				}else{
-				}*/
-				  break;
+				case 75: // Imprint size1
+					
+					    break;
+					    
+				case 76: //// Imprint size1 unit
+					   	break;
+					   	
+				case 77:   // Imprint size1 Type    
+						break;
+						
 				  
-				case 78:
-				case 79:
-				case 80:
-				case 81:
-				case 82:
-				case 83:
-				case 84:
-				case 85:
-				case 86:
-				case 87:	
-					/*if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						quantity = cell.getStringCellValue();
-				         if(!StringUtils.isEmpty(quantity)){
-				        	 UpchargeNetPrice.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-				         }
-					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						double quantity1 = (double)cell.getNumericCellValue();
-				         if(!StringUtils.isEmpty(quantity1)){
-				        	 UpchargeNetPrice.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-				         }
-					}else{
-					}*/
+				case 78: // // Imprint size2
+					  	break;
+					  	
+				case 79:	// Imprint size2 Unit
+					    break;
+					    
+				case 80: // Imprint size2 Type
+					  	break;
+					  	
+				case 81:  // Imprint location
+					
+					String imprintLocation = cell.getStringCellValue();
+					ImprintLocation locationObj = new ImprintLocation();
+					locationObj.setValue(imprintLocation);
+					listImprintLocation.add(locationObj);
+					    break;
+					    
+				case 82:  // Second Imprintsize1
+					   	break;
+					   	
+				case 83:  // Second Imprintsize1 unit
+						break;
+						
+				case 84:  // Second Imprintsize1 type
 					  break;
-				case 88:
-				case 89:
-				case 90:
-				case 91:
-				case 92:
-				case 93:
-				case 94:
-				case 95:
-				case 96:
-				case 97:
-					/*if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						quantity = cell.getStringCellValue();
-				         if(!StringUtils.isEmpty(quantity)){
-				        	 UpCharDiscount.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-				         }
-					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						int quantity1 = (int)cell.getNumericCellValue();
-				         if(!StringUtils.isEmpty(quantity1)){
-				        	 UpCharDiscount.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-				         }
-					}else{
-						
-					}*/
-					 break; // upcharge discount end
-					 
-				case 98:
-				case 99:
-				case 100:
-				case 101:
-				case 102:
-				case 103:
-				case 104:
-				case 105:
-				case 106:
-				case 107:
-					/*if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						quantity = cell.getStringCellValue();
-				         if(!StringUtils.isEmpty(quantity)){
-				        	 UpCharQuantity.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-				         }
-					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						int quantity1 = (int)cell.getNumericCellValue();
-				         if(!StringUtils.isEmpty(quantity1)){
-				        	 UpCharQuantity.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-				         }
-					}else{
-						
-					}*/
-					 break; // upcharge quanytity
-					 
-					 
-					 
-				case 108:
-					 int shipval= (int) cell.getNumericCellValue();
-					 shippingitemValue=Integer.toString(shipval);
-					shippingitemValue=shippingitemValue+ApplicationConstants.CONST_DELIMITER_COLON+"per Case";
-					break;
-					
-				case 109:
-					int shipwtval= (int) cell.getNumericCellValue();
-					shippingWeightValue=Integer.toString(shipwtval);
 					  
+				case 85: // Second Imprintsize2
 					break;
 					
-				case 110:
-					String weightinLBS=cell.getStringCellValue();
-					shippingWeightValue=weightinLBS+ApplicationConstants.CONST_DELIMITER_COLON+shippingWeightValue;
-					/*ShipingItem = shipinestmt.getShippingEstimates(shippingitemValue, shippingdimensionValue,shippingWeightValue);
-					if(ShipingItem.getDimensions()!=null || ShipingItem.getNumberOfItems()!=null || ShipingItem.getWeight()!=null ){
-					productConfigObj.setShippingEstimates(ShipingItem);
-					}*/
+				case 86: //Second Imprintsize2 Unit
 					break;
-				case 111:
-					//Weight per Item
-					System.out.println(111);
+					
+				case 87: // Second Imprintsize2 type	
+					  break;
+					  
+				case 88: // Second Imprint location
+					String imprintLocation2 = cell.getStringCellValue();
+					ImprintLocation locationObj2 = new ImprintLocation();
+					locationObj2.setValue(imprintLocation2);
+					listImprintLocation.add(locationObj2);
+					break;
+				case 89: // DecorationMethod
+					String decorationMethod = cell.getStringCellValue();
+					listOfImprintMethods = imprintMethodParser.getImprintMethodValues(decorationMethod,
+							                                                           listOfImprintMethods);
+					 break; 
+					 
+				case 90: //NoDecoration
+					String noDecoration = cell.getStringCellValue();
+					if(noDecoration.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
+						listOfImprintMethods = imprintMethodParser.getImprintMethodValues(noDecoration,
+                                listOfImprintMethods);
+					}
+					
+					 break;
+				case 91: //NoDecorationOffered
+					String noDecorationOffered = cell.getStringCellValue();
+					if(noDecorationOffered.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
+						listOfImprintMethods = imprintMethodParser.getImprintMethodValues(noDecorationOffered,
+                                listOfImprintMethods);
+					}
+					 break;
+				case 92: //NewPictureURL
+					break;
+				case 93:  //NewPictureFile  -- not used
+					break;
+				case 94: //ErasePicture -- not used
+					break;
+				case 95: //NewBlankPictureURL
+					break;
+				case 96: //NewBlankPictureFile -- not used
+					break;
+				case 97://EraseBlankPicture  -- not used
+					break;
+					 
+				case 98: //PicExists   -- not used
+					break;
+				case 99: //NotPictured  -- not used
+					break;
+				case 100: //MadeInCountry
+					
+					String madeInCountry = cell.getStringCellValue();
+					if(!madeInCountry.isEmpty()){
+						List<Origin> listOfOrigin = originParser.getOriginValues(madeInCountry);
+						productConfigObj.setOrigins(listOfOrigin);
+					}
+					break;
+					
+				case 101:// AssembledInCountry
+					String assembledInCountry = cell.getStringCellValue();
+					assembledInCountry = originParser.getCountryCodeConvertName(assembledInCountry);
+					if(!assembledInCountry.isEmpty() && assembledInCountry != null){
+						productExcelObj.setAdditionalProductInfo(assembledInCountry);
+					}
+					break;
+				case 102: //DecoratedInCountry
+					String decoratedInCountry = cell.getStringCellValue();
+					decoratedInCountry = originParser.getCountryCodeConvertName(decoratedInCountry);
+					if(!decoratedInCountry.isEmpty() && decoratedInCountry != null){
+						productExcelObj.setAdditionalProductInfo(decoratedInCountry);
+					}
+					break;
+				case 103: //ComplianceList  -- No data
+					break;
+				case 104://ComplianceMemo  -- No data
+					break;
+				case 105: //ProdTimeLo
+					String prodTimeLo = null;
+					ProductionTime productionTime = new ProductionTime();
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+						prodTimeLo = cell.getStringCellValue();
+					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						prodTimeLo = String.valueOf(cell.getNumericCellValue());
+					}else{
+						
+					}
+					productionTime.setBusinessDays(prodTimeLo);
+					listOfProductionTime.add(productionTime);
+					break;
+				case 106: //ProdTimeHi
+					String prodTimeHi = null;
+					ProductionTime productionTime1 = new ProductionTime();
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+						prodTimeHi = cell.getStringCellValue();
+					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						prodTimeHi = String.valueOf(cell.getNumericCellValue());
+					}else{
+						
+					}
+					productionTime1.setBusinessDays(prodTimeHi);
+					listOfProductionTime.add(productionTime1);
+					break;
+				case 107://RushProdTimeLo
+					String rushProdTimeLo  = cell.getStringCellValue();
+					if(!rushProdTimeLo.equals(ApplicationConstants.CONST_STRING_ZERO)){
+						rushTime = rushTimeParser.getRushTimeValues(rushProdTimeLo, rushTime);
+					}
+					
+					 break; 	 
+				case 108://RushProdTimeH
+					String rushProdTimeH  = cell.getStringCellValue();
+					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO)){
+						rushTime = rushTimeParser.getRushTimeValues(rushProdTimeH, rushTime);
+					}
+					break;
+					
+				case 109://Packaging
+				
+					String pack  = cell.getStringCellValue();
+					List<Packaging> listOfPackaging = packagingParser.getPackageValues(pack);
+					productConfigObj.setPackaging(listOfPackaging);
+					break;
+					
+				case 110: //CartonL
+					 cartonL  = cell.getStringCellValue();
+					
+					break;
+				case 111://CartonW
+					cartonW  = cell.getStringCellValue();
 					break;
 	
-				case 112:
-					//Unit of Measure
+				case 112://CartonH
+					cartonH  = cell.getStringCellValue();
 					break;
-				case 113:
-					//Sizes
-
+				case 113: //WeightPerCarton
+					weightPerCarton  = cell.getStringCellValue();
 					break;
-				case 114:
-					//Size Name
+				case 114: //UnitsPerCarton
+					unitsPerCarton  = cell.getStringCellValue();
+					break;
+					
+				case 115: //ShipPointCountry
 
 					break;
 					
-				case 115:
-					//Size Width
+				case 116: //ShipPointZip
+					
+					break;
+					
+				case 117: //Comment
+					
 
 					break;
 					
-				case 116:
-					//Size Length
-
-					break;
-					
-				case 117:
-					//Size Height
-
-					break;
-					
-				case 118:
-					//Lead Time relates to Production Time
-
+				case 118: //Verified
 					break;
 			
-				case 119:
-					//Rush Lead Time relates to Rush Time
+				case 119: //UpdateInventory
+					
 					break;
 				
-				case 120:
-					//Item Type1
+				case 120: //InventoryOnHand
+					
 					break;
 					
-				case 121:
-					//Item Colors1
-					colorValue=cell.getStringCellValue();
-					if(!StringUtils.isEmpty(colorValue)){
-						//color=colorparser.getColorCriteria(colorValue);
-				    
-					if(color!=null){
-					productConfigObj.setColors(color);
-					}
-					}
+				case 121: //InventoryOnHandAdd
 					break;
 					
-				
-				
-			case 122:
-				//Item Type2
-				System.out.println(122);
+				case 122: //InventoryMemo
 				break;
 				
-			case 123:
+			/*case 123: // not required
 				//Item Colors2
 				colorValue=cell.getStringCellValue();
 				if(!StringUtils.isEmpty(colorValue)){
@@ -735,7 +831,7 @@ public class SageProductsExcelMapping {
 				//Imprint colors2 (it is related imprint method values)
 				imprintColorValue = cell.getStringCellValue();
 				if(!StringUtils.isEmpty(imprintColorValue)){
-					/*imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);*/
+					//imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);
 					if(imprintColorValue.equalsIgnoreCase("Laser Engraved")){
 						imprintMethodValues.append(imprintColorValue + ",");
 					}	
@@ -899,16 +995,24 @@ public class SageProductsExcelMapping {
 				
 			case 155:
 				//FOB Bill From Zip
-				break;
+				break;*/   // not required for 123 cases onwards
 			}  // end inner while loop
 					 
-					  
-		        
-				}
-				
-			//imprintMethods = imprintMethodParser.getImprintCriteria(imprintMethodValues.toString());
-			productConfigObj.setImprintMethods(imprintMethods); 
-			
+		}
+			// set  product configuration objects
+			List<String> listOfCategories = new ArrayList<String>();
+			listOfCategories.add("USB/FLASH DRIVES");
+			productExcelObj.setCategories(listOfCategories);
+			String productDescription ="Phone Holder USB 2.0 Flash Drive";
+			//productDescription = "Phone Holder USB 2.0 Flash Drive";
+			productExcelObj.setDescription(productDescription);
+			ShippingEstimate shipping = shippingEstimateParser.getShippingEstimateValues(cartonL, cartonW,
+					                               cartonH, weightPerCarton, unitsPerCarton);
+			productConfigObj.setImprintLocation(listImprintLocation);
+			productConfigObj.setImprintMethods(listOfImprintMethods);
+			productConfigObj.setRushTime(rushTime);
+			productConfigObj.setShippingEstimates(shipping);
+			productConfigObj.setProductionTime(listOfProductionTime);
 			//imprintColorsValueList = imprintColorParser.getImprintColorCriteria(imprintColorValues.toString());
 			//imprintColors.setType("COLR");
 			//imprintColors.setValues(imprintColorsValueList);
@@ -916,10 +1020,11 @@ public class SageProductsExcelMapping {
 			
 				//productExcelObj.setProductConfigurations(productConfigObj);l
 			 // end inner while loop
+			productExcelObj.setPriceType("L");
 			if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
-				/*priceGrids = priceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
-						         listOfQuantity.toString(), listOfDiscount.toString(), "USD",
-						         priceIncludes, true, "N", productName,"",priceGrids);	*/
+				priceGrids = priceGridParser.getPriceGrids(listOfPrices.toString(), 
+						         listOfQuantity.toString(), priceCode, "USD",
+						         priceIncludes.toString(), true, quoteUponRequest, productName,"",priceGrids);	
 			}
 			
 			 
@@ -1018,5 +1123,40 @@ public class SageProductsExcelMapping {
 	public void setPriceGridParser(PriceGridParser priceGridParser) {
 		this.priceGridParser = priceGridParser;
 	}
+	public ImprintMethodParser getImprintMethodParser() {
+		return imprintMethodParser;
+	}
 
+	public void setImprintMethodParser(ImprintMethodParser imprintMethodParser) {
+		this.imprintMethodParser = imprintMethodParser;
+	}
+	public OriginParser getOriginParser() {
+		return originParser;
+	}
+
+	public void setOriginParser(OriginParser originParser) {
+		this.originParser = originParser;
+	}
+	public RushTimeParser getRushTimeParser() {
+		return rushTimeParser;
+	}
+
+	public void setRushTimeParser(RushTimeParser rushTimeParser) {
+		this.rushTimeParser = rushTimeParser;
+	}
+	public PackagingParser getPackagingParser() {
+		return packagingParser;
+	}
+
+	public void setPackagingParser(PackagingParser packagingParser) {
+		this.packagingParser = packagingParser;
+	}
+	public ShippingEstimateParser getShippingEstimateParser() {
+		return shippingEstimateParser;
+	}
+
+	public void setShippingEstimateParser(
+			ShippingEstimateParser shippingEstimateParser) {
+		this.shippingEstimateParser = shippingEstimateParser;
+	}
 }

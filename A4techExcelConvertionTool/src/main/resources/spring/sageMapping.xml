@@ -18,8 +18,18 @@
      	<property name="postServiceImpl" ref="postService"></property>
      	<property name="catalogParser" ref="catalogParserId"/>
      	<property name="priceGridParser" ref="priceGridParserId"/>
+     	<property name="imprintMethodParser" ref="imprintMethodId"/>
+     	<property name="originParser" ref="originParserId"/>
+     	<property name="rushTimeParser" ref="rushTimeId"/>
+     	<property name="packagingParser" ref="packageId"/>
+     	<property name="shippingEstimateParser" ref="shippingEstimateId"></property>
      </bean>
          
      <bean id="catalogParserId" class="com.a4tech.sage.product.parser.CatalogParser"/>
      <bean id="priceGridParserId" class="com.a4tech.sage.product.parser.PriceGridParser"/>
+     <bean id="imprintMethodId"  class="com.a4tech.sage.product.parser.ImprintMethodParser"/>
+     <bean id="originParserId" class="com.a4tech.sage.product.parser.OriginParser"/>
+     <bean id="rushTimeId" class="com.a4tech.sage.product.parser.RushTimeParser"/>
+     <bean id="packageId" class="com.a4tech.sage.product.parser.PackagingParser"/>
+     <bean id="shippingEstimateId" class="com.a4tech.sage.product.parser.ShippingEstimateParser"></bean>
 </beans>
