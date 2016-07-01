@@ -25,6 +25,7 @@
      	<property name="shippingEstimateParser" ref="shippingEstimateId"/>
      	<property name="dimParserObj" ref="dimensionParserId"/>
      	<property name="colorParserObj" ref="colorParserId"/>
+     	<property name="productDaoObj"  ref="productDao"/>
      </bean>
          
      <bean id="catalogParserId" class="com.a4tech.sage.product.parser.CatalogParser"/>
