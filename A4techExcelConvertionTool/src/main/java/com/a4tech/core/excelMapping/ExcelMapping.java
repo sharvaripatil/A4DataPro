@@ -453,7 +453,7 @@ public class ExcelMapping {
 					if(!StringUtils.isEmpty(themeValue)){
 					themes=themeParser.getThemeCriteria(themeValue);
 					if(themes!=null){
-					productConfigObj.setThemes(themes);
+					//productConfigObj.setThemes(themes);
 					}
 					}
 					break;

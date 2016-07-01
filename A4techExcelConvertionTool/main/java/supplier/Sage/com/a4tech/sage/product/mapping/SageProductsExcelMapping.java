@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -16,7 +17,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Artwork;
+import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintColorValue;
 import com.a4tech.product.model.ImprintLocation;
@@ -30,8 +33,13 @@ import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Size;
+import com.a4tech.product.model.Theme;
+import com.a4tech.product.model.Values;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.sage.product.parser.CatalogParser;
+import com.a4tech.sage.product.parser.ColorParser;
+import com.a4tech.sage.product.parser.DimensionParser;
 import com.a4tech.sage.product.parser.ImprintMethodParser;
 import com.a4tech.sage.product.parser.OriginParser;
 import com.a4tech.sage.product.parser.PackagingParser;
@@ -40,6 +48,7 @@ import com.a4tech.sage.product.parser.RushTimeParser;
 import com.a4tech.sage.product.parser.ShippingEstimateParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.LookupData;
+
 
 public class SageProductsExcelMapping {
 	
@@ -53,7 +62,13 @@ public class SageProductsExcelMapping {
 	private RushTimeParser    rushTimeParser;
 	private PackagingParser	packagingParser;
 	private ShippingEstimateParser shippingEstimateParser;
-
+	List<String> productKeywords = new ArrayList<String>();
+	List<Theme> themeList = new ArrayList<Theme>();
+	List<Catalog> catalogList = new ArrayList<Catalog>();
+	Size size=new Size();
+	DimensionParser dimParserObj= new DimensionParser();
+	ColorParser colorParserObj =  new ColorParser();
+	
 	public int readExcel(String accessToken,Workbook workbook ,Integer asiNumber){
 		
 		List<String> numOfProducts = new ArrayList<String>();
@@ -78,7 +93,10 @@ public class SageProductsExcelMapping {
 		  String upChargeLevel = null;
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		  
-		  
+		  double dimensionValue =0;
+		  double dimensionUnits = 0 ;
+		  double dimensionType = 0 ;
+		  Dimension finalDimensionObj=new Dimension();
 		  //ProductNumberParser pnumberParser=new ProductNumberParser();
 		try{
 			 
@@ -122,7 +140,6 @@ public class SageProductsExcelMapping {
 		String canorder =null;
 		String reqfororder =null;
 		String shippingWeightValue=null;
-		String colorValue=null;
 		String imprintValue=null;
 		String imprintColorValue=null;
 		String cartonL = null;
@@ -132,6 +149,7 @@ public class SageProductsExcelMapping {
 		String unitsPerCarton = null;
 		
 		List<Color> color = new ArrayList<Color>();
+		List<ImprintMethod> imprintMethods = new ArrayList<ImprintMethod>();
 		List<Artwork> artworkList = new ArrayList<Artwork>();
 		List<ImprintColorValue> imprintColorsValueList = new ArrayList<ImprintColorValue>();
 		String productName = null;
@@ -145,7 +163,7 @@ public class SageProductsExcelMapping {
 			
 			try{
 			Row nextRow = iterator.next();
-			if (nextRow.getRowNum() == 0)
+			if (nextRow.getRowNum() < 7)
 				continue;
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
 			
@@ -181,7 +199,7 @@ public class SageProductsExcelMapping {
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 10){
+						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
 							   // Add repeatable sets here
 							 	productExcelObj.setPriceGrids(priceGrids);
@@ -207,177 +225,192 @@ public class SageProductsExcelMapping {
 							productExcelObj = new Product();
 					 }
 				}
-				if(productXids.size() >1  && !LookupData.isRepeateIndex(String.valueOf(columnIndex+1))){
-					continue;
-				}
+				
 
 				switch (columnIndex + 1) {
-				case 1:
-					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						productId = cell.getStringCellValue();
-					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+				case 1://ExternalProductID
+			     if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+                    	productId = String.valueOf(cell.getStringCellValue());
+					}else if
+					(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 						productId = String.valueOf((int)cell.getNumericCellValue());
-					}else{
-						
 					}
 					productExcelObj.setExternalProductId(productId);
-					break;
 					
-				case 2:
-					 productName = cell.getStringCellValue();
-					productExcelObj.setName(productName);
+					 break;
+				case 2://AsiProdNo
+					int asiProdNo = 0;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+						try{
+							asiProdNo = Integer.parseInt(cell.getStringCellValue());
+							productExcelObj.setAsiProdNo(Integer.toString(asiProdNo));
+						}catch(NumberFormatException nfe){
+							
+						}
+					  }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						  asiProdNo = (int) cell.getNumericCellValue();
+						  productExcelObj.setAsiProdNo(Integer.toString(asiProdNo));
+					  }
 					
-					break;
-		
-				case 3:
-     					break;
-			
-				case 4:
-					/*String categoryName = cell.getStringCellValue();
-					List<String> listOfCategories = new ArrayList<String>();
-					listOfCategories.add(categoryName);
-					//listOfCategories.add("USB/FLASH DRIVES");
-					productExcelObj.setCategories(listOfCategories);*/
+					  break;
+				case 3://Name
+                    String name = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(name)){
+					productExcelObj.setName(cell.getStringCellValue());
+					}else{
+						productExcelObj.setName(ApplicationConstants.CONST_STRING_EMPTY);
+					}
+     					
+				case 4://CatYear(Not used)
+					
+					
 				    break;
 					
-				case 5:
-					   // brand 
-					break;
-					
-				case 6: // brand name
-					
-					/*String brandName = cell.getStringCellValue();
-					List<TradeName> listOfBrands = new ArrayList<TradeName>();
-					TradeName tradeName1 = new TradeName();
-					tradeName1.setName(brandName);
-					listOfBrands.add(tradeName1);
-					productConfigObj.setTradeNames(listOfBrands);*/
-					break;
-					
-				case 7:
-					    // product description
-					/*String productDescription = cell.getStringCellValue();
-					//productDescription = "Phone Holder USB 2.0 Flash Drive";
-					productExcelObj.setDescription(productDescription);*/
-					break;
-					
-				case 8: // pricegrid related
+				case 5://PriceConfirmedThru
+					String priceConfirmedThru = cell.getStringCellValue();
+					String strArr[]=priceConfirmedThru.split("/");
+					priceConfirmedThru=strArr[2]+"/"+strArr[0]+"/"+strArr[1];
+					priceConfirmedThru=priceConfirmedThru.replaceAll("/", "-");
 					 
+					productExcelObj.setPriceConfirmedThru(priceConfirmedThru);
+
+					
 					break;
 					
-				case 9:
-							//Sub-Taxonomy
+				case 6: //  product status
+					
+					
+					
+					break;
+					
+				case 7://Catalogs
+					   String catalogValue = cell.getStringCellValue();
+						if(!StringUtils.isEmpty(catalogValue)){
+						Catalog catalogObj=new Catalog();
+						catalogObj.setCatalogName(catalogValue);
+						catalogList.add(catalogObj);
+						productExcelObj.setCatalogs(catalogList);
+						}
+					
+					break;
+					
+				case 8: // Catalogs(Not used)
+					
+					
+					break;
+					
+				case 9: //Catalogs page number
+							
 					break;
 					
 				case 10:  
-						//Sub-Taxonomy Name
+						//Catalogs(Not used)
 					break;
 					
-				case 11:  //Keywords
-					String Keywords = cell.getStringCellValue();
-					/*List<String> listOfKeywords = new ArrayList<String>();
-					if(Keywords.contains(ApplicationConstants.CONST_DELIMITER_AMPERSAND)){
-						listOfKeywords.addAll(Arrays.asList(Keywords.split(ApplicationConstants.CONST_DELIMITER_AMPERSAND)));
-					}else if(Keywords.contains("USBs")){
-						String[] keys = Keywords.split("USBs");
-						for (String key : keys) {
-							    if(key.contains("USB")){
-							    	listOfKeywords.addAll(Arrays.asList(key.split("USB")));
-							    }else{
-							    	listOfKeywords.add(key);
-							    }
-						}
+				case 11:  //Description
+					String description = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(description)){
+					productExcelObj.setDescription(description);
+					}else{
+						productExcelObj.setDescription(ApplicationConstants.CONST_STRING_EMPTY);
 					}
-					productExcelObj.setProductKeywords(listOfKeywords);*/
+					
 					break;
 				
-				case 12:  // origin
-					
-					/*String origin1 = cell.getStringCellValue();
-					List<Origin> listOfOrigins = new ArrayList<Origin>();
-					Origin origins = new Origin();
-					origins.setName(origin1);
-					listOfOrigins.add(origins);
-					productConfigObj.setOrigins(listOfOrigins);*/
-					
+				case 12:  // keywords
+					String productKeyword = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(productKeyword)){
+					String productKeywordArr[] = productKeyword.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+					for (String string : productKeywordArr) {
+						productKeywords.add(string);
+					}
+					productExcelObj.setProductKeywords(productKeywords);
+					}
 					break;
 
-				case 13: //Features
-					String productFeatures = cell.getStringCellValue();
-					/*productExcelObj = warrantyParser.getWarrantyAndDescriptionProduct(productExcelObj, productConfigObj,
-							                      productFeatures);*/
+				case 13: //Colors
+					String colorValue=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(colorValue)){
+	           	    color=colorParserObj.getColorCriteria(colorValue);
+	           	    productConfigObj.setColors(color);
+					}	
+					break;
+					
+				case 14: // Themes
+					String themeValue=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(themeValue)){
+						Theme themeObj=null;
+						String themeValueArr[] = themeValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+						for (String string : themeValueArr) {
+							themeObj=new Theme();
+							themeObj.setName(string);
+							themeList.add(themeObj);
+							}
+					       productConfigObj.setThemes(themeList);
+						}
 					
 					break;
 					
-				case 14: // small image url
-					/*String smallImageUrl=cell.getStringCellValue();
-					Image image = new Image();
-					      image.setImageURL(smallImageUrl);
-					      image.setIsPrimary(true);
-					      image.setRank(1);
-					     imgList.add(image);*/
+				case 15://size --  value
+					 dimensionValue =cell.getNumericCellValue();
 					
 					break;
-					
-				case 15:
-					String mediumImageUrl=cell.getStringCellValue();
-					 /*image = new Image();
-				      image.setImageURL(mediumImageUrl);
-				      image.setIsPrimary(false);
-				      image.setRank(2);
-				     imgList.add(image);*/
-					
-					break;
-				case 16: 
-					 /* String largeImageUrl = cell.getStringCellValue();
-					  image = new Image();
-				      image.setImageURL(largeImageUrl);
-				      image.setIsPrimary(false);
-				      image.setRank(3);
-				     imgList.add(image);
-					  break;*/
+				case 16: //size -- Unit
+					 dimensionUnits =cell.getNumericCellValue();
+					//String unit1=String.valueOf(Dimension1Units);
+			
+					  break;
 				
-				case 17: 
-					
-					String zoomImageUrl = cell.getStringCellValue();
-					 /*image = new Image();
-				      image.setImageURL(zoomImageUrl);
-				      image.setIsPrimary(false);
-				      image.setRank(4);
-				     imgList.add(image);
-				    productExcelObj.setImages(imgList);*/
+				case 17: //size -- type
+					 dimensionType =cell.getNumericCellValue();
+					 if(dimensionType !=0 )
+					 {
+					 List<Values> valuesList =
+						  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
+                     finalDimensionObj.setValues(valuesList);
+					 }
+                  
 					break;
 				
-				 case 18: 
-					String materials=cell.getStringCellValue();
-					
-					//List<Material> listOfMaterialList = materialParser.getMaterialValues(materials);
-					//productConfigObj.setMaterials(listOfMaterialList);
+				 case 18: //size
+					 dimensionValue =cell.getNumericCellValue();
 					
 					break;
 					
-				case 19:  
-					String priceMsg=cell.getStringCellValue();
+				case 19:  //size
+					dimensionUnits =cell.getNumericCellValue();
+					//String unit2=String.valueOf(Dimension2Units);
+
 					
 					break;
 					
-				case 20: 
-					String priceStartDate=cell.getStringCellValue();
-					
-					
-					break;
-					
-				case 21: 
-					String quantit=cell.getStringCellValue();
+				case 20: //size
+					 dimensionType =cell.getNumericCellValue();
+					 List<Values> valuesList1 =
+							  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
+	                     finalDimensionObj.setValues(valuesList1);
+	                  
 					
 					break;
 					
-				case 22: 
-					String netPrice=cell.getStringCellValue();
+				case 21: //size
+			      dimensionValue =cell.getNumericCellValue();
+					
+					break;
+					
+				case 22: //size
+					 dimensionUnits =cell.getNumericCellValue();
+					
+
+					
 				   break;
 					
-				case 23: 
-					String code=cell.getStringCellValue();
+				case 23: //size
+					dimensionType =cell.getNumericCellValue();
+					 dimensionType =cell.getNumericCellValue();
+					 List<Values> valuesList2 =
+							  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
+	                     finalDimensionObj.setValues(valuesList2);
 
 					
 				   break;
@@ -529,6 +562,20 @@ public class SageProductsExcelMapping {
 			          		break; 
 				case 68:
 				case 69:
+				Boolean IsEnvironmentallyFriendly = cell.getBooleanCellValue();
+					Theme themeObj1 = new Theme();
+					String str =new String();
+					if(IsEnvironmentallyFriendly == true)			
+					{	
+						themeObj1.setName("Eco Friendly");	
+					}
+					else
+					{
+						themeObj1.setName("");
+					}
+					themeList.add(themeObj1);
+					productConfigObj.setThemes(themeList);
+					break;
 				case 70:
 				case 71:
 				case 72:
@@ -1013,6 +1060,9 @@ public class SageProductsExcelMapping {
 			productConfigObj.setRushTime(rushTime);
 			productConfigObj.setShippingEstimates(shipping);
 			productConfigObj.setProductionTime(listOfProductionTime);
+			size.setDimension(finalDimensionObj);
+			productConfigObj.setImprintMethods(imprintMethods); 
+			productConfigObj.setSizes(size);
 			//imprintColorsValueList = imprintColorParser.getImprintColorCriteria(imprintColorValues.toString());
 			//imprintColors.setType("COLR");
 			//imprintColors.setValues(imprintColorsValueList);
