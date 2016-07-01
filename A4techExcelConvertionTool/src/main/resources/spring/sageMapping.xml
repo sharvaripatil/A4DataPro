@@ -23,6 +23,7 @@
      	<property name="rushTimeParser" ref="rushTimeId"/>
      	<property name="packagingParser" ref="packageId"/>
      	<property name="shippingEstimateParser" ref="shippingEstimateId"></property>
+     	<property name="productDaoObj"  ref="productDao"/>
      </bean>
          
      <bean id="catalogParserId" class="com.a4tech.sage.product.parser.CatalogParser"/>

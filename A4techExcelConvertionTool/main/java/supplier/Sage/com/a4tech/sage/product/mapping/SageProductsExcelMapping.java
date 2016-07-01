@@ -16,6 +16,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
@@ -68,7 +69,7 @@ public class SageProductsExcelMapping {
 	Size size=new Size();
 	DimensionParser dimParserObj= new DimensionParser();
 	ColorParser colorParserObj =  new ColorParser();
-	
+	ProductDao productDaoObj;
 	public int readExcel(String accessToken,Workbook workbook ,Integer asiNumber){
 		
 		List<String> numOfProducts = new ArrayList<String>();
@@ -1134,8 +1135,8 @@ public class SageProductsExcelMapping {
 	
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet ");
-			return 0;
 		}finally{
+			productDaoObj.getErrorLog(asiNumber);
 			try {
 				workbook.close();
 			//inputStream.close();
@@ -1209,4 +1210,13 @@ public class SageProductsExcelMapping {
 			ShippingEstimateParser shippingEstimateParser) {
 		this.shippingEstimateParser = shippingEstimateParser;
 	}
+
+	public ProductDao getProductDaoObj() {
+		return productDaoObj;
+	}
+
+	public void setProductDaoObj(ProductDao productDaoObj) {
+		this.productDaoObj = productDaoObj;
+	}
+	
 }
