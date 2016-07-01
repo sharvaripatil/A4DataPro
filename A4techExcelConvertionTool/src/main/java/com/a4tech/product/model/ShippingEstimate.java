@@ -12,41 +12,37 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ShippingEstimate {
 
     @JsonProperty("NumberOfItems")
-    private List<Object> numberOfItems;
+    private List<NumberOfItems> numberOfItems;
     @JsonProperty("Dimensions")
     private Dimensions    dimensions;
     @JsonProperty("Weight")
-    private List<Object>       weight;
-
-    @JsonProperty("NumberOfItems")
-    public List<Object> getNumberOfItems() {
-        return numberOfItems;
-    }
-
-    @JsonProperty("NumberOfItems")
-    public void setNumberOfItems(List<Object> numberOfItems) {
-        this.numberOfItems = numberOfItems;
-    }
-
+    private List<Weight>       weight;
     @JsonProperty("Dimensions")
     public Dimensions getDimensions() {
         return dimensions;
     }
-
-    @JsonProperty("Dimensions")
+    
+	@JsonProperty("Dimensions")
     public void setDimensions(Dimensions dimensions) {
         this.dimensions = dimensions;
     }
+	@JsonProperty("Weight")
+    public List<Weight> getWeight() {
+		return weight;
+	}
+	@JsonProperty("Weight")
+	public void setWeight(List<Weight> weight) {
+		this.weight = weight;
+	}
 
-    @JsonProperty("Weight")
-    public List<Object> getWeight() {
-        return weight;
-    }
-
-    @JsonProperty("Weight")
-    public void setWeight(List<Object> weight) {
-        this.weight = weight;
-    }
+	@JsonProperty("NumberOfItems")
+    public List<NumberOfItems> getNumberOfItems() {
+		return numberOfItems;
+	}
+    @JsonProperty("NumberOfItems")
+	public void setNumberOfItems(List<NumberOfItems> numberOfItems) {
+		this.numberOfItems = numberOfItems;
+	}
 
 
 }

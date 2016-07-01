@@ -30,7 +30,7 @@ public class ShippingEstimationParser {
 			itemObj.setUnit(shipItemArr[1]);
 			itemObj.setValue(shipItemArr[0]);
 			shipingEstObj1.add(itemObj);
-			ItemObject.setNumberOfItems(shipingEstObj1);
+			//ItemObject.setNumberOfItems(shipingEstObj1);
 		}
 
 		if (shippingWeightValue != null && !shippingWeightValue.isEmpty()) {
@@ -39,7 +39,7 @@ public class ShippingEstimationParser {
 			weightObj.setUnit(shipweightArr[0]);
 			weightObj.setValue(shipweightArr[1]);
 			shipingEstObj2.add(weightObj);
-			ItemObject.setWeight(shipingEstObj2);
+			//ItemObject.setWeight(shipingEstObj2);
 		}
 
 		if (shippingdimensionValue != null && !shippingdimensionValue.isEmpty()) {

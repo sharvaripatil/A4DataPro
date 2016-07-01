@@ -30,13 +30,13 @@ public class ProductConfigurations {
     private List<Shape>              shapes               = null;
     
     @JsonProperty("Themes")
-    private List<String>			  themes				= null;
+    private List<Theme>			  themes				= null;
     @JsonProperty("Options")
     private List<Option>              options              = null;
     @JsonProperty("Origins")
     private List<Origin>              origins              = null;
     @JsonProperty("Packaging")
-    private List<String>              packaging            = null;
+    private List<Packaging>              packaging            = null;
     @JsonProperty("TradeNames")
     private List<TradeName>              tradeNames           = null;
     @JsonProperty("ImprintMethods")
@@ -136,16 +136,15 @@ public class ProductConfigurations {
     public void setShapes(List<Shape> shapes) {
         this.shapes = shapes;
     }
-    
-    @XmlElementWrapper(name = "Themes")
-    @XmlElement(name = "Theme")
-    public List<String> getThemes() {
+
+   /* public List<String> getThemes() {
 		return themes;
 	}
 
 	public void setThemes(List<String> themes) {
 		this.themes = themes;
-	}
+	}*/
+    
 
 	@JsonProperty("Options")
     @XmlElementWrapper(name = "Options")
@@ -154,7 +153,18 @@ public class ProductConfigurations {
         return options;
     }
 
-    @JsonProperty("Options")
+    
+    @XmlElementWrapper(name = "Themes")
+    @XmlElement(name = "Theme")
+    public List<Theme> getThemes() {
+		return themes;
+	}
+
+	public void setThemes(List<Theme> themes) {
+		this.themes = themes;
+	}
+
+	@JsonProperty("Options")
     public void setOptions(List<Option> options) {
         this.options = options;
     }
@@ -174,14 +184,13 @@ public class ProductConfigurations {
     @JsonProperty("Packaging")
     @XmlElementWrapper(name = "Packagings")
     @XmlElement(name = "Packaging")
-    public List<String> getPackaging() {
-        return packaging;
-    }
+    public List<Packaging> getPackaging() {
+		return packaging;
+	}
 
-    @JsonProperty("Packaging")
-    public void setPackaging(List<String> packaging) {
-        this.packaging = packaging;
-    }
+	public void setPackaging(List<Packaging> packaging) {
+		this.packaging = packaging;
+	}
 
     @JsonProperty("TradeNames")
     @XmlElementWrapper(name = "TradeNames")
@@ -189,8 +198,8 @@ public class ProductConfigurations {
     public List<TradeName> getTradeNames() {
         return tradeNames;
     }
-
-    @JsonProperty("TradeNames")
+    
+	@JsonProperty("TradeNames")
     public void setTradeNames(List<TradeName> tradeNames) {
         this.tradeNames = tradeNames;
     }

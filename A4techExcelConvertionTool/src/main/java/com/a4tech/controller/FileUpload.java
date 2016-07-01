@@ -24,12 +24,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.a4tech.JulyData.excelMapping.JulyDataMapping;
 import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
 import com.a4tech.product.service.ProductService;
+import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.service.loginImpl.LoginServiceImpl;
 import com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping;
 import com.a4tech.v2.core.excelMapping.ExcelMapping;
@@ -50,6 +53,7 @@ public class FileUpload extends HttpServlet{
 	private static String accessToken = null;
 	private UsbProductsExcelMapping usbExcelMapping;
 	private JulyDataMapping julymapping;
+	private SageProductsExcelMapping sageExcelMapping;
 	private ExcelMapping excelMapping;
 	@Autowired
 	private LoginServiceImpl loginService;
@@ -88,6 +92,7 @@ public class FileUpload extends HttpServlet{
          }
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBean.getFile().getBytes())){
 	       
+			  
 	            	if (fileBean.getFile().getOriginalFilename().endsWith("xls")) {
 	                workbook = new HSSFWorkbook(bis);
 	                
@@ -111,13 +116,17 @@ public class FileUpload extends HttpServlet{
 						numOfProducts = julymapping.readExcel(accessToken, workbook,Integer.valueOf(asiNumber));
 						model.addAttribute("fileName", numOfProducts);
 						return "success";
+				    case "55204":	//supplier Sage
+				    	numOfProducts = sageExcelMapping.readExcel(accessToken, workbook, Integer.valueOf(asiNumber));
+						model.addAttribute("fileName", numOfProducts);
+						return "success";
 							
 					default:
 						break;
 					}
 	            	
 	        }catch(IOException e1){
-	        	e1.printStackTrace();
+	        	
 	        }catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -159,6 +168,11 @@ public class FileUpload extends HttpServlet{
 	public void setExcelMapping(ExcelMapping excelMapping) {
 		this.excelMapping = excelMapping;
 	}
-	
+	public SageProductsExcelMapping getSageExcelMapping() {
+		return sageExcelMapping;
+	}
+	public void setSageExcelMapping(SageProductsExcelMapping sageExcelMapping) {
+		this.sageExcelMapping = sageExcelMapping;
+	}
 	
 }
