@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -29,8 +28,8 @@ public class PostServiceImpl implements PostService {
 	private String postApiURL ;
 	@Autowired
 	ObjectMapper mapper1;
-
-	public int postProduct(String authTokens, Product product,Integer asiNumber) {
+	
+	public int postProduct(String authTokens, Product product,int asiNumber) {
 
 		try {
 
@@ -58,6 +57,7 @@ public class PostServiceImpl implements PostService {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				return 0;
 			}
 			//productDao.errorResponse(rsponse);
 			return 0;
@@ -65,6 +65,7 @@ public class PostServiceImpl implements PostService {
 			_LOGGER.error("Exception while posting product to Radar API", hce);
 			return 0;
 		}
+		
 	}
 
 	public RestTemplate getRestTemplate() {
@@ -90,10 +91,8 @@ public class PostServiceImpl implements PostService {
 		this.productDao = productDao;
 	}
 
-	@Override
-	public int postProduct(String authToken, Product product) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+
+	
+
 
 }

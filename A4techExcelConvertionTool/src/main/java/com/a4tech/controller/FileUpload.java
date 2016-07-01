@@ -3,7 +3,13 @@ package com.a4tech.controller;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -17,18 +23,25 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.a4tech.JulyData.excelMapping.JulyDataMapping;
 import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
 import com.a4tech.product.service.ProductService;
 import com.a4tech.service.loginImpl.LoginServiceImpl;
 import com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping;
+import com.a4tech.v2.core.excelMapping.ExcelMapping;
 
 @Controller
 @RequestMapping({"/","/uploadFile.htm"})
-public class FileUpload {
+public class FileUpload extends HttpServlet{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Autowired
 	ProductService productService;
 	@Autowired
@@ -37,7 +50,7 @@ public class FileUpload {
 	private static String accessToken = null;
 	private UsbProductsExcelMapping usbExcelMapping;
 	private JulyDataMapping julymapping;
-	
+	private ExcelMapping excelMapping;
 	@Autowired
 	private LoginServiceImpl loginService;
 	private static Logger _LOGGER = Logger.getLogger(Class.class);
@@ -54,7 +67,7 @@ public class FileUpload {
 	
 	@RequestMapping(method= RequestMethod.POST)
 	public String fileUpload(@ModelAttribute("filebean") @Valid FileBean fileBean , BindingResult result ,
-			final RedirectAttributes redirectAttributes , Model model){
+			final RedirectAttributes redirectAttributes , Model model,HttpServletRequest request){
 		_LOGGER.info("Enter Controller Class");
 		//LoginServiceImpl loginService  = new LoginServiceImpl();
 		 Workbook workbook = null;
@@ -83,10 +96,10 @@ public class FileUpload {
 	            	}else{
 	 	               _LOGGER.info("Invlid upload excel file,Please try one more time");
 	            	}
-	                
+	            	 request.getSession().setAttribute("asiNumber", asiNumber);
 	                switch (asiNumber) {
 					case "55201"://product v2
-				        numOfProducts = productService.excelProducts(accessToken,workbook);
+				        numOfProducts = excelMapping.readExcel(accessToken,workbook, Integer.valueOf(asiNumber));
 		                model.addAttribute("fileName", numOfProducts);
 		                return "success";
 						//break;
@@ -95,7 +108,7 @@ public class FileUpload {
 							model.addAttribute("fileName", numOfProducts);
 							return "success";
 					case "55203":	//supplier JulyData	
-						numOfProducts = julymapping.readExcel(accessToken, workbook);
+						numOfProducts = julymapping.readExcel(accessToken, workbook,Integer.valueOf(asiNumber));
 						model.addAttribute("fileName", numOfProducts);
 						return "success";
 							
@@ -104,7 +117,7 @@ public class FileUpload {
 					}
 	            	
 	        }catch(IOException e1){
-	        	
+	        	e1.printStackTrace();
 	        }catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -133,6 +146,18 @@ public class FileUpload {
 	}
 	public void setLoginService(LoginServiceImpl loginService) {
 		this.loginService = loginService;
+	}
+	public ProductService getProductService() {
+		return productService;
+	}
+	public void setProductService(ProductService productService) {
+		this.productService = productService;
+	}
+	public ExcelMapping getExcelMapping() {
+		return excelMapping;
+	}
+	public void setExcelMapping(ExcelMapping excelMapping) {
+		this.excelMapping = excelMapping;
 	}
 	
 	
