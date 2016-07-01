@@ -11,18 +11,20 @@ import com.a4tech.sage.product.util.LookupData;
 
 public class DimensionParser {
 
-	public List<Values> getValues(double dimensionValue,
-			double dimensionUnits, double dimensionType) {
+	public List<Values> getValues(String dimensionValue,
+			String dimensionUnits, String dimensionType) {
 		   List<Values> valuesList = new ArrayList<Values>();
 		
 			 Value  valueObj1 = new Value();
-			 ArrayList<Value> valueList = new ArrayList<Value>();
+			 List<Value> valueList = new ArrayList<Value>();
 			 
-			 valueObj1.setValue(String.valueOf(dimensionValue));
-			 valueObj1.setUnit(LookupData.getDimensionUnits((int)dimensionUnits));
-			 valueObj1.setCriteriaType(LookupData.getDimensionType((int)dimensionType));
+			 Values valuesObj = new Values();
+			 valueObj1.setValue(dimensionValue);
+			 valueObj1.setUnit(LookupData.getDimensionUnits(Integer.parseInt(dimensionUnits)));
+			 valueObj1.setCriteriaType(LookupData.getDimensionType(Integer.parseInt(dimensionType)));
 		     valueList.add(valueObj1);
-			 
+		     valuesObj.setValue(valueList);
+		     valuesList.add(valuesObj);
 		   return valuesList;
 
 }

@@ -22,7 +22,9 @@
      	<property name="originParser" ref="originParserId"/>
      	<property name="rushTimeParser" ref="rushTimeId"/>
      	<property name="packagingParser" ref="packageId"/>
-     	<property name="shippingEstimateParser" ref="shippingEstimateId"></property>
+     	<property name="shippingEstimateParser" ref="shippingEstimateId"/>
+     	<property name="dimParserObj" ref="dimensionParserId"/>
+     	<property name="colorParserObj" ref="colorParserId"/>
      </bean>
          
      <bean id="catalogParserId" class="com.a4tech.sage.product.parser.CatalogParser"/>
@@ -31,5 +33,7 @@
      <bean id="originParserId" class="com.a4tech.sage.product.parser.OriginParser"/>
      <bean id="rushTimeId" class="com.a4tech.sage.product.parser.RushTimeParser"/>
      <bean id="packageId" class="com.a4tech.sage.product.parser.PackagingParser"/>
-     <bean id="shippingEstimateId" class="com.a4tech.sage.product.parser.ShippingEstimateParser"></bean>
+     <bean id="shippingEstimateId" class="com.a4tech.sage.product.parser.ShippingEstimateParser"/>
+     <bean id="dimensionParserId" class="com.a4tech.sage.product.parser.DimensionParser"/>
+     <bean id="colorParserId" class="com.a4tech.sage.product.parser.ColorParser"/> 
 </beans>

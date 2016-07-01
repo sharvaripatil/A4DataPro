@@ -66,9 +66,9 @@ public class SageProductsExcelMapping {
 	List<Theme> themeList = new ArrayList<Theme>();
 	List<Catalog> catalogList = new ArrayList<Catalog>();
 	Size size=new Size();
-	DimensionParser dimParserObj= new DimensionParser();
-	ColorParser colorParserObj =  new ColorParser();
-	
+	DimensionParser dimParserObj;
+	ColorParser colorParserObj ;
+
 	public int readExcel(String accessToken,Workbook workbook ,Integer asiNumber){
 		
 		List<String> numOfProducts = new ArrayList<String>();
@@ -93,9 +93,9 @@ public class SageProductsExcelMapping {
 		  String upChargeLevel = null;
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		  
-		  double dimensionValue =0;
-		  double dimensionUnits = 0 ;
-		  double dimensionType = 0 ;
+		  String dimensionValue = null;;
+		  String dimensionUnits = null ;
+		  String dimensionType = null ;
 		  Dimension finalDimensionObj=new Dimension();
 		  //ProductNumberParser pnumberParser=new ProductNumberParser();
 		try{
@@ -199,7 +199,7 @@ public class SageProductsExcelMapping {
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 1){
+						 if(nextRow.getRowNum() != 7){
 							 System.out.println("Java object converted to JSON String, written to file");
 							   // Add repeatable sets here
 							 	productExcelObj.setPriceGrids(priceGrids);
@@ -239,19 +239,14 @@ public class SageProductsExcelMapping {
 					
 					 break;
 				case 2://AsiProdNo
-					int asiProdNo = 0;
-					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						try{
-							asiProdNo = Integer.parseInt(cell.getStringCellValue());
-							productExcelObj.setAsiProdNo(Integer.toString(asiProdNo));
-						}catch(NumberFormatException nfe){
-							
-						}
-					  }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						  asiProdNo = (int) cell.getNumericCellValue();
-						  productExcelObj.setAsiProdNo(Integer.toString(asiProdNo));
-					  }
-					
+					String AsiProdNo=null;
+			        if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
+			        	AsiProdNo = String.valueOf(cell.getStringCellValue());
+			        }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+			        	AsiProdNo = String.valueOf((int)cell.getNumericCellValue());
+			        }else{  
+			      }
+			      productExcelObj.setAsiProdNo(AsiProdNo);
 					  break;
 				case 3://Name
                     String name = cell.getStringCellValue();
@@ -352,18 +347,17 @@ public class SageProductsExcelMapping {
 					break;
 					
 				case 15://size --  value
-					 dimensionValue =cell.getNumericCellValue();
-					
+						dimensionValue =cell.getStringCellValue();
 					break;
 				case 16: //size -- Unit
-					 dimensionUnits =cell.getNumericCellValue();
+					 dimensionUnits =cell.getStringCellValue();
 					//String unit1=String.valueOf(Dimension1Units);
 			
 					  break;
 				
 				case 17: //size -- type
-					 dimensionType =cell.getNumericCellValue();
-					 if(dimensionType !=0 )
+					 dimensionType =cell.getStringCellValue();
+					 if(dimensionType != null )
 					 {
 					 List<Values> valuesList =
 						  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
@@ -373,19 +367,19 @@ public class SageProductsExcelMapping {
 					break;
 				
 				 case 18: //size
-					 dimensionValue =cell.getNumericCellValue();
+					 dimensionValue =cell.getStringCellValue();
 					
 					break;
 					
 				case 19:  //size
-					dimensionUnits =cell.getNumericCellValue();
+					dimensionUnits =cell.getStringCellValue();
 					//String unit2=String.valueOf(Dimension2Units);
 
 					
 					break;
 					
 				case 20: //size
-					 dimensionType =cell.getNumericCellValue();
+					 dimensionType =cell.getStringCellValue();
 					 List<Values> valuesList1 =
 							  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
 	                     finalDimensionObj.setValues(valuesList1);
@@ -394,20 +388,20 @@ public class SageProductsExcelMapping {
 					break;
 					
 				case 21: //size
-			      dimensionValue =cell.getNumericCellValue();
+			      dimensionValue =cell.getStringCellValue();
 					
 					break;
 					
 				case 22: //size
-					 dimensionUnits =cell.getNumericCellValue();
+					 dimensionUnits =cell.getStringCellValue();
 					
 
 					
 				   break;
 					
 				case 23: //size
-					dimensionType =cell.getNumericCellValue();
-					 dimensionType =cell.getNumericCellValue();
+					dimensionType =cell.getStringCellValue();
+					 dimensionType =cell.getStringCellValue();
 					 List<Values> valuesList2 =
 							  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
 	                     finalDimensionObj.setValues(valuesList2);
@@ -562,10 +556,9 @@ public class SageProductsExcelMapping {
 			          		break; 
 				case 68:
 				case 69:
-				Boolean IsEnvironmentallyFriendly = cell.getBooleanCellValue();
+				String IsEnvironmentallyFriendly = cell.getStringCellValue();
 					Theme themeObj1 = new Theme();
-					String str =new String();
-					if(IsEnvironmentallyFriendly == true)			
+					if(IsEnvironmentallyFriendly.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE))			
 					{	
 						themeObj1.setName("Eco Friendly");	
 					}
@@ -1050,9 +1043,9 @@ public class SageProductsExcelMapping {
 			List<String> listOfCategories = new ArrayList<String>();
 			listOfCategories.add("USB/FLASH DRIVES");
 			productExcelObj.setCategories(listOfCategories);
-			String productDescription ="Phone Holder USB 2.0 Flash Drive";
+			/*String productDescription ="Phone Holder USB 2.0 Flash Drive";
 			//productDescription = "Phone Holder USB 2.0 Flash Drive";
-			productExcelObj.setDescription(productDescription);
+			productExcelObj.setDescription(productDescription);*/
 			ShippingEstimate shipping = shippingEstimateParser.getShippingEstimateValues(cartonL, cartonW,
 					                               cartonH, weightPerCarton, unitsPerCarton);
 			productConfigObj.setImprintLocation(listImprintLocation);
@@ -1208,5 +1201,21 @@ public class SageProductsExcelMapping {
 	public void setShippingEstimateParser(
 			ShippingEstimateParser shippingEstimateParser) {
 		this.shippingEstimateParser = shippingEstimateParser;
+	}
+
+	public DimensionParser getDimParserObj() {
+		return dimParserObj;
+	}
+
+	public void setDimParserObj(DimensionParser dimParserObj) {
+		this.dimParserObj = dimParserObj;
+	}
+
+	public ColorParser getColorParserObj() {
+		return colorParserObj;
+	}
+
+	public void setColorParserObj(ColorParser colorParserObj) {
+		this.colorParserObj = colorParserObj;
 	}
 }
