@@ -15,7 +15,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
   <mvc:annotation-driven/>
-  <context:component-scan base-package="com"/>
+  <context:component-scan base-package="com.a4tech.controller"/>
   <mvc:resources mapping="/resources/**" location="/resources/" />
   <context:annotation-config/>
  
@@ -70,11 +70,7 @@
 			<property name="productDao" ref="productDao"></property>
 			<property name="postApiURL" value="${product.post.v3.URL}"></property>
 		</bean>
-		
-		
-		
-		
-		
+				
 		<bean id="objectMapper" name="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
 		<bean id="loginServiceImpl"  class="com.a4tech.service.loginImpl.LoginServiceImpl" autowire="byName">
 		 	<property name="restTemplate" ref="restTemplate"/>

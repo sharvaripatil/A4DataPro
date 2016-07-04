@@ -134,7 +134,6 @@ public class ProductDao {
 	            //hashmap.put(productEntity2.getProductNumber(), value)
 	            for (ErrorEntity productEntity2 : arr.getErrors()) {
 	            	arraylist.add(productEntity2.getError());
-					System.out.println(productEntity2.getError());
 				}
 	            hashmap.put(arr.getProductNo(), arraylist);
 	        }
@@ -143,11 +142,6 @@ public class ProductDao {
 	    	FileOutputStream fos = new FileOutputStream(fout);
 	     
 	    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-	     
-	    	/*for (int i = 0; i < 10; i++) {
-	    		bw.write("something");
-	    		bw.newLine();
-	    	}*/
 	     
 	    	for (Map.Entry<String,ArrayList<String>> entry : hashmap.entrySet()) {
 	    	    String key = entry.getKey();

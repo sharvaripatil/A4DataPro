@@ -1,44 +1,43 @@
-package com.a4tech.core.errors;
+package com.a4tech.controller;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.a4tech.core.model.FileBean;
+import com.a4tech.util.ApplicationConstants;
 
 @Controller
 public class DownloadServlet  {
-	private static final long serialVersionUID = 1L;
-
+	
+	private static Logger _LOGGER = Logger.getLogger(DownloadServlet.class);
+	
 	@RequestMapping("/downloadServlet.htm")
-	protected void doGet(HttpServletRequest request,
+	protected void getDownloadFile(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+
 		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
 		String filename=(String) request.getSession().getAttribute("asiNumber");
-		 filename = filename+".txt";
-		String filepath = "D:\\A4 ESPUpdate\\ErrorFiles\\";
+		filename = filename+".txt";
 		response.setContentType("APPLICATION/OCTET-STREAM");
 		response.setHeader("Content-Disposition", "attachment; filename=\""
 				+ filename + "\"");
-		FileInputStream fileInputStream = new FileInputStream(filepath
-				+ filename);
-
-		int i;
-		while ((i = fileInputStream.read()) != -1) {
-			out.write(i);
+		int lineNum;
+		try(PrintWriter out = response.getWriter();
+				FileInputStream fileInputStream = new FileInputStream(ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH
+				+ filename)){
+			while ((lineNum = fileInputStream.read()) != ApplicationConstants.CONST_NEGATIVE_NUMBER_ONE) {
+				out.write(lineNum);
+			}
+		}catch (FileNotFoundException e) {
+			_LOGGER.fatal("Error log file is not available");
 		}
-		fileInputStream.close();
-		out.close();
 	}
 }

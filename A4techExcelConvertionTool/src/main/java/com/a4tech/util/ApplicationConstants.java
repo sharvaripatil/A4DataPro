@@ -39,6 +39,7 @@ public class ApplicationConstants {
     public static final String  CONST_STRING_INCHES							= "in";
     public static final String  CONST_STRING_SHIPPING_WEIGHT                = "lbs";
     public static final String	CONST_STRING_SHIPPING_NUMBER_UNIT_CARTON    = "per Carton";
+    public static final String	CONST_STRING_DOWNLOAD_FILE_PATH 			= "D:\\A4 ESPUpdate\\ErrorFiles\\";
     
     public final static String  COMBO_VALUES_SEPARATOR 					    = ":";
     public final static Integer COMBO_TEXT_VALUE_INDEX 					    = 1;
@@ -58,6 +59,7 @@ public class ApplicationConstants {
 	public static final String  CONST_DELIMITER_HYPHEN 					    = "-";
 	
 	public static final int     CONST_NUMBER_ZERO                           = 0;
+	public static final int     CONST_NEGATIVE_NUMBER_ONE					= -1;
 	
 	//public static final String  
     
