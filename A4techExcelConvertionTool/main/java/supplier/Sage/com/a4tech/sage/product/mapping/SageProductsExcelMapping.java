@@ -36,6 +36,7 @@ import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
+import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.sage.product.parser.CatalogParser;
@@ -94,10 +95,11 @@ public class SageProductsExcelMapping {
 		  String upChargeLevel = null;
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		  
-		  double dimensionValue =0;
-		  double dimensionUnits = 0 ;
-		  double dimensionType = 0 ;
+		  StringBuilder dimensionValue = new StringBuilder();
+		  StringBuilder dimensionUnits = new StringBuilder();
+		  StringBuilder dimensionType = new StringBuilder();
 		  Dimension finalDimensionObj=new Dimension();
+		  Dimension existingDimensiobn;
 		  //ProductNumberParser pnumberParser=new ProductNumberParser();
 		try{
 			 
@@ -353,66 +355,86 @@ public class SageProductsExcelMapping {
 					break;
 					
 				case 15://size --  value
-					 dimensionValue =cell.getNumericCellValue();
-					
+					String dimensionValue1 =cell.getStringCellValue();
+					if(!StringUtils.isEmpty(dimensionValue1)&& dimensionValue1 !="0" )
+					{
+					dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					}
 					break;
 				case 16: //size -- Unit
-					 dimensionUnits =cell.getNumericCellValue();
+					 String dimensionUnits1 =cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(dimensionUnits1) && dimensionUnits1 !="0")
+						{
 					//String unit1=String.valueOf(Dimension1Units);
-			
-					  break;
+					 dimensionUnits.append(dimensionUnits1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+						}
+					 break;
 				
 				case 17: //size -- type
-					 dimensionType =cell.getNumericCellValue();
-					 if(dimensionType !=0 )
+					String dimensionType1 =cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(dimensionType1)&& dimensionType1 !="0" )
 					 {
-					 List<Values> valuesList =
-						  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
-                     finalDimensionObj.setValues(valuesList);
+					dimensionType.append(dimensionType1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					  
 					 }
-                  
 					break;
 				
 				 case 18: //size
-					 dimensionValue =cell.getNumericCellValue();
-					
+					 String dimensionValue2 =cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(dimensionValue2) && dimensionValue2 !="0")
+					 {
+                  dimensionValue.append(dimensionValue2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					 }
 					break;
 					
 				case 19:  //size
-					dimensionUnits =cell.getNumericCellValue();
+					String dimensionUnits2 =cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(dimensionUnits2) && dimensionUnits2 !="0")
+					 {
+					 dimensionUnits.append(dimensionUnits2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+				     }
 					//String unit2=String.valueOf(Dimension2Units);
 
 					
 					break;
 					
 				case 20: //size
-					 dimensionType =cell.getNumericCellValue();
-					 List<Values> valuesList1 =
-							  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
-	                     finalDimensionObj.setValues(valuesList1);
-	                  
-					
+					String  dimensionType2 =cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(dimensionType2)&& dimensionType2 !="0" )
+					 {
+
+					dimensionType.append(dimensionType2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					 }
+				
 					break;
 					
 				case 21: //size
-			      dimensionValue =cell.getNumericCellValue();
-					
+					String dimensionValue3 =cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(dimensionValue3)&& dimensionValue3 !="0" )
+					 {
+					dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					 }
 					break;
 					
+					
 				case 22: //size
-					 dimensionUnits =cell.getNumericCellValue();
-					
+					String dimensionUnits3 =cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(dimensionUnits3)&& dimensionUnits3 !="0" )
+					 {
+					 dimensionUnits.append(dimensionUnits3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 
-					
+					 }
+	
 				   break;
 					
 				case 23: //size
-					dimensionType =cell.getNumericCellValue();
-					 dimensionType =cell.getNumericCellValue();
-					 List<Values> valuesList2 =
-							  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
-	                     finalDimensionObj.setValues(valuesList2);
+					String dimensionType3 =cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(dimensionType3)&& dimensionType3 !="0" )
+					 {
 
+					dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+
+					 }
 					
 				   break;
 				   
@@ -1061,6 +1083,9 @@ public class SageProductsExcelMapping {
 			productConfigObj.setRushTime(rushTime);
 			productConfigObj.setShippingEstimates(shipping);
 			productConfigObj.setProductionTime(listOfProductionTime);
+			List<Values> valuesList =dimParserObj.getValues(dimensionValue.toString(),
+					                                            dimensionUnits.toString(), dimensionType.toString());
+               finalDimensionObj.setValues(valuesList);	
 			size.setDimension(finalDimensionObj);
 			productConfigObj.setImprintMethods(imprintMethods); 
 			productConfigObj.setSizes(size);
