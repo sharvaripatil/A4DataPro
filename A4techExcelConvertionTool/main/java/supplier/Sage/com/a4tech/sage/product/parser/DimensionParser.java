@@ -3,13 +3,11 @@ package com.a4tech.sage.product.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.internal.runners.model.EachTestNotifier;
-
-import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.sage.product.util.LookupData;
 import com.a4tech.util.ApplicationConstants;
+
 
 public class DimensionParser {
 	public List<Values> getValues(String dimensionValue, String dimensionUnits,
@@ -30,9 +28,9 @@ public class DimensionParser {
 
 		for (int i = 0; i < dimensionValueArr.length; i++) {
 			valueObj = new Value();
-			valueObj.setValue(dimensionValueArr[0]);
-			valueObj.setUnit(dimensionUnitsArr[0]);
-			valueObj.setCriteriaType(dimensionTypeArr[0]);
+			valueObj.setValue(dimensionValueArr[i]);
+			valueObj.setUnit(LookupData.Dimension1Units.get(i));
+			valueObj.setAttribute(LookupData.Dimension1Type.get(i));
 			valueList.add(valueObj);
 		}
 

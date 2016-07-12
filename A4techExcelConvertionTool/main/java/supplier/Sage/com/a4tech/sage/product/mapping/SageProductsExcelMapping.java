@@ -202,7 +202,7 @@ public class SageProductsExcelMapping {
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 1){
+						 if(nextRow.getRowNum() != 7){
 							 System.out.println("Java object converted to JSON String, written to file");
 							   // Add repeatable sets here
 							 	productExcelObj.setPriceGrids(priceGrids);
@@ -355,86 +355,111 @@ public class SageProductsExcelMapping {
 					break;
 					
 				case 15://size --  value
-					String dimensionValue1 =cell.getStringCellValue();
-					if(!StringUtils.isEmpty(dimensionValue1)&& dimensionValue1 !="0" )
-					{
-					dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
-					}
+					String dimensionValue1= null;
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+				         dimensionValue1 =cell.getStringCellValue();
+					 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+					    dimensionValue1 =String.valueOf((int)cell.getNumericCellValue());
+					 }
+						dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					
 					break;
 				case 16: //size -- Unit
-					 String dimensionUnits1 =cell.getStringCellValue();
-					 if(!StringUtils.isEmpty(dimensionUnits1) && dimensionUnits1 !="0")
-						{
-					//String unit1=String.valueOf(Dimension1Units);
+					 String dimensionUnits1 = null;
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						 dimensionUnits1 =cell.getStringCellValue();
+					 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						 dimensionUnits1 =String.valueOf((int)cell.getNumericCellValue());
+					 }
+					
 					 dimensionUnits.append(dimensionUnits1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
-						}
+						
 					 break;
 				
 				case 17: //size -- type
-					String dimensionType1 =cell.getStringCellValue();
-					 if(!StringUtils.isEmpty(dimensionType1)&& dimensionType1 !="0" )
-					 {
+					String dimensionType1 =null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionType1 =cell.getStringCellValue();
+					 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						 dimensionType1 =String.valueOf((int)cell.getNumericCellValue());
+					 }
 					dimensionType.append(dimensionType1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					  
-					 }
+					 
 					break;
 				
 				 case 18: //size
-					 String dimensionValue2 =cell.getStringCellValue();
-					 if(!StringUtils.isEmpty(dimensionValue2) && dimensionValue2 !="0")
-					 {
+					 String dimensionValue2 =null;
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						 dimensionValue2 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionValue2 =String.valueOf((int)cell.getNumericCellValue());
+						 }
                   dimensionValue.append(dimensionValue2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
-					 }
+				
 					break;
 					
 				case 19:  //size
-					String dimensionUnits2 =cell.getStringCellValue();
-					 if(!StringUtils.isEmpty(dimensionUnits2) && dimensionUnits2 !="0")
-					 {
+					String dimensionUnits2 =null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionUnits2 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionUnits2 =String.valueOf((int)cell.getNumericCellValue());
+						 }
 					 dimensionUnits.append(dimensionUnits2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
-				     }
+				     
 					//String unit2=String.valueOf(Dimension2Units);
 
 					
 					break;
 					
 				case 20: //size
-					String  dimensionType2 =cell.getStringCellValue();
-					 if(!StringUtils.isEmpty(dimensionType2)&& dimensionType2 !="0" )
-					 {
-
+					String  dimensionType2 = null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionType2 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionType2 =String.valueOf((int)cell.getNumericCellValue());
+						 }
 					dimensionType.append(dimensionType2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
-					 }
+				
 				
 					break;
 					
 				case 21: //size
-					String dimensionValue3 =cell.getStringCellValue();
-					 if(!StringUtils.isEmpty(dimensionValue3)&& dimensionValue3 !="0" )
-					 {
+					String dimensionValue3  = null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionValue3 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionValue3 =String.valueOf((int)cell.getNumericCellValue());
+						 }
 					dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
-					 }
+				
 					break;
 					
 					
 				case 22: //size
-					String dimensionUnits3 =cell.getStringCellValue();
-					 if(!StringUtils.isEmpty(dimensionUnits3)&& dimensionUnits3 !="0" )
-					 {
+					String dimensionUnits3 = null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionUnits3 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionUnits3 =String.valueOf((int)cell.getNumericCellValue());
+						 }
 					 dimensionUnits.append(dimensionUnits3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 
-					 }
+					 
 	
 				   break;
 					
 				case 23: //size
-					String dimensionType3 =cell.getStringCellValue();
-					 if(!StringUtils.isEmpty(dimensionType3)&& dimensionType3 !="0" )
-					 {
-
+					String dimensionType3 = null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionType3 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionType3 =String.valueOf((int)cell.getNumericCellValue());
+						 }
 					dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 
-					 }
+					
 					
 				   break;
 				   
@@ -585,10 +610,10 @@ public class SageProductsExcelMapping {
 			          		break; 
 				case 68:
 				case 69:
-				Boolean IsEnvironmentallyFriendly = cell.getBooleanCellValue();
+				String IsEnvironmentallyFriendly = cell.getStringCellValue();
 					Theme themeObj1 = new Theme();
 					String str =new String();
-					if(IsEnvironmentallyFriendly == true)			
+					if(IsEnvironmentallyFriendly.equalsIgnoreCase("true"))			
 					{	
 						themeObj1.setName("Eco Friendly");	
 					}
@@ -1140,7 +1165,7 @@ public class SageProductsExcelMapping {
 			
 			}catch(Exception e){
 			//e.printStackTrace();
-			_LOGGER.error("Error while Processing Product :"+productExcelObj.getExternalProductId() );		 
+			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
 		}
 		}
 		workbook.close();

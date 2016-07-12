@@ -56,7 +56,7 @@ public class ApplicationConstants {
 	public static final String  CONST_DELIMITER_FSLASH 					    = "/";
 	//public static final String  CONST_DELIMITER_BSLASH 					    = "\\";
 	public static final String  CONST_DELIMITER_HYPHEN 					    = "-";
-	public static final String	CONST_DIMENSION_SPLITTER					= "$$";
+	public static final String	CONST_DIMENSION_SPLITTER					= "@@";
 	
 	public static final int     CONST_NUMBER_ZERO                           = 0;
 	
