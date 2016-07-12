@@ -29,8 +29,8 @@ public class DimensionParser {
 		for (int i = 0; i < dimensionValueArr.length; i++) {
 			valueObj = new Value();
 			valueObj.setValue(dimensionValueArr[i]);
-			valueObj.setUnit(LookupData.Dimension1Units.get(i));
-			valueObj.setAttribute(LookupData.Dimension1Type.get(i));
+			valueObj.setUnit(LookupData.Dimension1Units.get(dimensionUnitsArr[i]));
+			valueObj.setAttribute(LookupData.Dimension1Type.get(dimensionTypeArr[i]));
 			valueList.add(valueObj);
 		}
 
