@@ -36,6 +36,7 @@ import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
+import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.sage.product.parser.CatalogParser;
@@ -94,10 +95,11 @@ public class SageProductsExcelMapping {
 		  String upChargeLevel = null;
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		  
-		  double dimensionValue =0;
-		  double dimensionUnits = 0 ;
-		  double dimensionType = 0 ;
+		  StringBuilder dimensionValue = new StringBuilder();
+		  StringBuilder dimensionUnits = new StringBuilder();
+		  StringBuilder dimensionType = new StringBuilder();
 		  Dimension finalDimensionObj=new Dimension();
+		  Dimension existingDimensiobn;
 		  //ProductNumberParser pnumberParser=new ProductNumberParser();
 		try{
 			 
@@ -200,7 +202,7 @@ public class SageProductsExcelMapping {
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 1){
+						 if(nextRow.getRowNum() != 7){
 							 System.out.println("Java object converted to JSON String, written to file");
 							   // Add repeatable sets here
 							 	productExcelObj.setPriceGrids(priceGrids);
@@ -353,66 +355,111 @@ public class SageProductsExcelMapping {
 					break;
 					
 				case 15://size --  value
-					 dimensionValue =cell.getNumericCellValue();
+					String dimensionValue1= null;
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+				         dimensionValue1 =cell.getStringCellValue();
+					 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+					    dimensionValue1 =String.valueOf((int)cell.getNumericCellValue());
+					 }
+						dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					
 					break;
 				case 16: //size -- Unit
-					 dimensionUnits =cell.getNumericCellValue();
-					//String unit1=String.valueOf(Dimension1Units);
-			
-					  break;
+					 String dimensionUnits1 = null;
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						 dimensionUnits1 =cell.getStringCellValue();
+					 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						 dimensionUnits1 =String.valueOf((int)cell.getNumericCellValue());
+					 }
+					
+					 dimensionUnits.append(dimensionUnits1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+						
+					 break;
 				
 				case 17: //size -- type
-					 dimensionType =cell.getNumericCellValue();
-					 if(dimensionType !=0 )
-					 {
-					 List<Values> valuesList =
-						  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
-                     finalDimensionObj.setValues(valuesList);
+					String dimensionType1 =null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionType1 =cell.getStringCellValue();
+					 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						 dimensionType1 =String.valueOf((int)cell.getNumericCellValue());
 					 }
-                  
+					dimensionType.append(dimensionType1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					  
+					 
 					break;
 				
 				 case 18: //size
-					 dimensionValue =cell.getNumericCellValue();
-					
+					 String dimensionValue2 =null;
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						 dimensionValue2 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionValue2 =String.valueOf((int)cell.getNumericCellValue());
+						 }
+                  dimensionValue.append(dimensionValue2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+				
 					break;
 					
 				case 19:  //size
-					dimensionUnits =cell.getNumericCellValue();
+					String dimensionUnits2 =null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionUnits2 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionUnits2 =String.valueOf((int)cell.getNumericCellValue());
+						 }
+					 dimensionUnits.append(dimensionUnits2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+				     
 					//String unit2=String.valueOf(Dimension2Units);
 
 					
 					break;
 					
 				case 20: //size
-					 dimensionType =cell.getNumericCellValue();
-					 List<Values> valuesList1 =
-							  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
-	                     finalDimensionObj.setValues(valuesList1);
-	                  
-					
+					String  dimensionType2 = null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionType2 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionType2 =String.valueOf((int)cell.getNumericCellValue());
+						 }
+					dimensionType.append(dimensionType2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+				
+				
 					break;
 					
 				case 21: //size
-			      dimensionValue =cell.getNumericCellValue();
-					
+					String dimensionValue3  = null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionValue3 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionValue3 =String.valueOf((int)cell.getNumericCellValue());
+						 }
+					dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+				
 					break;
 					
+					
 				case 22: //size
-					 dimensionUnits =cell.getNumericCellValue();
-					
+					String dimensionUnits3 = null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionUnits3 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionUnits3 =String.valueOf((int)cell.getNumericCellValue());
+						 }
+					 dimensionUnits.append(dimensionUnits3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 
-					
+					 
+	
 				   break;
 					
 				case 23: //size
-					dimensionType =cell.getNumericCellValue();
-					 dimensionType =cell.getNumericCellValue();
-					 List<Values> valuesList2 =
-							  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
-	                     finalDimensionObj.setValues(valuesList2);
+					String dimensionType3 = null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionType3 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionType3 =String.valueOf((int)cell.getNumericCellValue());
+						 }
+					dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 
+					
 					
 				   break;
 				   
@@ -563,10 +610,10 @@ public class SageProductsExcelMapping {
 			          		break; 
 				case 68:
 				case 69:
-				Boolean IsEnvironmentallyFriendly = cell.getBooleanCellValue();
+				String IsEnvironmentallyFriendly = cell.getStringCellValue();
 					Theme themeObj1 = new Theme();
 					String str =new String();
-					if(IsEnvironmentallyFriendly == true)			
+					if(IsEnvironmentallyFriendly.equalsIgnoreCase("true"))			
 					{	
 						themeObj1.setName("Eco Friendly");	
 					}
@@ -1061,6 +1108,9 @@ public class SageProductsExcelMapping {
 			productConfigObj.setRushTime(rushTime);
 			productConfigObj.setShippingEstimates(shipping);
 			productConfigObj.setProductionTime(listOfProductionTime);
+			List<Values> valuesList =dimParserObj.getValues(dimensionValue.toString(),
+					                                            dimensionUnits.toString(), dimensionType.toString());
+               finalDimensionObj.setValues(valuesList);	
 			size.setDimension(finalDimensionObj);
 			productConfigObj.setImprintMethods(imprintMethods); 
 			productConfigObj.setSizes(size);
@@ -1115,7 +1165,7 @@ public class SageProductsExcelMapping {
 			
 			}catch(Exception e){
 			//e.printStackTrace();
-			_LOGGER.error("Error while Processing Product :"+productExcelObj.getExternalProductId() );		 
+			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
 		}
 		}
 		workbook.close();
