@@ -29,7 +29,7 @@ public class PostServiceImpl implements PostService {
 	@Autowired
 	ObjectMapper mapper1;
 	
-	public int postProduct(String authTokens, Product product,int asiNumber) {
+	public int postProduct(String authTokens, Product product,int asiNumber ,int batchId) {
 
 		try {
 
@@ -53,7 +53,7 @@ public class PostServiceImpl implements PostService {
 			try {
 				ErrorMessageList apiResponse =  mapper1.readValue(rsponse, ErrorMessageList.class);
 				_LOGGER.info("errors>>>>"+apiResponse);
-				productDao.save(apiResponse.getErrors(),product.getExternalProductId(),asiNumber);
+				productDao.save(apiResponse.getErrors(),product.getExternalProductId(),asiNumber,batchId);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -89,6 +89,12 @@ public class PostServiceImpl implements PostService {
 
 	public void setProductDao(ProductDao productDao) {
 		this.productDao = productDao;
+	}
+
+	@Override
+	public int postProduct(String authToken, Product product, int asiNumber) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 

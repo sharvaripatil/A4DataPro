@@ -4,10 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
@@ -23,19 +21,18 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.a4tech.JulyData.excelMapping.JulyDataMapping;
+import com.a4tech.core.excelMapping.ExcelMapping;
 import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
+import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.service.ProductService;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.service.loginImpl.LoginServiceImpl;
 import com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping;
-import com.a4tech.v2.core.excelMapping.ExcelMapping;
+import com.a4tech.v2.core.excelMapping.V2ExcelMapping;
 
 @Controller
 @RequestMapping({"/","/uploadFile.htm"})
@@ -54,9 +51,11 @@ public class FileUpload extends HttpServlet{
 	private UsbProductsExcelMapping usbExcelMapping;
 	private JulyDataMapping julymapping;
 	private SageProductsExcelMapping sageExcelMapping;
-	private ExcelMapping excelMapping;
+	private V2ExcelMapping productV2ExcelMapping;
+	private ExcelMapping gbDataExcelMapping;
 	@Autowired
 	private LoginServiceImpl loginService;
+	private ProductDao productDao;
 	private static Logger _LOGGER = Logger.getLogger(Class.class);
 	@InitBinder
 	private void initBinder(WebDataBinder binder){
@@ -68,6 +67,7 @@ public class FileUpload extends HttpServlet{
 		model.put("filebean", fileBean);
 		return "Home";
 	}
+	
 	
 	@RequestMapping(method= RequestMethod.POST)
 	public String fileUpload(@ModelAttribute("filebean") @Valid FileBean fileBean , BindingResult result ,
@@ -101,23 +101,28 @@ public class FileUpload extends HttpServlet{
 	            	}else{
 	 	               _LOGGER.info("Invlid upload excel file,Please try one more time");
 	            	}
+	            int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 	            	 request.getSession().setAttribute("asiNumber", asiNumber);
 	                switch (asiNumber) {
+	                case "55200": // GB Data Excel Mapping
+	                	 	numOfProducts = gbDataExcelMapping.readExcel(accessToken,workbook, Integer.valueOf(asiNumber),batchId);
+			                model.addAttribute("fileName", numOfProducts);
+			                return "success";
 					case "55201"://product v2
-				        numOfProducts = excelMapping.readExcel(accessToken,workbook, Integer.valueOf(asiNumber));
+				        numOfProducts = productV2ExcelMapping.readExcel(accessToken,workbook, Integer.valueOf(asiNumber),batchId);
 		                model.addAttribute("fileName", numOfProducts);
 		                return "success";
 						//break;
-					case "55202"://supplier USB data
-							numOfProducts = usbExcelMapping.readExcel(accessToken, workbook, Integer.valueOf(asiNumber));
+					case "55202"://supplier USB data(Nov_USB Products)
+							numOfProducts = usbExcelMapping.readExcel(accessToken, workbook, Integer.valueOf(asiNumber),batchId);
 							model.addAttribute("fileName", numOfProducts);
 							return "success";
 					case "55203":	//supplier JulyData	
-						numOfProducts = julymapping.readExcel(accessToken, workbook,Integer.valueOf(asiNumber));
+						numOfProducts = julymapping.readExcel(accessToken, workbook,Integer.valueOf(asiNumber),batchId);
 						model.addAttribute("fileName", numOfProducts);
 						return "success";
 				    case "55204":	//supplier Sage
-				    	numOfProducts = sageExcelMapping.readExcel(accessToken, workbook, Integer.valueOf(asiNumber));
+				    	numOfProducts = sageExcelMapping.readExcel(accessToken, workbook, Integer.valueOf(asiNumber),batchId);
 						model.addAttribute("fileName", numOfProducts);
 						return "success";
 							
@@ -162,17 +167,29 @@ public class FileUpload extends HttpServlet{
 	public void setProductService(ProductService productService) {
 		this.productService = productService;
 	}
-	public ExcelMapping getExcelMapping() {
-		return excelMapping;
-	}
-	public void setExcelMapping(ExcelMapping excelMapping) {
-		this.excelMapping = excelMapping;
-	}
 	public SageProductsExcelMapping getSageExcelMapping() {
 		return sageExcelMapping;
 	}
 	public void setSageExcelMapping(SageProductsExcelMapping sageExcelMapping) {
 		this.sageExcelMapping = sageExcelMapping;
+	}
+	public ProductDao getProductDao() {
+		return productDao;
+	}
+	public void setProductDao(ProductDao productDao) {
+		this.productDao = productDao;
+	}
+	public V2ExcelMapping getProductV2ExcelMapping() {
+		return productV2ExcelMapping;
+	}
+	public void setProductV2ExcelMapping(V2ExcelMapping productV2ExcelMapping) {
+		this.productV2ExcelMapping = productV2ExcelMapping;
+	}
+	public ExcelMapping getGbDataExcelMapping() {
+		return gbDataExcelMapping;
+	}
+	public void setGbDataExcelMapping(ExcelMapping gbDataExcelMapping) {
+		this.gbDataExcelMapping = gbDataExcelMapping;
 	}
 	
 }

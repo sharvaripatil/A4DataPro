@@ -1,13 +1,11 @@
 package com.a4tech.sage.product.mapping;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -17,15 +15,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
-import com.a4tech.product.model.Image;
-import com.a4tech.product.model.ImprintColorValue;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
-import com.a4tech.product.model.Option;
 import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
@@ -48,7 +42,6 @@ import com.a4tech.sage.product.parser.PriceGridParser;
 import com.a4tech.sage.product.parser.RushTimeParser;
 import com.a4tech.sage.product.parser.ShippingEstimateParser;
 import com.a4tech.util.ApplicationConstants;
-import com.a4tech.util.LookupData;
 
 
 public class SageProductsExcelMapping {
@@ -70,12 +63,10 @@ public class SageProductsExcelMapping {
 	DimensionParser dimParserObj;
 	ColorParser colorParserObj ;
 	ProductDao productDaoObj;
-	public int readExcel(String accessToken,Workbook workbook ,Integer asiNumber){
+	public int readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
 		List<String> numOfProducts = new ArrayList<String>();
-		FileInputStream inputStream = null;
-		//Workbook workbook = null;
-		//List<String>  productXids = new ArrayList<String>();
+		List<String> numOfProductsFailure = new ArrayList<String>();
 		Set<String>  productXids = new HashSet<String>();
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
@@ -122,17 +113,6 @@ public class SageProductsExcelMapping {
 		String quoteUponRequest  = null;
 		StringBuilder priceIncludes = new StringBuilder();
 		String quantity = null;
-		String SKUCriteria1 =null;
-		String SKUCriteria2 =null;
-		String skuvalue  =null;
-		String Inlink  =null;
-		String Instatus  =null;
-		String InQuantity=null;
-		String productNumberCriteria1=null;
-		String productNumberCriteria2=null;
-		String productNumber=null;
-		List<Option> option=new ArrayList<Option>();
-		Option optionobj= new Option();
 		//ProductOptionParser optionparserobj=new ProductOptionParser();
 		String optiontype =null;
 		String optionname =null;
@@ -151,11 +131,7 @@ public class SageProductsExcelMapping {
 		
 		List<Color> color = new ArrayList<Color>();
 		List<ImprintMethod> imprintMethods = new ArrayList<ImprintMethod>();
-		List<Artwork> artworkList = new ArrayList<Artwork>();
-		List<ImprintColorValue> imprintColorsValueList = new ArrayList<ImprintColorValue>();
 		String productName = null;
-		StringBuilder imprintMethodValues = new StringBuilder();
-		StringBuilder imprintColorValues = new StringBuilder();
 		List<ImprintLocation> listImprintLocation = new ArrayList<ImprintLocation>();
 		List<ImprintMethod> listOfImprintMethods = new ArrayList<ImprintMethod>();
 		List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
@@ -167,10 +143,6 @@ public class SageProductsExcelMapping {
 			if (nextRow.getRowNum() < 7)
 				continue;
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
-			
-			
-			List<Image> imgList = new ArrayList<Image>();
-			
 			if(productId != null){
 				productXids.add(productId);
 			}
@@ -207,17 +179,19 @@ public class SageProductsExcelMapping {
 							 	//productConfigObj.setOptions(option);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	//productList.add(productExcelObj);
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProducts.add("1");
+							 	}else{
+							 		numOfProductsFailure.add("0");
 							 	}
 								//System.out.println(mapper.writeValueAsString(productExcelObj));
 							 	_LOGGER.info("list size>>>>>>>"+numOfProducts.size());
-								
+							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 								// reset for repeateable set 
 								priceGrids = new ArrayList<PriceGrid>();
 								productConfigObj = new ProductConfigurations();
-								option=new ArrayList<Option>();
+								//option=new ArrayList<Option>();
 								
 						 }
 						    if(!productXids.contains(xid)){
@@ -351,13 +325,25 @@ public class SageProductsExcelMapping {
 						dimensionValue =cell.getStringCellValue();
 					break;
 				case 16: //size -- Unit
-					 dimensionUnits =cell.getStringCellValue();
+					 //dimensionUnits =cell.getStringCellValue();
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
+						 dimensionUnits = String.valueOf(cell.getStringCellValue());
+				        }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+				        	dimensionUnits = String.valueOf((int)cell.getNumericCellValue());
+				        }else{  
+				      }
 					//String unit1=String.valueOf(Dimension1Units);
 			
 					  break;
 				
 				case 17: //size -- type
-					 dimensionType =cell.getStringCellValue();
+					 //dimensionType =cell.getStringCellValue();
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
+						 dimensionType = String.valueOf(cell.getStringCellValue());
+				        }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+				        	dimensionType = String.valueOf((int)cell.getNumericCellValue());
+				        }else{  
+				      }
 					 if(dimensionType != null )
 					 {
 					 List<Values> valuesList =
@@ -373,14 +359,26 @@ public class SageProductsExcelMapping {
 					break;
 					
 				case 19:  //size
-					dimensionUnits =cell.getStringCellValue();
+					//dimensionUnits =cell.getStringCellValue();
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
+						 dimensionUnits = String.valueOf(cell.getStringCellValue());
+				        }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+				        	dimensionUnits = String.valueOf((int)cell.getNumericCellValue());
+				        }else{  
+				      }
 					//String unit2=String.valueOf(Dimension2Units);
 
 					
 					break;
 					
 				case 20: //size
-					 dimensionType =cell.getStringCellValue();
+					 //dimensionType =cell.getStringCellValue();
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
+						 dimensionType = String.valueOf(cell.getStringCellValue());
+				        }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+				        	dimensionType = String.valueOf((int)cell.getNumericCellValue());
+				        }else{  
+				      }
 					 List<Values> valuesList1 =
 							  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
 	                     finalDimensionObj.setValues(valuesList1);
@@ -394,15 +392,26 @@ public class SageProductsExcelMapping {
 					break;
 					
 				case 22: //size
-					 dimensionUnits =cell.getStringCellValue();
+					 //dimensionUnits =cell.getStringCellValue();
 					
-
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
+						 dimensionUnits = String.valueOf(cell.getStringCellValue());
+				        }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+				        	dimensionUnits = String.valueOf((int)cell.getNumericCellValue());
+				        }else{  
+				      }
 					
 				   break;
 					
 				case 23: //size
-					dimensionType =cell.getStringCellValue();
-					 dimensionType =cell.getStringCellValue();
+					//dimensionType =cell.getStringCellValue();
+					 //dimensionType =cell.getStringCellValue();
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
+						 dimensionType = String.valueOf(cell.getStringCellValue());
+				        }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+				        	dimensionType = String.valueOf((int)cell.getNumericCellValue());
+				        }else{  
+				      }
 					 List<Values> valuesList2 =
 							  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
 	                     finalDimensionObj.setValues(valuesList2);
@@ -1090,15 +1099,6 @@ public class SageProductsExcelMapping {
 				UpCharPrices = new StringBuilder();
 				UpCharDiscount = new StringBuilder();
 				UpCharQuantity = new StringBuilder();
-				skuvalue = null;
-			    Inlink = null;
-			    Instatus = null;
-			    InQuantity = null;
-			    SKUCriteria1 = null;
-			    SKUCriteria2 = null;
-			    productNumberCriteria1=null; 
-			    productNumberCriteria2=null;
-			    productNumber=null;
 			    optiontype=null;
 			    optionname=null;
 			    optionvalues=null;
@@ -1108,7 +1108,7 @@ public class SageProductsExcelMapping {
 			
 			}catch(Exception e){
 			//e.printStackTrace();
-			_LOGGER.error("Error while Processing Product :"+productExcelObj.getExternalProductId() );		 
+			_LOGGER.error("Error while Processing Product Id and Cause:"+productExcelObj.getExternalProductId() +" "+e.getCause() );		 
 		}
 		}
 		workbook.close();
@@ -1119,17 +1119,20 @@ public class SageProductsExcelMapping {
 		 	/*productExcelObj.setProductRelationSkus(productsku);
 		 	productExcelObj.setProductNumbers(pnumberList);*/
 		 	//productList.add(productExcelObj);
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProducts.add("1");
+		 	}else{
+		 		numOfProductsFailure.add("0");
 		 	}
 		 	_LOGGER.info("list size>>>>>>"+numOfProducts.size());
+		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 			//System.out.println(mapper1.writeValueAsString(productExcelObj));
 	
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet ");
 		}finally{
-			productDaoObj.getErrorLog(asiNumber);
+			productDaoObj.getErrorLog(asiNumber,batchId);
 			try {
 				workbook.close();
 			//inputStream.close();

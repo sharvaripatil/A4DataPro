@@ -80,15 +80,17 @@
         <!-- one of the properties available; the maximum file size in bytes -->
        <!--  <property name="maxUploadSize" value="100000"/> -->
     </bean>
-    <bean id="excelMappingV2" name="excelMappingV2" class="com.a4tech.v2.core.excelMapping.ExcelMapping" autowire="byName">
+    <bean id="excelMappingV2" name="excelMappingV2" class="com.a4tech.v2.core.excelMapping.V2ExcelMapping" autowire="byName">
      <property name="productDaoObj"  ref="productDao"/>
     </bean>
   <bean id="fileUpload" class="com.a4tech.controller.FileUpload">
-  <property name="excelMapping"  ref="excelMappingV2"/>
+  <property name="productV2ExcelMapping"  ref="excelMappingV2"/>
       <property name="usbExcelMapping"  ref="usbExcelMapping"/>
       <property name="julymapping"  ref="julymapping"/>
       <property name="loginService"  ref="loginServiceImpl"/>
       <property name="sageExcelMapping" ref="sageMappingId"/> 
+      <property name="productDao" ref="productDao"/>
+      <property name="gbDataExcelMapping" ref="gbDataExcelMappingId"/>
    </bean>
    <bean id="usbExcelMapping" class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
     <property name="colorparser"  ref="colorparser"/>
@@ -111,6 +113,10 @@
    <bean id="warrantyParser" class="com.a4tech.product.USBProducts.criteria.parser.ProductWarrantyParser"/>
    <bean id="imprintColors" class="com.a4tech.product.model.ImprintColor"/>
    <bean id="shipinestmt" class="com.a4tech.product.USBProducts.criteria.parser.ShippingEstimationParser"/>
+   <bean id="gbDataExcelMappingId" class="com.a4tech.core.excelMapping.ExcelMapping">
+   		<property name="postServiceImpl" ref="postService"/>
+   		<property name="productDaoObj"  ref="productDao"/>
+   </bean>
    
    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
   		<property name="driverClassName" value="${mysql.db.driverClassName}" />
@@ -125,6 +131,7 @@
 				<list>
 					<value>com.a4tech.product.dao.entity.ProductEntity</value>
 					<value>com.a4tech.product.dao.entity.ErrorEntity</value>
+					<value>com.a4tech.product.dao.entity.BatchEntity</value>
 				</list>
 			</property>
       <property name="hibernateProperties">

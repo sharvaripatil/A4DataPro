@@ -1,8 +1,9 @@
 package com.a4tech.product.dao.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -11,33 +12,22 @@ import javax.persistence.Table;
 
 @Table(name="error_log")
 @Entity
-public class ErrorEntity {
+public class ErrorEntity implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 794248617055025267L;
 	@Id
 	@Column(name="ERROR_ID")
 	@GeneratedValue
-	private Integer id;
-	@Column(name="PRODUCT_NUMBER",nullable=false)
-	private String productNumber;
+	private Integer errorId;
 	@Column(name="ERRORS")
 	private String Error;
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="PRODUCT_NUMBER",insertable=false,updatable=false)
+	@ManyToOne
+	@JoinColumn(name="PRODUCT_REF_ID",insertable=true,updatable=false,referencedColumnName = "PRODUCT_ID")
+	//@JoinColumn(name="PRODUCT_ID")
 	private ProductEntity product;
 	
-	public Integer getId() {
-		return id;
-	}
-	public void setId(Integer id) {
-		
-		this.id = id;
-	}
-	
-	public String getProductNumber() {
-		return productNumber;
-	}
-	public void setProductNumber(String productNumber) {
-		this.productNumber = productNumber;
-	}
 	public String getError() {
 		return Error;
 	}
@@ -50,5 +40,10 @@ public class ErrorEntity {
 	public void setProduct(ProductEntity product) {
 		this.product = product;
 	}
-
+	public Integer getErrorId() {
+		return errorId;
+	}
+	public void setErrorId(Integer errorId) {
+		this.errorId = errorId;
+	}
 }

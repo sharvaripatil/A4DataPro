@@ -4,6 +4,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 public interface ProductService {
 	
-	public int excelProducts(String accessToken,Workbook workBook,int asiNumber);
+	public int excelProducts(String accessToken,Workbook workBook,int asiNumber,int batchId);
 
 }

@@ -66,15 +66,15 @@ import com.a4tech.v2.criteria.parser.ShippingEstimationParser;
 import com.a4tech.v2.service.postImpl.PostServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ExcelMapping {
+public class V2ExcelMapping {
 	
-	private static final Logger _LOGGER = Logger.getLogger(ExcelMapping.class);
+	private static final Logger _LOGGER = Logger.getLogger(V2ExcelMapping.class);
 	@Autowired
 	PostServiceImpl postServiceImplV2 ;//= new PostServiceImpl();
 	
 	ProductDao productDaoObj;
 	@SuppressWarnings("finally")
-	public int readExcel(String accessToken,Workbook workbook,int asiNumber){
+	public int readExcel(String accessToken,Workbook workbook,int asiNumber,int batchId){
 		ImprintColor imprintColorsObj = new ImprintColor();
 		 //List<ImprintColorValue> imprintColors = new ArrayList<ImprintColorValue>();
 		List<String> numOfProducts = new ArrayList<String>();
@@ -1109,7 +1109,7 @@ public class ExcelMapping {
 			_LOGGER.error("Error while Processing excel sheet ");
 			return 0;
 		}finally{
-			productDaoObj.getErrorLog(asiNumber);
+			productDaoObj.getErrorLog(asiNumber,batchId);
 			try {
 				workbook.close();
 			//inputStream.close();

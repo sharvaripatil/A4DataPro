@@ -3,8 +3,10 @@ package com.a4tech.core.excelMapping;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -68,16 +70,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ExcelMapping {
 	
 	private static final Logger _LOGGER = Logger.getLogger(ExcelMapping.class);
-	PostServiceImpl postServiceImpl = new PostServiceImpl();
+	PostServiceImpl postServiceImpl ;
 	ProductDao productDaoObj;
 	@SuppressWarnings("finally")
-	public int readExcel(String accessToken,Workbook workbook,int asiNumber){
+	public int readExcel(String accessToken,Workbook workbook,int asiNumber,int batchId){
 		ImprintColor imprintColors = new ImprintColor();
 		List<String> numOfProducts = new ArrayList<String>();
 		FileInputStream inputStream = null;
 		LoginServiceImpl loginService = new LoginServiceImpl();
 		//Workbook workbook = null;
-		List<String>  productXids = new ArrayList<String>();
+		//List<String>  productXids = new ArrayList<String>();
+		Set<String>  listOfXids = new HashSet<String>();
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  ProductSkuParser skuparserobj=new ProductSkuParser();
@@ -197,28 +200,22 @@ public class ExcelMapping {
 			String rushService=null;
 			String prodSample=null;
 			
-			 productXids.add(externalProductId);
+			if(externalProductId != null){
+				listOfXids.add(externalProductId);
+			}
 			 boolean checkXid  = false;
-			 
-			
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
 				String xid = null;
 				int columnIndex = cell.getColumnIndex();
 				if(columnIndex + 1 == 1){
 					 xid = cell.getStringCellValue();
-					 if(productXids.contains(xid)){
-						 productXids.add(xid);
-					 }else{
-						 productXids = new ArrayList<String>();
-					 }
-					 
 					checkXid = true;
 				}else{
 					checkXid = false;
 				}
 				if(checkXid){
-					 if(!productXids.contains(xid)){
+					 if(!listOfXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
 							 ObjectMapper mapper = new ObjectMapper();
@@ -229,8 +226,8 @@ public class ExcelMapping {
 							 	productExcelObj.setProductRelationSkus(productsku);
 							 	productExcelObj.setProductNumbers(pnumberList);
 							 	//productList.add(productExcelObj);
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber);
-							 	if(num ==1){
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+							 	if(num ==1){ 
 							 		numOfProducts.add("1");
 							 	}
 								//System.out.println(mapper.writeValueAsString(productExcelObj));
@@ -244,16 +241,12 @@ public class ExcelMapping {
 								option=new ArrayList<Option>();
 								
 						 }
-						    if(!productXids.contains(xid)){
-						    	productXids.add(xid);
+						    if(!listOfXids.contains(xid)){
+						    	listOfXids.add(xid);
 						    }
 							productExcelObj = new Product();
 					 }
 				}
-				if(productXids.size() >1  && !LookupData.isRepeateIndex(String.valueOf(columnIndex+1))){
-					continue;
-				}
-
 				switch (columnIndex + 1) {
 				case 1:
 					 externalProductId = cell.getStringCellValue();
@@ -1104,7 +1097,7 @@ public class ExcelMapping {
 		 	productExcelObj.setProductRelationSkus(productsku);
 		 	productExcelObj.setProductNumbers(pnumberList);
 		 	//productList.add(productExcelObj);
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProducts.add("1");
 		 	}
@@ -1117,7 +1110,7 @@ public class ExcelMapping {
 			return 0;
 		}finally{
 			
-			productDaoObj.getErrorLog(asiNumber);
+			productDaoObj.getErrorLog(asiNumber,batchId);
 			try {
 				workbook.close();
 			//inputStream.close();

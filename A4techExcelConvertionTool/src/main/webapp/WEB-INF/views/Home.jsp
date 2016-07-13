@@ -26,7 +26,8 @@
 <form:form   name="myForm" enctype="multipart/form-data" modelAttribute="filebean" >
 <div class="wrapper">
   <div class="container">
-    <div class="col-md-6 col-xs-offset-2 col-lg-8 col-lg-offset-2">
+  <div class="col-md-12" align="center"><img class="img-responsive" src="http://www.asicentral.com/images/2016/header/asi-logo.png" style="width:29%;"></div>
+    <div class="col-md-6 col-xs-offset-2 col-lg-8 col-lg-offset-3">
       <div class="panel-heading"><span class="title text-center">
         <h1>A<sup>4</sup>-ASI <span> Connect</span></h1>
         </span> </div>

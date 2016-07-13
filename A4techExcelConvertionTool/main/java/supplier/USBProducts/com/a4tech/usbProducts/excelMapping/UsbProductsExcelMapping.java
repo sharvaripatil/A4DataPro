@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -96,12 +97,13 @@ public class UsbProductsExcelMapping {
 	private ShippingEstimationParser shipinestmt;
 	
 	@SuppressWarnings("finally")
-	public int readExcel(String accessToken,Workbook workbook ,Integer asiNumber){
+	public int readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId){
 		
 		List<String> numOfProducts = new ArrayList<String>();
 		FileInputStream inputStream = null;
 		//Workbook workbook = null;
-		List<String>  productXids = new ArrayList<String>();
+		//List<String>  productXids = new ArrayList<String>();
+		Set<String>  listOfProductXids = new HashSet<String>();
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  ProductSkuParser skuparserobj=new ProductSkuParser();
@@ -180,9 +182,10 @@ public class UsbProductsExcelMapping {
 			
 			
 			List<Image> imgList = new ArrayList<Image>();
-			
-			 productXids.add(productId);
-			 //String productName = null;
+			 
+			 if(productId != null){
+				 listOfProductXids.add(productId);
+			 }
 			 boolean checkXid  = false;
 			 ShippingEstimate ShipingItem = null;
 				
@@ -203,18 +206,18 @@ public class UsbProductsExcelMapping {
 						
 					}
 					 //xid = cell.getStringCellValue();
-					 if(productXids.contains(xid)){
+					/* if(productXids.contains(xid)){
 						 productXids.add(xid);
 					 }else{
 						 productXids = new ArrayList<String>();
-					 }
+					 }*/
 					 
 					checkXid = true;
 				}else{
 					checkXid = false;
 				}
 				if(checkXid){
-					 if(!productXids.contains(xid)){
+					 if(!listOfProductXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
 							   // Add repeatable sets here
@@ -222,7 +225,7 @@ public class UsbProductsExcelMapping {
 							 	//productConfigObj.setOptions(option);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	//productList.add(productExcelObj);
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 							 	if(num ==1){
 							 		numOfProducts.add("1");
 							 	}
@@ -235,16 +238,12 @@ public class UsbProductsExcelMapping {
 								option=new ArrayList<Option>();
 								
 						 }
-						    if(!productXids.contains(xid)){
-						    	productXids.add(xid);
+						    if(!listOfProductXids.contains(xid)){
+						    	listOfProductXids.add(xid);
 						    }
 							productExcelObj = new Product();
 					 }
 				}
-				if(productXids.size() >1  && !LookupData.isRepeateIndex(String.valueOf(columnIndex+1))){
-					continue;
-				}
-
 				switch (columnIndex + 1) {
 				case 1:
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
@@ -1024,7 +1023,7 @@ public class UsbProductsExcelMapping {
 		 	/*productExcelObj.setProductRelationSkus(productsku);
 		 	productExcelObj.setProductNumbers(pnumberList);*/
 		 	//productList.add(productExcelObj);
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProducts.add("1");
 		 	}
@@ -1035,7 +1034,7 @@ public class UsbProductsExcelMapping {
 			_LOGGER.error("Error while Processing excel sheet ");
 			return 0;
 		}finally{
-			productDaoObj.getErrorLog(asiNumber);
+			productDaoObj.getErrorLog(asiNumber,batchId);
 			try {
 				workbook.close();
 			//inputStream.close();
