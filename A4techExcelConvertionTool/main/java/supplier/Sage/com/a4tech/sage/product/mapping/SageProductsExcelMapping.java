@@ -349,7 +349,7 @@ public class SageProductsExcelMapping {
 							themeObj.setName(string);
 							themeList.add(themeObj);
 							}
-					       productConfigObj.setThemes(themeList);
+					       //productConfigObj.setThemes(themeList);
 						}
 					
 					break;
@@ -609,20 +609,18 @@ public class SageProductsExcelMapping {
 				case 67:
 			          		break; 
 				case 68:
+					       break;
 				case 69:
-				String IsEnvironmentallyFriendly = cell.getStringCellValue();
-					Theme themeObj1 = new Theme();
-					String str =new String();
+			   String IsEnvironmentallyFriendly = cell.getStringCellValue();
+			
 					if(IsEnvironmentallyFriendly.equalsIgnoreCase("true"))			
-					{	
+					{ Theme themeObj1 = new Theme();
+
 						themeObj1.setName("Eco Friendly");	
+
+						themeList.add(themeObj1);
 					}
-					else
-					{
-						themeObj1.setName("");
-					}
-					themeList.add(themeObj1);
-					productConfigObj.setThemes(themeList);
+			
 					break;
 				case 70:
 				case 71:
@@ -1105,6 +1103,7 @@ public class SageProductsExcelMapping {
 					                               cartonH, weightPerCarton, unitsPerCarton);
 			productConfigObj.setImprintLocation(listImprintLocation);
 			productConfigObj.setImprintMethods(listOfImprintMethods);
+			productConfigObj.setThemes(themeList);
 			productConfigObj.setRushTime(rushTime);
 			productConfigObj.setShippingEstimates(shipping);
 			productConfigObj.setProductionTime(listOfProductionTime);
