@@ -155,4 +155,10 @@
    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
   	<property name="basename" value="error"/>
   </bean>
+  <bean id="downloadFileController" name="downloadFileController" class="com.a4tech.controller.DownloadFileController" autowire="byName">
+  	<property name="username" value="${email.username}"/>
+  	<property name="password" value="${email.password}"/>
+  	<property name="domain" value="${domain.url}"/>
+  	<property name="portNo" value="${domain.portno}"/>
+  </bean>
 </beans>

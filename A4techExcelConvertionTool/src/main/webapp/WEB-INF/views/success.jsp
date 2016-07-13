@@ -36,10 +36,12 @@
         <br>
         <br>
         <br>
-        <div class="filedownload" align="left">
+       <div class="filedownload" align="left">
         <h4>Click on the link to download Product Error File:
-	<a href="downloadServlet.htm"><u>Download a File</u></a></h4>
-        
+	<c:url value="/sendEmails.html" var="sendEmailsLink" />
+	<a href="${sendEmailsLink}"><u>Download a File</u></a></h4>
+      <br/>
+         <h4 style="font-size: 39px !important;"><strong>${successmsg}</strong> </h4>
         </div>
     
       </div>
