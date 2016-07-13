@@ -6,26 +6,38 @@ import java.util.List;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.sage.product.util.LookupData;
-
+import com.a4tech.util.ApplicationConstants;
 
 
 public class DimensionParser {
+	public List<Values> getValues(String dimensionValue, String dimensionUnits,
+			String dimensionType) {
 
-	public List<Values> getValues(String dimensionValue,
-			String dimensionUnits, String dimensionType) {
-		   List<Values> valuesList = new ArrayList<Values>();
-		
-			 Value  valueObj1 = new Value();
-			 List<Value> valueList = new ArrayList<Value>();
-			 
-			 Values valuesObj = new Values();
-			 valueObj1.setValue(dimensionValue);
-			 valueObj1.setUnit(LookupData.getDimensionUnits(Integer.parseInt(dimensionUnits)));
-			 valueObj1.setCriteriaType(LookupData.getDimensionType(Integer.parseInt(dimensionType)));
-		     valueList.add(valueObj1);
-		     valuesObj.setValue(valueList);
-		     valuesList.add(valuesObj);
-		   return valuesList;
+		String dimensionValueArr[] = dimensionValue
+				.split(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+		String dimensionUnitsArr[] = dimensionUnits
+				.split(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+		String dimensionTypeArr[] = dimensionType
+				.split(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 
-}
+		ArrayList<Value> valueList = new ArrayList<Value>();
+		List<Values> valueslist = new ArrayList<Values>();
+
+		Values valuesObj = new Values();
+		Value valueObj = null;
+
+		for (int i = 0; i < dimensionValueArr.length; i++) {
+			valueObj = new Value();
+			valueObj.setValue(dimensionValueArr[i]);
+			valueObj.setUnit(LookupData.Dimension1Units.get(dimensionUnitsArr[i]));
+			valueObj.setAttribute(LookupData.Dimension1Type.get(dimensionTypeArr[i]));
+			valueList.add(valueObj);
+		}
+
+		valuesObj.setValue(valueList);
+		valueslist.add(valuesObj);
+
+		return valueslist;
+	}
+
 }

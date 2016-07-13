@@ -30,6 +30,7 @@ import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
+import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.sage.product.parser.CatalogParser;
@@ -85,10 +86,11 @@ public class SageProductsExcelMapping {
 		  String upChargeLevel = null;
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		  
-		  String dimensionValue = null;;
-		  String dimensionUnits = null ;
-		  String dimensionType = null ;
+		  StringBuilder dimensionValue = new StringBuilder();
+		  StringBuilder dimensionUnits = new StringBuilder();
+		  StringBuilder dimensionType = new StringBuilder();
 		  Dimension finalDimensionObj=new Dimension();
+		  Dimension existingDimensiobn;
 		  //ProductNumberParser pnumberParser=new ProductNumberParser();
 		try{
 			 
@@ -214,14 +216,19 @@ public class SageProductsExcelMapping {
 					
 					 break;
 				case 2://AsiProdNo
-					String AsiProdNo=null;
-			        if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
-			        	AsiProdNo = String.valueOf(cell.getStringCellValue());
-			        }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-			        	AsiProdNo = String.valueOf((int)cell.getNumericCellValue());
-			        }else{  
-			      }
-			      productExcelObj.setAsiProdNo(AsiProdNo);
+					int asiProdNo = 0;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+						try{
+							asiProdNo = Integer.parseInt(cell.getStringCellValue());
+							productExcelObj.setAsiProdNo(Integer.toString(asiProdNo));
+						}catch(NumberFormatException nfe){
+							
+						}
+					  }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						  asiProdNo = (int) cell.getNumericCellValue();
+						  productExcelObj.setAsiProdNo(Integer.toString(asiProdNo));
+					  }
+					
 					  break;
 				case 3://Name
                     String name = cell.getStringCellValue();
@@ -316,105 +323,114 @@ public class SageProductsExcelMapping {
 							themeObj.setName(string);
 							themeList.add(themeObj);
 							}
-					       productConfigObj.setThemes(themeList);
+					       //productConfigObj.setThemes(themeList);
 						}
 					
 					break;
 					
 				case 15://size --  value
-						dimensionValue =cell.getStringCellValue();
+						String dimensionValue1= null;
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+				         dimensionValue1 =cell.getStringCellValue();
+					 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+					    dimensionValue1 =String.valueOf((int)cell.getNumericCellValue());
+					 }
+						dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					
 					break;
 				case 16: //size -- Unit
-					 //dimensionUnits =cell.getStringCellValue();
-					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
-						 dimensionUnits = String.valueOf(cell.getStringCellValue());
-				        }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-				        	dimensionUnits = String.valueOf((int)cell.getNumericCellValue());
-				        }else{  
-				      }
-					//String unit1=String.valueOf(Dimension1Units);
-			
+					  String dimensionUnits1 = null;
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						 dimensionUnits1 =cell.getStringCellValue();
+					 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						 dimensionUnits1 =String.valueOf((int)cell.getNumericCellValue());
+					 }
+					
+					 dimensionUnits.append(dimensionUnits1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					  break;
 				
 				case 17: //size -- type
-					 //dimensionType =cell.getStringCellValue();
-					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
-						 dimensionType = String.valueOf(cell.getStringCellValue());
-				        }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-				        	dimensionType = String.valueOf((int)cell.getNumericCellValue());
-				        }else{  
-				      }
-					 if(dimensionType != null )
-					 {
-					 List<Values> valuesList =
-						  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
-                     finalDimensionObj.setValues(valuesList);
+					String dimensionType1 =null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionType1 =cell.getStringCellValue();
+					 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						 dimensionType1 =String.valueOf((int)cell.getNumericCellValue());
 					 }
-                  
+					dimensionType.append(dimensionType1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					  
+					 
 					break;
 				
 				 case 18: //size
-					 dimensionValue =cell.getStringCellValue();
-					
+					 String dimensionValue2 =null;
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						 dimensionValue2 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionValue2 =String.valueOf((int)cell.getNumericCellValue());
+						 }
+                  dimensionValue.append(dimensionValue2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+				
 					break;
 					
 				case 19:  //size
-					//dimensionUnits =cell.getStringCellValue();
-					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
-						 dimensionUnits = String.valueOf(cell.getStringCellValue());
-				        }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-				        	dimensionUnits = String.valueOf((int)cell.getNumericCellValue());
-				        }else{  
-				      }
+					String dimensionUnits2 =null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionUnits2 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionUnits2 =String.valueOf((int)cell.getNumericCellValue());
+						 }
+					 dimensionUnits.append(dimensionUnits2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+				     
 					//String unit2=String.valueOf(Dimension2Units);
 
 					
 					break;
 					
 				case 20: //size
-					 //dimensionType =cell.getStringCellValue();
-					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
-						 dimensionType = String.valueOf(cell.getStringCellValue());
-				        }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-				        	dimensionType = String.valueOf((int)cell.getNumericCellValue());
-				        }else{  
-				      }
-					 List<Values> valuesList1 =
-							  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
-	                     finalDimensionObj.setValues(valuesList1);
-	                  
-					
+					String  dimensionType2 = null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionType2 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionType2 =String.valueOf((int)cell.getNumericCellValue());
+						 }
+					dimensionType.append(dimensionType2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+				
+				
 					break;
 					
 				case 21: //size
-			      dimensionValue =cell.getStringCellValue();
-					
+					String dimensionValue3  = null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionValue3 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionValue3 =String.valueOf((int)cell.getNumericCellValue());
+						 }
+					dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+				
 					break;
 					
+					
 				case 22: //size
-					 //dimensionUnits =cell.getStringCellValue();
-					
-					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
-						 dimensionUnits = String.valueOf(cell.getStringCellValue());
-				        }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-				        	dimensionUnits = String.valueOf((int)cell.getNumericCellValue());
-				        }else{  
-				      }
-					
+					String dimensionUnits3 = null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionUnits3 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionUnits3 =String.valueOf((int)cell.getNumericCellValue());
+						 }
+					 dimensionUnits.append(dimensionUnits3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+
+					 
+	
 				   break;
 					
 				case 23: //size
-					//dimensionType =cell.getStringCellValue();
-					 //dimensionType =cell.getStringCellValue();
-					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
-						 dimensionType = String.valueOf(cell.getStringCellValue());
-				        }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-				        	dimensionType = String.valueOf((int)cell.getNumericCellValue());
-				        }else{  
-				      }
-					 List<Values> valuesList2 =
-							  dimParserObj.getValues(dimensionValue, dimensionUnits, dimensionType);
-	                     finalDimensionObj.setValues(valuesList2);
+					String dimensionType3 = null;
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
+						dimensionType3 =cell.getStringCellValue();
+						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							 dimensionType3 =String.valueOf((int)cell.getNumericCellValue());
+						 }
+					dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 
 					
 				   break;
@@ -565,19 +581,17 @@ public class SageProductsExcelMapping {
 				case 67:
 			          		break; 
 				case 68:
+					       break;
 				case 69:
 				String IsEnvironmentallyFriendly = cell.getStringCellValue();
-					Theme themeObj1 = new Theme();
-					if(IsEnvironmentallyFriendly.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE))			
-					{	
+			
+					if(IsEnvironmentallyFriendly.equalsIgnoreCase("true"))			
+					{ Theme themeObj1 = new Theme();
+
 						themeObj1.setName("Eco Friendly");	
+
+						themeList.add(themeObj1);
 					}
-					else
-					{
-						themeObj1.setName("");
-					}
-					themeList.add(themeObj1);
-					productConfigObj.setThemes(themeList);
 					break;
 				case 70:
 				case 71:
@@ -1053,16 +1067,20 @@ public class SageProductsExcelMapping {
 			List<String> listOfCategories = new ArrayList<String>();
 			listOfCategories.add("USB/FLASH DRIVES");
 			productExcelObj.setCategories(listOfCategories);
-			/*String productDescription ="Phone Holder USB 2.0 Flash Drive";
+			String productDescription ="Phone Holder USB 2.0 Flash Drive";
 			//productDescription = "Phone Holder USB 2.0 Flash Drive";
-			productExcelObj.setDescription(productDescription);*/
+			productExcelObj.setDescription(productDescription);
 			ShippingEstimate shipping = shippingEstimateParser.getShippingEstimateValues(cartonL, cartonW,
 					                               cartonH, weightPerCarton, unitsPerCarton);
 			productConfigObj.setImprintLocation(listImprintLocation);
 			productConfigObj.setImprintMethods(listOfImprintMethods);
+			productConfigObj.setThemes(themeList);
 			productConfigObj.setRushTime(rushTime);
 			productConfigObj.setShippingEstimates(shipping);
 			productConfigObj.setProductionTime(listOfProductionTime);
+			List<Values> valuesList =dimParserObj.getValues(dimensionValue.toString(),
+					                                            dimensionUnits.toString(), dimensionType.toString());
+               finalDimensionObj.setValues(valuesList);	
 			size.setDimension(finalDimensionObj);
 			productConfigObj.setImprintMethods(imprintMethods); 
 			productConfigObj.setSizes(size);
@@ -1108,7 +1126,7 @@ public class SageProductsExcelMapping {
 			
 			}catch(Exception e){
 			//e.printStackTrace();
-			_LOGGER.error("Error while Processing Product Id and Cause:"+productExcelObj.getExternalProductId() +" "+e.getCause() );		 
+			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
 		}
 		}
 		workbook.close();
