@@ -216,19 +216,14 @@ public class SageProductsExcelMapping {
 					
 					 break;
 				case 2://AsiProdNo
-					int asiProdNo = 0;
-					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						try{
-							asiProdNo = Integer.parseInt(cell.getStringCellValue());
-							productExcelObj.setAsiProdNo(Integer.toString(asiProdNo));
-						}catch(NumberFormatException nfe){
-							
-						}
-					  }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						  asiProdNo = (int) cell.getNumericCellValue();
-						  productExcelObj.setAsiProdNo(Integer.toString(asiProdNo));
-					  }
-					
+					 String asiProdNo = null;
+					    if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
+					      asiProdNo = String.valueOf(cell.getStringCellValue());
+					    }else if
+					     (cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+					      asiProdNo = String.valueOf((int)cell.getNumericCellValue());
+					     }
+					     productExcelObj.setAsiProdNo(asiProdNo);		
 					  break;
 				case 3://Name
                     String name = cell.getStringCellValue();
