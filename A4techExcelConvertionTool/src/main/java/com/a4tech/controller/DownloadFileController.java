@@ -30,18 +30,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.a4tech.util.ApplicationConstants;
+import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @RequestMapping("/sendEmails")
 public class DownloadFileController {
 	
 	private static Logger _LOGGER = Logger.getLogger(DownloadFileController.class);
-	
+	@Autowired
+	 private JavaMailSender mailSenderObj;
 	    String username;
 	    String password;
 	    String domain;
-	    String portNo;
+		String portNo;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String doSendEmail(HttpServletRequest request,
@@ -81,45 +91,32 @@ public class DownloadFileController {
 	public void sendMail(String supplierId,int batchId){
 		String fileName= batchId+".txt";
 		try {
-				Properties props = new Properties();
-				props.put("mail.smtp.auth", "true");
-				props.put("mail.smtp.starttls.enable", "true");
-				props.put("mail.smtp.host", domain);
-				props.put("mail.smtp.port", portNo);
-
-				Session session = Session.getInstance(props,
-				  new javax.mail.Authenticator() {
-					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication(username, password);
-					}
-				  });
-		    DataSource source = new FileDataSource(ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH+ 
-		    		                                                                             fileName);
-			Message message = new MimeMessage(session);
-			message.setFrom(new InternetAddress(username));
-			message.setRecipients(Message.RecipientType.TO,
-				InternetAddress.parse(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId)));
-			message.setSubject("Product Error Batch File");
-			  // Create the message part
-	         BodyPart messageBodyPart = new MimeBodyPart();
-
-	         // Now set the actual message
-	         messageBodyPart.setText("Kindly find the attached " +batchId +" Product Error File"
-	        		 + "\n\n\n\n Note: This is a System Generated Message Kindly Do not reply back");
-	        
-	         Multipart multipart = new MimeMultipart();
-	         multipart.addBodyPart(messageBodyPart);
-	         messageBodyPart = new MimeBodyPart();
-	        
-	         messageBodyPart.setDataHandler(new DataHandler(source));
-	         messageBodyPart.setFileName(String.valueOf(batchId));
-	         multipart.addBodyPart(messageBodyPart);
-	        message.setContent(multipart);
-			Transport.send(message);
-			_LOGGER.info("Email Sent Successfully to Suppier batchId " +batchId+" On Email Id: "+ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
-		}catch(Exception e){
-			_LOGGER.error("Error While Sending Email To Supplier "+batchId +e.toString());
-		}
+				FileSystemResource  file = new FileSystemResource(ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH+ fileName);
+		     // if(file.exists()){
+		    	  
+			    /* response.setHeader("Content-Disposition", "attachment; filename=\""
+			     + fileName + "\"");*/
+		      MimeMessage mimeMessage = mailSenderObj.createMimeMessage();
+		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		         helper.setFrom("a4tech.batchupdate@gmail.com");
+		      helper.setTo(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
+		      helper.setSubject("Product Error Batch File");
+		      helper.setText("Kindly find the attached " +batchId +" Product Error File"
+		             + "\n\n\n\n Note: This is a System Generated Message Kindly Do not reply back");
+		       helper.addAttachment(file.getFilename(), file);
+		       mailSenderObj.send(mimeMessage);
+		       //emailMsg="Email Sent Successfully!!!";
+	      /*}else{
+	    	  response.setHeader("Content-Disposition", "attachment; filename=\""
+					     + "defualtFile.txt" + "\"");
+	      		}*/
+		      } catch (javax.mail.MessagingException e) {
+			      // TODO Auto-generated catch block
+			    _LOGGER.error(e.toString());
+			     }catch (Exception e) {
+					// TODO: handle exception
+			    	 _LOGGER.error(e.toString());
+				}
 		
 	}
 
@@ -154,4 +151,12 @@ public class DownloadFileController {
 	public void setPortNo(String portNo) {
 		this.portNo = portNo;
 	}
+	public JavaMailSender getMailSenderObj() {
+		return mailSenderObj;
+	}
+
+	public void setMailSenderObj(JavaMailSender mailSenderObj) {
+		this.mailSenderObj = mailSenderObj;
+	}
+
 }
