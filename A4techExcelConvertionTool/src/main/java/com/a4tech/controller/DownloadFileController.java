@@ -30,14 +30,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.a4tech.util.ApplicationConstants;
+import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @RequestMapping("/sendEmails")
 public class DownloadFileController {
 	
 	private static Logger _LOGGER = Logger.getLogger(DownloadFileController.class);
-	
+	@Autowired
+	 private JavaMailSender mailSenderObj;
 	    String username;
 	    String password;
 	    String domain;
@@ -47,89 +57,45 @@ public class DownloadFileController {
 	public String doSendEmail(HttpServletRequest request,
 			HttpServletResponse response,Model model) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.setContentType("text/html");
-		 
-		String supplierId=(String) request.getSession().getAttribute("asiNumber");
-		  
-		 
-		String fileName= supplierId+".txt";
-		String filepath =ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH;
-		String emailMsg="No Error File Found for Supplier "+supplierId +" ,Email not sent!!!";
 		
-		File f = new File(filepath+ fileName);
-		boolean flag=false;
-		  if(f.exists()){
-			  flag=true;
-		  }
-		  response.setContentType("APPLICATION/OCTET-STREAM");
-			response.setHeader("Content-Disposition", "attachment; filename=\""
-					+ fileName + "\"");
-			int lineNum;
-			try(PrintWriter out = response.getWriter();
-					FileInputStream fileInputStream = new FileInputStream(ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH
-					+ fileName)){
-				while ((lineNum = fileInputStream.read()) != ApplicationConstants.CONST_NEGATIVE_NUMBER_ONE) {
-					out.write(lineNum);
+		      String supplierId=(String) request.getSession().getAttribute("asiNumber");
+		    
+			  String fileName= supplierId+".txt";
+			 
+			  String emailMsg="No Error File Found for Supplier "+supplierId +" ,Email not sent!!!";
+			  try {
+			  response.setContentType("text/html");
+			  response.setContentType("APPLICATION/OCTET-STREAM");
+			
+		     FileSystemResource  file = new FileSystemResource(ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH+ fileName);
+		      if(file.exists()){
+		    	  
+			     response.setHeader("Content-Disposition", "attachment; filename=\""
+			     + fileName + "\"");
+		      MimeMessage mimeMessage = mailSenderObj.createMimeMessage();
+		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		         helper.setFrom("a4tech.batchupdate@gmail.com");
+		      helper.setTo(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
+		      helper.setSubject("Product Error Batch File");
+		      helper.setText("Kindly find the attached " +supplierId +" Product Error File"
+		             + "\n\n\n\n Note: This is a System Generated Message Kindly Do not reply back");
+		       helper.addAttachment(file.getFilename(), file);
+		       mailSenderObj.send(mimeMessage);
+		       emailMsg="Email Sent Successfully!!!";
+	      }else{
+	    	  response.setHeader("Content-Disposition", "attachment; filename=\""
+					     + "defualtFile.txt" + "\"");
+	      		}
+		      } catch (javax.mail.MessagingException e) {
+			      // TODO Auto-generated catch block
+			    _LOGGER.error(e.toString());
+			     }catch (Exception e) {
+					// TODO: handle exception
+			    	 _LOGGER.error(e.toString());
 				}
-			}catch (FileNotFoundException e) {
-				_LOGGER.fatal("Error log file is not available");
-			}
-			
-		try {
-			if(flag){
-				Properties props = new Properties();
-				props.put("mail.smtp.auth", "true");
-				props.put("mail.smtp.starttls.enable", "true");
-				props.put("mail.smtp.host", domain);
-				props.put("mail.smtp.port", portNo);
-
-				Session session = Session.getInstance(props,
-				  new javax.mail.Authenticator() {
-					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication(username, password);
-					}
-				  });
-		    DataSource source = new FileDataSource(filepath+ fileName);
-			Message message = new MimeMessage(session);
-			message.setFrom(new InternetAddress(username));
-			message.setRecipients(Message.RecipientType.TO,
-				InternetAddress.parse(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId)));
-			message.setSubject("Product Error Batch File");
-			//message.setText("Kindly find the attached " +filename +"Product Error File");
-			  // Create the message part
-	         BodyPart messageBodyPart = new MimeBodyPart();
-
-	         // Now set the actual message
-	         messageBodyPart.setText("Kindly find the attached " +supplierId +" Product Error File"
-	        		 + "\n\n\n\n Note: This is a System Generated Message Kindly Do not reply back");
-	        
-	         Multipart multipart = new MimeMultipart();
-	         multipart.addBodyPart(messageBodyPart);
-	         messageBodyPart = new MimeBodyPart();
-	        
-	         messageBodyPart.setDataHandler(new DataHandler(source));
-	         messageBodyPart.setFileName(supplierId);
-	         multipart.addBodyPart(messageBodyPart);
-	        message.setContent(multipart);
-			Transport.send(message);
-			emailMsg="Email Sent Successfully !!!";
-			
-			_LOGGER.info("Email Sent Successfully to Suppier " +supplierId+" On Email Id: "+ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
-			}
-		}catch(Exception e){
-			_LOGGER.error("Error While Sending Email To Supplier "+supplierId +e.toString());
-		}
-		
-		 /*SimpleMailMessage message = new SimpleMailMessage();
-		  message.setFrom("amey.more@a4technology.com");
-		  message.setTo("sharvari.patil@a4technology.com");
-		  message.setSubject("Test Mail"); 
-		  message.setText("Hi"); 
-		  //sending message  
-		  mailSender.send(message); */
-		  model.addAttribute("successmsg", emailMsg);
-        return "success";    
-			
+		      
+		      model.addAttribute("successmsg", emailMsg);
+		      return "success";    
 	}
 	
 
@@ -164,4 +130,15 @@ public class DownloadFileController {
 	public void setPortNo(String portNo) {
 		this.portNo = portNo;
 	}
+
+
+	public JavaMailSender getMailSenderObj() {
+		return mailSenderObj;
+	}
+
+
+	public void setMailSenderObj(JavaMailSender mailSenderObj) {
+		this.mailSenderObj = mailSenderObj;
+	}
+	
 }
