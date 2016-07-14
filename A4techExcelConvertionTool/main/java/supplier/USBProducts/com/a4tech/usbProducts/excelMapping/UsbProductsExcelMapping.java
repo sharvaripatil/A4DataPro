@@ -97,8 +97,11 @@ public class UsbProductsExcelMapping {
 	private ShippingEstimationParser shipinestmt;
 	
 	@SuppressWarnings("finally")
-	public int readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId){
 		
+		List<String> numOfProductsSuccess = new ArrayList<String>();
+		List<String> numOfProductsFailure = new ArrayList<String>();
+		String finalResult = null;
 		List<String> numOfProducts = new ArrayList<String>();
 		FileInputStream inputStream = null;
 		//Workbook workbook = null;
@@ -227,7 +230,9 @@ public class UsbProductsExcelMapping {
 							 	//productList.add(productExcelObj);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 							 	if(num ==1){
-							 		numOfProducts.add("1");
+							 		numOfProductsSuccess.add("1");
+							 	}else{
+							 		numOfProductsFailure.add("0");
 							 	}
 								//System.out.println(mapper.writeValueAsString(productExcelObj));
 							 	_LOGGER.info("list size>>>>>>>"+numOfProducts.size());
@@ -1025,26 +1030,27 @@ public class UsbProductsExcelMapping {
 		 	//productList.add(productExcelObj);
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
-		 		numOfProducts.add("1");
+		 		numOfProductsSuccess.add("1");
+		 	}else{
+		 		numOfProductsFailure.add("0");
 		 	}
 		 	_LOGGER.info("list size>>>>>>"+numOfProducts.size());
 			//System.out.println(mapper1.writeValueAsString(productExcelObj));
-	
+		 	finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
+		 	productDaoObj.getErrorLog(asiNumber,batchId);
+		 	return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet ");
-			return 0;
+			return finalResult;
 		}finally{
-			productDaoObj.getErrorLog(asiNumber,batchId);
 			try {
 				workbook.close();
-			//inputStream.close();
 			} catch (IOException e) {
 				_LOGGER.error("Error while Processing excel sheet");
 	
 			}
 				_LOGGER.info("Complted processing of excel sheet ");
 				_LOGGER.info("Total no of product:"+numOfProducts.size() );
-				return numOfProducts.size();
 		}
 		
 	

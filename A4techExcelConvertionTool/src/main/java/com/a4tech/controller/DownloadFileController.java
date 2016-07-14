@@ -49,12 +49,12 @@ public class DownloadFileController {
 		// TODO Auto-generated method stub
 		response.setContentType("text/html");
 		 
-		String supplierId=(String) request.getSession().getAttribute("asiNumber");
+		String batchId=(String) request.getSession().getAttribute("batchId");
 		  
 		 
-		String fileName= supplierId+".txt";
+		String fileName= batchId+".txt";
 		String filepath =ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH;
-		String emailMsg="No Error File Found for Supplier "+supplierId +" ,Email not sent!!!";
+		//String emailMsg="No Error File Found for Supplier "+supplierId +" ,Email not sent!!!";
 		
 		File f = new File(filepath+ fileName);
 		boolean flag=false;
@@ -74,9 +74,13 @@ public class DownloadFileController {
 			}catch (FileNotFoundException e) {
 				_LOGGER.fatal("Error log file is not available");
 			}
+        return "success";    
 			
+	}
+	
+	public void sendMail(String supplierId,int batchId){
+		String fileName= batchId+".txt";
 		try {
-			if(flag){
 				Properties props = new Properties();
 				props.put("mail.smtp.auth", "true");
 				props.put("mail.smtp.starttls.enable", "true");
@@ -89,18 +93,18 @@ public class DownloadFileController {
 						return new PasswordAuthentication(username, password);
 					}
 				  });
-		    DataSource source = new FileDataSource(filepath+ fileName);
+		    DataSource source = new FileDataSource(ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH+ 
+		    		                                                                             fileName);
 			Message message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(username));
 			message.setRecipients(Message.RecipientType.TO,
 				InternetAddress.parse(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId)));
 			message.setSubject("Product Error Batch File");
-			//message.setText("Kindly find the attached " +filename +"Product Error File");
 			  // Create the message part
 	         BodyPart messageBodyPart = new MimeBodyPart();
 
 	         // Now set the actual message
-	         messageBodyPart.setText("Kindly find the attached " +supplierId +" Product Error File"
+	         messageBodyPart.setText("Kindly find the attached " +batchId +" Product Error File"
 	        		 + "\n\n\n\n Note: This is a System Generated Message Kindly Do not reply back");
 	        
 	         Multipart multipart = new MimeMultipart();
@@ -108,30 +112,16 @@ public class DownloadFileController {
 	         messageBodyPart = new MimeBodyPart();
 	        
 	         messageBodyPart.setDataHandler(new DataHandler(source));
-	         messageBodyPart.setFileName(supplierId);
+	         messageBodyPart.setFileName(String.valueOf(batchId));
 	         multipart.addBodyPart(messageBodyPart);
 	        message.setContent(multipart);
 			Transport.send(message);
-			emailMsg="Email Sent Successfully !!!";
-			
-			_LOGGER.info("Email Sent Successfully to Suppier " +supplierId+" On Email Id: "+ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
-			}
+			_LOGGER.info("Email Sent Successfully to Suppier batchId " +batchId+" On Email Id: "+ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
 		}catch(Exception e){
-			_LOGGER.error("Error While Sending Email To Supplier "+supplierId +e.toString());
+			_LOGGER.error("Error While Sending Email To Supplier "+batchId +e.toString());
 		}
 		
-		 /*SimpleMailMessage message = new SimpleMailMessage();
-		  message.setFrom("amey.more@a4technology.com");
-		  message.setTo("sharvari.patil@a4technology.com");
-		  message.setSubject("Test Mail"); 
-		  message.setText("Hi"); 
-		  //sending message  
-		  mailSender.send(message); */
-		  model.addAttribute("successmsg", emailMsg);
-        return "success";    
-			
 	}
-	
 
 	public String getUsername() {
 		return username;

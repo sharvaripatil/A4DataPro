@@ -32,6 +32,7 @@ import com.a4tech.product.service.ProductService;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.service.loginImpl.LoginServiceImpl;
 import com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping;
+import com.a4tech.util.ApplicationConstants;
 import com.a4tech.v2.core.excelMapping.V2ExcelMapping;
 
 @Controller
@@ -53,6 +54,7 @@ public class FileUpload extends HttpServlet{
 	private SageProductsExcelMapping sageExcelMapping;
 	private V2ExcelMapping productV2ExcelMapping;
 	private ExcelMapping gbDataExcelMapping;
+	private DownloadFileController downloadMail;
 	@Autowired
 	private LoginServiceImpl loginService;
 	private ProductDao productDao;
@@ -73,10 +75,15 @@ public class FileUpload extends HttpServlet{
 	public String fileUpload(@ModelAttribute("filebean") @Valid FileBean fileBean , BindingResult result ,
 			final RedirectAttributes redirectAttributes , Model model,HttpServletRequest request){
 		_LOGGER.info("Enter Controller Class");
+		String finalResult = null;
 		//LoginServiceImpl loginService  = new LoginServiceImpl();
 		 Workbook workbook = null;
 
 		int numOfProducts =0;
+		String emailMsg="Email Sent Successfully !!!";
+		String noOfProductsSuccess = null;
+		String noOfProductsFailure = null;
+		String[] splitFinalResult;
 		 String asiNumber = fileBean.getAsiNumber();
 		 if(result.hasErrors()){
 			 return "Home"; 
@@ -102,28 +109,52 @@ public class FileUpload extends HttpServlet{
 	 	               _LOGGER.info("Invlid upload excel file,Please try one more time");
 	            	}
 	            int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
-	            	 request.getSession().setAttribute("asiNumber", asiNumber);
+	            	 request.getSession().setAttribute("batchId", String.valueOf(batchId));
 	                switch (asiNumber) {
 	                case "55200": // GB Data Excel Mapping
 	                	 	numOfProducts = gbDataExcelMapping.readExcel(accessToken,workbook, Integer.valueOf(asiNumber),batchId);
 			                model.addAttribute("fileName", numOfProducts);
+			                downloadMail.sendMail(asiNumber, batchId);
+							model.addAttribute("successmsg", emailMsg);
 			                return "success";
 					case "55201"://product v2
 				        numOfProducts = productV2ExcelMapping.readExcel(accessToken,workbook, Integer.valueOf(asiNumber),batchId);
 		                model.addAttribute("fileName", numOfProducts);
+		                downloadMail.sendMail(asiNumber, batchId);
+						model.addAttribute("successmsg", emailMsg);
 		                return "success";
 						//break;
 					case "55202"://supplier USB data(Nov_USB Products)
-							numOfProducts = usbExcelMapping.readExcel(accessToken, workbook, Integer.valueOf(asiNumber),batchId);
-							model.addAttribute("fileName", numOfProducts);
+						finalResult = usbExcelMapping.readExcel(accessToken, workbook, Integer.valueOf(asiNumber),batchId);
+						if(finalResult != null){
+							splitFinalResult = finalResult.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+							noOfProductsSuccess = splitFinalResult[0];
+							noOfProductsFailure = splitFinalResult[1];
+							model.addAttribute("successProductsCount", noOfProductsSuccess);
+							model.addAttribute("failureProductsCount", noOfProductsFailure);
+							if(!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)){
+								model.addAttribute("successmsg", emailMsg);
+								downloadMail.sendMail(asiNumber, batchId);
+							}
+						}
 							return "success";
 					case "55203":	//supplier JulyData	
 						numOfProducts = julymapping.readExcel(accessToken, workbook,Integer.valueOf(asiNumber),batchId);
 						model.addAttribute("fileName", numOfProducts);
 						return "success";
 				    case "55204":	//supplier Sage
-				    	numOfProducts = sageExcelMapping.readExcel(accessToken, workbook, Integer.valueOf(asiNumber),batchId);
-						model.addAttribute("fileName", numOfProducts);
+				    	finalResult = sageExcelMapping.readExcel(accessToken, workbook, Integer.valueOf(asiNumber),batchId);
+				    	if(finalResult != null){
+				    		splitFinalResult = finalResult.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+				    		noOfProductsSuccess = splitFinalResult[0];
+				    		noOfProductsFailure = splitFinalResult[1];
+				    		model.addAttribute("successProductsCount", noOfProductsSuccess);
+				    		model.addAttribute("failureProductsCount", noOfProductsFailure);
+				    		if(!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)){
+				    			model.addAttribute("successmsg", emailMsg);
+				    			downloadMail.sendMail(asiNumber, batchId);
+				    		}
+				    }
 						return "success";
 							
 					default:
@@ -190,6 +221,12 @@ public class FileUpload extends HttpServlet{
 	}
 	public void setGbDataExcelMapping(ExcelMapping gbDataExcelMapping) {
 		this.gbDataExcelMapping = gbDataExcelMapping;
+	}
+	public DownloadFileController getDownloadMail() {
+		return downloadMail;
+	}
+	public void setDownloadMail(DownloadFileController downloadMail) {
+		this.downloadMail = downloadMail;
 	}
 	
 }

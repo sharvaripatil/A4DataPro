@@ -222,6 +222,7 @@ public class ProductDao {
 			}
 				errorEntity = new ErrorEntity();
 				errorEntity.setError(errorMessage.getReason());
+				_LOGGER.info("error message length:::"+errorMessage.getReason().length());
 				productEntity.addErrorEntity(errorEntity);	  
 		}
 		productEntity.setSupplierAsiNumber(asiNumber);
@@ -235,7 +236,7 @@ public class ProductDao {
 		tx.commit();
 		
 	}catch(Exception ex){
-		_LOGGER.info("Error in dao block"+ex.getCause());
+		_LOGGER.info("Error in dao block:"+ex.getCause());
 	}finally{
 		if(session !=null){
 			try{
@@ -265,7 +266,7 @@ public class ProductDao {
 				}
 	            hashmap.put(arr.getProductNo(), arraylist);
 	        }
-	        String errorComp=Integer.toString(asiNumber);
+	        String errorComp=Integer.toString(batchId);
 	        File fout = new File(errorFileLocPath+errorComp+".txt");
 	    	FileOutputStream fos = new FileOutputStream(fout);
 	     

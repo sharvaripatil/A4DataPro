@@ -84,13 +84,14 @@
      <property name="productDaoObj"  ref="productDao"/>
     </bean>
   <bean id="fileUpload" class="com.a4tech.controller.FileUpload">
-  <property name="productV2ExcelMapping"  ref="excelMappingV2"/>
+  	  <property name="productV2ExcelMapping"  ref="excelMappingV2"/>
       <property name="usbExcelMapping"  ref="usbExcelMapping"/>
       <property name="julymapping"  ref="julymapping"/>
       <property name="loginService"  ref="loginServiceImpl"/>
       <property name="sageExcelMapping" ref="sageMappingId"/> 
       <property name="productDao" ref="productDao"/>
       <property name="gbDataExcelMapping" ref="gbDataExcelMappingId"/>
+      <property name="downloadMail" ref="downloadFileController"/>
    </bean>
    <bean id="usbExcelMapping" class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
     <property name="colorparser"  ref="colorparser"/>
@@ -123,6 +124,11 @@
   		<property name="url" value="${mysql.db.url}" />
   		<property name="username" value="${mysql.db.username}" />
   		<property name="password" value="${mysql.db.password}" />
+        
+        <!-- server details -->
+  		<!-- <property name="url" value="${server.mysql.db.url}" />
+  		<property name="username" value="${server.mysql.db.username}" />
+  		<property name="password" value="${server.mysql.db.password}" /> -->
    </bean>   
    
    <bean id="hibernate3AnnotatedSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">

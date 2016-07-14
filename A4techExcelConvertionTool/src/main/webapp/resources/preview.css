@@ -37,3 +37,11 @@ h1 span { color: #111; font-family:'Fredericka the Great'; font-size: 30px; font
 .panel-heading .title{
 	margin:0px 100px 0px 0px;
 }
+
+.successtxt{
+	font-size: 39px !important;
+	color:#D81B60;
+	font-style: italic;
+}
+.greens{color: #29ce00;}
+.faileds{color:#e71d1d;}

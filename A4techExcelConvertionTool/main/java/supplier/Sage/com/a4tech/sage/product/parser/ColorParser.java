@@ -15,8 +15,9 @@ public class ColorParser {
 		List<Color> colorlist = new ArrayList<Color>();
 		String colorArr[] = colorValue
 				.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-		Color colorObj = new Color();
+		Color colorObj = null;
 		for (String value : colorArr) {
+			colorObj = new Color();
 			if (value.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
 
 				String colorArr1[] = colorValue

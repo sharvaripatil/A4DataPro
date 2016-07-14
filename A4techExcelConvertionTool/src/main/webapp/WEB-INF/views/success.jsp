@@ -29,21 +29,33 @@
     <div class="col-md-6 col-xs-offset-2 col-lg-8 col-lg-offset-2">
       <div class="panel-body">
        <div class="success">
-        <h1 style="font-size: 39px !important;"><strong>${fileName}</strong> Product's are uploaded successfully.</h1>
-        <br/><br/>
+       <c:choose>
+       		<c:when test="${successProductsCount != 0 && failureProductsCount != 0}">
+       			<h1 style="font-size: 25px !important;"><strong>${successProductsCount}</strong> Product's are uploaded <strong class="greens">successfully</strong> & <strong>${failureProductsCount}</strong> Product's are <strong class="faileds">failed</strong> </h1>
+       		</c:when>
+       		<c:when test="${successProductsCount == 0}">
+       			<h1 style="font-size: 25px !important;"><strong>${failureProductsCount}</strong> Product's are <strong class="faileds">failed</strong></h1>
+       		</c:when>
+       		<c:when test="${failureProductsCount == 0}">
+       			<h1 style="font-size: 25px !important;"><strong>${successProductsCount}</strong> Product's are uploaded <strong class="greens">successfully</strong></h1>
+       		</c:when>
+       </c:choose>
+       <%--  <h1 style="font-size: 25px !important;"><strong>${fileName}</strong> Product's are uploaded successfully.</h1>
+        <br/><br/> --%>
       <a class="btn btn-home btn-lg" style="margin: 0px 41% auto;" href="<c:url value='/uploadFile.htm' />"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
     </div>
         <br>
         <br>
         <br>
+      <c:if test="${failureProductsCount != 0}">
        <div class="filedownload" align="left">
         <h4>Click on the link to download Product Error File:
 	<c:url value="/sendEmails.html" var="sendEmailsLink" />
 	<a href="${sendEmailsLink}"><u>Download a File</u></a></h4>
       <br/>
-         <h4 style="font-size: 39px !important;"><strong>${successmsg}</strong> </h4>
+         <h4 class="successtxt"><strong>${successmsg}</strong> </h4>
         </div>
-    
+    </c:if>
       </div>
     </div>
   </div>

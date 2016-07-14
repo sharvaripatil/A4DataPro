@@ -57,17 +57,15 @@ public class SageProductsExcelMapping {
 	private RushTimeParser    rushTimeParser;
 	private PackagingParser	packagingParser;
 	private ShippingEstimateParser shippingEstimateParser;
-	List<String> productKeywords = new ArrayList<String>();
-	List<Theme> themeList = new ArrayList<Theme>();
-	List<Catalog> catalogList = new ArrayList<Catalog>();
 	Size size=new Size();
 	DimensionParser dimParserObj;
 	ColorParser colorParserObj ;
 	ProductDao productDaoObj;
-	public int readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
-		List<String> numOfProducts = new ArrayList<String>();
+		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
+		String finalResult = null;
 		Set<String>  productXids = new HashSet<String>();
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
@@ -138,6 +136,9 @@ public class SageProductsExcelMapping {
 		List<ImprintMethod> listOfImprintMethods = new ArrayList<ImprintMethod>();
 		List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
 		RushTime rushTime  = new RushTime();
+		List<String> productKeywords = new ArrayList<String>();
+		List<Theme> themeList = new ArrayList<Theme>();
+		List<Catalog> catalogList = new ArrayList<Catalog>();
 		while (iterator.hasNext()) {
 			
 			try{
@@ -183,16 +184,20 @@ public class SageProductsExcelMapping {
 							 	//productList.add(productExcelObj);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
-							 		numOfProducts.add("1");
+							 		numOfProductsSuccess.add("1");
 							 	}else{
 							 		numOfProductsFailure.add("0");
 							 	}
 								//System.out.println(mapper.writeValueAsString(productExcelObj));
-							 	_LOGGER.info("list size>>>>>>>"+numOfProducts.size());
+							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 								// reset for repeateable set 
 								priceGrids = new ArrayList<PriceGrid>();
 								productConfigObj = new ProductConfigurations();
+								themeList = new ArrayList<Theme>();
+								finalDimensionObj = new Dimension();
+								catalogList = new ArrayList<Catalog>();
+								productKeywords = new ArrayList<String>();
 								//option=new ArrayList<Option>();
 								
 						 }
@@ -226,8 +231,8 @@ public class SageProductsExcelMapping {
 					     productExcelObj.setAsiProdNo(asiProdNo);		
 					  break;
 				case 3://Name
-                    String name = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(name)){
+                     productName = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(productName)){
 					productExcelObj.setName(cell.getStringCellValue());
 					}else{
 						productExcelObj.setName(ApplicationConstants.CONST_STRING_EMPTY);
@@ -303,8 +308,8 @@ public class SageProductsExcelMapping {
 				case 13: //Colors
 					String colorValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(colorValue)){
-	           	    color=colorParserObj.getColorCriteria(colorValue);
-	           	    productConfigObj.setColors(color);
+						color=colorParserObj.getColorCriteria(colorValue);
+						productConfigObj.setColors(color);
 					}	
 					break;
 					
@@ -330,7 +335,9 @@ public class SageProductsExcelMapping {
 					 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 					    dimensionValue1 =String.valueOf((int)cell.getNumericCellValue());
 					 }
-						dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					   if(!dimensionValue1.isEmpty()){
+						   dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					   }
 					
 					break;
 				case 16: //size -- Unit
@@ -340,8 +347,9 @@ public class SageProductsExcelMapping {
 					 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 						 dimensionUnits1 =String.valueOf((int)cell.getNumericCellValue());
 					 }
-					
-					 dimensionUnits.append(dimensionUnits1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					 if(!dimensionUnits1.isEmpty()){
+						 dimensionUnits.append(dimensionUnits1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					 }
 					  break;
 				
 				case 17: //size -- type
@@ -351,7 +359,9 @@ public class SageProductsExcelMapping {
 					 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 						 dimensionType1 =String.valueOf((int)cell.getNumericCellValue());
 					 }
-					dimensionType.append(dimensionType1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					if(!dimensionType1.isEmpty()){
+						dimensionType.append(dimensionType1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					}
 					  
 					 
 					break;
@@ -363,7 +373,9 @@ public class SageProductsExcelMapping {
 						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 							 dimensionValue2 =String.valueOf((int)cell.getNumericCellValue());
 						 }
-                  dimensionValue.append(dimensionValue2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					 if(!dimensionValue2.isEmpty()){
+						 dimensionValue.append(dimensionValue2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					 }
 				
 					break;
 					
@@ -374,11 +386,9 @@ public class SageProductsExcelMapping {
 						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 							 dimensionUnits2 =String.valueOf((int)cell.getNumericCellValue());
 						 }
-					 dimensionUnits.append(dimensionUnits2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
-				     
-					//String unit2=String.valueOf(Dimension2Units);
-
-					
+					if(!dimensionUnits2.isEmpty()){
+						dimensionUnits.append(dimensionUnits2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					}
 					break;
 					
 				case 20: //size
@@ -388,9 +398,10 @@ public class SageProductsExcelMapping {
 						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 							 dimensionType2 =String.valueOf((int)cell.getNumericCellValue());
 						 }
-					dimensionType.append(dimensionType2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
-				
-				
+					if(!dimensionType2.isEmpty()){
+						dimensionType.append(dimensionType2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					}
+					
 					break;
 					
 				case 21: //size
@@ -400,8 +411,9 @@ public class SageProductsExcelMapping {
 						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 							 dimensionValue3 =String.valueOf((int)cell.getNumericCellValue());
 						 }
-					dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
-				
+					if(dimensionValue3 != null && !dimensionValue3.isEmpty()){
+						dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					}
 					break;
 					
 					
@@ -412,10 +424,9 @@ public class SageProductsExcelMapping {
 						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 							 dimensionUnits3 =String.valueOf((int)cell.getNumericCellValue());
 						 }
-					 dimensionUnits.append(dimensionUnits3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
-
-					 
-	
+					if(dimensionUnits3 != null && !dimensionUnits3.isEmpty()){
+						 dimensionUnits.append(dimensionUnits3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					}
 				   break;
 					
 				case 23: //size
@@ -425,7 +436,10 @@ public class SageProductsExcelMapping {
 						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 							 dimensionType3 =String.valueOf((int)cell.getNumericCellValue());
 						 }
-					dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					if(dimensionType3 != null && !dimensionType3.isEmpty()){
+						dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+					}
+					
 
 					
 				   break;
@@ -616,11 +630,12 @@ public class SageProductsExcelMapping {
 				case 81:  // Imprint location
 					
 					String imprintLocation = cell.getStringCellValue();
-					ImprintLocation locationObj = new ImprintLocation();
-					locationObj.setValue(imprintLocation);
-					listImprintLocation.add(locationObj);
-					    break;
-					    
+					if(!imprintLocation.isEmpty()){
+						ImprintLocation locationObj = new ImprintLocation();
+						locationObj.setValue(imprintLocation);
+						listImprintLocation.add(locationObj);
+					}
+					 break;
 				case 82:  // Second Imprintsize1
 					   	break;
 					   	
@@ -641,9 +656,11 @@ public class SageProductsExcelMapping {
 					  
 				case 88: // Second Imprint location
 					String imprintLocation2 = cell.getStringCellValue();
-					ImprintLocation locationObj2 = new ImprintLocation();
-					locationObj2.setValue(imprintLocation2);
-					listImprintLocation.add(locationObj2);
+					if(!imprintLocation2.isEmpty()){
+						ImprintLocation locationObj2 = new ImprintLocation();
+						locationObj2.setValue(imprintLocation2);
+						listImprintLocation.add(locationObj2);
+					}
 					break;
 				case 89: // DecorationMethod
 					String decorationMethod = cell.getStringCellValue();
@@ -694,15 +711,15 @@ public class SageProductsExcelMapping {
 					
 				case 101:// AssembledInCountry
 					String assembledInCountry = cell.getStringCellValue();
-					assembledInCountry = originParser.getCountryCodeConvertName(assembledInCountry);
-					if(!assembledInCountry.isEmpty() && assembledInCountry != null){
+					if(!assembledInCountry.isEmpty()){
+						assembledInCountry = originParser.getCountryCodeConvertName(assembledInCountry);
 						productExcelObj.setAdditionalProductInfo(assembledInCountry);
 					}
 					break;
 				case 102: //DecoratedInCountry
 					String decoratedInCountry = cell.getStringCellValue();
-					decoratedInCountry = originParser.getCountryCodeConvertName(decoratedInCountry);
-					if(!decoratedInCountry.isEmpty() && decoratedInCountry != null){
+					if(!decoratedInCountry.isEmpty()){
+						decoratedInCountry = originParser.getCountryCodeConvertName(decoratedInCountry);
 						productExcelObj.setAdditionalProductInfo(decoratedInCountry);
 					}
 					break;
@@ -1079,6 +1096,9 @@ public class SageProductsExcelMapping {
 			size.setDimension(finalDimensionObj);
 			productConfigObj.setImprintMethods(imprintMethods); 
 			productConfigObj.setSizes(size);
+			dimensionValue = new  StringBuilder();
+			dimensionUnits = new  StringBuilder();
+			dimensionType = new  StringBuilder();
 			//imprintColorsValueList = imprintColorParser.getImprintColorCriteria(imprintColorValues.toString());
 			//imprintColors.setType("COLR");
 			//imprintColors.setValues(imprintColorsValueList);
@@ -1134,31 +1154,32 @@ public class SageProductsExcelMapping {
 		 	//productList.add(productExcelObj);
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
-		 		numOfProducts.add("1");
+		 		numOfProductsSuccess.add("1");
 		 	}else{
 		 		numOfProductsFailure.add("0");
 		 	}
-		 	_LOGGER.info("list size>>>>>>"+numOfProducts.size());
+		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 			//System.out.println(mapper1.writeValueAsString(productExcelObj));
-	
+	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
+	       productDaoObj.getErrorLog(asiNumber,batchId);
+	       //return numOfProductsSuccess.size();
+	       return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet ");
+			//return numOfProductsSuccess.size();
+			return finalResult;
 		}finally{
-			productDaoObj.getErrorLog(asiNumber,batchId);
 			try {
 				workbook.close();
-			//inputStream.close();
 			} catch (IOException e) {
 				_LOGGER.error("Error while Processing excel sheet");
 	
 			}
 				_LOGGER.info("Complted processing of excel sheet ");
-				_LOGGER.info("Total no of product:"+numOfProducts.size() );
-				return numOfProducts.size();
+				_LOGGER.info("Total no of product:"+numOfProductsSuccess.size() );
 		}
 		
-	
 	}
 	
 	public PostServiceImpl getPostServiceImpl() {
