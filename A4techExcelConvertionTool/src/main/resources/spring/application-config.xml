@@ -121,14 +121,14 @@
    
    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
   		<property name="driverClassName" value="${mysql.db.driverClassName}" />
-  		<!-- <property name="url" value="${mysql.db.url}" />
+  		<property name="url" value="${mysql.db.url}" />
   		<property name="username" value="${mysql.db.username}" />
-  		<property name="password" value="${mysql.db.password}" /> -->
+  		<property name="password" value="${mysql.db.password}" />
         
-        <!-- server details -->
-  		<property name="url" value="${server.mysql.db.url}" />
+         <!-- server details -->
+  		<!-- <property name="url" value="${server.mysql.db.url}" />
   		<property name="username" value="${server.mysql.db.username}" />
-  		<property name="password" value="${server.mysql.db.password}" />
+  		<property name="password" value="${server.mysql.db.password}" />  -->
    </bean>   
    
    <bean id="hibernate3AnnotatedSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
