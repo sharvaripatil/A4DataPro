@@ -222,7 +222,6 @@ public class ProductDao {
 			}
 				errorEntity = new ErrorEntity();
 				errorEntity.setError(errorMessage.getReason());
-				_LOGGER.info("error message length:::"+errorMessage.getReason().length());
 				productEntity.addErrorEntity(errorEntity);	  
 		}
 		productEntity.setSupplierAsiNumber(asiNumber);
