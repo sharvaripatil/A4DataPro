@@ -76,7 +76,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class UsbProductsExcelMapping {
 	
 	private static final Logger _LOGGER = Logger.getLogger(UsbProductsExcelMapping.class);
-	//PostServiceImpl postServiceImpl = new PostServiceImpl();
 	PostServiceImpl postServiceImpl;
 	ProductDao productDaoObj;
 	private ProductColorParser colorparser;
@@ -104,8 +103,6 @@ public class UsbProductsExcelMapping {
 		String finalResult = null;
 		List<String> numOfProducts = new ArrayList<String>();
 		FileInputStream inputStream = null;
-		//Workbook workbook = null;
-		//List<String>  productXids = new ArrayList<String>();
 		Set<String>  listOfProductXids = new HashSet<String>();
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
@@ -208,12 +205,7 @@ public class UsbProductsExcelMapping {
 					}else{
 						
 					}
-					 //xid = cell.getStringCellValue();
-					/* if(productXids.contains(xid)){
-						 productXids.add(xid);
-					 }else{
-						 productXids = new ArrayList<String>();
-					 }*/
+				
 					 
 					checkXid = true;
 				}else{
@@ -225,19 +217,15 @@ public class UsbProductsExcelMapping {
 							 System.out.println("Java object converted to JSON String, written to file");
 							   // Add repeatable sets here
 							 	productExcelObj.setPriceGrids(priceGrids);
-							 	//productConfigObj.setOptions(option);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
-							 	//productList.add(productExcelObj);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else{
 							 		numOfProductsFailure.add("0");
 							 	}
-								//System.out.println(mapper.writeValueAsString(productExcelObj));
 							 	_LOGGER.info("list size>>>>>>>"+numOfProducts.size());
 								
-								// reset for repeateable set 
 								priceGrids = new ArrayList<PriceGrid>();
 								productConfigObj = new ProductConfigurations();
 								option=new ArrayList<Option>();
@@ -274,7 +262,6 @@ public class UsbProductsExcelMapping {
 					String categoryName = cell.getStringCellValue();
 					List<String> listOfCategories = new ArrayList<String>();
 					listOfCategories.add(categoryName);
-					//listOfCategories.add("USB/FLASH DRIVES");
 					productExcelObj.setCategories(listOfCategories);
 				    break;
 					
@@ -295,14 +282,12 @@ public class UsbProductsExcelMapping {
 				case 7:
 					    // product description
 					String productDescription = cell.getStringCellValue();
-					//productDescription = "Phone Holder USB 2.0 Flash Drive";
 					productExcelObj.setDescription(productDescription);
 					break;
 					
 				case 8: // pricegrid related
 					 priceIncludes = cell.getStringCellValue();
 					productExcelObj.setPriceType("L"); 
-					//productExcelObj.setDescription(productName);
 					break;
 					
 				case 9:
@@ -793,7 +778,6 @@ public class UsbProductsExcelMapping {
 				//Imprint colors2 (it is related imprint method values)
 				imprintColorValue = cell.getStringCellValue();
 				if(!StringUtils.isEmpty(imprintColorValue)){
-					/*imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);*/
 					if(imprintColorValue.equalsIgnoreCase("Laser Engraved")){
 						imprintMethodValues.append(imprintColorValue + ",");
 					}	
@@ -939,7 +923,6 @@ public class UsbProductsExcelMapping {
 				
 			//Option Charges
 				break;
-				//productExcelObj.setProductConfigurations(productConfigObj);l
 				
 			case 153:
 				//Additional Product Information
@@ -972,7 +955,6 @@ public class UsbProductsExcelMapping {
 			imprintColors.setValues(imprintColorsValueList);
 			productConfigObj.setImprintColors(imprintColors);
 			
-				//productExcelObj.setProductConfigurations(productConfigObj);l
 			 // end inner while loop
 			if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
 				priceGrids = priceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
@@ -1016,7 +998,6 @@ public class UsbProductsExcelMapping {
 			    optionadditionalinfo=null;
 			
 			}catch(Exception e){
-			//e.printStackTrace();
 			_LOGGER.error("Error while Processing Product :"+productExcelObj.getExternalProductId() );		 
 		}
 		}
@@ -1025,9 +1006,6 @@ public class UsbProductsExcelMapping {
 		   // Add repeatable sets here
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
-		 	/*productExcelObj.setProductRelationSkus(productsku);
-		 	productExcelObj.setProductNumbers(pnumberList);*/
-		 	//productList.add(productExcelObj);
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -1035,7 +1013,6 @@ public class UsbProductsExcelMapping {
 		 		numOfProductsFailure.add("0");
 		 	}
 		 	_LOGGER.info("list size>>>>>>"+numOfProducts.size());
-			//System.out.println(mapper1.writeValueAsString(productExcelObj));
 		 	finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
 		 	productDaoObj.getErrorLog(asiNumber,batchId);
 		 	return finalResult;

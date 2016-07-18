@@ -69,14 +69,12 @@ public class SageProductsExcelMapping {
 		Set<String>  productXids = new HashSet<String>();
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
-		  //ProductSkuParser skuparserobj=new ProductSkuParser();
 		  String productId = null;
 		  String currencyType = null;
 		  String priceQurFlag = null;
 		  String priceType    = null;
 		  String basePriceName = null;
-		  //String priceIncludes = null;
-		  //PriceGridParser priceGridParser = new PriceGridParser();
+		
 		  String upChargeName = null;
 		  String upChargeQur = null;
 		  String upchargeType = null;
@@ -89,7 +87,7 @@ public class SageProductsExcelMapping {
 		  StringBuilder dimensionType = new StringBuilder();
 		  Dimension finalDimensionObj=new Dimension();
 		  Dimension existingDimensiobn;
-		  //ProductNumberParser pnumberParser=new ProductNumberParser();
+
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -113,7 +111,6 @@ public class SageProductsExcelMapping {
 		String quoteUponRequest  = null;
 		StringBuilder priceIncludes = new StringBuilder();
 		String quantity = null;
-		//ProductOptionParser optionparserobj=new ProductOptionParser();
 		String optiontype =null;
 		String optionname =null;
 		String optionvalues =null;
@@ -149,13 +146,10 @@ public class SageProductsExcelMapping {
 			if(productId != null){
 				productXids.add(productId);
 			}
-			 //String productName = null;
 			 boolean checkXid  = false;
 			 ShippingEstimate ShipingItem = null;
-				
 				String shippingitemValue = null;
 				String shippingdimensionValue = null;
-				 //imprintColors.setType("COLR");
 			
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
@@ -177,28 +171,22 @@ public class SageProductsExcelMapping {
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 7){
 							 System.out.println("Java object converted to JSON String, written to file");
-							   // Add repeatable sets here
 							 	productExcelObj.setPriceGrids(priceGrids);
-							 	//productConfigObj.setOptions(option);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
-							 	//productList.add(productExcelObj);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else{
 							 		numOfProductsFailure.add("0");
 							 	}
-								//System.out.println(mapper.writeValueAsString(productExcelObj));
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
-								// reset for repeateable set 
 								priceGrids = new ArrayList<PriceGrid>();
 								productConfigObj = new ProductConfigurations();
 								themeList = new ArrayList<Theme>();
 								finalDimensionObj = new Dimension();
 								catalogList = new ArrayList<Catalog>();
 								productKeywords = new ArrayList<String>();
-								//option=new ArrayList<Option>();
 								
 						 }
 						    if(!productXids.contains(xid)){
@@ -821,257 +809,7 @@ public class SageProductsExcelMapping {
 					
 				case 122: //InventoryMemo
 				break;
-				
-			/*case 123: // not required
-				//Item Colors2
-				colorValue=cell.getStringCellValue();
-				if(!StringUtils.isEmpty(colorValue)){
-					//color=colorparser.getColorCriteria(colorValue);
-				    
-				if(color!=null){
-				productConfigObj.setColors(color);
-				}
-				}
-				break;
-				
-			case 124:
-				//Item Type3
-				System.out.println(124);
-				break;
-				
-			case 125:
-				//Item Colors3
-				colorValue=cell.getStringCellValue();
-				if(!StringUtils.isEmpty(colorValue)){
-					//color=colorparser.getColorCriteria(colorValue);
-				    
-				if(color!=null){
-				productConfigObj.setColors(color);
-				}
-				}
-				break;
-				
-			case 126:
-				//Item Type4
-				System.out.println(126);
-				break;
-				
-			case 127:
-				//Item Colors4
-				colorValue=cell.getStringCellValue();
-				if(!StringUtils.isEmpty(colorValue)){
-					//color=colorparser.getColorCriteria(colorValue);
-				    
-				if(color!=null){
-				productConfigObj.setColors(color);
-				}
-				}
-				break;
-				
-			case 128:
-				//imprint Method1
-				imprintValue=cell.getStringCellValue();
-				  if(!StringUtils.isEmpty(imprintValue)){
-					  imprintMethodValues.append(imprintValue + ",");
-				  }
-				break;
-
-			case 129:
-				//Imprint Location1
-				break;
-				
-				
-				
-			case 130:
-				//Imprint Colors1
-				imprintColorValue = cell.getStringCellValue();
-				if(!StringUtils.isEmpty(imprintColorValue)){
-					//imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);
-				}
-				break;
-				
-			case 131:
-				//imprint method2
-				imprintValue=cell.getStringCellValue();
-				
-				 if(!StringUtils.isEmpty(imprintValue)){
-					  imprintMethodValues.append(imprintValue + ",");
-				  }
-				 break;
-				
-			case 132:
-				//Imprint Location2
-				break;
-				
-			case 133:
-				//Imprint colors2 (it is related imprint method values)
-				imprintColorValue = cell.getStringCellValue();
-				if(!StringUtils.isEmpty(imprintColorValue)){
-					//imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);
-					if(imprintColorValue.equalsIgnoreCase("Laser Engraved")){
-						imprintMethodValues.append(imprintColorValue + ",");
-					}	
-				}
-				break;
-				
-				
-			case 134:
-				//Imprint method3
-				imprintValue=cell.getStringCellValue();
-				 if(!StringUtils.isEmpty(imprintValue)){
-					  imprintMethodValues.append(imprintValue + ",");
-				  }
-				break;
-				
-				
-				
-			case 135:
-				//Imprint location3
-				break;
-				
-				
-				
-			case 136:
-				//Imprint Colors3
-				imprintColorValue = cell.getStringCellValue();
-				if(!StringUtils.isEmpty(imprintColorValue)){
-					//imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);
-				}
-				break;
-				
-			case 137:
-				//Imprint method 4
-				imprintValue=cell.getStringCellValue();
-				 if(!StringUtils.isEmpty(imprintValue)){
-					  imprintMethodValues.append(imprintValue + ",");
-				  }
-				break;
-				
-			case 138:
-				//Imprint location4
-				break;
-				
-				
-				
-			case 139:
-				//Imprint Colors4
-				imprintColorValue = cell.getStringCellValue();
-				if(!StringUtils.isEmpty(imprintColorValue)){
-					//imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);
-				}
-				break;
-				
-				
-			case 140:
-				//Imprint method 5
-				imprintValue=cell.getStringCellValue();
-				 if(!StringUtils.isEmpty(imprintValue)){
-					  imprintMethodValues.append(imprintValue + ",");
-				  }
-				break;
-				
-			case 141:
-				//Imprint location5
-				break;
-				
-				
-				
-			case 142:
-				//Imprint Colors5
-				imprintColorValue = cell.getStringCellValue();
-				if(!StringUtils.isEmpty(imprintColorValue)){
-					//imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);
-				}
-				break;
-				
-				
-				
-			case 143:
-				//Imprint method 6
-				imprintValue=cell.getStringCellValue();
-				 if(!StringUtils.isEmpty(imprintValue)){
-					  imprintMethodValues.append(imprintValue + ",");
-				  }
-				break;
-				
-			case 144:
-				//Imprint location6
-				break;
-				
-				
-				
-			case 145:
-				//Imprint Colors6
-				imprintColorValue = cell.getStringCellValue();
-				if(!StringUtils.isEmpty(imprintColorValue)){
-					//imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);
-     			}
-				break;
-				
-				
-			case 146:
-				//Imprint method 7
-				imprintValue=cell.getStringCellValue();
-				 if(!StringUtils.isEmpty(imprintValue)){
-					  imprintMethodValues.append(imprintValue + ",");
-				  }
-				break;
-				
-			case 147:
-				//Imprint location7
-				break;
-				
-				
-				
-			case 148:
-				//Imprint Colors7
-				imprintColorValue = cell.getStringCellValue();
-				if(!StringUtils.isEmpty(imprintColorValue)){
-					//imprintColorValues=imprintColorParser.getImprintColorValues(imprintColorValue,imprintColorValues);
-				}
-				break;
-				
-			case 149:
-				//Selections
-
-				break;
-				
-			case 150:
-				String artwork = cell.getStringCellValue();
-				if(!StringUtils.isEmpty(artwork)){
-				//artworkList=artworkProcessor.getArtworkCriteria(artwork);
-				if(artworkList!=null){
-				productConfigObj.setArtwork(artworkList);
-				}}
-				break;
-				
-				
-			case 151:
-				break;
-				
-			case 152:
-				
-			//Option Charges
-				break;
-				//productExcelObj.setProductConfigurations(productConfigObj);l
-				
-			case 153:
-				//Additional Product Information
-				String artworK = cell.getStringCellValue();
-				if(!StringUtils.isEmpty(artworK)){
-				//artworkList=artworkProcessor.getArtworkCriteria(artworK);
-				if(artworkList!=null){
-				productConfigObj.setArtwork(artworkList);
-				}}
-				break;
 			
-			case 154:
-				//FOB Ship From Zip
-				break;
-				
-			case 155:
-				//FOB Bill From Zip
-				break;*/   // not required for 123 cases onwards
 			}  // end inner while loop
 					 
 		}
@@ -1080,7 +818,6 @@ public class SageProductsExcelMapping {
 			listOfCategories.add("USB/FLASH DRIVES");
 			productExcelObj.setCategories(listOfCategories);
 			String productDescription ="Phone Holder USB 2.0 Flash Drive";
-			//productDescription = "Phone Holder USB 2.0 Flash Drive";
 			productExcelObj.setDescription(productDescription);
 			ShippingEstimate shipping = shippingEstimateParser.getShippingEstimateValues(cartonL, cartonW,
 					                               cartonH, weightPerCarton, unitsPerCarton);
@@ -1099,12 +836,7 @@ public class SageProductsExcelMapping {
 			dimensionValue = new  StringBuilder();
 			dimensionUnits = new  StringBuilder();
 			dimensionType = new  StringBuilder();
-			//imprintColorsValueList = imprintColorParser.getImprintColorCriteria(imprintColorValues.toString());
-			//imprintColors.setType("COLR");
-			//imprintColors.setValues(imprintColorsValueList);
-			//productConfigObj.setImprintColors(imprintColors);
 			
-				//productExcelObj.setProductConfigurations(productConfigObj);l
 			 // end inner while loop
 			productExcelObj.setPriceType("L");
 			if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
@@ -1119,11 +851,6 @@ public class SageProductsExcelMapping {
 							 upChargeQur, currencyType, upChargeName, upchargeType, upChargeLevel, new Integer(1), priceGrids);
 				}*/
 				
-				/*if(!StringUtils.isEmpty(optionname) && !StringUtils.isEmpty(optiontype) && !StringUtils.isEmpty(optionvalues) ){
-					optionobj=optionparserobj.getOptions(optiontype, optionname, optionvalues, canorder, reqfororder, optionadditionalinfo);
-					option.add(optionobj);		
-					productConfigObj.setOptions(option);	
-				}*/
 				
 				upChargeQur = null;
 				UpCharCriteria = new StringBuilder();
@@ -1140,18 +867,14 @@ public class SageProductsExcelMapping {
 			    optionadditionalinfo=null;
 			
 			}catch(Exception e){
-			//e.printStackTrace();
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
 		}
 		}
 		workbook.close();
-		//inputStream.close();
-		   // Add repeatable sets here
+		
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
-		 	/*productExcelObj.setProductRelationSkus(productsku);
-		 	productExcelObj.setProductNumbers(pnumberList);*/
-		 	//productList.add(productExcelObj);
+	
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -1160,14 +883,11 @@ public class SageProductsExcelMapping {
 		 	}
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
-			//System.out.println(mapper1.writeValueAsString(productExcelObj));
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
 	       productDaoObj.getErrorLog(asiNumber,batchId);
-	       //return numOfProductsSuccess.size();
 	       return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet ");
-			//return numOfProductsSuccess.size();
 			return finalResult;
 		}finally{
 			try {

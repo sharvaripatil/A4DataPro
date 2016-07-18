@@ -21,9 +21,7 @@ public class ProductSizeParser {
 	public Size getSizes(String sizeGroup, String sizeValue) {
 		Size sizeObj = new Size();
 		try{
-		
-		//shippingitemValue != null && !shippingitemValue.isEmpty()
-		if (sizeGroup.contains(ApplicationConstants.CONST_VALUE_TYPE_DIMENSION)) {
+			if (sizeGroup.contains(ApplicationConstants.CONST_VALUE_TYPE_DIMENSION)) {
 			Dimension dimensionObj = new Dimension();
 			String DimenArr[] = sizeValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 			List<Values> valuesList = new ArrayList<Values>();
