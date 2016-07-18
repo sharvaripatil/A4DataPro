@@ -144,8 +144,6 @@ public class PriceGridParser {
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			// listOfPrice =
-			// getPrices(upChargePrices,upChargeQuantity,upChargeDiscount);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}

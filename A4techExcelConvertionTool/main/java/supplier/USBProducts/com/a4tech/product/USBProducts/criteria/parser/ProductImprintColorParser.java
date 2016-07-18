@@ -43,7 +43,6 @@ public class ProductImprintColorParser {
 	public StringBuilder getImprintColorValues(String values,StringBuilder allValues){
 		
 		String imprintArr[] = values.split("\\|");
-		//StringBuilder imprintColors = new StringBuilder();
 		for (String value : imprintArr) {
 			allValues.append(value +",");
 		}

@@ -22,9 +22,6 @@ public class ProductSkuParser {
 			   String skuinventoryQty) {
 			  ProductSkus pskuObj=new ProductSkus();
 			  try{
-			  //List<ProductNumber> pnumberList=new ArrayList<ProductNumber>();
-			  
-			  //ProductNumber pnumberObj2=new ProductNumber();
 			  List<ProductSKUConfiguration> configList=new ArrayList<ProductSKUConfiguration>();
 			  List<Object> Value;
 			  ProductSKUConfiguration configObj;
@@ -55,8 +52,6 @@ public class ProductSkuParser {
 			  }
 			  
 			  pskuObj.setConfigurations(configList);
-			  
-			  //pnumberList.add(pnumberObj);
 			  Inventory inventory =new Inventory();
 			  if(skuinventoryLink!=null && !skuinventoryLink.isEmpty()){
 			   inventory.setInventoryLink(skuinventoryLink);
