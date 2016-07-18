@@ -105,11 +105,6 @@ public class DownloadFileController {
 		             + "\n\n\n\n Note: This is a System Generated Message Kindly Do not reply back");
 		       helper.addAttachment(file.getFilename(), file);
 		       mailSenderObj.send(mimeMessage);
-		       //emailMsg="Email Sent Successfully!!!";
-	      /*}else{
-	    	  response.setHeader("Content-Disposition", "attachment; filename=\""
-					     + "defualtFile.txt" + "\"");
-	      		}*/
 		      } catch (javax.mail.MessagingException e) {
 			      // TODO Auto-generated catch block
 			    _LOGGER.error(e.toString());

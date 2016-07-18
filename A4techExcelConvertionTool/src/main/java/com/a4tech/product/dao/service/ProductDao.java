@@ -34,48 +34,6 @@ public class ProductDao {
 	
 	SessionFactory sessionFactory;
 	String errorFileLocPath;
-	/*public void save(List<ErrorMessage> errors ,String productNo ,Integer asiNumber){
-		_LOGGER.info("Enter the DAO class");
-		Set<ErrorEntity>  listErrorEntity = new HashSet<ErrorEntity>();
-		Session session = null;
-		Transaction tx  = null;
-		ErrorEntity errorEntity = null;
-		for (ErrorMessage errorMessage : errors) {
-			if(errorMessage.getReason() == null){
-				continue;
-			}
-			if(errorMessage.getReason().equalsIgnoreCase("null")){
-				continue;
-			}
-			  errorEntity = new ErrorEntity();
-			  errorEntity.setError(errorMessage.getReason());
-			  listErrorEntity.add(errorEntity);
-		}
-		ProductEntity productEntity = new ProductEntity();
-		productEntity.setSupplierAsiNumber(asiNumber);
-		productEntity.setProductNo(productNo);
-		//productEntity.setProductStatus(false);
-		productEntity.setErrors(listErrorEntity);
-	try{
-		 session = sessionFactory.openSession();
-		 tx =  session.beginTransaction();
-		 session.saveOrUpdate(productEntity);
-		tx.commit();
-		
-	}catch(Exception ex){
-		_LOGGER.info("Error in dao block");
-	}finally{
-		if(session !=null){
-			try{
-				session.close();
-			}catch(Exception ex){
-				_LOGGER.info("Error while close session object");
-			}
-			
-		}
-	}	
-		
-	}*/
 	
 	public void save(ExternalAPIResponse errors ,String productNo ,Integer asiNumber){
 		_LOGGER.info("Enter the DAO class");
@@ -121,62 +79,6 @@ public class ProductDao {
 	}	
 		
 	}
-	
-	/*public void getErrorLog(int asiNumber){
-		Session session = null;
-		
-		try{
-			 session = sessionFactory.openSession();
-		 
-		//Criteria crit = session.createCriteria(ProductEntity.class);
-		HashMap<String, ArrayList<String>> hashmap = new HashMap<String, ArrayList<String>>();
-		Criteria prdCrit = session.createCriteria(ProductEntity.class);
-		prdCrit.add(Restrictions.eq("companyId",asiNumber));
-		//List results = prdCrit.list();
-		  List<ProductEntity> list = prdCrit.list();
-	        for(ProductEntity arr : list){
-	        	
-	            ArrayList<String> arraylist = new ArrayList<String>();
-	            //hashmap.put(productEntity2.getProductNumber(), value)
-	            for (ErrorEntity productEntity2 : arr.getErrors()) {
-	            	arraylist.add(productEntity2.getError());
-				}
-	            hashmap.put(arr.getProductNo(), arraylist);
-	        }
-	        String errorComp=Integer.toString(asiNumber);
-	        File fout = new File(errorFileLocPath+errorComp+".txt");
-	    	FileOutputStream fos = new FileOutputStream(fout);
-	     
-	    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-	     
-	    	for (Map.Entry<String,ArrayList<String>> entry : hashmap.entrySet()) {
-	    	    String key = entry.getKey();
-	    	    ArrayList<String> listt = entry.getValue();
-	    	    String data="";
-	    	    for (String string : listt) {
-	    	    	data=string+"|"+data;
-				}
-	    	    String finalStr="XID: "+key+"   " +data;
-	    	    bw.write(finalStr);
-	    	    bw.newLine();
-	    	}
-	    	bw.close();
-		
-		String hql = "select p.PRODUCT_NUMBER,e.ERRORS from a4techconvertiontool.product_log p join  a4techconvertiontool.error_log e on p.PRODUCT_NUMBER = e.PRODUCT_NUMBER where    P.COMPANY_ID='55202'";
-		Query query = session.createQuery(hql);
-		List results = query.list();
-	}catch(Exception ex){
-		_LOGGER.info("Error in dao block");
-	}finally{
-		if(session !=null){
-			try{
-				session.close();
-			}catch(Exception ex){
-				_LOGGER.info("Error while close session object");
-			}
-			}
-		}
-	}*/
 	
 	public int createBatchId(int asiNumber){
 		Session session;
