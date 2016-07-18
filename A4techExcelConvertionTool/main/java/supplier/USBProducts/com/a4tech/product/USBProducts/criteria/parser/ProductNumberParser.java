@@ -20,8 +20,6 @@ public class ProductNumberParser {
 		List<Configurations> configList=new ArrayList<Configurations>();
 		List<Object> Value;
 		Configurations configObj;
-		/*Map<String, String> criCodeMap=new HashMap<String, String>();
-		criCodeMap=CommonUtilites.getMap();*/
 		
 		
 		pnumberObj.setProductNumber(productNumber);

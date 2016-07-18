@@ -27,21 +27,10 @@ public class ProductImprintMethodParser {
 					imprintObj=new ImprintMethod();
 		 			imprintObj.setType(imprintMethod.trim());
 		 			imprintObj.setAlias(imprintMethod.trim());
-		 			//impmthdList.add(imprintObj);
 		 			setOfImprintMethod.add(imprintObj);
 				}
 			}
-		//String impValue = imprintValue;
-		//String imprintArr[] = impValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-		
-		/*//for (String tempImpint : imprintArr) {
- 			imprintObj=new ImprintMethod();
- 			imprintObj.setType(imprintValue.trim());
- 			imprintObj.setAlias(imprintValue.trim());
- 			//impmthdList.add(imprintObj);
- 			setOfImprintMethod.add(imprintObj);
-		//}
-		*/
+	
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Imprint Method :"+e.getMessage());             
 		   	return null;
