@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ page session="false" %>
@@ -7,78 +9,78 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>A4-ASI Connect</title>
-<!-- Bootstrap -->
-<link href="resources/bootstrap.css" rel="stylesheet">
-<link rel="stylesheet" href="resources/loginstyle.css">
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
-<link href="resources/preview.css" rel="stylesheet" type="text/css">
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" type="text/css">
+<title>A4 - ASI Connect</title>
 
-<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- CSS -->
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
+<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="resources/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="resources/css/style.css">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
-		  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-		  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-		<![endif]-->
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
 </head>
-<body style="overflow:hidden;">
-<!-- <form method="POST" action="uploadFile" enctype="multipart/form-data"> -->
-<div class="wrapper">
-  <div class="container">
-    <div class="col-md-6 col-xs-offset-2 col-lg-8 col-lg-offset-2">
-      <div class="panel-body">
-       <div class="success">
-       <c:choose>
+
+<body>
+<!-- Top content -->
+<div class="top-content">
+  <div class="inner-bg">
+    <div class="form-top" align="center"> 
+      <div class="row">
+        <c:choose>
        		<c:when test="${successProductsCount != 0 && failureProductsCount != 0}">
-       			<h1 style="font-size: 25px !important;"><strong>${successProductsCount}</strong> Product's are uploaded <strong class="greens">successfully</strong> & <strong>${failureProductsCount}</strong> Product's are <strong class="faileds">failed</strong> </h1>
+       			<h3 style="font-size: 25px !important;"><strong>${successProductsCount}</strong> Product's are uploaded <strong class="greens">successfully</strong> & <strong>${failureProductsCount}</strong> Product's are <strong class="faileds">failed</strong> </h3>
        		</c:when>
-       		<c:when test="${successProductsCount == 0}">
-       			<h1 style="font-size: 25px !important;"><strong>${failureProductsCount}</strong> Product's are <strong class="faileds">failed</strong></h1>
+       		<c:when test="${failureProductsCount != 0}">
+       			<h3 style="font-size: 25px !important;"><strong>${failureProductsCount}</strong> Product's are <strong class="faileds">failed</strong></h3>
        		</c:when>
-       		<c:when test="${failureProductsCount == 0}">
-       			<h1 style="font-size: 25px !important;"><strong>${successProductsCount}</strong> Product's are uploaded <strong class="greens">successfully</strong></h1>
+       		<c:when test="${successProductsCount != 0}">
+       			<h3 style="font-size: 25px !important;"><strong>${successProductsCount}</strong> Product's are uploaded <strong class="greens">successfully</strong></h3>
        		</c:when>
        </c:choose>
-       <%--  <h1 style="font-size: 25px !important;"><strong>${fileName}</strong> Product's are uploaded successfully.</h1>
-        <br/><br/> --%>
-      <a class="btn btn-home btn-lg" style="margin: 0px 41% auto;" href="<c:url value='/uploadFile.htm' />"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
-    </div>
-        <br>
-        <br>
-        <br>
+      </div>
+      <hr>
+      <div class="row">
       <c:if test="${failureProductsCount != 0}">
-       <div class="filedownload" align="left">
-        <h4>Click on the link to download Product Error File:
+       <div class="filedownload" align="center">
+        <p>Click on the link to download Product Error File:
 	<c:url value="/sendEmails.html" var="sendEmailsLink" />
-	<a href="${sendEmailsLink}"><u>Download a File</u></a></h4>
+	<a href="${sendEmailsLink}"><u><strong>Download a File</strong></u></a></p>
       <br/>
-         <h4 class="successtxt"><strong>${successmsg}</strong> </h4>
+        <%--  <h3 class="successtxt"><strong>${successmsg}</strong> </h3> --%>
         </div>
     </c:if>
+       <!--  <p>Click on the link to download the Product error file : <strong>Download File</strong></p> -->
       </div>
+      
+        <div class="row">
+        <div class="text" style="font-style: italic;">
+          <!-- <h1> Email Sent Successfully...!!! </h1> -->
+          <h1> <strong>${successmsg}</strong> </h1>
+        </div>
+      </div>
+    <!--  <div class="row"> -->
+        <!-- <button type="submit" class="btn1"><span class="glyphicon glyphicon-home" ></span> &nbsp;Home</button> -->
+        <a class="btn btn-home btn-lg btn1" style="margin: 0px 41% auto;" href="<c:url value='/uploadFile.htm' />"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+     <!--  </div> -->
     </div>
+      
   </div>
 </div>
-<ul class="bg-bubbles">
-  <li></li>
-  <li></li>
-  <li></li>
-  <li></li>
-  <li></li>
-  <li></li>
-  <li></li>
-  <li></li>
-  <li></li>
-  <li></li>
-</ul>
 
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) --> 
-<script src="resources/jquery-1.11.2.min.js"></script> 
+<!-- Javascript --> 
+<script src="resources/js/jquery-1.11.1.min.js"></script> 
+<script src="resources/bootstrap/js/bootstrap.min.js"></script> 
+<script src="resources/js/jquery.backstretch.min.js"></script> 
+<script src="resources/js/scripts.js"></script> 
 
-<!-- Include all compiled plugins (below), or include individual files as needed --> 
-<script src="resources/bootstrap.js"></script> 
-
+<!--[if lt IE 10]>
+            <script src="resources/js/placeholder.js"></script>
+        <![endif]-->
 
 </body>
 </html>

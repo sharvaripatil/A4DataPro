@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.a4tech.JulyData.excelMapping.JulyDataMapping;
@@ -67,7 +68,7 @@ public class FileUpload extends HttpServlet{
 	public String welcomePage(Map<String, Object> model){
 		FileBean fileBean = new FileBean();
 		model.put("filebean", fileBean);
-		return "Home";
+		return "home";
 	}
 	
 	
@@ -75,6 +76,10 @@ public class FileUpload extends HttpServlet{
 	public String fileUpload(@ModelAttribute("filebean") @Valid FileBean fileBean , BindingResult result ,
 			final RedirectAttributes redirectAttributes , Model model,HttpServletRequest request){
 		_LOGGER.info("Enter Controller Class");
+		/*String asiNumber = request.getParameter("asiNumber");
+		String userName = request.getParameter("asiNumber");
+		String password = request.getParameter("asiNumber");
+		//MultipartFile file = (MultipartFile) request.; */		
 		String finalResult = null;
 		//LoginServiceImpl loginService  = new LoginServiceImpl();
 		 Workbook workbook = null;
@@ -84,9 +89,9 @@ public class FileUpload extends HttpServlet{
 		String noOfProductsSuccess = null;
 		String noOfProductsFailure = null;
 		String[] splitFinalResult;
-		 String asiNumber = fileBean.getAsiNumber();
+		String asiNumber = fileBean.getAsiNumber();
 		 if(result.hasErrors()){
-			 return "Home"; 
+			 return "home"; 
 		 }
 		 if(accessToken == null){
          	accessToken = loginService.doLogin("55201",  fileBean.getUserName(),
@@ -94,7 +99,7 @@ public class FileUpload extends HttpServlet{
          	if(accessToken.equalsIgnoreCase("unAuthorized")){
          		accessToken = null;
          		model.addAttribute("invalidDetails", "");
-         		 return "Home";
+         		 return "home";
          	}
          }
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBean.getFile().getBytes())){
@@ -130,14 +135,14 @@ public class FileUpload extends HttpServlet{
 							splitFinalResult = finalResult.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 							noOfProductsSuccess = splitFinalResult[0];
 							noOfProductsFailure = splitFinalResult[1];
-							model.addAttribute("successProductsCount", noOfProductsSuccess);
-							model.addAttribute("failureProductsCount", noOfProductsFailure);
+							redirectAttributes.addFlashAttribute("successProductsCount", noOfProductsSuccess);
+				    		redirectAttributes.addFlashAttribute("failureProductsCount", noOfProductsFailure);
 							if(!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)){
-								model.addAttribute("successmsg", emailMsg);
+								redirectAttributes.addFlashAttribute("successmsg", emailMsg);
 								downloadMail.sendMail(asiNumber, batchId);
 							}
 						}
-							return "success";
+							return "redirect:success.htm";
 					case "55203":	//supplier JulyData	
 						numOfProducts = julymapping.readExcel(accessToken, workbook,Integer.valueOf(asiNumber),batchId);
 						model.addAttribute("fileName", numOfProducts);
@@ -148,14 +153,14 @@ public class FileUpload extends HttpServlet{
 				    		splitFinalResult = finalResult.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 				    		noOfProductsSuccess = splitFinalResult[0];
 				    		noOfProductsFailure = splitFinalResult[1];
-				    		model.addAttribute("successProductsCount", noOfProductsSuccess);
-				    		model.addAttribute("failureProductsCount", noOfProductsFailure);
+				    		redirectAttributes.addFlashAttribute("successProductsCount", noOfProductsSuccess);
+				    		redirectAttributes.addFlashAttribute("failureProductsCount", noOfProductsFailure);
 				    		if(!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)){
-				    			model.addAttribute("successmsg", emailMsg);
+				    			redirectAttributes.addFlashAttribute("successmsg", emailMsg);
 				    			downloadMail.sendMail(asiNumber, batchId);
 				    		}
 				    }
-						return "success";
+						return "redirect:success.htm";
 							
 					default:
 						break;
@@ -166,8 +171,21 @@ public class FileUpload extends HttpServlet{
 	        }catch (Exception e) {
 				// TODO: handle exception
 			}
-        return "Home";
+        return "home";
 }
+	@RequestMapping(value="/success.htm",method = RequestMethod.GET)
+	 public String submit(Model model){
+	   String noOfSucc = (String)model.asMap().get("successProductsCount");
+	   String noOfFail = (String)model.asMap().get("failureProductsCount");
+	   if(noOfSucc == null){
+		   model.addAttribute("successProductsCount", "0");
+   		
+	   }
+	   if(noOfFail == null){
+		 model.addAttribute("failureProductsCount", "0");
+	   }
+	    return "success";
+	 } 
 	public FileValidator getFileValidator() {
 		return fileValidator;
 	}
