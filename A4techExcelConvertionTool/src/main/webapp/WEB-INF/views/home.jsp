@@ -117,6 +117,8 @@ function validateForm(){
 
 $('.btn1').on('click', function() {
     var $this = $(this);
+    var file = document.uploadBean.file.value; 
+    if(file != '')
   $this.button('loading');
     setTimeout(function() {
        $this.button('reset');
