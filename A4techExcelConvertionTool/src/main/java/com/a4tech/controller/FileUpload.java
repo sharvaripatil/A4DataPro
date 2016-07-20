@@ -96,10 +96,14 @@ public class FileUpload extends HttpServlet{
 		 if(accessToken == null){
          	accessToken = loginService.doLogin("55201",  fileBean.getUserName(),
          													fileBean.getPassword());
-         	if(accessToken.equalsIgnoreCase("unAuthorized")){
-         		accessToken = null;
-         		model.addAttribute("invalidDetails", "");
-         		 return "home";
+         	if(accessToken != null){
+         		if(accessToken.equalsIgnoreCase("unAuthorized")){
+             		accessToken = null;
+             		model.addAttribute("invalidDetails", "");
+             		 return "home";
+             	}
+         	}else{
+         		return "errorPage";
          	}
          }
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBean.getFile().getBytes())){

@@ -33,13 +33,13 @@
       <div class="row">
         <c:choose>
        		<c:when test="${successProductsCount != 0 && failureProductsCount != 0}">
-       			<h3 style="font-size: 25px !important;"><strong>${successProductsCount}</strong> Product's are uploaded <strong class="greens">successfully</strong> & <strong>${failureProductsCount}</strong> Product's are <strong class="faileds">failed</strong> </h3>
+       			<h3 style="font-size: 25px !important;"><strong>${successProductsCount}</strong> Product's have been uploaded <strong class="greens">successfully</strong> & <strong>${failureProductsCount}</strong> Product's are <strong class="faileds">failed</strong> </h3>
        		</c:when>
        		<c:when test="${failureProductsCount != 0}">
        			<h3 style="font-size: 25px !important;"><strong>${failureProductsCount}</strong> Product's are <strong class="faileds">failed</strong></h3>
        		</c:when>
        		<c:when test="${successProductsCount != 0}">
-       			<h3 style="font-size: 25px !important;"><strong>${successProductsCount}</strong> Product's are uploaded <strong class="greens">successfully</strong></h3>
+       			<h3 style="font-size: 25px !important;"><strong>${successProductsCount}</strong> Product's have been uploaded <strong class="greens">successfully</strong></h3>
        		</c:when>
        </c:choose>
       </div>

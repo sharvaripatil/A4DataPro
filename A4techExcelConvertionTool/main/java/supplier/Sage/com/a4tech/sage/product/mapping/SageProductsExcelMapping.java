@@ -176,8 +176,10 @@ public class SageProductsExcelMapping {
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
-							 	}else{
+							 	}else if(num == 0){
 							 		numOfProductsFailure.add("0");
+							 	}else{
+							 		
 							 	}
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
@@ -878,8 +880,10 @@ public class SageProductsExcelMapping {
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
-		 	}else{
+		 	}else if(num == 0){
 		 		numOfProductsFailure.add("0");
+		 	}else{
+		 		
 		 	}
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());

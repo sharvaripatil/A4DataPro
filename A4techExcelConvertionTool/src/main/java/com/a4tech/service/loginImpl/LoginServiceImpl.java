@@ -80,8 +80,10 @@ public class LoginServiceImpl implements LoginService {
         	
         	_LOGGER.error("Error while doing login "+e.getMessage(),e);
         }
-        
-        return accessBean.getAccessToken();
+        if(accessBean != null){
+        	return accessBean.getAccessToken();
+        }
+        return null;
 	}
 
 	public String getLoginApiURL() {

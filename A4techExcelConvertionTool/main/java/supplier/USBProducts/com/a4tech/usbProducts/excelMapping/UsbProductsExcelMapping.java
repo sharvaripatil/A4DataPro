@@ -221,8 +221,10 @@ public class UsbProductsExcelMapping {
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
-							 	}else{
+							 	}else if(num == 0) {
 							 		numOfProductsFailure.add("0");
+							 	}else{
+							 		
 							 	}
 							 	_LOGGER.info("list size>>>>>>>"+numOfProducts.size());
 								
@@ -1009,8 +1011,10 @@ public class UsbProductsExcelMapping {
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
-		 	}else{
+		 	}else if(num == 0){
 		 		numOfProductsFailure.add("0");
+		 	}else{
+		 		
 		 	}
 		 	_LOGGER.info("list size>>>>>>"+numOfProducts.size());
 		 	finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();

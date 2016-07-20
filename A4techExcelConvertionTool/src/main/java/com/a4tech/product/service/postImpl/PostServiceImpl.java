@@ -57,13 +57,13 @@ public class PostServiceImpl implements PostService {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				return 0;
+				return -1;
 			}
 			//productDao.errorResponse(rsponse);
 			return 0;
 		} catch (Exception hce) {
 			_LOGGER.error("Exception while posting product to Radar API", hce);
-			return 0;
+			return -1;
 		}
 		
 	}
