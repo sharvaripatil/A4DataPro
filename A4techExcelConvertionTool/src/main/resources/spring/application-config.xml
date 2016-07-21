@@ -92,6 +92,7 @@
       <property name="productDao" ref="productDao"/>
       <property name="gbDataExcelMapping" ref="gbDataExcelMappingId"/>
       <property name="downloadMail" ref="downloadFileController"/>
+      <property name="dCProductsExcelMapping" ref="dCProductsExcelMappingId"/>
    </bean>
    <bean id="usbExcelMapping" class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
     <property name="colorparser"  ref="colorparser"/>
@@ -118,7 +119,10 @@
    		<property name="postServiceImpl" ref="postService"/>
    		<property name="productDaoObj"  ref="productDao"/>
    </bean>
-   
+   <bean id="dCProductsExcelMappingId" class="com.a4tech.dc.product.mapping.DCProductsExcelMapping">
+   		<property name="productDaoObj"  ref="productDao"/>
+   		<property name="postServiceImpl" ref="postService"/>
+   </bean>
    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
   		<property name="driverClassName" value="${mysql.db.driverClassName}" />
   		<property name="url" value="${mysql.db.url}" />

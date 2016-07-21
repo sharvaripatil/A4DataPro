@@ -28,6 +28,7 @@ import com.a4tech.JulyData.excelMapping.JulyDataMapping;
 import com.a4tech.core.excelMapping.ExcelMapping;
 import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
+import com.a4tech.dc.product.mapping.DCProductsExcelMapping;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.service.ProductService;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
@@ -56,6 +57,7 @@ public class FileUpload extends HttpServlet{
 	private V2ExcelMapping productV2ExcelMapping;
 	private ExcelMapping gbDataExcelMapping;
 	private DownloadFileController downloadMail;
+	private DCProductsExcelMapping dCProductsExcelMapping;
 	@Autowired
 	private LoginServiceImpl loginService;
 	private ProductDao productDao;
@@ -163,9 +165,13 @@ public class FileUpload extends HttpServlet{
 				    			redirectAttributes.addFlashAttribute("successmsg", emailMsg);
 				    			downloadMail.sendMail(asiNumber, batchId);
 				    		}
-				    }
+				       }
 						return "redirect:success.htm";
-							
+						
+				    case "55205":  //Distributor Central
+				    	finalResult = dCProductsExcelMapping.readExcel(asiNumber, workbook, 
+				    			                                          Integer.valueOf(asiNumber), batchId);
+				    	return "redirect:success.htm";
 					default:
 						break;
 					}
@@ -249,6 +255,13 @@ public class FileUpload extends HttpServlet{
 	}
 	public void setDownloadMail(DownloadFileController downloadMail) {
 		this.downloadMail = downloadMail;
+	}
+	public DCProductsExcelMapping getdCProductsExcelMapping() {
+		return dCProductsExcelMapping;
+	}
+	public void setdCProductsExcelMapping(
+			DCProductsExcelMapping dCProductsExcelMapping) {
+		this.dCProductsExcelMapping = dCProductsExcelMapping;
 	}
 	
 }
