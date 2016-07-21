@@ -89,7 +89,7 @@
 <script type="text/javascript">
 function validateForm(){
 	var asiNumber = document.uploadBean.asiNumber.value;
-	 var userName = document.uploadBean.userName.value;
+	var userName = document.uploadBean.userName.value;
 	var password = document.uploadBean.password.value;
 	var file = document.uploadBean.file.value; 
 	if (asiNumber==null || asiNumber==''){  
@@ -116,13 +116,18 @@ function validateForm(){
 }
 
 $('.btn1').on('click', function() {
+	alert('enter');
+	alert($('#asiNumber').val());
     var $this = $(this);
-    var file = document.uploadBean.file.value; 
-    if(file != '')
-  $this.button('loading');
-    setTimeout(function() {
-       $this.button('reset');
-   }, 20000);
+    var file = document.uploadBean.file.value;
+    var asiNumber = document.uploadBean.asiNumber.value;
+	var userName = document.uploadBean.userName.value;
+	var password = document.uploadBean.password.value;
+    if(file != '' && asiNumber != '' && userName != '' && password != '')
+  		$this.button('loading');
+    	setTimeout(function() {
+       	$this.button('reset');
+   	}, 2000000);
 });
 
 </script>
