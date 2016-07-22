@@ -111,11 +111,55 @@ public class DCProductsExcelMapping {
 			if (nextRow.getRowNum() ==0)
 				continue;
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
+			if(productId != null){
+				productXids.add(productId);
+			}
+			 boolean checkXid  = false;
 			
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
 				String xid = null;
 				int columnIndex = cell.getColumnIndex();
+				
+				if(columnIndex + 1 == 1){
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+						xid = cell.getStringCellValue();
+					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						xid = String.valueOf((int)cell.getNumericCellValue());
+					}else{
+						
+					}
+					checkXid = true;
+				}else{
+					checkXid = false;
+				}
+				if(checkXid){
+					 if(!productXids.contains(xid)){
+						 if(nextRow.getRowNum() != 1){
+							 System.out.println("Java object converted to JSON String, written to file");
+							 	productExcelObj.setPriceGrids(priceGrids);
+							 	productExcelObj.setProductConfigurations(productConfigObj);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 	if(num ==1){
+							 		numOfProductsSuccess.add("1");
+							 	}else if(num == 0){
+							 		numOfProductsFailure.add("0");
+							 	}else{
+							 		
+							 	}
+							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
+							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
+								priceGrids = new ArrayList<PriceGrid>();
+								productConfigObj = new ProductConfigurations();
+								
+						 }
+						    if(!productXids.contains(xid)){
+						    	productXids.add(xid);
+						    }
+							productExcelObj = new Product();
+					 }
+				}
+				
 				switch (columnIndex + 1) {
 				case 1://ExternalProductID
 			     if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
