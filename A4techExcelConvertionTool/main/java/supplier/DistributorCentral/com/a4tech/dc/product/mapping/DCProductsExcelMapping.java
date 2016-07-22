@@ -40,6 +40,7 @@ import com.a4tech.sage.product.parser.ImprintMethodParser;
 import com.a4tech.sage.product.parser.OriginParser;
 import com.a4tech.sage.product.parser.PackagingParser;
 import com.a4tech.product.DCProducts.parser.DCPriceGridParser;
+import com.a4tech.product.DCProducts.parser.ProductOriginParser;
 import com.a4tech.sage.product.parser.RushTimeParser;
 import com.a4tech.sage.product.parser.ShippingEstimateParser;
 import com.a4tech.util.ApplicationConstants;
@@ -103,6 +104,11 @@ public class DCProductsExcelMapping {
 		String netPrice = null;
 		String discCode=null;
 		String productName = null;
+
+		List<String> categories = new ArrayList<String>();	
+		List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
+		List<Origin> origin = new ArrayList<Origin>();
+		ProductOriginParser originParser=new ProductOriginParser();
 		while (iterator.hasNext()) {
 			
 			try{
@@ -161,16 +167,139 @@ public class DCProductsExcelMapping {
 				}
 				
 				switch (columnIndex + 1) {
-				case 1://ExternalProductID
-			     if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
-                    	productId = String.valueOf(cell.getStringCellValue());
-					}else if
-					(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						productId = String.valueOf((int)cell.getNumericCellValue());
-					}
-					productExcelObj.setExternalProductId(productId);
-					
+
+				case 1://SuplItemNo
+					 String asiProdNo = null;
+					    if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
+					      asiProdNo = String.valueOf(cell.getStringCellValue());
+					    }else if
+					     (cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+					      asiProdNo = String.valueOf((int)cell.getNumericCellValue());
+					     }
+					     productExcelObj.setAsiProdNo(asiProdNo);	
+			   
 					 break;
+				case 2://ItemName
+				    productName = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(productName)){
+					productExcelObj.setName(cell.getStringCellValue());
+					}else{
+						productExcelObj.setName(ApplicationConstants.CONST_STRING_EMPTY);
+					}
+						
+					  break;
+				case 3://SuplDisplayNo
+                  
+     					break;
+				case 4://Description
+					String description = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(description)){
+					productExcelObj.setDescription(description);
+					}else{
+						productExcelObj.setDescription(ApplicationConstants.CONST_STRING_EMPTY);
+					}
+					
+				    break;
+					
+				case 5://AddInfo
+					String additionalProductInfo = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(additionalProductInfo)){
+					productExcelObj.setAdditionalProductInfo(additionalProductInfo);
+					}else{
+						productExcelObj.setAdditionalProductInfo(ApplicationConstants.CONST_STRING_EMPTY);
+					}
+					
+					break;
+					
+				case 6: //  DistributorOnlyInfo
+					String Distributorcomment = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(Distributorcomment)){
+					productExcelObj.setDistributorOnlyComments(Distributorcomment);
+					}else{
+						productExcelObj.setDistributorOnlyComments(ApplicationConstants.CONST_STRING_EMPTY);
+					}
+					
+					
+					break;
+					
+
+				case 7://Categories
+					String category = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(category)){
+					String categoryArr[] = category.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+					for (String string : categoryArr) {
+						categories.add(string);
+					}
+					productExcelObj.setCategories(categories);
+					}
+					   
+						
+					break;
+					
+				case 8: // Size
+					
+					
+					break;
+					
+				case 9: //DisplayWeight
+							
+					break;
+					
+				case 10:  
+						//OriginationZipCode
+					break;
+					
+				case 11:  //CountryOfManufactureGUID
+					
+					break;
+				
+				case 12:  // CountryOfManufactureName
+					
+					String CountryOfManufactureName=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(CountryOfManufactureName)){
+					origin=originParser.getOriginCriteria(CountryOfManufactureName);
+					productConfigObj.setOrigins(origin);
+					
+					
+					}
+					break;
+
+				case 13: //OptionsByOptionNumber
+					
+					break;
+					
+				case 14: //OptionsByOptionName
+					
+					break;
+					
+				case 15://OptionsByOptionStyleNumber
+					
+					break;
+				case 16: //HasImage
+					
+					  break;
+				
+				case 17: //ImageLink
+					
+					break;
+				
+				 case 18: //ProductionTime
+					 String prodTimeLo = null;
+						ProductionTime productionTime = new ProductionTime();
+						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+							prodTimeLo = cell.getStringCellValue();
+						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							prodTimeLo = String.valueOf(cell.getNumericCellValue());
+						}else{
+							
+						}
+						productionTime.setBusinessDays(prodTimeLo);
+						listOfProductionTime.add(productionTime);
+					   productConfigObj.setProductionTime(listOfProductionTime);
+				
+					break;
+		//--------------------------------------------------------------			
+
 				case 20:
 				case 21:
 				case 22:
