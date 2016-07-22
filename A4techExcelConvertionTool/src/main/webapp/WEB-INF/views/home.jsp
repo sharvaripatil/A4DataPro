@@ -28,6 +28,7 @@
 <!-- Top content -->
 <div class="top-content">
   <div class="inner-bg">
+  <div class="row pull-right logo"> <img src="resources/img/logo.png" alt="" height="80px"/> </div>
     <div class="container">
       <div class="row">
         <div class="col-sm-8 col-sm-offset-2 text">
@@ -116,13 +117,11 @@ function validateForm(){
 }
 
 $('.btn1').on('click', function() {
-	alert('enter');
-	alert($('#asiNumber').val());
-    var $this = $(this);
-    var file = document.uploadBean.file.value;
-    var asiNumber = document.uploadBean.asiNumber.value;
-	var userName = document.uploadBean.userName.value;
-	var password = document.uploadBean.password.value;
+	var $this = $(this);
+    var asiNumber = $('#asiNumber').val();
+	var userName = $('#userName').val();
+	var password = $('#password').val();
+	var file = document.uploadBean.file.value; 
     if(file != '' && asiNumber != '' && userName != '' && password != '')
   		$this.button('loading');
     	setTimeout(function() {
