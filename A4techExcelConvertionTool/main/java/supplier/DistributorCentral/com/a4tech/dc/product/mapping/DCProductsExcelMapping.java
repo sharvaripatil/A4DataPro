@@ -39,7 +39,7 @@ import com.a4tech.sage.product.parser.DimensionParser;
 import com.a4tech.sage.product.parser.ImprintMethodParser;
 import com.a4tech.sage.product.parser.OriginParser;
 import com.a4tech.sage.product.parser.PackagingParser;
-import com.a4tech.sage.product.parser.PriceGridParser;
+import com.a4tech.product.DCProducts.parser.DCPriceGridParser;
 import com.a4tech.sage.product.parser.RushTimeParser;
 import com.a4tech.sage.product.parser.ShippingEstimateParser;
 import com.a4tech.util.ApplicationConstants;
@@ -51,7 +51,9 @@ public class DCProductsExcelMapping {
 	
 	private PostServiceImpl postServiceImpl;
 	ProductDao productDaoObj;
-	
+	DCPriceGridParser dcPriceGridParser;
+	 
+	 
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
@@ -97,12 +99,16 @@ public class DCProductsExcelMapping {
 		String quoteUponRequest  = null;
 		StringBuilder priceIncludes = new StringBuilder();
 		String quantity = null;
+		String listPrice = null;
+		String netPrice = null;
+		String discCode=null;
 		String productName = null;
 		while (iterator.hasNext()) {
 			
 			try{
 			Row nextRow = iterator.next();
-			if (nextRow.getRowNum() < 7)
+		 
+			if (nextRow.getRowNum() ==0)
 				continue;
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
 			if(productId != null){
@@ -114,6 +120,7 @@ public class DCProductsExcelMapping {
 				Cell cell = cellIterator.next();
 				String xid = null;
 				int columnIndex = cell.getColumnIndex();
+				
 				if(columnIndex + 1 == 1){
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 						xid = cell.getStringCellValue();
@@ -128,7 +135,7 @@ public class DCProductsExcelMapping {
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 7){
+						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
@@ -153,7 +160,6 @@ public class DCProductsExcelMapping {
 					 }
 				}
 				
-
 				switch (columnIndex + 1) {
 				case 1://ExternalProductID
 			     if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
@@ -165,170 +171,83 @@ public class DCProductsExcelMapping {
 					productExcelObj.setExternalProductId(productId);
 					
 					 break;
-				case 2://AsiProdNo
-					 String asiProdNo = null;
-					    if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
-					      asiProdNo = String.valueOf(cell.getStringCellValue());
-					    }else if
-					     (cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-					      asiProdNo = String.valueOf((int)cell.getNumericCellValue());
-					     }
-					     productExcelObj.setAsiProdNo(asiProdNo);		
-					  break;
-				case 3://Name
-                     productName = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(productName)){
-					productExcelObj.setName(cell.getStringCellValue());
-					}else{
-						productExcelObj.setName(ApplicationConstants.CONST_STRING_EMPTY);
-					}
-     					
-				case 4://CatYear(Not used)
-					
-					
-				    break;
-					
-				case 5://PriceConfirmedThru
-					
-					break;
-					
-				case 6: //  product status
-					
-					
-					
-					break;
-					
-				case 7://Catalogs
-					   
-						
-					break;
-					
-				case 8: // Catalogs(Not used)
-					
-					
-					break;
-					
-				case 9: //Catalogs page number
-							
-					break;
-					
-				case 10:  
-						//Catalogs(Not used)
-					break;
-					
-				case 11:  //Description
-					String description = cell.getStringCellValue();
-					
-					break;
-				
-				case 12:  // keywords
-					String productKeyword = cell.getStringCellValue();
-					
-					break;
-
-				case 13: 
-					
-					break;
-					
-				case 14: 
-					String themeValue=cell.getStringCellValue();
-					
-					break;
-					
-				case 15://size --  value
-						String dimensionValue1= null;
-					
-					break;
-				case 16: //size -- Unit
-					  String dimensionUnits1 = null;
-					
-					  break;
-				
-				case 17: //size -- type
-					
-					break;
-				
-				 case 18: //size
-					
-				
-					break;
-					
-				case 19:  //size
-					
-					break;
-					
-				case 20: //size
-					
-					break;
-					
-				case 21: //size
-					
-					break;
-					
-					
-				case 22: //size
-					
-				   break;
-					
-				case 23: //size
-					
-				   break;
-				   
+				case 20:
+				case 21:
+				case 22:
+				case 23: 
 				case 24:  // Quantities
 				case 25: 
 				case 26: 
 				case 27: 
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+						quantity = cell.getStringCellValue();
+				         if(!StringUtils.isEmpty(quantity)){
+				        	 listOfQuantity.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
+					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						int quantityInt = (int)cell.getNumericCellValue();
+				         if(!StringUtils.isEmpty(quantityInt)){
+				        	 listOfQuantity.append(quantityInt).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
+					}else{
+					}
+					break;
 				case 28:
 				case 29:
-					
-					
-					   	break;
-				case 30:  // prices --list price
+				case 30:  
 				case 31:
 				case 32:
 				case 33:
 				case 34:
 				case 35:
-				 
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+						netPrice = cell.getStringCellValue();
+				         if(!StringUtils.isEmpty(netPrice)){
+				        	 listOfNetPrice.append(netPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
+					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						double netPriceInt = (double)cell.getNumericCellValue();
+				         if(!StringUtils.isEmpty(netPriceInt)){
+				        	 listOfNetPrice.append(netPriceInt).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
+					}else{
+					}
 					    break; 
-				case 36: // price code -- discount
-					    
-						priceCode = cell.getStringCellValue();
-					     break;
-				case 37:       // pricesPerUnit
+				case 36:
+				case 37:       
 				case 38:
 				case 39:
 				case 40:
 				case 41:
 				case 42:
-					
-					      break;
 				case 43:
-					     quoteUponRequest = cell.getStringCellValue();
+
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+						listPrice = cell.getStringCellValue();
+				         if(!StringUtils.isEmpty(listPrice)){
+				        	 listOfPrices.append(listPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
+					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						double listPriceD = (double)cell.getNumericCellValue();
+				         if(!StringUtils.isEmpty(listPriceD)){
+				        	 listOfPrices.append(listPriceD).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
+					}else{
+					}
 					      break;
-				case 44:  // priceIncludeClr
-					    
-					      priceIncludes.append(cell.getStringCellValue()).append(" ");
-					     break;
-				case 45: // priceIncludeSide
-						
-						priceIncludes.append(cell.getStringCellValue()).append(" ");
-						break;
-				case 46: // priceIncludeLoc
-						priceIncludes.append(cell.getStringCellValue());
-						break;
-						
-				case 47:       
-				
-				  break;
+				case 44:
+				case 45: 
+				case 46:
+				case 47:     
 				case 48:
-							break;
 				case 49:
-							break;
 				case 50:
-							break;
 				case 51:
-							break;
+					discCode = cell.getStringCellValue();
+			         if(!StringUtils.isEmpty(discCode)){
+			        	 listOfDiscount.append(discCode).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+			         }
+			         break;
 							}  // end inner while loop
 					 
 		}
@@ -343,9 +262,9 @@ public class DCProductsExcelMapping {
 			 // end inner while loop
 			productExcelObj.setPriceType("L");
 			if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
-				/*priceGrids = priceGridParser.getPriceGrids(listOfPrices.toString(), 
-						         listOfQuantity.toString(), priceCode, "USD",
-						         priceIncludes.toString(), true, quoteUponRequest, productName,"",priceGrids);	*/
+				priceGrids = dcPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
+						         listOfQuantity.toString(), listOfDiscount.toString(), "USD",
+						         "", true, "N", productName,"",priceGrids);	
 			}
 			
 			 
@@ -416,5 +335,13 @@ public class DCProductsExcelMapping {
 		this.productDaoObj = productDaoObj;
 	}
 
+	public DCPriceGridParser getDcPriceGridParser() {
+		return dcPriceGridParser;
+	}
+
+	public void setDcPriceGridParser(DCPriceGridParser dcPriceGridParser) {
+		this.dcPriceGridParser = dcPriceGridParser;
+	}
+	
 	
 }

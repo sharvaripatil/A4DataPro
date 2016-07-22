@@ -122,6 +122,7 @@
    <bean id="dCProductsExcelMappingId" class="com.a4tech.dc.product.mapping.DCProductsExcelMapping">
    		<property name="productDaoObj"  ref="productDao"/>
    		<property name="postServiceImpl" ref="postService"/>
+   		<property name="dcPriceGridParser" ref="dcPriceGridParserObj"></property>
    </bean>
    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
   		<property name="driverClassName" value="${mysql.db.driverClassName}" />
@@ -186,6 +187,7 @@
   </property>
   </bean>
   
+  <bean id="dcPriceGridParserObj" name="dcPriceGridParserObj" class="com.a4tech.product.DCProducts.parser.DCPriceGridParser" autowire="byName"></bean>
   
   
 </beans>
