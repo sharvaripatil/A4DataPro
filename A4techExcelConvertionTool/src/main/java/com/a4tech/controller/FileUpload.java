@@ -166,12 +166,12 @@ public class FileUpload extends HttpServlet{
 				    			downloadMail.sendMail(asiNumber, batchId);
 				    		}
 				       }
-						return "redirect:success.htm";
+						return "redirect:redirect.htm";
 						
 				    case "55205":  //Distributor Central
 				    	finalResult = dCProductsExcelMapping.readExcel(asiNumber, workbook, 
 				    			                                          Integer.valueOf(asiNumber), batchId);
-				    	return "redirect:success.htm";
+				    	return "redirect:redirect.htm";
 					default:
 						break;
 					}
@@ -183,7 +183,7 @@ public class FileUpload extends HttpServlet{
 			}
         return "home";
 }
-	@RequestMapping(value="/success.htm",method = RequestMethod.GET)
+	@RequestMapping(value="/redirect.htm",method = RequestMethod.GET)
 	 public String submit(Model model){
 	   String noOfSucc = (String)model.asMap().get("successProductsCount");
 	   String noOfFail = (String)model.asMap().get("failureProductsCount");

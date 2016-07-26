@@ -34,7 +34,7 @@
     </bean>
     <bean id="product" class="com.a4tech.product.model.Product"/>
       <bean id="restTemplate" name="restTemplate" class="org.springframework.web.client.RestTemplate">
-			<property name="messageConverters">
+			<!-- <property name="messageConverters">
 				<list>
 					<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
 						<property name="supportedMediaTypes">
@@ -62,7 +62,7 @@
 						<constructor-arg name="defaultCharset" value="UTF-8" />
 					</bean> 
 				</list>
-			</property>
+			</property> -->
 		</bean> 
  
          <bean id="postService"  class="com.a4tech.product.service.postImpl.PostServiceImpl">
