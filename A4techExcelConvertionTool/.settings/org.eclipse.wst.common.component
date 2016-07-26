@@ -3,11 +3,11 @@
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/Sage"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/USBProducts"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/USBProducts"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/JulyData"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/Sage"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/DistributorCentral"/>
         <property name="context-root" value="A4techExcelConvertionTool"/>
         <property name="java-output-path" value="/A4techExcelConvertionTool/target/classes"/>
