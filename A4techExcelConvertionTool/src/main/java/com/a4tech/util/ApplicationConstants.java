@@ -69,21 +69,18 @@ public class ApplicationConstants {
     
     
 	  public static Map<String, String> SUPPLIER_EMAIL_ID_MAP =new HashMap<String, String>();
-	 
+	  public static Map<String, String> SUPPORT_EMAIL_ID_MAP =new HashMap<String, String>();
 	    static {
 	       
 	    	SUPPLIER_EMAIL_ID_MAP.put("55201", "venkateswarlu.nidamanuri@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("55202", "amey.more@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("55203", "sharvari.patil@a4technology.com");
-	    	SUPPLIER_EMAIL_ID_MAP.put("55204", "venkateswarlu.nidamanuri@a4technology.com");
+	    	SUPPORT_EMAIL_ID_MAP.put("dev_1", "amey.more@a4technology.com");
+	    	SUPPORT_EMAIL_ID_MAP.put("dev_2", "venkateswarlu.nidamanuri@a4technology.com");
+	    	SUPPORT_EMAIL_ID_MAP.put("dev_3", "sharvari.patil@a4technology.com");
+	    	SUPPORT_EMAIL_ID_MAP.put("sysadmin_1", "salman@a4technology.com");
+	    	SUPPORT_EMAIL_ID_MAP.put("sysadmin_2", "soheb.khan@a4technology.com");
+	    	
 	    }
-    
-    
-    
-    
-    
-    
-    
-    
     
 }
