@@ -1,7 +1,9 @@
 package com.a4tech.sage.product.parser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.jasper.tagplugins.jstl.core.If;
 
@@ -13,6 +15,7 @@ public class ColorParser {
 
 	public List<Color> getColorCriteria(String colorValue) {
 		List<Color> colorlist = new ArrayList<Color>();
+		Set<Color> colorslist = new HashSet<Color>();
 		String colorArr[] = colorValue
 				.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 		Color colorObj = null;
@@ -32,15 +35,17 @@ public class ColorParser {
 				colorObj.setCombos(combolist);
 				colorObj.setName(value);
 				colorObj.setAlias(value);
-				colorlist.add(colorObj);
+				//colorlist.add(colorObj);
+				colorslist.add(colorObj);
 			} else {
 				colorObj.setName(value);
 				colorObj.setAlias(value);
-				colorlist.add(colorObj);
+				//colorlist.add(colorObj);
+				colorslist.add(colorObj);
 			}
 
 		}
-
+        colorlist.addAll(colorslist);
 		return colorlist;
 
 	}

@@ -819,8 +819,8 @@ public class SageProductsExcelMapping {
 			List<String> listOfCategories = new ArrayList<String>();
 			listOfCategories.add("USB/FLASH DRIVES");
 			productExcelObj.setCategories(listOfCategories);
-			String productDescription ="Phone Holder USB 2.0 Flash Drive";
-			productExcelObj.setDescription(productDescription);
+			//String productDescription ="Phone Holder USB 2.0 Flash Drive";
+			//productExcelObj.setDescription(productDescription);
 			ShippingEstimate shipping = shippingEstimateParser.getShippingEstimateValues(cartonL, cartonW,
 					                               cartonH, weightPerCarton, unitsPerCarton);
 			productConfigObj.setImprintLocation(listImprintLocation);
