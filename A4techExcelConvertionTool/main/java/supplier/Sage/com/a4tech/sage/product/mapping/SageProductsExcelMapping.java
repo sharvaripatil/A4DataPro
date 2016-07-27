@@ -191,6 +191,8 @@ public class SageProductsExcelMapping {
 								productKeywords = new ArrayList<String>();
 								listOfProductionTime = new ArrayList<ProductionTime>();
 								rushTime = new RushTime();
+								listImprintLocation = new ArrayList<ImprintLocation>();
+								listOfImprintMethods = new ArrayList<ImprintMethod>();
 								
 						 }
 						    if(!productXids.contains(xid)){
