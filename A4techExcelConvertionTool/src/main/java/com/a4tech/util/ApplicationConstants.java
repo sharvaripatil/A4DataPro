@@ -43,6 +43,7 @@ public class ApplicationConstants {
     public static final String  CONST_STRING_SHIPPING_WEIGHT                = "lbs";
     public static final String	CONST_STRING_SHIPPING_NUMBER_UNIT_CARTON    = "per Carton";
     public static final String	CONST_STRING_DOWNLOAD_FILE_PATH 			= "D:\\A4 ESPUpdate\\ErrorFiles\\";
+    public static final String	CONST_STRING_SECONDARY 						= "Secondary";
     
     public final static String  COMBO_VALUES_SEPARATOR 					    = ":";
     public final static Integer COMBO_TEXT_VALUE_INDEX 					    = 1;

@@ -18,7 +18,7 @@ import com.mysql.jdbc.Connection;
 	@RequestMapping("/checkConnection")
 	public class CheckDBConnectionController {
 			
-		private static Logger _LOGGER = Logger.getLogger(DownloadFileController.class);
+		private static Logger _LOGGER = Logger.getLogger(CheckDBConnectionController.class);
 		
 		  JavaMailSender mailSenderObj;
 			String username;
