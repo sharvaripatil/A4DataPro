@@ -167,17 +167,14 @@
   	<property name="basename" value="error"/>
   </bean>
    <bean id="downloadFileController" name="downloadFileController" class="com.a4tech.controller.DownloadFileController" autowire="byName">
-   <property name="username" value="${email.username}"/>
-   <property name="password" value="${email.password}"/>
-   <property name="domain" value="${domain.url}"/>
-   <property name="portNo" value="${domain.portno}"/>
    <property name="mailSenderObj" ref="mailSender" ></property>
+   <property name="username" value="${email.username}"/>
   </bean>
-  <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-  <property name="host" value="smtp.gmail.com" />
-  <property name="port" value="587" />
-  <property name="username" value="a4tech.batchupdate@gmail.com" />
-  <property name="password" value="A4Mumbai" />
+   <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+  <property name="host" value="${domain.url}" />
+  <property name="port" value="${domain.portno}" />
+  <property name="username" value="${email.username}" />
+  <property name="password" value="${email.password}" />
   <property name="javaMailProperties">
    <props>
     <prop key="mail.transport.protocol">smtp</prop>
@@ -189,5 +186,13 @@
   
   <bean id="dcPriceGridParserObj" name="dcPriceGridParserObj" class="com.a4tech.product.DCProducts.parser.DCPriceGridParser" autowire="byName"></bean>
   
-  
+  <bean id="checkDBConnectionController" name="checkDBConnectionController" class="com.a4tech.controller.CheckDBConnectionController" autowire="byName">
+   <property name="mailSenderObj" ref="mailSender" ></property>
+   <property name="username" value="${email.username}"/>
+   <property name="dbURL" value="${mysql.db.url_for_conncheck}" ></property>
+    <property name="dbUsername" value="${mysql.db.username}" ></property>
+     <property name="dbPassword" value="${mysql.db.password}"></property>
+     <property name="dbDriver" value="${mysql.db.driverClassName}" ></property>
+  </bean>
 </beans>
+

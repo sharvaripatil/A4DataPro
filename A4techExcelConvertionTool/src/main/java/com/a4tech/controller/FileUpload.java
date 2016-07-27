@@ -148,7 +148,7 @@ public class FileUpload extends HttpServlet{
 								downloadMail.sendMail(asiNumber, batchId);
 							}
 						}
-							return "redirect:success.htm";
+						return "redirect:redirect.htm";
 					case "55203":	//supplier JulyData	
 						numOfProducts = julymapping.readExcel(accessToken, workbook,Integer.valueOf(asiNumber),batchId);
 						model.addAttribute("fileName", numOfProducts);

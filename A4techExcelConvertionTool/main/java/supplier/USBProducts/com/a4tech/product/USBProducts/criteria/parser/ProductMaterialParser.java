@@ -133,17 +133,25 @@ public class ProductMaterialParser {
 					if(materials.contains(ApplicationConstants.CONST_STRING_COMMA_SEP)){
 						material = new Material();
 						String[] arrayOfMaterial = materials.split(ApplicationConstants.CONST_DELIMITER_COMMA);
-						material.setName(arrayOfMaterial[0]);
+						
+						for (String materialTemp : arrayOfMaterial) {
+							material = new Material();
+							material.setName(materialTemp);
+							material.setAlias(materialTemp);
+							materialList.add(material);
+						}
+						/*material.setName(arrayOfMaterial[0]);
 						material.setAlias(arrayOfMaterial[0]);
 						Combo materialCombo = new Combo();
 						materialCombo.setName(arrayOfMaterial[1]);
-						material.setCombo(materialCombo);
+						material.setCombo(materialCombo);*/
 					}else{
 						material = new Material();
 						material.setName(materials);
 						material.setAlias(materials);
+						materialList.add(material);
 					}
-					materialList.add(material);
+					//materialList.add(material);
 				}catch(Exception e){
 					_LOGGER.error("Error while processing Material :"+e.getMessage());             
 				   	return null;
