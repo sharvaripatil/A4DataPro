@@ -42,7 +42,7 @@
             <form:form name="uploadBean" enctype="multipart/form-data" modelAttribute="filebean">
               <div class="form-group">
               <c:if test="${invalidDetails == ''}">
-                 <div style="color:red">
+                 <div id="dataId" style="color:red" >
                     <h4>Please enter correct details</h4> 
                   </div>
                 </c:if>
@@ -118,6 +118,8 @@ function validateForm(){
 }
 
 $('.btn1').on('click', function() {
+	var elem = document.getElementById('dataId');
+	elem.innerHTML  = '';
 	var $this = $(this);
     var asiNumber = $('#asiNumber').val();
 	var userName = $('#userName').val();
