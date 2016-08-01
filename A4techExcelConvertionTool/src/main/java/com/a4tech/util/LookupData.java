@@ -9,6 +9,7 @@ public class LookupData {
 	
 	public static  Map<String,String> criteriaCodeMap =new HashMap<String, String>();
 	public static Set<String> repeateIndex = new HashSet<String>();
+	public static Set<String> shapes = new HashSet<String>();
 	static{
 		
 		repeateIndex.add("1");
@@ -146,6 +147,11 @@ public class LookupData {
 		criteriaCodeMap.put("SHOP","Shipping Option");
 		criteriaCodeMap.put("WARR","Warranty Information");
 		
+		shapes.add("CUSTOM");
+		shapes.add("Circle");
+		shapes.add("Octagon");
+		shapes.add("Oval");
+		
 	}
 	
 	public static boolean isRepeateIndex(String indexNo){
@@ -160,6 +166,13 @@ public class LookupData {
 			return criteriaCodeMap.get(criteriaCode);
 		}
 		return "";
+	}
+	
+	public static boolean isShape(String value){
+		if(shapes.contains(value)){
+			return true;
+		}
+		return false;
 	}
 	//public static String
 }

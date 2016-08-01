@@ -27,6 +27,7 @@ import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.RushTime;
+import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
@@ -40,6 +41,7 @@ import com.a4tech.sage.product.parser.ImprintMethodParser;
 import com.a4tech.sage.product.parser.OriginParser;
 import com.a4tech.sage.product.parser.PackagingParser;
 import com.a4tech.product.DCProducts.parser.DCPriceGridParser;
+import com.a4tech.product.DCProducts.parser.DimensionAndShapeParser;
 import com.a4tech.product.DCProducts.parser.ProductOriginParser;
 import com.a4tech.sage.product.parser.RushTimeParser;
 import com.a4tech.sage.product.parser.ShippingEstimateParser;
@@ -53,8 +55,9 @@ public class DCProductsExcelMapping {
 	private PostServiceImpl postServiceImpl;
 	ProductDao productDaoObj;
 	DCPriceGridParser dcPriceGridParser;
+	private DimensionAndShapeParser dimensionAndShapeParser;
 	 
-	 
+
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
@@ -236,13 +239,19 @@ public class DCProductsExcelMapping {
 						
 					break;
 					
-				case 8: // Size
-					
-					
+				case 8: // Sizes and Shapes
+					String dimensionAndShape = cell.getStringCellValue();
+					if(dimensionAndShape != null && !dimensionAndShape.isEmpty()){
+						String shape = dimensionAndShape.substring(dimensionAndShape.lastIndexOf(" ")+1);
+						List<Shape> listOfShapes = dimensionAndShapeParser.getShapes(shape);
+						if(listOfShapes != null){
+							productConfigObj.setShapes(listOfShapes);
+						}
+					}
 					break;
 					
 				case 9: //DisplayWeight
-							
+					
 					break;
 					
 				case 10:  
@@ -471,6 +480,14 @@ public class DCProductsExcelMapping {
 	public void setDcPriceGridParser(DCPriceGridParser dcPriceGridParser) {
 		this.dcPriceGridParser = dcPriceGridParser;
 	}
-	
+	 
+	public DimensionAndShapeParser getDimensionAndShapeParser() {
+		return dimensionAndShapeParser;
+	}
+
+	public void setDimensionAndShapeParser(
+				    DimensionAndShapeParser dimensionAndShapeParser) {
+		this.dimensionAndShapeParser = dimensionAndShapeParser;
+	}
 	
 }
