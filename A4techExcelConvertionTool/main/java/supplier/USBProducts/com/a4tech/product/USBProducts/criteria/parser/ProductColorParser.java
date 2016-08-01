@@ -41,12 +41,12 @@ public class ProductColorParser {
 					String alias = value.replaceAll("/", "-");// ApplicationConstants.CONST_DELIMITER_FSLASH,
 																// ApplicationConstants.CONST_DELIMITER_HYPHEN);
 
-					colorObj.setName(colorArray[0].trim());
+					colorObj.setName(alias);
 					colorObj.setAlias(alias);
 
 					Combo combotemp = new Combo();
 					combotemp.setName(colorArray[1].trim());
-					combotemp.setType("Secondary");
+					combotemp.setType(ApplicationConstants.CONST_STRING_SECONDARY);
 
 					comboList.add(combotemp);
 

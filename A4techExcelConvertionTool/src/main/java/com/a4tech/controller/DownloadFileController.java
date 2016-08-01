@@ -49,9 +49,6 @@ public class DownloadFileController {
 	@Autowired
 	 private JavaMailSender mailSenderObj;
 	    String username;
-	    String password;
-	    String domain;
-		String portNo;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String doSendEmail(HttpServletRequest request,
@@ -98,7 +95,7 @@ public class DownloadFileController {
 			     + fileName + "\"");*/
 		      MimeMessage mimeMessage = mailSenderObj.createMimeMessage();
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-		         helper.setFrom("a4tech.batchupdate@gmail.com");
+		         helper.setFrom(username);
 		      helper.setTo(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
 		      helper.setSubject("Product Error Batch File");
 		      helper.setText("Kindly find the attached " +batchId +".txt Product Error File"
@@ -123,29 +120,6 @@ public class DownloadFileController {
 		this.username = username;
 	}
 
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getDomain() {
-		return domain;
-	}
-
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
-
-	public String getPortNo() {
-		return portNo;
-	}
-
-	public void setPortNo(String portNo) {
-		this.portNo = portNo;
-	}
 	public JavaMailSender getMailSenderObj() {
 		return mailSenderObj;
 	}

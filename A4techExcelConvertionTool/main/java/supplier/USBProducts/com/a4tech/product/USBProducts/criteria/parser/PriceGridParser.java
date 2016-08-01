@@ -39,16 +39,27 @@ public class PriceGridParser {
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
-		if (!priceGrid.getIsQUR()) {
+		if(!priceGrid.getIsQUR()){
+			listOfPrice = getPrices(prices, netCost, quantity, discount);
+		}
+		/*else{
+			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
+		}*/
+		/*if (!priceGrid.getIsQUR()) {
 			listOfPrice = getPrices(prices, netCost, quantity, discount);
 		} else {
 			listOfPrice = new ArrayList<Price>();
+		}*/
+		if(listOfPrice != null && !listOfPrice.isEmpty()){
+			priceGrid.setPrices(listOfPrice);
 		}
-		priceGrid.setPrices(listOfPrice);
+		
 		if (criterias != null && !criterias.isEmpty()) {
 			configuration = getConfigurations(criterias);
 		}
-		priceGrid.setPriceConfigurations(configuration);
+		if(configuration != null){
+			priceGrid.setPriceConfigurations(configuration);
+		}
 		existingPriceGrid.add(priceGrid);
 		return existingPriceGrid;
 
@@ -161,5 +172,7 @@ public class PriceGridParser {
 
 		return existingPriceGrid;
 	}
+	
+	
 
 }

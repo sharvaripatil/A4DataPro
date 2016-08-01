@@ -87,7 +87,7 @@ public class FileUpload extends HttpServlet{
 		 Workbook workbook = null;
 
 		int numOfProducts =0;
-		String emailMsg="Email Sent Successfully !!!";
+		String emailMsg="Email has been sent Successfully !!!";
 		String noOfProductsSuccess = null;
 		String noOfProductsFailure = null;
 		String[] splitFinalResult;
@@ -148,7 +148,7 @@ public class FileUpload extends HttpServlet{
 								downloadMail.sendMail(asiNumber, batchId);
 							}
 						}
-							return "redirect:success.htm";
+						return "redirect:redirect.htm";
 					case "55203":	//supplier JulyData	
 						numOfProducts = julymapping.readExcel(accessToken, workbook,Integer.valueOf(asiNumber),batchId);
 						model.addAttribute("fileName", numOfProducts);
