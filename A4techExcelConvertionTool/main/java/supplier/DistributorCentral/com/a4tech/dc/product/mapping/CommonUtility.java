@@ -4,7 +4,7 @@ public class CommonUtility {
 	
 
 	public static boolean isEmptyOrNull(String str) {
-		return (str != null || !"".equals(str));
+		return (str != null && !"".equals(str));
 	}
 	
 

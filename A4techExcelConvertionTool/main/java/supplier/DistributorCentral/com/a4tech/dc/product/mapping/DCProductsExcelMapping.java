@@ -288,8 +288,9 @@ public class DCProductsExcelMapping {
 					if(!StringUtils.isEmpty(ImageLink)){
                      Image ImgObj= new Image();
                      ImgObj.setImageURL(ImageLink);
-                     ImgObj.setRank(1);
-                     ImgObj.setIsPrimary(true);
+                     ImgObj.setRank(ApplicationConstants.CONST_INT_VALUE_ONE);
+                     ImgObj.setIsPrimary(ApplicationConstants.CONST_BOOLEAN_TRUE);
+                     
                      imgList.add(ImgObj);
                      productExcelObj.setImages(imgList);		
 					}
