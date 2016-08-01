@@ -188,13 +188,13 @@
   <bean id="dcPriceGridParserObj" name="dcPriceGridParserObj" class="com.a4tech.product.DCProducts.parser.DCPriceGridParser" autowire="byName"></bean>
   <bean id="dimensionAndShapeParserId" name="dimensionAndShapeParserId" class="com.a4tech.product.DCProducts.parser.DimensionAndShapeParser" />
   
-  <bean id="checkDBConnectionController" name="checkDBConnectionController" class="com.a4tech.controller.CheckDBConnectionController" autowire="byName">
+  <!-- <bean id="checkDBConnectionController" name="checkDBConnectionController" class="com.a4tech.controller.CheckDBConnectionController" autowire="byName">
    <property name="mailSenderObj" ref="mailSender" ></property>
    <property name="username" value="${email.username}"/>
    <property name="dbURL" value="${mysql.db.url_for_conncheck}" ></property>
     <property name="dbUsername" value="${mysql.db.username}" ></property>
      <property name="dbPassword" value="${mysql.db.password}"></property>
      <property name="dbDriver" value="${mysql.db.driverClassName}" ></property>
-  </bean>
+  </bean> -->
 </beans>
 

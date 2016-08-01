@@ -1,4 +1,4 @@
-package com.a4tech.controller;
+/*package com.a4tech.controller;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -50,10 +50,10 @@ import com.mysql.jdbc.Connection;
 		    		SimpleMailMessage message = new SimpleMailMessage();  
 		    	        message.setFrom(username);  
 		    	    message.setTo(ApplicationConstants.SUPPORT_EMAIL_ID_MAP.get("dev_1"));
-		    	    /*message.setTo(ApplicationConstants.SUPPORT_EMAIL_ID_MAP.get("dev_2"));
+		    	    message.setTo(ApplicationConstants.SUPPORT_EMAIL_ID_MAP.get("dev_2"));
 		    	    message.setTo(ApplicationConstants.SUPPORT_EMAIL_ID_MAP.get("sysadmin_1"));
 		    	    message.setCc(ApplicationConstants.SUPPORT_EMAIL_ID_MAP.get("dev_3"));
-		    	    message.setCc(ApplicationConstants.SUPPORT_EMAIL_ID_MAP.get("sysadmin_2"));*/
+		    	    message.setCc(ApplicationConstants.SUPPORT_EMAIL_ID_MAP.get("sysadmin_2"));
 		    	    message.setSubject("Database Connectivity Failure");  
 		    	    message.setText("Falied to connect to MySql database on server 192.168.1.10 on port 3306 for DB a4techconvertiontool"
 		    	    		+"\n\n\n Error Log: "+error
@@ -129,3 +129,4 @@ import com.mysql.jdbc.Connection;
 		
 
 
+*/

@@ -46,6 +46,11 @@
                     <h4>Please enter correct details</h4> 
                   </div>
                 </c:if>
+                <c:if test="${invalidUploadFile == ''}">
+                 <div id="dataId" style="color:red" >
+                      <h4>Please Upload xls/xlsx Files Only</h4> 
+                  </div>
+                </c:if>
                 <label class="sr-only" for="form-asi-number">ASI Number</label>
                 <form:input path="asiNumber" name="asiNumber" id="asiNumber" placeholder="ASI Number..." class="form-asi-number form-control"/>
                 <!-- <input type="text" name="asiNumber" placeholder="ASI Number..." class="form-asi-number form-control" id="asiNumber"> -->
@@ -80,7 +85,7 @@
 </div>
 
 <!-- Javascript -->
-<script src="resources/js/dbconcheck.js"></script> 
+<!-- <script src="resources/js/dbconcheck.js"></script>  -->
 <script src="resources/js/jquery-1.11.1.min.js"></script> 
 <script src="resources/bootstrap/js/bootstrap.min.js"></script>
 <script src="resources/js/jquery.buttonLoader.js"></script>  
