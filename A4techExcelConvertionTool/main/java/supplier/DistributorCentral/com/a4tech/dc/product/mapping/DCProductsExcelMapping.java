@@ -18,6 +18,7 @@ import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Origin;
@@ -104,7 +105,11 @@ public class DCProductsExcelMapping {
 		String netPrice = null;
 		String discCode=null;
 		String productName = null;
-
+		String CountryOfManufactureGUID = null;
+		
+		
+		 List<Image> imgList = new ArrayList<Image>();
+		List<Origin> originList =new ArrayList<Origin>();
 		List<String> categories = new ArrayList<String>();	
 		List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
 		List<Origin> origin = new ArrayList<Origin>();
@@ -250,6 +255,7 @@ public class DCProductsExcelMapping {
 					break;
 					
 				case 11:  //CountryOfManufactureGUID
+					CountryOfManufactureGUID=cell.getStringCellValue();
 					
 					break;
 				
@@ -257,10 +263,8 @@ public class DCProductsExcelMapping {
 					
 					String CountryOfManufactureName=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(CountryOfManufactureName)){
-					origin=originParser.getOriginCriteria(CountryOfManufactureName);
-					productConfigObj.setOrigins(origin);
-					
-					
+					originList=originParser.getOriginCriteria(CountryOfManufactureGUID,CountryOfManufactureName);
+					productConfigObj.setOrigins(originList);
 					}
 					break;
 
@@ -280,7 +284,15 @@ public class DCProductsExcelMapping {
 					  break;
 				
 				case 17: //ImageLink
-					
+					String ImageLink = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(ImageLink)){
+                     Image ImgObj= new Image();
+                     ImgObj.setImageURL(ImageLink);
+                     ImgObj.setRank(1);
+                     ImgObj.setIsPrimary(true);
+                     imgList.add(ImgObj);
+                     productExcelObj.setImages(imgList);		
+					}
 					break;
 				
 				 case 18: //ProductionTime
