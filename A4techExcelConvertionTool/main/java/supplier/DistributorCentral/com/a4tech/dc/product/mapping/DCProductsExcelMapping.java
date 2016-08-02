@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.product.DCProducts.parser.ShippingEstimationParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
@@ -57,7 +58,8 @@ public class DCProductsExcelMapping {
 	ProductDao productDaoObj;
 	DCPriceGridParser dcPriceGridParser;
 	private DimensionAndShapeParser dimensionAndShapeParser;
-	 
+	private ShippingEstimationParser shippingEstimationParser;
+	private ProductOriginParser originParser;
 
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
@@ -79,8 +81,7 @@ public class DCProductsExcelMapping {
 		  String upChargeDetails = null;
 		  String upChargeLevel = null;
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
-		 
-
+		  ShippingEstimate shippingItem = null;
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -116,7 +117,7 @@ public class DCProductsExcelMapping {
 		List<String> categories = new ArrayList<String>();	
 		List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
 		List<Origin> origin = new ArrayList<Origin>();
-		ProductOriginParser originParser=new ProductOriginParser();
+		
 		while (iterator.hasNext()) {
 			
 			try{
@@ -256,8 +257,14 @@ public class DCProductsExcelMapping {
 					break;
 					
 				case 9: //DisplayWeight
-					
-					break;
+					String shippingWeightValue = cell.getStringCellValue();
+					if(shippingWeightValue != null && !shippingWeightValue.isEmpty()){
+					shippingItem = shippingEstimationParser.getShippingEstimates(shippingWeightValue);
+					if(shippingItem.getDimensions()!=null || shippingItem.getNumberOfItems()!=null || shippingItem.getWeight()!=null ){
+					productConfigObj.setShippingEstimates(shippingItem);
+					}
+					}
+					break;	
 					
 				case 10:  
 						//OriginationZipCode
@@ -501,6 +508,23 @@ public class DCProductsExcelMapping {
 	public void setDimensionAndShapeParser(
 				    DimensionAndShapeParser dimensionAndShapeParser) {
 		this.dimensionAndShapeParser = dimensionAndShapeParser;
+	}
+
+	public ShippingEstimationParser getShippingEstimationParser() {
+		return shippingEstimationParser;
+	}
+
+	public void setShippingEstimationParser(
+			ShippingEstimationParser shippingEstimationParser) {
+		this.shippingEstimationParser = shippingEstimationParser;
+	}
+
+	public ProductOriginParser getOriginParser() {
+		return originParser;
+	}
+
+	public void setOriginParser(ProductOriginParser originParser) {
+		this.originParser = originParser;
 	}
 	
 }

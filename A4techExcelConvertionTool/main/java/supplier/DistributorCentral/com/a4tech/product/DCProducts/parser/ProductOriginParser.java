@@ -8,6 +8,9 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Origin;
 
+import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
+
 public class ProductOriginParser {
 
 	private Logger              _LOGGER              = Logger.getLogger(getClass());
