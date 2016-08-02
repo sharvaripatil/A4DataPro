@@ -1,4 +1,4 @@
-package com.a4tech.dc.product.mapping;
+package com.a4tech.util;
 
 public class CommonUtility {
 	
