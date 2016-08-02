@@ -41,16 +41,19 @@
           <div class="form-bottom">
             <form:form name="uploadBean" enctype="multipart/form-data" modelAttribute="filebean">
               <div class="form-group">
-              <c:if test="${invalidDetails == ''}">
+              <c:choose>
+            <c:when test="${invalidDetails == ''}">
                  <div id="dataId" style="color:red" >
-                    <h4>Please enter correct details</h4> 
-                  </div>
-                </c:if>
-                <c:if test="${invalidUploadFile == ''}">
-                 <div id="dataId" style="color:red" >
-                      <h4>Please Upload xls/xlsx Files Only</h4> 
-                  </div>
-                </c:if>
+                  <h4>Please enter correct details</h4> 
+                 </div>
+           </c:when>
+            <c:when test="${invalidUploadFile == ''}">
+                <div id="dataId" style="color:red" >
+               <h4>Please Upload xls/xlsx Files Only</h4> 
+               </div>
+           </c:when>
+         </c:choose> 
+            
                 <label class="sr-only" for="form-asi-number">ASI Number</label>
                 <form:input path="asiNumber" name="asiNumber" id="asiNumber" placeholder="ASI Number..." class="form-asi-number form-control"/>
                 <!-- <input type="text" name="asiNumber" placeholder="ASI Number..." class="form-asi-number form-control" id="asiNumber"> -->
