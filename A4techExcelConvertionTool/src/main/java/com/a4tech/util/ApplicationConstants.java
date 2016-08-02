@@ -7,6 +7,7 @@ public class ApplicationConstants {
    
 	
 	public static final String PRICE_SPLITTER_BASE_PRICEGRID              	= "___";
+	public static final int CONST_INT_VALUE_ONE                     	    =  1;
 	public static final String CONST_STRING_VALUE_ONE                     	= "1";
 	public static final String CONST_STRING_CAPITAL_Y                     	= "Y";
 	public final static String CONST_STRING_EMPTY  							= "";

@@ -189,6 +189,10 @@ public class SageProductsExcelMapping {
 								finalDimensionObj = new Dimension();
 								catalogList = new ArrayList<Catalog>();
 								productKeywords = new ArrayList<String>();
+								listOfProductionTime = new ArrayList<ProductionTime>();
+								rushTime = new RushTime();
+								listImprintLocation = new ArrayList<ImprintLocation>();
+								listOfImprintMethods = new ArrayList<ImprintMethod>();
 								
 						 }
 						    if(!productXids.contains(xid)){
@@ -325,7 +329,7 @@ public class SageProductsExcelMapping {
 					 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 					    dimensionValue1 =String.valueOf((int)cell.getNumericCellValue());
 					 }
-					   if(!dimensionValue1.isEmpty()){
+					   if(dimensionValue1 != null && !dimensionValue1.isEmpty()){
 						   dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					   }
 					
@@ -337,7 +341,7 @@ public class SageProductsExcelMapping {
 					 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 						 dimensionUnits1 =String.valueOf((int)cell.getNumericCellValue());
 					 }
-					 if(!dimensionUnits1.isEmpty()){
+					 if(dimensionUnits1 != null && !dimensionUnits1.isEmpty()){
 						 dimensionUnits.append(dimensionUnits1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
 					  break;
@@ -363,7 +367,7 @@ public class SageProductsExcelMapping {
 						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 							 dimensionValue2 =String.valueOf((int)cell.getNumericCellValue());
 						 }
-					 if(!dimensionValue2.isEmpty()){
+					 if(dimensionValue2 != null && !dimensionValue2.isEmpty()){
 						 dimensionValue.append(dimensionValue2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
 				
@@ -376,7 +380,7 @@ public class SageProductsExcelMapping {
 						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 							 dimensionUnits2 =String.valueOf((int)cell.getNumericCellValue());
 						 }
-					if(!dimensionUnits2.isEmpty()){
+					if(dimensionUnits2 != null && !dimensionUnits2.isEmpty()){
 						dimensionUnits.append(dimensionUnits2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					break;
@@ -388,7 +392,7 @@ public class SageProductsExcelMapping {
 						 }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 							 dimensionType2 =String.valueOf((int)cell.getNumericCellValue());
 						 }
-					if(!dimensionType2.isEmpty()){
+					if(dimensionType2 != null && !dimensionType2.isEmpty()){
 						dimensionType.append(dimensionType2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					

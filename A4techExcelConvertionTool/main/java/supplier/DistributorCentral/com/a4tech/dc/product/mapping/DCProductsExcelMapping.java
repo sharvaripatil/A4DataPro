@@ -19,6 +19,7 @@ import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Origin;
@@ -28,6 +29,7 @@ import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.RushTime;
+import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
@@ -41,6 +43,7 @@ import com.a4tech.sage.product.parser.ImprintMethodParser;
 import com.a4tech.sage.product.parser.OriginParser;
 import com.a4tech.sage.product.parser.PackagingParser;
 import com.a4tech.product.DCProducts.parser.DCPriceGridParser;
+import com.a4tech.product.DCProducts.parser.DimensionAndShapeParser;
 import com.a4tech.product.DCProducts.parser.ProductOriginParser;
 import com.a4tech.sage.product.parser.RushTimeParser;
 import com.a4tech.sage.product.parser.ShippingEstimateParser;
@@ -54,8 +57,9 @@ public class DCProductsExcelMapping {
 	private PostServiceImpl postServiceImpl;
 	ProductDao productDaoObj;
 	DCPriceGridParser dcPriceGridParser;
+	private DimensionAndShapeParser dimensionAndShapeParser;
 	 
-	 
+
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
@@ -105,7 +109,11 @@ public class DCProductsExcelMapping {
 		String netPrice = null;
 		String discCode=null;
 		String productName = null;
-
+		String CountryOfManufactureGUID = null;
+		
+		
+		 List<Image> imgList = new ArrayList<Image>();
+		List<Origin> originList =new ArrayList<Origin>();
 		List<String> categories = new ArrayList<String>();	
 		List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
 		List<Origin> origin = new ArrayList<Origin>();
@@ -237,9 +245,15 @@ public class DCProductsExcelMapping {
 						
 					break;
 					
-				case 8: // Size
-					
-					
+				case 8: // Sizes and Shapes
+					String dimensionAndShape = cell.getStringCellValue();
+					if(dimensionAndShape != null && !dimensionAndShape.isEmpty()){
+						String shape = dimensionAndShape.substring(dimensionAndShape.lastIndexOf(" ")+1);
+						List<Shape> listOfShapes = dimensionAndShapeParser.getShapes(shape);
+						if(listOfShapes != null){
+							productConfigObj.setShapes(listOfShapes);
+						}
+					}
 					break;
 					
 				case 9: //DisplayWeight
@@ -255,6 +269,7 @@ public class DCProductsExcelMapping {
 					break;
 					
 				case 11:  //CountryOfManufactureGUID
+					CountryOfManufactureGUID=cell.getStringCellValue();
 					
 					break;
 				
@@ -262,10 +277,8 @@ public class DCProductsExcelMapping {
 					
 					String CountryOfManufactureName=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(CountryOfManufactureName)){
-					origin=originParser.getOriginCriteria(CountryOfManufactureName);
-					productConfigObj.setOrigins(origin);
-					
-					
+					originList=originParser.getOriginCriteria(CountryOfManufactureGUID,CountryOfManufactureName);
+					productConfigObj.setOrigins(originList);
 					}
 					break;
 
@@ -285,7 +298,16 @@ public class DCProductsExcelMapping {
 					  break;
 				
 				case 17: //ImageLink
-					
+					String ImageLink = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(ImageLink)){
+                     Image ImgObj= new Image();
+                     ImgObj.setImageURL(ImageLink);
+                     ImgObj.setRank(ApplicationConstants.CONST_INT_VALUE_ONE);
+                     ImgObj.setIsPrimary(ApplicationConstants.CONST_BOOLEAN_TRUE);
+                     
+                     imgList.add(ImgObj);
+                     productExcelObj.setImages(imgList);		
+					}
 					break;
 				
 				 case 18: //ProductionTime
@@ -476,6 +498,14 @@ public class DCProductsExcelMapping {
 	public void setDcPriceGridParser(DCPriceGridParser dcPriceGridParser) {
 		this.dcPriceGridParser = dcPriceGridParser;
 	}
-	
+	 
+	public DimensionAndShapeParser getDimensionAndShapeParser() {
+		return dimensionAndShapeParser;
+	}
+
+	public void setDimensionAndShapeParser(
+				    DimensionAndShapeParser dimensionAndShapeParser) {
+		this.dimensionAndShapeParser = dimensionAndShapeParser;
+	}
 	
 }

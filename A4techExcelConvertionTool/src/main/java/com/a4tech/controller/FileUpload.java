@@ -87,7 +87,7 @@ public class FileUpload extends HttpServlet{
 		 Workbook workbook = null;
 
 		int numOfProducts =0;
-		String emailMsg="Email Sent Successfully !!!";
+		String emailMsg="Email has been sent Successfully !!!";
 		String noOfProductsSuccess = null;
 		String noOfProductsFailure = null;
 		String[] splitFinalResult;
@@ -95,19 +95,7 @@ public class FileUpload extends HttpServlet{
 		 if(result.hasErrors()){
 			 return "home"; 
 		 }
-		 if(accessToken == null){
-         	accessToken = loginService.doLogin("55201",  fileBean.getUserName(),
-         													fileBean.getPassword());
-         	if(accessToken != null){
-         		if(accessToken.equalsIgnoreCase("unAuthorized")){
-             		accessToken = null;
-             		model.addAttribute("invalidDetails", "");
-             		 return "home";
-             	}
-         	}else{
-         		return "errorPage";
-         	}
-         }
+		 
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBean.getFile().getBytes())){
 	       
 			  
@@ -118,7 +106,22 @@ public class FileUpload extends HttpServlet{
 	            		workbook = new XSSFWorkbook(bis);
 	            	}else{
 	 	               _LOGGER.info("Invlid upload excel file,Please try one more time");
+	 	               	model.addAttribute("invalidUploadFile", "");
+	             		return "home";
 	            	}
+	            	if(accessToken == null){
+	                 	accessToken = loginService.doLogin("55201",  fileBean.getUserName(),
+	                 													fileBean.getPassword());
+	                 	if(accessToken != null){
+	                 		if(accessToken.equalsIgnoreCase("unAuthorized")){
+	                     		accessToken = null;
+	                     		model.addAttribute("invalidDetails", "");
+	                     		 return "home";
+	                     	}
+	                 	}else{
+	                 		return "errorPage";
+	                 	}
+	                 }
 	            int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 	            	 request.getSession().setAttribute("batchId", String.valueOf(batchId));
 	                switch (asiNumber) {

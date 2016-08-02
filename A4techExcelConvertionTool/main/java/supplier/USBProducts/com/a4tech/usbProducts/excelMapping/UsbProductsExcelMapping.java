@@ -226,7 +226,7 @@ public class UsbProductsExcelMapping {
 							 	}else{
 							 		
 							 	}
-							 	_LOGGER.info("list size>>>>>>>"+numOfProducts.size());
+							 	_LOGGER.info("list size of success>>>>>>>"+numOfProductsSuccess.size());
 								
 								priceGrids = new ArrayList<PriceGrid>();
 								productConfigObj = new ProductConfigurations();
@@ -483,8 +483,14 @@ public class UsbProductsExcelMapping {
 				case 54:
 				case 55:
 				case 56:
-				case 57:	
-					quantity = cell.getStringCellValue();
+				case 57:
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+						quantity = cell.getStringCellValue();
+					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+						quantity = String.valueOf(cell.getNumericCellValue());
+					}else{
+						
+					}
 			         if(!StringUtils.isEmpty(quantity)){
 			        	 listOfDiscount.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			         }
@@ -612,14 +618,28 @@ public class UsbProductsExcelMapping {
 					 
 					 
 				case 108:
-					 int shipval= (int) cell.getNumericCellValue();
-					 shippingitemValue=Integer.toString(shipval);
+					    if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+					    	shippingitemValue = cell.getStringCellValue();
+					    }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+					    	shippingitemValue = String.valueOf(cell.getNumericCellValue());
+					    }else{
+					    	
+					    }
+					 //int shipval= (int) cell.getNumericCellValue();
+					 //shippingitemValue=Integer.toString(shipval);
 					shippingitemValue=shippingitemValue+ApplicationConstants.CONST_DELIMITER_COLON+"per Case";
 					break;
 					
 				case 109:
-					int shipwtval= (int) cell.getNumericCellValue();
-					shippingWeightValue=Integer.toString(shipwtval);
+					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+						 shippingWeightValue = cell.getStringCellValue();
+					    }else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+					    	shippingWeightValue = String.valueOf(cell.getNumericCellValue());
+					    }else{
+					    	
+					    }
+					//int shipwtval= (int) cell.getNumericCellValue();
+					//shippingWeightValue=Integer.toString(shipwtval);
 					  
 					break;
 					
@@ -633,7 +653,6 @@ public class UsbProductsExcelMapping {
 					break;
 				case 111:
 					//Weight per Item
-					System.out.println(111);
 					break;
 	
 				case 112:
@@ -692,7 +711,6 @@ public class UsbProductsExcelMapping {
 				
 			case 122:
 				//Item Type2
-				System.out.println(122);
 				break;
 				
 			case 123:
@@ -962,6 +980,10 @@ public class UsbProductsExcelMapping {
 				priceGrids = priceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
 						         listOfQuantity.toString(), listOfDiscount.toString(), "USD",
 						         priceIncludes, true, "N", productName,"",priceGrids);	
+			}else{
+				priceGrids = priceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
+				         listOfQuantity.toString(), listOfDiscount.toString(), "USD",
+				         priceIncludes, true, "Y", productName,"",priceGrids);	
 			}
 			
 			 
@@ -1000,6 +1022,7 @@ public class UsbProductsExcelMapping {
 			    optionadditionalinfo=null;
 			
 			}catch(Exception e){
+				_LOGGER.info("error message::"+ e.getMessage());
 			_LOGGER.error("Error while Processing Product :"+productExcelObj.getExternalProductId() );		 
 		}
 		}
