@@ -59,7 +59,7 @@ public class DCProductsExcelMapping {
 	DCPriceGridParser dcPriceGridParser;
 	private DimensionAndShapeParser dimensionAndShapeParser;
 	private ShippingEstimationParser shippingEstimationParser;
-	 
+	private ProductOriginParser originParser;
 
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
@@ -117,7 +117,7 @@ public class DCProductsExcelMapping {
 		List<String> categories = new ArrayList<String>();	
 		List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
 		List<Origin> origin = new ArrayList<Origin>();
-		ProductOriginParser originParser=new ProductOriginParser();
+		
 		while (iterator.hasNext()) {
 			
 			try{
@@ -508,6 +508,23 @@ public class DCProductsExcelMapping {
 	public void setDimensionAndShapeParser(
 				    DimensionAndShapeParser dimensionAndShapeParser) {
 		this.dimensionAndShapeParser = dimensionAndShapeParser;
+	}
+
+	public ShippingEstimationParser getShippingEstimationParser() {
+		return shippingEstimationParser;
+	}
+
+	public void setShippingEstimationParser(
+			ShippingEstimationParser shippingEstimationParser) {
+		this.shippingEstimationParser = shippingEstimationParser;
+	}
+
+	public ProductOriginParser getOriginParser() {
+		return originParser;
+	}
+
+	public void setOriginParser(ProductOriginParser originParser) {
+		this.originParser = originParser;
 	}
 	
 }

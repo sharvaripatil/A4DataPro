@@ -125,6 +125,7 @@
    		<property name="dcPriceGridParser" ref="dcPriceGridParserObj"/>
    		<property name="dimensionAndShapeParser" ref="dimensionAndShapeParserId"/>
    		<property name="shippingEstimationParser" ref="shippingEstObj"/>
+   		<property name="originParser" ref="productOriginObj"/>
    </bean>
    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
   		<property name="driverClassName" value="${mysql.db.driverClassName}" />
@@ -189,6 +190,7 @@
   <bean id="dcPriceGridParserObj" name="dcPriceGridParserObj" class="com.a4tech.product.DCProducts.parser.DCPriceGridParser" autowire="byName"></bean>
   <bean id="dimensionAndShapeParserId" name="dimensionAndShapeParserId" class="com.a4tech.product.DCProducts.parser.DimensionAndShapeParser" />
   <bean id="shippingEstObj" name="shippingEstObj" class="com.a4tech.product.DCProducts.parser.ShippingEstimationParser" />
+  <bean id="productOriginObj" name="productOriginObj" class="com.a4tech.product.DCProducts.parser.ProductOriginParser" />
   <!-- <bean id="checkDBConnectionController" name="checkDBConnectionController" class="com.a4tech.controller.CheckDBConnectionController" autowire="byName">
    <property name="mailSenderObj" ref="mailSender" ></property>
    <property name="username" value="${email.username}"/>
