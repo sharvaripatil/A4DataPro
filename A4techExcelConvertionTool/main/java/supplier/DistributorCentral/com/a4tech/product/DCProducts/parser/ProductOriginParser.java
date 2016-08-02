@@ -6,9 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.dc.product.mapping.CommonUtility;
 import com.a4tech.product.model.Origin;
-import com.a4tech.util.ApplicationConstants;
 
 public class ProductOriginParser {
 
@@ -19,10 +17,10 @@ public class ProductOriginParser {
 		Origin originObj = new Origin();
 		
 		try{ 
-		if(CommonUtility.isEmptyOrNull(customercode)){
+		if(StringUtils.isEmpty(customercode)){
 			originObj.setCustomerOrderCode(customercode);
 		}
-     	if(CommonUtility.isEmptyOrNull(origin)){
+     	if(StringUtils.isEmpty(origin)){
      		originObj.setName(origin);
      	}
 		originList.add(originObj);
