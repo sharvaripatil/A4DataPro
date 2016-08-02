@@ -58,6 +58,7 @@ public class DCProductsExcelMapping {
 	ProductDao productDaoObj;
 	DCPriceGridParser dcPriceGridParser;
 	private DimensionAndShapeParser dimensionAndShapeParser;
+	private ShippingEstimationParser shippingEstimationParser;
 	 
 
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
@@ -80,7 +81,6 @@ public class DCProductsExcelMapping {
 		  String upChargeDetails = null;
 		  String upChargeLevel = null;
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
-		  ShippingEstimationParser shipinestmt = new ShippingEstimationParser();
 		  ShippingEstimate shippingItem = null;
 		try{
 			 
@@ -258,9 +258,11 @@ public class DCProductsExcelMapping {
 					
 				case 9: //DisplayWeight
 					String shippingWeightValue = cell.getStringCellValue();
-					shippingItem = shipinestmt.getShippingEstimates(shippingWeightValue);
+					if(shippingWeightValue != null && !shippingWeightValue.isEmpty()){
+					shippingItem = shippingEstimationParser.getShippingEstimates(shippingWeightValue);
 					if(shippingItem.getDimensions()!=null || shippingItem.getNumberOfItems()!=null || shippingItem.getWeight()!=null ){
 					productConfigObj.setShippingEstimates(shippingItem);
+					}
 					}
 					break;	
 					
