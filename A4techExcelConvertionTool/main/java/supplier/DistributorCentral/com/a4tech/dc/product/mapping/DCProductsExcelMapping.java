@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.product.DCProducts.parser.ShippingEstimationParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
@@ -75,8 +76,8 @@ public class DCProductsExcelMapping {
 		  String upChargeDetails = null;
 		  String upChargeLevel = null;
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
-		 
-
+		  ShippingEstimationParser shipinestmt = new ShippingEstimationParser();
+		  ShippingEstimate shippingItem = null;
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -242,8 +243,12 @@ public class DCProductsExcelMapping {
 					break;
 					
 				case 9: //DisplayWeight
-							
-					break;
+					String shippingWeightValue = cell.getStringCellValue();
+					shippingItem = shipinestmt.getShippingEstimates(shippingWeightValue);
+					if(shippingItem.getDimensions()!=null || shippingItem.getNumberOfItems()!=null || shippingItem.getWeight()!=null ){
+					productConfigObj.setShippingEstimates(shippingItem);
+					}
+					break;	
 					
 				case 10:  
 						//OriginationZipCode
