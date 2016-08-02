@@ -98,7 +98,7 @@ public class DownloadFileController {
 		         helper.setFrom(username);
 		      helper.setTo(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
 		      helper.setSubject("Product Error Batch File");
-		      helper.setText("Kindly find the attached " +batchId +" Product Error File"
+		      helper.setText("Kindly find the attached " +batchId +".txt Product Error File"
 		             + "\n\n\n\n Note: This is a System Generated Message Kindly Do not reply back");
 		       helper.addAttachment(file.getFilename(), file);
 		       mailSenderObj.send(mimeMessage);
