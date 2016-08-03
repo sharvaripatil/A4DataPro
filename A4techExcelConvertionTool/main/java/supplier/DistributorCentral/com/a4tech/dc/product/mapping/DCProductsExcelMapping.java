@@ -463,13 +463,13 @@ public class DCProductsExcelMapping {
 	       productDaoObj.getErrorLog(asiNumber,batchId);
 	       return finalResult;
 		}catch(Exception e){
-			_LOGGER.error("Error while Processing excel sheet ");
+			_LOGGER.error("Error while Processing excel sheet ,Error message: "+e.getMessage());
 			return finalResult;
 		}finally{
 			try {
 				workbook.close();
 			} catch (IOException e) {
-				_LOGGER.error("Error while Processing excel sheet");
+				_LOGGER.error("Error while Processing excel sheet, Error message: "+e.getMessage());
 	
 			}
 				_LOGGER.info("Complted processing of excel sheet ");

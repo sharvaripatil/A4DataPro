@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
@@ -14,10 +16,10 @@ import com.a4tech.util.LookupData;
 
 
 public class PriceGridParser {
-	
+	private Logger              _LOGGER              = Logger.getLogger(getClass());
 	public List<PriceGrid> getPriceGrids(String listOfPrices,String listOfQuan,String listOfDisc ,String currency,String priceInclude,
 			                 boolean isBasePrice ,String isQur,String priceName,String criterias ,List<PriceGrid> existingPriceGrid){
-		
+		try{
 		Integer sequence =1;
 		List<PriceConfiguration> configuration = null ;
 		PriceGrid priceGrid = new PriceGrid();
@@ -43,13 +45,17 @@ public class PriceGridParser {
 		}
 		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
+	}catch (Exception e){
+		_LOGGER.error("Error creating price grid: "+e.getMessage());
+	}
 		return existingPriceGrid; 
 		
 	}
 	
 	public List<Price> getPrices(String[] prices, String[] quantity , String[] discount){
-		 
-		  List<Price> listOfPrices = new ArrayList<Price>();
+		List<Price> listOfPrices = new ArrayList<Price>();
+		 try{
+		  
 		   for(int i=0,j=1;i<prices.length && i<quantity.length&&i<discount.length;i++,j++){
 			 
 			   Price price = new Price();
@@ -66,11 +72,15 @@ public class PriceGridParser {
 			 price.setPriceUnit(priceUnit);
 			 listOfPrices.add(price);
 		   }
+	}catch (Exception e){
+		_LOGGER.error("Error creating prices: "+e.getMessage());
+	}
 		return listOfPrices;
 	}
 	
 	public List<PriceConfiguration> getConfigurations(String criterias){
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
+		try{
 		String[] config =null;
 		PriceConfiguration configs = null;
 		if(criterias.contains(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID)){
@@ -104,12 +114,15 @@ public class PriceGridParser {
 			configs.setValue(Arrays.asList((Object)config[1]));
 			priceConfiguration.add(configs);
 		}
+		}catch(Exception e){
+			_LOGGER.error("Error creating price configuration: "+e.getMessage());
+		}
 		return priceConfiguration;
 	}
 	
 	public List<PriceGrid> getUpchargePriceGrid(String quantity,String prices ,String discounts, String upChargeCriterias , String qurFlag,String currency
 			                           ,String upChargeName, String upChargeType,String upchargeUsageType,Integer upChargeSequence ,List<PriceGrid> existingPriceGrid){
-		
+		try{
 		List<PriceConfiguration> configuration = null ;
 		PriceGrid priceGrid = new PriceGrid();
 		String[] upChargePrices = prices.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -137,7 +150,9 @@ public class PriceGridParser {
 		}
 		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
-		
+	}catch(Exception e){
+		_LOGGER.error("Error creating upcharge price grid: "+e.getMessage());
+	}
 		return existingPriceGrid;
 	}
 
