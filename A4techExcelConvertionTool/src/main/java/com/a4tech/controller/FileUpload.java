@@ -179,10 +179,10 @@ public class FileUpload extends HttpServlet{
 						break;
 					}
 	            	
-	        }catch(IOException e1){
-	        	
+	        }catch(IOException e){
+	        	_LOGGER.error("Error In FileUpload: "+e.getMessage());
 	        }catch (Exception e) {
-				// TODO: handle exception
+	        	_LOGGER.error("Error In FileUpload: "+e.getMessage());
 			}
         return "home";
 }
