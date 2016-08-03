@@ -181,7 +181,7 @@ public class ProductDao {
 	    	    	data.append(error).append(ApplicationConstants.CONST_DELIMITER_PIPE);
 				}
 	    	    data.setLength(data.length()-1);
-	    	    String finalStr="XID: "+key+"   " +data;
+	    	    String finalStr="ProductID: "+key+"   " +data;
 	    	    bw.write(finalStr);
 	    	    bw.newLine();
 	    	}
