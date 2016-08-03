@@ -52,7 +52,7 @@ public class ProductRushTimeParser {
  		rushObj.setAvailable(true);
 		rushObj.setRushTimeValues(rushValueTimeList);
 		}catch(Exception e){
-			_LOGGER.error("Error while processing Personalization :"+e.getMessage());             
+			_LOGGER.error("Error while processing RushTime :"+e.getMessage());             
 		   	return null;
 		   	
 		   }

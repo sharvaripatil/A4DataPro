@@ -1083,7 +1083,7 @@ public class ExcelMapping {
 			
 			}catch(Exception e){
 			//e.printStackTrace();
-			_LOGGER.error("Error while Processing Product :"+productExcelObj.getExternalProductId() );		 
+			_LOGGER.error("Error while Processing Product :"+productExcelObj.getExternalProductId() +" Error: "+e.getMessage() );		 
 		}
 		}
 		workbook.close();
@@ -1106,7 +1106,7 @@ public class ExcelMapping {
 		 	
 		 	
 		}catch(Exception e){
-			_LOGGER.error("Error while Processing excel sheet ");
+			_LOGGER.error("Error while Processing excel sheet ,Error: "+e.getMessage());
 			return 0;
 		}finally{
 			
@@ -1115,7 +1115,7 @@ public class ExcelMapping {
 				workbook.close();
 			//inputStream.close();
 			} catch (IOException e) {
-				_LOGGER.error("Error while Processing excel sheet");
+				_LOGGER.error("Error while Processing excel sheet ,Error: "+e.getMessage());
 	
 			}
 			_LOGGER.info("Complted processing of excel sheet ");
