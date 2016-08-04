@@ -22,6 +22,7 @@ public class PriceGridParser {
 			String qurFlag, String priceName, String criterias,
 			List<PriceGrid> existingPriceGrid) {
 		_LOGGER.info("Enter Price Grid Parser class");
+		try{
 		Integer sequence = 1;
 		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
@@ -50,6 +51,9 @@ public class PriceGridParser {
 		}
 		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
+		}catch(Exception e){
+			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
+		}
 		return existingPriceGrid;
 
 	}
@@ -82,17 +86,18 @@ public class PriceGridParser {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
 		String[] config = null;
 		PriceConfiguration configs = null;
+		try{
 		if (criterias
 				.contains(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID)) {
 			String[] configuraions = criterias
 					.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			for (String criteria : configuraions) {
 				PriceConfiguration configuraion = new PriceConfiguration();
-				config = criteria.split(":");
+				config = criteria.split(ApplicationConstants.CONST_DELIMITER_COLON);
 				String criteriaValue = LookupData.getCriteriaValue(config[0]);
 				configuraion.setCriteria(criteriaValue);
-				if (config[1].contains(",")) {
-					String[] values = config[1].split(",");
+				if (config[1].contains(ApplicationConstants.CONST_STRING_COMMA_SEP)) {
+					String[] values = config[1].split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 					for (String Value : values) {
 						configs = new PriceConfiguration();
 						configs.setCriteria(criteriaValue);
@@ -109,11 +114,14 @@ public class PriceGridParser {
 
 		} else {
 			configs = new PriceConfiguration();
-			config = criterias.split(":");
+			config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
 			String criteriaValue = LookupData.getCriteriaValue(config[0]);
 			configs.setCriteria(criteriaValue);
 			configs.setValue(Arrays.asList((Object) config[1]));
 			priceConfiguration.add(configs);
+		}
+		}catch(Exception e){
+			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
 		}
 		return priceConfiguration;
 	}
@@ -123,7 +131,7 @@ public class PriceGridParser {
 			String currency, String upChargeName, String upChargeType,
 			String upchargeUsageType, Integer upChargeSequence,
 			List<PriceGrid> existingPriceGrid) {
-
+		try{
 		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
 		String[] upChargePrices = prices
@@ -154,7 +162,9 @@ public class PriceGridParser {
 		}
 		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
-
+		}catch(Exception e){
+			_LOGGER.error("Error while processing UpchargePriceGrid: "+e.getMessage());
+		}
 		return existingPriceGrid;
 	}
 
