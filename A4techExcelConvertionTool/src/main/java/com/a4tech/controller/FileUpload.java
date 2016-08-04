@@ -109,7 +109,7 @@ public class FileUpload extends HttpServlet{
 	 	               	model.addAttribute("invalidUploadFile", "");
 	             		return "home";
 	            	}
-	            	if(accessToken == null){
+	            	//if(accessToken == null){
 	                 	accessToken = loginService.doLogin("55201",  fileBean.getUserName(),
 	                 													fileBean.getPassword());
 	                 	if(accessToken != null){
@@ -121,7 +121,7 @@ public class FileUpload extends HttpServlet{
 	                 	}else{
 	                 		return "errorPage";
 	                 	}
-	                 }
+	              //   }
 	            int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 	            	 request.getSession().setAttribute("batchId", String.valueOf(batchId));
 	                switch (asiNumber) {
@@ -179,10 +179,10 @@ public class FileUpload extends HttpServlet{
 						break;
 					}
 	            	
-	        }catch(IOException e1){
-	        	
+	        }catch(IOException e){
+	        	_LOGGER.error("Error In FileUpload: "+e.getMessage());
 	        }catch (Exception e) {
-				// TODO: handle exception
+	        	_LOGGER.error("Error In FileUpload: "+e.getMessage());
 			}
         return "home";
 }

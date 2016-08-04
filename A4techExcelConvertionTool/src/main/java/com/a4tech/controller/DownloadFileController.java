@@ -4,42 +4,23 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Properties;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.a4tech.util.ApplicationConstants;
-import javax.mail.internet.MimeMessage;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @RequestMapping("/sendEmails")
@@ -102,13 +83,15 @@ public class DownloadFileController {
 		      helper.setText("Kindly find the attached " +batchId +".txt Product Error File"
 		             + "\n\n\n\n Note: This is a System Generated Message Kindly Do not reply back");
 		       helper.addAttachment(file.getFilename(), file);
+		       _LOGGER.info("Sending Email to "+ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
 		       mailSenderObj.send(mimeMessage);
+		       _LOGGER.info("Mail Sent Successfully !!!");
 		      } catch (javax.mail.MessagingException e) {
 			      // TODO Auto-generated catch block
-			    _LOGGER.error(e.toString());
+			    _LOGGER.error("Mail Not Sent Successfully,Error Msg:"+e.toString());
 			     }catch (Exception e) {
 					// TODO: handle exception
-			    	 _LOGGER.error(e.toString());
+			    	 _LOGGER.error("Mail Not Sent Successfully,Error Msg:"+e.toString());
 				}
 		
 	}

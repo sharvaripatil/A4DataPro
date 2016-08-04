@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
@@ -10,13 +12,13 @@ import com.a4tech.product.model.PriceUnit;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.LookupData;
 public class DCPriceGridParser {
-
+	private Logger              _LOGGER              = Logger.getLogger(getClass());
 	public List<PriceGrid> getPriceGrids(String listOfPrices,
 			String listOfNetcost, String listOfQuan, String listOfDisc,
 			String currency, String priceInclude, boolean isBasePrice,
 			String isQur, String priceName, String criterias,
 			List<PriceGrid> existingPriceGrid) {
-
+		try{
 		Integer sequence = 1;
 		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
@@ -48,14 +50,18 @@ public class DCPriceGridParser {
 		}
 		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
+		}catch(Exception e){
+			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
+		}
 		return existingPriceGrid;
 
 	}
 
 	public List<Price> getPrices(String[] prices, String[] netCost,
 			String[] quantity, String[] discount) {
-
+		
 		List<Price> listOfPrices = new ArrayList<Price>();
+		try{
 		for (int i = 0, j = 1; i < prices.length && i < netCost.length
 				&& i < quantity.length && i < discount.length; i++, j++) {
 
@@ -75,11 +81,15 @@ public class DCPriceGridParser {
 			price.setPriceUnit(priceUnit);
 			listOfPrices.add(price);
 		}
+		}catch(Exception e){
+			_LOGGER.error("Error while processing Prices: "+e.getMessage());
+		}
 		return listOfPrices;
 	}
 
 	public List<PriceConfiguration> getConfigurations(String criterias) {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
+		try{
 		String[] config = null;
 		PriceConfiguration configs = null;
 		if (criterias
@@ -115,6 +125,9 @@ public class DCPriceGridParser {
 			configs.setValue(Arrays.asList((Object) config[1]));
 			priceConfiguration.add(configs);
 		}
+	}catch(Exception e){
+		_LOGGER.error("Error while processing priceConfiguration: "+e.getMessage());
+	}
 		return priceConfiguration;
 	}
 
@@ -123,7 +136,7 @@ public class DCPriceGridParser {
 			String currency, String upChargeName, String upChargeType,
 			String upchargeUsageType, Integer upChargeSequence,
 			List<PriceGrid> existingPriceGrid) {
-
+		try{
 		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
 		String[] upChargePrices = prices
@@ -156,7 +169,9 @@ public class DCPriceGridParser {
 		}
 		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
-
+		}catch(Exception e){
+			_LOGGER.error("Error while processing UpchargePriceGrid: "+e.getMessage());
+		}
 		return existingPriceGrid;
 	}
 

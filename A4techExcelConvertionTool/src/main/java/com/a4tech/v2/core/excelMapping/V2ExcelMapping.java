@@ -1084,7 +1084,8 @@ public class V2ExcelMapping {
 			
 			}catch(Exception e){
 			//e.printStackTrace();
-			_LOGGER.error("Error while Processing Product :"+productExcelObj.getExternalProductId() );		 
+			_LOGGER.error("Error while Processing Product :"+productExcelObj.getExternalProductId()+" Error:"+e.getMessage());
+			
 		}
 		}
 		workbook.close();
@@ -1106,7 +1107,7 @@ public class V2ExcelMapping {
 			//System.out.println(mapper1.writeValueAsString(productExcelObj));
 
 		}catch(Exception e){
-			_LOGGER.error("Error while Processing excel sheet ");
+			_LOGGER.error("Error while Processing excel sheet "+"Error Message :" +e.getMessage());
 			return 0;
 		}finally{
 			productDaoObj.getErrorLog(asiNumber,batchId);
@@ -1114,8 +1115,7 @@ public class V2ExcelMapping {
 				workbook.close();
 			//inputStream.close();
 			} catch (IOException e) {
-				_LOGGER.error("Error while Processing excel sheet");
-	
+				_LOGGER.error("Error while Processing excel sheet, Error Message :" +e.getMessage());
 			}
 				_LOGGER.info("Complted processing of excel sheet ");
 				_LOGGER.info("Total no of product:"+numOfProducts.size() );
