@@ -126,8 +126,8 @@ function validateForm(){
 }
 
 $('.btn1').on('click', function() {
-	  var elem = document.getElementById('dataId');
-	elem.innerHTML  = ''; 
+	 /*  var elem = document.getElementById('dataId');
+	elem.innerHTML  = '';  */
 	var $this = $(this);
     var asiNumber = $('#asiNumber').val();
 	var userName = $('#userName').val();
