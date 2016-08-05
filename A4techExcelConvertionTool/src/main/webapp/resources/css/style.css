@@ -155,7 +155,7 @@ ul.navbar-nav {
 	padding: 60px 100px 0px 100px;
 }
 .top-content .text {
-	padding-bottom: 50px;
+	padding-bottom: 38px;
 	color: #fff;
 }
 .top-content .text h1 {
@@ -399,6 +399,10 @@ input[type=file] {
 .logo{
 background-color: rgba(255, 255, 255, 0.65);
     border-radius: 15px;
+}
+.txt_red{
+	color: red;
+	font-size: 15px;
 }
 
 
