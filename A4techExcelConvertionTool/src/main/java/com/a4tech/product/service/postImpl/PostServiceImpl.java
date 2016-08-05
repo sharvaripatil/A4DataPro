@@ -1,6 +1,8 @@
 package com.a4tech.product.service.postImpl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.a4tech.core.errors.ErrorMessage;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.core.model.ExternalAPIResponse;
 import com.a4tech.product.dao.service.ProductDao;
@@ -23,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PostServiceImpl implements PostService {
 
 	private Logger _LOGGER = Logger.getLogger(getClass());
+	
     private ProductDao productDao;
 	private RestTemplate restTemplate;
 	private String postApiURL ;
@@ -63,6 +67,20 @@ public class PostServiceImpl implements PostService {
 			return 0;
 		} catch (Exception hce) {
 			_LOGGER.error("Exception while posting product to Radar API", hce);
+			
+			System.out.println(hce.getCause());
+			String errorMsg=hce.getCause().toString();
+			if(errorMsg.contains("java.net.UnknownHostException")|| errorMsg.contains("java.net.NoRouteToHostException")){
+			ErrorMessageList responseList =  new ErrorMessageList();
+			List<ErrorMessage> errorList=new ArrayList<ErrorMessage>();
+			ErrorMessage errorMsgObj=new ErrorMessage();
+			errorMsgObj.setMessage(errorMsg);
+			errorList.add(errorMsgObj);
+			errorMsgObj.setReason("Internet Down");
+			responseList.setErrors(errorList);
+			productDao.save(responseList.getErrors(),product.getExternalProductId(),asiNumber,batchId);
+			}
+			//System.out.println();
 			return -1;
 		}
 		
