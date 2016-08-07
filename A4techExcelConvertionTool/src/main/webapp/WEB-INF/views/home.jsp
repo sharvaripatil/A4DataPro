@@ -36,7 +36,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-6 book"> <img src="resources/img/ebook.png" alt="" height="350px"> </div>
+        <div class="col-sm-6 book"> <img src="resources/img/ebook.png" alt="" height="384px"> </div>
         <div class="col-sm-5">
           <div class="form-bottom">
             <form:form name="uploadBean" enctype="multipart/form-data" modelAttribute="filebean">
@@ -57,14 +57,17 @@
                 <label class="sr-only" for="form-asi-number">ASI Number</label>
                 <form:input path="asiNumber" name="asiNumber" id="asiNumber" placeholder="ASI Number..." class="form-asi-number form-control"/>
                 <!-- <input type="text" name="asiNumber" placeholder="ASI Number..." class="form-asi-number form-control" id="asiNumber"> -->
+             	<p id="asinum" class="txt_red"></p>
               </div>
               <div class="form-group">
                 <label class="sr-only" for="form-username">Username</label>
                 <form:input path="userName" name="userName" id="userName" placeholder="Username..." class="form-last-name form-control"/>
+                <p id="asiuser" class="txt_red"></p>
               </div>
               <div class="form-group">
                 <label class="sr-only" for="form-password">Password</label>
                 <form:password path="password" id="password" placeholder="Password..." class="form-password form-control"/>
+                <p id="asipass" class="txt_red"></p>
                 <!-- <input type="password" name="password" placeholder="Password..." class="form-password form-control" id="form-password"> -->
               </div>
               <div class="form-group pull-left">
@@ -75,7 +78,7 @@
                     <path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"/>
                   </svg>
                   <span>Choose a file&hellip;</span></label>
-                  
+                  <p id="asifile" class="txt_red"></p>
               </div>
               <!--  <form:button value="submit" class="btn1 btn-primary btn-lg pull-right btn-success has-spinner" id="submit">Submit</form:button>   -->
              <form:button value="submit" class="btn1 btn-primary btn-lg pull-right" id="load" data-loading-text="<i class='fa fa-spinner fa-spin '></i>Uploading.." onclick="return validateForm()">Submit</form:button>
@@ -87,6 +90,15 @@
   </div>
 </div>
 
+
+<!-- loader div -->
+<div class="container" id="loader">
+		<div class="box1">
+			<div class="loader1"></div>
+			<h3 style="color:yellow">Please Wait data is Uploading...</h3>
+		</div>
+</div>
+<!-- loader div end-->
 <!-- Javascript -->
 <!-- <script src="resources/js/dbconcheck.js"></script>  -->
 <script src="resources/js/jquery-1.11.1.min.js"></script> 
@@ -102,43 +114,52 @@ function validateForm(){
 	var userName = document.uploadBean.userName.value;
 	var password = document.uploadBean.password.value;
 	var file = document.uploadBean.file.value; 
-	if (asiNumber==null || asiNumber==''){  
-		  alert("Asi Number can't be blank");  
+	if (asiNumber==null || asiNumber==''){
+		  document.getElementById("asinum").innerHTML = "<i><b>!</b></i> &nbsp;Enter your ASI Number";
 		  document.uploadBean.asiNumber.focus();
 		  return false;  
+	}else{
+		document.getElementById("asinum").innerHTML = "";
 	}
-	if (userName==null || userName==""){  
-		  alert("userName can't be blank");  
+	if (userName==null || userName==""){ 
+		  document.getElementById("asiuser").innerHTML = "<i><b>!</b></i> &nbsp;Enter your Username";
 		  document.uploadBean.userName.focus();
 		  return false;  
+	}else{
+		document.getElementById("asiuser").innerHTML = "";
 	}
-	if (password==null || password==""){  
-		  alert("password can't be blank");
+	if (password==null || password==""){
+		  document.getElementById("asipass").innerHTML = "<i><b>!</b></i> &nbsp;Enter your Password";
 		  document.uploadBean.password.focus();
 		  return false;  
+	}else{
+		document.getElementById("asipass").innerHTML = "";
 	}
-	if (file==null || file==""){  
-		  alert("Please choose file"); 
+	if (file==null || file==""){
+		  document.getElementById("asifile").innerHTML = "<i><b>!</b></i> &nbsp;Please choose file";
 		  document.uploadBean.file.focus();
 		  return false;  
+	}else{
+		document.getElementById("asifile").innerHTML = "";
 	}
 	
 }
 
 $('.btn1').on('click', function() {
-	var elem = document.getElementById('dataId');
-	elem.innerHTML  = '';
+	 /*  var elem = document.getElementById('dataId');
+	elem.innerHTML  = '';  */
 	var $this = $(this);
     var asiNumber = $('#asiNumber').val();
 	var userName = $('#userName').val();
 	var password = $('#password').val();
 	var file = document.uploadBean.file.value; 
-    if(file != '' && asiNumber != '' && userName != '' && password != '')
-  		$this.button('loading');
-    	setTimeout(function() {
-       	$this.button('reset');
-   	}, 2000000);
+
+    if(file != '' && asiNumber != '' && userName != '' && password != ''){
+    	
+    	 $('#loader').addClass('in').delay(2000000).fadeOut(); 
+  }
 });
+
 
 </script>
 <!--[if lt IE 10]>
