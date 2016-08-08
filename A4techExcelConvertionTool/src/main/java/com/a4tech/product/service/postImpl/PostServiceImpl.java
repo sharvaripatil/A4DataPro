@@ -76,12 +76,12 @@ public class PostServiceImpl implements PostService {
 			ErrorMessage errorMsgObj=new ErrorMessage();
 			errorMsgObj.setMessage(errorMsg);
 			errorList.add(errorMsgObj);
-			errorMsgObj.setReason("Internet Down");
+			errorMsgObj.setReason("Product is unable to process due to Internet Down");
 			responseList.setErrors(errorList);
 			productDao.save(responseList.getErrors(),product.getExternalProductId(),asiNumber,batchId);
 			}
 			//System.out.println();
-			return -1;
+			return 0;
 		}
 		
 	}

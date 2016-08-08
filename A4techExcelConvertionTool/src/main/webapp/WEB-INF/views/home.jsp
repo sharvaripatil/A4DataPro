@@ -87,6 +87,15 @@
   </div>
 </div>
 
+
+<!-- loader div -->
+<div class="container" id="loader">
+		<div class="box1">
+			<div class="loader1"></div>
+			<h3 style="color:yellow">Please Wait data is Uploading...</h3>
+		</div>
+</div>
+<!-- loader div end-->
 <!-- Javascript -->
 <!-- <script src="resources/js/dbconcheck.js"></script>  -->
 <script src="resources/js/jquery-1.11.1.min.js"></script> 
@@ -133,13 +142,13 @@ $('.btn1').on('click', function() {
 	var userName = $('#userName').val();
 	var password = $('#password').val();
 	var file = document.uploadBean.file.value; 
+
     if(file != '' && asiNumber != '' && userName != '' && password != ''){
-  		$this.button('loading');
-    	setTimeout(function() {
-       	$this.button('reset');
-   	}, 2000000);
+    	
+    	 $('#loader').addClass('in').delay(2000000).fadeOut(); 
   }
 });
+
 
 </script>
 <!--[if lt IE 10]>

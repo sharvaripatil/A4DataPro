@@ -81,6 +81,7 @@ public class ProductDao {
 	}
 	
 	public int createBatchId(int asiNumber){
+		_LOGGER.info("Inside batch Id method");
 		Session session;
 		Transaction tx  = null;
 		int batchId = 0;
