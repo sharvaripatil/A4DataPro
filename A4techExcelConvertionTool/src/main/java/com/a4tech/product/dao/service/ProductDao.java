@@ -90,8 +90,11 @@ public class ProductDao {
 			BatchEntity batchEntity = new BatchEntity();
 			batchEntity.setAsiNumber(asiNumber);
 			tx =  session.beginTransaction();
+			_LOGGER.info("calling session.save");
 			 batchId = (int) session.save(batchEntity);
+			 _LOGGER.info("session calling end");
 			 tx.commit();
+			 _LOGGER.info("committing transaction end");
 		}catch(Exception ex){
 			_LOGGER.info("unable to insert batch ids");
 		}
