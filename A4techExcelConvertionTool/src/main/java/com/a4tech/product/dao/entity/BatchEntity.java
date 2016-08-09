@@ -1,5 +1,7 @@
 package com.a4tech.product.dao.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,7 +11,11 @@ import javax.persistence.Table;
 
 @Table(name="Batch_log")
 @Entity
-public class BatchEntity {
+public class BatchEntity implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6563299694063575185L;
 	@Id
 	@Column(name = "Batch_Id")
 	@GeneratedValue(strategy= GenerationType.AUTO)
