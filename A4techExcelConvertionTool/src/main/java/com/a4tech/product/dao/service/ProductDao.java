@@ -70,6 +70,7 @@ public class ProductDao {
 		List results = query.list();
 	}catch(Exception ex){
 		_LOGGER.info("Error in dao block");
+		tx.rollback();
 	}finally{
 		if(session !=null){
 			try{
@@ -85,7 +86,7 @@ public class ProductDao {
 	
 	public int createBatchId(int asiNumber){
 		_LOGGER.info("Inside batch Id method");
-		Session session;
+		Session session = null;
 		Transaction tx  = null;
 		int batchId = 0;
 		try{
@@ -104,6 +105,15 @@ public class ProductDao {
 			 _LOGGER.info("committing transaction end");
 		}catch(Exception ex){
 			_LOGGER.info("unable to insert batch ids");
+			tx.rollback();
+		}finally{
+			if(session !=null){
+				try{
+					session.close();
+				}catch(Exception seex){
+					_LOGGER.info("Error while close session object for create batch id");
+				}		
+			}
 		}
 		
 		return batchId;
@@ -124,7 +134,7 @@ public class ProductDao {
 	}
 	
 	public void save(List<ErrorMessage> errors ,String productNo ,Integer asiNumber,int batchId){
-		_LOGGER.info("Enter the DAO class info mode");
+		_LOGGER.info("Enter the DAO class ");
 		Session session = null;
 		Transaction tx  = null;
 		ErrorEntity errorEntity = null;
@@ -142,13 +152,19 @@ public class ProductDao {
 		productEntity.setBatchId(batchId);
 		productEntity.setCreateProductDate(Calendar.getInstance().getTime());
 	try{
+		_LOGGER.info("before session");
 		 session = sessionFactory.openSession();
+		 _LOGGER.info("after session");
 		 tx =  session.beginTransaction();
+		 _LOGGER.info("end tx");
 		 session.save(productEntity);
+		 _LOGGER.info("end save");
 		tx.commit();
+		_LOGGER.info("end commit");
 		
 	}catch(Exception ex){
 		_LOGGER.info("Error in dao block:"+ex.getCause());
+		tx.rollback();
 	}finally{
 		if(session !=null){
 			try{
