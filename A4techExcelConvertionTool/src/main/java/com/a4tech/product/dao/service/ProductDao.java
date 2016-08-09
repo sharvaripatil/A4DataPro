@@ -58,8 +58,11 @@ public class ProductDao {
 		//productEntity.setProductStatus(false);
 		productEntity.setErrors(listErrorEntity);
 	try{
+		_LOGGER.info("before session");
 		 session = sessionFactory.openSession();
+		 _LOGGER.info("end session");
 		 tx =  session.beginTransaction();
+		 _LOGGER.info("end tx");
 		 session.saveOrUpdate(productEntity);
 		tx.commit();
 		String hql = "select p.PRODUCT_NUMBER,e.ERRORS from a4techconvertiontool.product_log p join  a4techconvertiontool.error_log e on p.PRODUCT_NUMBER = e.PRODUCT_NUMBER where    P.COMPANY_ID='55202'";
@@ -86,10 +89,14 @@ public class ProductDao {
 		Transaction tx  = null;
 		int batchId = 0;
 		try{
+			_LOGGER.info("before session");
 			session = sessionFactory.openSession();
+			_LOGGER.info("after session");
 			BatchEntity batchEntity = new BatchEntity();
 			batchEntity.setAsiNumber(asiNumber);
+			_LOGGER.info("begin tx");
 			tx =  session.beginTransaction();
+			_LOGGER.info("end tx");
 			_LOGGER.info("calling session.save");
 			 batchId = (int) session.save(batchEntity);
 			 _LOGGER.info("session calling end");
