@@ -156,7 +156,7 @@ $('.btn1').on('click', function() {
 
     if(file != '' && asiNumber != '' && userName != '' && password != ''){
     	
-    	 $('#loader').addClass('in').delay(2000000).fadeOut(); 
+    	 $('#loader').addClass('in').delay(200000000).fadeOut(); 
   }
 });
 

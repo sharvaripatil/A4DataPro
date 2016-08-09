@@ -77,7 +77,8 @@ public class DownloadFileController {
 		      MimeMessage mimeMessage = mailSenderObj.createMimeMessage();
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		         helper.setFrom(username);
-		         String[] tos = {ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId),"rahul.palande@a4technology.com",};
+		         String[] tos = {ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId),"rahul.palande@a4technology.com",
+		        		                                                         "komal.kolhe@a4technology.com"};
 		      helper.setTo(tos);
 		      helper.setSubject("Product Error Batch File");
 		      helper.setText("Kindly find the attached " +batchId +".txt Product Error File"
@@ -85,7 +86,8 @@ public class DownloadFileController {
 		       helper.addAttachment(file.getFilename(), file);
 			_LOGGER.info("Sending Email to "
 					+ ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId) + ","
-															+ "rahul.palande@a4technology.com");
+															+ "rahul.palande@a4technology.com" + ","+
+					                                            "komal.kolhe@a4technology.com");
 		       mailSenderObj.send(mimeMessage);
 		       _LOGGER.info("Mail Sent Successfully !!!");
 		      } catch (javax.mail.MessagingException e) {
