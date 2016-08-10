@@ -87,7 +87,8 @@ public class DownloadFileController {
 			_LOGGER.info("Sending Email to "
 					+ ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId) + ","
 															+ "rahul.palande@a4technology.com" + ","+
-					                                            "komal.kolhe@a4technology.com");
+					                                            "komal.kolhe@a4technology.com" + ","+
+															    "venkateswarlu.nidamanuri@a4technology.com");
 		       mailSenderObj.send(mimeMessage);
 		       _LOGGER.info("Mail Sent Successfully !!!");
 		      } catch (javax.mail.MessagingException e) {

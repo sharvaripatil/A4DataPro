@@ -77,7 +77,8 @@ public class ApplicationConstants {
 	    	SUPPLIER_EMAIL_ID_MAP.put("55201", "venkateswarlu.nidamanuri@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("55202", "amey.more@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("55203", "sharvari.patil@a4technology.com");
-	    	SUPPLIER_EMAIL_ID_MAP.put("55204", "venkateswarlu.nidamanuri@a4technology.com");
+	    	//SUPPLIER_EMAIL_ID_MAP.put("55204", "venkateswarlu.nidamanuri@a4technology.com");
+	    	SUPPORT_EMAIL_ID_MAP.put("55204", "azam.rizvi@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("55205", "venkateswarlu.nidamanuri@a4technology.com");
 	    	SUPPORT_EMAIL_ID_MAP.put("dev_1", "amey.more@a4technology.com");
 	    	SUPPORT_EMAIL_ID_MAP.put("dev_2", "venkateswarlu.nidamanuri@a4technology.com");
