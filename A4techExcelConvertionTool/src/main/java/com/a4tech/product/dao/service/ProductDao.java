@@ -21,6 +21,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
 import com.a4tech.core.errors.ErrorMessage;
+import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.core.model.ExternalAPIResponse;
 import com.a4tech.product.dao.entity.BatchEntity;
 import com.a4tech.product.dao.entity.ErrorEntity;
@@ -58,11 +59,8 @@ public class ProductDao {
 		//productEntity.setProductStatus(false);
 		productEntity.setErrors(listErrorEntity);
 	try{
-		_LOGGER.info("before session");
 		 session = sessionFactory.openSession();
-		 _LOGGER.info("end session");
 		 tx =  session.beginTransaction();
-		 _LOGGER.info("end tx");
 		 session.saveOrUpdate(productEntity);
 		tx.commit();
 		String hql = "select p.PRODUCT_NUMBER,e.ERRORS from a4techconvertiontool.product_log p join  a4techconvertiontool.error_log e on p.PRODUCT_NUMBER = e.PRODUCT_NUMBER where    P.COMPANY_ID='55202'";
@@ -90,19 +88,12 @@ public class ProductDao {
 		Transaction tx  = null;
 		int batchId = 0;
 		try{
-			_LOGGER.info("before session");
 			session = sessionFactory.openSession();
-			_LOGGER.info("after session");
 			BatchEntity batchEntity = new BatchEntity();
 			batchEntity.setAsiNumber(asiNumber);
-			_LOGGER.info("begin tx");
 			tx =  session.beginTransaction();
-			_LOGGER.info("end tx");
-			_LOGGER.info("calling session.save");
 			 batchId = (int) session.save(batchEntity);
-			 _LOGGER.info("session calling end");
 			 tx.commit();
-			 _LOGGER.info("committing transaction end");
 		}catch(Exception ex){
 			_LOGGER.info("unable to insert batch ids");
 			tx.rollback();
@@ -228,5 +219,24 @@ public class ProductDao {
 			}
 			}
 		}
+	}
+	
+	public void responseconvertErrorMessage(String msg,String productId,Integer asiNumber,int batchId){
+		ErrorMessageList responseList = new ErrorMessageList();
+		List<ErrorMessage> errorList = new ArrayList<ErrorMessage>();
+		ErrorMessage errorMsgObj = new ErrorMessage();
+		errorMsgObj.setMessage(msg);
+		errorList.add(errorMsgObj);
+		if(msg.contains("java.net.UnknownHostException")
+						|| msg.contains("java.net.NoRouteToHostException")){
+			errorMsgObj
+			.setReason("Product is unable to process due to Internet service down");
+		}else if(msg.equalsIgnoreCase("500 Internal Server Error")){
+			errorMsgObj
+			.setReason("Product is unable to process due to ASI server issue");
+		}
+		
+		responseList.setErrors(errorList);
+		save(responseList.getErrors(),productId, asiNumber, batchId);
 	}
 }

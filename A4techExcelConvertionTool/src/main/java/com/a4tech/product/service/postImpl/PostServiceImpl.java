@@ -66,22 +66,43 @@ public class PostServiceImpl implements PostService {
 			//productDao.errorResponse(rsponse);
 			return 0;
 		} catch (Exception hce) {
-			_LOGGER.error("Exception while posting product to Radar API", hce);
-			
-			System.out.println(hce.getCause());
-			String errorMsg=hce.getCause().toString();
-			if(errorMsg.contains("java.net.UnknownHostException")|| errorMsg.contains("java.net.NoRouteToHostException")){
-			ErrorMessageList responseList =  new ErrorMessageList();
-			List<ErrorMessage> errorList=new ArrayList<ErrorMessage>();
-			ErrorMessage errorMsgObj=new ErrorMessage();
-			errorMsgObj.setMessage(errorMsg);
-			errorList.add(errorMsgObj);
-			errorMsgObj.setReason("Product is unable to process due to Internet Down");
-			responseList.setErrors(errorList);
-			productDao.save(responseList.getErrors(),product.getExternalProductId(),asiNumber,batchId);
+			_LOGGER.error("Exception while posting product to ExternalAPI", hce);
+			String serverErrorMsg = hce.getMessage();
+			if(serverErrorMsg != null && serverErrorMsg.equalsIgnoreCase("500 Internal Server Error")){
+				_LOGGER.info("internal server msg received from ExternalAPI ");
+				productDao.responseconvertErrorMessage(serverErrorMsg, product.getExternalProductId(), asiNumber, batchId);
+				return 0;
+			}else if(hce.getCause() != null){
+				String errorMsg = hce.getCause().toString();
+				if (errorMsg.contains("java.net.UnknownHostException")
+						|| errorMsg.contains("java.net.NoRouteToHostException")){
+					productDao.responseconvertErrorMessage(errorMsg, product.getExternalProductId(), asiNumber, batchId);
+					return 0;
+				}
+			}else{
+				
 			}
+			
+			/*System.out.println(hce.getCause());
+			if (hce.getCause() != null) {
+				String errorMsg = hce.getCause().toString();
+				if (errorMsg.contains("java.net.UnknownHostException")
+						|| errorMsg.contains("java.net.NoRouteToHostException")) {
+					ErrorMessageList responseList = new ErrorMessageList();
+					List<ErrorMessage> errorList = new ArrayList<ErrorMessage>();
+					ErrorMessage errorMsgObj = new ErrorMessage();
+					errorMsgObj.setMessage(errorMsg);
+					errorList.add(errorMsgObj);
+					errorMsgObj
+							.setReason("Product is unable to process due to Internet Down");
+					responseList.setErrors(errorList);
+					productDao.save(responseList.getErrors(),
+							product.getExternalProductId(), asiNumber, batchId);
+				}
+				return 0;
+			}*/
 			//System.out.println();
-			return 0;
+			return -1;
 		}
 		
 	}

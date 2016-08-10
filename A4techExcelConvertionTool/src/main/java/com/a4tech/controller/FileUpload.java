@@ -35,6 +35,7 @@ import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.service.loginImpl.LoginServiceImpl;
 import com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 import com.a4tech.v2.core.excelMapping.V2ExcelMapping;
 
 @Controller
@@ -98,18 +99,18 @@ public class FileUpload extends HttpServlet{
 		 
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBean.getFile().getBytes())){
 	       
-			  
-	            	if (fileBean.getFile().getOriginalFilename().endsWith("xls")) {
-	                workbook = new HSSFWorkbook(bis);
+			     String fileExtension = CommonUtility.getFileExtension(fileBean.getFile().
+			    		                                                     getOriginalFilename());
+	            	if (fileExtension.equalsIgnoreCase("xls")) {
+	            		workbook = new HSSFWorkbook(bis);
 	                
-	            	} else if (fileBean.getFile().getOriginalFilename().endsWith("xlsx")) {
+	            	} else if (fileExtension.equalsIgnoreCase("xlsx")) {
 	            		workbook = new XSSFWorkbook(bis);
 	            	}else{
 	 	               _LOGGER.info("Invlid upload excel file,Please try one more time");
 	 	               	model.addAttribute("invalidUploadFile", "");
 	             		return "home";
 	            	}
-	            	//if(accessToken == null){
 	                 	accessToken = loginService.doLogin("55201",  fileBean.getUserName(),
 	                 													fileBean.getPassword());
 	                 	if(accessToken != null){
@@ -121,7 +122,6 @@ public class FileUpload extends HttpServlet{
 	                 	}else{
 	                 		return "errorPage";
 	                 	}
-	              //   }
 	            int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 	            	 request.getSession().setAttribute("batchId", String.valueOf(batchId));
 	                switch (asiNumber) {

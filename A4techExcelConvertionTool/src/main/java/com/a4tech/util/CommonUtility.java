@@ -7,5 +7,9 @@ public class CommonUtility {
 		return (str != null && !"".equals(str));
 	}
 	
+	public static String getFileExtension(String fileName){
+		
+		return  fileName.substring(fileName.lastIndexOf('.')+1);
+	}
 
 }
