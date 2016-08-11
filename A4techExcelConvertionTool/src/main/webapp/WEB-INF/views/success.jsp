@@ -29,17 +29,17 @@
 <!-- Top content -->
 <div class="top-content">
   <div class="inner-bg">
-    <div class="form-top" align="center"> 
-      <div class="row">
+    <div class="col-md-6 col-md-offset-3 form-bottom" align="center"> 
+      <div class="row" style="text-align: center;">
         <c:choose>
        		<c:when test="${successProductsCount != 0 && failureProductsCount != 0}">
-       			<h3 style="font-size: 25px !important;"><strong>${successProductsCount}</strong> Product's have been uploaded <strong class="greens">successfully</strong> & <strong>${failureProductsCount}</strong> Product's are <strong class="faileds">failed</strong> </h3>
+       			<h3 style="font-size: 25px !important;"><strong>${successProductsCount}</strong> Product(s) have been uploaded <strong class="greens">successfully</strong> & <strong>${failureProductsCount}</strong> Product(s) are <strong class="faileds">failed</strong> </h3>
        		</c:when>
        		<c:when test="${failureProductsCount != 0}">
-       			<h3 style="font-size: 25px !important;"><strong>${failureProductsCount}</strong> Product's are <strong class="faileds">failed</strong></h3>
+       			<h3 style="font-size: 25px !important;"><strong>${failureProductsCount}</strong> Product(s) are <strong class="faileds">failed</strong></h3>
        		</c:when>
        		<c:when test="${successProductsCount != 0}">
-       			<h3 style="font-size: 25px !important;"><strong>${successProductsCount}</strong> Product's have been uploaded <strong class="greens">successfully</strong></h3>
+       			<h3 style="font-size: 25px !important;"><strong>${successProductsCount}</strong> Product(s) have been uploaded <strong class="greens">successfully</strong></h3>
        		</c:when>
        </c:choose>
       </div>
@@ -47,9 +47,10 @@
       <div class="row">
       <c:if test="${failureProductsCount != 0}">
        <div class="filedownload" align="center">
+
         <p>Click on the link to download Product Error File:
-	<c:url value="/sendEmails.html" var="sendEmailsLink" />
-	<a href="${sendEmailsLink}"><u><strong>Download a File</strong></u></a></p>
+	<c:url value="/sendEmails.html" var="sendEmailsLink" /><br/>
+	<a href="${sendEmailsLink}"><strong>Download a File</strong></a></p>
       <br/>
         <%--  <h3 class="successtxt"><strong>${successmsg}</strong> </h3> --%>
         </div>
@@ -58,9 +59,9 @@
       </div>
       
         <div class="row">
-        <div class="text" style="font-style: italic;">
+        <div class="text">
           <!-- <h1> Email Sent Successfully...!!! </h1> -->
-          <h1> <strong>${successmsg}</strong> </h1>
+          <h3 style="text-align: center;"> <strong>${successmsg}</strong> </h3>
         </div>
       </div>
     <!--  <div class="row"> -->

@@ -218,7 +218,7 @@ ul.navbar-nav {
 }
 .form-bottom {
 	padding: 55px 25px 85px 25px;
-	background: rgb(34, 34, 34);
+	background: rgba(34, 34, 34, 0.48);/*rgb(34, 34, 34);*/
 	-moz-border-radius: 0 0 4px 4px;
 	-webkit-border-radius: 0 0 4px 4px;
 	border-radius: 0 0 4px 4px;
@@ -381,14 +381,14 @@ p {
 	font-size:20px;
 }
 p strong {
-	color: #9e2325;
+	color: #00e2ff;
 	cursor: pointer;
 }
 hr {
 	margin-top: 0px !important;
 	margin-bottom: 20px !important;
 	border: 0 !important;
-	border-top: 1px solid rgb(218, 28, 35) !important;
+	border-top: 1px solid #fff !important;
 }
 .form-top h1 {
 	color: #4CAF50 !important;
