@@ -184,6 +184,9 @@ public class SageProductsExcelMapping {
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 								priceGrids = new ArrayList<PriceGrid>();
+								listOfPrices = new StringBuilder();
+							    listOfQuantity = new StringBuilder();
+								listOfNetPrice = new StringBuilder();
 								productConfigObj = new ProductConfigurations();
 								themeList = new ArrayList<Theme>();
 								finalDimensionObj = new Dimension();
@@ -862,6 +865,8 @@ public class SageProductsExcelMapping {
 				UpCharCriteria = new StringBuilder();
 				priceQurFlag = null;
 				listOfPrices = new StringBuilder();
+			    listOfQuantity = new StringBuilder();
+				listOfNetPrice = new StringBuilder();
 				UpCharPrices = new StringBuilder();
 				UpCharDiscount = new StringBuilder();
 				UpCharQuantity = new StringBuilder();

@@ -92,8 +92,8 @@ public class ProductDao {
 			BatchEntity batchEntity = new BatchEntity();
 			batchEntity.setAsiNumber(asiNumber);
 			tx =  session.beginTransaction();
-			 batchId = (int) session.save(batchEntity);
-			 tx.commit();
+			batchId = (int) session.save(batchEntity);
+			tx.commit();
 		}catch(Exception ex){
 			_LOGGER.info("unable to insert batch ids");
 			tx.rollback();
@@ -143,15 +143,10 @@ public class ProductDao {
 		productEntity.setBatchId(batchId);
 		productEntity.setCreateProductDate(Calendar.getInstance().getTime());
 	try{
-		_LOGGER.info("before session");
 		 session = sessionFactory.openSession();
-		 _LOGGER.info("after session");
 		 tx =  session.beginTransaction();
-		 _LOGGER.info("end tx");
 		 session.save(productEntity);
-		 _LOGGER.info("end save");
-		tx.commit();
-		_LOGGER.info("end commit");
+		 tx.commit();
 		
 	}catch(Exception ex){
 		_LOGGER.info("Error in dao block:"+ex.getCause());
