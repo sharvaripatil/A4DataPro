@@ -229,6 +229,9 @@ public class ProductDao {
 		}else if(msg.equalsIgnoreCase("500 Internal Server Error")){
 			errorMsgObj
 			.setReason("Product is unable to process due to ASI server issue");
+		}else if(msg.contains("java.net.SocketTimeoutException")){
+			errorMsgObj
+			.setReason("Product is unable to process due to ASI server not responding");
 		}
 		
 		responseList.setErrors(errorList);

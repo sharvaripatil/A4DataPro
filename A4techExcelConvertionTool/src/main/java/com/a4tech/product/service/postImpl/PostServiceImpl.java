@@ -78,6 +78,9 @@ public class PostServiceImpl implements PostService {
 						|| errorMsg.contains("java.net.NoRouteToHostException")){
 					productDao.responseconvertErrorMessage(errorMsg, product.getExternalProductId(), asiNumber, batchId);
 					return 0;
+				}else if(errorMsg.contains("java.net.SocketTimeoutException")){
+					productDao.responseconvertErrorMessage(errorMsg, product.getExternalProductId(), asiNumber, batchId);
+					return 0;
 				}
 			}else{
 				

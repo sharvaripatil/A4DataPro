@@ -34,6 +34,11 @@
     </bean>
     <bean id="product" class="com.a4tech.product.model.Product"/>
       <bean id="restTemplate" name="restTemplate" class="org.springframework.web.client.RestTemplate">
+      <constructor-arg>
+        <bean class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory"
+            p:readTimeout="50000"
+            p:connectTimeout="50000" />
+    	</constructor-arg>
 			<!-- <property name="messageConverters">
 				<list>
 					<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
