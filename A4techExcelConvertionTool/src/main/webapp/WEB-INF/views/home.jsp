@@ -10,7 +10,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>A4 - ASI Connect</title>
+<title>A4 DataPro</title>
 <!-- CSS -->
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
 <link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css">
@@ -32,7 +32,7 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-8 col-sm-offset-2 text">
-          <h1><strong>A<sup>4</sup> - ASI</strong> Connect </h1>
+          <h1><strong>A<sup>4</sup></strong> DataPro </h1>
         </div>
       </div>
       <div class="row">

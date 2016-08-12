@@ -67,14 +67,14 @@ public class ProductDao {
 		Query query = session.createQuery(hql);
 		List results = query.list();
 	}catch(Exception ex){
-		_LOGGER.info("Error in dao block");
+		_LOGGER.error("Error in dao block : "+ ex.getMessage());
 		tx.rollback();
 	}finally{
 		if(session !=null){
 			try{
 				session.close();
 			}catch(Exception ex){
-				_LOGGER.info("Error while close session object");
+				_LOGGER.warn("Error while close session object");
 			}
 			
 		}
@@ -95,14 +95,14 @@ public class ProductDao {
 			batchId = (int) session.save(batchEntity);
 			tx.commit();
 		}catch(Exception ex){
-			_LOGGER.info("unable to insert batch ids");
+			_LOGGER.error("unable to insert batch ids");
 			tx.rollback();
 		}finally{
 			if(session !=null){
 				try{
 					session.close();
 				}catch(Exception seex){
-					_LOGGER.info("Error while close session object for create batch id");
+					_LOGGER.warn("Error while close session object for create batch id");
 				}		
 			}
 		}
@@ -149,14 +149,14 @@ public class ProductDao {
 		 tx.commit();
 		
 	}catch(Exception ex){
-		_LOGGER.info("Error in dao block:"+ex.getCause());
+		_LOGGER.error("Error in dao block : "+ex.getCause());
 		tx.rollback();
 	}finally{
 		if(session !=null){
 			try{
 				session.close();
 			}catch(Exception ex){
-				_LOGGER.info("Error while close session object");
+				_LOGGER.warn("Error while close session object");
 			}
 			
 		}
@@ -204,13 +204,13 @@ public class ProductDao {
 		Query query = session.createQuery(hql);
 		List results = query.list();*/
 	}catch(Exception ex){
-		_LOGGER.info("Error in dao block");
+		_LOGGER.error("Error in dao block : "+ex.getMessage());
 	}finally{
 		if(session !=null){
 			try{
 				session.close();
 			}catch(Exception ex){
-				_LOGGER.info("Error while close session object");
+				_LOGGER.warn("Error while close session object");
 			}
 			}
 		}

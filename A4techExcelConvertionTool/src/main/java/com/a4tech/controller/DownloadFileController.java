@@ -36,14 +36,9 @@ public class DownloadFileController {
 			HttpServletResponse response,Model model) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		response.setContentType("text/html");
-		 
-		String batchId=(String) request.getSession().getAttribute("batchId");
-		  
-		 
+		String batchId=(String) request.getSession().getAttribute("batchId"); 
 		String fileName= batchId+".txt";
 		String filepath =ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH;
-		//String emailMsg="No Error File Found for Supplier "+supplierId +" ,Email not sent!!!";
-		
 		File f = new File(filepath+ fileName);
 		boolean flag=false;
 		  if(f.exists()){
@@ -60,7 +55,7 @@ public class DownloadFileController {
 					out.write(lineNum);
 				}
 			}catch (FileNotFoundException e) {
-				_LOGGER.fatal("Error log file is not available");
+				_LOGGER.error("Error log file is not available");
 			}
         return "success";    
 			
@@ -70,25 +65,21 @@ public class DownloadFileController {
 		String fileName= batchId+".txt";
 		try {
 				FileSystemResource  file = new FileSystemResource(ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH+ fileName);
-		     // if(file.exists()){
-		    	  
-			    /* response.setHeader("Content-Disposition", "attachment; filename=\""
-			     + fileName + "\"");*/
 		      MimeMessage mimeMessage = mailSenderObj.createMimeMessage();
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-		         helper.setFrom(username);
-		         String[] tos = {ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId),"rahul.palande@a4technology.com",
-		        		                                                         "komal.kolhe@a4technology.com"};
-		      helper.setTo(tos);
+		      helper.setFrom(username);
+		      helper.setTo(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
+		      String[] bccs = {"venkateswarlu.nidamanuri@a4technology.com",
+		    		                "amey.more@a4technology.com"};
+		      helper.setBcc(bccs);
 		      helper.setSubject("Product Error Batch File");
 		      helper.setText("Kindly find the attached " +batchId +".txt Product Error File"
 		             + "\n\n\n\n Note: This is a System Generated Message Kindly Do not reply back");
 		       helper.addAttachment(file.getFilename(), file);
 			_LOGGER.info("Sending Email to "
-					+ ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId) + ","
-															+ "rahul.palande@a4technology.com" + ","+
-					                                            "komal.kolhe@a4technology.com" + ","+
-															    "venkateswarlu.nidamanuri@a4technology.com");
+					+ ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId) + "," +
+															    "venkateswarlu.nidamanuri@a4technology.com" + ","+
+					                                       "amey.more@a4technology.com");
 		       mailSenderObj.send(mimeMessage);
 		       _LOGGER.info("Mail Sent Successfully !!!");
 		      } catch (javax.mail.MessagingException e) {

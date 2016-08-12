@@ -53,10 +53,10 @@ public class PostServiceImpl implements PostService {
 			_LOGGER.info("Result : " + response);
 			return 1;
 		}catch(HttpClientErrorException hce){
-			String rsponse = hce.getResponseBodyAsString();
+			String response = hce.getResponseBodyAsString();
 			try {
-				ErrorMessageList apiResponse =  mapper1.readValue(rsponse, ErrorMessageList.class);
-				_LOGGER.info("errors>>>>"+apiResponse);
+				 _LOGGER.info("ASI Error Response Msg :"+response);
+				ErrorMessageList apiResponse =  mapper1.readValue(response, ErrorMessageList.class);
 				productDao.save(apiResponse.getErrors(),product.getExternalProductId(),asiNumber,batchId);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
