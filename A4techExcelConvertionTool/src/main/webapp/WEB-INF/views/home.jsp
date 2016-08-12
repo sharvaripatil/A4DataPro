@@ -55,13 +55,13 @@
          </c:choose> 
             
                 <label class="sr-only" for="form-asi-number">ASI Number</label>
-                <form:input path="asiNumber" name="asiNumber" id="asiNumber" placeholder="ASI Number..." class="form-asi-number form-control"/>
+                <form:input path="asiNumber" name="asiNumber" id="asiNumber" placeholder="ASI Number..." autocomplete="off"  class="form-asi-number form-control"/>
                 <!-- <input type="text" name="asiNumber" placeholder="ASI Number..." class="form-asi-number form-control" id="asiNumber"> -->
              	<p id="asinum" class="txt_red"></p>
               </div>
               <div class="form-group">
                 <label class="sr-only" for="form-username">Username</label>
-                <form:input path="userName" name="userName" id="userName" placeholder="Username..." class="form-last-name form-control"/>
+                <form:input path="userName" name="userName" id="userName" placeholder="Username..." autocomplete="off"  class="form-last-name form-control"/>
                 <p id="asiuser" class="txt_red"></p>
               </div>
               <div class="form-group">
@@ -95,7 +95,7 @@
 <div class="container" id="loader">
 		<div class="box1">
 			<div class="loader1"></div>
-			<h3 style="color:yellow">Please Wait data is Uploading...</h3>
+			<h3 style="color:white">Please wait while data is Uploading...</h3>
 		</div>
 </div>
 <!-- loader div end-->
