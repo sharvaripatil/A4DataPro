@@ -98,6 +98,8 @@
       <property name="gbDataExcelMapping" ref="gbDataExcelMappingId"/>
       <property name="downloadMail" ref="downloadFileController"/>
       <property name="dCProductsExcelMapping" ref="dCProductsExcelMappingId"/>
+      <property name="espTemplateMapping" ref="espTemplateMappingId"/>
+      
    </bean>
    <bean id="usbExcelMapping" class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
     <property name="colorparser"  ref="colorparser"/>
@@ -123,6 +125,14 @@
    <bean id="gbDataExcelMappingId" class="com.a4tech.core.excelMapping.ExcelMapping">
    		<property name="postServiceImpl" ref="postService"/>
    		<property name="productDaoObj"  ref="productDao"/>
+   </bean>
+     <bean id="espTemplateMappingId" class="com.a4tech.ESPTemplate.product.mapping.ESPTemplateMapping">
+   		<property name="postServiceImpl" ref="postService"/>
+   		<property name="productDaoObj"  ref="productDao"/>
+   
+   		
+   		
+   	
    </bean>
    <bean id="dCProductsExcelMappingId" class="com.a4tech.dc.product.mapping.DCProductsExcelMapping">
    		<property name="productDaoObj"  ref="productDao"/>
@@ -196,6 +206,8 @@
   <bean id="dimensionAndShapeParserId" name="dimensionAndShapeParserId" class="com.a4tech.product.DCProducts.parser.DimensionAndShapeParser" />
   <bean id="shippingEstObj" name="shippingEstObj" class="com.a4tech.product.DCProducts.parser.ShippingEstimationParser" />
   <bean id="productOriginObj" name="productOriginObj" class="com.a4tech.product.DCProducts.parser.ProductOriginParser" />
+  
+  
   <!-- <bean id="checkDBConnectionController" name="checkDBConnectionController" class="com.a4tech.controller.CheckDBConnectionController" autowire="byName">
    <property name="mailSenderObj" ref="mailSender" ></property>
    <property name="username" value="${email.username}"/>

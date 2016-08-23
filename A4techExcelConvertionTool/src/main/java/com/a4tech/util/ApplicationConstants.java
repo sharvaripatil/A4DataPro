@@ -36,6 +36,7 @@ public class ApplicationConstants {
     public static final String  CONST_STRING_HOT_FOIL_STAMPED			    = "Hot/foil stamped";
     public static final String  CONST_STRING_TRUE							= "True";
     public static final String  CONST_STRING_COUNTRY_CODE_CH                = "CH";
+    public static final String  CONST_STRING_COUNTRY_CODE_CN                = "CN";
     public static final String  CONST_STRING_COUNTRY_CODE_US                = "US";
     public static final String  CONST_STRING_COUNTRY_NAME_USA			    = "U.S.A.";
     public static final String  CONST_STRING_COUNTRY_NAME_CHINA			    = "CHINA";

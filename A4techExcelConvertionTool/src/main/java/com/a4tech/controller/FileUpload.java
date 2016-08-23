@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.a4tech.ESPTemplate.product.mapping.ESPTemplateMapping;
 import com.a4tech.JulyData.excelMapping.JulyDataMapping;
 import com.a4tech.core.excelMapping.ExcelMapping;
 import com.a4tech.core.model.FileBean;
@@ -59,6 +60,7 @@ public class FileUpload extends HttpServlet{
 	private ExcelMapping gbDataExcelMapping;
 	private DownloadFileController downloadMail;
 	private DCProductsExcelMapping dCProductsExcelMapping;
+	private ESPTemplateMapping espTemplateMapping;
 	@Autowired
 	private LoginServiceImpl loginService;
 	private ProductDao productDao;
@@ -175,6 +177,11 @@ public class FileUpload extends HttpServlet{
 				    	finalResult = dCProductsExcelMapping.readExcel(asiNumber, workbook, 
 				    			                                          Integer.valueOf(asiNumber), batchId);
 				    	return "redirect:redirect.htm";
+				    	
+				    case "91561":  //Distributor Central
+				    	finalResult = espTemplateMapping.readExcel(asiNumber, workbook, 
+				    			                                          Integer.valueOf(asiNumber), batchId);
+				    	return "redirect:redirect.htm";
 					default:
 						break;
 					}
@@ -186,6 +193,7 @@ public class FileUpload extends HttpServlet{
 			}
         return "home";
 }
+	
 	@RequestMapping(value="/redirect.htm",method = RequestMethod.GET)
 	 public String submit(Model model){
 	   String noOfSucc = (String)model.asMap().get("successProductsCount");
@@ -266,5 +274,12 @@ public class FileUpload extends HttpServlet{
 			DCProductsExcelMapping dCProductsExcelMapping) {
 		this.dCProductsExcelMapping = dCProductsExcelMapping;
 	}
+	public ESPTemplateMapping getEspTemplateMapping() {
+		return espTemplateMapping;
+	}
+	public void setEspTemplateMapping(ESPTemplateMapping espTemplateMapping) {
+		this.espTemplateMapping = espTemplateMapping;
+	}
+	
 	
 }
