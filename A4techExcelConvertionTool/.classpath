@@ -21,6 +21,7 @@
 	</classpathentry>
 	<classpathentry kind="src" path="main/java/supplier/JulyData"/>
 	<classpathentry kind="src" path="main/java/supplier/DistributorCentral"/>
+	<classpathentry kind="src" path="main/java/supplier/kuku"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>

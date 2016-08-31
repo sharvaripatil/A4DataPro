@@ -25,6 +25,7 @@
         <property name="suffix" value=".jsp" />
     </bean>
     <import resource="sageMapping.xml"/>
+    <import resource="kuku_mapping.xml"/>
     <context:property-placeholder location="classpath:application.properties,classpath:database.properties"/>
     
     <bean id="fileValidator" class="com.a4tech.core.validator.FileValidator"/>
@@ -98,6 +99,7 @@
       <property name="gbDataExcelMapping" ref="gbDataExcelMappingId"/>
       <property name="downloadMail" ref="downloadFileController"/>
       <property name="dCProductsExcelMapping" ref="dCProductsExcelMappingId"/>
+      <property name="kukuProductsExcelMapping" ref="kukuProductsExcelMappingId"/>
    </bean>
    <bean id="usbExcelMapping" class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
     <property name="colorparser"  ref="colorparser"/>
