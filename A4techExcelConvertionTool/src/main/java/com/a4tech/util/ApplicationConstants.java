@@ -32,6 +32,10 @@ public class ApplicationConstants {
     public static final String  CONST_VALUE_TYPE_SPACE 						= " ";
     public static final String 	DATE_FORMAT 								= "yyyy-MM-dd'T'HH:mm:ss.SZ";
     public static final String  CONST_STRING_UNIMPRINTED					= "UNIMPRINTED";
+    public static final String  CONST_STRING_FULL_COLOR					    = "FULL COLOR";
+    public static final String  CONST_STRING_AND					        = "and";
+    public static final String  CONST_STRING_PLUS				            = "\\+";
+    
     public static final String  CONST_STRING_HOT_STAMPED					= "Hot Stamped";
     public static final String  CONST_STRING_HOT_FOIL_STAMPED			    = "Hot/foil stamped";
     public static final String  CONST_STRING_TRUE							= "True";
@@ -43,10 +47,12 @@ public class ApplicationConstants {
     public static final String  CONST_STRING_ZERO                           = "0";
     public static final String  CONST_STRING_INCHES							= "in";
     public static final String  CONST_STRING_SHIPPING_WEIGHT                = "lbs";
+    public static final String  CONST_STRING_SHIPPINGWT_UNIT_KG             = "kg";
     public static final String	CONST_STRING_SHIPPING_NUMBER_UNIT_CARTON    = "per Carton";
     public static final String	CONST_STRING_DOWNLOAD_FILE_PATH 			= "D:\\A4 ESPUpdate\\ErrorFiles\\";
     public static final String	CONST_STRING_SECONDARY 						= "Secondary";
-    
+    public static final String	CONST_STRING_PERSONALIZATION				= "PERSONALIZATION";
+
     public final static String  COMBO_VALUES_SEPARATOR 					    = ":";
     public final static Integer COMBO_TEXT_VALUE_INDEX 					    = 1;
 	public static final String  CONST_STRING_COMBO_TEXT 					= "Combo";
@@ -79,6 +85,7 @@ public class ApplicationConstants {
 	    	SUPPLIER_EMAIL_ID_MAP.put("55202", "azam.rizvi@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("55203", "sharvari.patil@a4technology.com");
 	    	//SUPPLIER_EMAIL_ID_MAP.put("55204", "sharvari.patil@a4technology.com");
+	    	SUPPLIER_EMAIL_ID_MAP.put("91561", "sharvari.patil@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("55204", "azam.rizvi@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("55205", "venkateswarlu.nidamanuri@a4technology.com");
 	    	SUPPORT_EMAIL_ID_MAP.put("dev_1", "amey.more@a4technology.com");

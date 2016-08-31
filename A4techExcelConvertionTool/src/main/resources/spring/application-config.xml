@@ -129,9 +129,16 @@
      <bean id="espTemplateMappingId" class="com.a4tech.ESPTemplate.product.mapping.ESPTemplateMapping">
    		<property name="postServiceImpl" ref="postService"/>
    		<property name="productDaoObj"  ref="productDao"/>
-   
+        <property name="originParser"  ref="originParser"/>
+        <property name="rushTimeParser"  ref="rushTimeParser"/>
+         <property name="productImprintMethodParser"  ref="productImprintMethodParser"/>
+         <property name="shippingEstimationParser"  ref="shippingEstimationParser"/>
+            <property name="ProductMaterialParserObj"  ref="ProductMaterialParserObj"/>
+   		<property name="PriceGridParserObj"  ref="PriceGridParserObj"/>
+   		<property name="colorParserObj"  ref="colorParserObj"/>
+   			<property name="sizeParserObj"  ref="sizeParserObj"/>
    		
-   		
+   	
    	
    </bean>
    <bean id="dCProductsExcelMappingId" class="com.a4tech.dc.product.mapping.DCProductsExcelMapping">
@@ -206,6 +213,19 @@
   <bean id="dimensionAndShapeParserId" name="dimensionAndShapeParserId" class="com.a4tech.product.DCProducts.parser.DimensionAndShapeParser" />
   <bean id="shippingEstObj" name="shippingEstObj" class="com.a4tech.product.DCProducts.parser.ShippingEstimationParser" />
   <bean id="productOriginObj" name="productOriginObj" class="com.a4tech.product.DCProducts.parser.ProductOriginParser" />
+  
+  
+  <!-- ESPTemplate file-91561 -->
+  
+  <bean id="originParser" class="com.a4tech.product.ESPTemplate.parser.OriginParser"/>
+   <bean id="rushTimeParser" class="com.a4tech.product.ESPTemplate.parser.RushTimeParser"/>
+  <bean id="productImprintMethodParser" class="com.a4tech.product.ESPTemplate.parser.ProductImprintMethodParser"/>
+ <bean id="shippingEstimationParser" class="com.a4tech.product.ESPTemplate.parser.ShippingEstimationParser"/>
+  <bean id="colorParserObj" class="com.a4tech.product.ESPTemplate.parser.ColorParser"/>
+    <bean id="ProductMaterialParserObj" class="com.a4tech.product.ESPTemplate.parser.ProductMaterialParser"/>
+      <bean id="PriceGridParserObj" class="com.a4tech.product.ESPTemplate.parser.PriceGridParser"/>
+     <bean id="sizeParserObj" class="com.a4tech.product.ESPTemplate.parser.SizeParser"/>
+  
   
   
   <!-- <bean id="checkDBConnectionController" name="checkDBConnectionController" class="com.a4tech.controller.CheckDBConnectionController" autowire="byName">

@@ -112,8 +112,8 @@ public class FileUpload extends HttpServlet{
 	 	               _LOGGER.info("Invlid upload excel file,Please try one more time");
 	 	               	model.addAttribute("invalidUploadFile", "");
 	             		return "home";
-	            	}
-	                 	accessToken = loginService.doLogin("55201",  fileBean.getUserName(),
+	            	}/*
+	                 	accessToken = loginService.doLogin(fileBean.getAsiNumber(),  fileBean.getUserName(),
 	                 													fileBean.getPassword());
 	                 	if(accessToken != null){
 	                 		if(accessToken.equalsIgnoreCase("unAuthorized")){
@@ -123,7 +123,7 @@ public class FileUpload extends HttpServlet{
 	                     	}
 	                 	}else{
 	                 		return "errorPage";
-	                 	}
+	                 	}*/
 	            int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 	            	 request.getSession().setAttribute("batchId", String.valueOf(batchId));
 	                switch (asiNumber) {
@@ -181,6 +181,17 @@ public class FileUpload extends HttpServlet{
 				    case "91561":  //Distributor Central
 				    	finalResult = espTemplateMapping.readExcel(asiNumber, workbook, 
 				    			                                          Integer.valueOf(asiNumber), batchId);
+				    	if(finalResult != null){
+				    		splitFinalResult = finalResult.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+				    		noOfProductsSuccess = splitFinalResult[0];
+				    		noOfProductsFailure = splitFinalResult[1];
+				    		redirectAttributes.addFlashAttribute("successProductsCount", noOfProductsSuccess);
+				    		redirectAttributes.addFlashAttribute("failureProductsCount", noOfProductsFailure);
+				    		if(!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)){
+				    			redirectAttributes.addFlashAttribute("successmsg", emailMsg);
+				    			downloadMail.sendMail(asiNumber, batchId);
+				    		}
+				       }
 				    	return "redirect:redirect.htm";
 					default:
 						break;

@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.a4tech.core.errors.ErrorMessage;
@@ -21,6 +22,8 @@ import com.a4tech.product.model.Product;
 import com.a4tech.product.service.LoginService;
 import com.a4tech.product.service.PostService;
 import com.a4tech.service.loginImpl.LoginServiceImpl;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PostServiceImpl implements PostService {
@@ -33,7 +36,7 @@ public class PostServiceImpl implements PostService {
 	@Autowired
 	ObjectMapper mapper1;
 	
-	public int postProduct(String authTokens, Product product,int asiNumber ,int batchId) {
+	public int postProduct(String authTokens, Product product,int asiNumber ,int batchId) throws JsonParseException, JsonMappingException, IOException {
 
 		try {
 
@@ -65,7 +68,13 @@ public class PostServiceImpl implements PostService {
 			}
 			//productDao.errorResponse(rsponse);
 			return 0;
-		} catch (Exception hce) {
+		}catch(HttpServerErrorException serverEx){
+			String serverResponse = serverEx.getResponseBodyAsString();
+			ErrorMessageList apiResponse =  mapper1.readValue(serverResponse, ErrorMessageList.class);
+			productDao.save(apiResponse.getErrors(),product.getExternalProductId(),asiNumber,batchId);
+			return 0;
+		}
+		catch (Exception hce) {
 			_LOGGER.error("Exception while posting product to ExternalAPI", hce);
 			String serverErrorMsg = hce.getMessage();
 			if(serverErrorMsg != null && serverErrorMsg.equalsIgnoreCase("500 Internal Server Error")){
