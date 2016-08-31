@@ -30,6 +30,7 @@ import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
 import com.a4tech.dc.product.mapping.DCProductsExcelMapping;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
 import com.a4tech.product.service.ProductService;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.service.loginImpl.LoginServiceImpl;
@@ -59,6 +60,7 @@ public class FileUpload extends HttpServlet{
 	private ExcelMapping gbDataExcelMapping;
 	private DownloadFileController downloadMail;
 	private DCProductsExcelMapping dCProductsExcelMapping;
+	private KukuProductsExcelMapping kukuProductsExcelMapping;
 	@Autowired
 	private LoginServiceImpl loginService;
 	private ProductDao productDao;
@@ -111,7 +113,7 @@ public class FileUpload extends HttpServlet{
 	 	               	model.addAttribute("invalidUploadFile", "");
 	             		return "home";
 	            	}
-	                 	accessToken = loginService.doLogin("55201",  fileBean.getUserName(),
+	                 	accessToken = loginService.doLogin(fileBean.getAsiNumber(),  fileBean.getUserName(),
 	                 													fileBean.getPassword());
 	                 	if(accessToken != null){
 	                 		if(accessToken.equalsIgnoreCase("unAuthorized")){
@@ -174,6 +176,23 @@ public class FileUpload extends HttpServlet{
 				    case "55205":  //Distributor Central
 				    	finalResult = dCProductsExcelMapping.readExcel(asiNumber, workbook, 
 				    			                                          Integer.valueOf(asiNumber), batchId);
+				    	return "redirect:redirect.htm";
+				    	
+				    case "65851":  //Kuku International
+				    	finalResult = kukuProductsExcelMapping.readExcel(accessToken, workbook, 
+				    			                                          Integer.valueOf(asiNumber), batchId);
+				    	if(finalResult != null){
+				    		splitFinalResult = finalResult.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+				    		noOfProductsSuccess = splitFinalResult[0];
+				    		noOfProductsFailure = splitFinalResult[1];
+				    		redirectAttributes.addFlashAttribute("successProductsCount", noOfProductsSuccess);
+				    		redirectAttributes.addFlashAttribute("failureProductsCount", noOfProductsFailure);
+				    		if(!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)){
+				    			redirectAttributes.addFlashAttribute("successmsg", emailMsg);
+				    			downloadMail.sendMail(asiNumber, batchId);
+				    		}
+				       }
+				    	
 				    	return "redirect:redirect.htm";
 					default:
 						break;
@@ -265,6 +284,13 @@ public class FileUpload extends HttpServlet{
 	public void setdCProductsExcelMapping(
 			DCProductsExcelMapping dCProductsExcelMapping) {
 		this.dCProductsExcelMapping = dCProductsExcelMapping;
+	}
+	public KukuProductsExcelMapping getKukuProductsExcelMapping() {
+		return kukuProductsExcelMapping;
+	}
+	public void setKukuProductsExcelMapping(
+			KukuProductsExcelMapping kukuProductsExcelMapping) {
+		this.kukuProductsExcelMapping = kukuProductsExcelMapping;
 	}
 	
 }
