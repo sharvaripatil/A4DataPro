@@ -68,6 +68,24 @@ public class ApplicationConstants {
 	public static final int     CONST_NUMBER_ZERO                           = 0;
 	public static final int     CONST_NEGATIVE_NUMBER_ONE					= -1;
 	
+	public static final String  CONST_STRING_FALSE						= "False";
+	public static final String  CONST_STRING_DISCOUNT_CODE_Z			= "Z";
+	public static final String  CONST_STRING__SERVICECHARGE				= "Required";
+	public static final String  CONST_STRING__YES						= "Yes";
+	public static final String  CONST_STRING__PERSONALIZATION			= "PERSONALIZATION";
+	public static final String  CONST_STRING__CURRENCY_USD              ="USD";
+	public static final String  CONST_STRING_IMMD_CHARGE			    = "Imprint Method Charge";
+	public static final String	CONST_STRING_FULLCOLOR					="FULL COLOR";
+	public static final String	CONST_STRING_DAYS					    ="days";
+	public static final String	CONST_SHIPPING_UNIT_KG					="kg";
+	public static final String	CONST_SHIPPING_UNIT_GRAMS				="grams";
+	
+	public static final String  CONST_STRING_COUNTRY_CODE_CN                = "CN";
+	public static final String  CONST_STRING_AND					        = "and";
+	public static final String  CONST_STRING_PLUS				            = "\\+";
+	
+	
+	
 	//public static final String  
     
     
@@ -81,6 +99,9 @@ public class ApplicationConstants {
 	    	//SUPPLIER_EMAIL_ID_MAP.put("55204", "sharvari.patil@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("55204", "azam.rizvi@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("55205", "venkateswarlu.nidamanuri@a4technology.com");
+	    	SUPPLIER_EMAIL_ID_MAP.put("65851", "amey.more@a4technology.com");
+	    	SUPPLIER_EMAIL_ID_MAP.put("91561", "sharvari.patil@a4technology.com");
+
 	    	SUPPORT_EMAIL_ID_MAP.put("dev_1", "amey.more@a4technology.com");
 	    	SUPPORT_EMAIL_ID_MAP.put("dev_2", "venkateswarlu.nidamanuri@a4technology.com");
 	    	SUPPORT_EMAIL_ID_MAP.put("dev_3", "sharvari.patil@a4technology.com");

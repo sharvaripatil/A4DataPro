@@ -5,6 +5,7 @@ body {
 	color: #888;
 	line-height: 30px;
 	text-align: center;
+	background: url("../img/backgrounds/product600.png")
 }
 strong {
 	font-weight: 500;
@@ -218,7 +219,7 @@ ul.navbar-nav {
 }
 .form-bottom {
 	padding: 55px 25px 85px 25px;
-	background: rgba(34, 34, 34, 0.48);/*rgb(34, 34, 34);*/
+	background: rgba(34, 34, 34, 0.9);/*rgb(34, 34, 34);*/
 	-moz-border-radius: 0 0 4px 4px;
 	-webkit-border-radius: 0 0 4px 4px;
 	border-radius: 0 0 4px 4px;
