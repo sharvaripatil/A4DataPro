@@ -6,6 +6,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="src" path="main/java/supplier/64905"/>
 	<classpathentry kind="src" path="main/java/supplier/Sage"/>
 	<classpathentry kind="src" path="main/java/supplier/USBProducts"/>
 	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">

@@ -98,6 +98,7 @@
       <property name="gbDataExcelMapping" ref="gbDataExcelMappingId"/>
       <property name="downloadMail" ref="downloadFileController"/>
       <property name="dCProductsExcelMapping" ref="dCProductsExcelMappingId"/>
+      <property name="klMapping" ref="klMappingId"/>
    </bean>
    <bean id="usbExcelMapping" class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
     <property name="colorparser"  ref="colorparser"/>
@@ -204,5 +205,17 @@
      <property name="dbPassword" value="${mysql.db.password}"></property>
      <property name="dbDriver" value="${mysql.db.driverClassName}" ></property>
   </bean> -->
+  
+  <!-- supplier 64509 configuration start -->
+  <bean id="klPriceGridParserId" class="com.a4tech.kl.product.parser.KlPriceGridParser"/>
+  <bean id="klProductAttributeParserId" class="com.a4tech.kl.product.parser.KlProductAttributeParser"/>
+   <bean id="klMappingId" class="com.a4tech.kl.product.mapping.KlProductsExcelMapping">
+     	<property name="postServiceImpl" ref="postService"/>
+     	<property name="productDaoObj"  ref="productDao"/>
+     	<property name="klPriceGridPar" ref="klPriceGridParserId"/>
+     	<property name="attributeparser" ref="klProductAttributeParserId"/>
+    </bean>
+    
+    <!-- supplier 64509 configuration end -->  
 </beans>
 
