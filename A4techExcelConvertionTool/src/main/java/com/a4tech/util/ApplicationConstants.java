@@ -79,6 +79,7 @@ public class ApplicationConstants {
 	public static final String	CONST_STRING_DAYS					    ="days";
 	public static final String	CONST_SHIPPING_UNIT_KG					="kg";
 	public static final String	CONST_SHIPPING_UNIT_GRAMS				="grams";
+	public static final String  CONST_STRING_IMPRINT_METHOD             = "Imprint Method";
 	
 	public static final String  CONST_STRING_COUNTRY_CODE_CN                = "CN";
 	public static final String  CONST_STRING_AND					        = "and";

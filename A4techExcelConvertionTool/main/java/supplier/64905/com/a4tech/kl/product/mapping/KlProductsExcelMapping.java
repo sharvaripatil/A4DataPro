@@ -670,8 +670,11 @@ public class KlProductsExcelMapping {
 			    * 
 			    */
 				if(imprintMethodName != null && !imprintMethodName.isEmpty()){
-					priceGrids = klPriceGridPar.getUpchargePriceGrid("1", imprintUpchargePrice,"z", "Imprint Method", 
-							 "n", "USD", imprintMethodName, "Imprint Method Charge", "", new Integer(1), priceGrids);
+					priceGrids = klPriceGridPar.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE , 
+							imprintUpchargePrice,ApplicationConstants.CONST_STRING_DISCOUNT_CODE_Z,
+							ApplicationConstants.CONST_STRING_IMPRINT_METHOD,ApplicationConstants.CONST_CHAR_N, 
+							ApplicationConstants.CONST_STRING__CURRENCY_USD, imprintMethodName, ApplicationConstants.CONST_STRING_IMMD_CHARGE, 
+						  ApplicationConstants.CONST_STRING_EMPTY, new Integer(1), priceGrids);
 				}
 				//upChargeQur = null;
 				//UpCharCriteria = new StringBuilder();

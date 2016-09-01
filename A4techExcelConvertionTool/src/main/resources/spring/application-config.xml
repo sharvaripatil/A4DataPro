@@ -86,6 +86,7 @@
 		<property name="dCProductsExcelMapping" ref="dCProductsExcelMappingId" />
 		<property name="kukuProductsExcelMapping" ref="kukuProductsExcelMappingId" />
 		<property name="espTemplateMapping" ref="espTemplateMappingId" />
+		<property name="klMapping" ref="klMappingId"/>
 	</bean>
 	<bean id="usbExcelMapping"
 		class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
@@ -218,7 +219,7 @@
 	<bean id="productOriginObj" name="productOriginObj"
 		class="com.a4tech.product.DCProducts.parser.ProductOriginParser" />
 
-	<!-- ESPTemplate file-91561 -->
+	<!-- ESPTemplate file-91561 start -->
 
 	<bean id="originParser" class="com.a4tech.product.ESPTemplate.parser.OriginParser" />
 	<bean id="rushTimeParser" class="com.a4tech.product.ESPTemplate.parser.RushTimeParser" />
@@ -231,6 +232,19 @@
 		class="com.a4tech.product.ESPTemplate.parser.ProductMaterialParser" />
 	<bean id="PriceGridParserObj" class="com.a4tech.product.ESPTemplate.parser.PriceGridParser" />
 	<bean id="sizeParserObj" class="com.a4tech.product.ESPTemplate.parser.SizeParser" />
+	<!-- ESPTemplate file-91561 end -->
+	
+	<!-- supplier 64509 configuration start -->
+  <bean id="klPriceGridParserId" class="com.a4tech.kl.product.parser.KlPriceGridParser"/>
+  <bean id="klProductAttributeParserId" class="com.a4tech.kl.product.parser.KlProductAttributeParser"/>
+   <bean id="klMappingId" class="com.a4tech.kl.product.mapping.KlProductsExcelMapping">
+     	<property name="postServiceImpl" ref="postService"/>
+     	<property name="productDaoObj"  ref="productDao"/>
+     	<property name="klPriceGridPar" ref="klPriceGridParserId"/>
+     	<property name="attributeparser" ref="klProductAttributeParserId"/>
+    </bean>
+    
+    <!-- supplier 64509 configuration end -->  
 
 	<!-- <bean id="checkDBConnectionController" name="checkDBConnectionController" 
 		class="com.a4tech.controller.CheckDBConnectionController" autowire="byName"> 

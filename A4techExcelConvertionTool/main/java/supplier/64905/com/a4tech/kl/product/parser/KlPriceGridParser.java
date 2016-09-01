@@ -156,7 +156,7 @@ public class KlPriceGridParser {
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(upChargeValue);
 		priceGrid
-				.setIsQUR((qurFlag.equalsIgnoreCase("n")) ? ApplicationConstants.CONST_BOOLEAN_FALSE
+				.setIsQUR((qurFlag.equalsIgnoreCase("N")) ? ApplicationConstants.CONST_BOOLEAN_FALSE
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);
