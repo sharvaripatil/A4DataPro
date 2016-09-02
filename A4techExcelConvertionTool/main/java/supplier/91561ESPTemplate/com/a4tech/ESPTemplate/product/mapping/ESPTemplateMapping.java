@@ -59,7 +59,7 @@ public class ESPTemplateMapping {
 
 
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
-		
+		int columnIndex = 0;
 		
 		Set<String>  productXids = new HashSet<String>();
 		List<String> numOfProductsSuccess = new ArrayList<String>();
@@ -77,30 +77,6 @@ public class ESPTemplateMapping {
 			String Four_color_process=null;
 			String productName = null;
 			String finalResult = null;
-			int Qty1 = 0;
-			int Qty2 = 0;
-			int Qty3 = 0;
-			int Qty4 = 0;
-			int Qty5 = 0;
-			int Qty6 = 0;
-			int Qty7 = 0;
-			int Qty8 = 0;
-			double price1 = 0;
-			double price2 = 0;
-			double price3 = 0;
-			double price4 = 0;
-			double price5 = 0;
-			double price6 = 0;
-			double price7 = 0;
-			double price8 = 0;
-			String code1 = null;
-			String code2 = null;
-			String code3 = null;
-			String code4 = null;
-			String code5 = null;
-			String code6 = null;
-			String code7 = null;
-			String code8 = null;
 			
 			StringBuilder listOfQuantity = new StringBuilder();
 			StringBuilder listOfPrices = new StringBuilder();
@@ -126,7 +102,7 @@ public class ESPTemplateMapping {
 	    Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
-		
+		System.out.println("sharvari" +sheet.getLastRowNum());
 		while (iterator.hasNext()) {
 			
 			try{
@@ -143,7 +119,7 @@ public class ESPTemplateMapping {
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
 				String xid = null;
-				int columnIndex = cell.getColumnIndex();
+				 columnIndex = cell.getColumnIndex();
 				
 				if(columnIndex + 1 == 1){
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
@@ -444,148 +420,180 @@ public class ESPTemplateMapping {
 					 PriceIncludes=cell.getStringCellValue();
 					break;
 				case 28:
-					Qty1=(int) cell.getNumericCellValue();
+					int Qty1=(int) cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(Qty1)){
 					listOfQuantity.append(Qty1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 					break;
 				case 29:
-					price1=cell.getNumericCellValue();;
+					double price1=cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(price1)){
 					listOfPrices.append(price1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					}
 					break;
 				case 30:  
-					code1=cell.getStringCellValue();
+					String code1=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(code1)){
 					listOfDiscount.append(code1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					}
 					break;
 				case 31:
-					Qty2=(int) cell.getNumericCellValue();
+					int Qty2=(int) cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(Qty2)){
 					listOfQuantity.append(Qty2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 					break;
 				case 32:
 					//Price 2
-					price2=cell.getNumericCellValue();;
+					double price2=cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(price2)){
 					listOfPrices.append(price2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 					break;
 				case 33:
 					//Code 2
-					code2=cell.getStringCellValue();
+					String code2=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(code2)){
 					listOfDiscount.append(code2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 					break;
 				case 34:
-					Qty3=(int) cell.getNumericCellValue();;
+					int Qty3=(int) cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(Qty3)){
 					listOfQuantity.append(Qty3).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 					break;
 				case 35://Price 3
-					price3=cell.getNumericCellValue();;
+					double price3=cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(price3)){
 					listOfPrices.append(price3).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 					
 					
 					    break; 
 				case 36://Code3
-					code3=cell.getStringCellValue();
+					String code3=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(code3)){
 					listOfDiscount.append(code3).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					
+					}
 					break;
                 case 37://Qty4
-					Qty4=(int) cell.getNumericCellValue();;;
+                	int Qty4=(int) cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(Qty4)){
 					listOfQuantity.append(Qty4).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 
 					
 					break;
 				case 38:  
 					//Price4
-					price4=cell.getNumericCellValue();;
+					double price4=cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(price4)){
 					listOfPrices.append(price4).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 					break;
 				case 39:
 					//Code4
-					code4=cell.getStringCellValue();
+					String code4=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(code4)){
 					listOfDiscount.append(code4).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 					break;
 				case 40:
-					Qty5=(int) cell.getNumericCellValue();;;
+					int Qty5=(int) cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(Qty5)){
 					listOfQuantity.append(Qty5).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 
-
+					}
 					break;
 				case 41:
 					//Price5
-					price5=cell.getNumericCellValue();;
+					double price5=cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(price5)){
 					listOfPrices.append(price5).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 					break;
 				case 42:
 					//Code5
-					code5=cell.getStringCellValue();
+					String code5=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(code5)){
 					listOfDiscount.append(code5).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 
 					break;
 				case 43:
-					Qty6=(int) cell.getNumericCellValue();;;
+					
+					int Qty6=(int) cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(Qty6)){
 					listOfQuantity.append(Qty6).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 
 					
 					break;
 				case 44://Price6
-					price6=cell.getNumericCellValue();;
+					double price6=cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(price6)){
 					listOfPrices.append(price6).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 
 					      break;
 				case 45://Code6
-					code6=cell.getStringCellValue();
+					
+					String code6=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(code6)){
 					listOfDiscount.append(code6).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 
 					
 					 break;
 				case 46: //Qty7
-					Qty7=(int) cell.getNumericCellValue();;
+					
+					int Qty7=(int) cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(Qty7)){
 					listOfQuantity.append(Qty7).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 
 					break;
 				case 47://Price7
-					price7=cell.getNumericCellValue();;
+					double price7=cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(price7)){
 					listOfPrices.append(price7).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 					
 					break;
 				case 48:  //Code7
-					code7=cell.getStringCellValue();
+					String code7=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(code7)){
 					listOfDiscount.append(code7).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 
 					
 					break;
 				case 49://Qty8
-					Qty8=(int)cell.getNumericCellValue();;
+					
+					int Qty8=(int)cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(Qty8)){
 					listOfQuantity.append(Qty8).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 					
 					
 					break;
 			
 				case 50://Price8
-					price8=cell.getNumericCellValue();;
+					
+					double price8=cell.getNumericCellValue();
+					if(!StringUtils.isEmpty(price8)){
 					listOfPrices.append(price8).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-
+					}
 					
 					break;
 					
 				case 51://Code8
-					code8=cell.getStringCellValue();
+					String code8=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(code8)){
 					listOfDiscount.append(code8).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-                     break;
+					} 
+					break;
 			   
 							}  // end inner while loop
 					 
@@ -596,7 +604,7 @@ public class ESPTemplateMapping {
 			 // end inner while loop
 			productExcelObj.setPriceType("L");
 		
-				if(!StringUtils.isEmpty(imprintValue)){		
+				if(!StringUtils.isEmpty(listOfPrices)){		
 				// base price parser
 				priceGrids = PriceGridParserObj.getPriceGrids(listOfPrices.toString(), 
 						         listOfQuantity.toString(), listOfDiscount.toString(), "USD",
@@ -609,59 +617,57 @@ public class ESPTemplateMapping {
 				}
 				
 			
-			listOfPrices = new StringBuilder();
-			 PriceIncludes=null;
+			
+				 listOfQuantity = new StringBuilder();
+				 listOfPrices = new StringBuilder();
+				 listOfDiscount = new StringBuilder();
+		       productId = null;
+			  PriceIncludes=null;
              imprintValue=null;
              ImprintchargesString =null;
-             productId = null;
-			 Sold_as_Blanks=null;
+             Sold_as_Blanks=null;
 			 Four_color_process=null;
 		     productName = null;
 			 finalResult = null;
-		
-				
-				
-			
+			 ////////////////////////////////////
 			}catch(Exception e){
-
-				_LOGGER.error("Error while Processing Product and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
-		}
-		}
-		workbook.close();
-		
-		 	productExcelObj.setPriceGrids(priceGrids);
-		 	productExcelObj.setProductConfigurations(productConfigObj);
-
-	
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
-		 	if(num ==1){
-		 		numOfProductsSuccess.add("1");
-		 	}else if(num == 0){
-		 		numOfProductsFailure.add("0");
-		 	}else{
-		 		
-		 	}
-		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
-		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
-	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
-	       productDaoObj.getErrorLog(asiNumber,batchId);
-	       return finalResult;
-		}catch(Exception e){
-			_LOGGER.error("Error while Processing excel sheet ,Error message: "+e.getMessage());
-			return finalResult;
-		}finally{
-			try {
-				workbook.close();
-			} catch (IOException e) {
-				_LOGGER.error("Error while Processing excel sheet, Error message: "+e.getMessage());
-	
+				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() +"for column"+columnIndex+1);		 
 			}
-				_LOGGER.info("Complted processing of excel sheet ");
-				_LOGGER.info("Total no of product:"+numOfProductsSuccess.size() );
+			}
+			workbook.close();
+			
+			 	productExcelObj.setPriceGrids(priceGrids);
+			 	productExcelObj.setProductConfigurations(productConfigObj);
+
+			 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+			 	if(num ==1){
+			 		numOfProductsSuccess.add("1");
+			 	}else if(num == 0){
+			 		numOfProductsFailure.add("0");
+			 	}else{
+			 		
+			 	}
+			 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
+			 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
+		       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
+		       productDaoObj.getErrorLog(asiNumber,batchId);
+		       return finalResult;
+			}catch(Exception e){
+				_LOGGER.error("Error while Processing excel sheet ,Error message: "+e.getMessage()+"for column"+columnIndex+1);
+				return finalResult;
+			}finally{
+				try {
+					workbook.close();
+				} catch (IOException e) {
+					_LOGGER.error("Error while Processing excel sheet, Error message: "+e.getMessage()+"for column" +columnIndex+1);
+
+				}
+					_LOGGER.info("Complted processing of excel sheet ");
+					_LOGGER.info("Total no of product:"+numOfProductsSuccess.size() );
+			}
+			
 		}
-		
-	}
-	
+
 	
 	public ProductDao getProductDaoObj() {
 		return productDaoObj;
@@ -746,8 +752,6 @@ public class ESPTemplateMapping {
 	public void setPostServiceImpl(PostServiceImpl postServiceImpl) {
 		this.postServiceImpl = postServiceImpl;
 	}
-	
-	
 	
 	
 }
