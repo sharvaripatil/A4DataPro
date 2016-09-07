@@ -102,7 +102,6 @@ public class ESPTemplateMapping {
 	    Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
-		System.out.println("sharvari" +sheet.getLastRowNum());
 		while (iterator.hasNext()) {
 			
 			try{
@@ -281,7 +280,6 @@ public class ESPTemplateMapping {
 				      if(!StringUtils.isEmpty(prodTimeLo)){
 				       prodTimeLo=prodTimeLo.replaceAll("days","");
 				      productionTime.setBusinessDays(prodTimeLo);
-				      productionTime.setDetails("days");
 				      productionTimeList.add(productionTime);
 				      productConfigObj.setProductionTime(productionTimeList);
 				      }

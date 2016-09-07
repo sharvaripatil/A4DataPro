@@ -25,6 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.a4tech.ESPTemplate.product.mapping.ESPTemplateMapping;
 import com.a4tech.JulyData.excelMapping.JulyDataMapping;
+import com.a4tech.RFGLine.product.mapping.RFGLineProductExcelMapping;
 import com.a4tech.core.excelMapping.ExcelMapping;
 import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
@@ -64,6 +65,7 @@ public class FileUpload extends HttpServlet {
 	private ESPTemplateMapping espTemplateMapping;
 	private KukuProductsExcelMapping kukuProductsExcelMapping;
 	private KlProductsExcelMapping klMapping;
+	private RFGLineProductExcelMapping rfgLineProductExcelMapping;
 	@Autowired
 	private LoginServiceImpl loginService;
 	private ProductDao productDao;
@@ -244,21 +246,33 @@ public class FileUpload extends HttpServlet {
 				}
 
 				return "redirect:redirect.htm";
-			 case "64905":  //Kinline Promos
-			    	finalResult = klMapping.readExcel(accessToken, workbook, 
-                                        Integer.valueOf(asiNumber), batchId);
-			    	if(finalResult != null){
-			    		splitFinalResult = finalResult.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-			    		noOfProductsSuccess = splitFinalResult[0];
-			    		noOfProductsFailure = splitFinalResult[1];
-			    		redirectAttributes.addFlashAttribute("successProductsCount", noOfProductsSuccess);
-			    		redirectAttributes.addFlashAttribute("failureProductsCount", noOfProductsFailure);
-			    		if(!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)){
-			    			redirectAttributes.addFlashAttribute("successmsg", emailMsg);
-			    			downloadMail.sendMail(asiNumber, batchId);
-			    		}
-			       }
-			    	return "redirect:redirect.htm";
+			case "64905": // Kinline Promos
+				finalResult = klMapping.readExcel(accessToken, workbook,
+						Integer.valueOf(asiNumber), batchId);
+				if (finalResult != null) {
+					splitFinalResult = finalResult
+							.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+					noOfProductsSuccess = splitFinalResult[0];
+					noOfProductsFailure = splitFinalResult[1];
+					redirectAttributes.addFlashAttribute(
+							"successProductsCount", noOfProductsSuccess);
+					redirectAttributes.addFlashAttribute(
+							"failureProductsCount", noOfProductsFailure);
+					if (!noOfProductsFailure
+							.equals(ApplicationConstants.CONST_STRING_ZERO)) {
+						redirectAttributes.addFlashAttribute("successmsg",
+								emailMsg);
+						downloadMail.sendMail(asiNumber, batchId);
+					}
+				}
+				return "redirect:redirect.htm";
+				
+			case "82283":  //rfgLineProductExcelMapping
+		    	finalResult = rfgLineProductExcelMapping.readExcel(asiNumber, workbook, 
+		    			                                          Integer.valueOf(asiNumber), batchId);
+		    	return "redirect:redirect.htm";
+		    	
+		    	
 			default:
 				break;
 			}
@@ -390,6 +404,7 @@ public class FileUpload extends HttpServlet {
 	public void setEspTemplateMapping(ESPTemplateMapping espTemplateMapping) {
 		this.espTemplateMapping = espTemplateMapping;
 	}
+
 	public KlProductsExcelMapping getKlMapping() {
 		return klMapping;
 	}
@@ -397,6 +412,16 @@ public class FileUpload extends HttpServlet {
 	public void setKlMapping(KlProductsExcelMapping klMapping) {
 		this.klMapping = klMapping;
 	}
+
+	public RFGLineProductExcelMapping getRfgLineProductExcelMapping() {
+		return rfgLineProductExcelMapping;
+	}
+
+	public void setRfgLineProductExcelMapping(
+			RFGLineProductExcelMapping rfgLineProductExcelMapping) {
+		this.rfgLineProductExcelMapping = rfgLineProductExcelMapping;
+	}
+
 
 
 }
