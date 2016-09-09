@@ -20,6 +20,7 @@ public class ShippingEstimationParser {
 		
 		
 		List<NumberOfItems> numberOfItem = new ArrayList<NumberOfItems>();
+
 		NumberOfItems itemObj=new NumberOfItems();
 		if(!StringUtils.isEmpty(ShipQty1)&& !ShipQty1.equals("0") ){
 		itemObj.setValue(ShipQty1);

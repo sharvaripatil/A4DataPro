@@ -458,6 +458,14 @@ public class RFGLineProductExcelMapping {
 
 	}
 
+	public DescrptionParser getDescrptionParserObj() {
+		return DescrptionParserObj;
+	}
+
+	public void setDescrptionParserObj(DescrptionParser descrptionParserObj) {
+		DescrptionParserObj = descrptionParserObj;
+	}
+
 	public PriceGridParser getRfgPriceGridParserObj() {
 		return rfgPriceGridParserObj;
 	}

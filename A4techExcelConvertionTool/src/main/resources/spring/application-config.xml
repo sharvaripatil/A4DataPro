@@ -148,6 +148,10 @@
 	<property name="postServiceImpl" ref="postService" />
 	<property name="shippingParserObj" ref="shippingParserObj" />
 	<property name="rfgPriceGridParserObj" ref="rfgPriceGridParserObj" />
+   <property name="DescrptionParserObj" ref="DescrptionParserObj" />
+  
+		
+	
 	</bean>
 	
 	
@@ -256,7 +260,14 @@
     </bean>
     
     	<bean id="shippingParserObj" class="com.a4tech.RFGLine.products.parser.ShippingEstimationParser" />
-        	<bean id="rfgPriceGridParserObj" class="com.a4tech.RFGLine.products.parser.PriceGridParser" />
+        <bean id="rfgPriceGridParserObj" class="com.a4tech.RFGLine.products.parser.PriceGridParser" />
+        <bean id="DescrptionParserObj" class="com.a4tech.RFGLine.products.parser.DescrptionParser" >
+        <property name="descsizeParserObj" ref="descsizeParserObj" />
+        <property name="attributeObj" ref="attributeObj" />
+         
+        </bean>
+        <bean id="descsizeParserObj" class="com.a4tech.RFGLine.products.parser.SizeParser" />
+         <bean id="attributeObj" class="com.a4tech.RFGLine.products.parser.ProductAttributeParser" />
     
     
     
