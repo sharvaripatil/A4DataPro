@@ -54,8 +54,6 @@ public class LoginServiceImpl implements LoginService {
             body.put(ApplicationConstants.CONST_ASI_NUMBER, asiNumber);
             body.put(ApplicationConstants.CONST_USERNAME,userName);
             body.put(ApplicationConstants.CONST_PASSWORD, password);
-
-            
             HttpEntity<?> httpEntity = new HttpEntity<Object>(body, header);
             _LOGGER.info("Hitting ASI endpoint for Login");
             ResponseEntity<AccessBean> response = restTemplate.exchange(loginApiURL, HttpMethod.POST, httpEntity, AccessBean.class);

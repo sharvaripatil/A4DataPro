@@ -55,9 +55,18 @@
 	<bean id="postService" class="com.a4tech.product.service.postImpl.PostServiceImpl">
 		<property name="restTemplate" ref="restTemplate"></property>
 		<property name="productDao" ref="productDao"></property>
-		<property name="postApiURL" value="${product.post.v3.URL}"></property>
+		<property name="postApiURL" value="${product.post.v3.URL}"/>
+		<property name="getProductUrl" value="${product.get.v3.URL}"/>
 	</bean>
 
+   <bean id="lookupRestService" class="com.a4tech.lookup.service.restService.LookupRestService">
+   		<property name="restTemplate" ref="restTemplate"/>
+   		<property name="imprintMethodUrl" value="${imprintMethod.lookup.url}"/>
+   		<property name="materialLookupUrl" value="${materials.lookup.url}"/>
+   </bean>
+   <bean id="lookupServiceData" class="com.a4tech.lookup.service.LookupServiceData">
+   		<property name="lookupRestService" ref="lookupRestService"/>
+   </bean>
 	<bean id="objectMapper" name="objectMapper"
 		class="com.fasterxml.jackson.databind.ObjectMapper" />
 	<bean id="loginServiceImpl" class="com.a4tech.service.loginImpl.LoginServiceImpl"
@@ -88,6 +97,7 @@
 		<property name="espTemplateMapping" ref="espTemplateMappingId" />
 		<property name="klMapping" ref="klMappingId"/>
 		<property name="bbiProductsExcelMapping" ref="bbiProductsExcelMappingId"/>
+		<property name="adspecMapping" ref="adspecProductsExcelMappingId"/>
 	</bean>
 	<bean id="usbExcelMapping"
 		class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
@@ -262,7 +272,19 @@
     <bean id="bbiPriceGridParserBBId" class="com.a4tech.product.bbi.criteria.parser.BBIPriceGridParser"/>
     <!-- supplier 40445 configuration end -->  
     
-    
+      <!-- supplier 32125 configuration start -->
+     <bean id="adspecPriceGridParserId" class="com.a4tech.adspec.product.parser.AdspecPriceGridParser"/>
+     <bean id="adspecProductAttributeParserId" class="com.a4tech.adspec.product.parser.AdspecProductAttributeParser">
+     	 <property name="lookupServiceData" ref="lookupServiceData"/>
+     </bean>
+     <bean id="adspecProductsExcelMappingId" class="com.a4tech.adspec.product.mapping.AdspecProductsExcelMapping">
+     	   <property name="postServiceImpl" ref="postService"/>
+     	   <property name="adspicPriceGridParser" ref="adspecPriceGridParserId"/>
+     	   <property name="productDaoObj" ref="productDao"/>
+     	   <property name="adspecAttrParser" ref="adspecProductAttributeParserId"/>
+     </bean>
+       
+     <!-- supplier 32125 configuration end -->
 
 	<!-- <bean id="checkDBConnectionController" name="checkDBConnectionController" 
 		class="com.a4tech.controller.CheckDBConnectionController" autowire="byName"> 

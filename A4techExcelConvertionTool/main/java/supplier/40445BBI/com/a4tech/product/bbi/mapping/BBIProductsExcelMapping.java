@@ -182,7 +182,7 @@ public class BBIProductsExcelMapping {
 							productId = String.valueOf((int)cell.getNumericCellValue());
 						}
 						/////imp code 
-						existingApiProduct=postServiceImpl.doGet(accessToken, productId);
+						existingApiProduct=postServiceImpl.getProduct(accessToken, productId);
 						if(existingApiProduct!=null){
 							_LOGGER.info("Product "+productId+" is an existing product Using existing product also");
 							productExcelObj=existingApiProduct;
