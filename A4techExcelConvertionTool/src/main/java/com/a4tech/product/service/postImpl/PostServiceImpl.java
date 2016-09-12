@@ -1,8 +1,6 @@
 package com.a4tech.product.service.postImpl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +12,11 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.a4tech.core.errors.ErrorMessage;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.core.model.ExternalAPIResponse;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Product;
-import com.a4tech.product.service.LoginService;
 import com.a4tech.product.service.PostService;
-import com.a4tech.service.loginImpl.LoginServiceImpl;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,19 +28,16 @@ public class PostServiceImpl implements PostService {
     private ProductDao productDao;
 	private RestTemplate restTemplate;
 	private String postApiURL ;
+	private String getProductUrl;
 	@Autowired
 	ObjectMapper mapper1;
 	
 	public int postProduct(String authTokens, Product product,int asiNumber ,int batchId) throws JsonParseException, JsonMappingException, IOException {
 
 		try {
-
-			//productDao.save(product);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("AuthToken", authTokens);
-			// headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.add("Content-Type", "application/json ; charset=utf-8");
-			//ObjectMapper mapper1 = new ObjectMapper();
 			_LOGGER.info("Product Data : "
 					+ mapper1.writeValueAsString(product));
 			HttpEntity<Product> requestEntity = new HttpEntity<Product>(
@@ -66,7 +58,6 @@ public class PostServiceImpl implements PostService {
 				e.printStackTrace();
 				return -1;
 			}
-			//productDao.errorResponse(rsponse);
 			return 0;
 			
 		} catch(HttpServerErrorException serverEx){
@@ -80,45 +71,47 @@ public class PostServiceImpl implements PostService {
 			String serverErrorMsg = hce.getMessage();
 			if(serverErrorMsg != null && serverErrorMsg.equalsIgnoreCase("500 Internal Server Error")){
 				_LOGGER.info("internal server msg received from ExternalAPI ");
-				productDao.responseconvertErrorMessage(serverErrorMsg, product.getExternalProductId(), asiNumber, batchId);
+				productDao.responseconvertErrorMessage(serverErrorMsg, product.getExternalProductId(), 
+						 																asiNumber, batchId);
 				return 0;
 			}else if(hce.getCause() != null){
 				String errorMsg = hce.getCause().toString();
 				if (errorMsg.contains("java.net.UnknownHostException")
 						|| errorMsg.contains("java.net.NoRouteToHostException")){
-					productDao.responseconvertErrorMessage(errorMsg, product.getExternalProductId(), asiNumber, batchId);
+					productDao.responseconvertErrorMessage(errorMsg, product.getExternalProductId(),
+																							asiNumber, batchId);
 					return 0;
 				}else if(errorMsg.contains("java.net.SocketTimeoutException")){
-					productDao.responseconvertErrorMessage(errorMsg, product.getExternalProductId(), asiNumber, batchId);
+					productDao.responseconvertErrorMessage(errorMsg, product.getExternalProductId(),
+																							asiNumber, batchId);
 					return 0;
 				}
 			}else{
 				
 			}
-			
-			/*System.out.println(hce.getCause());
-			if (hce.getCause() != null) {
-				String errorMsg = hce.getCause().toString();
-				if (errorMsg.contains("java.net.UnknownHostException")
-						|| errorMsg.contains("java.net.NoRouteToHostException")) {
-					ErrorMessageList responseList = new ErrorMessageList();
-					List<ErrorMessage> errorList = new ArrayList<ErrorMessage>();
-					ErrorMessage errorMsgObj = new ErrorMessage();
-					errorMsgObj.setMessage(errorMsg);
-					errorList.add(errorMsgObj);
-					errorMsgObj
-							.setReason("Product is unable to process due to Internet Down");
-					responseList.setErrors(errorList);
-					productDao.save(responseList.getErrors(),
-							product.getExternalProductId(), asiNumber, batchId);
-				}
-				return 0;
-			}*/
-			//System.out.println();
 			return -1;
 		}
 		
 	}
+	
+	public Product getProduct(String authToken,String productId){
+	try{
+		 HttpHeaders headers = new HttpHeaders();
+		 headers.add("AuthToken", authToken);
+		 headers.add("Content-Type", "application/json");
+		 HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+	     ResponseEntity<Product> getResponse  =	restTemplate.exchange(getProductUrl, HttpMethod.GET, requestEntity, 
+	    		                                                                            Product.class ,productId);
+	     Product product = getResponse.getBody();
+	    _LOGGER.info("Product from API::"+product);
+	    return product;  
+	  }catch(HttpClientErrorException hce){
+		_LOGGER.error("HttpClientError ::"+hce.getMessage());
+	  }catch(Exception e){
+		_LOGGER.error("Exception ::"+e.getMessage());
+	 }
+	return null;
+  }
 
 	public RestTemplate getRestTemplate() {
 		return restTemplate;
@@ -148,9 +141,11 @@ public class PostServiceImpl implements PostService {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	public String getGetProductUrl() {
+		return getProductUrl;
+	}
 
-
-	
-
-
+	public void setGetProductUrl(String getProductUrl) {
+		this.getProductUrl = getProductUrl;
+	}
 }
