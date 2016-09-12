@@ -61,8 +61,8 @@
 
    <bean id="lookupRestService" class="com.a4tech.lookup.service.restService.LookupRestService">
    		<property name="restTemplate" ref="restTemplate"/>
-   		<property name="imprintMethodUrl" ref="${imprintMethod.lookup.url}"/>
-   		<property name="materialLookupUrl" ref="${materials.lookup.url}"/>
+   		<property name="imprintMethodUrl" value="${imprintMethod.lookup.url}"/>
+   		<property name="materialLookupUrl" value="${materials.lookup.url}"/>
    </bean>
    <bean id="lookupServiceData" class="com.a4tech.lookup.service.LookupServiceData">
    		<property name="lookupRestService" ref="lookupRestService"/>
@@ -264,7 +264,6 @@
      	   <property name="postServiceImpl" ref="postService"/>
      	   <property name="adspicPriceGridParser" ref="adspecPriceGridParserId"/>
      	   <property name="productDaoObj" ref="productDao"/>
-     	   <property name="lookupData" ref="lookupData"/>
      	   <property name="adspecAttrParser" ref="adspecProductAttributeParserId"/>
      </bean>
        

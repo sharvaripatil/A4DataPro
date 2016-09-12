@@ -70,7 +70,6 @@ public class FileUpload extends HttpServlet {
 	@Autowired
 	private LoginServiceImpl loginService;
 	private ProductDao productDao;
-	LookupServiceData data = new LookupServiceData();
 	private static Logger _LOGGER = Logger.getLogger(Class.class);
 
 	@InitBinder
@@ -91,7 +90,6 @@ public class FileUpload extends HttpServlet {
 			BindingResult result, final RedirectAttributes redirectAttributes,
 			Model model, HttpServletRequest request) {
 		_LOGGER.info("Enter Controller Class");
-		data.getImprintMethods();
 		/*
 		 * String asiNumber = request.getParameter("asiNumber"); String userName
 		 * = request.getParameter("asiNumber"); String password =

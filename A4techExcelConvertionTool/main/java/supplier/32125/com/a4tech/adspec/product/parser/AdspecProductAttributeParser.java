@@ -50,10 +50,11 @@ public class AdspecProductAttributeParser {
 	
 	public List<ProductionTime> getProductionTime(String value){
 		List<ProductionTime> listOfProTime = null;
-		if(!StringUtils.isEmpty(value)){
+		if(!StringUtils.isEmpty(value.trim())){
 			listOfProTime = new ArrayList<ProductionTime>();
 			ProductionTime prodTimeObj = new ProductionTime();
-			prodTimeObj.setBusinessDays(value);
+			String prdTime = getProductionTimeValue(value);
+			prodTimeObj.setBusinessDays(prdTime);
 			prodTimeObj.setDetails(ApplicationConstants.CONST_STRING_EMPTY);
 			listOfProTime.add(prodTimeObj);
 		}
@@ -95,6 +96,11 @@ public class AdspecProductAttributeParser {
 			return listOfArtwork;
 		}
 		return listOfArtwork;
+	}
+	
+	public String getProductionTimeValue(String value){
+		String prdTime = value.split("[daysDays]")[0];
+		return prdTime.trim();
 	}
 	public LookupServiceData getLookupServiceData() {
 		return lookupServiceData;

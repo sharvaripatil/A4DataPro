@@ -17,7 +17,6 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.adspec.product.parser.AdspecPriceGridParser;
 import com.a4tech.adspec.product.parser.AdspecProductAttributeParser;
-import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Catalog;
@@ -41,12 +40,10 @@ public class AdspecProductsExcelMapping {
 	private PostServiceImpl postServiceImpl;
 	private AdspecPriceGridParser adspicPriceGridParser;
 	private ProductDao productDaoObj;
-	private LookupServiceData lookupData;
 	private AdspecProductAttributeParser adspecAttrParser;
 	
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
-		lookupData.getImprintMethods();
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		String finalResult = null;
@@ -164,7 +161,18 @@ public class AdspecProductsExcelMapping {
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
 						    }
-							productExcelObj = new Product();
+						    Cell index = nextRow.getCell(7);
+						    String isNewProduct  = CommonUtility.getCellValueStrinOrInt(index);
+						    if("0".equals(isNewProduct)){
+						     productExcelObj = postServiceImpl.getProduct(accessToken, xid);
+						     if(productExcelObj == null){
+						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
+						    	 productExcelObj = new Product();
+						     }
+						    }else{
+						    	productExcelObj = new Product();
+						    }
+							
 					 }
 				}
 				
@@ -480,13 +488,6 @@ public class AdspecProductsExcelMapping {
 
 	public void setProductDaoObj(ProductDao productDaoObj) {
 		this.productDaoObj = productDaoObj;
-	}
-	public LookupServiceData getLookupData() {
-		return lookupData;
-	}
-
-	public void setLookupData(LookupServiceData lookupData) {
-		this.lookupData = lookupData;
 	}
 	public AdspecProductAttributeParser getAdspecAttrParser() {
 		return adspecAttrParser;
