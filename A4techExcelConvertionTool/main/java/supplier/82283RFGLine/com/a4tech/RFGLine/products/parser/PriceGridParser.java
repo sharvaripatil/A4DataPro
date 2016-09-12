@@ -32,6 +32,7 @@ public class PriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 
 		priceGrid.setCurrency(currency);
+		priceGrid.setPriceIncludes("1 Color, 1 Location Imprint Included");
 		priceGrid.setDescription(priceName);
 		priceGrid
 				.setIsQUR(isQur.equalsIgnoreCase("Y") ? ApplicationConstants.CONST_BOOLEAN_TRUE

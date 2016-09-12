@@ -162,9 +162,7 @@ public class RFGLineProductExcelMapping {
 							break;
 						case 3:// Description
 							String Description=cell.getStringCellValue();
-							_LOGGER.info("description"
-									+ Description);
-							productExcelObj= DescrptionParserObj.getDescription(Description,productExcelObj);
+							productExcelObj= DescrptionParserObj.getDescription(Description,productExcelObj,productConfigObj);
 							
 							break;
 						case 4:// OriginationZipCode
@@ -247,6 +245,7 @@ public class RFGLineProductExcelMapping {
 						    ProductionTime productionTime = new ProductionTime();
 						     prodTimeLo=CommonUtility.getCellValueStrinOrInt(cell);
 						     productionTime.setBusinessDays(prodTimeLo);
+						     productionTime.setDetails("7-10 Working Days from Proof Approval");
 						     productionTimeList.add(productionTime);
 						     productConfigObj.setProductionTime(productionTimeList);
 						   

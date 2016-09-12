@@ -1,25 +1,33 @@
 package com.a4tech.RFGLine.products.parser;
 
-
+import java.util.ArrayList;
 import java.util.List;
 
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.Material;
+import com.a4tech.product.model.Option;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.RushTime;
+import com.a4tech.product.model.RushTimeValue;
 import com.a4tech.product.model.Size;
+import com.a4tech.util.ApplicationConstants;
 
 public class DescrptionParser {
-	
-	 private SizeParser descsizeParserObj;
-	 private ProductAttributeParser attributeObj;
-	
-    public Product getDescription(String Description,Product existingProduct){
-	ProductConfigurations descrproductConfigObj	=new ProductConfigurations();
 
-	//Description
-	String FullDescription=Description;
-	FullDescription=FullDescription.substring(0,Description.indexOf("Bag Size:"));			
+	private SizeParser descsizeParserObj;
+	private ProductAttributeParser attributeObj;
+	private MaterialParser materialParserObj;
+
+	public Product getDescription(String Description,Product existingProduct,ProductConfigurations descrproductConfigObj){
+
+	String FullDescription=null; 
+	String FullDescriptionFirst=Description;
+	FullDescriptionFirst=Description.substring(0,Description.indexOf("Bag Size:"));
+	String FullDescriptionSecond=Description.substring(Description.indexOf("2 Color Maximum Imprint"),Description.indexOf("Additional Imprint Color:"));
+	FullDescription=FullDescriptionFirst.concat(FullDescriptionSecond);
 	FullDescription = FullDescription.replaceAll("(\r\n|\n)", " ");
     existingProduct.setDescription(FullDescription);
    
@@ -36,7 +44,11 @@ public class DescrptionParser {
        
     	}
     	  if (value.contains("Made from"))
+    		  
     	{
+    		  String MaterailValue=Description.substring(Description.indexOf("Made from")+10, Description.indexOf("Comes In"));
+    		  List<Material> MaterialList = materialParserObj.getMaterialName(MaterailValue);
+    		  descrproductConfigObj.setMaterials(MaterialList);
    
     	}
     	
@@ -54,8 +66,31 @@ public class DescrptionParser {
     	  descrproductConfigObj.setImprintSize(imprintSizeList);
       	}
     	  
+    	  if (value.contains("Standard Imprint Colors"))
+    	  {
+    	  String imprintColor=null;
+    	  imprintColor=Description.substring(Description.indexOf("Standard Imprint Colors:")+25,Description.indexOf("** PMS Colors"));	
+    	  ImprintColor imprintColorObj=attributeObj.getImprintColor(imprintColor);
+    	  descrproductConfigObj.setImprintColors(imprintColorObj);
+    	  }
+    	 
+    	  if (value.contains("Rush Available"))
+    	  {
+    	  List<RushTimeValue> RushTimevalueList = new ArrayList<RushTimeValue>();
+    	  RushTime RushTimeObj=new RushTime();
+    	  RushTimeObj.setAvailable(true);
+    	  RushTimeObj.setRushTimeValues(RushTimevalueList);
+
+    	  }
     	  
-    	  
+    	  if(value.contains("** PMS Colors"))
+    		  
+    	  {
+    		  String OptionValue[]=Description.split("Custom PMS");
+    		  String OptionValue1[]=OptionValue[0].split("\\*");
+    		  List<Option> optionsList= attributeObj.getOption(OptionValue1[2]);
+    		  descrproductConfigObj.setOptions(optionsList);
+    	  }
     	  
 	}
  
@@ -82,5 +117,15 @@ public class DescrptionParser {
 		this.attributeObj = attributeObj;
 	}
 
+	public MaterialParser getMaterialParserObj() {
+		return materialParserObj;
+	}
+
+	public void setMaterialParserObj(MaterialParser materialParserObj) {
+		this.materialParserObj = materialParserObj;
+	}
+
+	
+	
 	
 }
