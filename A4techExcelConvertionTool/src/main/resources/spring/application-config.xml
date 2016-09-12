@@ -87,6 +87,7 @@
 		<property name="kukuProductsExcelMapping" ref="kukuProductsExcelMappingId" />
 		<property name="espTemplateMapping" ref="espTemplateMappingId" />
 		<property name="klMapping" ref="klMappingId"/>
+		<property name="bbiProductsExcelMapping" ref="bbiProductsExcelMappingId"/>
 	</bean>
 	<bean id="usbExcelMapping"
 		class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
@@ -245,6 +246,23 @@
     </bean>
     
     <!-- supplier 64509 configuration end -->  
+    
+    
+    <!-- supplier 40445 configuration start -->
+  
+   <bean id="bbiProductsExcelMappingId" class="com.a4tech.product.bbi.mapping.BBIProductsExcelMapping">
+     	<property name="postServiceImpl" ref="postService"/>
+     	<property name="productDaoObj"  ref="productDao"/>
+     	<property name="sizeParser" ref="sizeParserBBIId"/>
+     	<property name="imprintMethodParser" ref="imprintMethodParserBBIId"/>
+     	<property name="bbiPriceGridParser" ref="bbiPriceGridParserBBId"/>
+    </bean>
+    <bean id="sizeParserBBIId" class="com.a4tech.product.bbi.criteria.parser.ProductSizeParser"/>
+    <bean id="imprintMethodParserBBIId" class="com.a4tech.product.bbi.criteria.parser.ProductImprintMethodParser"/>
+    <bean id="bbiPriceGridParserBBId" class="com.a4tech.product.bbi.criteria.parser.BBIPriceGridParser"/>
+    <!-- supplier 40445 configuration end -->  
+    
+    
 
 	<!-- <bean id="checkDBConnectionController" name="checkDBConnectionController" 
 		class="com.a4tech.controller.CheckDBConnectionController" autowire="byName"> 

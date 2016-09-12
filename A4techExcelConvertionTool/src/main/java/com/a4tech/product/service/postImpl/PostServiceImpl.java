@@ -2,6 +2,7 @@ package com.a4tech.product.service.postImpl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -118,6 +120,37 @@ public class PostServiceImpl implements PostService {
 			return -1;
 		}
 		
+	}
+	
+public Product doGet(String authToken, String xid) {
+		
+		Product product = null;
+		try {
+			String url = "https://sandbox-productservice.asicentral.com/v3/product/" + xid.trim();
+			HttpHeaders header = new HttpHeaders();
+			header.setContentType(MediaType.APPLICATION_JSON);
+			header.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+			header.add("AuthToken", authToken);
+			HttpEntity<String> requestEntity = new HttpEntity<String>(header);
+
+			_LOGGER.info("Getting ASI Product - XID: " + xid);
+			_LOGGER.info("With Authentication Token: " + authToken);
+
+			ResponseEntity<Product> response = restTemplate.exchange(url,
+					HttpMethod.GET, requestEntity, Product.class, xid);
+			if (response != null && response.getBody() != null) {
+				product = response.getBody();
+			}
+
+			_LOGGER.info("URL: "+ " with Response Code: "
+					+ response.getStatusCode());
+
+		} catch (Exception e) {
+			//e.printStackTrace();
+			_LOGGER.error("Error while doing a get for product: " + xid +" " +e.getMessage(),e);
+			return null;
+		}
+		return product;
 	}
 
 	public RestTemplate getRestTemplate() {
