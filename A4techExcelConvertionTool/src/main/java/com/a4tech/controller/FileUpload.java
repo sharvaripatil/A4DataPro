@@ -31,6 +31,7 @@ import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
 import com.a4tech.dc.product.mapping.DCProductsExcelMapping;
 import com.a4tech.kl.product.mapping.KlProductsExcelMapping;
+import com.a4tech.product.bbi.mapping.BBIProductsExcelMapping;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
@@ -66,6 +67,7 @@ public class FileUpload extends HttpServlet {
 	private ESPTemplateMapping espTemplateMapping;
 	private KukuProductsExcelMapping kukuProductsExcelMapping;
 	private KlProductsExcelMapping klMapping;
+	private BBIProductsExcelMapping bbiProductsExcelMapping;
 	private AdspecProductsExcelMapping adspecMapping;
 	@Autowired
 	private LoginServiceImpl loginService;
@@ -262,6 +264,27 @@ public class FileUpload extends HttpServlet {
 			    		}
 			       }
 			    	return "redirect:redirect.htm";
+			 case "40445": // new bbi term
+					finalResult = bbiProductsExcelMapping.readExcel(accessToken,
+							workbook, Integer.valueOf(asiNumber), batchId);
+					if (finalResult != null) {
+						splitFinalResult = finalResult
+								.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+						noOfProductsSuccess = splitFinalResult[0];
+						noOfProductsFailure = splitFinalResult[1];
+						redirectAttributes.addFlashAttribute(
+								"successProductsCount", noOfProductsSuccess);
+						redirectAttributes.addFlashAttribute(
+								"failureProductsCount", noOfProductsFailure);
+						if (!noOfProductsFailure
+								.equals(ApplicationConstants.CONST_STRING_ZERO)) {
+							redirectAttributes.addFlashAttribute("successmsg",
+									emailMsg);
+							downloadMail.sendMail(asiNumber, batchId);
+						}
+					}
+
+					return "redirect:redirect.htm";
 			 case "32125":  //Adspec 
 			    	finalResult = adspecMapping.readExcel(accessToken, workbook, 
                                      Integer.valueOf(asiNumber), batchId);
@@ -421,6 +444,15 @@ public class FileUpload extends HttpServlet {
 
 	public void setAdspecMapping(AdspecProductsExcelMapping adspecMapping) {
 		this.adspecMapping = adspecMapping;
+	}
+
+	public BBIProductsExcelMapping getBbiProductsExcelMapping() {
+		return bbiProductsExcelMapping;
+	}
+
+	public void setBbiProductsExcelMapping(
+			BBIProductsExcelMapping bbiProductsExcelMapping) {
+		this.bbiProductsExcelMapping = bbiProductsExcelMapping;
 	}
 
 
