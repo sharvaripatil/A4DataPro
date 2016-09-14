@@ -140,12 +140,12 @@ public class PriceGridParser {
 
 		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
-		String[] upChargePrices = prices
+		/*String[] upChargePrices = prices
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] upChargeQuantity = quantity
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] upChargeDiscount = discounts
-				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);*/
 
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(upChargeName);

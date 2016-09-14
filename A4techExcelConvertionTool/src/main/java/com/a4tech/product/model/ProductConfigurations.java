@@ -72,7 +72,7 @@ public class ProductConfigurations {
 	@JsonProperty("RushTime")
     private RushTime            rushTime             = null;
     @JsonProperty("AdditionalColors")
-    private List<String>              additionalColors     = null;
+    private List<AdditionalColor>              additionalColors     = null;
     @JsonProperty("AdditionalLocations")
     private List<AdditionalLocation>              additionalLocations  = null;
     @JsonProperty("ImprintSize")
@@ -239,27 +239,25 @@ public class ProductConfigurations {
     public void setRushTime(RushTime rushTime) {
         this.rushTime = rushTime;
     }
-
-    @JsonProperty("AdditionalColors")
-    @XmlElementWrapper(name = "AdditionalColors")
-    @XmlElement(name = "AdditionalColor")
-    public List<String> getAdditionalColors() {
-        return additionalColors;
-    }
-
-    @JsonProperty("AdditionalColors")
-    public void setAdditionalColors(List<String> additionalColors) {
-        this.additionalColors = additionalColors;
-    }
-
-    @JsonProperty("AdditionalLocations")
+    
+   @JsonProperty("AdditionalLocations")
     @XmlElementWrapper(name = "AdditionalLocations")
     @XmlElement(name = "AdditionalLocation")
     public List<AdditionalLocation> getAdditionalLocations() {
         return additionalLocations;
     }
+    @JsonProperty("AdditionalColors")
+    @XmlElementWrapper(name = "AdditionalColors")
+    @XmlElement(name = "AdditionalColor")
+    public List<AdditionalColor> getAdditionalColors() {
+		return additionalColors;
+	}
+    @JsonProperty("AdditionalColors")
+	public void setAdditionalColors(List<AdditionalColor> additionalColors) {
+		this.additionalColors = additionalColors;
+	}
 
-    @JsonProperty("AdditionalLocations")
+	@JsonProperty("AdditionalLocations")
     public void setAdditionalLocations(List<AdditionalLocation> additionalLocations) {
         this.additionalLocations = additionalLocations;
     }

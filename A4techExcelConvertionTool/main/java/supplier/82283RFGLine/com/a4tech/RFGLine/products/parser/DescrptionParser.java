@@ -3,6 +3,8 @@ package com.a4tech.RFGLine.products.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.a4tech.product.model.AdditionalColor;
+import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintSize;
@@ -83,14 +85,49 @@ public class DescrptionParser {
 
     	  }
     	  
-    	  if(value.contains("** PMS Colors"))
-    		  
-    	  {
-    		  String OptionValue[]=Description.split("Custom PMS");
-    		  String OptionValue1[]=OptionValue[0].split("\\*");
-    		  List<Option> optionsList= attributeObj.getOption(OptionValue1[2]);
-    		  descrproductConfigObj.setOptions(optionsList);
-    	  }
+    	 
+    	  
+    	 if(value.contains("Additional Imprint Color: "))
+    	 {
+    	    AdditionalColor additionColorObj=new AdditionalColor();
+       	    List<AdditionalColor> AdditionalColorList = new ArrayList<AdditionalColor>();
+       	    additionColorObj.setName("Additional Imprint Color");
+        	AdditionalColorList.add(additionColorObj);
+    		descrproductConfigObj.setAdditionalColors(AdditionalColorList);
+    		String Value[]=value.split("\\: \\$");
+            String upchargeValue[]=Value[1].split("\\(");
+            String upchargeValue2=upchargeValue[0];
+            String Priceinclude="plus Setup";
+            String discountcode="v";
+    		 
+    	 }
+    	 if(value.contains("Additional Imprint Location:"))
+    	 {
+    		 AdditionalLocation additionLocationObj=new AdditionalLocation();
+             List<AdditionalLocation> AdditionalLocationList = new ArrayList<AdditionalLocation>();
+             additionLocationObj.setName("Additional Imprint Location");
+             AdditionalLocationList.add(additionLocationObj);
+             descrproductConfigObj.setAdditionalLocations(AdditionalLocationList);
+             String Value[]=value.split("\\: \\$");
+             String upchargeValue[]=Value[1].split("\\(");
+             String upchargeValue3=upchargeValue[0];
+             String Priceinclude="plus Setup";
+             String discountcode="v";
+             
+    	 }
+    	 if(value.contains("PMS Color"))
+   		  
+   	  {
+   		  String OptionValue[]=Description.split("Custom PMS");
+   		  String OptionValue1[]=OptionValue[0].split("\\*");
+   		  List<Option> optionsList= attributeObj.getOption(value);
+   		  descrproductConfigObj.setOptions(optionsList);
+   		  String valueArr[]=Description.split("Imprint:  \\$");
+          String upchargeValue[]=valueArr[1].split("\\(");
+          String upchargeValue4=upchargeValue[0];
+          String discountcode="v";
+   		  
+   	  }
     	  
 	}
  

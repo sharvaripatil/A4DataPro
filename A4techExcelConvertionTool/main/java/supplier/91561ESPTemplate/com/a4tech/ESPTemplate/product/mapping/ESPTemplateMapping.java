@@ -301,8 +301,8 @@ public class ESPTemplateMapping {
 					String FOBPoint =cell.getStringCellValue();
 				
 					List<FOBPoint> fobPointList = new ArrayList<FOBPoint>();
-					if(!StringUtils.isEmpty(FOBPoint)){
-					fobPointObj.setName(FOBPoint);
+					if(FOBPoint.contains("CA")){
+					fobPointObj.setName("Calabasas, CA 91302 USA");
 					fobPointList.add(fobPointObj);
 					productExcelObj.setFobPoints(fobPointList);
 					}

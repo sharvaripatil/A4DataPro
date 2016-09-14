@@ -63,6 +63,10 @@ public class RFGLineProductExcelMapping {
 		 String ShipWeight1=null;
 		 String ShipLength1=null;
 		 String ShipWidth1 = null;
+		 int SetupQty=0;
+		 int SetupNet=0;
+		 int SetupRetail=0;
+		 String SetupMargin=null;
 	
 		try {
 
@@ -256,18 +260,24 @@ public class RFGLineProductExcelMapping {
 						case 25:
 
 							// SetupQty1
+							 SetupQty=(int) cell.getNumericCellValue();
 
 							break;
 
 						case 26:
 							// SetupNet1
+							 SetupNet=(int) cell.getNumericCellValue();
+
+							
 							break;
 						case 27:
 							// SetupRetail1
-						
+							 SetupRetail=(int) cell.getNumericCellValue();
+
 							break;
 						case 28:
 							// SetupMargin1
+							 SetupMargin=cell.getStringCellValue();
 							break;
 						case 29:
 							// SetupDisplay1
@@ -391,18 +401,15 @@ public class RFGLineProductExcelMapping {
 						         priceIncludes, true, "Y", productName,"",priceGrids);	
 					}
 					
-
-					/*
-					 * if(UpCharCriteria != null &&
-					 * !UpCharCriteria.toString().isEmpty()){ priceGrids =
-					 * priceGridParser
-					 * .getUpchargePriceGrid(UpCharQuantity.toString(),
-					 * UpCharPrices.toString(), UpCharDiscount.toString(),
-					 * UpCharCriteria.toString(), upChargeQur, currencyType,
-					 * upChargeName, upchargeType, upChargeLevel, new
-					 * Integer(1), priceGrids); }
-					 */
-
+					
+					
+					if(SetupRetail !=0)
+					{ 
+					priceGrids = rfgPriceGridParserObj.getUpchargePriceGrid(Integer.toString(SetupQty),Integer.toString(SetupRetail),SetupMargin.toString(),"Imprint Method",  
+							"false", "USD", "printed",  "Imprint Method Charge", "Other", new Integer(1), priceGrids);
+					
+					
+					}
 				
 				
 					listOfPrices = new StringBuilder();
