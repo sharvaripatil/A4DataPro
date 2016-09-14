@@ -12,7 +12,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/64905"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/kuku"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/91561ESPTemplate"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/32125"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/40445BBI"/>
         <property name="context-root" value="A4techExcelConvertionTool"/>
         <property name="java-output-path" value="/A4techExcelConvertionTool/target/classes"/>
     </wb-module>
