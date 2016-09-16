@@ -18,12 +18,18 @@ public class ProductOriginParser {
 	public List<Origin> getOriginCriteria(String customercode,String origin){
 		List<Origin> originList =new ArrayList<Origin>();
 		Origin originObj = new Origin();
+		if(origin.contains("None")){
+			return null;
+		}
+		if(origin.contains("United States")){
+			origin="U.S.A.";
+		}
 		
 		try{ 
-		if(StringUtils.isEmpty(customercode)){
+		if(!StringUtils.isEmpty(customercode)){
 			originObj.setCustomerOrderCode(customercode);
 		}
-     	if(StringUtils.isEmpty(origin)){
+     	if(!StringUtils.isEmpty(origin)){
      		originObj.setName(origin);
      	}
 		originList.add(originObj);

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
@@ -134,7 +135,7 @@ public class KukuPriceGridParser {
 
 	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
 			String discounts, String upChargeCriterias, String qurFlag,
-			String currency, String upChargeName, String upChargeType,
+			String currency,String priceIncludeUp, String upChargeName, String upChargeType,
 			String upchargeUsageType, Integer upChargeSequence,
 			List<PriceGrid> existingPriceGrid) {
 		try{
@@ -148,6 +149,13 @@ public class KukuPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 
 		priceGrid.setCurrency(currency);
+		if(!StringUtils.isEmpty(priceIncludeUp)){
+			priceGrid.setPriceIncludes(priceIncludeUp);
+		}
+		else{
+			priceGrid.setPriceIncludes(ApplicationConstants.CONST_STRING_EMPTY);
+		}
+		
 		priceGrid.setDescription(upChargeName);
 		priceGrid.setServiceCharge(ApplicationConstants.CONST_STRING__SERVICECHARGE);
 		priceGrid

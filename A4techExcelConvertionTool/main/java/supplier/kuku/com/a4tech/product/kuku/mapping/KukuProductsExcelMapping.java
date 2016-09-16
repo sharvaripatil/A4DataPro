@@ -326,7 +326,7 @@ public class KukuProductsExcelMapping {
 					
 					case 17:// production option = protduction time as per client feedback
 						String prodTimeValue = null;
-						ProductionTime productionTimeObj = new ProductionTime();
+						ProductionTime productionTimeObj ;
 						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 							prodTimeValue = cell.getStringCellValue();
 						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
@@ -339,26 +339,32 @@ public class KukuProductsExcelMapping {
 							String prodArr[]=prodTimeValue.split(",");
 							for (String prodVal : prodArr) {
 								if(prodVal.contains("express")){
+									productionTimeObj= new ProductionTime();
 									prodVal=prodVal.replaceAll("By express", "");
 									prodVal=prodVal.replaceAll("working days", "");
 									prodVal=prodVal.replaceAll(":","").trim();
 									productionTimeObj.setBusinessDays(prodVal);
 									productionTimeObj.setDetails("By express");
+									listOfProductionTime.add(productionTimeObj);
 								}else if(prodVal.contains("sea")){
+									productionTimeObj= new ProductionTime();
 									prodVal=prodVal.replaceAll("By sea", "");
 									prodVal=prodVal.replaceAll("working days", "");
 									prodVal=prodVal.replaceAll("days", "");
 									prodVal=prodVal.replaceAll(":","").trim();
 									productionTimeObj.setBusinessDays(prodVal);
 									productionTimeObj.setDetails("By sea");
+									listOfProductionTime.add(productionTimeObj);
 								}else if(prodVal.contains("air")){
+									productionTimeObj= new ProductionTime();
 									prodVal=prodVal.replaceAll("By air", "");
 									prodVal=prodVal.replaceAll("days", "");
 									prodVal=prodVal.replaceAll(":","").trim();
 									productionTimeObj.setBusinessDays(prodVal);
 									productionTimeObj.setDetails("By air");
+									listOfProductionTime.add(productionTimeObj);
 								}
-								listOfProductionTime.add(productionTimeObj);
+								
 							}
 						productConfigObj.setProductionTime(listOfProductionTime);	
 						}
@@ -732,7 +738,7 @@ public class KukuProductsExcelMapping {
 			}
 			if(!StringUtils.isEmpty(imprintMethodValue)&& !StringUtils.isEmpty(imprintMethodValueUpchrg)){
 					priceGrids = kukuPriceGridParser.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,imprintMethodValueUpchrg, ApplicationConstants.CONST_STRING_DISCOUNT_CODE_Z,
-							"IMMD:"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING__CURRENCY_USD, imprintMethodValue, 
+							"IMMD:"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING__CURRENCY_USD, priceIncludeUp,imprintMethodValue, 
 							ApplicationConstants.CONST_STRING_IMMD_CHARGE, ApplicationConstants.CONST_VALUE_TYPE_OTHER, ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
 				}
 		
@@ -745,6 +751,8 @@ public class KukuProductsExcelMapping {
 			listOfPrices = new StringBuilder();
 			listOfProductionTime=new ArrayList<ProductionTime>();
 			imprintMethods = new ArrayList<ImprintMethod>();
+			priceIncludes=null;
+			priceIncludeUp=null;
 		}catch(Exception e){
 		_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() +"for column"+columnIndex+1);		 
 	}

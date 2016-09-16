@@ -36,17 +36,9 @@ import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
-import com.a4tech.sage.product.parser.CatalogParser;
-import com.a4tech.sage.product.parser.ColorParser;
-import com.a4tech.sage.product.parser.DimensionParser;
-import com.a4tech.sage.product.parser.ImprintMethodParser;
-import com.a4tech.sage.product.parser.OriginParser;
-import com.a4tech.sage.product.parser.PackagingParser;
 import com.a4tech.product.DCProducts.parser.DCPriceGridParser;
 import com.a4tech.product.DCProducts.parser.DimensionAndShapeParser;
 import com.a4tech.product.DCProducts.parser.ProductOriginParser;
-import com.a4tech.sage.product.parser.RushTimeParser;
-import com.a4tech.sage.product.parser.ShippingEstimateParser;
 import com.a4tech.util.ApplicationConstants;
 
 
@@ -110,14 +102,13 @@ public class DCProductsExcelMapping {
 		String discCode=null;
 		String productName = null;
 		String CountryOfManufactureGUID = null;
-		
-		
+		String asiProdNo =null;
 		 List<Image> imgList = new ArrayList<Image>();
 		List<Origin> originList =new ArrayList<Origin>();
 		List<String> categories = new ArrayList<String>();	
 		List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
 		List<Origin> origin = new ArrayList<Origin>();
-		
+		int columnIndex = 0;
 		while (iterator.hasNext()) {
 			
 			try{
@@ -134,7 +125,7 @@ public class DCProductsExcelMapping {
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
 				String xid = null;
-				int columnIndex = cell.getColumnIndex();
+				  columnIndex = cell.getColumnIndex();
 				
 				if(columnIndex + 1 == 1){
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
@@ -178,7 +169,7 @@ public class DCProductsExcelMapping {
 				switch (columnIndex + 1) {
 
 				case 1://SuplItemNo
-					 String asiProdNo = null;
+					 
 					    if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
 					      asiProdNo = String.valueOf(cell.getStringCellValue());
 					    }else if
@@ -190,10 +181,16 @@ public class DCProductsExcelMapping {
 					 break;
 				case 2://ItemName
 				    productName = cell.getStringCellValue();
+				    String tempArr[]=null;
 					if(!StringUtils.isEmpty(productName)){
 					productExcelObj.setName(cell.getStringCellValue());
+					 tempArr=productName.split(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
+					xid=asiProdNo+ApplicationConstants.CONST_VALUE_TYPE_SPACE+tempArr[0];
+					productExcelObj.setExternalProductId(xid);
 					}else{
 						productExcelObj.setName(ApplicationConstants.CONST_STRING_EMPTY);
+						xid=asiProdNo+ApplicationConstants.CONST_VALUE_TYPE_SPACE+asiNumber;
+						productExcelObj.setExternalProductId(xid);
 					}
 						
 					  break;
@@ -203,6 +200,7 @@ public class DCProductsExcelMapping {
 				case 4://Description
 					String description = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(description)){
+						description=removeSpecialChar(description);
 					productExcelObj.setDescription(description);
 					}else{
 						productExcelObj.setDescription(ApplicationConstants.CONST_STRING_EMPTY);
@@ -213,6 +211,7 @@ public class DCProductsExcelMapping {
 				case 5://AddInfo
 					String additionalProductInfo = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(additionalProductInfo)){
+					additionalProductInfo=removeSpecialChar(additionalProductInfo);
 					productExcelObj.setAdditionalProductInfo(additionalProductInfo);
 					}else{
 						productExcelObj.setAdditionalProductInfo(ApplicationConstants.CONST_STRING_EMPTY);
@@ -223,6 +222,7 @@ public class DCProductsExcelMapping {
 				case 6: //  DistributorOnlyInfo
 					String Distributorcomment = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(Distributorcomment)){
+					Distributorcomment=removeSpecialChar(Distributorcomment);
 					productExcelObj.setDistributorOnlyComments(Distributorcomment);
 					}else{
 						productExcelObj.setDistributorOnlyComments(ApplicationConstants.CONST_STRING_EMPTY);
@@ -280,7 +280,9 @@ public class DCProductsExcelMapping {
 					String CountryOfManufactureName=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(CountryOfManufactureName)){
 					originList=originParser.getOriginCriteria(CountryOfManufactureGUID,CountryOfManufactureName);
+					if(!originList.isEmpty()){
 					productConfigObj.setOrigins(originList);
+					}
 					}
 					break;
 
@@ -322,7 +324,8 @@ public class DCProductsExcelMapping {
 						}else{
 							
 						}
-						productionTime.setBusinessDays(prodTimeLo);
+						productionTime.setBusinessDays(prodTimeLo.replace(".0", "").trim());
+						productionTime.setDetails("");
 						listOfProductionTime.add(productionTime);
 					   productConfigObj.setProductionTime(listOfProductionTime);
 				
@@ -410,9 +413,9 @@ public class DCProductsExcelMapping {
 					 
 		}
 			// set  product configuration objects
-			List<String> listOfCategories = new ArrayList<String>();
+			/*List<String> listOfCategories = new ArrayList<String>();
 			listOfCategories.add("USB/FLASH DRIVES");
-			productExcelObj.setCategories(listOfCategories);
+			productExcelObj.setCategories(listOfCategories);*/
 			String productDescription ="Phone Holder USB 2.0 Flash Drive";
 			productExcelObj.setDescription(productDescription);
 			
@@ -439,9 +442,10 @@ public class DCProductsExcelMapping {
 				UpCharPrices = new StringBuilder();
 				UpCharDiscount = new StringBuilder();
 				UpCharQuantity = new StringBuilder();
-			
+				listOfProductionTime=new ArrayList<ProductionTime>();
+				categories=new ArrayList<String>();
 			}catch(Exception e){
-			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
+			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() +"columnindex"+ columnIndex);		 
 		}
 		}
 		workbook.close();
@@ -527,4 +531,14 @@ public class DCProductsExcelMapping {
 		this.originParser = originParser;
 	}
 	
+	  /*
+	 author :amey more
+	 purpose:this method is to eliminate special chars from the string in description,additional info,DistributorOnlyInfo   
+	 * */
+		
+		public static String removeSpecialChar(String tempValue){
+			tempValue=tempValue.replaceAll("(<hr>|<STRONG>|</STRONG>|<font color=\"b5b8b9\">|</font>|</strong>|<strong>|<i>|</i>|<font color=\"b31b34\">|<BR>|</BR>|<br>|</br>| ¡|ñ|!|<font color=\"ffffff\">|<FONT>|</FONT>|<hr>)", "");
+			return tempValue;
+			
+		}
 }
