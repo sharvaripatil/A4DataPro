@@ -28,6 +28,7 @@ import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.Theme;
+import com.a4tech.product.model.WarrantyInformation;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -68,6 +69,10 @@ public class AdspecProductsExcelMapping {
 		  String[] priceQuantities = null;
 		  StringBuilder fullDesciption = new StringBuilder();
 		  String desciption;
+		  String upChargeName = "";
+		  String upchargeHardwareValue = "";
+		  String warrantyValue = "";
+		  boolean isWarrantyAvailable = false;
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -96,6 +101,7 @@ public class AdspecProductsExcelMapping {
 		//List<String> productKeywords = new ArrayList<String>();
 		List<Theme> themeList = new ArrayList<Theme>();
 		int rowNumber ;
+		List<WarrantyInformation> listOfWarrnty = new ArrayList<WarrantyInformation>();
 		while (iterator.hasNext()) {
 			
 			try{
@@ -155,6 +161,9 @@ public class AdspecProductsExcelMapping {
 								productImprintMethods = new ArrayList<ImprintMethod>();
 								listOfCategories = new ArrayList<String>();
 								categories = new StringJoiner(ApplicationConstants.CONST_DELIMITER_COMMA);
+								listOfWarrnty = new ArrayList<WarrantyInformation>();
+								fullDesciption = new StringBuilder();
+								isWarrantyAvailable = false;
 								//productKeywords = new ArrayList<String>();
 								
 						 }
@@ -331,22 +340,35 @@ public class AdspecProductsExcelMapping {
 						// Pending 
 					break;
 				case 36: //Description3 (Imprint colors)
-					 String imprColorValue = cell.getStringCellValue();
-					 ImprintColor imprintColors = adspecAttrParser.getImprintColors(imprColorValue);
-					 if(imprintColors != null){
-						 productConfigObj.setImprintColors(imprintColors);
-					 }
-					
+					       // ignore this fileds as per client comments
+					//This field indicates the maximum number of imprint colors which ASI does not capture.  
+					//So ignore this field.
 					  break;
-				case 37:       
+				case 37:    //Description3 (Imprint location)  
+					// ignore this fileds as per client comments
 					break;
-				case 38: 
+				case 38: //Description3 (Imprint area)
+					  // there is no data for this column
 					break;
-				case 39: 
+				case 39: // Hardware Warranty
+					 warrantyValue = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!CommonUtility.checkZeroAndEmpty(warrantyValue)){
+						listOfWarrnty = adspecAttrParser.getProductWarrantyInfo(warrantyValue,listOfWarrnty,
+								            		              ApplicationConstants.CONST_STRING_HARDWARE,isWarrantyAvailable);
+						isWarrantyAvailable = true;
+					}
+					
 					break;
-				case 40:
-					break;
-				case 41: 
+				case 40: // warranty graphics
+					   String warrValue = CommonUtility.getCellValueStrinOrInt(cell);
+					   listOfWarrnty = adspecAttrParser.getProductWarrantyInfo(warrValue, listOfWarrnty,
+							                                                ApplicationConstants.CONST_STRING_GRAPHIC,isWarrantyAvailable);
+					break; // warranty up
+				case 41: // UpCharge for hardware warranty
+					 upchargeHardwareValue = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!ApplicationConstants.CONST_STRING_ZERO.equals(upchargeHardwareValue)){
+						 upChargeName = adspecAttrParser.getUpchargeNameForWarranty(listOfWarrnty);
+					}
 					break;
 				case 42: // description9(description)
 					  desciption = cell.getStringCellValue();
@@ -364,7 +386,7 @@ public class AdspecProductsExcelMapping {
 					    }
 					
 					break;
-				case 45: 
+				case 45:  // following cases are related to images
 					break;
 				case 46:
 					break;
@@ -393,12 +415,22 @@ public class AdspecProductsExcelMapping {
 				productExcelObj.setCategories(listOfCategories);
 				productConfigObj.setThemes(themeList);
 				productConfigObj.setImprintMethods(productImprintMethods); 
+				productConfigObj.setWarranty(listOfWarrnty);
 				productExcelObj.setPriceType("L");
 				String qurFlag = "n"; // by default for testing purpose
+				productExcelObj.setDescription(fullDesciption.toString());
 				if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
 					priceGrids = adspicPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 							priceQuantities, "R", "USD",
 							         "", true, qurFlag, productName,"",priceGrids);	
+				}
+				
+				if(StringUtils.isEmpty(upchargeHardwareValue) && !CommonUtility.checkZeroAndEmpty(warrantyValue)){
+					priceGrids = adspicPriceGridParser.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE , 
+							String.valueOf(50),"G",
+							ApplicationConstants.CONST_STRING_WARRANTY_INFORMATION,ApplicationConstants.CONST_CHAR_N, 
+							ApplicationConstants.CONST_STRING__CURRENCY_USD, upChargeName, ApplicationConstants.CONST_STRING_WARRANTY_CHARGE_TYPE, 
+						  ApplicationConstants.CONST_STRING_EMPTY, new Integer(1), priceGrids);
 				}
 			}
 			

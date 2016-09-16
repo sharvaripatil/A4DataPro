@@ -13,7 +13,9 @@ import com.a4tech.product.model.ImprintColorValue;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.ProductionTime;
+import com.a4tech.product.model.WarrantyInformation;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 
 public class AdspecProductAttributeParser {
      
@@ -60,22 +62,6 @@ public class AdspecProductAttributeParser {
 		}
 		return listOfProTime;
 	}
-	
-	public ImprintColor getImprintColors(String value){
-		ImprintColor imprintColorObj = null;
-		if(!StringUtils.isEmpty(value)){
-			 imprintColorObj = new ImprintColor();
-			imprintColorObj.setType("COLR");
-			List<ImprintColorValue> impcolorValuesList =new ArrayList<ImprintColorValue>();
-			ImprintColorValue impclrObj=new ImprintColorValue();
-			impclrObj.setName(value);
-			impcolorValuesList.add(impclrObj);
-			imprintColorObj.setValues(impcolorValuesList);
-			return imprintColorObj;
-		}
-		return imprintColorObj;
-	}
-	
 	public List<Catalog> getProductCatalog(String cataPageNum){
 		List<Catalog> listOfCatalog = new ArrayList<Catalog>();
 		Catalog catalogObj=new Catalog();
@@ -97,6 +83,54 @@ public class AdspecProductAttributeParser {
 		}
 		return listOfArtwork;
 	}
+	
+	public List<WarrantyInformation> getProductWarrantyInfo(String Warrantyvalue,
+			                        List<WarrantyInformation> listOfWarranty,String typeOfValue,boolean isWarrantyAvailable){
+		WarrantyInformation warrntyObj = null;
+		if(ApplicationConstants.CONST_STRING_LIFE_TIME.equalsIgnoreCase(Warrantyvalue)){
+			warrntyObj = new WarrantyInformation();
+			warrntyObj.setComments(ApplicationConstants.CONST_STRING_LIFE_TIME);
+			listOfWarranty.add(warrntyObj);
+		}else if(CommonUtility.isBlank(Warrantyvalue) && 
+				            ApplicationConstants.CONST_STRING_GRAPHIC.equals(typeOfValue)){
+			warrntyObj = new WarrantyInformation();
+			warrntyObj.setName("graphic warranty is 90 day for outdoor use and 1 year for indoor use");
+			listOfWarranty.add(warrntyObj);
+		}else if(ApplicationConstants.CONST_STRING_VALUE_ONE.equals(Warrantyvalue) &&
+				              ApplicationConstants.CONST_STRING_GRAPHIC.equals(typeOfValue)){
+			warrntyObj = new WarrantyInformation();
+			warrntyObj.setName("graphic warranty is "+Warrantyvalue + " "+"Year");
+			listOfWarranty.add(warrntyObj);
+			
+		}else{
+			warrntyObj = new WarrantyInformation();
+			warrntyObj.setName(ApplicationConstants.CONST_STRING_WARRANTY_LENGTH);
+			warrntyObj.setComments(Warrantyvalue + " "+"Year(s)");
+			listOfWarranty.add(warrntyObj);
+		}
+		if(!isWarrantyAvailable){
+			warrntyObj = new WarrantyInformation();
+			warrntyObj.setName(ApplicationConstants.CONST_STRING_WARRANTY_AVAILABLE);
+			listOfWarranty.add(warrntyObj);
+		}
+		return listOfWarranty;	
+	}
+	
+	
+	public String getUpchargeNameForWarranty(List<WarrantyInformation> listOfWarrnty ){
+		   for (WarrantyInformation warrantyInfo : listOfWarrnty) {
+			     if(ApplicationConstants.CONST_STRING_WARRANTY_LENGTH.equals(warrantyInfo.getName())){
+			    	 return ApplicationConstants.CONST_STRING_WARRANTY_LENGTH;
+			     }else if(ApplicationConstants.CONST_STRING_LIFE_TIME.equals(warrantyInfo.getComments())){
+			    	 return ApplicationConstants.CONST_STRING_LIFE_TIME;
+			     }else{
+			    	 
+			     }	     
+		}
+		
+		return "";
+	}
+	
 	
 	public String getProductionTimeValue(String value){
 		String prdTime = value.split("[daysDays]")[0];

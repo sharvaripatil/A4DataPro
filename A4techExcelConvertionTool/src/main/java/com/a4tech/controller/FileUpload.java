@@ -35,6 +35,7 @@ import com.a4tech.product.bbi.mapping.BBIProductsExcelMapping;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
+import com.a4tech.product.service.ILoginService;
 import com.a4tech.product.service.ProductService;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.service.loginImpl.LoginServiceImpl;
@@ -69,8 +70,7 @@ public class FileUpload extends HttpServlet {
 	private KlProductsExcelMapping klMapping;
 	private BBIProductsExcelMapping bbiProductsExcelMapping;
 	private AdspecProductsExcelMapping adspecMapping;
-	@Autowired
-	private LoginServiceImpl loginService;
+	private ILoginService loginService;
 	private ProductDao productDao;
 	private static Logger _LOGGER = Logger.getLogger(Class.class);
 
@@ -366,11 +366,11 @@ public class FileUpload extends HttpServlet {
 		this.julymapping = julymapping;
 	}
 
-	public LoginServiceImpl getLoginService() {
+	public ILoginService getLoginService() {
 		return loginService;
 	}
 
-	public void setLoginService(LoginServiceImpl loginService) {
+	public void setLoginService(ILoginService loginService) {
 		this.loginService = loginService;
 	}
 

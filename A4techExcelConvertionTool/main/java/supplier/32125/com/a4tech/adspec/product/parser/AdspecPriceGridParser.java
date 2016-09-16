@@ -164,12 +164,12 @@ public class AdspecPriceGridParser {
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);
-		priceGrid.setUpchargeType("Other");
-		priceGrid.setUpchargeUsageType(upchargeUsageType);
-		priceGrid.setServiceCharge("Required");
+		priceGrid.setUpchargeType(upChargeType);
+		priceGrid.setUpchargeUsageType("Other");
+		priceGrid.setServiceCharge("Optional");
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			//listOfPrice = getPrices(upChargePrices, upChargeQuantity, upChargeDiscount);
+			listOfPrice = getPrices(upChargePrices, upChargeQuantity, discounts);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}

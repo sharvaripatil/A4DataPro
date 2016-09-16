@@ -81,6 +81,13 @@ public class ApplicationConstants {
 	public static final String	CONST_SHIPPING_UNIT_KG					="kg";
 	public static final String	CONST_SHIPPING_UNIT_GRAMS				="grams";
 	public static final String  CONST_STRING_IMPRINT_METHOD             = "Imprint Method";
+	public static final String  CONST_STRING_WARRANTY_AVAILABLE         = "WARRANTY AVAILABLE";
+	public static final String  CONST_STRING_WARRANTY_LENGTH			= "WARRANTY LENGTH";
+	public static final String  CONST_STRING_LIFE_TIME                  = "Lifetime";
+	public static final String  CONST_STRING_GRAPHIC					= "Graphic";
+	public static final String  CONST_STRING_HARDWARE					= "Hardware";
+	public static final String  CONST_STRING_WARRANTY_CHARGE_TYPE		= "Warranty Charge";
+	public static final String  CONST_STRING_WARRANTY_INFORMATION 		= "Warranty Information";
 	
 	public static final String  CONST_STRING_COUNTRY_CODE_CN                = "CN";
 	public static final String  CONST_STRING_AND					        = "and";

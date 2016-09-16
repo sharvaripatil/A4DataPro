@@ -80,4 +80,24 @@ public class CommonUtility {
 	   }
 	   return null;
    }
+   /* @Author  Venkat ,13/09/2016
+    * @Param   String (Value) 
+    * @Description This method is checking value is zero or blank
+    * @ReturnType boolean
+    */
+   public static boolean checkZeroAndEmpty(String value){
+		   
+		   if(ApplicationConstants.CONST_STRING_ZERO.equals(value) || 
+				                                      ApplicationConstants.CONST_STRING_EMPTY.equals(value)){
+			   return true;
+		   }
+	   return false;
+   }
+   
+   public static boolean isBlank(String value){
+	   if(value.equals(" ")){
+		   return true;
+	   }
+	   return false;
+   }
 }
