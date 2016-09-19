@@ -10,21 +10,24 @@ import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Option;
+import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.RushTimeValue;
 import com.a4tech.product.model.Size;
-import com.a4tech.util.ApplicationConstants;
+
 
 public class DescrptionParser {
 
 	private SizeParser descsizeParserObj;
 	private ProductAttributeParser attributeObj;
 	private MaterialParser materialParserObj;
+	private PriceGridParser rfgPriceGridParserObj;
 
-	public Product getDescription(String Description,Product existingProduct,ProductConfigurations descrproductConfigObj){
-
+	public Product getDescription(String Description,Product existingProduct,ProductConfigurations descrproductConfigObj,List<PriceGrid> priceGrids2){
+		
+	
 	String FullDescription=null; 
 	String FullDescriptionFirst=Description;
 	FullDescriptionFirst=Description.substring(0,Description.indexOf("Bag Size:"));
@@ -97,9 +100,11 @@ public class DescrptionParser {
     		String Value[]=value.split("\\: \\$");
             String upchargeValue[]=Value[1].split("\\(");
             String upchargeValue2=upchargeValue[0];
-            String Priceinclude="plus Setup";
-            String discountcode="v";
-    		 
+
+    priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue2,"","v","Additional Color",  
+					"false", "USD", "Additional Imprint Color",  "Imprint Color Charge", "Other", new Integer(2), priceGrids2);
+			
+    existingProduct.setPriceGrids(priceGrids2);
     	 }
     	 if(value.contains("Additional Imprint Location:"))
     	 {
@@ -111,8 +116,9 @@ public class DescrptionParser {
              String Value[]=value.split("\\: \\$");
              String upchargeValue[]=Value[1].split("\\(");
              String upchargeValue3=upchargeValue[0];
-             String Priceinclude="plus Setup";
-             String discountcode="v";
+            
+             priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue3,"","v","Additional Location",  
+ 					"false", "USD", "Additional Imprint Location",  "Imprint Location Charge", "Other", new Integer(3), priceGrids2);
              
     	 }
     	 if(value.contains("PMS Color"))
@@ -120,13 +126,16 @@ public class DescrptionParser {
    	  {
    		  String OptionValue[]=Description.split("Custom PMS");
    		  String OptionValue1[]=OptionValue[0].split("\\*");
-   		  List<Option> optionsList= attributeObj.getOption(value);
+   		  List<Option> optionsList= attributeObj.getOption(OptionValue1[2]);
    		  descrproductConfigObj.setOptions(optionsList);
    		  String valueArr[]=Description.split("Imprint:  \\$");
           String upchargeValue[]=valueArr[1].split("\\(");
           String upchargeValue4=upchargeValue[0];
-          String discountcode="v";
-   		  
+       
+          priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue4,"","v","Imprint Option",  
+					"false", "USD", "Per Color",  "Imprint Option Charge", "Other", new Integer(4), priceGrids2);
+           
+       
    	  }
     	  
 	}
@@ -160,6 +169,14 @@ public class DescrptionParser {
 
 	public void setMaterialParserObj(MaterialParser materialParserObj) {
 		this.materialParserObj = materialParserObj;
+	}
+
+	public PriceGridParser getRfgPriceGridParserObj() {
+		return rfgPriceGridParserObj;
+	}
+
+	public void setRfgPriceGridParserObj(PriceGridParser rfgPriceGridParserObj) {
+		this.rfgPriceGridParserObj = rfgPriceGridParserObj;
 	}
 
 	

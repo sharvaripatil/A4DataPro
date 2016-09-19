@@ -32,7 +32,7 @@ public class PriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 
 		priceGrid.setCurrency(currency);
-		priceGrid.setPriceIncludes("1 Color, 1 Location Imprint Included");
+		priceGrid.setPriceIncludes("plus Setup");
 		priceGrid.setDescription(priceName);
 		priceGrid
 				.setIsQUR(isQur.equalsIgnoreCase("Y") ? ApplicationConstants.CONST_BOOLEAN_TRUE
@@ -43,23 +43,22 @@ public class PriceGridParser {
 		if(!priceGrid.getIsQUR()){
 			listOfPrice = getPrices(prices, netCost, quantity, discount);
 		}
-		/*else{
+	else{
 			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
-		}*/
-		/*if (!priceGrid.getIsQUR()) {
+		}
+	if (!priceGrid.getIsQUR()) {
 			listOfPrice = getPrices(prices, netCost, quantity, discount);
 		} else {
 			listOfPrice = new ArrayList<Price>();
-		}*/
+		}
 		if(listOfPrice != null && !listOfPrice.isEmpty()){
 			priceGrid.setPrices(listOfPrice);
 		}
-		
-		if (criterias != null && !criterias.isEmpty()) {
-			configuration = getConfigurations(criterias);
-		}
+if (criterias != null && !criterias.isEmpty()) {
+		configuration = getConfigurations(criterias,priceName);
+	}
 		if(configuration != null){
-			priceGrid.setPriceConfigurations(configuration);
+		priceGrid.setPriceConfigurations(configuration);
 		}
 		existingPriceGrid.add(priceGrid);
 		return existingPriceGrid;
@@ -70,7 +69,7 @@ public class PriceGridParser {
 			String[] quantity, String[] discount) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
-		for (int i = 0, j = 1; i < prices.length && i < netCost.length
+		for (int i = 0, j = 1; i < prices.length 
 				&& i < quantity.length && i < discount.length; i++, j++) {
 
 			Price price = new Price();
@@ -82,7 +81,10 @@ public class PriceGridParser {
 				price.setQty(0);
 			}
 			price.setPrice(prices[i]);
-			price.setNetCost(netCost[i]);
+			
+			if(!netCost[i].isEmpty()){
+				price.setNetCost(netCost[i]);
+			}
 			price.setDiscountCode(discount[i]);
 			priceUnit
 					.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
@@ -92,7 +94,7 @@ public class PriceGridParser {
 		return listOfPrices;
 	}
 
-	public List<PriceConfiguration> getConfigurations(String criterias) {
+	public List<PriceConfiguration> getConfigurations(String criterias,String UpchargeName) {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
 		String[] config = null;
 		PriceConfiguration configs = null;
@@ -113,8 +115,7 @@ public class PriceGridParser {
 						configs.setValue(Arrays.asList((Object) Value));
 						priceConfiguration.add(configs);
 					}
-				} else {
-					configs = new PriceConfiguration();
+						configs = new PriceConfiguration();
 					configs.setCriteria(criteriaValue);
 					configs.setValue(Arrays.asList((Object) config[1]));
 					priceConfiguration.add(configs);
@@ -123,16 +124,16 @@ public class PriceGridParser {
 
 		} else {
 			configs = new PriceConfiguration();
-			config = criterias.split(":");
-			String criteriaValue = LookupData.getCriteriaValue(config[0]);
-			configs.setCriteria(criteriaValue);
-			configs.setValue(Arrays.asList((Object) config[1]));
+			configs.setCriteria(criterias);
+			configs.setValue(Arrays.asList((Object) UpchargeName));
 			priceConfiguration.add(configs);
 		}
 		return priceConfiguration;
 	}
 
-	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
+	
+	
+	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,String netcost,
 			String discounts, String upChargeCriterias, String qurFlag,
 			String currency, String upChargeName, String upChargeType,
 			String upchargeUsageType, Integer upChargeSequence,
@@ -140,40 +141,42 @@ public class PriceGridParser {
 
 		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
-		/*String[] upChargePrices = prices
+		String[] upChargePrices = prices
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		String[] upChargeNetcost= netcost
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] upChargeQuantity = quantity
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] upChargeDiscount = discounts
-				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);*/
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(upChargeName);
 		priceGrid
-				.setIsQUR((qurFlag.equalsIgnoreCase("Y")) ? ApplicationConstants.CONST_BOOLEAN_TRUE
-						: ApplicationConstants.CONST_BOOLEAN_FALSE);
+				.setIsQUR((qurFlag.equalsIgnoreCase("false")) ? ApplicationConstants.CONST_BOOLEAN_FALSE
+						: ApplicationConstants.CONST_BOOLEAN_TRUE);
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);
 		priceGrid.setUpchargeType(upChargeType);
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			// listOfPrice =
-			// getPrices(upChargePrices,upChargeQuantity,upChargeDiscount);
+			 listOfPrice =
+			 getPrices(upChargePrices,upChargeNetcost,upChargeQuantity,upChargeDiscount);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
 
-		priceGrid.setPrices(listOfPrice);
+        priceGrid.setPrices(listOfPrice);
 		if (upChargeCriterias != null && !upChargeCriterias.isEmpty()) {
-			configuration = getConfigurations(upChargeCriterias);
+		configuration = getConfigurations(upChargeCriterias,upChargeName);
 		}
 		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
 
 		return existingPriceGrid;
 	}
-	
+
 	
 
 }

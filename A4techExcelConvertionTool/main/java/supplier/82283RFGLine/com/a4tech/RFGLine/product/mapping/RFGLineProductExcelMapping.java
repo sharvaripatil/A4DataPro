@@ -166,8 +166,9 @@ public class RFGLineProductExcelMapping {
 							break;
 						case 3:// Description
 							String Description=cell.getStringCellValue();
-							productExcelObj= DescrptionParserObj.getDescription(Description,productExcelObj,productConfigObj);
+							productExcelObj= DescrptionParserObj.getDescription(Description,productExcelObj,productConfigObj,priceGrids);
 							
+							priceGrids=productExcelObj.getPriceGrids();
 							break;
 						case 4:// OriginationZipCode
 							String fobpoint=null;
@@ -403,14 +404,10 @@ public class RFGLineProductExcelMapping {
 					
 					
 					
-					if(SetupRetail !=0)
-					{ 
-					priceGrids = rfgPriceGridParserObj.getUpchargePriceGrid(Integer.toString(SetupQty),Integer.toString(SetupRetail),SetupMargin.toString(),"Imprint Method",  
+					
+					priceGrids = rfgPriceGridParserObj.getUpchargePriceGrid(Integer.toString(SetupQty),Integer.toString(SetupRetail),Integer.toString(SetupNet),SetupMargin.toString(),"Imprint Method",  
 							"false", "USD", "printed",  "Imprint Method Charge", "Other", new Integer(1), priceGrids);
-					
-					
-					}
-				
+
 				
 					listOfPrices = new StringBuilder();
 					listOfNetPrice  = new StringBuilder();

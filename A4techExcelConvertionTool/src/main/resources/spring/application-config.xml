@@ -265,11 +265,15 @@
         <property name="descsizeParserObj" ref="descsizeParserObj" />
         <property name="attributeObj" ref="attributeObj" />
         <property name="materialParserObj" ref="materialParserObj" />
+        <property name="rfgPriceGridParserObj" ref="rfgPriceGridParserObj" />
+        
+        
          
         </bean>
         <bean id="descsizeParserObj" class="com.a4tech.RFGLine.products.parser.SizeParser" />
          <bean id="attributeObj" class="com.a4tech.RFGLine.products.parser.ProductAttributeParser" />
          <bean id="materialParserObj" class="com.a4tech.RFGLine.products.parser.MaterialParser" />
+         
          
     
     
