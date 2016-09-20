@@ -18,12 +18,12 @@ import com.a4tech.product.model.RushTimeValue;
 import com.a4tech.product.model.Size;
 
 
-public class DescrptionParser {
+public class RFGDescrptionParser {
 
-	private SizeParser descsizeParserObj;
-	private ProductAttributeParser attributeObj;
-	private MaterialParser materialParserObj;
-	private PriceGridParser rfgPriceGridParserObj;
+	private RFGSizeParser descsizeParserObj;
+	private RFGProductAttributeParser attributeObj;
+	private RFGMaterialParser materialParserObj;
+	private RFGPriceGridParser rfgPriceGridParserObj;
 
 	public Product getDescription(String Description,Product existingProduct,ProductConfigurations descrproductConfigObj,List<PriceGrid> priceGrids2){
 		
@@ -48,7 +48,7 @@ public class DescrptionParser {
         descrproductConfigObj.setSizes(sizeObj);
        
     	}
-    	  if (value.contains("Made from"))
+    	  else  if (value.contains("Made from"))
     		  
     	{
     		  String MaterailValue=Description.substring(Description.indexOf("Made from")+10, Description.indexOf("Comes In"));
@@ -57,21 +57,21 @@ public class DescrptionParser {
    
     	}
     	
-    	  if (value.contains("Comes In"))
+    	  else  if (value.contains("Comes In"))
       	{
     	  String colorValue[]=value.split("Comes In:");
           List<Color> colorList=attributeObj.getColorCriteria(colorValue[1]);
           descrproductConfigObj.setColors(colorList);
      
       	}
-    	  if (value.contains("Imprint Size"))
+    	  else if (value.contains("Imprint Size"))
       	{
     	  String imprintSize[]=value.split("Imprint Size:");
     	  List<ImprintSize> imprintSizeList= attributeObj.getImprintSize(imprintSize[1]);
     	  descrproductConfigObj.setImprintSize(imprintSizeList);
       	}
     	  
-    	  if (value.contains("Standard Imprint Colors"))
+    	  else if (value.contains("Standard Imprint Colors"))
     	  {
     	  String imprintColor=null;
     	  imprintColor=Description.substring(Description.indexOf("Standard Imprint Colors:")+25,Description.indexOf("** PMS Colors"));	
@@ -79,7 +79,7 @@ public class DescrptionParser {
     	  descrproductConfigObj.setImprintColors(imprintColorObj);
     	  }
     	 
-    	  if (value.contains("Rush Available"))
+    	  else if (value.contains("Rush Available"))
     	  {
     	  List<RushTimeValue> RushTimevalueList = new ArrayList<RushTimeValue>();
     	  RushTime RushTimeObj=new RushTime();
@@ -88,9 +88,7 @@ public class DescrptionParser {
 
     	  }
     	  
-    	 
-    	  
-    	 if(value.contains("Additional Imprint Color: "))
+    	  else if(value.contains("Additional Imprint Color: "))
     	 {
     	    AdditionalColor additionColorObj=new AdditionalColor();
        	    List<AdditionalColor> AdditionalColorList = new ArrayList<AdditionalColor>();
@@ -101,12 +99,11 @@ public class DescrptionParser {
             String upchargeValue[]=Value[1].split("\\(");
             String upchargeValue2=upchargeValue[0];
 
-    priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue2,"","v","Additional Color",  
+      priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue2,"","v","Additional Color",  
 					"false", "USD", "Additional Imprint Color",  "Imprint Color Charge", "Other", new Integer(2), priceGrids2);
 			
-    existingProduct.setPriceGrids(priceGrids2);
     	 }
-    	 if(value.contains("Additional Imprint Location:"))
+    	  else if(value.contains("Additional Imprint Location:"))
     	 {
     		 AdditionalLocation additionLocationObj=new AdditionalLocation();
              List<AdditionalLocation> AdditionalLocationList = new ArrayList<AdditionalLocation>();
@@ -119,11 +116,11 @@ public class DescrptionParser {
             
              priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue3,"","v","Additional Location",  
  					"false", "USD", "Additional Imprint Location",  "Imprint Location Charge", "Other", new Integer(3), priceGrids2);
-             
     	 }
-    	 if(value.contains("PMS Color"))
+    	  else if(value.contains("PMS Color Imprint"))
    		  
    	  {
+    		  
    		  String OptionValue[]=Description.split("Custom PMS");
    		  String OptionValue1[]=OptionValue[0].split("\\*");
    		  List<Option> optionsList= attributeObj.getOption(OptionValue1[2]);
@@ -134,48 +131,45 @@ public class DescrptionParser {
        
           priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue4,"","v","Imprint Option",  
 					"false", "USD", "Per Color",  "Imprint Option Charge", "Other", new Integer(4), priceGrids2);
-           
        
    	  }
-    	  
-	}
+    	 }
  
-    
-    
+    existingProduct.setPriceGrids(priceGrids2); 
     existingProduct.setProductConfigurations(descrproductConfigObj);
    	return existingProduct;
 		
 	}
 
-	public SizeParser getDescsizeParserObj() {
+	public RFGSizeParser getDescsizeParserObj() {
 		return descsizeParserObj;
 	}
 
-	public void setDescsizeParserObj(SizeParser descsizeParserObj) {
+	public void setDescsizeParserObj(RFGSizeParser descsizeParserObj) {
 		this.descsizeParserObj = descsizeParserObj;
 	}
 
-	public ProductAttributeParser getAttributeObj() {
+	public RFGProductAttributeParser getAttributeObj() {
 		return attributeObj;
 	}
 
-	public void setAttributeObj(ProductAttributeParser attributeObj) {
+	public void setAttributeObj(RFGProductAttributeParser attributeObj) {
 		this.attributeObj = attributeObj;
 	}
 
-	public MaterialParser getMaterialParserObj() {
+	public RFGMaterialParser getMaterialParserObj() {
 		return materialParserObj;
 	}
 
-	public void setMaterialParserObj(MaterialParser materialParserObj) {
+	public void setMaterialParserObj(RFGMaterialParser materialParserObj) {
 		this.materialParserObj = materialParserObj;
 	}
 
-	public PriceGridParser getRfgPriceGridParserObj() {
+	public RFGPriceGridParser getRfgPriceGridParserObj() {
 		return rfgPriceGridParserObj;
 	}
 
-	public void setRfgPriceGridParserObj(PriceGridParser rfgPriceGridParserObj) {
+	public void setRfgPriceGridParserObj(RFGPriceGridParser rfgPriceGridParserObj) {
 		this.rfgPriceGridParserObj = rfgPriceGridParserObj;
 	}
 

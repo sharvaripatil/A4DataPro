@@ -11,7 +11,7 @@ import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 
 
-public class SizeParser {
+public class RFGSizeParser {
  
 	
 	public Size getSizes(String descriptionSize)

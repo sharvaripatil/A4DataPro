@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.a4tech.product.model.Material;
 
-public class MaterialParser {
+public class RFGMaterialParser {
 	
 	public List<Material> getMaterialName(String materialValue) {
 		materialValue=materialValue.replaceAll("(\r\n|\n)", " ");

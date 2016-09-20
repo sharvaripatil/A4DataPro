@@ -11,7 +11,7 @@ import com.a4tech.product.model.Option;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 
-public class ProductAttributeParser {
+public class RFGProductAttributeParser {
 
 	public List<Color> getColorCriteria(String color) {
 		List<Color> colorList = new ArrayList<Color>();

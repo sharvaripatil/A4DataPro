@@ -14,9 +14,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.RFGLine.products.parser.DescrptionParser;
-import com.a4tech.RFGLine.products.parser.PriceGridParser;
-import com.a4tech.RFGLine.products.parser.ShippingEstimationParser;
+import com.a4tech.RFGLine.products.parser.RFGDescrptionParser;
+import com.a4tech.RFGLine.products.parser.RFGPriceGridParser;
+import com.a4tech.RFGLine.products.parser.RFGShippingEstimationParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.PriceGrid;
@@ -34,9 +34,9 @@ public class RFGLineProductExcelMapping {
 			.getLogger(RFGLineProductExcelMapping.class);
 	
 	private PostServiceImpl postServiceImpl;
-	private ShippingEstimationParser shippingParserObj;
-	private PriceGridParser rfgPriceGridParserObj;
-	private DescrptionParser  DescrptionParserObj;
+	private RFGShippingEstimationParser shippingParserObj;
+	private RFGPriceGridParser rfgPriceGridParserObj;
+	private RFGDescrptionParser  DescrptionParserObj;
 	private ProductDao productDaoObj;
 
 	public String readExcel(String accessToken, Workbook workbook,
@@ -413,6 +413,8 @@ public class RFGLineProductExcelMapping {
 					listOfNetPrice  = new StringBuilder();
 					listOfQuantity  = new StringBuilder();
 					listOfDiscount  = new StringBuilder();
+				     productId = null;
+
 				
 
 				} catch (Exception e) {
@@ -461,19 +463,19 @@ public class RFGLineProductExcelMapping {
 
 	}
 
-	public DescrptionParser getDescrptionParserObj() {
+	public RFGDescrptionParser getDescrptionParserObj() {
 		return DescrptionParserObj;
 	}
 
-	public void setDescrptionParserObj(DescrptionParser descrptionParserObj) {
+	public void setDescrptionParserObj(RFGDescrptionParser descrptionParserObj) {
 		DescrptionParserObj = descrptionParserObj;
 	}
 
-	public PriceGridParser getRfgPriceGridParserObj() {
+	public RFGPriceGridParser getRfgPriceGridParserObj() {
 		return rfgPriceGridParserObj;
 	}
 
-	public void setRfgPriceGridParserObj(PriceGridParser rfgPriceGridParserObj) {
+	public void setRfgPriceGridParserObj(RFGPriceGridParser rfgPriceGridParserObj) {
 		this.rfgPriceGridParserObj = rfgPriceGridParserObj;
 	}
 
@@ -493,11 +495,11 @@ public class RFGLineProductExcelMapping {
 		this.productDaoObj = productDaoObj;
 	}
 
-	public ShippingEstimationParser getShippingParserObj() {
+	public RFGShippingEstimationParser getShippingParserObj() {
 		return shippingParserObj;
 	}
 
-	public void setShippingParserObj(ShippingEstimationParser shippingParserObj) {
+	public void setShippingParserObj(RFGShippingEstimationParser shippingParserObj) {
 		this.shippingParserObj = shippingParserObj;
 	}
 

@@ -12,7 +12,7 @@ import com.a4tech.product.model.Weight;
 
 
 
-public class ShippingEstimationParser {
+public class RFGShippingEstimationParser {
 	public ShippingEstimate getShippingEstimateValues(String ShipQty1,String ShipWeight1,String ShipLength1,String ShipWidth1,
 			String ShipHeight1){
 		ShippingEstimate shippingEstimate = new ShippingEstimate();	

@@ -11,7 +11,7 @@ import com.a4tech.product.model.PriceUnit;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.LookupData;
 
-public class PriceGridParser {
+public class RFGPriceGridParser {
 
 	public List<PriceGrid> getPriceGrids(String listOfPrices,
 			String listOfNetcost, String listOfQuan, String listOfDisc,
@@ -20,7 +20,7 @@ public class PriceGridParser {
 			List<PriceGrid> existingPriceGrid) {
 
 		Integer sequence = 1;
-		List<PriceConfiguration> configuration = null;
+	//	List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
 		String[] prices = listOfPrices
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -32,7 +32,7 @@ public class PriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 
 		priceGrid.setCurrency(currency);
-		priceGrid.setPriceIncludes("plus Setup");
+		//priceGrid.setPriceIncludes("plus Setup");
 		priceGrid.setDescription(priceName);
 		priceGrid
 				.setIsQUR(isQur.equalsIgnoreCase("Y") ? ApplicationConstants.CONST_BOOLEAN_TRUE
@@ -54,12 +54,12 @@ public class PriceGridParser {
 		if(listOfPrice != null && !listOfPrice.isEmpty()){
 			priceGrid.setPrices(listOfPrice);
 		}
-if (criterias != null && !criterias.isEmpty()) {
+/*if (criterias != null && !criterias.isEmpty()) {
 		configuration = getConfigurations(criterias,priceName);
 	}
 		if(configuration != null){
 		priceGrid.setPriceConfigurations(configuration);
-		}
+		}*/
 		existingPriceGrid.add(priceGrid);
 		return existingPriceGrid;
 
@@ -152,6 +152,10 @@ if (criterias != null && !criterias.isEmpty()) {
 
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(upChargeName);
+		if(upChargeName.contains("Additional Imprint Color")|| upChargeName.contains("Additional Imprint Location"))
+{
+		priceGrid.setPriceIncludes("plus Setup");
+}
 		priceGrid
 				.setIsQUR((qurFlag.equalsIgnoreCase("false")) ? ApplicationConstants.CONST_BOOLEAN_FALSE
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);
