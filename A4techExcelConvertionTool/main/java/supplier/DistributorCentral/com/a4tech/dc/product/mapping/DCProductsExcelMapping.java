@@ -40,6 +40,7 @@ import com.a4tech.product.DCProducts.parser.DCPriceGridParser;
 import com.a4tech.product.DCProducts.parser.DimensionAndShapeParser;
 import com.a4tech.product.DCProducts.parser.ProductOriginParser;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 
 
 public class DCProductsExcelMapping {
@@ -128,13 +129,7 @@ public class DCProductsExcelMapping {
 				  columnIndex = cell.getColumnIndex();
 				
 				if(columnIndex + 1 == 1){
-					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						xid = cell.getStringCellValue();
-					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						xid = String.valueOf((int)cell.getNumericCellValue());
-					}else{
-						
-					}
+					xid=CommonUtility.getCellValueStrinOrInt(cell);
 					checkXid = true;
 				}else{
 					checkXid = false;
@@ -170,12 +165,7 @@ public class DCProductsExcelMapping {
 
 				case 1://SuplItemNo
 					 
-					    if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
-					      asiProdNo = String.valueOf(cell.getStringCellValue());
-					    }else if
-					     (cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-					      asiProdNo = String.valueOf((int)cell.getNumericCellValue());
-					     }
+					asiProdNo=CommonUtility.getCellValueStrinOrInt(cell);
 					     productExcelObj.setAsiProdNo(asiProdNo);	
 			   
 					 break;
@@ -248,7 +238,7 @@ public class DCProductsExcelMapping {
 				case 8: // Sizes and Shapes
 					String dimensionAndShape = cell.getStringCellValue();
 					if(dimensionAndShape != null && !dimensionAndShape.isEmpty()){
-						String shape = dimensionAndShape.substring(dimensionAndShape.lastIndexOf(" ")+1);
+						String shape = dimensionAndShape.substring(dimensionAndShape.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE)+1);
 						List<Shape> listOfShapes = dimensionAndShapeParser.getShapes(shape);
 						if(listOfShapes != null){
 							productConfigObj.setShapes(listOfShapes);
@@ -317,15 +307,9 @@ public class DCProductsExcelMapping {
 				 case 18: //ProductionTime
 					 String prodTimeLo = null;
 						ProductionTime productionTime = new ProductionTime();
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							prodTimeLo = cell.getStringCellValue();
-						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-							prodTimeLo = String.valueOf(cell.getNumericCellValue());
-						}else{
-							
-						}
-						productionTime.setBusinessDays(prodTimeLo.replace(".0", "").trim());
-						productionTime.setDetails("");
+						prodTimeLo=CommonUtility.getCellValueStrinOrInt(cell);
+						productionTime.setBusinessDays(prodTimeLo.replace(".0", ApplicationConstants.CONST_STRING_EMPTY).trim());
+						productionTime.setDetails(ApplicationConstants.CONST_STRING_EMPTY);
 						listOfProductionTime.add(productionTime);
 					   productConfigObj.setProductionTime(listOfProductionTime);
 				
@@ -416,16 +400,16 @@ public class DCProductsExcelMapping {
 			/*List<String> listOfCategories = new ArrayList<String>();
 			listOfCategories.add("USB/FLASH DRIVES");
 			productExcelObj.setCategories(listOfCategories);*/
-			String productDescription ="Phone Holder USB 2.0 Flash Drive";
-			productExcelObj.setDescription(productDescription);
+			/*String productDescription ="Phone Holder USB 2.0 Flash Drive";
+			productExcelObj.setDescription(productDescription);*/
 			
 			
 			 // end inner while loop
-			productExcelObj.setPriceType("L");
+			productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
 			if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
 				priceGrids = dcPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
-						         listOfQuantity.toString(), listOfDiscount.toString(), "USD",
-						         "", true, "N", productName,"",priceGrids);	
+						         listOfQuantity.toString(), listOfDiscount.toString(),ApplicationConstants.CONST_STRING__CURRENCY_USD,
+						         ApplicationConstants.CONST_STRING_EMPTY, ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_CHAR_N, productName,ApplicationConstants.CONST_STRING_EMPTY,priceGrids);	
 			}
 			
 			 
