@@ -26,13 +26,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.a4tech.ESPTemplate.product.mapping.ESPTemplateMapping;
 import com.a4tech.JulyData.excelMapping.JulyDataMapping;
 import com.a4tech.RFGLine.product.mapping.RFGLineProductExcelMapping;
+import com.a4tech.adspec.product.mapping.AdspecProductsExcelMapping;
 import com.a4tech.core.excelMapping.ExcelMapping;
 import com.a4tech.core.model.FileBean;
 import com.a4tech.core.validator.FileValidator;
 import com.a4tech.dc.product.mapping.DCProductsExcelMapping;
 import com.a4tech.kl.product.mapping.KlProductsExcelMapping;
+import com.a4tech.product.bbi.mapping.BBIProductsExcelMapping;
+import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
+import com.a4tech.product.service.ILoginService;
 import com.a4tech.product.service.ProductService;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.service.loginImpl.LoginServiceImpl;
@@ -66,8 +70,9 @@ public class FileUpload extends HttpServlet {
 	private KukuProductsExcelMapping kukuProductsExcelMapping;
 	private KlProductsExcelMapping klMapping;
 	private RFGLineProductExcelMapping rfgLineProductExcelMapping;
-	@Autowired
-	private LoginServiceImpl loginService;
+	private BBIProductsExcelMapping bbiProductsExcelMapping;
+	private AdspecProductsExcelMapping adspecMapping;
+	private ILoginService loginService;
 	private ProductDao productDao;
 	private static Logger _LOGGER = Logger.getLogger(Class.class);
 
@@ -201,8 +206,24 @@ public class FileUpload extends HttpServlet {
 				return "redirect:redirect.htm";
 
 			case "55205": // Distributor Central
-				finalResult = dCProductsExcelMapping.readExcel(asiNumber,
+				finalResult = dCProductsExcelMapping.readExcel(accessToken,
 						workbook, Integer.valueOf(asiNumber), batchId);
+				if (finalResult != null) {
+					splitFinalResult = finalResult
+							.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+					noOfProductsSuccess = splitFinalResult[0];
+					noOfProductsFailure = splitFinalResult[1];
+					redirectAttributes.addFlashAttribute(
+							"successProductsCount", noOfProductsSuccess);
+					redirectAttributes.addFlashAttribute(
+							"failureProductsCount", noOfProductsFailure);
+					if (!noOfProductsFailure
+							.equals(ApplicationConstants.CONST_STRING_ZERO)) {
+						redirectAttributes.addFlashAttribute("successmsg",
+								emailMsg);
+						downloadMail.sendMail(asiNumber, batchId);
+					}
+				}
 				return "redirect:redirect.htm";
 			case "91561": // Esptemplate
 				finalResult = espTemplateMapping.readExcel(accessToken,
@@ -246,33 +267,57 @@ public class FileUpload extends HttpServlet {
 				}
 
 				return "redirect:redirect.htm";
-			case "64905": // Kinline Promos
-				finalResult = klMapping.readExcel(accessToken, workbook,
-						Integer.valueOf(asiNumber), batchId);
-				if (finalResult != null) {
-					splitFinalResult = finalResult
-							.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-					noOfProductsSuccess = splitFinalResult[0];
-					noOfProductsFailure = splitFinalResult[1];
-					redirectAttributes.addFlashAttribute(
-							"successProductsCount", noOfProductsSuccess);
-					redirectAttributes.addFlashAttribute(
-							"failureProductsCount", noOfProductsFailure);
-					if (!noOfProductsFailure
-							.equals(ApplicationConstants.CONST_STRING_ZERO)) {
-						redirectAttributes.addFlashAttribute("successmsg",
-								emailMsg);
-						downloadMail.sendMail(asiNumber, batchId);
+			 case "64905":  //Kinline Promos
+			    	finalResult = klMapping.readExcel(accessToken, workbook, 
+                                        Integer.valueOf(asiNumber), batchId);
+			    	if(finalResult != null){
+			    		splitFinalResult = finalResult.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+			    		noOfProductsSuccess = splitFinalResult[0];
+			    		noOfProductsFailure = splitFinalResult[1];
+			    		redirectAttributes.addFlashAttribute("successProductsCount", noOfProductsSuccess);
+			    		redirectAttributes.addFlashAttribute("failureProductsCount", noOfProductsFailure);
+			    		if(!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)){
+			    			redirectAttributes.addFlashAttribute("successmsg", emailMsg);
+			    			downloadMail.sendMail(asiNumber, batchId);
+			    		}
+			       }
+			    	return "redirect:redirect.htm";
+			 case "40445": // new bbi term
+					finalResult = bbiProductsExcelMapping.readExcel(accessToken,
+							workbook, Integer.valueOf(asiNumber), batchId);
+					if (finalResult != null) {
+						splitFinalResult = finalResult
+								.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+						noOfProductsSuccess = splitFinalResult[0];
+						noOfProductsFailure = splitFinalResult[1];
+						redirectAttributes.addFlashAttribute(
+								"successProductsCount", noOfProductsSuccess);
+						redirectAttributes.addFlashAttribute(
+								"failureProductsCount", noOfProductsFailure);
+						if (!noOfProductsFailure
+								.equals(ApplicationConstants.CONST_STRING_ZERO)) {
+							redirectAttributes.addFlashAttribute("successmsg",
+									emailMsg);
+							downloadMail.sendMail(asiNumber, batchId);
+						}
 					}
-				}
-				return "redirect:redirect.htm";
-				
-			case "82283":  //rfgLineProductExcelMapping
-		    	finalResult = rfgLineProductExcelMapping.readExcel(asiNumber, workbook, 
-		    			                                          Integer.valueOf(asiNumber), batchId);
-		    	return "redirect:redirect.htm";
-		    	
-		    	
+
+					return "redirect:redirect.htm";
+			 case "32125":  //Adspec 
+			    	finalResult = adspecMapping.readExcel(accessToken, workbook, 
+                                     Integer.valueOf(asiNumber), batchId);
+			    	if(finalResult != null){
+			    		splitFinalResult = finalResult.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+			    		noOfProductsSuccess = splitFinalResult[0];
+			    		noOfProductsFailure = splitFinalResult[1];
+			    		redirectAttributes.addFlashAttribute("successProductsCount", noOfProductsSuccess);
+			    		redirectAttributes.addFlashAttribute("failureProductsCount", noOfProductsFailure);
+			    		if(!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)){
+			    			redirectAttributes.addFlashAttribute("successmsg", emailMsg);
+			    			downloadMail.sendMail(asiNumber, batchId);
+			    		}
+			       }
+			    	return "redirect:redirect.htm";
 			default:
 				break;
 			}
@@ -323,11 +368,11 @@ public class FileUpload extends HttpServlet {
 		this.julymapping = julymapping;
 	}
 
-	public LoginServiceImpl getLoginService() {
+	public ILoginService getLoginService() {
 		return loginService;
 	}
 
-	public void setLoginService(LoginServiceImpl loginService) {
+	public void setLoginService(ILoginService loginService) {
 		this.loginService = loginService;
 	}
 
@@ -404,13 +449,28 @@ public class FileUpload extends HttpServlet {
 	public void setEspTemplateMapping(ESPTemplateMapping espTemplateMapping) {
 		this.espTemplateMapping = espTemplateMapping;
 	}
-
 	public KlProductsExcelMapping getKlMapping() {
 		return klMapping;
 	}
 
 	public void setKlMapping(KlProductsExcelMapping klMapping) {
 		this.klMapping = klMapping;
+	}
+	public AdspecProductsExcelMapping getAdspecMapping() {
+		return adspecMapping;
+	}
+
+	public void setAdspecMapping(AdspecProductsExcelMapping adspecMapping) {
+		this.adspecMapping = adspecMapping;
+	}
+
+	public BBIProductsExcelMapping getBbiProductsExcelMapping() {
+		return bbiProductsExcelMapping;
+	}
+
+	public void setBbiProductsExcelMapping(
+			BBIProductsExcelMapping bbiProductsExcelMapping) {
+		this.bbiProductsExcelMapping = bbiProductsExcelMapping;
 	}
 
 	public RFGLineProductExcelMapping getRfgLineProductExcelMapping() {

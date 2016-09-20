@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.DeserializationConfig.Feature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,11 +18,12 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.a4tech.core.model.AccessBean;
-import com.a4tech.product.service.LoginService;
+import com.a4tech.product.service.ILoginService;
 import com.a4tech.util.ApplicationConstants;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class LoginServiceImpl implements LoginService {
+public class LoginServiceImpl implements ILoginService {
 
 	private Logger _LOGGER = Logger.getLogger(getClass());
 	
@@ -54,8 +53,6 @@ public class LoginServiceImpl implements LoginService {
             body.put(ApplicationConstants.CONST_ASI_NUMBER, asiNumber);
             body.put(ApplicationConstants.CONST_USERNAME,userName);
             body.put(ApplicationConstants.CONST_PASSWORD, password);
-
-            
             HttpEntity<?> httpEntity = new HttpEntity<Object>(body, header);
             _LOGGER.info("Hitting ASI endpoint for Login");
             ResponseEntity<AccessBean> response = restTemplate.exchange(loginApiURL, HttpMethod.POST, httpEntity, AccessBean.class);

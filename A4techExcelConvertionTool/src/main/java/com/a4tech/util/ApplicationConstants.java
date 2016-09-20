@@ -45,7 +45,8 @@ public class ApplicationConstants {
     public static final String	CONST_STRING_SHIPPING_NUMBER_UNIT_CARTON    = "per Carton";
     public static final String	CONST_STRING_DOWNLOAD_FILE_PATH 			= "D:\\A4 ESPUpdate\\ErrorFiles\\";
     public static final String	CONST_STRING_SECONDARY 						= "Secondary";
-    public static final String CONST_STRING_PERSONALIZATION                 = "PERSONALIZATION";
+    public static final String  CONST_STRING_PERSONALIZATION                = "PERSONALIZATION";
+    public static final String  CONST_STRING_PRINTED                        =  "Printed";
     
     public final static String  COMBO_VALUES_SEPARATOR 					    = ":";
     public final static Integer COMBO_TEXT_VALUE_INDEX 					    = 1;
@@ -80,15 +81,24 @@ public class ApplicationConstants {
 	public static final String	CONST_SHIPPING_UNIT_KG					="kg";
 	public static final String	CONST_SHIPPING_UNIT_GRAMS				="grams";
 	public static final String  CONST_STRING_IMPRINT_METHOD             = "Imprint Method";
+	public static final String  CONST_STRING_WARRANTY_AVAILABLE         = "WARRANTY AVAILABLE";
+	public static final String  CONST_STRING_WARRANTY_LENGTH			= "WARRANTY LENGTH";
+	public static final String  CONST_STRING_LIFE_TIME                  = "Lifetime";
+	public static final String  CONST_STRING_GRAPHIC					= "Graphic";
+	public static final String  CONST_STRING_HARDWARE					= "Hardware";
+	public static final String  CONST_STRING_WARRANTY_CHARGE_TYPE		= "Warranty Charge";
+	public static final String  CONST_STRING_WARRANTY_INFORMATION 		= "Warranty Information";
 	
 	public static final String  CONST_STRING_COUNTRY_CODE_CN                = "CN";
 	public static final String  CONST_STRING_AND					        = "and";
 	public static final String  CONST_STRING_PLUS				            = "\\+";
-	
-	
-	
-	//public static final String  
-    
+	public static final String  CONST_STRING_RUN_CHARGE			    = "Run Charge";
+	public static final String  CONST_STRING_COPY_CHARGE			    ="Copy Changes Charge";
+	public static final String  CONST_STRING_SETUP_CHARGE			    ="Set-up Charge";
+	public static final String  CONST_STRING_ARTWK_CHARGE			    ="Artwork Charge";
+	public static final String  CONST_DELIMITER_DOT						= ".";
+	public static final String  CONST_STRING_IMPRNT_COLR				= "COLR";
+	public static final String  CONST_STRING_IMPRINT_CODE             = "IMMD";
     
 	  public static Map<String, String> SUPPLIER_EMAIL_ID_MAP =new HashMap<String, String>();
 	  public static Map<String, String> SUPPORT_EMAIL_ID_MAP =new HashMap<String, String>();
@@ -102,7 +112,8 @@ public class ApplicationConstants {
 	    	SUPPLIER_EMAIL_ID_MAP.put("55205", "venkateswarlu.nidamanuri@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("65851", "amey.more@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("91561", "sharvari.patil@a4technology.com");
-
+	    	SUPPLIER_EMAIL_ID_MAP.put("40445", "amey.more@a4technology.com");
+	    	
 	    	SUPPORT_EMAIL_ID_MAP.put("dev_1", "amey.more@a4technology.com");
 	    	SUPPORT_EMAIL_ID_MAP.put("dev_2", "venkateswarlu.nidamanuri@a4technology.com");
 	    	SUPPORT_EMAIL_ID_MAP.put("dev_3", "sharvari.patil@a4technology.com");

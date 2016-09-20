@@ -90,48 +90,23 @@ public class KlPriceGridParser {
 
 	public List<PriceConfiguration> getConfigurations(String criterias,String value) {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
-		String[] config = null;
 		PriceConfiguration configs = null;
 		try{
-		if (criterias
-				.contains(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID)) {
-			String[] configuraions = criterias
-					.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-			for (String criteria : configuraions) {
-				PriceConfiguration configuraion = new PriceConfiguration();
-				config = criteria.split(ApplicationConstants.CONST_DELIMITER_COLON);
-				String criteriaValue = LookupData.getCriteriaValue(config[0]);
-				configuraion.setCriteria(criteriaValue);
-				if (config[1].contains(ApplicationConstants.CONST_STRING_COMMA_SEP)) {
-					String[] values = config[1].split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-					for (String Value : values) {
-						configs = new PriceConfiguration();
-						configs.setCriteria(criteriaValue);
-						configs.setValue(Arrays.asList((Object) Value));
-						priceConfiguration.add(configs);
-					}
-				} else {
+			if(value.contains(ApplicationConstants.CONST_STRING_COMMA_SEP)){
+				String[] configValues = value.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+				for (String Value : configValues) {
 					configs = new PriceConfiguration();
-					configs.setCriteria(criteriaValue);
-					configs.setValue(Arrays.asList((Object) config[1]));
+					configs = new PriceConfiguration();
+					configs.setCriteria(criterias);
+					configs.setValue(Arrays.asList((Object) Value));
 					priceConfiguration.add(configs);
 				}
+			}else{
+				configs = new PriceConfiguration();
+				configs.setCriteria(criterias);
+				configs.setValue(Arrays.asList((Object) value));
+				priceConfiguration.add(configs);
 			}
-
-		} else {
-			configs = new PriceConfiguration();
-			config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
-			String criteriaValue = LookupData.getCriteriaValue(config[0]);
-			try{
-				configs.setCriteria(config[0]);
-			}catch(ArrayIndexOutOfBoundsException aie){
-				
-			}
-			
-			//configs.setValue(Arrays.asList((Object) config[1]));
-			configs.setValue(Arrays.asList((Object) value));
-			priceConfiguration.add(configs);
-		}
 		}catch(Exception e){
 			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
 		}
