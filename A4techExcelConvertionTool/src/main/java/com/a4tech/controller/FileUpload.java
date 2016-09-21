@@ -318,6 +318,28 @@ public class FileUpload extends HttpServlet {
 			    		}
 			       }
 			    	return "redirect:redirect.htm";
+			    	
+			 case "82283": // new bbi term
+					finalResult = rfgLineProductExcelMapping.readExcel(accessToken,
+							workbook, Integer.valueOf(asiNumber), batchId);
+					if (finalResult != null) {
+						splitFinalResult = finalResult
+								.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+						noOfProductsSuccess = splitFinalResult[0];
+						noOfProductsFailure = splitFinalResult[1];
+						redirectAttributes.addFlashAttribute(
+								"successProductsCount", noOfProductsSuccess);
+						redirectAttributes.addFlashAttribute(
+								"failureProductsCount", noOfProductsFailure);
+						if (!noOfProductsFailure
+								.equals(ApplicationConstants.CONST_STRING_ZERO)) {
+							redirectAttributes.addFlashAttribute("successmsg",
+									emailMsg);
+							downloadMail.sendMail(asiNumber, batchId);
+						}
+					}
+			    	return "redirect:redirect.htm";
+
 			default:
 				break;
 			}

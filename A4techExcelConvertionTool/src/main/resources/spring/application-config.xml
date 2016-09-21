@@ -149,8 +149,8 @@
 		<property name="rushTimeParser" ref="rushTimeParser" />
 		<property name="productImprintMethodParser" ref="productImprintMethodParser" />
 		<property name="shippingEstimationParser" ref="shippingEstimationParser" />
-		<property name="ProductMaterialParserObj" ref="ProductMaterialParserObj" />
-		<property name="PriceGridParserObj" ref="PriceGridParserObj" />
+		<property name="productMaterialParserObj" ref="ProductMaterialParserObj" />
+		<property name="priceGridParserObj" ref="PriceGridParserObj" />
 		<property name="colorParserObj" ref="colorParserObj" />
 		<property name="sizeParserObj" ref="sizeParserObj" />
 
@@ -159,7 +159,7 @@
 	<property name="postServiceImpl" ref="postService" />
 	<property name="shippingParserObj" ref="shippingParserObj" />
 	<property name="rfgPriceGridParserObj" ref="rfgPriceGridParserObj" />
-   <property name="DescrptionParserObj" ref="DescrptionParserObj" />
+   <property name="descrptionParserObj" ref="descrptionParserObj" />
   
 		
 	
@@ -272,7 +272,7 @@
     
     	<bean id="shippingParserObj" class="com.a4tech.RFGLine.products.parser.RFGShippingEstimationParser" />
         <bean id="rfgPriceGridParserObj" class="com.a4tech.RFGLine.products.parser.RFGPriceGridParser" />
-        <bean id="DescrptionParserObj" class="com.a4tech.RFGLine.products.parser.RFGDescrptionParser" >
+        <bean id="descrptionParserObj" class="com.a4tech.RFGLine.products.parser.RFGDescrptionParser" >
         <property name="descsizeParserObj" ref="descsizeParserObj" />
         <property name="attributeObj" ref="attributeObj" />
         <property name="materialParserObj" ref="materialParserObj" />

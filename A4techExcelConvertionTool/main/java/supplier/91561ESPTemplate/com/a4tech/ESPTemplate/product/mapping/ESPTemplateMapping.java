@@ -52,8 +52,8 @@ public class ESPTemplateMapping {
 	private ProductImprintMethodParser productImprintMethodParser;
 	private ShippingEstimationParser shippingEstimationParser;
 	private ColorParser colorParserObj ;
-	private ProductMaterialParser ProductMaterialParserObj;
-	private PriceGridParser PriceGridParserObj;
+	private ProductMaterialParser productMaterialParserObj;
+	private PriceGridParser priceGridParserObj;
 	private SizeParser sizeParserObj;
 	
 
@@ -249,7 +249,7 @@ public class ESPTemplateMapping {
 					String materialValue=cell.getStringCellValue();
 					List<Material> materialobj=new ArrayList<Material>();
 					if(!StringUtils.isEmpty(materialValue)){
-						materialobj=ProductMaterialParserObj.getMaterialCriteria(materialValue);
+						materialobj=productMaterialParserObj.getMaterialCriteria(materialValue);
 					productConfigObj.setMaterials(materialobj);
 					}
 					
@@ -604,13 +604,13 @@ public class ESPTemplateMapping {
 		
 				if(!StringUtils.isEmpty(listOfPrices)){		
 				// base price parser
-				priceGrids = PriceGridParserObj.getPriceGrids(listOfPrices.toString(), 
+				priceGrids = priceGridParserObj.getPriceGrids(listOfPrices.toString(), 
 						         listOfQuantity.toString(), listOfDiscount.toString(), "USD",
 						         PriceIncludes , true, "false", productName,"",priceGrids);	
 			}
 			
 			if(!StringUtils.isEmpty(imprintValue)){
-					priceGrids = PriceGridParserObj.getUpchargePriceGrid("1", ImprintchargesString.toString(), "Z", "IMMD:"+imprintValue, 
+					priceGrids = priceGridParserObj.getUpchargePriceGrid("1", ImprintchargesString.toString(), "Z", "IMMD:"+imprintValue, 
 							"false", "USD", imprintValue,  "Imprint Method Charge", "Other", new Integer(1), priceGrids);
 				}
 				
@@ -718,22 +718,28 @@ public class ESPTemplateMapping {
 		this.colorParserObj = colorParserObj;
 	}
 
+	
+
 	public ProductMaterialParser getProductMaterialParserObj() {
-		return ProductMaterialParserObj;
+		return productMaterialParserObj;
 	}
+
 
 	public void setProductMaterialParserObj(
 			ProductMaterialParser productMaterialParserObj) {
-		ProductMaterialParserObj = productMaterialParserObj;
+		this.productMaterialParserObj = productMaterialParserObj;
 	}
+
 
 	public PriceGridParser getPriceGridParserObj() {
-		return PriceGridParserObj;
+		return priceGridParserObj;
 	}
 
+
 	public void setPriceGridParserObj(PriceGridParser priceGridParserObj) {
-		PriceGridParserObj = priceGridParserObj;
+		this.priceGridParserObj = priceGridParserObj;
 	}
+
 
 	public SizeParser getSizeParserObj() {
 		return sizeParserObj;

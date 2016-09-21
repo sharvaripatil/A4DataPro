@@ -113,6 +113,8 @@ public class ApplicationConstants {
 	    	SUPPLIER_EMAIL_ID_MAP.put("65851", "amey.more@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("91561", "sharvari.patil@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("40445", "amey.more@a4technology.com");
+	    	SUPPLIER_EMAIL_ID_MAP.put("82283", "sharvari.patil@a4technology.com");
+
 	    	
 	    	SUPPORT_EMAIL_ID_MAP.put("dev_1", "amey.more@a4technology.com");
 	    	SUPPORT_EMAIL_ID_MAP.put("dev_2", "venkateswarlu.nidamanuri@a4technology.com");

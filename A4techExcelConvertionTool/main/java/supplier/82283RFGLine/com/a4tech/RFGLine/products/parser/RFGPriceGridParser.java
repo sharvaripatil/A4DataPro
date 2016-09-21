@@ -126,6 +126,11 @@ public class RFGPriceGridParser {
 			configs = new PriceConfiguration();
 			configs.setCriteria(criterias);
 			configs.setValue(Arrays.asList((Object) UpchargeName));
+			
+			if(criterias.contains("Imprint Option"))
+			{
+				configs.setOptionName("Custom PMS Color Imprint");
+			}
 			priceConfiguration.add(configs);
 		}
 		return priceConfiguration;
@@ -156,6 +161,7 @@ public class RFGPriceGridParser {
 {
 		priceGrid.setPriceIncludes("plus Setup");
 }
+		priceGrid.setServiceCharge(ApplicationConstants.CONST_STRING__SERVICECHARGE);
 		priceGrid
 				.setIsQUR((qurFlag.equalsIgnoreCase("false")) ? ApplicationConstants.CONST_BOOLEAN_FALSE
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);

@@ -19,6 +19,7 @@ import com.a4tech.RFGLine.products.parser.RFGPriceGridParser;
 import com.a4tech.RFGLine.products.parser.RFGShippingEstimationParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.FOBPoint;
+import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -36,13 +37,15 @@ public class RFGLineProductExcelMapping {
 	private PostServiceImpl postServiceImpl;
 	private RFGShippingEstimationParser shippingParserObj;
 	private RFGPriceGridParser rfgPriceGridParserObj;
-	private RFGDescrptionParser  DescrptionParserObj;
+	private RFGDescrptionParser  descrptionParserObj;
 	private ProductDao productDaoObj;
 
 	public String readExcel(String accessToken, Workbook workbook,
 			Integer asiNumber, int batchId) {
 
 		Set<String> productXids = new HashSet<String>();
+		List<ImprintMethod> imprintMethods = new ArrayList<ImprintMethod>();
+		ImprintMethod imprintMethodObj=new ImprintMethod();
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
@@ -166,7 +169,7 @@ public class RFGLineProductExcelMapping {
 							break;
 						case 3:// Description
 							String Description=cell.getStringCellValue();
-							productExcelObj= DescrptionParserObj.getDescription(Description,productExcelObj,productConfigObj,priceGrids);
+							productExcelObj= descrptionParserObj.getDescription(Description,productExcelObj,productConfigObj,priceGrids);
 							
 							priceGrids=productExcelObj.getPriceGrids();
 							break;
@@ -391,6 +394,7 @@ public class RFGLineProductExcelMapping {
 
 					// end inner while loop
 					
+					
 					productExcelObj.setPriceType("L");
 					if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
 						priceGrids = rfgPriceGridParserObj.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
@@ -402,17 +406,20 @@ public class RFGLineProductExcelMapping {
 						         priceIncludes, true, "Y", productName,"",priceGrids);	
 					}
 					
-					
-					
+					productConfigObj.setImprintMethods(imprintMethods);
+					imprintMethodObj.setAlias("PRINTED");
+					imprintMethodObj.setType("PRINTED");
+					imprintMethods.add(imprintMethodObj);
 					
 					priceGrids = rfgPriceGridParserObj.getUpchargePriceGrid(Integer.toString(SetupQty),Integer.toString(SetupRetail),Integer.toString(SetupNet),SetupMargin.toString(),"Imprint Method",  
-							"false", "USD", "printed",  "Imprint Method Charge", "Other", new Integer(1), priceGrids);
+							"false", "USD", "PRINTED",  "Imprint Method Charge", "Other", new Integer(1), priceGrids);
 
 				
 					listOfPrices = new StringBuilder();
 					listOfNetPrice  = new StringBuilder();
 					listOfQuantity  = new StringBuilder();
 					listOfDiscount  = new StringBuilder();
+					imprintMethods=new ArrayList<ImprintMethod>();
 				     productId = null;
 
 				
@@ -463,13 +470,23 @@ public class RFGLineProductExcelMapping {
 
 	}
 
+	
+	
+
+
 	public RFGDescrptionParser getDescrptionParserObj() {
-		return DescrptionParserObj;
+		return descrptionParserObj;
 	}
 
+
+
+
+
 	public void setDescrptionParserObj(RFGDescrptionParser descrptionParserObj) {
-		DescrptionParserObj = descrptionParserObj;
+		this.descrptionParserObj = descrptionParserObj;
 	}
+
+
 
 	public RFGPriceGridParser getRfgPriceGridParserObj() {
 		return rfgPriceGridParserObj;

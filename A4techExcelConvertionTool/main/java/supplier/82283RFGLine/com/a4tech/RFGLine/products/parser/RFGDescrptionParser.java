@@ -99,7 +99,7 @@ public class RFGDescrptionParser {
             String upchargeValue[]=Value[1].split("\\(");
             String upchargeValue2=upchargeValue[0];
 
-      priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue2,"","v","Additional Color",  
+      priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue2,"","V","Additional Colors",  
 					"false", "USD", "Additional Imprint Color",  "Imprint Color Charge", "Other", new Integer(2), priceGrids2);
 			
     	 }
@@ -114,7 +114,7 @@ public class RFGDescrptionParser {
              String upchargeValue[]=Value[1].split("\\(");
              String upchargeValue3=upchargeValue[0];
             
-             priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue3,"","v","Additional Location",  
+             priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue3,"","V","Additional Location",  
  					"false", "USD", "Additional Imprint Location",  "Imprint Location Charge", "Other", new Integer(3), priceGrids2);
     	 }
     	  else if(value.contains("PMS Color Imprint"))
@@ -129,7 +129,7 @@ public class RFGDescrptionParser {
           String upchargeValue[]=valueArr[1].split("\\(");
           String upchargeValue4=upchargeValue[0];
        
-          priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue4,"","v","Imprint Option",  
+          priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue4,"","V","Imprint Option",  
 					"false", "USD", "Per Color",  "Imprint Option Charge", "Other", new Integer(4), priceGrids2);
        
    	  }

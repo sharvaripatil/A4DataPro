@@ -8,8 +8,10 @@ import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintColorValue;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Option;
+import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
+
 
 public class RFGProductAttributeParser {
 
@@ -56,13 +58,16 @@ public class RFGProductAttributeParser {
 	
 	public List<Option> getOption(String OptionValue) {
 		List<Option> optionsList=new ArrayList<Option>();
+		
 		Option optionObj=new Option();
 		
-		List<String> values = new ArrayList<String>();
-		values.add("Per Color");
-		optionObj.setOptionType("Imprint Option");
+		List<OptionValue> valuesList = new ArrayList<OptionValue>();
+		OptionValue optionValueObj = new OptionValue();
+		optionValueObj.setValue("Per Color");
+		valuesList.add(optionValueObj);
+		optionObj.setOptionType("Imprint");
 		optionObj.setName("Custom PMS Color Imprint");
-		optionObj.setValues(values);
+		optionObj.setValues(valuesList);
 		optionObj.setAdditionalInformation(OptionValue);
 		optionObj.setCanOnlyOrderOne(false);
 		optionObj.setRequiredForOrder(false);
