@@ -184,8 +184,24 @@ public class FileUpload extends HttpServlet {
 				return "redirect:redirect.htm";
 
 			case "55205": // Distributor Central
-				finalResult = dCProductsExcelMapping.readExcel(asiNumber,
+				finalResult = dCProductsExcelMapping.readExcel(accessToken,
 						workbook, Integer.valueOf(asiNumber), batchId);
+				if (finalResult != null) {
+					splitFinalResult = finalResult
+							.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+					noOfProductsSuccess = splitFinalResult[0];
+					noOfProductsFailure = splitFinalResult[1];
+					redirectAttributes.addFlashAttribute(
+							"successProductsCount", noOfProductsSuccess);
+					redirectAttributes.addFlashAttribute(
+							"failureProductsCount", noOfProductsFailure);
+					if (!noOfProductsFailure
+							.equals(ApplicationConstants.CONST_STRING_ZERO)) {
+						redirectAttributes.addFlashAttribute("successmsg",
+								emailMsg);
+						downloadMail.sendMail(asiNumber, batchId);
+					}
+				}
 				return "redirect:redirect.htm";
 			case "91561": // Esptemplate
 				finalResult = espTemplateMapping.readExcel(accessToken,

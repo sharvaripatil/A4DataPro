@@ -42,6 +42,7 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 
 public class BBIProductsExcelMapping {
 	
@@ -132,13 +133,7 @@ public class BBIProductsExcelMapping {
 					String xid = null;
 					  columnIndex = cell.getColumnIndex();
 					if(columnIndex + 1 == 1){
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							xid=	cell.getStringCellValue();
-						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-							xid = String.valueOf((int)cell.getNumericCellValue());
-						}else{
-							
-						}
+						xid=CommonUtility.getCellValueStrinOrInt(cell);
 						checkXid = true;
 					}else{
 						checkXid = false;
@@ -176,11 +171,7 @@ public class BBIProductsExcelMapping {
 					
 					switch (columnIndex + 1) {
 					case 1:
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							productId = cell.getStringCellValue();
-						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-							productId = String.valueOf((int)cell.getNumericCellValue());
-						}
+						productId=CommonUtility.getCellValueStrinOrInt(cell);
 						/////imp code 
 						existingApiProduct=postServiceImpl.getProduct(accessToken, productId);
 						if(existingApiProduct!=null){
@@ -218,11 +209,7 @@ public class BBIProductsExcelMapping {
 			
 					case 3:
 						String	listPrice1=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							listPrice1 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								listPrice1 = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-							}
+						listPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(listPrice1)){
 				        	 listOfPrices.append(listPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				        	 listOfQuantity.append(q1.replace("Qty","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -231,11 +218,7 @@ public class BBIProductsExcelMapping {
 				
 					case 4:
 						String	listPrice2=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							listPrice2 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								listPrice2 = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-							}
+						listPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(listPrice2)){
 				        	 listOfPrices.append(listPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				        	 listOfQuantity.append(q2.replace("Qty","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -244,11 +227,7 @@ public class BBIProductsExcelMapping {
 						
 					case 5:
 						String	listPrice3=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							listPrice3 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								listPrice3 = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-							}
+						listPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(listPrice3)){
 				        	 listOfPrices.append(listPrice3).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				        	 listOfQuantity.append(q3.replace("Qty","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -258,11 +237,7 @@ public class BBIProductsExcelMapping {
 						
 					case 6: 
 						String	listPrice4=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							listPrice4 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								listPrice4 = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-							}
+						listPrice4=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(listPrice4)){
 				        	 listOfPrices.append(listPrice4).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				        	 listOfQuantity.append(q4.replace("Qty","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -272,11 +247,7 @@ public class BBIProductsExcelMapping {
 						
 					case 7:
 						String	listPrice5=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							listPrice5 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								listPrice5 = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-							}
+						listPrice5=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(listPrice5)){
 				        	 listOfPrices.append(listPrice5).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				        	 listOfQuantity.append(q5.replace("Qty","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -285,11 +256,7 @@ public class BBIProductsExcelMapping {
 						
 					case 8: 
 						String	listPrice6=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							listPrice6 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								listPrice6 = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-							}
+						listPrice6=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(listPrice6)){
 				        	 listOfPrices.append(listPrice6).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				        	 listOfQuantity.append(q6.replace("Qty","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -340,14 +307,14 @@ public class BBIProductsExcelMapping {
 							try{
 						artWork=artWork.replace(")", "),");
 						String tempArr[]=artWork.split(ApplicationConstants.CONST_DELIMITER_COMMA);
-						for (int i = 0; i < tempArr.length; i++) {
-						if(i==0){
+						for (int index = 0; index < tempArr.length; index++) {
+						if(index==0){
 							artWorkChrg=tempArr[0];
 						}
-						else if(i==1){
+						else if(index==1){
 							logoCharg=tempArr[1];
 						}
-						else if(i==2){
+						else if(index==2){
 							copyChrg=tempArr[2];
 						}
 						}
@@ -412,12 +379,8 @@ public class BBIProductsExcelMapping {
 						String prodTimeLo = null;
 						int tempVal;
 						ProductionTime productionTime = new ProductionTime();
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							prodTimeLo = cell.getStringCellValue();
-						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-							tempVal = (int) cell.getNumericCellValue();
-							prodTimeLo=Integer.toString(tempVal);
-						}
+						
+						prodTimeLo=CommonUtility.getCellValueStrinOrInt(cell);
 						if(!StringUtils.isEmpty(prodTimeLo)){
 					    prodTimeLo=prodTimeLo.replaceAll(ApplicationConstants.CONST_STRING_DAYS,ApplicationConstants.CONST_STRING_EMPTY);
 						productionTime.setBusinessDays(prodTimeLo);

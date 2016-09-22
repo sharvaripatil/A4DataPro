@@ -1,5 +1,6 @@
 package com.a4tech.util;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +68,19 @@ public class CommonUtility {
 		return value;
 	}
 	
+	public static String getCellValueStrinOrDecimal(Cell cell){
+		String value = "";
+		try{
+	if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+		value = cell.getStringCellValue();
+		}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+			value = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
+		}
+	}catch(Exception e){
+		_LOGGER.error("Cell value convert into String/decimal: "+e.getMessage());
+	}
+		return value;
+	}
 	public static boolean isPriceQuantity(int indexNumber){
 		if(indexNumber >=9 && indexNumber <=22){
 			return true;

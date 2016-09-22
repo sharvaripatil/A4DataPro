@@ -42,6 +42,7 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 
 public class KukuProductsExcelMapping {
 	
@@ -116,13 +117,7 @@ public class KukuProductsExcelMapping {
 					String xid = null;
 					  columnIndex = cell.getColumnIndex();
 					if(columnIndex + 1 == 1){
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							xid=	cell.getStringCellValue();
-						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-							xid = String.valueOf((int)cell.getNumericCellValue());
-						}else{
-							
-						}
+						xid=CommonUtility.getCellValueStrinOrInt(cell);
 						checkXid = true;
 					}else{
 						checkXid = false;
@@ -160,13 +155,7 @@ public class KukuProductsExcelMapping {
 					
 					switch (columnIndex + 1) {
 					case 1:
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							productId = cell.getStringCellValue();
-						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-							productId = String.valueOf((int)cell.getNumericCellValue());
-						}else{
-							
-						}
+						productId=CommonUtility.getCellValueStrinOrInt(cell);
 						productExcelObj.setExternalProductId(productId);
 						break;
 						
@@ -285,12 +274,7 @@ public class KukuProductsExcelMapping {
 						String prodTimeLo = null;
 						int tempVal;
 						ProductionTime productionTime = new ProductionTime();
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							prodTimeLo = cell.getStringCellValue();
-						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-							tempVal = (int) cell.getNumericCellValue();
-							prodTimeLo=Integer.toString(tempVal);
-						}
+						prodTimeLo=CommonUtility.getCellValueStrinOrInt(cell);
 						if(!StringUtils.isEmpty(prodTimeLo)){
 					    prodTimeLo=prodTimeLo.replaceAll(ApplicationConstants.CONST_STRING_DAYS,ApplicationConstants.CONST_STRING_EMPTY);
 						productionTime.setBusinessDays(prodTimeLo);
@@ -313,11 +297,7 @@ public class KukuProductsExcelMapping {
 						
 						
 					case 15:
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							imprintMethodValueUpchrg = cell.getStringCellValue();
-						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-							imprintMethodValueUpchrg = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-						}
+						imprintMethodValueUpchrg=CommonUtility.getCellValueStrinOrDecimal(cell);
 						break;
 						
 					case 16:
@@ -326,12 +306,8 @@ public class KukuProductsExcelMapping {
 					
 					case 17:// production option = protduction time as per client feedback
 						String prodTimeValue = null;
-						ProductionTime productionTimeObj = new ProductionTime();
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							prodTimeValue = cell.getStringCellValue();
-						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-							prodTimeValue = String.valueOf(cell.getNumericCellValue());
-						}
+						ProductionTime productionTimeObj ;
+						prodTimeValue=CommonUtility.getCellValueStrinOrInt(cell);
 						if(!StringUtils.isEmpty(prodTimeValue)){
 							
 							prodTimeValue=prodTimeValue.replaceAll("days","days,");
@@ -339,26 +315,32 @@ public class KukuProductsExcelMapping {
 							String prodArr[]=prodTimeValue.split(",");
 							for (String prodVal : prodArr) {
 								if(prodVal.contains("express")){
+									productionTimeObj= new ProductionTime();
 									prodVal=prodVal.replaceAll("By express", "");
 									prodVal=prodVal.replaceAll("working days", "");
 									prodVal=prodVal.replaceAll(":","").trim();
 									productionTimeObj.setBusinessDays(prodVal);
 									productionTimeObj.setDetails("By express");
+									listOfProductionTime.add(productionTimeObj);
 								}else if(prodVal.contains("sea")){
+									productionTimeObj= new ProductionTime();
 									prodVal=prodVal.replaceAll("By sea", "");
 									prodVal=prodVal.replaceAll("working days", "");
 									prodVal=prodVal.replaceAll("days", "");
 									prodVal=prodVal.replaceAll(":","").trim();
 									productionTimeObj.setBusinessDays(prodVal);
 									productionTimeObj.setDetails("By sea");
+									listOfProductionTime.add(productionTimeObj);
 								}else if(prodVal.contains("air")){
+									productionTimeObj= new ProductionTime();
 									prodVal=prodVal.replaceAll("By air", "");
 									prodVal=prodVal.replaceAll("days", "");
 									prodVal=prodVal.replaceAll(":","").trim();
 									productionTimeObj.setBusinessDays(prodVal);
 									productionTimeObj.setDetails("By air");
+									listOfProductionTime.add(productionTimeObj);
 								}
-								listOfProductionTime.add(productionTimeObj);
+								
 							}
 						productConfigObj.setProductionTime(listOfProductionTime);	
 						}
@@ -491,24 +473,14 @@ public class KukuProductsExcelMapping {
 					    
 					case 32:
 						String	quantity1=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						 	quantity1 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								quantity1 = String.valueOf((int)cell.getNumericCellValue());
-							}
+						quantity1=CommonUtility.getCellValueStrinOrInt(cell);
 					         if(!StringUtils.isEmpty(quantity1)){
 					        	 listOfQuantity.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
-					         
-						
 						break;
 					case 33:
 						String	listPrice1=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							listPrice1 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								listPrice1 = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-							}
+						listPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(listPrice1)){
 				        	 listOfPrices.append(listPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
@@ -523,22 +495,14 @@ public class KukuProductsExcelMapping {
 						break;
 					case 35:
 						String	quantity2=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							quantity2 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								quantity2 = String.valueOf((int)cell.getNumericCellValue());
-							}
+						quantity2=CommonUtility.getCellValueStrinOrInt(cell);
 					         if(!StringUtils.isEmpty(quantity2)){
 					        	 listOfQuantity.append(quantity2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
 						break;
 					case 36:
 						String	listPrice2=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							listPrice2 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								listPrice2 = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-							}
+						listPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(listPrice2)){
 				        	 listOfPrices.append(listPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
@@ -551,22 +515,14 @@ public class KukuProductsExcelMapping {
 						break;
 					case 38:
 						String	quantity3=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							quantity3 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								quantity3 = String.valueOf((int)cell.getNumericCellValue());
-							}
+						quantity3=CommonUtility.getCellValueStrinOrInt(cell);
 					         if(!StringUtils.isEmpty(quantity3)){
 					        	 listOfQuantity.append(quantity3).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
 						break;
 					case 39:
 						String	listPrice3=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							listPrice3 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								listPrice3 = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-							}
+						listPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(listPrice3)){
 				        	 listOfPrices.append(listPrice3).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
@@ -579,22 +535,14 @@ public class KukuProductsExcelMapping {
 						break;
 					case 41:
 						String	quantity4=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							quantity4 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								quantity4 = String.valueOf((int)cell.getNumericCellValue());
-							}
+						quantity4=CommonUtility.getCellValueStrinOrInt(cell);
 					         if(!StringUtils.isEmpty(quantity4)){
 					        	 listOfQuantity.append(quantity4).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
 						break;
 					case 42:
 						String	listPrice4=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							listPrice4 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								listPrice4 = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-							}
+						listPrice4=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(listPrice4)){
 				        	 listOfPrices.append(listPrice4).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
@@ -607,22 +555,14 @@ public class KukuProductsExcelMapping {
 						break;
 					case 44:
 						String	quantity5=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							quantity5 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								quantity5 = String.valueOf((int)cell.getNumericCellValue());
-							}
+						quantity5=CommonUtility.getCellValueStrinOrInt(cell);
 					         if(!StringUtils.isEmpty(quantity5)){
 					        	 listOfQuantity.append(quantity5).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
 						break;
 					case 45:
 						String	listPrice5=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							listPrice5 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								listPrice5 = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-							}
+						listPrice5=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(listPrice5)){
 				        	 listOfPrices.append(listPrice5).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
@@ -635,11 +575,7 @@ public class KukuProductsExcelMapping {
 						break;
 					case 47:
 						String	quantity6=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							quantity6 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								quantity6 = String.valueOf((int)cell.getNumericCellValue());
-							}
+						quantity6=CommonUtility.getCellValueStrinOrInt(cell);
 					         if(!StringUtils.isEmpty(quantity6)){
 					        	 listOfQuantity.append(quantity6).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
@@ -647,11 +583,7 @@ public class KukuProductsExcelMapping {
 						
 					case 48:
 						String	listPrice6=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							listPrice6 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								listPrice6 = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-							}
+						listPrice6=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(listPrice6)){
 				        	 listOfPrices.append(listPrice6).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
@@ -664,22 +596,14 @@ public class KukuProductsExcelMapping {
 						break;
 					case 50:
 						String	quantity7=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							quantity7 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								quantity7 = String.valueOf((int)cell.getNumericCellValue());
-							}
+						quantity7=CommonUtility.getCellValueStrinOrInt(cell);
 					         if(!StringUtils.isEmpty(quantity7)){
 					        	 listOfQuantity.append(quantity7).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
 						break;
 					case 51:
 						String	listPrice7=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							listPrice7 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								listPrice7 = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-							}
+						listPrice7=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(listPrice7)){
 				        	 listOfPrices.append(listPrice7).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
@@ -692,22 +616,14 @@ public class KukuProductsExcelMapping {
 						break;
 					case 53:
 						String	quantity8=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							quantity8 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								quantity8 = String.valueOf((int)cell.getNumericCellValue());
-							}
+						quantity8=CommonUtility.getCellValueStrinOrInt(cell);
 					         if(!StringUtils.isEmpty(quantity8)){
 					        	 listOfQuantity.append(quantity8).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
 						break;
 					case 54:
 						String	listPrice8=null;
-						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-							listPrice8 = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								listPrice8 = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
-							}
+						listPrice8=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(listPrice8)){
 				        	 listOfPrices.append(listPrice8).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
@@ -732,7 +648,7 @@ public class KukuProductsExcelMapping {
 			}
 			if(!StringUtils.isEmpty(imprintMethodValue)&& !StringUtils.isEmpty(imprintMethodValueUpchrg)){
 					priceGrids = kukuPriceGridParser.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,imprintMethodValueUpchrg, ApplicationConstants.CONST_STRING_DISCOUNT_CODE_Z,
-							"IMMD:"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING__CURRENCY_USD, imprintMethodValue, 
+							"IMMD:"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING__CURRENCY_USD, priceIncludeUp,imprintMethodValue, 
 							ApplicationConstants.CONST_STRING_IMMD_CHARGE, ApplicationConstants.CONST_VALUE_TYPE_OTHER, ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
 				}
 		
@@ -745,6 +661,8 @@ public class KukuProductsExcelMapping {
 			listOfPrices = new StringBuilder();
 			listOfProductionTime=new ArrayList<ProductionTime>();
 			imprintMethods = new ArrayList<ImprintMethod>();
+			priceIncludes=null;
+			priceIncludeUp=null;
 		}catch(Exception e){
 		_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() +"for column"+columnIndex+1);		 
 	}
@@ -759,8 +677,6 @@ public class KukuProductsExcelMapping {
 	 		numOfProductsSuccess.add("1");
 	 	}else if(num == 0){
 	 		numOfProductsFailure.add("0");
-	 	}else{
-	 		
 	 	}
 	 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 	 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
