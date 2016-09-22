@@ -6,10 +6,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 
 
-import com.a4tech.product.service.ProductService;
+import com.a4tech.product.service.IProductService;
 import com.a4tech.v2.core.excelMapping.V2ExcelMapping;
 
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements IProductService{
 
 	public V2ExcelMapping excelMapping  = new V2ExcelMapping();
 	public int excelProducts(String AccessToken,Workbook workBook,int asiNumber,int batchId ) {
