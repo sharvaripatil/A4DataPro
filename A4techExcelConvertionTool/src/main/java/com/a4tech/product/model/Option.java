@@ -16,7 +16,7 @@ public class Option {
     @JsonProperty("Name")
     private String       name;
     @JsonProperty("Values")
-    private List<String> values = new ArrayList<String>();
+    private List<OptionValue> values = new ArrayList<OptionValue>();
     @JsonProperty("AdditionalInformation")
     private String       additionalInformation;
     @JsonProperty("CanOnlyOrderOne")
@@ -43,28 +43,24 @@ public class Option {
     public void setName(String name) {
         this.name = name;
     }
-
-    @JsonProperty("Values")
-    public List<String> getValues() {
-        return values;
-    }
-
-    @JsonProperty("Values")
-    public void setValues(List<String> values) {
-        this.values = values;
-    }
-
     @JsonProperty("AdditionalInformation")
     public String getAdditionalInformation() {
         return additionalInformation;
     }
-
-    @JsonProperty("AdditionalInformation")
+	@JsonProperty("AdditionalInformation")
     public void setAdditionalInformation(String additionalInformation) {
         this.additionalInformation = additionalInformation;
     }
+	 @JsonProperty("Values")
+    public List<OptionValue> getValues() {
+		return values;
+	}
+	 @JsonProperty("Values")
+	public void setValues(List<OptionValue> values) {
+		this.values = values;
+	}
 
-    @JsonProperty("CanOnlyOrderOne")
+	@JsonProperty("CanOnlyOrderOne")
     public Boolean getCanOnlyOrderOne() {
         return canOnlyOrderOne;
     }
