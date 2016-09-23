@@ -9,6 +9,7 @@ import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Weight;
+import com.a4tech.util.ApplicationConstants;
 
 
 
@@ -22,7 +23,7 @@ public class RFGShippingEstimationParser {
 		List<NumberOfItems> numberOfItem = new ArrayList<NumberOfItems>();
 
 		NumberOfItems itemObj=new NumberOfItems();
-		if(!StringUtils.isEmpty(ShipQty1)&& !ShipQty1.equals("0") ){
+		if(!StringUtils.isEmpty(ShipQty1)&& !ShipQty1.equals(ApplicationConstants.CONST_STRING_ZERO)){
 		itemObj.setValue(ShipQty1);
 		itemObj.setUnit("case");
 		numberOfItem.add(itemObj);
@@ -33,7 +34,7 @@ public class RFGShippingEstimationParser {
 		
 		List<Weight> listOfWeightObj = new ArrayList<Weight>();
 		Weight  weightObj = new Weight();
-		if(!StringUtils.isEmpty(ShipWeight1)&& !ShipWeight1.equals("0")){
+		if(!StringUtils.isEmpty(ShipWeight1)&& !ShipWeight1.equals(ApplicationConstants.CONST_STRING_ZERO)){
 		weightObj.setValue(ShipWeight1);
 		weightObj.setUnit("lbs");
 		listOfWeightObj.add(weightObj);
@@ -43,19 +44,19 @@ public class RFGShippingEstimationParser {
 		
 		
 		Dimensions dimension =new Dimensions();
-		if(!StringUtils.isEmpty(ShipLength1)&& !ShipLength1.equals("0") ){
+		if(!StringUtils.isEmpty(ShipLength1)&& !ShipLength1.equals(ApplicationConstants.CONST_STRING_ZERO) ){
       	dimension.setLength(ShipLength1);
-      	dimension.setLengthUnit("in");
+      	dimension.setLengthUnit(ApplicationConstants.CONST_STRING_INCHES);
       	shippingEstimate.setDimensions(dimension);
 		}
-		if(!StringUtils.isEmpty(ShipWidth1)&& !ShipWidth1.equals("0")  ){
+		if(!StringUtils.isEmpty(ShipWidth1)&& !ShipWidth1.equals(ApplicationConstants.CONST_STRING_ZERO)  ){
       	dimension.setWidth(ShipWidth1);
-     	dimension.setWidthUnit("in");
+     	dimension.setWidthUnit(ApplicationConstants.CONST_STRING_INCHES);
      	shippingEstimate.setDimensions(dimension);
 		}
-		if(!StringUtils.isEmpty(ShipHeight1)&& !ShipHeight1.equals("0")  ){
+		if(!StringUtils.isEmpty(ShipHeight1)&& !ShipHeight1.equals(ApplicationConstants.CONST_STRING_ZERO)  ){
       	dimension.setHeight(ShipHeight1);
-      	dimension.setHeightUnit("in");
+      	dimension.setHeightUnit(ApplicationConstants.CONST_STRING_INCHES);
       	shippingEstimate.setDimensions(dimension);
 		}
 	

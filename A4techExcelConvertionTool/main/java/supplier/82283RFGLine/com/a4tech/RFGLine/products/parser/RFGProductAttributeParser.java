@@ -11,6 +11,7 @@ import com.a4tech.product.model.Option;
 import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
+import com.a4tech.util.ApplicationConstants;
 
 
 public class RFGProductAttributeParser {
@@ -19,7 +20,7 @@ public class RFGProductAttributeParser {
 		List<Color> colorList = new ArrayList<Color>();
 
 		Color colorObj = null;
-		String colorArr[] = color.split(",");
+		String colorArr[] = color.split(ApplicationConstants.CONST_DELIMITER_COMMA);
 
 		for (String value : colorArr) {
 			colorObj = new Color();
@@ -34,7 +35,7 @@ public class RFGProductAttributeParser {
 		List<ImprintSize> ImprintSizeList = new ArrayList<ImprintSize>();
 
 		ImprintSize ImprintSizeObj = new ImprintSize();
-		ImprintSizeValue = ImprintSizeValue.replace("\"", "");
+		ImprintSizeValue = ImprintSizeValue.replace("\"",ApplicationConstants.CONST_STRING_EMPTY);
 		ImprintSizeObj.setValue(ImprintSizeValue);
 		ImprintSizeList.add(ImprintSizeObj);
 		return ImprintSizeList;
@@ -43,8 +44,8 @@ public class RFGProductAttributeParser {
 	public ImprintColor getImprintColor(String ImprintColorValue) {
 		ImprintColor imprintColorObj = new ImprintColor();
 		List<ImprintColorValue> impcolorValuesList = new ArrayList<ImprintColorValue>();
-		String imprintArr[] = ImprintColorValue.split(",");
-		imprintColorObj.setType("COLR");
+		String imprintArr[] = ImprintColorValue.split(ApplicationConstants.CONST_DELIMITER_COMMA);
+		imprintColorObj.setType(ApplicationConstants.CONST_STRING_IMPRNT_COLR);
 		ImprintColorValue impclrObj = null;
 		for (String tempImpint : imprintArr) {
 			impclrObj = new ImprintColorValue();

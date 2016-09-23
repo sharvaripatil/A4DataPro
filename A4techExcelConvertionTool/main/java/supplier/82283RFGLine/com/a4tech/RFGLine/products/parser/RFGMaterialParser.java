@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.a4tech.product.model.Material;
+import com.a4tech.util.ApplicationConstants;
 
 public class RFGMaterialParser {
 	
 	public List<Material> getMaterialName(String materialValue) {
-		materialValue=materialValue.replaceAll("(\r\n|\n)", " ");
+		materialValue=materialValue.replaceAll(ApplicationConstants.CONST_STRING_NEWLINECHARS,ApplicationConstants.CONST_STRING_EMPTY);
 		List<Material> MaterialList =new ArrayList<Material>();
 		Material materialObj=new Material();
 		

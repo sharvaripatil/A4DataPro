@@ -42,6 +42,7 @@ public class RFGLineProductExcelMapping {
 
 	public String readExcel(String accessToken, Workbook workbook,
 			Integer asiNumber, int batchId) {
+		int columnIndex = 0;
 
 		Set<String> productXids = new HashSet<String>();
 		List<ImprintMethod> imprintMethods = new ArrayList<ImprintMethod>();
@@ -95,7 +96,7 @@ public class RFGLineProductExcelMapping {
 					while (cellIterator.hasNext()) {
 						Cell cell = cellIterator.next();
 						String xid = null;
-						int columnIndex = cell.getColumnIndex();
+						 columnIndex = cell.getColumnIndex();
 
 						if (columnIndex + 1 == 1) {
 							if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
@@ -146,25 +147,23 @@ public class RFGLineProductExcelMapping {
 						switch (columnIndex + 1) {
 
 						case 1:// SuplItemNo
-							  if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
-							    	productId = String.valueOf(cell.getStringCellValue().trim());
-							    }else if
-							     (cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-							    	productId = String.valueOf((int)cell.getNumericCellValue());
-							     }
-							     productExcelObj.setExternalProductId(productId);	
+						
+							 productId =  CommonUtility.getCellValueStrinOrInt(cell);
+							 productExcelObj.setExternalProductId(productId);	
 					   
 
 							break;
 						case 2:// ItemName
 							productName = cell.getStringCellValue();
-							if (!StringUtils.isEmpty(productName)) {
-								productExcelObj.setName(cell
-										.getStringCellValue());
-							} else {
-								productExcelObj
-										.setName(ApplicationConstants.CONST_STRING_EMPTY);
+							int len=productName.length();
+							 if(len>60){
+								String strTemp=productName.substring(0, 60);
+								int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
+								productName=(String) strTemp.subSequence(0, lenTemp);
 							}
+							productExcelObj.setName(productName);
+							 
+						
 
 							break;
 						case 3:// Description
@@ -174,15 +173,7 @@ public class RFGLineProductExcelMapping {
 							priceGrids=productExcelObj.getPriceGrids();
 							break;
 						case 4:// OriginationZipCode
-							String fobpoint=null;
-							if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
-								fobpoint = String.valueOf(cell
-										.getStringCellValue());
-							} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-								fobpoint = String.valueOf((int) cell
-										.getNumericCellValue());
-							}
-							
+							String fobpoint=CommonUtility.getCellValueStrinOrInt(cell);
 							List<FOBPoint> fobPointList = new ArrayList<FOBPoint>();
 							if(fobpoint.contains("33125")){
 							fobPointObj.setName("Miami, FL 33125 USA");
@@ -213,7 +204,7 @@ public class RFGLineProductExcelMapping {
 							break;
 
 						case 9: // ShipHeight1
-						     String ShipHeight1 = CommonUtility.getCellValueStrinOrInt(cell);
+						    String ShipHeight1 = CommonUtility.getCellValueStrinOrInt(cell);
 						   ShipingItem = shippingParserObj.getShippingEstimateValues(ShipQty1, ShipWeight1, ShipLength1, ShipWidth1, ShipHeight1);
 			               productConfigObj.setShippingEstimates(ShipingItem);
 
@@ -295,18 +286,10 @@ public class RFGLineProductExcelMapping {
 						case 36:// Qty7
 						case 37:// Qty8
 							try{
-								if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-									quantity = cell.getStringCellValue();
-							         if(!StringUtils.isEmpty(quantity) && !quantity.equals("0")){
-							        	 listOfQuantity.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+								quantity = CommonUtility.getCellValueStrinOrInt(cell);
+							     if(!StringUtils.isEmpty(quantity) && !quantity.equals("0")){
+							       listOfQuantity.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							         }
-								}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-									int quantity1 = (int)cell.getNumericCellValue();
-							         if(!StringUtils.isEmpty(quantity1) && quantity1 !=0){
-							        	 listOfQuantity.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-							         }
-								}else{
-								}
 							}catch (Exception e) {
 								_LOGGER.info("Error in base price Quantity field");
 							}
@@ -319,19 +302,15 @@ public class RFGLineProductExcelMapping {
 						case 43:// Net6
 						case 44:// Net7
 						case 45:// Net8
-							if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-								quantity = cell.getStringCellValue();
-						         if(!StringUtils.isEmpty(quantity)){
-						        	 listOfNetPrice.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-						         }
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								double quantity1 = (double)cell.getNumericCellValue();
-						         if(!StringUtils.isEmpty(quantity1)){
-						        	 listOfNetPrice.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-						         }
-							}else{
-							}
 
+				        	 try{
+									 String Netcost = CommonUtility.getCellValueDouble(cell);
+								     if(!StringUtils.isEmpty(Netcost) && !Netcost.equals("0")){
+							        	 listOfNetPrice.append(Netcost).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+								         }
+								}catch (Exception e) {
+									_LOGGER.info("Error in base price Netcost field");
+								}
 							break;
 						case 46: //Retail1
 						case 47:// Retail2
@@ -341,24 +320,16 @@ public class RFGLineProductExcelMapping {
 						case 51:// Retail6
 						case 52:// Retail7
 						case 53:// Retail8
-							 try{
-								 if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-										quantity = cell.getStringCellValue();
-								         if(!StringUtils.isEmpty(quantity)&& !quantity.equals("0")){
-								        	 listOfPrices.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-								         }
-									}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-										double quantity1 = (double)cell.getNumericCellValue();
-								         if(!StringUtils.isEmpty(quantity1)){
-								        	 listOfPrices.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-								         }
-									}else{
-									}  
-							 }catch (Exception e) {
-								_LOGGER.info("Error in base price prices field");
-							}
 
-							break;
+				        	 try{
+									 String ListPrice = CommonUtility.getCellValueDouble(cell);
+								     if(!StringUtils.isEmpty(ListPrice) && !ListPrice.equals("0")){
+							        	 listOfPrices.append(ListPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+								         }
+								}catch (Exception e) {
+									 _LOGGER.info("Error in base price prices field");							break;
+								}
+				        	 break;
 						case 54:// Margin1
 						case 55:// Margin2
 						case 56:// Margin3
@@ -368,22 +339,13 @@ public class RFGLineProductExcelMapping {
 						case 60:// Margin7
 						case 61:// Margin8
 							try{
- 							if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-								quantity = cell.getStringCellValue();
-						         if(!StringUtils.isEmpty(quantity) && !quantity.equals("0")){
-						        	 listOfDiscount.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-						         }
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								double quantity1 = (double)cell.getNumericCellValue();
-						         if(!StringUtils.isEmpty(quantity1)){
-						        	 listOfDiscount.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-						         }
-							}else{
-							}  
+								 String Discountcode = CommonUtility.getCellValueStrinOrInt(cell);
+							     if(!StringUtils.isEmpty(Discountcode) && !Discountcode.equals("0")){
+						        	 listOfDiscount.append(Discountcode).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							         }
 							}catch (Exception e) {
-								_LOGGER.info("Error in pricePerUnit field");
+					        	 _LOGGER.info("Error in pricePerUnit field");
 							}
-
 							break;
 
 						} // end inner while loop
@@ -428,7 +390,7 @@ public class RFGLineProductExcelMapping {
 					_LOGGER.error("Error while Processing ProductId and cause :"
 							+ productExcelObj.getExternalProductId()
 							+ " "
-							+ e.getMessage());
+							+ e.getMessage() +"for column"+columnIndex+1);
 				}
 			}
 			workbook.close();

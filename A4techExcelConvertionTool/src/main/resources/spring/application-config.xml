@@ -155,15 +155,14 @@
 		<property name="sizeParserObj" ref="sizeParserObj" />
 
 	</bean>
+	
 	<bean id="rfgLineProductExcelMappingId" class="com.a4tech.RFGLine.product.mapping.RFGLineProductExcelMapping">
 	<property name="postServiceImpl" ref="postService" />
 	<property name="shippingParserObj" ref="shippingParserObj" />
 	<property name="rfgPriceGridParserObj" ref="rfgPriceGridParserObj" />
    <property name="descrptionParserObj" ref="descrptionParserObj" />
-  
-		
-	
-	</bean>
+     <property name="productDaoObj" ref="productDao" />
+   	</bean>
 	
 	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"

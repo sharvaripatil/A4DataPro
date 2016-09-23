@@ -16,6 +16,7 @@ import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.RushTimeValue;
 import com.a4tech.product.model.Size;
+import com.a4tech.util.ApplicationConstants;
 
 
 public class RFGDescrptionParser {
@@ -31,19 +32,21 @@ public class RFGDescrptionParser {
 	String FullDescription=null; 
 	String FullDescriptionFirst=Description;
 	FullDescriptionFirst=Description.substring(0,Description.indexOf("Bag Size:"));
+	if(Description.contains("2 Color")){
 	String FullDescriptionSecond=Description.substring(Description.indexOf("2 Color Maximum Imprint"),Description.indexOf("Additional Imprint Color:"));
 	FullDescription=FullDescriptionFirst.concat(FullDescriptionSecond);
-	FullDescription = FullDescription.replaceAll("(\r\n|\n)", " ");
+	FullDescription = FullDescription.replaceAll(ApplicationConstants.CONST_STRING_NEWLINECHARS,ApplicationConstants.CONST_STRING_EMPTY);
     existingProduct.setDescription(FullDescription);
-   
-    String tempDesc[]=Description.split("(\r\n|\n)");
+	}
+	 existingProduct.setDescription(FullDescriptionFirst);
+    String tempDesc[]=Description.split(ApplicationConstants.CONST_STRING_NEWLINECHARS);
       
     for (String value : tempDesc) {
     	
     	  if (value.contains("Bag Size"))
     	{
     	String sizeValue[]=value.split("Bag Size:");
-    	sizeValue[1]=sizeValue[1].replaceAll("\"", "");
+    	sizeValue[1]=sizeValue[1].replaceAll("\"",ApplicationConstants.CONST_STRING_EMPTY);
     	Size sizeObj=descsizeParserObj.getSizes(sizeValue[1]);
         descrproductConfigObj.setSizes(sizeObj);
        

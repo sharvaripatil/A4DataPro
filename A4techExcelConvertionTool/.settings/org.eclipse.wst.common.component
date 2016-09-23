@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="A4techExcelConvertionTool">
+    <wb-module deploy-name="A4DataPro">
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
@@ -13,7 +13,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/kuku"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/91561ESPTemplate"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/82283RFGLine"/>
-        <property name="context-root" value="A4techExcelConvertionTool"/>
-        <property name="java-output-path" value="/A4techExcelConvertionTool/target/classes"/>
+        <property name="java-output-path" value="/A4DataPro/target/classes"/>
+        <property name="context-root" value="A4DataPro"/>
     </wb-module>
 </project-modules>

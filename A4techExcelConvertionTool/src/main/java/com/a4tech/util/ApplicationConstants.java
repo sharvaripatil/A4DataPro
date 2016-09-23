@@ -99,6 +99,8 @@ public class ApplicationConstants {
 	public static final String  CONST_DELIMITER_DOT						= ".";
 	public static final String  CONST_STRING_IMPRNT_COLR				= "COLR";
 	public static final String  CONST_STRING_IMPRINT_CODE             = "IMMD";
+	public static final String  CONST_STRING_NEWLINECHARS             ="(\r\n|\n)";	
+	
     
 	  public static Map<String, String> SUPPLIER_EMAIL_ID_MAP =new HashMap<String, String>();
 	  public static Map<String, String> SUPPORT_EMAIL_ID_MAP =new HashMap<String, String>();
