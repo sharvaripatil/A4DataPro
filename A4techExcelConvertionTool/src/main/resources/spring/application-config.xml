@@ -95,6 +95,7 @@
 		<property name="dCProductsExcelMapping" ref="dCProductsExcelMappingId" />
 		<property name="kukuProductsExcelMapping" ref="kukuProductsExcelMappingId" />
 		<property name="espTemplateMapping" ref="espTemplateMappingId" />
+		<property name="rfgLineProductExcelMapping" ref="rfgLineProductExcelMappingId" />
 		<property name="klMapping" ref="klMappingId"/>
 		<property name="bbiProductsExcelMapping" ref="bbiProductsExcelMappingId"/>
 		<property name="adspecMapping" ref="adspecProductsExcelMappingId"/>
@@ -148,12 +149,22 @@
 		<property name="rushTimeParser" ref="rushTimeParser" />
 		<property name="productImprintMethodParser" ref="productImprintMethodParser" />
 		<property name="shippingEstimationParser" ref="shippingEstimationParser" />
-		<property name="ProductMaterialParserObj" ref="ProductMaterialParserObj" />
-		<property name="PriceGridParserObj" ref="PriceGridParserObj" />
+		<property name="productMaterialParserObj" ref="ProductMaterialParserObj" />
+		<property name="priceGridParserObj" ref="PriceGridParserObj" />
 		<property name="colorParserObj" ref="colorParserObj" />
 		<property name="sizeParserObj" ref="sizeParserObj" />
 
 	</bean>
+	
+	<bean id="rfgLineProductExcelMappingId" class="com.a4tech.RFGLine.product.mapping.RFGLineProductExcelMapping">
+	<property name="postServiceImpl" ref="postService" />
+	<property name="shippingParserObj" ref="shippingParserObj" />
+	<property name="rfgPriceGridParserObj" ref="rfgPriceGridParserObj" />
+   <property name="descrptionParserObj" ref="descrptionParserObj" />
+     <property name="productDaoObj" ref="productDao" />
+   	</bean>
+	
+	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="${mysql.db.driverClassName}" />
@@ -245,6 +256,9 @@
 	<bean id="sizeParserObj" class="com.a4tech.product.ESPTemplate.parser.SizeParser" />
 	<!-- ESPTemplate file-91561 end -->
 	
+	
+	
+	
 	<!-- supplier 64509 configuration start -->
   <bean id="klPriceGridParserId" class="com.a4tech.kl.product.parser.KlPriceGridParser"/>
   <bean id="klProductAttributeParserId" class="com.a4tech.kl.product.parser.KlProductAttributeParser"/>
@@ -254,6 +268,26 @@
      	<property name="klPriceGridPar" ref="klPriceGridParserId"/>
      	<property name="attributeparser" ref="klProductAttributeParserId"/>
     </bean>
+    
+    	<bean id="shippingParserObj" class="com.a4tech.RFGLine.products.parser.RFGShippingEstimationParser" />
+        <bean id="rfgPriceGridParserObj" class="com.a4tech.RFGLine.products.parser.RFGPriceGridParser" />
+        <bean id="descrptionParserObj" class="com.a4tech.RFGLine.products.parser.RFGDescrptionParser" >
+        <property name="descsizeParserObj" ref="descsizeParserObj" />
+        <property name="attributeObj" ref="attributeObj" />
+        <property name="materialParserObj" ref="materialParserObj" />
+        <property name="rfgPriceGridParserObj" ref="rfgPriceGridParserObj" />
+        
+        
+         
+        </bean>
+        <bean id="descsizeParserObj" class="com.a4tech.RFGLine.products.parser.RFGSizeParser" />
+         <bean id="attributeObj" class="com.a4tech.RFGLine.products.parser.RFGProductAttributeParser" />
+         <bean id="materialParserObj" class="com.a4tech.RFGLine.products.parser.RFGMaterialParser" />
+         
+         
+    
+    
+    
     
     <!-- supplier 64509 configuration end -->  
     

@@ -23,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.a4tech.ESPTemplate.product.mapping.ESPTemplateMapping;
 import com.a4tech.JulyData.excelMapping.JulyDataMapping;
+import com.a4tech.RFGLine.product.mapping.RFGLineProductExcelMapping;
 import com.a4tech.adspec.product.mapping.AdspecProductsExcelMapping;
 import com.a4tech.core.excelMapping.ExcelMapping;
 import com.a4tech.core.model.FileBean;
@@ -60,6 +61,7 @@ public class FileUpload extends HttpServlet {
 	private ESPTemplateMapping espTemplateMapping;
 	private KukuProductsExcelMapping kukuProductsExcelMapping;
 	private KlProductsExcelMapping klMapping;
+	private RFGLineProductExcelMapping rfgLineProductExcelMapping;
 	private BBIProductsExcelMapping bbiProductsExcelMapping;
 	private AdspecProductsExcelMapping adspecMapping;
 	private ILoginService loginService;
@@ -296,6 +298,28 @@ public class FileUpload extends HttpServlet {
 			    		}
 			       }
 			    	return "redirect:redirect.htm";
+			    	
+			 case "82283": // new bbi term
+					finalResult = rfgLineProductExcelMapping.readExcel(accessToken,
+							workbook, Integer.valueOf(asiNumber), batchId);
+					if (finalResult != null) {
+						splitFinalResult = finalResult
+								.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+						noOfProductsSuccess = splitFinalResult[0];
+						noOfProductsFailure = splitFinalResult[1];
+						redirectAttributes.addFlashAttribute(
+								"successProductsCount", noOfProductsSuccess);
+						redirectAttributes.addFlashAttribute(
+								"failureProductsCount", noOfProductsFailure);
+						if (!noOfProductsFailure
+								.equals(ApplicationConstants.CONST_STRING_ZERO)) {
+							redirectAttributes.addFlashAttribute("successmsg",
+									emailMsg);
+							downloadMail.sendMail(asiNumber, batchId);
+						}
+					}
+			    	return "redirect:redirect.htm";
+
 			default:
 				break;
 			}
@@ -441,6 +465,16 @@ public class FileUpload extends HttpServlet {
 			BBIProductsExcelMapping bbiProductsExcelMapping) {
 		this.bbiProductsExcelMapping = bbiProductsExcelMapping;
 	}
+
+	public RFGLineProductExcelMapping getRfgLineProductExcelMapping() {
+		return rfgLineProductExcelMapping;
+	}
+
+	public void setRfgLineProductExcelMapping(
+			RFGLineProductExcelMapping rfgLineProductExcelMapping) {
+		this.rfgLineProductExcelMapping = rfgLineProductExcelMapping;
+	}
+
 
 
 }

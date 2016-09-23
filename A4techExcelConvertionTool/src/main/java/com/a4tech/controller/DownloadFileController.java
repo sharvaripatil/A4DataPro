@@ -69,7 +69,7 @@ public class DownloadFileController {
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		      helper.setFrom(username);
 		      helper.setTo(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
-		      String[] bccs = {"venkateswarlu.nidamanuri@a4technology.com",
+		      String[] bccs = {
 		    		                "amey.more@a4technology.com"};
 		      helper.setBcc(bccs);
 		      helper.setSubject("Product Error Batch File");
@@ -78,7 +78,7 @@ public class DownloadFileController {
 		       helper.addAttachment(file.getFilename(), file);
 			_LOGGER.info("Sending Email to "
 					+ ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId) + "," +
-															    "venkateswarlu.nidamanuri@a4technology.com" + ","+
+															   
 					                                       "amey.more@a4technology.com");
 		       mailSenderObj.send(mimeMessage);
 		       _LOGGER.info("Mail Sent Successfully !!!");
