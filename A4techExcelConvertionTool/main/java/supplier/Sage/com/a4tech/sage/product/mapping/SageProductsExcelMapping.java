@@ -43,6 +43,7 @@ import com.a4tech.sage.product.parser.PriceGridParser;
 import com.a4tech.sage.product.parser.RushTimeParser;
 import com.a4tech.sage.product.parser.ShippingEstimateParser;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 
 
 public class SageProductsExcelMapping {
@@ -98,14 +99,8 @@ public class SageProductsExcelMapping {
 		
 		StringBuilder listOfQuantity = new StringBuilder();
 		StringBuilder listOfPrices = new StringBuilder();
-		StringBuilder listOfNetPrice = new StringBuilder();
 		StringBuilder listOfDiscount = new StringBuilder();
-		StringBuilder basePriceCriteria =  new StringBuilder();
-		StringBuilder UpCharQuantity = new StringBuilder();
-		StringBuilder UpCharPrices = new StringBuilder();
-		StringBuilder UpchargeNetPrice = new StringBuilder();
-		StringBuilder UpCharDiscount = new StringBuilder();
-		StringBuilder UpCharCriteria = new StringBuilder();
+	
 		String		priceCode = null;
 		StringBuilder pricesPerUnit = new StringBuilder();
 		String quoteUponRequest  = null;
@@ -125,6 +120,9 @@ public class SageProductsExcelMapping {
 		String cartonH = null;
 		String weightPerCarton = null;
 		String unitsPerCarton = null;
+		String ListPrice =null;
+		String Discountcode = null;
+		String decorationMethod =null;
 		
 		List<Color> color = new ArrayList<Color>();
 		List<ImprintMethod> imprintMethods = new ArrayList<ImprintMethod>();
@@ -147,9 +145,7 @@ public class SageProductsExcelMapping {
 				productXids.add(productId);
 			}
 			 boolean checkXid  = false;
-			 ShippingEstimate ShipingItem = null;
-				String shippingitemValue = null;
-				String shippingdimensionValue = null;
+		
 			
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
@@ -186,7 +182,6 @@ public class SageProductsExcelMapping {
 								priceGrids = new ArrayList<PriceGrid>();
 								listOfPrices = new StringBuilder();
 							    listOfQuantity = new StringBuilder();
-								listOfNetPrice = new StringBuilder();
 								productConfigObj = new ProductConfigurations();
 								themeList = new ArrayList<Theme>();
 								finalDimensionObj = new Dimension();
@@ -532,22 +527,27 @@ public class SageProductsExcelMapping {
 						priceIncludes.append(cell.getStringCellValue());
 						break;
 						
-				case 47:       
-					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-					quantity = cell.getStringCellValue();
-			         if(!StringUtils.isEmpty(quantity)){
-			        	 listOfNetPrice.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-			         }
-				}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-					double quantity1 = (double)cell.getNumericCellValue();
-			         if(!StringUtils.isEmpty(quantity1)){
-			        	 listOfNetPrice.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-			         }
-				}else{
-				}
+				case 47:    //setup charge   
+					 try{
+						  ListPrice = CommonUtility.getCellValueDouble(cell);
+					     if(!StringUtils.isEmpty(ListPrice) && !ListPrice.equals("0")){
+				        	 listOfPrices.append(ListPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
+					}catch (Exception e) {
+						 _LOGGER.info("Error in base price prices field");							
+					}
 				  break;
-				case 48:
-							break;
+				case 48://setup discount code
+					
+					try{
+						  Discountcode = CommonUtility.getCellValueStrinOrInt(cell);
+					     if(!StringUtils.isEmpty(Discountcode) && !Discountcode.equals("0")){
+				        	 listOfDiscount.append(Discountcode).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
+					}catch (Exception e) {
+			        	 _LOGGER.info("Error in pricePerUnit field");
+					}
+				  break;
 				case 49:
 							break;
 				case 50:
@@ -660,9 +660,8 @@ public class SageProductsExcelMapping {
 					}
 					break;
 				case 89: // DecorationMethod
-					String decorationMethod = cell.getStringCellValue();
-					listOfImprintMethods = imprintMethodParser.getImprintMethodValues(decorationMethod,
-							                                                           listOfImprintMethods);
+					 decorationMethod = cell.getStringCellValue();
+					listOfImprintMethods = imprintMethodParser.getImprintMethodValues(decorationMethod,listOfImprintMethods);
 					 break; 
 					 
 				case 90: //NoDecoration
@@ -840,7 +839,7 @@ public class SageProductsExcelMapping {
 					                                            dimensionUnits.toString(), dimensionType.toString());
                finalDimensionObj.setValues(valuesList);	
 			size.setDimension(finalDimensionObj);
-			productConfigObj.setImprintMethods(imprintMethods); 
+			//productConfigObj.setImprintMethods(imprintMethods); 
 			productConfigObj.setSizes(size);
 			dimensionValue = new  StringBuilder();
 			dimensionUnits = new  StringBuilder();
@@ -854,22 +853,19 @@ public class SageProductsExcelMapping {
 						         priceIncludes.toString(), true, quoteUponRequest, productName,"",priceGrids);	
 			}
 			
-			 
-				/*if(UpCharCriteria != null && !UpCharCriteria.toString().isEmpty()){
-					priceGrids = priceGridParser.getUpchargePriceGrid(UpCharQuantity.toString(), UpCharPrices.toString(), UpCharDiscount.toString(), UpCharCriteria.toString(), 
-							 upChargeQur, currencyType, upChargeName, upchargeType, upChargeLevel, new Integer(1), priceGrids);
-				}*/
+		
+			if( decorationMethod != null && !decorationMethod.toString().isEmpty())
+			{
+			
+			priceGrids = priceGridParser.getUpchargePriceGrid("1", ListPrice, Discountcode, "Imprint Method", 
+							"false", "USD", decorationMethod, "Imprint Method Charge", "Other", new Integer(1), priceGrids);
+			}
 				
 				
 				upChargeQur = null;
-				UpCharCriteria = new StringBuilder();
 				priceQurFlag = null;
 				listOfPrices = new StringBuilder();
 			    listOfQuantity = new StringBuilder();
-				listOfNetPrice = new StringBuilder();
-				UpCharPrices = new StringBuilder();
-				UpCharDiscount = new StringBuilder();
-				UpCharQuantity = new StringBuilder();
 			    optiontype=null;
 			    optionname=null;
 			    optionvalues=null;
