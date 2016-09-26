@@ -57,7 +57,7 @@ public class FileUpload extends HttpServlet {
 	private V2ExcelMapping productV2ExcelMapping;
 	private ExcelMapping gbDataExcelMapping;
 	private DownloadFileController downloadMail;
-	private DCProductsExcelMapping dCProductsExcelMapping;
+	private DCProductsExcelMapping dcProductExcelMapping;
 	private ESPTemplateMapping espTemplateMapping;
 	private KukuProductsExcelMapping kukuProductsExcelMapping;
 	private KlProductsExcelMapping klMapping;
@@ -186,7 +186,7 @@ public class FileUpload extends HttpServlet {
 				return "redirect:redirect.htm";
 
 			case "55205": // Distributor Central
-				finalResult = dCProductsExcelMapping.readExcel(accessToken,
+				finalResult = dcProductExcelMapping.readExcel(accessToken,
 						workbook, Integer.valueOf(asiNumber), batchId);
 				if (finalResult != null) {
 					splitFinalResult = finalResult
@@ -331,7 +331,6 @@ public class FileUpload extends HttpServlet {
 		}
 		return "home";
 	}
-
 	@RequestMapping(value = "/redirect.htm", method = RequestMethod.GET)
 	public String submit(Model model) {
 		String noOfSucc = (String) model.asMap().get("successProductsCount");
@@ -416,14 +415,13 @@ public class FileUpload extends HttpServlet {
 	public void setDownloadMail(DownloadFileController downloadMail) {
 		this.downloadMail = downloadMail;
 	}
-
-	public DCProductsExcelMapping getdCProductsExcelMapping() {
-		return dCProductsExcelMapping;
+	public DCProductsExcelMapping getDcProductExcelMapping() {
+	return dcProductExcelMapping;
 	}
 
-	public void setdCProductsExcelMapping(
-			DCProductsExcelMapping dCProductsExcelMapping) {
-		this.dCProductsExcelMapping = dCProductsExcelMapping;
+	public void setDcProductExcelMapping(
+		DCProductsExcelMapping dcProductExcelMapping) {
+	this.dcProductExcelMapping = dcProductExcelMapping;
 	}
 
 	public KukuProductsExcelMapping getKukuProductsExcelMapping() {

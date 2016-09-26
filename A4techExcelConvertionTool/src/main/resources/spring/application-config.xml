@@ -92,7 +92,7 @@
 		<property name="productDao" ref="productDao" />
 		<property name="gbDataExcelMapping" ref="gbDataExcelMappingId" />
 		<property name="downloadMail" ref="downloadFileController" />
-		<property name="dCProductsExcelMapping" ref="dCProductsExcelMappingId" />
+		<property name="dcProductExcelMapping" ref="dCProductsExcelMappingId" />
 		<property name="kukuProductsExcelMapping" ref="kukuProductsExcelMappingId" />
 		<property name="espTemplateMapping" ref="espTemplateMappingId" />
 		<property name="rfgLineProductExcelMapping" ref="rfgLineProductExcelMappingId" />
