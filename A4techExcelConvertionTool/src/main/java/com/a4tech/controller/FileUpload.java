@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,21 +23,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.a4tech.ESPTemplate.product.mapping.ESPTemplateMapping;
 import com.a4tech.JulyData.excelMapping.JulyDataMapping;
+import com.a4tech.RFGLine.product.mapping.RFGLineProductExcelMapping;
 import com.a4tech.adspec.product.mapping.AdspecProductsExcelMapping;
 import com.a4tech.core.excelMapping.ExcelMapping;
 import com.a4tech.core.model.FileBean;
-import com.a4tech.core.validator.FileValidator;
 import com.a4tech.dc.product.mapping.DCProductsExcelMapping;
 import com.a4tech.kl.product.mapping.KlProductsExcelMapping;
 import com.a4tech.product.bbi.mapping.BBIProductsExcelMapping;
-import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
 import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.service.ILoginService;
-import com.a4tech.product.service.ProductService;
+import com.a4tech.product.service.IProductService;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
-import com.a4tech.service.loginImpl.LoginServiceImpl;
 import com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -54,10 +50,7 @@ public class FileUpload extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 1L;
 	@Autowired
-	ProductService productService;
-	@Autowired
-	FileValidator fileValidator;
-	// FileValidator validate = new FileValidator();
+	IProductService productService;
 	private static String accessToken = null;
 	private UsbProductsExcelMapping usbExcelMapping;
 	private JulyDataMapping julymapping;
@@ -65,22 +58,18 @@ public class FileUpload extends HttpServlet {
 	private V2ExcelMapping productV2ExcelMapping;
 	private ExcelMapping gbDataExcelMapping;
 	private DownloadFileController downloadMail;
-	private DCProductsExcelMapping dCProductsExcelMapping;
+	private DCProductsExcelMapping dcProductExcelMapping;
 	private ESPTemplateMapping espTemplateMapping;
 	private KukuProductsExcelMapping kukuProductsExcelMapping;
 	private KlProductsExcelMapping klMapping;
+	private RFGLineProductExcelMapping rfgLineProductExcelMapping;
 	private BBIProductsExcelMapping bbiProductsExcelMapping;
 	private AdspecProductsExcelMapping adspecMapping;
 	private NewProductsExcelMapping newProductsExcelMapping;
 	private ILoginService loginService;
 	private ProductDao productDao;
 	private static Logger _LOGGER = Logger.getLogger(Class.class);
-
-	@InitBinder
-	private void initBinder(WebDataBinder binder) {
-		binder.setValidator(fileValidator);
-	}
-
+	
 	@RequestMapping(method = RequestMethod.GET)
 	public String welcomePage(Map<String, Object> model) {
 		FileBean fileBean = new FileBean();
@@ -94,14 +83,7 @@ public class FileUpload extends HttpServlet {
 			BindingResult result, final RedirectAttributes redirectAttributes,
 			Model model, HttpServletRequest request) {
 		_LOGGER.info("Enter Controller Class");
-		/*
-		 * String asiNumber = request.getParameter("asiNumber"); String userName
-		 * = request.getParameter("asiNumber"); String password =
-		 * request.getParameter("asiNumber"); //MultipartFile file =
-		 * (MultipartFile) request.;
-		 */
 		String finalResult = null;
-		// LoginServiceImpl loginService = new LoginServiceImpl();
 		Workbook workbook = null;
 
 		int numOfProducts = 0;
@@ -206,7 +188,7 @@ public class FileUpload extends HttpServlet {
 				return "redirect:redirect.htm";
 
 			case "55205": // Distributor Central
-				finalResult = dCProductsExcelMapping.readExcel(accessToken,
+				finalResult = dcProductExcelMapping.readExcel(accessToken,
 						workbook, Integer.valueOf(asiNumber), batchId);
 				if (finalResult != null) {
 					splitFinalResult = finalResult
@@ -334,6 +316,28 @@ public class FileUpload extends HttpServlet {
 			    		}
 			       }
 			    	return "redirect:redirect.htm";
+			    	
+			    	case "82283": // new bbi term
+					finalResult = rfgLineProductExcelMapping.readExcel(accessToken,
+							workbook, Integer.valueOf(asiNumber), batchId);
+					if (finalResult != null) {
+						splitFinalResult = finalResult
+								.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+						noOfProductsSuccess = splitFinalResult[0];
+						noOfProductsFailure = splitFinalResult[1];
+						redirectAttributes.addFlashAttribute(
+								"successProductsCount", noOfProductsSuccess);
+						redirectAttributes.addFlashAttribute(
+								"failureProductsCount", noOfProductsFailure);
+						if (!noOfProductsFailure
+								.equals(ApplicationConstants.CONST_STRING_ZERO)) {
+							redirectAttributes.addFlashAttribute("successmsg",
+									emailMsg);
+							downloadMail.sendMail(asiNumber, batchId);
+						}
+					}
+			    	return "redirect:redirect.htm";
+			    	
 			default:
 				break;
 			}
@@ -345,7 +349,6 @@ public class FileUpload extends HttpServlet {
 		}
 		return "home";
 	}
-
 	@RequestMapping(value = "/redirect.htm", method = RequestMethod.GET)
 	public String submit(Model model) {
 		String noOfSucc = (String) model.asMap().get("successProductsCount");
@@ -359,15 +362,6 @@ public class FileUpload extends HttpServlet {
 		}
 		return "success";
 	}
-
-	public FileValidator getFileValidator() {
-		return fileValidator;
-	}
-
-	public void setFileValidator(FileValidator fileValidator) {
-		this.fileValidator = fileValidator;
-	}
-
 	public UsbProductsExcelMapping getUsbExcelMapping() {
 		return usbExcelMapping;
 	}
@@ -392,11 +386,11 @@ public class FileUpload extends HttpServlet {
 		this.loginService = loginService;
 	}
 
-	public ProductService getProductService() {
+	public IProductService getProductService() {
 		return productService;
 	}
 
-	public void setProductService(ProductService productService) {
+	public void setProductService(IProductService productService) {
 		this.productService = productService;
 	}
 
@@ -439,14 +433,13 @@ public class FileUpload extends HttpServlet {
 	public void setDownloadMail(DownloadFileController downloadMail) {
 		this.downloadMail = downloadMail;
 	}
-
-	public DCProductsExcelMapping getdCProductsExcelMapping() {
-		return dCProductsExcelMapping;
+	public DCProductsExcelMapping getDcProductExcelMapping() {
+	return dcProductExcelMapping;
 	}
 
-	public void setdCProductsExcelMapping(
-			DCProductsExcelMapping dCProductsExcelMapping) {
-		this.dCProductsExcelMapping = dCProductsExcelMapping;
+	public void setDcProductExcelMapping(
+		DCProductsExcelMapping dcProductExcelMapping) {
+	this.dcProductExcelMapping = dcProductExcelMapping;
 	}
 
 	public KukuProductsExcelMapping getKukuProductsExcelMapping() {
@@ -497,6 +490,16 @@ public class FileUpload extends HttpServlet {
 			NewProductsExcelMapping newProductsExcelMapping) {
 		this.newProductsExcelMapping = newProductsExcelMapping;
 	}
+
+	public RFGLineProductExcelMapping getRfgLineProductExcelMapping() {
+		return rfgLineProductExcelMapping;
+	}
+
+	public void setRfgLineProductExcelMapping(
+			RFGLineProductExcelMapping rfgLineProductExcelMapping) {
+		this.rfgLineProductExcelMapping = rfgLineProductExcelMapping;
+	}
+
 
 
 }

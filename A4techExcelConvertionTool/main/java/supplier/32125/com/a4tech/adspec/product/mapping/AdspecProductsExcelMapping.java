@@ -20,7 +20,6 @@ import com.a4tech.adspec.product.parser.AdspecProductAttributeParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Catalog;
-import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.PriceGrid;

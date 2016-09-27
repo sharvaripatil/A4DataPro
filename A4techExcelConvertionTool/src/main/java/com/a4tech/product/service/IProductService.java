@@ -2,9 +2,8 @@ package com.a4tech.product.service;
 
 import org.apache.poi.ss.usermodel.Workbook;
 
-public interface ProductService {
+public interface IProductService {
 	
-	//public int excelProducts(String accessToken,Workbook workBook,int asiNumber,int batchId);
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId);
 
 }
