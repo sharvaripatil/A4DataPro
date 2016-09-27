@@ -99,7 +99,7 @@ public class ApplicationConstants {
 	public static final String  CONST_DELIMITER_DOT						= ".";
 	public static final String  CONST_STRING_IMPRNT_COLR				= "COLR";
 	public static final String  CONST_STRING_IMPRINT_CODE             = "IMMD";
-    
+	public static final String	CONST_STRING_SHIPPING_NUMBER_UNIT_CASE   = "per Case";
 	  public static Map<String, String> SUPPLIER_EMAIL_ID_MAP =new HashMap<String, String>();
 	  public static Map<String, String> SUPPORT_EMAIL_ID_MAP =new HashMap<String, String>();
 	    static {
@@ -113,7 +113,7 @@ public class ApplicationConstants {
 	    	SUPPLIER_EMAIL_ID_MAP.put("65851", "amey.more@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("91561", "sharvari.patil@a4technology.com");
 	    	SUPPLIER_EMAIL_ID_MAP.put("40445", "amey.more@a4technology.com");
-	    	
+	    	SUPPLIER_EMAIL_ID_MAP.put("91284", "amey.more@a4technology.com");
 	    	SUPPORT_EMAIL_ID_MAP.put("dev_1", "amey.more@a4technology.com");
 	    	SUPPORT_EMAIL_ID_MAP.put("dev_2", "venkateswarlu.nidamanuri@a4technology.com");
 	    	SUPPORT_EMAIL_ID_MAP.put("dev_3", "sharvari.patil@a4technology.com");

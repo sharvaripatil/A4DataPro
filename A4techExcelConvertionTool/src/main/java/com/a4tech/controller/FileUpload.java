@@ -35,6 +35,7 @@ import com.a4tech.product.bbi.mapping.BBIProductsExcelMapping;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
+import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.service.ILoginService;
 import com.a4tech.product.service.ProductService;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
@@ -70,6 +71,7 @@ public class FileUpload extends HttpServlet {
 	private KlProductsExcelMapping klMapping;
 	private BBIProductsExcelMapping bbiProductsExcelMapping;
 	private AdspecProductsExcelMapping adspecMapping;
+	private NewProductsExcelMapping newProductsExcelMapping;
 	private ILoginService loginService;
 	private ProductDao productDao;
 	private static Logger _LOGGER = Logger.getLogger(Class.class);
@@ -316,6 +318,22 @@ public class FileUpload extends HttpServlet {
 			    		}
 			       }
 			    	return "redirect:redirect.htm";
+			    	
+			 case "91284":  //NewProducts
+			    	finalResult = newProductsExcelMapping.readExcel(accessToken, workbook, 
+                                  Integer.valueOf(asiNumber), batchId);
+			    	if(finalResult != null){
+			    		splitFinalResult = finalResult.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+			    		noOfProductsSuccess = splitFinalResult[0];
+			    		noOfProductsFailure = splitFinalResult[1];
+			    		redirectAttributes.addFlashAttribute("successProductsCount", noOfProductsSuccess);
+			    		redirectAttributes.addFlashAttribute("failureProductsCount", noOfProductsFailure);
+			    		if(!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)){
+			    			redirectAttributes.addFlashAttribute("successmsg", emailMsg);
+			    			downloadMail.sendMail(asiNumber, batchId);
+			    		}
+			       }
+			    	return "redirect:redirect.htm";
 			default:
 				break;
 			}
@@ -469,6 +487,15 @@ public class FileUpload extends HttpServlet {
 	public void setBbiProductsExcelMapping(
 			BBIProductsExcelMapping bbiProductsExcelMapping) {
 		this.bbiProductsExcelMapping = bbiProductsExcelMapping;
+	}
+
+	public NewProductsExcelMapping getNewProductsExcelMapping() {
+		return newProductsExcelMapping;
+	}
+
+	public void setNewProductsExcelMapping(
+			NewProductsExcelMapping newProductsExcelMapping) {
+		this.newProductsExcelMapping = newProductsExcelMapping;
 	}
 
 
