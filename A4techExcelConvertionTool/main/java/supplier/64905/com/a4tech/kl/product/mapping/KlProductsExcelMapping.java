@@ -673,7 +673,7 @@ public class KlProductsExcelMapping {
 					priceGrids = klPriceGridPar.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE , 
 							imprintUpchargePrice,ApplicationConstants.CONST_STRING_DISCOUNT_CODE_Z,
 							ApplicationConstants.CONST_STRING_IMPRINT_METHOD,ApplicationConstants.CONST_CHAR_N, 
-							ApplicationConstants.CONST_STRING__CURRENCY_USD, imprintMethodName, ApplicationConstants.CONST_STRING_IMMD_CHARGE, 
+							ApplicationConstants.CONST_STRING_CURRENCY_USD, imprintMethodName, ApplicationConstants.CONST_STRING_IMMD_CHARGE, 
 						  ApplicationConstants.CONST_STRING_EMPTY, new Integer(1), priceGrids);
 				}
 				//upChargeQur = null;

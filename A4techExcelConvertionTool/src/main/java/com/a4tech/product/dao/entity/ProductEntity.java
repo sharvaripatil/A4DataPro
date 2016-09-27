@@ -83,7 +83,7 @@ public class ProductEntity implements Serializable{
 	public void addErrorEntity(ErrorEntity entity){
 		if(entity!= null){
 			getErrors().add(entity);
+			entity.setProduct(this);
 		}
-		entity.setProduct(this);
 	}
 }

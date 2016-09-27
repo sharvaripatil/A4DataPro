@@ -408,7 +408,7 @@ public class DCProductsExcelMapping {
 			productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
 			if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
 				priceGrids = dcPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
-						         listOfQuantity.toString(), listOfDiscount.toString(),ApplicationConstants.CONST_STRING__CURRENCY_USD,
+						         listOfQuantity.toString(), listOfDiscount.toString(),ApplicationConstants.CONST_STRING_CURRENCY_USD,
 						         ApplicationConstants.CONST_STRING_EMPTY, ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_CHAR_N, productName,ApplicationConstants.CONST_STRING_EMPTY,priceGrids);	
 			}
 			

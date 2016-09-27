@@ -408,7 +408,7 @@ public class BBIProductsExcelMapping {
 				////imp code
 				priceGrids=	 new ArrayList<PriceGrid>();
 				////
-				priceGrids = bbiPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), discCode,ApplicationConstants.CONST_STRING__CURRENCY_USD,
+				priceGrids = bbiPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), discCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,
 						priceIncludes,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, productName,ApplicationConstants.CONST_STRING_EMPTY,priceGrids);	
 			}
 			
@@ -418,21 +418,21 @@ public class BBIProductsExcelMapping {
 				imprintMethodValueUpchrg=imprintMethodValueUpchrg.substring(imprintMethodValueUpchrg.indexOf("$")+1, imprintMethodValueUpchrg.indexOf("("));
 				
 			priceGrids = bbiPriceGridParser.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,imprintMethodValueUpchrg.trim(),discCode ,
-					"IMMD:"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING__CURRENCY_USD, imprintMethodValue, 
+					"IMMD:"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, imprintMethodValue, 
 					ApplicationConstants.CONST_STRING_RUN_CHARGE, ApplicationConstants.CONST_VALUE_TYPE_OTHER, ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
 		    }
 			if(!StringUtils.isEmpty(artWrkVal)&&!StringUtils.isEmpty(artWorkChrg)){
 				discCode=artWorkChrg.substring(artWorkChrg.indexOf("(")+1, artWorkChrg.indexOf(")"));
 				artWorkChrg=artWorkChrg.substring(artWorkChrg.indexOf(":")+1, artWorkChrg.indexOf("("));
 				priceGrids = bbiPriceGridParser.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,artWorkChrg.trim(), discCode,
-						"ARTW:"+artWrkVal,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING__CURRENCY_USD, artWrkVal, 
+						"ARTW:"+artWrkVal,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, artWrkVal, 
 						ApplicationConstants.CONST_STRING_ARTWK_CHARGE, ApplicationConstants.CONST_VALUE_TYPE_OTHER, 2, priceGrids);
 			}
 			if(!StringUtils.isEmpty(imprintMethodValue)&&!StringUtils.isEmpty(logoCharg)){
 				discCode=logoCharg.substring(logoCharg.indexOf("(")+1, logoCharg.indexOf(")"));
 				logoCharg=logoCharg.substring(logoCharg.indexOf(":")+1, logoCharg.indexOf("("));
 				priceGrids = bbiPriceGridParser.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,logoCharg.trim(), discCode,
-						"IMMD:"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING__CURRENCY_USD, imprintMethodValue, 
+						"IMMD:"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, imprintMethodValue, 
 						ApplicationConstants.CONST_STRING_SETUP_CHARGE, ApplicationConstants.CONST_VALUE_TYPE_OTHER, 3, priceGrids);
 			}
 			
@@ -441,7 +441,7 @@ public class BBIProductsExcelMapping {
 				copyChrg=copyChrg.substring(copyChrg.indexOf(":")+1, copyChrg.indexOf("("));
 				
 				priceGrids = bbiPriceGridParser.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,copyChrg.trim(), discCode,
-						"IMMD:"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING__CURRENCY_USD, imprintMethodValue, 
+						"IMMD:"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, imprintMethodValue, 
 						ApplicationConstants.CONST_STRING_COPY_CHARGE, ApplicationConstants.CONST_VALUE_TYPE_OTHER, 4, priceGrids);
 			}
 			

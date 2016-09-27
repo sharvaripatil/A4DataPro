@@ -71,10 +71,9 @@ public class ApplicationConstants {
 	
 	public static final String  CONST_STRING_FALSE						= "False";
 	public static final String  CONST_STRING_DISCOUNT_CODE_Z			= "Z";
-	public static final String  CONST_STRING__SERVICECHARGE				= "Required";
-	public static final String  CONST_STRING__YES						= "Yes";
-	public static final String  CONST_STRING__PERSONALIZATION			= "PERSONALIZATION";
-	public static final String  CONST_STRING__CURRENCY_USD              ="USD";
+	public static final String  CONST_STRING_SERVICECHARGE				= "Required";
+	public static final String  CONST_STRING_YES						= "Yes";
+	public static final String  CONST_STRING_CURRENCY_USD               ="USD";
 	public static final String  CONST_STRING_IMMD_CHARGE			    = "Imprint Method Charge";
 	public static final String	CONST_STRING_FULLCOLOR					="FULL COLOR";
 	public static final String	CONST_STRING_DAYS					    ="days";
@@ -88,11 +87,26 @@ public class ApplicationConstants {
 	public static final String  CONST_STRING_HARDWARE					= "Hardware";
 	public static final String  CONST_STRING_WARRANTY_CHARGE_TYPE		= "Warranty Charge";
 	public static final String  CONST_STRING_WARRANTY_INFORMATION 		= "Warranty Information";
+	public static final String  CONST_REDIRECT_URL               		= "redirect:redirect.htm";
+	public static final String  CONST_STRING_HOME						= "home";
+	public static final String  CONST_STRING_SUCCESS					= "success";
+	public static final String  CONST_STRING_FILE_NAME                  = "fileName";
+	public static final String  SUCCESS_PRODUCTS_COUNT      			= "successProductsCount";
+	public static final String  FAILURE_PRODUCTS_COUNT      			= "failureProductsCount";
+	public static final String  CONST_STRING_SUCCESS_MSG			    = "successmsg";
+	public static final String  CONST_STRING_UN_AUTHORIZED				= "unAuthorized";
+	public static final String  CONST_STRING_ERROR_PAGE					= "errorPage";
+	public static final String	CONST_STRING_XLS						= "xls";
+	public static final String	CONST_STRING_XLSX						= "xlsx";
+	public static final String	CONST_STRING_INVALID_UPLOAD_FILE		= "invalidUploadFile";
+	public static final String	CONST_STRING_INVALID_DETAILS			= "invalidDetails";
+	public static final String  MAIL_SEND_SUCCESS_MESSAGE				= "Email has been sent Successfully !!!";
 	
-	public static final String  CONST_STRING_COUNTRY_CODE_CN                = "CN";
-	public static final String  CONST_STRING_AND					        = "and";
-	public static final String  CONST_STRING_PLUS				            = "\\+";
-	public static final String  CONST_STRING_RUN_CHARGE			    = "Run Charge";
+	
+	public static final String  CONST_STRING_COUNTRY_CODE_CN            = "CN";
+	public static final String  CONST_STRING_AND					    = "and";
+	public static final String  CONST_STRING_PLUS				        = "\\+";
+	public static final String  CONST_STRING_RUN_CHARGE			    	= "Run Charge";
 	public static final String  CONST_STRING_COPY_CHARGE			    ="Copy Changes Charge";
 	public static final String  CONST_STRING_SETUP_CHARGE			    ="Set-up Charge";
 	public static final String  CONST_STRING_ARTWK_CHARGE			    ="Artwork Charge";
@@ -102,8 +116,8 @@ public class ApplicationConstants {
 	public static final String  CONST_STRING_NEWLINECHARS             ="(\r\n|\n)";	
 	
     
-	  public static Map<String, String> SUPPLIER_EMAIL_ID_MAP =new HashMap<String, String>();
-	  public static Map<String, String> SUPPORT_EMAIL_ID_MAP =new HashMap<String, String>();
+	  public static final Map<String, String> SUPPLIER_EMAIL_ID_MAP =new HashMap<>();
+	  public static final Map<String, String> SUPPORT_EMAIL_ID_MAP =new HashMap<>();
 	    static {
 	       
 	    	SUPPLIER_EMAIL_ID_MAP.put("55201", "venkateswarlu.nidamanuri@a4technology.com");

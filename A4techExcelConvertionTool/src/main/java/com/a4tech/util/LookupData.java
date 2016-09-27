@@ -7,9 +7,9 @@ import java.util.Set;
 
 public class LookupData {
 	
-	public static  Map<String,String> criteriaCodeMap =new HashMap<String, String>();
-	public static Set<String> repeateIndex = new HashSet<String>();
-	public static Set<String> shapes = new HashSet<String>();
+	public static final Map<String,String> criteriaCodeMap =new HashMap<String, String>();
+	public static final Set<String> repeateIndex = new HashSet<String>();
+	public static final Set<String> shapes = new HashSet<String>();
 	static{
 		
 		repeateIndex.add("1");

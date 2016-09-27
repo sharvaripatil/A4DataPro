@@ -20,8 +20,8 @@ private Logger              _LOGGER              = Logger.getLogger(getClass());
 		
 		Personalization persObj=null;
 				persObj=new Personalization();
-	 			persObj.setType(ApplicationConstants.CONST_STRING__PERSONALIZATION);
-	 			persObj.setAlias(ApplicationConstants.CONST_STRING__PERSONALIZATION);
+	 			persObj.setType(ApplicationConstants.CONST_STRING_PERSONALIZATION);
+	 			persObj.setAlias(ApplicationConstants.CONST_STRING_PERSONALIZATION);
 	 			listPersonalz.add(persObj);
 	 			_LOGGER.info("PERSONALIZATION processed");
 		return listPersonalz;

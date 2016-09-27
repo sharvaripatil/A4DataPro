@@ -34,7 +34,6 @@ public class DownloadFileController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String doSendEmail(HttpServletRequest request,
 			HttpServletResponse response,Model model) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		response.setContentType("text/html");
 		String batchId=(String) request.getSession().getAttribute("batchId"); 
 		String fileName= batchId+".txt";
@@ -61,7 +60,7 @@ public class DownloadFileController {
 			
 	}
 	
-	public void sendMail(String supplierId,int batchId){
+	public boolean sendMail(String supplierId,int batchId){
 		String fileName= batchId+".txt";
 		try {
 				FileSystemResource  file = new FileSystemResource(ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH+ fileName);
@@ -83,13 +82,13 @@ public class DownloadFileController {
 		       mailSenderObj.send(mimeMessage);
 		       _LOGGER.info("Mail Sent Successfully !!!");
 		      } catch (javax.mail.MessagingException e) {
-			      // TODO Auto-generated catch block
 			    _LOGGER.error("Mail Not Sent Successfully,Error Msg:"+e.toString());
-			     }catch (Exception e) {
-					// TODO: handle exception
-			    	 _LOGGER.error("Mail Not Sent Successfully,Error Msg:"+e.toString());
-				}
-		
+			    	return false;
+			 }catch (Exception e) {
+			   _LOGGER.error("Mail Not Sent Successfully,Error Msg:"+e.toString());
+			     return false;
+			}
+		return true;
 	}
 
 	public String getUsername() {

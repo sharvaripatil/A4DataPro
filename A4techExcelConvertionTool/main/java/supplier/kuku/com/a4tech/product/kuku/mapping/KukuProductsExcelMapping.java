@@ -384,7 +384,7 @@ public class KukuProductsExcelMapping {
 						
 					case 22: //sold as blank=Unimprinted as per client feedback
 						String imprinValue=cell.getStringCellValue();
-						 if(!StringUtils.isEmpty(imprintMethodValue)&&imprinValue.equalsIgnoreCase(ApplicationConstants.CONST_STRING__YES)){
+						 if(!StringUtils.isEmpty(imprintMethodValue)&&imprinValue.equalsIgnoreCase(ApplicationConstants.CONST_STRING_YES)){
 							 imprintMethods = imprintMethodParser.getImprintCriteria(ApplicationConstants.CONST_STRING_UNIMPRINTED,imprintMethods);
 								productConfigObj.setImprintMethods(imprintMethods); 
 						  }
@@ -392,14 +392,14 @@ public class KukuProductsExcelMapping {
 						
 					case 23://personalization
 						String personalizationVaue=cell.getStringCellValue();
-						 if(!StringUtils.isEmpty(personalizationVaue)&&personalizationVaue.equalsIgnoreCase(ApplicationConstants.CONST_STRING__YES)){
-							 listPers = personlizationParser.getPersonalizationCriteria(ApplicationConstants.CONST_STRING__PERSONALIZATION);
+						 if(!StringUtils.isEmpty(personalizationVaue)&&personalizationVaue.equalsIgnoreCase(ApplicationConstants.CONST_STRING_YES)){
+							 listPers = personlizationParser.getPersonalizationCriteria(ApplicationConstants.CONST_STRING_PERSONALIZATION);
 								productConfigObj.setPersonalization(listPers);
 						  }
 						break;
 					case 24:
 						String rushTime = cell.getStringCellValue();
-						if(!StringUtils.isEmpty(rushTime)&&rushTime.equalsIgnoreCase(ApplicationConstants.CONST_STRING__YES)){
+						if(!StringUtils.isEmpty(rushTime)&&rushTime.equalsIgnoreCase(ApplicationConstants.CONST_STRING_YES)){
 						RushTime rushTimeObj=new RushTime();
 						List<RushTimeValue> rushTimeValues=new ArrayList<RushTimeValue>();
 						RushTimeValue rushTimeValue=new RushTimeValue();
@@ -414,7 +414,7 @@ public class KukuProductsExcelMapping {
 						
 					case 25: //Four color process=Four color process under imprint method as per client feedback
 						String imprinFullClValue=cell.getStringCellValue();
-						 if(!StringUtils.isEmpty(imprintMethodValue)&&imprinFullClValue.equalsIgnoreCase(ApplicationConstants.CONST_STRING__YES)){
+						 if(!StringUtils.isEmpty(imprintMethodValue)&&imprinFullClValue.equalsIgnoreCase(ApplicationConstants.CONST_STRING_YES)){
 							 imprintMethods = imprintMethodParser.getImprintCriteria(ApplicationConstants.CONST_STRING_FULLCOLOR,imprintMethods);
 								productConfigObj.setImprintMethods(imprintMethods); 
 						  }
@@ -643,12 +643,12 @@ public class KukuProductsExcelMapping {
 			
 			if(!StringUtils.isEmpty(listOfPrices)){
 					 
-				priceGrids = kukuPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), listOfDiscount.toString(),ApplicationConstants.CONST_STRING__CURRENCY_USD,
+				priceGrids = kukuPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), listOfDiscount.toString(),ApplicationConstants.CONST_STRING_CURRENCY_USD,
 						ApplicationConstants.CONST_STRING_EMPTY,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, productName,ApplicationConstants.CONST_STRING_EMPTY,priceGrids);	
 			}
 			if(!StringUtils.isEmpty(imprintMethodValue)&& !StringUtils.isEmpty(imprintMethodValueUpchrg)){
 					priceGrids = kukuPriceGridParser.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,imprintMethodValueUpchrg, ApplicationConstants.CONST_STRING_DISCOUNT_CODE_Z,
-							"IMMD:"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING__CURRENCY_USD, priceIncludeUp,imprintMethodValue, 
+							"IMMD:"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, priceIncludeUp,imprintMethodValue, 
 							ApplicationConstants.CONST_STRING_IMMD_CHARGE, ApplicationConstants.CONST_VALUE_TYPE_OTHER, ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
 				}
 		

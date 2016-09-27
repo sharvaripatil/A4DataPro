@@ -161,7 +161,7 @@ public class RFGPriceGridParser {
 {
 		priceGrid.setPriceIncludes("plus Setup");
 }
-		priceGrid.setServiceCharge(ApplicationConstants.CONST_STRING__SERVICECHARGE);
+		priceGrid.setServiceCharge(ApplicationConstants.CONST_STRING_SERVICECHARGE);
 		priceGrid
 				.setIsQUR((qurFlag.equalsIgnoreCase("false")) ? ApplicationConstants.CONST_BOOLEAN_FALSE
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);

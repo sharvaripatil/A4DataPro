@@ -15,12 +15,12 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.product.criteria.parser.ProductImprintColorParser;
 import com.a4tech.product.criteria.parser.CatalogParser;
 import com.a4tech.product.criteria.parser.PersonlizationParser;
 import com.a4tech.product.criteria.parser.PriceGridParser;
 import com.a4tech.product.criteria.parser.ProductArtworkProcessor;
 import com.a4tech.product.criteria.parser.ProductColorParser;
+import com.a4tech.product.criteria.parser.ProductImprintColorParser;
 import com.a4tech.product.criteria.parser.ProductImprintMethodParser;
 import com.a4tech.product.criteria.parser.ProductMaterialParser;
 import com.a4tech.product.criteria.parser.ProductNumberParser;
@@ -64,7 +64,6 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.service.loginImpl.LoginServiceImpl;
 import com.a4tech.util.ApplicationConstants;
-import com.a4tech.util.LookupData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ExcelMapping {

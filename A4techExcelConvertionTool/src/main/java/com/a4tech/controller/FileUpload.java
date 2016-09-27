@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -42,15 +41,11 @@ import com.a4tech.v2.core.excelMapping.V2ExcelMapping;
 
 @Controller
 @RequestMapping({ "/", "/uploadFile.htm" })
-public class FileUpload extends HttpServlet {
+public class FileUpload {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	@Autowired
 	IProductService productService;
-	private static String accessToken = null;
+	private String accessToken = null;
 	private UsbProductsExcelMapping usbExcelMapping;
 	private JulyDataMapping julymapping;
 	private SageProductsExcelMapping sageExcelMapping;
@@ -72,7 +67,7 @@ public class FileUpload extends HttpServlet {
 	public String welcomePage(Map<String, Object> model) {
 		FileBean fileBean = new FileBean();
 		model.put("filebean", fileBean);
-		return "home";
+		return ApplicationConstants.CONST_STRING_HOME;
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
@@ -85,13 +80,9 @@ public class FileUpload extends HttpServlet {
 		Workbook workbook = null;
 
 		int numOfProducts = 0;
-		String emailMsg = "Email has been sent Successfully !!!";
-		String noOfProductsSuccess = null;
-		String noOfProductsFailure = null;
-		String[] splitFinalResult;
 		String asiNumber = fileBean.getAsiNumber();
 		if (result.hasErrors()) {
-			return "home";
+			return ApplicationConstants.CONST_STRING_HOME;
 		}
 
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBean
@@ -99,26 +90,28 @@ public class FileUpload extends HttpServlet {
 
 			String fileExtension = CommonUtility.getFileExtension(fileBean
 					.getFile().getOriginalFilename());
-			if (fileExtension.equalsIgnoreCase("xls")) {
+			if (ApplicationConstants.CONST_STRING_XLS.equalsIgnoreCase(fileExtension)) {
 				workbook = new HSSFWorkbook(bis);
 
-			} else if (fileExtension.equalsIgnoreCase("xlsx")) {
+			} else if (ApplicationConstants.CONST_STRING_XLSX.equalsIgnoreCase(fileExtension)) {
 				workbook = new XSSFWorkbook(bis);
 			} else {
 				_LOGGER.info("Invlid upload excel file,Please try one more time");
-				model.addAttribute("invalidUploadFile", "");
-				return "home";
+				model.addAttribute(ApplicationConstants.CONST_STRING_INVALID_UPLOAD_FILE, 
+						                                          ApplicationConstants.CONST_STRING_EMPTY);
+				return ApplicationConstants.CONST_STRING_HOME;
 			}
 			accessToken = loginService.doLogin(fileBean.getAsiNumber(),
 					fileBean.getUserName(), fileBean.getPassword());
 			if (accessToken != null) {
-				if (accessToken.equalsIgnoreCase("unAuthorized")) {
+				if (ApplicationConstants.CONST_STRING_UN_AUTHORIZED.equals(accessToken)) {
 					accessToken = null;
-					model.addAttribute("invalidDetails", "");
-					return "home";
+					model.addAttribute(ApplicationConstants.CONST_STRING_INVALID_DETAILS, 
+							                                     ApplicationConstants.CONST_STRING_EMPTY);
+					return ApplicationConstants.CONST_STRING_HOME;
 				}
 			} else {
-				return "errorPage";
+				return ApplicationConstants.CONST_STRING_ERROR_PAGE;
 			}
 			int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 			request.getSession().setAttribute("batchId",
@@ -127,198 +120,94 @@ public class FileUpload extends HttpServlet {
 			case "55200": // GB Data Excel Mapping
 				numOfProducts = gbDataExcelMapping.readExcel(accessToken,
 						workbook, Integer.valueOf(asiNumber), batchId);
-				model.addAttribute("fileName", numOfProducts);
+				model.addAttribute(ApplicationConstants.CONST_STRING_FILE_NAME, numOfProducts);
 				downloadMail.sendMail(asiNumber, batchId);
-				model.addAttribute("successmsg", emailMsg);
-				return "success";
+				model.addAttribute(ApplicationConstants.CONST_STRING_SUCCESS_MSG , 
+						                                  ApplicationConstants.MAIL_SEND_SUCCESS_MESSAGE);
+				return ApplicationConstants.CONST_STRING_SUCCESS;
 			case "55201":// product v2
 				numOfProducts = productV2ExcelMapping.readExcel(accessToken,
 						workbook, Integer.valueOf(asiNumber), batchId);
-				model.addAttribute("fileName", numOfProducts);
+				model.addAttribute(ApplicationConstants.CONST_STRING_FILE_NAME, numOfProducts);
 				downloadMail.sendMail(asiNumber, batchId);
-				model.addAttribute("successmsg", emailMsg);
-				return "success";
+				model.addAttribute(ApplicationConstants.CONST_STRING_SUCCESS_MSG , 
+						                                  ApplicationConstants.MAIL_SEND_SUCCESS_MESSAGE);
+				return ApplicationConstants.CONST_STRING_SUCCESS;
 				// break;
 			case "55202":// supplier USB data(Nov_USB Products)
 				finalResult = usbExcelMapping.readExcel(accessToken, workbook,
 						Integer.valueOf(asiNumber), batchId);
 				if (finalResult != null) {
-					splitFinalResult = finalResult
-							.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-					noOfProductsSuccess = splitFinalResult[0];
-					noOfProductsFailure = splitFinalResult[1];
-					redirectAttributes.addFlashAttribute(
-							"successProductsCount", noOfProductsSuccess);
-					redirectAttributes.addFlashAttribute(
-							"failureProductsCount", noOfProductsFailure);
-					if (!noOfProductsFailure
-							.equals(ApplicationConstants.CONST_STRING_ZERO)) {
-						redirectAttributes.addFlashAttribute("successmsg",
-								emailMsg);
-						downloadMail.sendMail(asiNumber, batchId);
-					}
+					parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 				}
-				return "redirect:redirect.htm";
+				return ApplicationConstants.CONST_REDIRECT_URL;
 			case "55203": // supplier JulyData
 				numOfProducts = julymapping.readExcel(accessToken, workbook,
 						Integer.valueOf(asiNumber), batchId);
-				model.addAttribute("fileName", numOfProducts);
-				return "success";
+				model.addAttribute(ApplicationConstants.CONST_STRING_FILE_NAME, numOfProducts);
+				return ApplicationConstants.CONST_STRING_SUCCESS;
 			case "55204": // supplier Sage
 				finalResult = sageExcelMapping.readExcel(accessToken, workbook,
 						Integer.valueOf(asiNumber), batchId);
 				if (finalResult != null) {
-					splitFinalResult = finalResult
-							.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-					noOfProductsSuccess = splitFinalResult[0];
-					noOfProductsFailure = splitFinalResult[1];
-					redirectAttributes.addFlashAttribute(
-							"successProductsCount", noOfProductsSuccess);
-					redirectAttributes.addFlashAttribute(
-							"failureProductsCount", noOfProductsFailure);
-					if (!noOfProductsFailure
-							.equals(ApplicationConstants.CONST_STRING_ZERO)) {
-						redirectAttributes.addFlashAttribute("successmsg",
-								emailMsg);
-						downloadMail.sendMail(asiNumber, batchId);
-					}
+					parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 				}
-				return "redirect:redirect.htm";
+				return ApplicationConstants.CONST_REDIRECT_URL;
 
 			case "55205": // Distributor Central
 				finalResult = dcProductExcelMapping.readExcel(accessToken,
 						workbook, Integer.valueOf(asiNumber), batchId);
 				if (finalResult != null) {
-					splitFinalResult = finalResult
-							.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-					noOfProductsSuccess = splitFinalResult[0];
-					noOfProductsFailure = splitFinalResult[1];
-					redirectAttributes.addFlashAttribute(
-							"successProductsCount", noOfProductsSuccess);
-					redirectAttributes.addFlashAttribute(
-							"failureProductsCount", noOfProductsFailure);
-					if (!noOfProductsFailure
-							.equals(ApplicationConstants.CONST_STRING_ZERO)) {
-						redirectAttributes.addFlashAttribute("successmsg",
-								emailMsg);
-						downloadMail.sendMail(asiNumber, batchId);
-					}
+					parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 				}
-				return "redirect:redirect.htm";
+				return ApplicationConstants.CONST_REDIRECT_URL;
 			case "91561": // Esptemplate
 				finalResult = espTemplateMapping.readExcel(accessToken,
 						workbook, Integer.valueOf(asiNumber), batchId);
 				if (finalResult != null) {
-					splitFinalResult = finalResult
-							.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-					noOfProductsSuccess = splitFinalResult[0];
-					noOfProductsFailure = splitFinalResult[1];
-					redirectAttributes.addFlashAttribute(
-							"successProductsCount", noOfProductsSuccess);
-					redirectAttributes.addFlashAttribute(
-							"failureProductsCount", noOfProductsFailure);
-					if (!noOfProductsFailure
-							.equals(ApplicationConstants.CONST_STRING_ZERO)) {
-						redirectAttributes.addFlashAttribute("successmsg",
-								emailMsg);
-						downloadMail.sendMail(asiNumber, batchId);
-					}
+					parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 				}
-				return "redirect:redirect.htm";
+				return ApplicationConstants.CONST_REDIRECT_URL;
 
 			case "65851": // Kuku International
 				finalResult = kukuProductsExcelMapping.readExcel(accessToken,
 						workbook, Integer.valueOf(asiNumber), batchId);
 				if (finalResult != null) {
-					splitFinalResult = finalResult
-							.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-					noOfProductsSuccess = splitFinalResult[0];
-					noOfProductsFailure = splitFinalResult[1];
-					redirectAttributes.addFlashAttribute(
-							"successProductsCount", noOfProductsSuccess);
-					redirectAttributes.addFlashAttribute(
-							"failureProductsCount", noOfProductsFailure);
-					if (!noOfProductsFailure
-							.equals(ApplicationConstants.CONST_STRING_ZERO)) {
-						redirectAttributes.addFlashAttribute("successmsg",
-								emailMsg);
-						downloadMail.sendMail(asiNumber, batchId);
-					}
+					parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 				}
 
-				return "redirect:redirect.htm";
+				return ApplicationConstants.CONST_REDIRECT_URL;
 			 case "64905":  //Kinline Promos
 			    	finalResult = klMapping.readExcel(accessToken, workbook, 
                                         Integer.valueOf(asiNumber), batchId);
 			    	if(finalResult != null){
-			    		splitFinalResult = finalResult.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-			    		noOfProductsSuccess = splitFinalResult[0];
-			    		noOfProductsFailure = splitFinalResult[1];
-			    		redirectAttributes.addFlashAttribute("successProductsCount", noOfProductsSuccess);
-			    		redirectAttributes.addFlashAttribute("failureProductsCount", noOfProductsFailure);
-			    		if(!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)){
-			    			redirectAttributes.addFlashAttribute("successmsg", emailMsg);
-			    			downloadMail.sendMail(asiNumber, batchId);
-			    		}
+			    		parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 			       }
-			    	return "redirect:redirect.htm";
+			    	return ApplicationConstants.CONST_REDIRECT_URL;
 			 case "40445": // new bbi term
 					finalResult = bbiProductsExcelMapping.readExcel(accessToken,
 							workbook, Integer.valueOf(asiNumber), batchId);
 					if (finalResult != null) {
-						splitFinalResult = finalResult
-								.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-						noOfProductsSuccess = splitFinalResult[0];
-						noOfProductsFailure = splitFinalResult[1];
-						redirectAttributes.addFlashAttribute(
-								"successProductsCount", noOfProductsSuccess);
-						redirectAttributes.addFlashAttribute(
-								"failureProductsCount", noOfProductsFailure);
-						if (!noOfProductsFailure
-								.equals(ApplicationConstants.CONST_STRING_ZERO)) {
-							redirectAttributes.addFlashAttribute("successmsg",
-									emailMsg);
-							downloadMail.sendMail(asiNumber, batchId);
-						}
+						parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 					}
 
-					return "redirect:redirect.htm";
+					return ApplicationConstants.CONST_REDIRECT_URL;
 			 case "32125":  //Adspec 
 			    	finalResult = adspecMapping.readExcel(accessToken, workbook, 
                                      Integer.valueOf(asiNumber), batchId);
 			    	if(finalResult != null){
-			    		splitFinalResult = finalResult.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-			    		noOfProductsSuccess = splitFinalResult[0];
-			    		noOfProductsFailure = splitFinalResult[1];
-			    		redirectAttributes.addFlashAttribute("successProductsCount", noOfProductsSuccess);
-			    		redirectAttributes.addFlashAttribute("failureProductsCount", noOfProductsFailure);
-			    		if(!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)){
-			    			redirectAttributes.addFlashAttribute("successmsg", emailMsg);
-			    			downloadMail.sendMail(asiNumber, batchId);
-			    		}
+			    		parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 			       }
-			    	return "redirect:redirect.htm";
+			    	return ApplicationConstants.CONST_REDIRECT_URL;
 			    	
 			 case "82283": // new bbi term
 					finalResult = rfgLineProductExcelMapping.readExcel(accessToken,
 							workbook, Integer.valueOf(asiNumber), batchId);
+					
 					if (finalResult != null) {
-						splitFinalResult = finalResult
-								.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-						noOfProductsSuccess = splitFinalResult[0];
-						noOfProductsFailure = splitFinalResult[1];
-						redirectAttributes.addFlashAttribute(
-								"successProductsCount", noOfProductsSuccess);
-						redirectAttributes.addFlashAttribute(
-								"failureProductsCount", noOfProductsFailure);
-						if (!noOfProductsFailure
-								.equals(ApplicationConstants.CONST_STRING_ZERO)) {
-							redirectAttributes.addFlashAttribute("successmsg",
-									emailMsg);
-							downloadMail.sendMail(asiNumber, batchId);
-						}
+						parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 					}
-			    	return "redirect:redirect.htm";
+			    	return ApplicationConstants.CONST_REDIRECT_URL;
 
 			default:
 				break;
@@ -329,20 +218,49 @@ public class FileUpload extends HttpServlet {
 		} catch (Exception e) {
 			_LOGGER.error("Error In FileUpload: " + e.getMessage());
 		}
-		return "home";
+		return ApplicationConstants.CONST_STRING_HOME;
 	}
 	@RequestMapping(value = "/redirect.htm", method = RequestMethod.GET)
 	public String submit(Model model) {
-		String noOfSucc = (String) model.asMap().get("successProductsCount");
-		String noOfFail = (String) model.asMap().get("failureProductsCount");
+		String noOfSucc = (String) model.asMap().get(ApplicationConstants.SUCCESS_PRODUCTS_COUNT );
+		String noOfFail = (String) model.asMap().get(ApplicationConstants.FAILURE_PRODUCTS_COUNT );
 		if (noOfSucc == null) {
-			model.addAttribute("successProductsCount", "0");
+			model.addAttribute(ApplicationConstants.SUCCESS_PRODUCTS_COUNT , 
+					                                    ApplicationConstants.CONST_STRING_ZERO);
 
 		}
 		if (noOfFail == null) {
-			model.addAttribute("failureProductsCount", "0");
+			model.addAttribute(ApplicationConstants.FAILURE_PRODUCTS_COUNT	, 
+					                                         ApplicationConstants.CONST_STRING_ZERO);
 		}
-		return "success";
+		return ApplicationConstants.CONST_STRING_SUCCESS;
+	}
+	
+	/*@Author Venkat
+	 *@Param String,String,String,RedirectAttributes
+	 *@Description this method parse data(success and failed)after receiving final result from  
+	 *              excel parser and  send out mail if any products are Failure         
+	 * @Retrun Void
+	 */
+	public void parseFinalData(String result,String asiNumber ,int batchId,
+			                                     RedirectAttributes redirectAttributes){
+		String[] splitFinalResult = result
+				.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+		String noOfProductsSuccess = splitFinalResult[ApplicationConstants.CONST_NUMBER_ZERO];
+		String noOfProductsFailure = splitFinalResult[ApplicationConstants.CONST_INT_VALUE_ONE];
+		redirectAttributes.addFlashAttribute(ApplicationConstants.SUCCESS_PRODUCTS_COUNT ,
+																				noOfProductsSuccess);
+		redirectAttributes.addFlashAttribute(ApplicationConstants.FAILURE_PRODUCTS_COUNT , 
+																				noOfProductsFailure);
+		if (!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)) {
+			
+			boolean isMailSendSuccess = downloadMail.sendMail(asiNumber, batchId);
+			if(isMailSendSuccess){
+				redirectAttributes.addFlashAttribute(ApplicationConstants.CONST_STRING_SUCCESS_MSG ,
+				                                             ApplicationConstants.MAIL_SEND_SUCCESS_MESSAGE);
+			}
+			
+		}
 	}
 	public UsbProductsExcelMapping getUsbExcelMapping() {
 		return usbExcelMapping;
@@ -472,7 +390,4 @@ public class FileUpload extends HttpServlet {
 			RFGLineProductExcelMapping rfgLineProductExcelMapping) {
 		this.rfgLineProductExcelMapping = rfgLineProductExcelMapping;
 	}
-
-
-
 }
