@@ -109,9 +109,11 @@ public class FileUpload extends HttpServlet {
 				model.addAttribute("invalidUploadFile", "");
 				return "home";
 			}
+//			accessToken = loginService.doLogin("55201",
+//					"ARizvi", "password1");
 			accessToken = loginService.doLogin(fileBean.getAsiNumber(),
 					fileBean.getUserName(), fileBean.getPassword());
-			if (accessToken != null) {
+		if (accessToken != null) {
 				if (accessToken.equalsIgnoreCase("unAuthorized")) {
 					accessToken = null;
 					model.addAttribute("invalidDetails", "");

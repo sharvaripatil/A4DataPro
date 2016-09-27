@@ -24,7 +24,7 @@ public class PriceGridParser {
 		_LOGGER.info("Enter Price Grid Parser class");
 		try{
 		Integer sequence = 1;
-		List<PriceConfiguration> configuration = null;
+	//	List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
 		String[] prices = listOfPrices
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -46,10 +46,10 @@ public class PriceGridParser {
 			listOfPrice = new ArrayList<Price>();
 		}
 		priceGrid.setPrices(listOfPrice);
-		if (criterias != null && !criterias.isEmpty()) {
-			configuration = getConfigurations(criterias);
-		}
-		priceGrid.setPriceConfigurations(configuration);
+//		if (criterias != null && !criterias.isEmpty()) {
+//			configuration = getConfigurations(criterias);
+//		}
+//		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
@@ -82,7 +82,7 @@ public class PriceGridParser {
 		return listOfPrices;
 	}
 
-	public List<PriceConfiguration> getConfigurations(String criterias) {
+	public List<PriceConfiguration> getConfigurations(String criterias,String UpchargeName) {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
 		String[] config = null;
 		PriceConfiguration configs = null;
@@ -106,19 +106,23 @@ public class PriceGridParser {
 					}
 				} else {
 					configs = new PriceConfiguration();
+					config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
+					//String criteriaValue = LookupData.getCriteriaValue(config[0]);
 					configs.setCriteria(criteriaValue);
 					configs.setValue(Arrays.asList((Object) config[1]));
 					priceConfiguration.add(configs);
+					
 				}
 			}
 
 		} else {
+			
 			configs = new PriceConfiguration();
-			config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
-			String criteriaValue = LookupData.getCriteriaValue(config[0]);
-			configs.setCriteria(criteriaValue);
-			configs.setValue(Arrays.asList((Object) config[1]));
+			configs.setCriteria(criterias);
+			configs.setValue(Arrays.asList((Object) UpchargeName));
 			priceConfiguration.add(configs);
+			
+			
 		}
 		}catch(Exception e){
 			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
@@ -138,8 +142,7 @@ public class PriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] upChargeQuantity = quantity
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		String[] upChargeDiscount = discounts
-				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		String upChargeDiscount = discounts;
 
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(upChargeName);
@@ -152,13 +155,15 @@ public class PriceGridParser {
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
+			 listOfPrice =
+			 getPrices(upChargePrices,upChargeQuantity,upChargeDiscount);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
 
 		priceGrid.setPrices(listOfPrice);
 		if (upChargeCriterias != null && !upChargeCriterias.isEmpty()) {
-			configuration = getConfigurations(upChargeCriterias);
+			configuration = getConfigurations(upChargeCriterias,upChargeName);
 		}
 		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);

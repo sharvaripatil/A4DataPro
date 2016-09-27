@@ -9,8 +9,6 @@ import com.a4tech.product.model.ImprintColorValue;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Option;
 import com.a4tech.product.model.OptionValue;
-import com.a4tech.product.model.Value;
-import com.a4tech.product.model.Values;
 import com.a4tech.util.ApplicationConstants;
 
 
