@@ -28,13 +28,13 @@
 <!-- Top content -->
 <div class="top-content">
   <div class="inner-bg">
-  <div class="row pull-right logo"> <img src="resources/img/logo.png" alt="" height="80px"/> </div>
-    <div class="container">
-      <div class="row">
+    <div class="container logo">
+     <div class="row"> <img src="resources/img/testlogo.png" alt="" height="80px"/> <br/><br/></div>
+    <!--   <div class="row">
         <div class="col-sm-8 col-sm-offset-2 text">
           <h1><strong>A<sup>4</sup></strong> DataPro </h1>
         </div>
-      </div>
+      </div> -->
       <div class="row">
         <div class="col-sm-6 book"> <img src="resources/img/ebook.png" alt="" height="384px"> </div>
         <div class="col-sm-5">
