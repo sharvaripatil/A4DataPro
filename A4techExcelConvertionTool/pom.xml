@@ -2,12 +2,11 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.a4tech.product</groupId>
-  <artifactId>A4techExcelConvertionTool</artifactId>
+  <artifactId>A4DataPro</artifactId>
   <packaging>war</packaging>
-  <version>ExcelConvertionTool</version>
-  <name>A4techExcelConvertionTool</name>
+  <version>1.0</version>
+  <name>A4DataPro</name>
   <url>http://maven.apache.org</url>
-  
   
   <properties>
     <java.version>1.8</java.version>
