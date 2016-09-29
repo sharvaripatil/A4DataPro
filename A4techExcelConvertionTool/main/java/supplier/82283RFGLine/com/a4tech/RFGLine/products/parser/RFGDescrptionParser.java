@@ -35,10 +35,11 @@ public class RFGDescrptionParser {
 	if(Description.contains("2 Color")){
 	String FullDescriptionSecond=Description.substring(Description.indexOf("2 Color Maximum Imprint"),Description.indexOf("Additional Imprint Color:"));
 	FullDescription=FullDescriptionFirst.concat(FullDescriptionSecond);
-	FullDescription = FullDescription.replaceAll(ApplicationConstants.CONST_STRING_NEWLINECHARS,ApplicationConstants.CONST_STRING_EMPTY);
+	FullDescription = FullDescription.replaceAll(ApplicationConstants.CONST_STRING_NEWLINECHARS,ApplicationConstants.CONST_VALUE_TYPE_SPACE);
     existingProduct.setDescription(FullDescription);
 	}
-	 existingProduct.setDescription(FullDescriptionFirst);
+	FullDescriptionFirst = FullDescriptionFirst.replaceAll(ApplicationConstants.CONST_STRING_NEWLINECHARS,ApplicationConstants.CONST_VALUE_TYPE_SPACE);
+	existingProduct.setDescription(FullDescriptionFirst);
     String tempDesc[]=Description.split(ApplicationConstants.CONST_STRING_NEWLINECHARS);
       
     for (String value : tempDesc) {
@@ -103,7 +104,7 @@ public class RFGDescrptionParser {
             String upchargeValue2=upchargeValue[0];
 
       priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue2,"","V","Additional Colors",  
-					"false", "USD", "Additional Imprint Color",  "Imprint Color Charge", "Other", new Integer(2), priceGrids2);
+					"false", "USD", "Additional Imprint Color",  "Add. Color Charge", "Other", new Integer(2), priceGrids2);
 			
     	 }
     	  else if(value.contains("Additional Imprint Location:"))
@@ -118,7 +119,7 @@ public class RFGDescrptionParser {
              String upchargeValue3=upchargeValue[0];
             
              priceGrids2 = rfgPriceGridParserObj.getUpchargePriceGrid("1",upchargeValue3,"","V","Additional Location",  
- 					"false", "USD", "Additional Imprint Location",  "Imprint Location Charge", "Other", new Integer(3), priceGrids2);
+ 					"false", "USD", "Additional Imprint Location",  "Add. Location Charge", "Other", new Integer(3), priceGrids2);
     	 }
     	  else if(value.contains("PMS Color Imprint"))
    		  
