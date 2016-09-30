@@ -189,7 +189,7 @@ public class NewProductsExcelMapping {
 						// product description
 						 productDescription = cell.getStringCellValue();
 						 if(!StringUtils.isEmpty(productDescription)){
-						productDescription=	productDescription.replaceAll(ApplicationConstants.CONST_STRING_NEWLINECHARS,ApplicationConstants.CONST_VALUE_TYPE_SPACE);
+						productDescription=	productDescription.replaceAll(ApplicationConstants.CONST_STRING_NEWLINE,ApplicationConstants.CONST_VALUE_TYPE_SPACE);
 						productExcelObj.setDescription(productDescription);
 						
 						int len=productDescription.length();
@@ -210,6 +210,7 @@ public class NewProductsExcelMapping {
 						productDescription = cell.getStringCellValue();
 						 if(!StringUtils.isEmpty(productDescription)){
 							 productDescription=tempValue+productDescription;
+							 productDescription=productDescription.replaceAll(ApplicationConstants.CONST_STRING_NEWLINE,ApplicationConstants.CONST_VALUE_TYPE_SPACE);
 							 productExcelObj.setDescription(productDescription);
 						 }else{
 							 productExcelObj.setDescription(tempValue);
