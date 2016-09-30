@@ -263,6 +263,9 @@
 	<!-- supplier 64509 configuration start -->
   <bean id="klPriceGridParserId" class="com.a4tech.kl.product.parser.KlPriceGridParser"/>
   <bean id="klProductAttributeParserId" class="com.a4tech.kl.product.parser.KlProductAttributeParser"/>
+  <bean id="klColorParserId" class="com.a4tech.kl.product.parser.KlColorAndMaterialParser"/>
+  <bean id="klSizeParserId" class="com.a4tech.kl.product.parser.KlSizeParser"/>
+  <bean id="klImprintMethodParserId" class="com.a4tech.product.criteria.parser.ProductImprintMethodParser"/>
    <bean id="klMappingId" class="com.a4tech.kl.product.mapping.KlProductsExcelMapping">
      	<property name="postServiceImpl" ref="postService"/>
      	<property name="productDaoObj"  ref="productDao"/>

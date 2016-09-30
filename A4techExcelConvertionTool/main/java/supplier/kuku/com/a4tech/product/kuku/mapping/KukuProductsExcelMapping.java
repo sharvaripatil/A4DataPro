@@ -306,42 +306,9 @@ public class KukuProductsExcelMapping {
 					
 					case 17:// production option = protduction time as per client feedback
 						String prodTimeValue = null;
-						ProductionTime productionTimeObj ;
 						prodTimeValue=CommonUtility.getCellValueStrinOrInt(cell);
-						if(!StringUtils.isEmpty(prodTimeValue)){
-							
-							prodTimeValue=prodTimeValue.replaceAll("days","days,");
-							//System.out.println(str);
-							String prodArr[]=prodTimeValue.split(",");
-							for (String prodVal : prodArr) {
-								if(prodVal.contains("express")){
-									productionTimeObj= new ProductionTime();
-									prodVal=prodVal.replaceAll("By express", "");
-									prodVal=prodVal.replaceAll("working days", "");
-									prodVal=prodVal.replaceAll(":","").trim();
-									productionTimeObj.setBusinessDays(prodVal);
-									productionTimeObj.setDetails("By express");
-									listOfProductionTime.add(productionTimeObj);
-								}else if(prodVal.contains("sea")){
-									productionTimeObj= new ProductionTime();
-									prodVal=prodVal.replaceAll("By sea", "");
-									prodVal=prodVal.replaceAll("working days", "");
-									prodVal=prodVal.replaceAll("days", "");
-									prodVal=prodVal.replaceAll(":","").trim();
-									productionTimeObj.setBusinessDays(prodVal);
-									productionTimeObj.setDetails("By sea");
-									listOfProductionTime.add(productionTimeObj);
-								}else if(prodVal.contains("air")){
-									productionTimeObj= new ProductionTime();
-									prodVal=prodVal.replaceAll("By air", "");
-									prodVal=prodVal.replaceAll("days", "");
-									prodVal=prodVal.replaceAll(":","").trim();
-									productionTimeObj.setBusinessDays(prodVal);
-									productionTimeObj.setDetails("By air");
-									listOfProductionTime.add(productionTimeObj);
-								}
-								
-							}
+						if(!StringUtils.isEmpty(prodTimeValue)){	
+					    listOfProductionTime=	getProductionTime(listOfProductionTime, prodTimeValue);
 						productConfigObj.setProductionTime(listOfProductionTime);	
 						}
 						break;
@@ -699,6 +666,42 @@ public class KukuProductsExcelMapping {
 	
 }
 
+	public static List<ProductionTime> getProductionTime(List<ProductionTime> listProductionTime,String prodTimeValue){
+		prodTimeValue=prodTimeValue.replaceAll("days","days,");
+		ProductionTime productionTimeObj=null;
+		//System.out.println(str);
+		String prodArr[]=prodTimeValue.split(",");
+		for (String prodVal : prodArr) {
+			if(prodVal.contains("express")){
+				productionTimeObj= new ProductionTime();
+				prodVal=prodVal.replaceAll("By express", "");
+				prodVal=prodVal.replaceAll("working days", "");
+				prodVal=prodVal.replaceAll(":","").trim();
+				productionTimeObj.setBusinessDays(prodVal);
+				productionTimeObj.setDetails("By express");
+				listProductionTime.add(productionTimeObj);
+			}else if(prodVal.contains("sea")){
+				productionTimeObj= new ProductionTime();
+				prodVal=prodVal.replaceAll("By sea", "");
+				prodVal=prodVal.replaceAll("working days", "");
+				prodVal=prodVal.replaceAll("days", "");
+				prodVal=prodVal.replaceAll(":","").trim();
+				productionTimeObj.setBusinessDays(prodVal);
+				productionTimeObj.setDetails("By sea");
+				listProductionTime.add(productionTimeObj);
+			}else if(prodVal.contains("air")){
+				productionTimeObj= new ProductionTime();
+				prodVal=prodVal.replaceAll("By air", "");
+				prodVal=prodVal.replaceAll("days", "");
+				prodVal=prodVal.replaceAll(":","").trim();
+				productionTimeObj.setBusinessDays(prodVal);
+				productionTimeObj.setDetails("By air");
+				listProductionTime.add(productionTimeObj);
+			}
+			
+		}
+		return listProductionTime;
+	}
 	public ProductDao getProductDaoObj() {
 		return productDaoObj;
 	}

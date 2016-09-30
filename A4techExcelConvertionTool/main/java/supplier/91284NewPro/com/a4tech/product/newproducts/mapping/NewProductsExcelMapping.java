@@ -246,8 +246,8 @@ public class NewProductsExcelMapping {
 					case 7: 
 						String	shipWT=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(shipWT)){
-							if(shipWT.length()>7){
-								shipWT=shipWT.substring(0, 7);
+							if(shipWT.length()>6){
+								shipWT=shipWT.substring(0, 6);
 							}
 						
 						 List<Weight>       weightList=new ArrayList<Weight>();
@@ -354,7 +354,10 @@ public class NewProductsExcelMapping {
 						
 					case 18:
 					 	imprintMethodValue=CommonUtility.getCellValueStrinOrDecimal(cell);
-						 if(!StringUtils.isEmpty(imprintMethodValue)){
+						 if(!StringUtils.isEmpty(imprintMethodValue)&& !imprintMethodValue.equalsIgnoreCase("BLANK")){
+							 if(imprintMethodValue.contains("Engrave")){
+								 imprintMethodValue="Laser Engraved";
+								}
 							 imprintMethods = newProimprintMethodParser.getImprintCriteria(imprintMethodValue,imprintMethods);
 								productConfigObj.setImprintMethods(imprintMethods); 
 						  }

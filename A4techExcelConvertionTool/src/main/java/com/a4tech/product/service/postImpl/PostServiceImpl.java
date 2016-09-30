@@ -33,7 +33,7 @@ public class PostServiceImpl implements PostService {
 	private String postApiURL ;
 	private String getProductUrl;
 	@Autowired
-	ObjectMapper mapper1;
+	ObjectMapper mapperObj;
 	
 	public int postProduct(String authTokens, Product product,int asiNumber ,int batchId) throws JsonParseException, JsonMappingException, IOException {
 
@@ -42,7 +42,7 @@ public class PostServiceImpl implements PostService {
 			headers.add("AuthToken", authTokens);
 			headers.add("Content-Type", "application/json ; charset=utf-8");
 			_LOGGER.info("Product Data : "
-					+ mapper1.writeValueAsString(product));
+					+ mapperObj.writeValueAsString(product));
 			HttpEntity<Product> requestEntity = new HttpEntity<Product>(
 					product, headers);
 			ResponseEntity<ExternalAPIResponse> response = restTemplate
@@ -54,7 +54,7 @@ public class PostServiceImpl implements PostService {
 			String response = hce.getResponseBodyAsString();
 			try {
 				 _LOGGER.info("ASI Error Response Msg :"+response);
-				ErrorMessageList apiResponse =  mapper1.readValue(response, ErrorMessageList.class);
+				ErrorMessageList apiResponse =  mapperObj.readValue(response, ErrorMessageList.class);
 				productDao.save(apiResponse.getErrors(),product.getExternalProductId(),asiNumber,batchId);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -65,7 +65,7 @@ public class PostServiceImpl implements PostService {
 			
 		} catch(HttpServerErrorException serverEx){
 			String serverResponse = serverEx.getResponseBodyAsString();
-			ErrorMessageList apiResponse =  mapper1.readValue(serverResponse, ErrorMessageList.class);
+			ErrorMessageList apiResponse =  mapperObj.readValue(serverResponse, ErrorMessageList.class);
 			productDao.save(apiResponse.getErrors(),product.getExternalProductId(),asiNumber,batchId);
 			return 0;
 		}
@@ -106,7 +106,8 @@ public class PostServiceImpl implements PostService {
 	     ResponseEntity<Product> getResponse  =	restTemplate.exchange(getProductUrl, HttpMethod.GET, requestEntity, 
 	    		                                                                            Product.class ,productId);
 	     Product product = getResponse.getBody();
-	    _LOGGER.info("Product from API::"+product);
+	    _LOGGER.info("Product from API::"
+				+ mapperObj.writeValueAsString(product));
 	    return product;  
 	  }catch(HttpClientErrorException hce){
 		_LOGGER.error("HttpClientError ::"+hce.getMessage());

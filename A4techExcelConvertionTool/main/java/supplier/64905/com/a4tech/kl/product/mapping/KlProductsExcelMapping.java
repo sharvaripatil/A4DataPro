@@ -49,6 +49,9 @@ public class KlProductsExcelMapping {
 	private PostServiceImpl postServiceImpl;
 	private KlPriceGridParser klPriceGridPar ;
 	private KlProductAttributeParser attributeparser;
+	private KlColorAndMaterialParser klColorParser ;
+	private KlSizeParser klSizeParser ;
+	private ProductImprintMethodParser klImprintMethodParser;
 	ProductDao productDaoObj;
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
@@ -228,15 +231,13 @@ public class KlProductsExcelMapping {
 					
 				case 10:  //Product_Color
 					String ProductColor = cell.getStringCellValue();
-					KlColorAndMaterialParser colorParser = new KlColorAndMaterialParser();
-					List<Color> productColors = colorParser.getColors(ProductColor);
+					List<Color> productColors = klColorParser.getColors(ProductColor);
 					productConfigObj.setColors(productColors);
 					break;
 					
 				case 11:  //Material
 					String material = cell.getStringCellValue();
-					KlColorAndMaterialParser materialParser = new KlColorAndMaterialParser();
-					List<Material> productMaterial = materialParser.getMaterials(material);
+					List<Material> productMaterial = klColorParser.getMaterials(material);
 					productConfigObj.setMaterials(productMaterial);
 					break;
 				
@@ -246,8 +247,7 @@ public class KlProductsExcelMapping {
 
 				case 13: //size
 					String size=cell.getStringCellValue();
-					KlSizeParser sizeParser = new KlSizeParser();
-					Size productSizes = sizeParser.getSizes(size);
+					Size productSizes = klSizeParser.getSizes(size);
 					productConfigObj.setSizes(productSizes);
 					break;
 					
@@ -295,9 +295,7 @@ public class KlProductsExcelMapping {
 					
 				case 22: //Imprint_Method
 					imprintMethodName = cell.getStringCellValue();
-					ProductImprintMethodParser imprintMethodParser = new ProductImprintMethodParser();
-					 productImprintMethods = imprintMethodParser.
-							                                     getImprintCriteria(imprintMethodName);
+					 productImprintMethods = klImprintMethodParser.getImprintCriteria(imprintMethodName);
 				   break;
 					
 				case 23: //Min_Qty
@@ -757,5 +755,31 @@ public class KlProductsExcelMapping {
 	public void setAttributeparser(KlProductAttributeParser attributeparser) {
 		this.attributeparser = attributeparser;
 	}
+
+	public KlColorAndMaterialParser getKlColorParser() {
+		return klColorParser;
+	}
+
+	public void setKlColorParser(KlColorAndMaterialParser klColorParser) {
+		this.klColorParser = klColorParser;
+	}
+
+	public KlSizeParser getKlSizeParser() {
+		return klSizeParser;
+	}
+
+	public void setKlSizeParser(KlSizeParser klSizeParser) {
+		this.klSizeParser = klSizeParser;
+	}
+
+	public ProductImprintMethodParser getKlImprintMethodParser() {
+		return klImprintMethodParser;
+	}
+
+	public void setKlImprintMethodParser(
+			ProductImprintMethodParser klImprintMethodParser) {
+		this.klImprintMethodParser = klImprintMethodParser;
+	}
+	
 
 }
