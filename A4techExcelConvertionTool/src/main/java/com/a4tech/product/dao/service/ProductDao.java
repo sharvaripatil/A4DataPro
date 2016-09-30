@@ -68,7 +68,9 @@ public class ProductDao {
 		List results = query.list();
 	}catch(Exception ex){
 		_LOGGER.error("Error in dao block : "+ ex.getMessage());
-		tx.rollback();
+		if(tx != null){
+			tx.rollback();
+		}	
 	}finally{
 		if(session !=null){
 			try{
@@ -96,7 +98,9 @@ public class ProductDao {
 			tx.commit();
 		}catch(Exception ex){
 			_LOGGER.error("unable to insert batch ids");
-			tx.rollback();
+			if(tx != null){
+				tx.rollback();
+			}	
 		}finally{
 			if(session !=null){
 				try{
@@ -150,7 +154,9 @@ public class ProductDao {
 		
 	}catch(Exception ex){
 		_LOGGER.error("Error in dao block : "+ex.getCause());
-		tx.rollback();
+		if(tx != null){
+			tx.rollback();
+		}	
 	}finally{
 		if(session !=null){
 			try{

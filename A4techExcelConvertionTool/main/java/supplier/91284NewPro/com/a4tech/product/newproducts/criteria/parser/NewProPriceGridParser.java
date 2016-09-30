@@ -156,7 +156,7 @@ import com.a4tech.util.LookupData;
 
 			priceGrid.setCurrency(currency);
 			priceGrid.setDescription(upChargeName);
-			priceGrid.setServiceCharge(ApplicationConstants.CONST_STRING__SERVICECHARGE);
+			priceGrid.setServiceCharge(ApplicationConstants.CONST_STRING_SERVICECHARGE);
 			priceGrid
 					.setIsQUR((qurFlag.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_Y)) ? ApplicationConstants.CONST_BOOLEAN_TRUE
 							: ApplicationConstants.CONST_BOOLEAN_FALSE);

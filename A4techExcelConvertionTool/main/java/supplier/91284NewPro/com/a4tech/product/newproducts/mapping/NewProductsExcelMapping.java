@@ -189,7 +189,7 @@ public class NewProductsExcelMapping {
 						// product description
 						 productDescription = cell.getStringCellValue();
 						 if(!StringUtils.isEmpty(productDescription)){
-						productDescription=productDescription.replace("\"", "");
+						productDescription=	productDescription.replaceAll(ApplicationConstants.CONST_STRING_NEWLINECHARS,ApplicationConstants.CONST_VALUE_TYPE_SPACE);
 						productExcelObj.setDescription(productDescription);
 						
 						int len=productDescription.length();
@@ -393,14 +393,14 @@ public class NewProductsExcelMapping {
 				////imp code
 				priceGrids=	 new ArrayList<PriceGrid>();
 				////
-				priceGrids = newProPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), discCode,ApplicationConstants.CONST_STRING__CURRENCY_USD,
+				priceGrids = newProPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), discCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,
 						priceIncludes,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, productName,ApplicationConstants.CONST_STRING_EMPTY,priceGrids);	
 			}
 			
 			if(!StringUtils.isEmpty(imprintMethodValue)&& !StringUtils.isEmpty(imprintMethodValueUpchrg)){
 				
 			priceGrids = newProPriceGridParser.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,imprintMethodValueUpchrg.trim(),imprintMethodValueUpchrgDis ,
-					"IMMD:"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING__CURRENCY_USD, imprintMethodValue, 
+					"IMMD:"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, imprintMethodValue, 
 					ApplicationConstants.CONST_STRING_IMMD_CHARGE, ApplicationConstants.CONST_VALUE_TYPE_OTHER, ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
 		    }
 			

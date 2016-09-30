@@ -54,7 +54,7 @@ public class PostServiceImpl implements PostService{
 					productDao.save(apiResponse,product.getExternalProductId(),asiNumber);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					_LOGGER.error("unable to connect External API System:"+e.getCause());
 					return 0;
 				}
 				

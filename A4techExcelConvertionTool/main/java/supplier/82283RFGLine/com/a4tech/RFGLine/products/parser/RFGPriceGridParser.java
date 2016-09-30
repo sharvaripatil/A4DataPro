@@ -35,7 +35,7 @@ public class RFGPriceGridParser {
 		//priceGrid.setPriceIncludes("plus Setup");
 		priceGrid.setDescription(priceName);
 		priceGrid
-				.setIsQUR(isQur.equalsIgnoreCase("Y") ? ApplicationConstants.CONST_BOOLEAN_TRUE
+				.setIsQUR(isQur.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_Y) ? ApplicationConstants.CONST_BOOLEAN_TRUE
 						: ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
@@ -161,7 +161,7 @@ public class RFGPriceGridParser {
 {
 		priceGrid.setPriceIncludes("plus Setup");
 }
-		priceGrid.setServiceCharge(ApplicationConstants.CONST_STRING__SERVICECHARGE);
+		priceGrid.setServiceCharge(ApplicationConstants.CONST_STRING_SERVICECHARGE);
 		priceGrid
 				.setIsQUR((qurFlag.equalsIgnoreCase("false")) ? ApplicationConstants.CONST_BOOLEAN_FALSE
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);

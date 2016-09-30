@@ -233,6 +233,38 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			
+	 <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+              	<source>src/main/java</source>
+                <source>main/java/supplier/82283RFGLine</source>
+                <source>main/java/supplier/32125</source>
+                <source>main/java/supplier/64905</source>
+                <source>main/java/supplier/Sage</source>
+                <source>main/java/supplier/USBProducts</source>
+                <source>main/java/supplier/JulyData</source>
+                <source>main/java/supplier/DistributorCentral</source>
+                <source>main/java/supplier/kuku</source>
+                <source>main/java/supplier/91561ESPTemplate</source>
+                <source>main/java/supplier/40445BBI</source>
+                <source>main/java/supplier/91284NewPro</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
 		</plugins>
 	</build>
 </project>

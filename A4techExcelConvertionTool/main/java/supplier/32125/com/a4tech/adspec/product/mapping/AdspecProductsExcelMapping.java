@@ -428,7 +428,7 @@ public class AdspecProductsExcelMapping {
 					priceGrids = adspicPriceGridParser.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE , 
 							String.valueOf(50),"G",
 							ApplicationConstants.CONST_STRING_WARRANTY_INFORMATION,ApplicationConstants.CONST_CHAR_N, 
-							ApplicationConstants.CONST_STRING__CURRENCY_USD, upChargeName, ApplicationConstants.CONST_STRING_WARRANTY_CHARGE_TYPE, 
+							ApplicationConstants.CONST_STRING_CURRENCY_USD, upChargeName, ApplicationConstants.CONST_STRING_WARRANTY_CHARGE_TYPE, 
 						  ApplicationConstants.CONST_STRING_EMPTY, new Integer(1), priceGrids);
 				}
 			}
