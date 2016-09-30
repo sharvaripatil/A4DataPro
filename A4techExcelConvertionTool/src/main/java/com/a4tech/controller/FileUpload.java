@@ -31,6 +31,7 @@ import com.a4tech.kl.product.mapping.KlProductsExcelMapping;
 import com.a4tech.product.bbi.mapping.BBIProductsExcelMapping;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
+import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.service.ILoginService;
 import com.a4tech.product.service.IProductService;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
@@ -59,6 +60,7 @@ public class FileUpload {
 	private RFGLineProductExcelMapping rfgLineProductExcelMapping;
 	private BBIProductsExcelMapping bbiProductsExcelMapping;
 	private AdspecProductsExcelMapping adspecMapping;
+	private NewProductsExcelMapping newProductsExcelMapping;
 	private ILoginService loginService;
 	private ProductDao productDao;
 	private static Logger _LOGGER = Logger.getLogger(Class.class);
@@ -200,11 +202,19 @@ public class FileUpload {
 			       }
 			    	return ApplicationConstants.CONST_REDIRECT_URL;
 			    	
-			 case "82283": // new bbi term
+			 case "82283": // RFG Line
 					finalResult = rfgLineProductExcelMapping.readExcel(accessToken,
 							workbook, Integer.valueOf(asiNumber), batchId);
 					
 					if (finalResult != null) {
+						parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
+					}
+			    	return ApplicationConstants.CONST_REDIRECT_URL;
+			    	
+			 case "91284":  //NewProducts
+			    	finalResult = newProductsExcelMapping.readExcel(accessToken, workbook, 
+                               Integer.valueOf(asiNumber), batchId);
+			    	if (finalResult != null) {
 						parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 					}
 			    	return ApplicationConstants.CONST_REDIRECT_URL;
@@ -390,4 +400,14 @@ public class FileUpload {
 			RFGLineProductExcelMapping rfgLineProductExcelMapping) {
 		this.rfgLineProductExcelMapping = rfgLineProductExcelMapping;
 	}
+
+	public NewProductsExcelMapping getNewProductsExcelMapping() {
+		return newProductsExcelMapping;
+	}
+
+	public void setNewProductsExcelMapping(
+			NewProductsExcelMapping newProductsExcelMapping) {
+		this.newProductsExcelMapping = newProductsExcelMapping;
+	}
+
 }
