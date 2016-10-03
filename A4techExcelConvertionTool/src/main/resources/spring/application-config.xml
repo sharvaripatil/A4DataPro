@@ -26,7 +26,6 @@
 	<context:property-placeholder
 		location="classpath:application.properties,classpath:database.properties" />
 
-	<bean id="fileValidator" class="com.a4tech.core.validator.FileValidator" />
 	<bean id="productService" class="com.a4tech.product.service.imple.ProductServiceImpl" />
 	<bean id="postServiceImplV2" name="postServiceImplV2"
 		class="com.a4tech.v2.service.postImpl.PostServiceImpl">
@@ -91,7 +90,6 @@
 		<property name="sageExcelMapping" ref="sageMappingId" />
 		<property name="productDao" ref="productDao" />
 		<property name="gbDataExcelMapping" ref="gbDataExcelMappingId" />
-		<property name="downloadMail" ref="downloadFileController" />
 		<property name="dcProductExcelMapping" ref="dCProductsExcelMappingId" />
 		<property name="kukuProductsExcelMapping" ref="kukuProductsExcelMappingId" />
 		<property name="espTemplateMapping" ref="espTemplateMappingId" />
@@ -213,11 +211,9 @@
 		class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename" value="error" />
 	</bean>
-	<bean id="downloadFileController" name="downloadFileController"
-		class="com.a4tech.controller.DownloadFileController" autowire="byName">
-		<property name="mailSenderObj" ref="mailSender"></property>
-		<property name="username" value="${email.username}" />
-	</bean>
+   <bean id="mailServiceImpl" class="com.a4tech.product.service.imple.MailServiceImpl">
+   		<property name="senderMailName" value="${email.username}"/>
+   </bean>
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="${domain.url}" />
 		<property name="port" value="${domain.portno}" />

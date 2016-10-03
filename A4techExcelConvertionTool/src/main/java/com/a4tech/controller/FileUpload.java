@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -14,7 +13,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,6 +31,7 @@ import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
 import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.service.ILoginService;
+import com.a4tech.product.service.IMailService;
 import com.a4tech.product.service.IProductService;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping;
@@ -46,13 +45,14 @@ public class FileUpload {
 
 	@Autowired
 	IProductService productService;
+	@Autowired
+	IMailService    mailService;
 	private String accessToken = null;
 	private UsbProductsExcelMapping usbExcelMapping;
 	private JulyDataMapping julymapping;
 	private SageProductsExcelMapping sageExcelMapping;
 	private V2ExcelMapping productV2ExcelMapping;
 	private ExcelMapping gbDataExcelMapping;
-	private DownloadFileController downloadMail;
 	private DCProductsExcelMapping dcProductExcelMapping;
 	private ESPTemplateMapping espTemplateMapping;
 	private KukuProductsExcelMapping kukuProductsExcelMapping;
@@ -74,18 +74,14 @@ public class FileUpload {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public String fileUpload(
-			@ModelAttribute("filebean") @Valid FileBean fileBean,
-			BindingResult result, final RedirectAttributes redirectAttributes,
-			Model model, HttpServletRequest request) {
+			@ModelAttribute("filebean") FileBean fileBean, final RedirectAttributes redirectAttributes,
+			                                                         Model model, HttpServletRequest request) {
 		_LOGGER.info("Enter Controller Class");
 		String finalResult = null;
 		Workbook workbook = null;
 
 		int numOfProducts = 0;
 		String asiNumber = fileBean.getAsiNumber();
-		if (result.hasErrors()) {
-			return ApplicationConstants.CONST_STRING_HOME;
-		}
 
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBean
 				.getFile().getBytes())) {
@@ -123,7 +119,7 @@ public class FileUpload {
 				numOfProducts = gbDataExcelMapping.readExcel(accessToken,
 						workbook, Integer.valueOf(asiNumber), batchId);
 				model.addAttribute(ApplicationConstants.CONST_STRING_FILE_NAME, numOfProducts);
-				downloadMail.sendMail(asiNumber, batchId);
+				mailService.sendMail(asiNumber, batchId);
 				model.addAttribute(ApplicationConstants.CONST_STRING_SUCCESS_MSG , 
 						                                  ApplicationConstants.MAIL_SEND_SUCCESS_MESSAGE);
 				return ApplicationConstants.CONST_STRING_SUCCESS;
@@ -131,7 +127,7 @@ public class FileUpload {
 				numOfProducts = productV2ExcelMapping.readExcel(accessToken,
 						workbook, Integer.valueOf(asiNumber), batchId);
 				model.addAttribute(ApplicationConstants.CONST_STRING_FILE_NAME, numOfProducts);
-				downloadMail.sendMail(asiNumber, batchId);
+				mailService.sendMail(asiNumber, batchId);
 				model.addAttribute(ApplicationConstants.CONST_STRING_SUCCESS_MSG , 
 						                                  ApplicationConstants.MAIL_SEND_SUCCESS_MESSAGE);
 				return ApplicationConstants.CONST_STRING_SUCCESS;
@@ -264,11 +260,11 @@ public class FileUpload {
 																				noOfProductsFailure);
 		if (!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)) {
 			
-			/*boolean isMailSendSuccess = downloadMail.sendMail(asiNumber, batchId);
+			/*boolean isMailSendSuccess = mailService.sendMail(asiNumber, batchId);
 			if(isMailSendSuccess){
 				redirectAttributes.addFlashAttribute(ApplicationConstants.CONST_STRING_SUCCESS_MSG ,
 				                                             ApplicationConstants.MAIL_SEND_SUCCESS_MESSAGE);
-			}*/ // for testing purpose
+			} */  // for testing purpose
 			
 		}
 	}
@@ -334,14 +330,6 @@ public class FileUpload {
 
 	public void setGbDataExcelMapping(ExcelMapping gbDataExcelMapping) {
 		this.gbDataExcelMapping = gbDataExcelMapping;
-	}
-
-	public DownloadFileController getDownloadMail() {
-		return downloadMail;
-	}
-
-	public void setDownloadMail(DownloadFileController downloadMail) {
-		this.downloadMail = downloadMail;
 	}
 	public DCProductsExcelMapping getDcProductExcelMapping() {
 	return dcProductExcelMapping;
