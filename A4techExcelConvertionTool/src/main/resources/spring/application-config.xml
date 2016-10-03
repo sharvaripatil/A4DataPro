@@ -99,6 +99,7 @@
 		<property name="klMapping" ref="klMappingId"/>
 		<property name="bbiProductsExcelMapping" ref="bbiProductsExcelMappingId"/>
 		<property name="adspecMapping" ref="adspecProductsExcelMappingId"/>
+		<property name="newProductsExcelMapping" ref="newProductsExcelMappingId"/>
 	</bean>
 	<bean id="usbExcelMapping"
 		class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
@@ -262,6 +263,9 @@
 	<!-- supplier 64509 configuration start -->
   <bean id="klPriceGridParserId" class="com.a4tech.kl.product.parser.KlPriceGridParser"/>
   <bean id="klProductAttributeParserId" class="com.a4tech.kl.product.parser.KlProductAttributeParser"/>
+  <bean id="klColorParserId" class="com.a4tech.kl.product.parser.KlColorAndMaterialParser"/>
+  <bean id="klSizeParserId" class="com.a4tech.kl.product.parser.KlSizeParser"/>
+  <bean id="klImprintMethodParserId" class="com.a4tech.product.criteria.parser.ProductImprintMethodParser"/>
    <bean id="klMappingId" class="com.a4tech.kl.product.mapping.KlProductsExcelMapping">
      	<property name="postServiceImpl" ref="postService"/>
      	<property name="productDaoObj"  ref="productDao"/>
@@ -319,6 +323,19 @@
      </bean>
        
      <!-- supplier 32125 configuration end -->
+     
+      <!-- supplier 91284 configuration start -->
+       <bean id="newProimprintMethodParserId" class="com.a4tech.product.newproducts.criteria.parser.NewProProductImprintmethodParser"/>
+      <bean id="newProPriceGridParserId" class="com.a4tech.product.newproducts.criteria.parser.NewProPriceGridParser"/> 
+     
+     <bean id="newProductsExcelMappingId" class="com.a4tech.product.newproducts.mapping.NewProductsExcelMapping">
+     	   <property name="postServiceImpl" ref="postService"/>
+     	   <property name="productDaoObj" ref="productDao"/>
+     	    <property name="newProimprintMethodParser" ref="newProimprintMethodParserId"/> 
+     	      <property name="newProPriceGridParser" ref="newProPriceGridParserId"/>
+     </bean>
+       
+     <!-- supplier 91284 configuration end -->
 
 	<!-- <bean id="checkDBConnectionController" name="checkDBConnectionController" 
 		class="com.a4tech.controller.CheckDBConnectionController" autowire="byName"> 
