@@ -49,7 +49,7 @@
        <div class="filedownload" align="center">
 
         <p>Click on the link to download Product Error File:
-	<c:url value="/sendEmails.html" var="sendEmailsLink" /><br/>
+	<c:url value="/downloadFile.html" var="sendEmailsLink" /><br/>
 	<a href="${sendEmailsLink}"><strong>Download a File</strong></a></p>
       <br/>
         <%--  <h3 class="successtxt"><strong>${successmsg}</strong> </h3> --%>
