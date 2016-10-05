@@ -183,6 +183,7 @@ public class NewProductsExcelMapping {
 						}
 						////*/
 						productExcelObj.setExternalProductId(productId);
+						productExcelObj.setAsiProdNo(productId);
 						break;
 						
 					case 3:
@@ -209,7 +210,7 @@ public class NewProductsExcelMapping {
 						String tempValue=productDescription;
 						productDescription = cell.getStringCellValue();
 						 if(!StringUtils.isEmpty(productDescription)){
-							 productDescription=tempValue+productDescription;
+							 productDescription=tempValue+ApplicationConstants.CONST_STRING_BIG_SPACE+productDescription;
 							 productDescription=productDescription.replaceAll(ApplicationConstants.CONST_STRING_NEWLINE,ApplicationConstants.CONST_VALUE_TYPE_SPACE);
 							 productExcelObj.setDescription(productDescription);
 						 }else{
@@ -247,10 +248,6 @@ public class NewProductsExcelMapping {
 					case 7: 
 						String	shipWT=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(shipWT)){
-							if(shipWT.length()>6){
-								shipWT=shipWT.substring(0, 6);
-							}
-						
 						 List<Weight>       weightList=new ArrayList<Weight>();
 						 Weight wtObj=new Weight();
 						 wtObj.setValue(shipWT);
