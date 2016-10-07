@@ -75,7 +75,7 @@ public class CommonUtility {
 	if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 		value = cell.getStringCellValue();
 		}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-			value = String.valueOf(new BigDecimal(cell.getNumericCellValue()));
+			value = String.valueOf(BigDecimal.valueOf(cell.getNumericCellValue()));
 		}
 	}catch(Exception e){
 		_LOGGER.error("Cell value convert into String/decimal: "+e.getMessage());

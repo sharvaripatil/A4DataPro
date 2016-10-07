@@ -27,6 +27,7 @@ public class DownloadFileController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String gerErrorLogFile(HttpServletRequest request,
 			HttpServletResponse response,Model model) throws ServletException, IOException {
+
 		response.setContentType("text/html");
 		String batchId=(String) request.getSession().getAttribute("batchId"); 
 		String fileName= batchId+".txt";
@@ -40,7 +41,9 @@ public class DownloadFileController {
 					out.print(line);
 				}
 			}catch (FileNotFoundException e) {
-				_LOGGER.error("Error log file is not available:"+e);
+				_LOGGER.error("Error log file is not available:"+e.getMessage());
+			}catch (Exception e) {
+				_LOGGER.error("unable to process the error log file :"+e);
 			}
         return "success";    
 			

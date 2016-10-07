@@ -71,7 +71,7 @@ public class DCPriceGridParser {
 			try {
 				price.setQty(Integer.valueOf(quantity[i]));
 			} catch (NumberFormatException nfe) {
-				price.setQty(0);
+				price.setQty(ApplicationConstants.CONST_NUMBER_ZERO);
 			}
 			price.setPrice(prices[i]);
 			price.setNetCost(netCost[i]);

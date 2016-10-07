@@ -129,7 +129,7 @@ public class AdspecPriceGridParser {
 			try{
 				configs.setCriteria(config[0]);
 			}catch(ArrayIndexOutOfBoundsException aie){
-				
+				_LOGGER.error("Error while processing priceconfiguration" + aie.getMessage());
 			}
 			
 			//configs.setValue(Arrays.asList((Object) config[1]));

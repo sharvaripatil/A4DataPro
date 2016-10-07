@@ -70,6 +70,7 @@ public class LoginServiceImpl implements ILoginService {
             
         
         }catch(HttpClientErrorException hce){
+        	_LOGGER.error("Error while doing login "+hce.getMessage());
         	if(hce.getMessage().equalsIgnoreCase("400 Bad Request")){
         		return "unAuthorized";	
         	}

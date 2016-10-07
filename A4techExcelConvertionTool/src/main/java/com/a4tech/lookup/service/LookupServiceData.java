@@ -6,10 +6,10 @@ import com.a4tech.lookup.service.restService.LookupRestService;
 
 public class LookupServiceData {
 	
-	private LookupRestService lookupRestService;
+	private static LookupRestService lookupRestService;
 	public static List<String> imprintMethods = null;
 	public static List<String> materialValues = null;
-	public List<String> getImprintMethods(){
+	public static List<String> getImprintMethods(){
 		 
 		  if(imprintMethods == null){
 			  imprintMethods = lookupRestService.getImprintMethodData();
@@ -17,7 +17,7 @@ public class LookupServiceData {
 		  }
 		return null;
 	}
-	public List<String> getMaterialValues(){
+	public static List<String> getMaterialValues(){
 		 
 		  if(imprintMethods == null){
 			  materialValues = lookupRestService.getMaterialsData();

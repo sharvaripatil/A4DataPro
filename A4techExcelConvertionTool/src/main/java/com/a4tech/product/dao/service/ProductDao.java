@@ -19,6 +19,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.util.StringUtils;
 
 import com.a4tech.core.errors.ErrorMessage;
 import com.a4tech.core.errors.ErrorMessageList;
@@ -46,7 +47,7 @@ public class ProductDao {
 		   Set<String> additionalInfo=errors.getAdditionalInfo();
 		   errorEntity.setError(errors.getMessage());
 		   listErrorEntity.add(errorEntity);
-		   if(!additionalInfo.isEmpty() && additionalInfo!=null){
+		   if(!StringUtils.isEmpty(additionalInfo)){
 		for (String errorMessage : additionalInfo) {
 			errorEntityTemp = new ErrorEntity();
 			errorEntityTemp.setError(errorMessage);

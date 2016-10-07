@@ -117,6 +117,8 @@ public class ApplicationConstants {
 	public static final String  CONST_STRING_NEWLINE          		  ="\n";	
 	
 	public static final String	CONST_STRING_SHIPPING_NUMBER_UNIT_CASE   = "per Case";
+	public static final String	CONST_STRING_BIG_SPACE   				= "   ";
+	
 	  public static Map<String, String> SUPPLIER_EMAIL_ID_MAP =new HashMap<String, String>();
 	  public static Map<String, String> SUPPORT_EMAIL_ID_MAP =new HashMap<String, String>();
 	    static {
