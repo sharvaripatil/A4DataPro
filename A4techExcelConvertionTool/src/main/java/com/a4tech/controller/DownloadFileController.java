@@ -24,7 +24,7 @@ public class DownloadFileController {
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String doSendEmail(HttpServletRequest request,
-			HttpServletResponse response,Model model) throws ServletException, IOException {
+			HttpServletResponse response,Model model) throws ServletException {
 		response.setContentType("text/html");
 		String batchId=(String) request.getSession().getAttribute("batchId"); 
 		String fileName= batchId+".txt";
@@ -39,7 +39,9 @@ public class DownloadFileController {
 					out.write(lineNum);
 				}
 			}catch (FileNotFoundException e) {
-				_LOGGER.error("Error log file is not available:"+e);
+				_LOGGER.error("Error log file is not available:"+e.getMessage());
+			} catch (IOException ex) {
+				_LOGGER.error("Error log file is not available:"+ex.getMessage());
 			}
         return "success";    
 			

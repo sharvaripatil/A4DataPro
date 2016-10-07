@@ -291,7 +291,7 @@ public class RFGLineProductExcelMapping {
 							       listOfQuantity.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							         }
 							}catch (Exception e) {
-								_LOGGER.info("Error in base price Quantity field");
+								_LOGGER.info("Error in base price Quantity field "+e.getMessage());
 							}
 							break;
 						case 38:// Net1
@@ -309,7 +309,7 @@ public class RFGLineProductExcelMapping {
 							        	 listOfNetPrice.append(Netcost).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 								         }
 								}catch (Exception e) {
-									_LOGGER.info("Error in base price Netcost field");
+									_LOGGER.info("Error in base price Netcost field "+e.getMessage());
 								}
 							break;
 						case 46: //Retail1
@@ -327,7 +327,7 @@ public class RFGLineProductExcelMapping {
 							        	 listOfPrices.append(ListPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 								         }
 								}catch (Exception e) {
-									 _LOGGER.info("Error in base price prices field");							break;
+									 _LOGGER.info("Error in base price prices field "+e.getMessage());							break;
 								}
 				        	 break;
 						case 54:// Margin1
@@ -344,7 +344,7 @@ public class RFGLineProductExcelMapping {
 						        	 listOfDiscount.append(Discountcode).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							         }
 							}catch (Exception e) {
-					        	 _LOGGER.info("Error in pricePerUnit field");
+					        	 _LOGGER.info("Error in pricePerUnit field "+e.getMessage() );
 							}
 							break;
 

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import com.a4tech.RFGLine.product.mapping.RFGLineProductExcelMapping;
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
@@ -12,7 +15,8 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.LookupData;
 
 public class RFGPriceGridParser {
-
+	private static final Logger _LOGGER = Logger
+			.getLogger(RFGLineProductExcelMapping.class);
 	public List<PriceGrid> getPriceGrids(String listOfPrices,
 			String listOfNetcost, String listOfQuan, String listOfDisc,
 			String currency, String priceInclude, boolean isBasePrice,
@@ -78,6 +82,7 @@ public class RFGPriceGridParser {
 			try {
 				price.setQty(Integer.valueOf(quantity[i]));
 			} catch (NumberFormatException nfe) {
+				_LOGGER.error("Error while processing quantity in RFGPricegrid" + nfe.getMessage());
 				price.setQty(0);
 			}
 			price.setPrice(prices[i]);

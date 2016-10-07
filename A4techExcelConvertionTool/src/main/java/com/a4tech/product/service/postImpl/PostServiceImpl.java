@@ -35,7 +35,7 @@ public class PostServiceImpl implements PostService {
 	@Autowired
 	ObjectMapper mapperObj;
 	
-	public int postProduct(String authTokens, Product product,int asiNumber ,int batchId) throws JsonParseException, JsonMappingException, IOException {
+	public int postProduct(String authTokens, Product product,int asiNumber ,int batchId) throws IOException {
 
 		try {
 			HttpHeaders headers = new HttpHeaders();
@@ -65,9 +65,18 @@ public class PostServiceImpl implements PostService {
 			
 		} catch(HttpServerErrorException serverEx){
 			String serverResponse = serverEx.getResponseBodyAsString();
-			ErrorMessageList apiResponse =  mapperObj.readValue(serverResponse, ErrorMessageList.class);
-			productDao.save(apiResponse.getErrors(),product.getExternalProductId(),asiNumber,batchId);
+			
+			ErrorMessageList apiResponse;
+			try {
+				apiResponse = mapperObj.readValue(serverResponse, ErrorMessageList.class);
+				productDao.save(apiResponse.getErrors(),product.getExternalProductId(),asiNumber,batchId);
+				_LOGGER.info("Error JSON:"+apiResponse);
+				
+			} catch (JsonParseException | JsonMappingException e) {
+				_LOGGER.error("Error while reading ErrorMessageList object to JSON:"+e.getCause());
+			}
 			return 0;
+			
 		}
 		catch (Exception hce) {
 			_LOGGER.error("Exception while posting product to ExternalAPI", hce);
