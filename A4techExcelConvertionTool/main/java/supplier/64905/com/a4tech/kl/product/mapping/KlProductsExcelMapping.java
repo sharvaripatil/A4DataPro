@@ -320,6 +320,7 @@ public class KlProductsExcelMapping {
 							 productExcelObj.setCanOrderLessThanMinimum(ApplicationConstants.CONST_BOOLEAN_TRUE);
 						 }
 					}catch (Exception e) {
+						_LOGGER.error("Error while processing CanOrderLessThanMinimum" + e.getMessage());
 						productExcelObj.setCanOrderLessThanMinimum(ApplicationConstants.CONST_BOOLEAN_FALSE);
 					}
 				   break;
@@ -712,13 +713,13 @@ public class KlProductsExcelMapping {
 	       productDaoObj.getErrorLog(asiNumber,batchId);
 	       return finalResult;
 		}catch(Exception e){
-			_LOGGER.error("Error while Processing excel sheet ");
+			_LOGGER.error("Error while Processing excel sheet "+e.getMessage());
 			return finalResult;
 		}finally{
 			try {
 				workbook.close();
 			} catch (IOException e) {
-				_LOGGER.error("Error while Processing excel sheet");
+				_LOGGER.error("Error while Processing excel sheet "+e.getMessage());
 	
 			}
 				_LOGGER.info("Complted processing of excel sheet ");

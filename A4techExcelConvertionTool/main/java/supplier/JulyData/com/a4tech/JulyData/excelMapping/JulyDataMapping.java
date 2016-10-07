@@ -321,7 +321,7 @@ public class JulyDataMapping {
                   
                   }catch(Exception e){
                   //e.printStackTrace();
-                  _LOGGER.error("Error while Processing Product :"+productExcelObj.getExternalProductId() );          
+                  _LOGGER.error("Error while Processing Product :"+productExcelObj.getExternalProductId()+"Error: " + e.getMessage());          
             }
             }
          }
@@ -344,14 +344,14 @@ public class JulyDataMapping {
                  _LOGGER.info("list size>>>>>>"+numOfProducts.size());
                   //System.out.println(mapper1.writeValueAsString(productExcelObj));
             }catch(Exception e){
-                  _LOGGER.error("Error while Processing excel sheet ");
+                  _LOGGER.error("Error while Processing excel sheet "+e.getMessage());
                   return 0;
             }finally{
                   try {
                         workbook.close();
                   //inputStream.close();
                   } catch (IOException e) {
-                        _LOGGER.error("Error while Processing excel sheet");
+                        _LOGGER.error("Error while Processing excel sheet "+e.getMessage() );
       
                   }
                         _LOGGER.info("Complted processing of excel sheet ");

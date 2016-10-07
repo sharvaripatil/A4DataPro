@@ -456,7 +456,7 @@ public class SageProductsExcelMapping {
 						}else{
 						}
 					}catch (Exception e) {
-						_LOGGER.info("Error in base price Quantity field");
+						_LOGGER.info("Error in base price Quantity field "+e.getMessage());
 					}
 					
 					   	break;
@@ -480,7 +480,7 @@ public class SageProductsExcelMapping {
 						}else{
 						}  
 				 }catch (Exception e) {
-					_LOGGER.info("Error in base price prices field");
+					_LOGGER.info("Error in base price prices field "+e.getMessage());
 				}
 					
 					    break; 
@@ -497,7 +497,7 @@ public class SageProductsExcelMapping {
 					try{
 						
 					}catch (Exception e) {
-						_LOGGER.info("Error in pricePerUnit field");
+						_LOGGER.info("Error in pricePerUnit field "+e.getMessage());
 					}
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 						quantity = cell.getStringCellValue();
@@ -534,7 +534,7 @@ public class SageProductsExcelMapping {
 				        	 listOfPrices.append(ListPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
 					}catch (Exception e) {
-						 _LOGGER.info("Error in base price prices field");							
+						 _LOGGER.info("Error in base price prices field "+e.getMessage());							
 					}
 				  break;
 				case 48://setup discount code
@@ -545,7 +545,7 @@ public class SageProductsExcelMapping {
 				        	 listOfDiscount.append(Discountcode).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
 					}catch (Exception e) {
-			        	 _LOGGER.info("Error in pricePerUnit field");
+			        	 _LOGGER.info("Error in pricePerUnit field "+e.getMessage());
 					}
 				  break;
 				case 49:
@@ -896,13 +896,13 @@ public class SageProductsExcelMapping {
 	       productDaoObj.getErrorLog(asiNumber,batchId);
 	       return finalResult;
 		}catch(Exception e){
-			_LOGGER.error("Error while Processing excel sheet ");
+			_LOGGER.error("Error while Processing excel sheet "+e.getMessage());
 			return finalResult;
 		}finally{
 			try {
 				workbook.close();
 			} catch (IOException e) {
-				_LOGGER.error("Error while Processing excel sheet");
+				_LOGGER.error("Error while Processing excel sheet "+e.getMessage());
 	
 			}
 				_LOGGER.info("Complted processing of excel sheet ");
