@@ -1109,7 +1109,7 @@ public class ExcelMapping {
 			return 0;
 		}finally{
 			
-			productDaoObj.getErrorLog(asiNumber,batchId);
+			productDaoObj.saveErrorLog(asiNumber,batchId);
 			try {
 				workbook.close();
 			//inputStream.close();

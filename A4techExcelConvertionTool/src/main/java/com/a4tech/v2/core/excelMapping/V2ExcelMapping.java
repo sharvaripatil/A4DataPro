@@ -1110,7 +1110,7 @@ public class V2ExcelMapping {
 			_LOGGER.error("Error while Processing excel sheet "+"Error Message :" +e.getMessage());
 			return 0;
 		}finally{
-			productDaoObj.getErrorLog(asiNumber,batchId);
+			productDaoObj.saveErrorLog(asiNumber,batchId);
 			try {
 				workbook.close();
 			//inputStream.close();

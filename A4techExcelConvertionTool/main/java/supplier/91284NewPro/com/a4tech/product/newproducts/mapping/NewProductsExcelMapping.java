@@ -438,7 +438,7 @@ public class NewProductsExcelMapping {
 	 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 	 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
        finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
-       productDaoObj.getErrorLog(asiNumber,batchId);
+       productDaoObj.saveErrorLog(asiNumber,batchId);
        return finalResult;
 	}catch(Exception e){
 		_LOGGER.error("Error while Processing excel sheet ,Error message: "+e.getMessage()+"for column"+columnIndex+1);

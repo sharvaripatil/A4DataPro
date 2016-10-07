@@ -171,7 +171,7 @@ public class ProductDao {
  }
 	
 	@SuppressWarnings("unchecked")
-	public void getErrorLog(int asiNumber ,int batchId){
+	public void saveErrorLog(int asiNumber ,int batchId){
 		Session session = null;
 		
 		try{

@@ -412,7 +412,7 @@ public class RFGLineProductExcelMapping {
 					+ numOfProductsFailure.size());
 			finalResult = numOfProductsSuccess.size() + ","
 					+ numOfProductsFailure.size();
-			productDaoObj.getErrorLog(asiNumber, batchId);
+			productDaoObj.saveErrorLog(asiNumber, batchId);
 			return finalResult;
 		} catch (Exception e) {
 			_LOGGER.error("Error while Processing excel sheet ,Error message: "
