@@ -1,6 +1,7 @@
 package com.a4tech.controller;
 
-import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.a4tech.ESPTemplate.product.mapping.ESPTemplateMapping;
@@ -37,6 +40,7 @@ import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
+import com.a4tech.util.ConvertCsvToExcel;
 import com.a4tech.v2.core.excelMapping.V2ExcelMapping;
 
 @Controller
@@ -63,6 +67,7 @@ public class FileUpload {
 	private NewProductsExcelMapping newProductsExcelMapping;
 	private ILoginService loginService;
 	private ProductDao productDao;
+	private ConvertCsvToExcel convertCsvToExcel;
 	private static Logger _LOGGER = Logger.getLogger(Class.class);
 	
 	@RequestMapping(method = RequestMethod.GET)
@@ -75,30 +80,19 @@ public class FileUpload {
 	@RequestMapping(method = RequestMethod.POST)
 	public String fileUpload(
 			@ModelAttribute("filebean") FileBean fileBean, final RedirectAttributes redirectAttributes,
-			                                                         Model model, HttpServletRequest request) {
+			                                                             Model model, HttpServletRequest request) {
 		_LOGGER.info("Enter Controller Class");
 		String finalResult = null;
-		Workbook workbook = null;
-
 		int numOfProducts = 0;
 		String asiNumber = fileBean.getAsiNumber();
-
-		try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBean
-				.getFile().getBytes())) {
-
-			String fileExtension = CommonUtility.getFileExtension(fileBean
-					.getFile().getOriginalFilename());
-			if (ApplicationConstants.CONST_STRING_XLS.equalsIgnoreCase(fileExtension)) {
-				workbook = new HSSFWorkbook(bis);
-
-			} else if (ApplicationConstants.CONST_STRING_XLSX.equalsIgnoreCase(fileExtension)) {
-				workbook = new XSSFWorkbook(bis);
-			} else {
-				_LOGGER.info("Invlid upload excel file,Please try one more time");
-				model.addAttribute(ApplicationConstants.CONST_STRING_INVALID_UPLOAD_FILE, 
-						                                          ApplicationConstants.CONST_STRING_EMPTY);
-				return ApplicationConstants.CONST_STRING_HOME;
-			}
+		String fileExtenion = CommonUtility.getFileExtension(fileBean.getFile()
+																.getOriginalFilename());
+		if (!CommonUtility.isValidFormat(fileExtenion)) {
+			model.addAttribute(ApplicationConstants.CONST_STRING_INVALID_UPLOAD_FILE, 
+                                              ApplicationConstants.CONST_STRING_EMPTY);
+			return ApplicationConstants.CONST_STRING_HOME;
+		}
+		try  {
 			accessToken = loginService.doLogin(fileBean.getAsiNumber(),
 					fileBean.getUserName(), fileBean.getPassword());
 			if (accessToken != null) {
@@ -111,6 +105,7 @@ public class FileUpload {
 			} else {
 				return ApplicationConstants.CONST_STRING_ERROR_PAGE;
 			}
+			Workbook workbook = getWorkBook(fileBean.getFile());
 			int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 			request.getSession().setAttribute("batchId",
 					String.valueOf(batchId));
@@ -218,9 +213,6 @@ public class FileUpload {
 			default:
 				break;
 			}
-
-		} catch (IOException e) {
-			_LOGGER.error("Error In FileUpload: " + e.getMessage());
 		} catch (Exception e) {
 			_LOGGER.error("Error In FileUpload: " + e.getMessage());
 		}
@@ -264,9 +256,55 @@ public class FileUpload {
 			if(isMailSendSuccess){
 				redirectAttributes.addFlashAttribute(ApplicationConstants.CONST_STRING_SUCCESS_MSG ,
 				                                             ApplicationConstants.MAIL_SEND_SUCCESS_MESSAGE);
-			} */  // for testing purpose
+			} */
 			
 		}
+	}
+	/*@author Venkat
+	 *@param MultipartFile
+	 *@description This method used for converting MultiPartFile format into File format
+	 *@return  File format
+	 */
+	public File convertMultiPartFileIntoFile(MultipartFile mfile){
+		File file = null;
+		file = new File(mfile.getOriginalFilename());
+		try {
+			mfile.transferTo(file);
+		} catch (IllegalStateException | IOException e) {
+			_LOGGER.error("unable to convert MultiPartFile into File format : "+e);
+		}
+		
+		return file;
+	}
+	/*@author Venkat
+	 *@param  MultipartFile
+	 *@description This method is design for convert file into workbook format,also 
+	 *                                           csv file format convert into workbook
+	 *@return WorkBook
+	 */
+	public  Workbook getWorkBook(MultipartFile mfile){
+	    String fileExtension = CommonUtility.getFileExtension(mfile.getOriginalFilename());
+	    File file = convertMultiPartFileIntoFile(mfile);
+	    Workbook workBook = null;
+	    if(ApplicationConstants.CONST_STRING_XLS.equalsIgnoreCase(fileExtension)){
+	    	try(Workbook workbook1 = new HSSFWorkbook(new FileInputStream(file))) {
+				return workbook1;
+			} catch (IOException e) {
+				_LOGGER.error("unable to file convert into excelsheet"+e);
+			}
+	     }else if(ApplicationConstants.CONST_STRING_XLSX.equalsIgnoreCase(fileExtension)){
+	    	try(Workbook workBook2 = new XSSFWorkbook(file)) {
+	    		return workBook2;
+			} catch (InvalidFormatException | IOException e) {
+				_LOGGER.error("unable to file convert into excelsheet"+e);
+			}
+	    }else if(ApplicationConstants.CONST_STRING_CSV.equalsIgnoreCase(fileExtension)){
+	    	workBook = convertCsvToExcel.getExcel(file);
+	    	return workBook;
+	    }else{
+	    	
+	    }
+		return workBook;
 	}
 	public UsbProductsExcelMapping getUsbExcelMapping() {
 		return usbExcelMapping;
@@ -397,5 +435,13 @@ public class FileUpload {
 			NewProductsExcelMapping newProductsExcelMapping) {
 		this.newProductsExcelMapping = newProductsExcelMapping;
 	}
+	public ConvertCsvToExcel getConvertCsvToExcel() {
+		return convertCsvToExcel;
+	}
+
+	public void setConvertCsvToExcel(ConvertCsvToExcel convertCsvToExcel) {
+		this.convertCsvToExcel = convertCsvToExcel;
+	}
+
 
 }

@@ -178,7 +178,12 @@
 		<artifactId>poi-ooxml</artifactId>
 		<version>${poi.version}</version>
     </dependency>
-    
+    <!-- Csv Reader  -->
+    <dependency>
+    	<groupId>com.opencsv</groupId>
+    	<artifactId>opencsv</artifactId>
+    	<version>3.3</version>
+	</dependency>
     <dependency>
 		<groupId>com.fasterxml.jackson.core</groupId>
 		<artifactId>jackson-databind</artifactId>

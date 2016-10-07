@@ -36,35 +36,36 @@ public class CommonUtility {
 		return new ArrayList<String>();
 	}
 	
-	public static String getCellValueDouble(Cell cell){
+	public static String getCellValueDouble(Cell cell) {
 		String value = "";
-		try{
-			if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+		try {
+			if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 				value = cell.getStringCellValue();
-			}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+			} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				double doubleValue = cell.getNumericCellValue();
 				value = String.valueOf(doubleValue);
 			}
-		}catch(Exception e){
-			_LOGGER.error("Cell value convert into Double: "+e.getMessage());
+		} catch (Exception e) {
+			_LOGGER.error("Cell value convert into Double: " + e.getMessage());
 		}
-		
+
 		return value;
 	}
 	
-	public static String getCellValueStrinOrInt(Cell cell){
+	public static String getCellValueStrinOrInt(Cell cell) {
 		String value = "";
-		try{
-			if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+		try {
+			if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 				value = cell.getStringCellValue();
-			}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+			} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				int numericValue = (int) cell.getNumericCellValue();
 				value = String.valueOf(numericValue);
 			}
-		}catch(Exception e){
-			_LOGGER.error("Cell value convert into String/Int format: "+e.getMessage());
+		} catch (Exception e) {
+			_LOGGER.error("Cell value convert into String/Int format: "
+					+ e.getMessage());
 		}
-		
+
 		return value;
 	}
 	
@@ -99,14 +100,14 @@ public class CommonUtility {
     * @Description This method is checking value is zero or blank
     * @ReturnType boolean
     */
-   public static boolean checkZeroAndEmpty(String value){
-		   
-		   if(ApplicationConstants.CONST_STRING_ZERO.equals(value) || 
-				                                      ApplicationConstants.CONST_STRING_EMPTY.equals(value)){
-			   return true;
-		   }
-	   return false;
-   }
+	public static boolean checkZeroAndEmpty(String value) {
+
+		if (ApplicationConstants.CONST_STRING_ZERO.equals(value)
+				|| ApplicationConstants.CONST_STRING_EMPTY.equals(value)) {
+			return true;
+		}
+		return false;
+	}
    
    public static boolean isBlank(String value){
 	   if(value.equals(" ")){
@@ -114,4 +115,20 @@ public class CommonUtility {
 	   }
 	   return false;
    }
+   /*@author Venkat
+    *@param String,it is file extension name i.e xls,csv..
+    *@description This method is valid for file extension weather it is xls,xlsx ,csv format or
+    *                                                                           any other format
+    * @ return boolean ,if filename having xls,xlsx ,csv then return true else false
+    */
+	public static boolean isValidFormat(String fileName) {
+
+		if (ApplicationConstants.CONST_STRING_XLS.equalsIgnoreCase(fileName)
+				|| ApplicationConstants.CONST_STRING_XLSX.equalsIgnoreCase(fileName)
+				|| ApplicationConstants.CONST_STRING_CSV.equalsIgnoreCase(fileName)) {
+			return true;
+
+		}
+		return false;
+	}
 }

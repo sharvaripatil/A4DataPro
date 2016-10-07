@@ -98,6 +98,7 @@
 		<property name="bbiProductsExcelMapping" ref="bbiProductsExcelMappingId"/>
 		<property name="adspecMapping" ref="adspecProductsExcelMappingId"/>
 		<property name="newProductsExcelMapping" ref="newProductsExcelMappingId"/>
+		<property name="convertCsvToExcel" ref="convertCsvToExcelId"/>
 	</bean>
 	<bean id="usbExcelMapping"
 		class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
@@ -272,28 +273,17 @@
     	<bean id="shippingParserObj" class="com.a4tech.RFGLine.products.parser.RFGShippingEstimationParser" />
         <bean id="rfgPriceGridParserObj" class="com.a4tech.RFGLine.products.parser.RFGPriceGridParser" />
         <bean id="descrptionParserObj" class="com.a4tech.RFGLine.products.parser.RFGDescrptionParser" >
-        <property name="descsizeParserObj" ref="descsizeParserObj" />
-        <property name="attributeObj" ref="attributeObj" />
-        <property name="materialParserObj" ref="materialParserObj" />
-        <property name="rfgPriceGridParserObj" ref="rfgPriceGridParserObj" />
-        
-        
-         
+        	<property name="descsizeParserObj" ref="descsizeParserObj" />
+        	<property name="attributeObj" ref="attributeObj" />
+        	<property name="materialParserObj" ref="materialParserObj" />
+        	<property name="rfgPriceGridParserObj" ref="rfgPriceGridParserObj" />
         </bean>
         <bean id="descsizeParserObj" class="com.a4tech.RFGLine.products.parser.RFGSizeParser" />
-         <bean id="attributeObj" class="com.a4tech.RFGLine.products.parser.RFGProductAttributeParser" />
-         <bean id="materialParserObj" class="com.a4tech.RFGLine.products.parser.RFGMaterialParser" />
-         
-         
-    
-    
-    
-    
+        <bean id="attributeObj" class="com.a4tech.RFGLine.products.parser.RFGProductAttributeParser" />
+        <bean id="materialParserObj" class="com.a4tech.RFGLine.products.parser.RFGMaterialParser" />
     <!-- supplier 64509 configuration end -->  
     
-    
     <!-- supplier 40445 configuration start -->
-  
    <bean id="bbiProductsExcelMappingId" class="com.a4tech.product.bbi.mapping.BBIProductsExcelMapping">
      	<property name="postServiceImpl" ref="postService"/>
      	<property name="productDaoObj"  ref="productDao"/>
@@ -327,18 +317,10 @@
      <bean id="newProductsExcelMappingId" class="com.a4tech.product.newproducts.mapping.NewProductsExcelMapping">
      	   <property name="postServiceImpl" ref="postService"/>
      	   <property name="productDaoObj" ref="productDao"/>
-     	    <property name="newProimprintMethodParser" ref="newProimprintMethodParserId"/> 
-     	      <property name="newProPriceGridParser" ref="newProPriceGridParserId"/>
+     	   <property name="newProimprintMethodParser" ref="newProimprintMethodParserId"/> 
+     	    <property name="newProPriceGridParser" ref="newProPriceGridParserId"/>
      </bean>
-       
+     <bean id="convertCsvToExcelId" class="com.a4tech.util.ConvertCsvToExcel"/>
      <!-- supplier 91284 configuration end -->
-
-	<!-- <bean id="checkDBConnectionController" name="checkDBConnectionController" 
-		class="com.a4tech.controller.CheckDBConnectionController" autowire="byName"> 
-		<property name="mailSenderObj" ref="mailSender" ></property> <property name="username" 
-		value="${email.username}"/> <property name="dbURL" value="${mysql.db.url_for_conncheck}" 
-		></property> <property name="dbUsername" value="${mysql.db.username}" ></property> 
-		<property name="dbPassword" value="${mysql.db.password}"></property> <property 
-		name="dbDriver" value="${mysql.db.driverClassName}" ></property> </bean> -->
 </beans>
 

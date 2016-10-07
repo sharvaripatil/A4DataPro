@@ -49,7 +49,7 @@
            </c:when>
             <c:when test="${invalidUploadFile == ''}">
                 <div id="dataId" style="color:red" >
-               <h4>Please Upload xls/xlsx Files Only</h4> 
+               <h4>Please Upload xls/xlsx/csv Files Only</h4> 
                </div>
            </c:when>
          </c:choose> 

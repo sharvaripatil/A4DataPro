@@ -187,24 +187,24 @@ public class ProductDao {
 	            hashmap.put(arr.getProductNo(), arraylist);
 	        }
 	        String errorComp=Integer.toString(batchId);
-	        File fout = new File(errorFileLocPath+errorComp+".txt");
-	    	FileOutputStream fos = new FileOutputStream(fout);
-	     
-	    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-	     
-	    	for (Map.Entry<String,ArrayList<String>> entry : hashmap.entrySet()) {
-	    	    String key = entry.getKey();
-	    	    ArrayList<String> listt = entry.getValue();
-	    	    StringBuilder data = new StringBuilder();
-	    	    for (String error : listt) {
-	    	    	data.append(error).append(ApplicationConstants.CONST_DELIMITER_PIPE);
+			try (FileOutputStream fos = new FileOutputStream(new File(errorFileLocPath+errorComp+".txt"));
+					BufferedWriter bw = new BufferedWriter(
+							new OutputStreamWriter(fos))) {
+				for (Map.Entry<String, ArrayList<String>> entry : hashmap
+						.entrySet()) {
+					String key = entry.getKey();
+					ArrayList<String> listt = entry.getValue();
+					StringBuilder data = new StringBuilder();
+					for (String error : listt) {
+						data.append(error).append(
+								ApplicationConstants.CONST_DELIMITER_PIPE);
+					}
+					data.setLength(data.length() - 1);
+					String finalStr = "ProductID: " + key + "   " + data;
+					bw.write(finalStr);
+					bw.newLine();
 				}
-	    	    data.setLength(data.length()-1);
-	    	    String finalStr="ProductID: "+key+"   " +data;
-	    	    bw.write(finalStr);
-	    	    bw.newLine();
-	    	}
-	    	bw.close();
+			}
 		
 		/*String hql = "select p.PRODUCT_NUMBER,e.ERRORS from a4techconvertiontool.product_log p join  a4techconvertiontool.error_log e on p.PRODUCT_NUMBER = e.PRODUCT_NUMBER where    P.COMPANY_ID='55202'";
 		Query query = session.createQuery(hql);

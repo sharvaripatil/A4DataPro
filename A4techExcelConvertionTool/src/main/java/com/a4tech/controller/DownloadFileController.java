@@ -1,8 +1,10 @@
 package com.a4tech.controller;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +25,7 @@ public class DownloadFileController {
 	private static Logger _LOGGER = Logger.getLogger(DownloadFileController.class);
 	
 	@RequestMapping(method = RequestMethod.GET)
-	public String doSendEmail(HttpServletRequest request,
+	public String gerErrorLogFile(HttpServletRequest request,
 			HttpServletResponse response,Model model) throws ServletException, IOException {
 		response.setContentType("text/html");
 		String batchId=(String) request.getSession().getAttribute("batchId"); 
@@ -31,12 +33,11 @@ public class DownloadFileController {
 		  response.setContentType("APPLICATION/OCTET-STREAM");
 			response.setHeader("Content-Disposition", "attachment; filename=\""
 					+ fileName + "\"");
-			int lineNum;
-			try(PrintWriter out = response.getWriter();
-					FileInputStream fileInputStream = new FileInputStream(ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH
-					+ fileName)){
-				while ((lineNum = fileInputStream.read()) != ApplicationConstants.CONST_NEGATIVE_NUMBER_ONE) {
-					out.write(lineNum);
+			String finalFilePath = ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH+fileName;
+			try(PrintWriter out = response.getWriter()){
+			List<String> fileLine = Files.readAllLines(Paths.get(finalFilePath));
+				for (String line : fileLine) {
+					out.print(line);
 				}
 			}catch (FileNotFoundException e) {
 				_LOGGER.error("Error log file is not available:"+e);
