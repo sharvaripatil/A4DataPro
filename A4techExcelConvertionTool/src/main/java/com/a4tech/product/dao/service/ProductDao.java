@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -64,9 +63,6 @@ public class ProductDao {
 		 tx =  session.beginTransaction();
 		 session.saveOrUpdate(productEntity);
 		tx.commit();
-		String hql = "select p.PRODUCT_NUMBER,e.ERRORS from a4techconvertiontool.product_log p join  a4techconvertiontool.error_log e on p.PRODUCT_NUMBER = e.PRODUCT_NUMBER where    P.COMPANY_ID='55202'";
-		Query query = session.createQuery(hql);
-		List results = query.list();
 	}catch(Exception ex){
 		_LOGGER.error("Error in dao block : "+ ex.getMessage());
 		if(tx != null){
@@ -222,27 +218,5 @@ public class ProductDao {
 			}
 			}
 		}
-	}
-	
-	public void responseconvertErrorMessage(String msg,String productId,Integer asiNumber,int batchId){
-		ErrorMessageList responseList = new ErrorMessageList();
-		List<ErrorMessage> errorList = new ArrayList<ErrorMessage>();
-		ErrorMessage errorMsgObj = new ErrorMessage();
-		errorMsgObj.setMessage(msg);
-		errorList.add(errorMsgObj);
-		if(msg.contains("java.net.UnknownHostException")
-						|| msg.contains("java.net.NoRouteToHostException")){
-			errorMsgObj
-			.setReason("Product is unable to process due to Internet service down");
-		}else if(msg.equalsIgnoreCase("500 Internal Server Error")){
-			errorMsgObj
-			.setReason("Product is unable to process due to ASI server issue");
-		}else if(msg.contains("java.net.SocketTimeoutException")){
-			errorMsgObj
-			.setReason("Product is unable to process due to ASI server not responding");
-		}
-		
-		responseList.setErrors(errorList);
-		save(responseList.getErrors(),productId, asiNumber, batchId);
 	}
 }

@@ -8,9 +8,11 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.core.errors.ErrorMessage;
+import com.a4tech.core.errors.ErrorMessageList;
+
 public class CommonUtility {
 	
-	//String[] priceQuantityIndex = {"8","9","10","11","12","13","14","15","16","17","18","19","20","21"};
    private static Logger _LOGGER = Logger.getLogger(CommonUtility.class);
 	public static boolean isEmptyOrNull(String str) {
 		return (str != null && !" ".equals(str));
@@ -130,5 +132,33 @@ public class CommonUtility {
 
 		}
 		return false;
+	}
+	/*
+	 * @author Venkat
+	 * @param String ,response message
+	 * @description this method is design for converting error response message 
+	 *                                   converting into errorMessageList format
+	 * @return errorMessageList 
+	 */
+	public static ErrorMessageList responseconvertErrorMessageList(
+			String response) {
+		ErrorMessageList responseList = new ErrorMessageList();
+		List<ErrorMessage> errorList = new ArrayList<ErrorMessage>();
+		ErrorMessage errorMsgObj = new ErrorMessage();
+		errorMsgObj.setMessage(response);
+		errorList.add(errorMsgObj);
+		if (response.contains("java.net.UnknownHostException")
+				|| response.contains("java.net.NoRouteToHostException")) {
+			errorMsgObj
+					.setReason("Product is unable to process due to Internet service down");
+		} else if (response.equalsIgnoreCase("500 Internal Server Error")) {
+			errorMsgObj
+					.setReason("Product is unable to process due to ASI server issue");
+		} else if (response.contains("java.net.SocketTimeoutException")) {
+			errorMsgObj
+					.setReason("Product is unable to process due to ASI server not responding");
+		}
+		responseList.setErrors(errorList);
+		return responseList;
 	}
 }

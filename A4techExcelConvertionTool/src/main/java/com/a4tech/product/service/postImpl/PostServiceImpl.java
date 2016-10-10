@@ -1,9 +1,6 @@
 package com.a4tech.product.service.postImpl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +17,7 @@ import com.a4tech.core.model.ExternalAPIResponse;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.service.PostService;
+import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,60 +48,68 @@ public class PostServiceImpl implements PostService {
 							ExternalAPIResponse.class);
 			_LOGGER.info("Result : " + response);
 			return 1;
-		}catch(HttpClientErrorException hce){
+		} catch (HttpClientErrorException hce) {
 			String response = hce.getResponseBodyAsString();
 			try {
-				 _LOGGER.info("ASI Error Response Msg :"+response);
-				ErrorMessageList apiResponse =  mapperObj.readValue(response, ErrorMessageList.class);
-				productDao.save(apiResponse.getErrors(),product.getExternalProductId(),asiNumber,batchId);
+				_LOGGER.info("ASI Error Response Msg :" + response);
+				ErrorMessageList apiResponse = mapperObj.readValue(response,
+						ErrorMessageList.class);
+				productDao.save(apiResponse.getErrors(),
+						product.getExternalProductId(), asiNumber, batchId);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				_LOGGER.error("unable to connect External API System:"+e.getCause());
+				_LOGGER.error("unable to connect External API System:"
+						+ e.getCause());
 				return -1;
 			}
 			return 0;
-			
-		} catch(HttpServerErrorException serverEx){
+
+		} catch (HttpServerErrorException serverEx) {
 			String serverResponse = serverEx.getResponseBodyAsString();
-			
+
 			ErrorMessageList apiResponse;
 			try {
-				apiResponse = mapperObj.readValue(serverResponse, ErrorMessageList.class);
-				productDao.save(apiResponse.getErrors(),product.getExternalProductId(),asiNumber,batchId);
-				_LOGGER.info("Error JSON:"+apiResponse);
-				
+				apiResponse = mapperObj.readValue(serverResponse,
+						ErrorMessageList.class);
+				productDao.save(apiResponse.getErrors(),
+						product.getExternalProductId(), asiNumber, batchId);
+				_LOGGER.info("Error JSON:" + apiResponse);
+
 			} catch (JsonParseException | JsonMappingException e) {
-				_LOGGER.error("Error while reading ErrorMessageList object to JSON:"+e.getCause());
+				_LOGGER.error("Error while reading ErrorMessageList object to JSON:"
+						+ e.getCause());
 			}
 			return 0;
-			
-		}
-		catch (Exception hce) {
+
+		} catch (Exception hce) {
 			_LOGGER.error("Exception while posting product to ExternalAPI", hce);
 			String serverErrorMsg = hce.getMessage();
-			if(serverErrorMsg != null && serverErrorMsg.equalsIgnoreCase("500 Internal Server Error")){
+			if (serverErrorMsg != null
+					&& serverErrorMsg
+							.equalsIgnoreCase("500 Internal Server Error")) {
 				_LOGGER.info("internal server msg received from ExternalAPI ");
-				productDao.responseconvertErrorMessage(serverErrorMsg, product.getExternalProductId(), 
-						 																asiNumber, batchId);
+				ErrorMessageList errorMsgList = CommonUtility
+						.responseconvertErrorMessageList(serverErrorMsg);
+				productDao.save(errorMsgList.getErrors(),
+						product.getExternalProductId(), asiNumber, batchId);
 				return 0;
-			}else if(hce.getCause() != null){
+			} else if (hce.getCause() != null) {
 				String errorMsg = hce.getCause().toString();
 				if (errorMsg.contains("java.net.UnknownHostException")
-						|| errorMsg.contains("java.net.NoRouteToHostException")){
-					productDao.responseconvertErrorMessage(errorMsg, product.getExternalProductId(),
-																							asiNumber, batchId);
-					return 0;
-				}else if(errorMsg.contains("java.net.SocketTimeoutException")){
-					productDao.responseconvertErrorMessage(errorMsg, product.getExternalProductId(),
-																							asiNumber, batchId);
+						|| errorMsg.contains("java.net.NoRouteToHostException")
+						|| errorMsg.contains("java.net.SocketTimeoutException")) {
+					ErrorMessageList errorMsgList = CommonUtility
+							.responseconvertErrorMessageList(errorMsg);
+					productDao.save(errorMsgList.getErrors(),
+							product.getExternalProductId(), asiNumber, batchId);
 					return 0;
 				}
-			}else{
-				
+			} else {
+
 			}
 			return -1;
 		}
-		
+
 	}
 	
 	public Product getProduct(String authToken,String productId){
