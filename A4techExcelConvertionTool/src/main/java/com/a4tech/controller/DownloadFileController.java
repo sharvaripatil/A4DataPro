@@ -30,7 +30,7 @@ public class DownloadFileController {
 
 		response.setContentType("text/html");
 		String batchId=(String) request.getSession().getAttribute("batchId"); 
-		String fileName= batchId+".txt";
+		String fileName= batchId+ApplicationConstants.CONST_STRING_DOT_TXT;
 		  response.setContentType("APPLICATION/OCTET-STREAM");
 			response.setHeader("Content-Disposition", "attachment; filename=\""
 					+ fileName + "\"");

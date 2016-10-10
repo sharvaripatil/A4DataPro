@@ -188,7 +188,8 @@ public class ProductDao {
 	            hashmap.put(arr.getProductNo(), arraylist);
 	        }
 	        String errorComp=Integer.toString(batchId);
-			try (FileOutputStream fos = new FileOutputStream(new File(errorFileLocPath+errorComp+".txt"));
+			try (FileOutputStream fos = new FileOutputStream(new File(errorFileLocPath+errorComp+
+					                                              ApplicationConstants.CONST_STRING_DOT_TXT));
 					BufferedWriter bw = new BufferedWriter(
 							new OutputStreamWriter(fos))) {
 				for (Map.Entry<String, ArrayList<String>> entry : hashmap

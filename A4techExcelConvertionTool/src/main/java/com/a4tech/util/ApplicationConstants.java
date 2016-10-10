@@ -102,6 +102,7 @@ public class ApplicationConstants {
 	public static final String	CONST_STRING_INVALID_DETAILS			= "invalidDetails";
 	public static final String  MAIL_SEND_SUCCESS_MESSAGE				= "Email has been sent Successfully !!!";
 	public static final String  CONST_STRING_CSV						= "csv";
+	public static final String  CONST_STRING_DOT_TXT                    = ".txt";
 	
 	public static final String  CONST_STRING_COUNTRY_CODE_CN            = "CN";
 	public static final String  CONST_STRING_AND					    = "and";

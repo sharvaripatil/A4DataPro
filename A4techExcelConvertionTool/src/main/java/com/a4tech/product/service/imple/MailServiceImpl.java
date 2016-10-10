@@ -25,7 +25,7 @@ public class MailServiceImpl implements IMailService{
      */
 	@Override
 	public boolean sendMail(String supplierId, int batchId) {
-		String fileName= batchId+".txt";
+		String fileName= batchId+ApplicationConstants.CONST_STRING_DOT_TXT;
 		try {
 				FileSystemResource  file = new FileSystemResource(ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH+ fileName);
 		      MimeMessage mimeMessage = mailSender.createMimeMessage();
