@@ -22,7 +22,7 @@ public class ProductTradeNameParser {
 		}
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Product TradeName :"+e.getMessage());       
-		   	return null;
+		   	return new ArrayList<String>();
 		   	
 		   }
 		return tradenameList;

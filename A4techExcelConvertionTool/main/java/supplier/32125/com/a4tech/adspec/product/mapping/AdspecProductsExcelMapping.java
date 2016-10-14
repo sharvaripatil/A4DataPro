@@ -51,19 +51,9 @@ public class AdspecProductsExcelMapping {
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  String productId = null;
-		 /* String currencyType = null;
-		  String priceQurFlag = null;
-		  String priceType    = null;
-		  String basePriceName = null;
-		
-		  String upChargeName = null;
-		  String upChargeQur = null;
-		  String upchargeType = null;
-		  String upChargeDetails = null;
-		  String upChargeLevel = null;*/
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		  List<ImprintMethod> productImprintMethods = null;
-		  List<String> listOfCategories = null;
+		  List<String> listOfCategories = new ArrayList<String>();
 		  StringJoiner categories = new StringJoiner(ApplicationConstants.CONST_DELIMITER_COMMA);
 		  String[] priceQuantities = null;
 		  StringBuilder fullDesciption = new StringBuilder();
@@ -82,22 +72,7 @@ public class AdspecProductsExcelMapping {
 		
 		StringBuilder listOfQuantity = new StringBuilder();
 		StringJoiner listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		/*StringBuilder basePriceCriteria =  new StringBuilder();
-		StringBuilder UpCharQuantity = new StringBuilder();
-		StringBuilder UpCharPrices = new StringBuilder();
-		StringBuilder UpchargeNetPrice = new StringBuilder();
-		StringBuilder UpCharDiscount = new StringBuilder();
-		StringBuilder UpCharCriteria = new StringBuilder();
-		String optiontype =null;
-		String optionname =null;
-		String optionvalues =null;
-		String optionadditionalinfo =null;
-		String canorder =null;
-		String reqfororder =null;*/
-		//StringBuilder pricesPerUnit = new StringBuilder();
-		//String quoteUponRequest  = null;
 		String productName = null;
-		//List<String> productKeywords = new ArrayList<String>();
 		List<Theme> themeList = new ArrayList<Theme>();
 		int rowNumber ;
 		List<WarrantyInformation> listOfWarrnty = new ArrayList<WarrantyInformation>();
@@ -113,8 +88,6 @@ public class AdspecProductsExcelMapping {
 			}else{
 				
 			}
-			/*if (nextRow.getRowNum() <2)
-				continue;*/
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
 			if(productId != null){
 				productXids.add(productId);
@@ -158,12 +131,12 @@ public class AdspecProductsExcelMapping {
 								productConfigObj = new ProductConfigurations();
 								themeList = new ArrayList<Theme>();
 								productImprintMethods = new ArrayList<ImprintMethod>();
-								listOfCategories = new ArrayList<String>();
 								categories = new StringJoiner(ApplicationConstants.CONST_DELIMITER_COMMA);
+								listOfCategories=new ArrayList<String>();
 								listOfWarrnty = new ArrayList<WarrantyInformation>();
 								fullDesciption = new StringBuilder();
 								isWarrantyAvailable = false;
-								//productKeywords = new ArrayList<String>();
+								
 								
 						 }
 						    if(!productXids.contains(xid)){
@@ -204,28 +177,28 @@ public class AdspecProductsExcelMapping {
 				case 4://Category
 					String category = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(category)){
-						categories.add(category);
+						listOfCategories.add(category);
 					}
 				    break;
 					
 				case 5://Category 2
 					String category2 = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(category2)){
-						categories.add(category2);
+						listOfCategories.add(category2);
 					}
 					break;
 					
 				case 6: // Category 3
 					String category3 = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(category3)){
-						categories.add(category3);
+						listOfCategories.add(category3);
 					}
 					break;
 					
 				case 7://Category 4
 					   String category4 = cell.getStringCellValue();
 					   if(!StringUtils.isEmpty(category4)){
-						   categories.add(category4);
+						   listOfCategories.add(category4);
 						}
 					break;
 					
@@ -410,7 +383,6 @@ public class AdspecProductsExcelMapping {
 						                                       ApplicationConstants.CONST_DELIMITER_COMMA);
 			}
 			if(rowNumber != 0){
-				listOfCategories = CommonUtility.getStringAsList(categories.toString(), ApplicationConstants.CONST_DELIMITER_COMMA);
 				productExcelObj.setCategories(listOfCategories);
 				productConfigObj.setThemes(themeList);
 				productConfigObj.setImprintMethods(productImprintMethods); 
@@ -434,31 +406,9 @@ public class AdspecProductsExcelMapping {
 			}
 			
 			
-			   /*  This upcharge related to Imprint method only ,if we need use upcharge for other product attribute
-			    *  then we need remove hard code values from calling function parameters   
-			    * 
-			    */
-				/*if(imprintMethodName != null && !imprintMethodName.isEmpty()){
-					priceGrids = adspicPriceGridParser.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE , 
-							imprintUpchargePrice,ApplicationConstants.CONST_STRING_DISCOUNT_CODE_Z,
-							ApplicationConstants.CONST_STRING_IMPRINT_METHOD,ApplicationConstants.CONST_CHAR_N, 
-							ApplicationConstants.CONST_STRING__CURRENCY_USD, imprintMethodName, ApplicationConstants.CONST_STRING_IMMD_CHARGE, 
-						  ApplicationConstants.CONST_STRING_EMPTY, new Integer(1), priceGrids);
-				}*/
-				//upChargeQur = null;
-				//UpCharCriteria = new StringBuilder();
-				//priceQurFlag = null;
 				listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			    listOfQuantity = new StringBuilder();
-				/*UpCharPrices = new StringBuilder();
-				UpCharDiscount = new StringBuilder();
-				UpCharQuantity = new StringBuilder();
-			    optiontype=null;
-			    optionname=null;
-			    optionvalues=null;
-			    canorder=null;
-			    reqfororder=null;
-			    optionadditionalinfo=null;*/
+				
 			
 			}catch(Exception e){
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 

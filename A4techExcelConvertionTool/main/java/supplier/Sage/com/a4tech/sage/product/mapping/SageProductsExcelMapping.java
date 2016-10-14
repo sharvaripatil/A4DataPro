@@ -247,9 +247,6 @@ public class SageProductsExcelMapping {
 					break;
 					
 				case 6: //  product status
-					
-					
-					
 					break;
 					
 				case 7://Catalogs
@@ -264,12 +261,9 @@ public class SageProductsExcelMapping {
 					break;
 					
 				case 8: // Catalogs(Not used)
-					
-					
 					break;
 					
 				case 9: //Catalogs page number
-							
 					break;
 					
 				case 10:  
@@ -315,7 +309,6 @@ public class SageProductsExcelMapping {
 							themeObj.setName(string);
 							themeList.add(themeObj);
 							}
-					       //productConfigObj.setThemes(themeList);
 						}
 					
 					break;
@@ -823,10 +816,7 @@ public class SageProductsExcelMapping {
 		}
 			// set  product configuration objects
 			List<String> listOfCategories = new ArrayList<String>();
-			listOfCategories.add("USB/FLASH DRIVES");
 			productExcelObj.setCategories(listOfCategories);
-			//String productDescription ="Phone Holder USB 2.0 Flash Drive";
-			//productExcelObj.setDescription(productDescription);
 			ShippingEstimate shipping = shippingEstimateParser.getShippingEstimateValues(cartonL, cartonW,
 					                               cartonH, weightPerCarton, unitsPerCarton);
 			productConfigObj.setImprintLocation(listImprintLocation);
@@ -837,9 +827,8 @@ public class SageProductsExcelMapping {
 			productConfigObj.setProductionTime(listOfProductionTime);
 			List<Values> valuesList =dimParserObj.getValues(dimensionValue.toString(),
 					                                            dimensionUnits.toString(), dimensionType.toString());
-               finalDimensionObj.setValues(valuesList);	
+            finalDimensionObj.setValues(valuesList);	
 			size.setDimension(finalDimensionObj);
-			//productConfigObj.setImprintMethods(imprintMethods); 
 			productConfigObj.setSizes(size);
 			dimensionValue = new  StringBuilder();
 			dimensionUnits = new  StringBuilder();

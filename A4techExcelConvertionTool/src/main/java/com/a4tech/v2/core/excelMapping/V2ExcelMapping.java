@@ -76,9 +76,7 @@ public class V2ExcelMapping {
 	@SuppressWarnings("finally")
 	public int readExcel(String accessToken,Workbook workbook,int asiNumber,int batchId){
 		ImprintColor imprintColorsObj = new ImprintColor();
-		 //List<ImprintColorValue> imprintColors = new ArrayList<ImprintColorValue>();
 		List<String> numOfProducts = new ArrayList<String>();
-		//Workbook workbook = null;
 		List<String>  productXids = new ArrayList<String>();
 		String productId = null;
 		  Product productExcelObj = new Product();   
@@ -187,9 +185,6 @@ public class V2ExcelMapping {
 			ProductImprintColorParser imprintColorParser =new ProductImprintColorParser();
 			 List<Image> imgList = new ArrayList<Image>();
 			 List<Catalog> catalogList = new ArrayList<Catalog>();
-		        
-		    //Image imgObj =new Image(); 
-			
 			Inventory inventoryObj = new Inventory();
 	        Size sizeObj = null;
 			ShippingEstimate ShipingItem = null;
@@ -243,7 +238,6 @@ public class V2ExcelMapping {
 							 	if(num ==1){
 							 		numOfProducts.add("1");
 							 	}
-								//System.out.println(mapper.writeValueAsString(productExcelObj));
 							 	_LOGGER.info("list size>>>>>>>"+numOfProducts.size());
 								
 								// reset for repeateable set 

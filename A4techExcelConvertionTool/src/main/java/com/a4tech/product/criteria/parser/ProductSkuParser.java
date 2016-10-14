@@ -76,7 +76,7 @@ public class ProductSkuParser {
 			  pskuObj.setInventory(inventory);
 			  }catch(Exception e){
 				_LOGGER.error("Error while processing Product SKUs :"+e.getMessage());            
-			    return null;
+			    return new ProductSkus();
 			     }
 			  return pskuObj;
 	}

@@ -396,14 +396,6 @@ public class DCProductsExcelMapping {
 							}  // end inner while loop
 					 
 		}
-			// set  product configuration objects
-			/*List<String> listOfCategories = new ArrayList<String>();
-			listOfCategories.add("USB/FLASH DRIVES");
-			productExcelObj.setCategories(listOfCategories);*/
-			/*String productDescription ="Phone Holder USB 2.0 Flash Drive";
-			productExcelObj.setDescription(productDescription);*/
-			
-			
 			 // end inner while loop
 			productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
 			if( listOfPrices != null && !listOfPrices.toString().isEmpty()){

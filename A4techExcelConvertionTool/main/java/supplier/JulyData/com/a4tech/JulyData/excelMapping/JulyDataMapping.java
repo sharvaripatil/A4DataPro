@@ -27,10 +27,7 @@ public class JulyDataMapping {
       @SuppressWarnings("finally")
       public int readExcel(String accessToken,Workbook workbook,Integer asiNumber,int batchId){
             
-            List<String> numOfProducts = new ArrayList<String>();
-      
-            //Workbook workbook = null;
-           
+              List<String> numOfProducts = new ArrayList<String>();
               Product productExcelObj = new Product();   
               ProductConfigurations productConfigObj=new ProductConfigurations();
             
@@ -47,7 +44,6 @@ public class JulyDataMapping {
             	 for (Sheet sheet : workbook) {
             		 numOfSheets= numOfSheets+1;
             List<String>  productXids = new ArrayList<String>();
-          //Sheet sheet = workbook.getSheetAt(0);
             Iterator<Row> iterator = sheet.iterator();
             _LOGGER.info("Started Processing Product");
             StringBuilder listOfQuantity = new StringBuilder();
@@ -88,20 +84,15 @@ public class JulyDataMapping {
                               if(checkXid){
                                     if(!productXids.contains(xid)){
                                           if(nextRow.getRowNum() != 1){
-                                                System.out.println("Java object converted to JSON String, written to file");
+                                                
                                                    // Add repeatable sets here
                                                       productExcelObj.setPriceGrids(priceGrids);
-                                                      //productConfigObj.setOptions(option);
                                                       productExcelObj.setProductConfigurations(productConfigObj);
-                                                    
-                                                    //productList.add(productExcelObj);
-                                                    // int num = postServiceImpl.postProduct(accessToken, productExcelObj);
                                                       ProductDataStore.setProduct(productId, productExcelObj);
                                                       int num =0;
                                                       if(num ==1){
                                                            numOfProducts.add("1");
                                                      }
-                                                      //System.out.println(mapper.writeValueAsString(productExcelObj));
                                                      _LOGGER.info("list size>>>>>>>"+numOfProducts.size());
                                                       
                                                       // reset for repeateable set 
@@ -123,9 +114,7 @@ public class JulyDataMapping {
                                                 
                                     }
                               }
-                              /*if(productXids.size() >1  && !LookupData.isRepeateIndex(String.valueOf(columnIndex+1))){
-                                    continue;
-                              }*/
+                              
                     if(numOfSheets == 1){
                         switch (columnIndex + 1) {
                         case 1:
@@ -205,12 +194,6 @@ public class JulyDataMapping {
                    //break;
              
                    case 4:
-                        /* //PRODUCT CATAGORY
-                         String categoryName = cell.getStringCellValue();
-                         List<String> listOfCategories = new ArrayList<String>();
-                         listOfCategories.add(categoryName);
-                         productExcelObj.setCategories(listOfCategories);
-                       break;*/
                 	   continue;
                          
                    case 5:
@@ -223,10 +206,6 @@ public class JulyDataMapping {
                          //break;
                 	   continue;
                    case 7:
-                             // product description
-               /*productDescription = cell.getStringCellValue();
-                         productExcelObj.setDescription(productDescription);
-                         break;*/
                 	   continue;
                          
                    case 8: 
@@ -270,12 +249,7 @@ public class JulyDataMapping {
                   // break;
              
                    case 4:
-                         //PRODUCT CATAGORY
-                        /* String categoryName = cell.getStringCellValue();
-                         List<String> listOfCategories = new ArrayList<String>();
-                         listOfCategories.add(categoryName);
-                         productExcelObj.setCategories(listOfCategories);*/
-                       //break;
+                        
                 	   continue;
                          
                    case 5:
@@ -287,10 +261,7 @@ public class JulyDataMapping {
                         continue;
                          //break;
                    case 7:
-                         /*    // product description
-               productDescription = cell.getStringCellValue();
-                         productExcelObj.setDescription(productDescription);
-                         break;*/
+                        
                 	   continue;
                 	                        
                    case 8: 

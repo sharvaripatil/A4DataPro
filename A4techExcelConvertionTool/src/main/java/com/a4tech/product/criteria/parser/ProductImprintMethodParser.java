@@ -28,7 +28,7 @@ public class ProductImprintMethodParser {
 		
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Imprint Method :"+e.getMessage());             
-		   	return null;
+		   	return new ArrayList<ImprintMethod>();
 		   	
 		   }
 		return impmthdList;
