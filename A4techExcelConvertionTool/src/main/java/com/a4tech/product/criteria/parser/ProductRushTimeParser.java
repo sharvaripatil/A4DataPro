@@ -22,7 +22,7 @@ public class ProductRushTimeParser {
 		
 		RushTimeValue rushValueObj=null;
 		for (String tempRushTime : rushTimetArr) {
-			try{
+			
  			rushValueObj=new RushTimeValue();
  			String value=tempRushTime;
  			String valueArr[]=value.split(ApplicationConstants.CONST_DELIMITER_COLON);
@@ -45,9 +45,7 @@ public class ProductRushTimeParser {
  			
  			
  			rushValueTimeList.add(rushValueObj);
-			}catch(Exception e){
-				
-			}
+			
 		}
  		rushObj.setAvailable(true);
 		rushObj.setRushTimeValues(rushValueTimeList);

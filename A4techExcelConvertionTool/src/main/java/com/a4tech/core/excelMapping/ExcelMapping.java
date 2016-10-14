@@ -402,9 +402,8 @@ public class ExcelMapping {
 					String colorValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(colorValue)){
 					color=colorparser.getColorCriteria(colorValue);
-					if(color!=null){
 					productConfigObj.setColors(color);
-					}
+					
 					}
 					break;
 					
@@ -412,9 +411,9 @@ public class ExcelMapping {
 					String materialValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(materialValue)){
 					materialList= materialParser.getMaterialCriteria(materialValue);
-					if(materialList!=null){
+					
 					productConfigObj.setMaterials(materialList);
-					}
+					
 					}
 					
 				case 16:
@@ -425,18 +424,18 @@ public class ExcelMapping {
 					
 					String sizeValue = cell.getStringCellValue();
 					sizeObj=sizeParser.getSizes(sizeGroup,sizeValue);
-					if(sizeObj.getApparel()!=null || sizeObj.getCapacity()!=null || sizeObj.getDimension()!=null||sizeObj.getOther()!=null||sizeObj.getVolume()!=null){
+					
 					productConfigObj.setSizes(sizeObj);
-					}
+					
 					break;
 				
 				 case 18:
 					String shapeValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(shapeValue)){
 					shapeList=shapeParser.getShapeCriteria(shapeValue);
-					if(shapeList!=null){
+					
 					productConfigObj.setShapes(shapeList);
-					}
+					
 					}
 					break;
 					
@@ -444,9 +443,9 @@ public class ExcelMapping {
 					String themeValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(themeValue)){
 					themes=themeParser.getThemeCriteria(themeValue);
-					if(themes!=null){
+					
 					//productConfigObj.setThemes(themes);
-					}
+					
 					}
 					break;
 					
@@ -454,9 +453,9 @@ public class ExcelMapping {
 					String tradeValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(tradeValue)){
 					tradeName=tradeNameParser.getTradeNameCriteria(tradeValue);
-					if(tradeName!=null){
+					
 					//productConfigObj.setTradeNames(tradeName);
-					}
+					
 					}
 					//System.out.println(columnIndex + "tradeName " + tradeName);
 					break;
@@ -465,9 +464,9 @@ public class ExcelMapping {
 					String originValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(originValue)){
 					origin=originParser.getOriginCriteria(originValue);
-					if(origin!=null){
+					
 					//productConfigObj.setOrigins(origin);
-					}
+					
 					}
 					break;
 					
@@ -505,9 +504,9 @@ public class ExcelMapping {
 					String imprintValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintValue)){
 					imprintMethods=imprintMethodParser.getImprintCriteria(imprintValue);
-					if(imprintMethods!=null){
+					
 					productConfigObj.setImprintMethods(imprintMethods);
-					}
+					
 					}
 					break;
 					
@@ -526,19 +525,19 @@ public class ExcelMapping {
 					String artwork = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(artwork)){
 					artworkList=artworkProcessor.getArtworkCriteria(artwork);
-					if(artworkList!=null){
+					
 					productConfigObj.setArtwork(artworkList);
-					}}
+					}
 					break;
 					
 				case 31:
 					String imprintColor = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintColor)){
 					imprintColors=imprintColorParser.getImprintColorCriteria(imprintColor);
-					if(imprintColors!=null){
+					
 					productConfigObj.setImprintColors(imprintColors);
 					//System.out.println(columnIndex + "imprintColors " + imprintColors);
-					}}
+					}
 					 
 					break;
 					
@@ -562,18 +561,18 @@ public class ExcelMapping {
 						flag=true;
 					}
 					samples=sampleParser.getSampleCriteria(prodSample, specSample,flag);
-					if(samples!=null){
+					
 					productConfigObj.setSamples(samples);
-					}
+					
 					break;
 					
 				case 40:
 					String productionTime = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(productionTime)){
 					productionTimeList=productionTimeParser.getProdTimeCriteria(productionTime);
-					if(productionTimeList!=null){
+					
 					productConfigObj.setProductionTime(productionTimeList);
-					}
+					
 				}
 					break;	
 					
@@ -586,27 +585,25 @@ public class ExcelMapping {
 					if(!StringUtils.isEmpty(rushService) && !rushService.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_N)){
 					String rushTimeValue = cell.getStringCellValue();
 					rushTime=rushTimeParser.getRushTimeCriteria(rushTimeValue);
-					if(rushTime!=null){
+					
 					productConfigObj.setRushTime(rushTime);
-					}}
+					}
 					break;
 				
 				case 43:
 					String sameDayService=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(sameDayService)){
 						sameDayObj=sameDayParser.getSameDayRush(sameDayService);
-						if(sameDayObj!=null){
 						productConfigObj.setSameDayRush(sameDayObj);
-						}}
+						}
 					break;
 					
 				case 44:
 					String packagingValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(packagingValue)){
 						  packaging=packagingParser.getPackagingCriteria(packagingValue);
-						  if(packaging!=null){
 							 productConfigObj.setPackaging(packaging);
-					     }
+					     
 					}
 					break;
 				case 45:
@@ -620,9 +617,8 @@ public class ExcelMapping {
 				case 47:
 					String shippingWeightValue = cell.getStringCellValue();
 					ShipingItem = shipinestmt.getShippingEstimates(shippingitemValue, shippingdimensionValue,shippingWeightValue);
-					if(ShipingItem.getDimensions()!=null || ShipingItem.getNumberOfItems()!=null || ShipingItem.getWeight()!=null ){
 					productConfigObj.setShippingEstimates(ShipingItem);
-					}
+					
 					break;
 					
 				case 48:
