@@ -77,8 +77,6 @@ public class ExcelMapping {
 		List<String> numOfProducts = new ArrayList<String>();
 		FileInputStream inputStream = null;
 		LoginServiceImpl loginService = new LoginServiceImpl();
-		//Workbook workbook = null;
-		//List<String>  productXids = new ArrayList<String>();
 		Set<String>  listOfXids = new HashSet<String>();
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
@@ -1032,8 +1030,6 @@ public class ExcelMapping {
 				priceGrids = priceGridParser.getPriceGrids(listOfPrices.toString(), listOfQuantity.toString(), listOfDiscount.toString(), currencyType,
 						priceIncludes, true, priceQurFlag, basePriceName,basePriceCriteria.toString(),priceGrids);	
 			}
-			//if()
-			 
 				if(UpCharCriteria != null && !UpCharCriteria.toString().isEmpty()){
 					priceGrids = priceGridParser.getUpchargePriceGrid(UpCharQuantity.toString(), UpCharPrices.toString(), UpCharDiscount.toString(), UpCharCriteria.toString(), 
 							 upChargeQur, currencyType, upChargeName, upchargeType, upChargeLevel, new Integer(1), priceGrids);
@@ -1086,16 +1082,13 @@ public class ExcelMapping {
 		}
 		}
 		workbook.close();
-		//inputStream.close();
 		ObjectMapper mapper = new ObjectMapper();
-		//System.out.println("Final product JSON, written to file");
 		 ObjectMapper mapper1 = new ObjectMapper();
 		   // Add repeatable sets here
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	productExcelObj.setProductRelationSkus(productsku);
 		 	productExcelObj.setProductNumbers(pnumberList);
-		 	//productList.add(productExcelObj);
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProducts.add("1");
@@ -1112,7 +1105,6 @@ public class ExcelMapping {
 			productDaoObj.saveErrorLog(asiNumber,batchId);
 			try {
 				workbook.close();
-			//inputStream.close();
 			} catch (IOException e) {
 				_LOGGER.error("Error while Processing excel sheet ,Error: "+e.getMessage());
 	

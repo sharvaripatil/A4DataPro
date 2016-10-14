@@ -86,25 +86,11 @@ public class KlProductsExcelMapping {
 		StringBuilder listOfQuantity = new StringBuilder();
 		StringBuilder listOfPrices = new StringBuilder();
 		StringBuilder listOfDiscount = new StringBuilder();
-		/*StringBuilder basePriceCriteria =  new StringBuilder();
-		StringBuilder UpCharQuantity = new StringBuilder();
-		StringBuilder UpCharPrices = new StringBuilder();
-		StringBuilder UpchargeNetPrice = new StringBuilder();
-		StringBuilder UpCharDiscount = new StringBuilder();
-		StringBuilder UpCharCriteria = new StringBuilder();
-		String optiontype =null;
-		String optionname =null;
-		String optionvalues =null;
-		String optionadditionalinfo =null;
-		String canorder =null;
-		String reqfororder =null;*/
-		//StringBuilder pricesPerUnit = new StringBuilder();
-		//String quoteUponRequest  = null;
 		String priceIncludes = null;
 		String quantity = null;
 		String productName = null;
 		RushTime rushTime  = new RushTime();
-		//List<String> productKeywords = new ArrayList<String>();
+		
 		List<Theme> themeList = new ArrayList<Theme>();
 		String productSample = null;
 		String rushServiceAvail = null;
@@ -454,14 +440,6 @@ public class KlProductsExcelMapping {
 							break;
 				case 55:  //Set up charge 
 					imprintUpchargePrice = CommonUtility.getCellValueDouble(cell);
-					     /*if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-					    	 imprintUpchargePrice  = cell.getStringCellValue();
-							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								 double imprUpchargeValue = cell.getNumericCellValue();
-								 imprintUpchargePrice = String.valueOf(imprUpchargeValue);
-						         
-							}else{
-							}*/
 							break;
 				case 56: // Option_Values
 					// waiting for client response
@@ -649,9 +627,6 @@ public class KlProductsExcelMapping {
 					 
 		}
 			// set  product configuration objects
-			//List<String> listOfCategories = new ArrayList<String>();
-			//listOfCategories.add("USB/FLASH DRIVES");
-			//productExcelObj.setCategories(listOfCategories);
 			productConfigObj.setThemes(themeList);
 			productConfigObj.setImprintMethods(productImprintMethods); 
 			//productConfigObj.setSizes(size);
@@ -675,20 +650,10 @@ public class KlProductsExcelMapping {
 							ApplicationConstants.CONST_STRING_CURRENCY_USD, imprintMethodName, ApplicationConstants.CONST_STRING_IMMD_CHARGE, 
 						  ApplicationConstants.CONST_STRING_EMPTY, new Integer(1), priceGrids);
 				}
-				//upChargeQur = null;
-				//UpCharCriteria = new StringBuilder();
-				//priceQurFlag = null;
+				
 				listOfPrices = new StringBuilder();
 			    listOfQuantity = new StringBuilder();
-				/*UpCharPrices = new StringBuilder();
-				UpCharDiscount = new StringBuilder();
-				UpCharQuantity = new StringBuilder();
-			    optiontype=null;
-			    optionname=null;
-			    optionvalues=null;
-			    canorder=null;
-			    reqfororder=null;
-			    optionadditionalinfo=null;*/
+				
 			
 			}catch(Exception e){
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 

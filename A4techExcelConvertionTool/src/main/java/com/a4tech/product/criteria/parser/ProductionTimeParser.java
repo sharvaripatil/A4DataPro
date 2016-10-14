@@ -51,7 +51,7 @@ public synchronized List<ProductionTime> getProdTimeCriteria(String prodTimeValu
 			
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Production Time :"+e.getMessage());
-	        return null;
+	        return new ArrayList<ProductionTime>();
 		   	
 		   }
 		 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Personalization;
 import com.a4tech.util.ApplicationConstants;
 
@@ -35,6 +36,7 @@ public class PersonlizationParser {
 		}
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Personalization :"+e.getMessage());
+			return new ArrayList<Personalization>();
 		}
 		return personaliseList;
 

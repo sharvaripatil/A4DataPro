@@ -53,7 +53,7 @@ public class ProductRushTimeParser {
 		rushObj.setRushTimeValues(rushValueTimeList);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing RushTime :"+e.getMessage());             
-		   	return null;
+		   	return new RushTime();
 		   	
 		   }
 		return rushObj;

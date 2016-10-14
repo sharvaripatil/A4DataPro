@@ -625,8 +625,7 @@ public class UsbProductsExcelMapping {
 					    }else{
 					    	
 					    }
-					 //int shipval= (int) cell.getNumericCellValue();
-					 //shippingitemValue=Integer.toString(shipval);
+					 
 					shippingitemValue=shippingitemValue+ApplicationConstants.CONST_DELIMITER_COLON+"per Case";
 					break;
 					
@@ -638,9 +637,6 @@ public class UsbProductsExcelMapping {
 					    }else{
 					    	
 					    }
-					//int shipwtval= (int) cell.getNumericCellValue();
-					//shippingWeightValue=Integer.toString(shipwtval);
-					  
 					break;
 					
 				case 110:

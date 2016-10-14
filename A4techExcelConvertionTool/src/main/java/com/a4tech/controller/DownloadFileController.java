@@ -26,7 +26,7 @@ public class DownloadFileController {
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String gerErrorLogFile(HttpServletRequest request,
-			HttpServletResponse response,Model model) throws ServletException, IOException {
+			HttpServletResponse response,Model model) throws ServletException {
 
 		response.setContentType("text/html");
 		String batchId=(String) request.getSession().getAttribute("batchId"); 

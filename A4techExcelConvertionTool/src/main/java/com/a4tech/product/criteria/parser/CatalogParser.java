@@ -34,6 +34,7 @@ public class CatalogParser {
 		}
 		catch(Exception e){
 			_LOGGER.error("Error while processing catalog :"+e.getMessage());
+			return new ArrayList<Catalog>();
 		}
 
 		return catalogList;

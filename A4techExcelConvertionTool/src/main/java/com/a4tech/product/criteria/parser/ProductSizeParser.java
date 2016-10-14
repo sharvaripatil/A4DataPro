@@ -137,7 +137,7 @@ public class ProductSizeParser {
 		{
 			
 			_LOGGER.error("Error while processing Size :"+e.getMessage());
-			return null;
+			return new Size();
 		}
 		return sizeObj;
 	}

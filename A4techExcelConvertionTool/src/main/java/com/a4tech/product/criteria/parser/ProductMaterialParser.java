@@ -98,7 +98,7 @@ public class ProductMaterialParser {
 			}
 			}catch(Exception e){
 				_LOGGER.error("Error while processing Material :"+e.getMessage());             
-			   	return null;
+			   	return new ArrayList<Material>();
 			   	
 			   }
 			return mtrlList;

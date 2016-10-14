@@ -3,10 +3,14 @@ package com.a4tech.product.criteria.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.a4tech.product.model.Personalization;
 import com.a4tech.util.ApplicationConstants;
 
 public class ProductPersonlizationParser {
+	
+	private Logger              _LOGGER              = Logger.getLogger(getClass());
 	public  List<Personalization> getPersonalization(
 			String personalizevalue) {
 		List<Personalization> personaliseList = new ArrayList<Personalization>();
@@ -32,7 +36,8 @@ public class ProductPersonlizationParser {
 		}
 		catch(Exception e)
 		{
-			return null;
+			_LOGGER.error("Error while processing Product Personalization :"+e.getMessage());    
+			return new ArrayList<Personalization>();
 		}
 		return personaliseList;
 

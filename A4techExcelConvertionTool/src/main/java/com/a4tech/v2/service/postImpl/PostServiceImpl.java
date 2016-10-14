@@ -33,7 +33,6 @@ public class PostServiceImpl implements PostService{
 		
 		public int postProduct(String authTokens, Product product,int asiNumber) {
 			
-			//ObjectMapper mapper1 = new ObjectMapper();
 			try {
 	            
 	        	HttpHeaders headers = new HttpHeaders();

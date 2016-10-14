@@ -67,7 +67,7 @@ public class ShippingEstimationParser {
 		}
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Shipping Estimate :"+e.getMessage());
-			return null;
+			return new ShippingEstimate();
 		}
 		return ItemObject;
 
