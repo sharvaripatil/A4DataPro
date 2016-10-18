@@ -65,6 +65,7 @@ public class ApplicationConstants {
 	//public static final String  CONST_DELIMITER_BSLASH 					    = "\\";
 	public static final String  CONST_DELIMITER_HYPHEN 					    = "-";
 	public static final String	CONST_DIMENSION_SPLITTER					= "@@";
+	public static final String  CONST_DELIMITER_PERCENT_SIGN                = "%";
 	
 	public static final int     CONST_NUMBER_ZERO                           = 0;
 	public static final int     CONST_NEGATIVE_NUMBER_ONE					= -1;
@@ -103,6 +104,12 @@ public class ApplicationConstants {
 	public static final String  MAIL_SEND_SUCCESS_MESSAGE				= "Email has been sent Successfully !!!";
 	public static final String  CONST_STRING_CSV						= "csv";
 	public static final String  CONST_STRING_DOT_TXT                    = ".txt";
+	public static final int     CONST_INT_VALUE_TWO                     =  2;
+	public static final int     CONST_INT_VALUE_THREE                   =  3;
+	public static final String  CONST_STRING_OTHER_FABRIC				= "Other Fabric";
+	public static final String  CONST_STRING_PRODUCT_COLOR              = "Product Color";
+	public static final String  CONST_STRING_SIZE 		                = "Size";
+	
 	
 	public static final String  CONST_STRING_COUNTRY_CODE_CN            = "CN";
 	public static final String  CONST_STRING_AND					    = "and";

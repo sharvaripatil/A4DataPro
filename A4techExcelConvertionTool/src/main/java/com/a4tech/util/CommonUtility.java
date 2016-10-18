@@ -161,4 +161,14 @@ public class CommonUtility {
 		responseList.setErrors(errorList);
 		return responseList;
 	}
+	/*
+	 * author Venkat 13/10/2016
+	 * @param String OriginalValue,String String SpecialSymbol
+	 * @description This method is remove special symbol in given value
+	 * @return String,it returns finalValue  
+	 */
+	public static String removeSpecialSymbols(String value,String symbol){
+		String finalValue = value.replaceAll(symbol, "");
+		return finalValue;
+	}
 }
