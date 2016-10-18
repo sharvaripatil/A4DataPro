@@ -31,7 +31,7 @@ public class ProductImprintColorParser {
  		imprintColorObj.setValues(impcolorValuesList);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Imprint Color :"+e.getMessage());           
-			return null;
+			return new ImprintColor();
    	
    }
  		

@@ -22,7 +22,7 @@ public class ProductOriginParser {
 		
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Product Origin :"+e.getMessage());            
-		   	return null;
+		   	return new ArrayList<String>();
 		   	
 		   }
 		return originList;

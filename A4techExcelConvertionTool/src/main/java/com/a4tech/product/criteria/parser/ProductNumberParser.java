@@ -51,7 +51,7 @@ public class ProductNumberParser {
 		pnumberObj.setConfigurations(configList);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Product Number :"+e.getMessage());             
-		   	return null;
+		   	return new ProductNumber();
 		   	
 		   }
 		return pnumberObj;		

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.util.ApplicationConstants;
@@ -101,7 +102,7 @@ public class ProductColorParser {
 
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Color :"+e.getMessage());
-         return null;	
+         return new  ArrayList<Color>();	
          }
 		
 		return colorList;
