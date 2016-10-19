@@ -52,16 +52,4 @@ public class ProductClient {
 		this.newRestTemplate = newRestTemplate;
 		_LOGGER.info(newRestTemplate);
 	}
-	
-	
-	
-	/*public RestTemplate getRestTemplate() {
-		return restTemplate;
-	}
-    @Required
-	public void setRestTemplate(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-	}*/
-	
-
 }

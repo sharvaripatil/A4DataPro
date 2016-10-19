@@ -38,7 +38,7 @@ public class ProductArtworkProcessor {
 
            }catch(Exception e){
         	   _LOGGER.error("Error while processing Artwork :"+e.getMessage());
-        	   return null;
+        	   return new  ArrayList<Artwork>();
 	   	
 	   }
 		return artworkList;

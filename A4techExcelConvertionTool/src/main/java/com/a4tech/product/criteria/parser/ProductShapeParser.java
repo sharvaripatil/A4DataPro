@@ -27,7 +27,7 @@ public class ProductShapeParser {
 		}
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Shape :"+e.getMessage());          
-		   	return null;
+		   	return new ArrayList<Shape>();
 		   	
 		   }
 		return shapeList;

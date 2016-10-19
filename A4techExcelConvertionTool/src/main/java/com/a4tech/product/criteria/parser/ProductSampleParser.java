@@ -59,7 +59,7 @@ public class ProductSampleParser {
 		prodSampleValue=null;
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Sample Parser :"+e.getMessage());          
-		   	return null;
+		   	return new Samples();
 		   	
 		   }
 		return samplesObj;

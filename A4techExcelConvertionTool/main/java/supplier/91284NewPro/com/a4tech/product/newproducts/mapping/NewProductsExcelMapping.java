@@ -46,7 +46,6 @@ public class NewProductsExcelMapping {
 	private static final Logger _LOGGER = Logger.getLogger(NewProductsExcelMapping.class);
 	PostServiceImpl postServiceImpl;
 	ProductDao productDaoObj;
-	//ProductSizeParser sizeParser;
 	NewProProductImprintmethodParser newProimprintMethodParser;
 	NewProPriceGridParser newProPriceGridParser;
 	@SuppressWarnings("finally")
@@ -378,7 +377,6 @@ public class NewProductsExcelMapping {
 					
 					}
 				} // end inner while loop
-			// productExcelObj.setDescription(productDescription);
 			productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
 			if(!StringUtils.isEmpty(tradeName)){
 				List<TradeName> tradeNames=new ArrayList<TradeName>();

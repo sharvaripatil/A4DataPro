@@ -26,7 +26,7 @@ public class ProductPackagingParser {
 		}
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Product Packaging :"+e.getMessage());             
-		   	return null;
+		   	return new ArrayList<Packaging>();
 		   	
 		   } 
 		return packagingList;

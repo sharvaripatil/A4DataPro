@@ -33,7 +33,7 @@ public class ProductSameDayParser {
 		
 		}catch(Exception e){
 			_LOGGER.error("Error while processing SameDay Parser :"+e.getMessage());           
-		   	return null;
+		   	return new SameDayRush();
 		   	
 		   }
 		return sdayObj;

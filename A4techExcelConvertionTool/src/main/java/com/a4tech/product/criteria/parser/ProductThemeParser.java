@@ -24,7 +24,7 @@ public class ProductThemeParser {
 		return themeList;
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Product Theme :"+e.getMessage());            
-		   	return null;
+		   	return new ArrayList<String>();
 		 }
 	}
 }
