@@ -30,13 +30,18 @@ import com.a4tech.product.model.Material;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
-
+import com.a4tech.apparel.products.parser.ApparelImprintMethodParser;
+import com.a4tech.product.model.AdditionalLocation;
+import com.a4tech.product.model.ImprintLocation;
+import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.Packaging;
 
 public class ApparelProductsExcelMapping {
 	
@@ -44,6 +49,7 @@ public class ApparelProductsExcelMapping {
 	
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
+	private ApparelImprintMethodParser imprintparserObj;
 	private ApparelPriceGridParser apparelPgParser;
 	private ApparelMaterialParser apparealMaterialParser;
 	private ApparealAvailabilityParser apparealAvailParser;
@@ -58,7 +64,20 @@ public class ApparelProductsExcelMapping {
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  String productId = null;
+			List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
+			List<ImprintSize> ImprintSizeList = new ArrayList<ImprintSize>();
+			List<AdditionalLocation> additionalLoaction = new ArrayList<AdditionalLocation>();
+			AdditionalLocation additionalLoactionObj=new AdditionalLocation();
+
+			
+			ImprintSize ImprintSizeObj = new ImprintSize();
+			
+			List<ImprintLocation> ImprintLocationList = new ArrayList<ImprintLocation>();
+			ImprintLocation ImprintLocationObj = new ImprintLocation();
+		  
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
+		  
+		  List<ProductionTime> prodTimeList =new ArrayList<ProductionTime>();
 		  List<ImprintMethod> productImprintMethods = null;
 		  String[] priceQuantities = null;
 		  StringBuilder fullDesciption = new StringBuilder();
@@ -68,6 +87,7 @@ public class ApparelProductsExcelMapping {
 		  Set<Value> sizeValues = new HashSet<>();
 		  Set<String> productSizeValues = new HashSet<String>(); // This Set used for product Availability
 		  List<String> repeatRows = new ArrayList<>();
+		  String desciption;
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -209,7 +229,17 @@ public class ApparelProductsExcelMapping {
 				case 10:
 					break;
 				case 11:
+				    String  productDescription = cell.getStringCellValue();
+					int len=productDescription.length();
+
+					 if(len>60){
+					 String newproductDescription=productDescription.substring(0, 60);
+					 productExcelObj.setDescription(newproductDescription);
+					 }
+					 productExcelObj.setDescription(productDescription);
+
 					break;
+					
 				case 12:
 					break;
 				case 13:
@@ -218,9 +248,69 @@ public class ApparelProductsExcelMapping {
 					productConfigObj.setMaterials(listOfMaterial);
 					 break;
 				case 14:
+				String imprintValue =cell.getStringCellValue();
+					if(imprintValue.contains("("))
+					{
+					String imprintSize= imprintValue.substring(imprintValue.indexOf("size")+1, imprintValue.indexOf(")"));
+					ImprintSizeObj.setValue(imprintSize);
+					ImprintSizeList.add(ImprintSizeObj);
+					}
+					
+					else if(imprintValue.contains("(")){
+					String imprintLocation[]=imprintValue.split("(");
+					ImprintLocationObj.setValue(imprintLocation[0]);
+					ImprintLocationList.add(ImprintLocationObj);
+					}else if  (imprintValue.contains("Other"))
+					{
+					String imprintLocation[]=imprintValue.split("Other");
+					ImprintLocationObj.setValue(imprintLocation[0]);
+					ImprintLocationList.add(ImprintLocationObj);
+					additionalLoactionObj.setName(imprintLocation[1]);
+					additionalLoaction.add(additionalLoactionObj);
+					}
+					else{
+						ImprintLocationObj.setValue(imprintValue);
+						ImprintLocationList.add(ImprintLocationObj);
+					}
+				
+					productConfigObj.setImprintSize(ImprintSizeList);
+					productConfigObj.setAdditionalLocations(additionalLoaction);
+					productConfigObj.setImprintLocation(ImprintLocationList);
 				case 15:
+				String imprintMethod=cell.getStringCellValue();
+					imprintMethodsList=imprintparserObj.getImprintMethodValues(imprintMethod);
+					productConfigObj.setImprintMethods(imprintMethodsList);
+					
+					break;
 				case 16:
+				String packagingValue=cell.getStringCellValue();
+					packagingValue=packagingValue.replaceAll("\"",ApplicationConstants.CONST_STRING_EMPTY);
+					List<Packaging> packaging = new ArrayList<Packaging>();
+					if(!StringUtils.isEmpty(packagingValue)){
+					Packaging pack = new Packaging();
+					pack.setName(packagingValue);
+					packaging.add(pack);
+					productConfigObj.setPackaging(packaging);
+					}
+					break;
 				case 17:
+				String productionTimeValue=cell.getStringCellValue();
+					ProductionTime proTimeObj=new ProductionTime(); 
+					proTimeObj.setBusinessDays("1");
+					proTimeObj.setDetails("Blank: 24 hours");
+					if(productionTimeValue.contains("5-10"))
+					{
+						proTimeObj.setBusinessDays("5-10");
+						proTimeObj.setDetails("Decorated");
+					}
+					if(productionTimeValue.contains("7-10"))
+					{
+						proTimeObj.setBusinessDays("7-10");
+						proTimeObj.setDetails("Decorated - after proof approval");
+					}
+					prodTimeList.add(proTimeObj);
+					productConfigObj.setProductionTime(prodTimeList);
+					break;
 				case 18:
 					break;
 				case 19: 
