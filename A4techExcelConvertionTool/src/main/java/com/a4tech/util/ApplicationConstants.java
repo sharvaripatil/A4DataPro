@@ -109,6 +109,8 @@ public class ApplicationConstants {
 	public static final String  CONST_STRING_OTHER_FABRIC				= "Other Fabric";
 	public static final String  CONST_STRING_PRODUCT_COLOR              = "Product Color";
 	public static final String  CONST_STRING_SIZE 		                = "Size";
+	public static final String  CONST_STRING_TRIM                       = "trim";
+	public static final String  SIZE_TYPE_STANDARD_AND_NUMBERED			= "Standard & Numbered";
 	
 	
 	public static final String  CONST_STRING_COUNTRY_CODE_CN            = "CN";

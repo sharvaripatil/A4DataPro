@@ -100,12 +100,18 @@ public class Color {
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+    	int code = (name.hashCode()+alias.hashCode())*10;
+       return code;
     }
 
     @Override
     public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
+    	 if (other instanceof Color) {
+    		 Color color = (Color) other;
+             return (color.name.equals(this.name) && color.alias.equals(this.alias));
+         } else {
+             return false;
+         }
     }
 
 }

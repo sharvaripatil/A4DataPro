@@ -171,4 +171,17 @@ public class CommonUtility {
 		String finalValue = value.replaceAll(symbol, "");
 		return finalValue;
 	}
+	/*@author Venkat 18/10/2016
+	 *@param String,String,String 
+	 *@description This method design for concatenate two string by delimiter
+	 *@return String 
+	 */
+	public static String appendStrings(String src, String destination ,String delimiter){
+		  if(!StringUtils.isEmpty(destination)){
+			  src = src.concat(ApplicationConstants.CONST_DELIMITER_HYPHEN).concat(destination);
+			  return src;
+		  }else {
+			  return src;
+		  }
+	}
 }

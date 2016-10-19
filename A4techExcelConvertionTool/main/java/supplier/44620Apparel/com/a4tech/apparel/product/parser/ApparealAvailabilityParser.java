@@ -2,6 +2,7 @@ package com.a4tech.apparel.product.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.AvailableVariations;
@@ -15,7 +16,7 @@ import com.a4tech.util.ApplicationConstants;
  */
 public class ApparealAvailabilityParser {
 	
-	public List<Availability> getProductAvailablity(List<String> parentList,List<String> childList){
+	public List<Availability> getProductAvailablity(Set<String> parentList,Set<String> childList){
 		List<Availability> listOfAvailablity = new ArrayList<>();
 		Availability  availabilityObj = new Availability();
 		AvailableVariations  AvailableVariObj = null;

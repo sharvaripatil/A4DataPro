@@ -14,7 +14,7 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 public class ApparelMaterialParser {
-	private LookupServiceData lookUpServiceData;
+	private LookupServiceData lookupServiceData;
 	private String specialCharacters = "[™®]";
 	
 	/*@author Venkat
@@ -30,13 +30,13 @@ public class ApparelMaterialParser {
 		if(!StringUtils.isEmpty(originalMaterialvalue)){
 			originalMaterialvalue = CommonUtility.removeSpecialSymbols(originalMaterialvalue,specialCharacters);
 		}
-		List<String> listOfLookupMaterial = getMaterialType(originalMaterialvalue);
+		List<String> listOfLookupMaterial = getMaterialType(originalMaterialvalue.toUpperCase());
 		if(!listOfLookupMaterial.isEmpty()){
 			int numOfMaterials = listOfLookupMaterial.size();
 			  if(numOfMaterials == ApplicationConstants.CONST_INT_VALUE_ONE){ // this condition used to single material value(E.X 100% smooth knit polyester)
 				  materialObj = getMaterialValue(listOfLookupMaterial.toString(), originalMaterialvalue);
 				  listOfMaterial.add(materialObj);
-			  }else if(numOfMaterials == ApplicationConstants.CONST_INT_VALUE_TWO && iscombo(originalMaterialvalue)){
+			  }else if(numOfMaterials == ApplicationConstants.CONST_INT_VALUE_TWO){
 				   materialObj = getMaterialValue(listOfLookupMaterial.toString(), originalMaterialvalue, // this condition used to two material value(E.X 100% polyester fleece, 300gsm or 8.85 oz./yd2 )
 						                                  ApplicationConstants.CONST_STRING_COMBO_TEXT);
 				   listOfMaterial.add(materialObj);
@@ -47,7 +47,7 @@ public class ApparelMaterialParser {
 				     if(values.length == ApplicationConstants.CONST_INT_VALUE_TWO){
 				    	 for (String materialValue : values) {
 				    		 blentMaterialObj = new BlendMaterial();
-				    		 String mtrlType = getMaterialType(materialValue).toString();
+				    		 String mtrlType = getMaterialType(materialValue.toUpperCase()).toString();
 				    		 if(materialValue.contains(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)){
 								  String percentage = materialValue.split(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)[0];
 								  blentMaterialObj.setName(mtrlType);
@@ -61,7 +61,7 @@ public class ApparelMaterialParser {
 				    	 Combo comboObj = new Combo();
 				    	 for (String materialValue : values) {
 				    		 blentMaterialObj = new BlendMaterial();
-							  String mtrlType = getMaterialType(materialValue).toString();
+							  String mtrlType = getMaterialType(materialValue.toUpperCase()).toString();
 							  if(materialValue.contains(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)){
 								  String percentage = materialValue.split(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)[0];
 								  if(!StringUtils.isEmpty(mtrlType)){
@@ -96,7 +96,7 @@ public class ApparelMaterialParser {
 	 * @return List             
 	 */
 	public List<String> getMaterialType(String value){
-		List<String> listOfLookupMaterials = lookUpServiceData.getMaterialValues();
+		List<String> listOfLookupMaterials = lookupServiceData.getMaterialValues();
 		List<String> finalMaterialValues = listOfLookupMaterials.stream()
 				                                  .filter(mtrlName -> value.contains(mtrlName))
 				                                  .collect(Collectors.toList());
@@ -130,12 +130,15 @@ public class ApparelMaterialParser {
 			materials = name.split(ApplicationConstants.CONST_DELIMITER_COMMA); 
 			materialObj.setName(materials[0]);
 			materialObj.setAlias(alias);
+			comboObj = new Combo();
+        	comboObj.setName(materials[1]);
+        	materialObj.setCombo(comboObj);
 		}
-        if(materialObj.equals(ApplicationConstants.CONST_STRING_COMBO_TEXT)){
+        /*if(materialObj.equals(ApplicationConstants.CONST_STRING_COMBO_TEXT)){
         	comboObj = new Combo();
         	comboObj.setName(materials[1]);
         	materialObj.setCombo(comboObj);
-        }
+        }*/
 		return materialObj;
 	}
 	/*
@@ -144,8 +147,8 @@ public class ApparelMaterialParser {
 	 * @description This method is check giving value is combo or not
 	 * @return boolean
 	 */
-	public boolean iscombo(String data){
-		  if(!data.contains("/") && !data.contains("/yd")){
+	public boolean iscombo(String data){  //100% polyester fleece, 300gsm or 8.85 oz./yd2
+		  if(data.contains("/yd")){
 			  return true;
 		  }
 		return false;
@@ -164,12 +167,11 @@ public class ApparelMaterialParser {
 		}
 		return false;
 	}
-	public LookupServiceData getLookUpData() {
-		return lookUpServiceData;
+	public LookupServiceData getLookupServiceData() {
+		return lookupServiceData;
 	}
-
-	public void setLookUpData(LookupServiceData lookUpServiceData) {
-		this.lookUpServiceData = lookUpServiceData;
+	public void setLookupServiceData(LookupServiceData lookupServiceData) {
+		this.lookupServiceData = lookupServiceData;
 	}
-
+	
 }

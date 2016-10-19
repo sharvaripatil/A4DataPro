@@ -4,6 +4,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -79,5 +82,20 @@ public class Value extends BaseValue {
     public String toString() {
         return "[\"Value\": \"" + this.getValue() + "\"]";
     }
+   
+    @Override
+    public int hashCode() {
+    	int code = value.hashCode()*10;
+        return code;
+    }
 
+    @Override
+    public boolean equals(Object other) {
+         if (other instanceof Value) {
+        	 Value value = (Value) other;
+             return (value.value.equals(this.value));
+         } else {
+             return false;
+         }
+    }
 }

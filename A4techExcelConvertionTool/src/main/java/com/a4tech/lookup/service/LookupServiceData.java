@@ -15,15 +15,15 @@ public class LookupServiceData {
 			  imprintMethods = lookupRestService.getImprintMethodData();
 			  return imprintMethods;
 		  }
-		return null;
+		return imprintMethods;
 	}
 	public  List<String> getMaterialValues(){
 		 
-		  if(imprintMethods == null){
+		  if(materialValues == null){
 			  materialValues = lookupRestService.getMaterialsData();
 			  return materialValues;
 		  }
-		return null;
+		return materialValues;
 	}
 	public boolean isImprintMethod(String imprintValue){
 		if(imprintMethods == null){

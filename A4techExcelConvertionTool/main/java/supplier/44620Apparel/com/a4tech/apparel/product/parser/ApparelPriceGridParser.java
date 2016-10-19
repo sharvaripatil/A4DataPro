@@ -18,7 +18,7 @@ public class ApparelPriceGridParser {
 
 	private Logger              _LOGGER              = Logger.getLogger(getClass());
 	public List<PriceGrid> getPriceGrids(String listOfNetCost,
-		    String[] listOfQuan, String discountCode,
+		    String listOfQuan, String discountCode,
 			String currency, String priceInclude, boolean isBasePrice,
 			String qurFlag, String priceName, String criterias,
 			List<PriceGrid> existingPriceGrid) {
@@ -27,6 +27,8 @@ public class ApparelPriceGridParser {
 		Integer sequence = 1;
 		PriceGrid priceGrid = new PriceGrid();
 		String[] pricesForNetCost = listOfNetCost
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		String[] listOfQuans = listOfQuan
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		/*String[] discountCode = discountCodes
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);*/
@@ -41,7 +43,7 @@ public class ApparelPriceGridParser {
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(pricesForNetCost, listOfQuan, discountCode);
+			listOfPrice = getPrices(pricesForNetCost, listOfQuans, discountCode);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}

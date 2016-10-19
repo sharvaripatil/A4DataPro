@@ -331,10 +331,14 @@
      	<property name="apparelPgParser" ref="appaPriceGridParserId"/>
      	<property name="apparealMaterialParser" ref="appaMaterialParserId"/>
      	<property name="apparealAvailParser" ref="appaAvailabilityParserId"/>
+     	<property name="appaAttributeParser" ref="appaProductAttributeParserId"/>
      </bean>
     <bean id="appaPriceGridParserId" class="com.a4tech.apparel.product.parser.ApparelPriceGridParser"/> 
-    <bean id="appaMaterialParserId" class="com.a4tech.apparel.product.parser.ApparelMaterialParser"/>
+    <bean id="appaMaterialParserId" class="com.a4tech.apparel.product.parser.ApparelMaterialParser">
+    	<property name="lookupServiceData" ref="lookupServiceData"/>
+    </bean>
     <bean id="appaAvailabilityParserId" class="com.a4tech.apparel.product.parser.ApparealAvailabilityParser"/>
+    <bean id="appaProductAttributeParserId" class="com.a4tech.apparel.product.parser.ApparealProductAttributeParser"/>
     
      <!-- supplier 44620 configuration end --> 
 </beans>

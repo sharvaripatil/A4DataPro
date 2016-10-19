@@ -2,6 +2,7 @@ package com.a4tech.apparel.product.mapping;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -16,15 +17,21 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.apparel.product.parser.ApparealAvailabilityParser;
+import com.a4tech.apparel.product.parser.ApparealProductAttributeParser;
 import com.a4tech.apparel.product.parser.ApparelMaterialParser;
 import com.a4tech.apparel.product.parser.ApparelPriceGridParser;
+import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.Apparel;
+import com.a4tech.product.model.Availability;
+import com.a4tech.product.model.Color;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.Material;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
-import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
@@ -40,6 +47,7 @@ public class ApparelProductsExcelMapping {
 	private ApparelPriceGridParser apparelPgParser;
 	private ApparelMaterialParser apparealMaterialParser;
 	private ApparealAvailabilityParser apparealAvailParser;
+	private ApparealProductAttributeParser appaAttributeParser;
 
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
@@ -52,10 +60,14 @@ public class ApparelProductsExcelMapping {
 		  String productId = null;
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		  List<ImprintMethod> productImprintMethods = null;
-		  List<String> listOfCategories = null;
-		  StringJoiner categories = new StringJoiner(ApplicationConstants.CONST_DELIMITER_COMMA);
 		  String[] priceQuantities = null;
 		  StringBuilder fullDesciption = new StringBuilder();
+		  Set<Color> listOfColors = new HashSet<>();
+		  String colorCustomerOderCode ="";
+		  Size size = new Size();
+		  Set<Value> sizeValues = new HashSet<>();
+		  Set<String> productSizeValues = new HashSet<String>(); // This Set used for product Availability
+		  List<String> repeatRows = new ArrayList<>();
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -65,23 +77,28 @@ public class ApparelProductsExcelMapping {
 		
 		StringJoiner listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		StringJoiner listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		String productName = null;
 		int rowNumber ;
-		boolean isRepeateRow = false;
+		String xid = null;
+		//String productXid = null;
+		boolean isFirstRowData = false;
 		while (iterator.hasNext()) {
 			
 			try{
 			Row nextRow = iterator.next();
+			if(nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO){
+				continue;
+			}
 			rowNumber = nextRow.getRowNum();
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
-			if(productId != null){
-				productXids.add(productId);
+			if(xid != null){
+				productXids.add(xid);
+				repeatRows.add(xid);
 			}
 			 boolean checkXid  = false;
 			
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
-				String xid = null;
+				
 				int columnIndex = cell.getColumnIndex();
 				if(columnIndex + 1 == 1){
 					xid = getProductXid(nextRow);
@@ -91,10 +108,15 @@ public class ApparelProductsExcelMapping {
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 2){
+						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
 							 	productExcelObj.setPriceGrids(priceGrids);
+							 	productConfigObj.setSizes(getProductSize(new ArrayList<Value>(sizeValues)));
 							 	productExcelObj.setProductConfigurations(productConfigObj);
+							 	List<Availability> listOfAvailablity = apparealAvailParser.
+							 			getProductAvailablity(ProductDataStore.getColorNames(), 
+							 					                              productSizeValues);
+							 	productExcelObj.setAvailability(listOfAvailablity);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -110,13 +132,15 @@ public class ApparelProductsExcelMapping {
 							    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 								productConfigObj = new ProductConfigurations();
 								productImprintMethods = new ArrayList<ImprintMethod>();
-								listOfCategories = new ArrayList<String>();
-								categories = new StringJoiner(ApplicationConstants.CONST_DELIMITER_COMMA);
 								fullDesciption = new StringBuilder();
+								sizeValues = new HashSet<>();
+								ProductDataStore.clearProductColorSet();
+								repeatRows.clear();
 								
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
+						    	repeatRows.add(xid);
 						    }
      						 productExcelObj = postServiceImpl.getProduct(accessToken, xid);
 						     if(productExcelObj == null){
@@ -124,57 +148,75 @@ public class ApparelProductsExcelMapping {
 						    	 productExcelObj = new Product();
 						     }
 							
-					 }else{ // skip cases except colors and sizes for repeatedly
-						 if(columnIndex+1 != 6 && columnIndex+1 != 8){
+					 }
+				}else{
+					if(productXids.contains(xid) && repeatRows.size() != 1){
+						 if(isRepeateColumn(columnIndex+1)){
 							 continue;
 						 }
-					 }
+					}
 				}
 				
 
 				switch (columnIndex+1) {
-				case 1://ExternalProductID
-					productId = CommonUtility.getCellValueStrinOrInt(cell);
-					productExcelObj.setExternalProductId(productId);
+				case 1://not required
 					 break;
-				case 2://Catalog Page
-					  String catalogPageNo = CommonUtility.getCellValueStrinOrInt(cell);
+				case 2:// ASI Xid
+					  productId = cell.getStringCellValue();
 					 
 					  break;
-				case 3://Product Name
-					 productName = CommonUtility.getCellValueStrinOrInt(cell);
-					productExcelObj.setName(productName);	
+				case 3://style
+					  productExcelObj.setAsiProdNo(CommonUtility.getCellValueStrinOrInt(cell));	
 				    break;
-				case 4://Category
-					String category = cell.getStringCellValue();
-					
+				case 4://Product name
+					String prdName = cell.getStringCellValue();
+					productExcelObj.setName(prdName.trim());
 				    break;
 					
-				case 5://Category 2
-					String category2 = cell.getStringCellValue();
+				case 5://Col
+					colorCustomerOderCode = CommonUtility.getCellValueStrinOrInt(cell);
 					
 					break;
 					
-				case 6: // Category 3
-					String category3 = cell.getStringCellValue();
-					
+				case 6: //  colorName
+					String colorName = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(colorName)){
+								listOfColors = appaAttributeParser
+							.getProductColors(colorName.trim(),colorCustomerOderCode.trim(),listOfColors);
+						productConfigObj.setColors(new ArrayList<Color>(listOfColors));
+					}
 					break;
 					
-				case 7://Category 4
-					   String category4 = cell.getStringCellValue();
-					   
+				case 7://Category 
+					   String category = cell.getStringCellValue();
+					   if(!StringUtils.isEmpty(category)){
+						   List<String> listOfCategories = Arrays.asList(category.trim());
+						   productExcelObj.setCategories(listOfCategories);
+					   }
 					break;
 					
-				case 8: // NewProduct
-					String isNewProduct = CommonUtility.getCellValueStrinOrInt(cell);
-				
+				case 8: // size
+					String sizeValue = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(sizeValue)){
+						sizeValue = sizeValue.trim();
+						productSizeValues.add(sizeValue);
+						sizeValues = appaAttributeParser.getSizeValues(sizeValue, sizeValues);
+					}
 					break;
 					
-				case 9: //Inventory_Link
+				case 9: // size group i.e Standard & Numbered
+					break;
 				case 10:
+					break;
 				case 11:
+					break;
 				case 12:
+					break;
 				case 13:
+					String material = cell.getStringCellValue();
+					List<Material> listOfMaterial = apparealMaterialParser.getMaterialList(material);
+					productConfigObj.setMaterials(listOfMaterial);
+					 break;
 				case 14:
 				case 15:
 				case 16:
@@ -202,20 +244,8 @@ public class ApparelProductsExcelMapping {
 					break;
 				case 38: //Description3 (Imprint area)
 					String itemWeightValue = CommonUtility.getCellValueDouble(cell);
-					List<Value> listOfValue = null;
-					List<Values> listOfValues = null;
 					if(!StringUtils.isEmpty(itemWeightValue)){
-						listOfValue = new ArrayList<>();
-						listOfValues = new ArrayList<>();
-						Volume volume  = new Volume();
-						Values values = new Values();
-						Value value = new Value();
-						value.setValue(itemWeightValue);
-						value.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_WEIGHT);
-						listOfValue.add(value);
-						values.setValue(listOfValue);
-						listOfValues.add(values);
-						volume.setValues(listOfValues);
+						Volume volume = appaAttributeParser.getItemWeightvolume(itemWeightValue);
 						productConfigObj.setItemWeight(volume);
 					}
 					
@@ -231,7 +261,7 @@ public class ApparelProductsExcelMapping {
 				String basePriceName = "Bronze,Silver,Gold";
 				if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
 					priceGrids = apparelPgParser.getPriceGrids(listOfPrices.toString(), 
-							priceQuantities, "P", "USD",
+							listOfQuantity.toString(), "P", "USD",
 							         "", true, qurFlag, basePriceName,"",priceGrids);	
 				}
 				listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -276,15 +306,36 @@ public class ApparelProductsExcelMapping {
 	}
 	
 	public String getProductXid(Row row){
-		Cell xidCell =  row.getCell(2);
+		Cell xidCell =  row.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
 		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
 		if(StringUtils.isEmpty(productXid)){
-		     xidCell = row.getCell(3);
+		     xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_TWO);
 		     productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
 		}
 		return productXid;
 	}
 	
+	public Size getProductSize(List<Value> sizeValues){
+		Size size = new Size();
+		Apparel appareal = new Apparel();
+		appareal.setValues(sizeValues);
+		appareal.setType(ApplicationConstants.SIZE_TYPE_STANDARD_AND_NUMBERED);
+		size.setApparel(appareal);
+		return size;
+	}
+	
+	public boolean isRepeateColumn(int columnIndex){
+		
+		if(columnIndex != 5 && columnIndex != 6 && columnIndex != 8){
+			return ApplicationConstants.CONST_BOOLEAN_TRUE;
+		}
+		return ApplicationConstants.CONST_BOOLEAN_FALSE;
+	}
+	
+	public List<Material> getExistingProductMaterials(Product existingProduct){
+		ProductConfigurations configuration = existingProduct.getProductConfigurations();
+		return configuration.getMaterials();
+	}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}
@@ -324,4 +375,13 @@ public class ApparelProductsExcelMapping {
 			ApparealAvailabilityParser apparealAvailParser) {
 		this.apparealAvailParser = apparealAvailParser;
 	}
+	public ApparealProductAttributeParser getAppaAttributeParser() {
+		return appaAttributeParser;
+	}
+
+	public void setAppaAttributeParser(
+			ApparealProductAttributeParser appaAttributeParser) {
+		this.appaAttributeParser = appaAttributeParser;
+	}
+
 }
