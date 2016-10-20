@@ -16,10 +16,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.apparel.product.parser.ApparealAvailabilityParser;
-import com.a4tech.apparel.product.parser.ApparealProductAttributeParser;
-import com.a4tech.apparel.product.parser.ApparelMaterialParser;
-import com.a4tech.apparel.product.parser.ApparelPriceGridParser;
 import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Apparel;
@@ -37,7 +33,11 @@ import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
+import com.a4tech.apparel.products.parser.ApparealAvailabilityParser;
+import com.a4tech.apparel.products.parser.ApparealProductAttributeParser;
 import com.a4tech.apparel.products.parser.ApparelImprintMethodParser;
+import com.a4tech.apparel.products.parser.ApparelMaterialParser;
+import com.a4tech.apparel.products.parser.ApparelPriceGridParser;
 import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintSize;
@@ -183,7 +183,7 @@ public class ApparelProductsExcelMapping {
 					 break;
 				case 2:// ASI Xid
 					  productId = cell.getStringCellValue();
-					 
+					  productExcelObj.setExternalProductId(xid);
 					  break;
 				case 3://style
 					  productExcelObj.setAsiProdNo(CommonUtility.getCellValueStrinOrInt(cell));	
@@ -226,7 +226,9 @@ public class ApparelProductsExcelMapping {
 					
 				case 9: // size group i.e Standard & Numbered
 					break;
-				case 10:
+				case 10: // USC code
+					String upc = CommonUtility.getCellValueDouble(cell);
+					productExcelObj.setUpcCode(upc);
 					break;
 				case 11:
 				    String  productDescription = cell.getStringCellValue();
@@ -394,7 +396,7 @@ public class ApparelProductsExcelMapping {
 		}
 		
 	}
-	
+
 	public String getProductXid(Row row){
 		Cell xidCell =  row.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
 		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
@@ -472,6 +474,14 @@ public class ApparelProductsExcelMapping {
 	public void setAppaAttributeParser(
 			ApparealProductAttributeParser appaAttributeParser) {
 		this.appaAttributeParser = appaAttributeParser;
+	}
+
+	public ApparelImprintMethodParser getImprintparserObj() {
+		return imprintparserObj;
+	}
+
+	public void setImprintparserObj(ApparelImprintMethodParser imprintparserObj) {
+		this.imprintparserObj = imprintparserObj;
 	}
 
 }

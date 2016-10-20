@@ -1,4 +1,4 @@
-package com.a4tech.apparel.product.parser;
+package com.a4tech.apparel.products.parser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,6 +112,7 @@ public class ApparelMaterialParser {
 	 */
 	public Material getMaterialValue(String name,String alias){
 		Material materialObj = new Material();
+		 CommonUtility.removeCurlyBraces(name);
 		materialObj.setName(name);
 		materialObj.setAlias(alias);
 		return materialObj;
@@ -126,6 +127,7 @@ public class ApparelMaterialParser {
 		Material materialObj = new Material();
 		 Combo comboObj = null;
 		 String[] materials = null;
+		 name = CommonUtility.removeCurlyBraces(name);
 		if(name.contains(ApplicationConstants.CONST_DELIMITER_COMMA)){
 			materials = name.split(ApplicationConstants.CONST_DELIMITER_COMMA); 
 			materialObj.setName(materials[0]);

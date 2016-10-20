@@ -184,4 +184,16 @@ public class CommonUtility {
 			  return src;
 		  }
 	}
+	
+  public static String removeCurlyBraces(String source){
+	  if(source.contains("["))
+	  {
+		  source = source.replace("[", "");
+	  }
+	  if(source.contains("]")){
+		  source = source.replace("]", "");
+	  }
+	  
+	  return source;
+  }
 }

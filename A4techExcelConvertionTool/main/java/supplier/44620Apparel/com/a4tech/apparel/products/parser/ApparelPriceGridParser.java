@@ -1,4 +1,4 @@
-package com.a4tech.apparel.product.parser;
+package com.a4tech.apparel.products.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
