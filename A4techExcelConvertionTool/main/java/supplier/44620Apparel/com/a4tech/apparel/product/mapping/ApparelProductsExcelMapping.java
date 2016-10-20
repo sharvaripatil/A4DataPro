@@ -2,6 +2,7 @@ package com.a4tech.apparel.product.mapping;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -15,23 +16,32 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.apparel.products.parser.ApparelImprintMethodParser;
+import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.AdditionalLocation;
-import com.a4tech.product.model.ImprintLocation;
+import com.a4tech.product.model.Apparel;
+import com.a4tech.product.model.Availability;
+import com.a4tech.product.model.Color;
 import com.a4tech.product.model.ImprintMethod;
-import com.a4tech.product.model.ImprintSize;
-import com.a4tech.product.model.Packaging;
+import com.a4tech.product.model.Material;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
-import com.a4tech.product.model.Theme;
-import com.a4tech.product.model.WarrantyInformation;
+import com.a4tech.product.model.Size;
+import com.a4tech.product.model.Value;
+import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
-
+import com.a4tech.apparel.products.parser.ApparealAvailabilityParser;
+import com.a4tech.apparel.products.parser.ApparealProductAttributeParser;
+import com.a4tech.apparel.products.parser.ApparelImprintMethodParser;
+import com.a4tech.apparel.products.parser.ApparelMaterialParser;
+import com.a4tech.apparel.products.parser.ApparelPriceGridParser;
+import com.a4tech.product.model.AdditionalLocation;
+import com.a4tech.product.model.ImprintLocation;
+import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.Packaging;
 
 public class ApparelProductsExcelMapping {
 	
@@ -40,7 +50,11 @@ public class ApparelProductsExcelMapping {
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
 	private ApparelImprintMethodParser imprintparserObj;
-	
+	private ApparelPriceGridParser apparelPgParser;
+	private ApparelMaterialParser apparealMaterialParser;
+	private ApparealAvailabilityParser apparealAvailParser;
+	private ApparealProductAttributeParser appaAttributeParser;
+
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
@@ -62,15 +76,17 @@ public class ApparelProductsExcelMapping {
 			ImprintLocation ImprintLocationObj = new ImprintLocation();
 		  
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
-
-			List<ProductionTime> prodTimeList =new ArrayList<ProductionTime>();
-			
-			
-		 // List<ImprintMethod> productImprintMethods = null;
-		  List<String> listOfCategories = null;
-		  StringJoiner categories = new StringJoiner(ApplicationConstants.CONST_DELIMITER_COMMA);
+		  
+		  List<ProductionTime> prodTimeList =new ArrayList<ProductionTime>();
+		  List<ImprintMethod> productImprintMethods = null;
 		  String[] priceQuantities = null;
 		  StringBuilder fullDesciption = new StringBuilder();
+		  Set<Color> listOfColors = new HashSet<>();
+		  String colorCustomerOderCode ="";
+		  Size size = new Size();
+		  Set<Value> sizeValues = new HashSet<>();
+		  Set<String> productSizeValues = new HashSet<String>(); // This Set used for product Availability
+		  List<String> repeatRows = new ArrayList<>();
 		  String desciption;
 		try{
 			 
@@ -79,55 +95,48 @@ public class ApparelProductsExcelMapping {
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
 		
-		
-		StringBuilder listOfQuantity = new StringBuilder();
+		StringJoiner listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		StringJoiner listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		String productName = null;
-		//List<String> productKeywords = new ArrayList<String>();
-		List<Theme> themeList = new ArrayList<Theme>();
 		int rowNumber ;
-		List<WarrantyInformation> listOfWarrnty = new ArrayList<WarrantyInformation>();
+		String xid = null;
+		//String productXid = null;
+		boolean isFirstRowData = false;
 		while (iterator.hasNext()) {
 			
 			try{
 			Row nextRow = iterator.next();
-			rowNumber = nextRow.getRowNum();
-			if(rowNumber == 0){
-				
-			}else if(rowNumber == 1){
+			if(nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO){
 				continue;
-			}else{
-				
 			}
-			/*if (nextRow.getRowNum() <2)
-				continue;*/
+			rowNumber = nextRow.getRowNum();
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
-			if(productId != null){
-				productXids.add(productId);
+			if(xid != null){
+				productXids.add(xid);
+				repeatRows.add(xid);
 			}
 			 boolean checkXid  = false;
 			
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
-				String xid = null;
+				
 				int columnIndex = cell.getColumnIndex();
-				if(rowNumber == 0){
-					if(!CommonUtility.isPriceQuantity(columnIndex+1)){
-						continue;
-					}
-				}
 				if(columnIndex + 1 == 1){
-					xid = CommonUtility.getCellValueStrinOrInt(cell);
+					xid = getProductXid(nextRow);
 					checkXid = true;
 				}else{
 					checkXid = false;
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 2){
+						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
 							 	productExcelObj.setPriceGrids(priceGrids);
+							 	productConfigObj.setSizes(getProductSize(new ArrayList<Value>(sizeValues)));
 							 	productExcelObj.setProductConfigurations(productConfigObj);
+							 	List<Availability> listOfAvailablity = apparealAvailParser.
+							 			getProductAvailablity(ProductDataStore.getColorNames(), 
+							 					                              productSizeValues);
+							 	productExcelObj.setAvailability(listOfAvailablity);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -140,77 +149,89 @@ public class ApparelProductsExcelMapping {
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 								priceGrids = new ArrayList<PriceGrid>();
 								listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-							    listOfQuantity = new StringBuilder();
+							    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 								productConfigObj = new ProductConfigurations();
-								themeList = new ArrayList<Theme>();
-								imprintMethodsList = new ArrayList<ImprintMethod>();
-								listOfCategories = new ArrayList<String>();
-								categories = new StringJoiner(ApplicationConstants.CONST_DELIMITER_COMMA);
-								listOfWarrnty = new ArrayList<WarrantyInformation>();
+								productImprintMethods = new ArrayList<ImprintMethod>();
 								fullDesciption = new StringBuilder();
+								sizeValues = new HashSet<>();
+								ProductDataStore.clearProductColorSet();
+								repeatRows.clear();
 								
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
+						    	repeatRows.add(xid);
 						    }
-						    Cell index = nextRow.getCell(7);
-						    String isNewProduct  = CommonUtility.getCellValueStrinOrInt(index);
-						    if("0".equals(isNewProduct)){
-						     productExcelObj = postServiceImpl.getProduct(accessToken, xid);
+     						 productExcelObj = postServiceImpl.getProduct(accessToken, xid);
 						     if(productExcelObj == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }
-						    }else{
-						    	productExcelObj = new Product();
-						    }
 							
 					 }
+				}else{
+					if(productXids.contains(xid) && repeatRows.size() != 1){
+						 if(isRepeateColumn(columnIndex+1)){
+							 continue;
+						 }
+					}
 				}
 				
 
 				switch (columnIndex+1) {
-				case 1://ExternalProductID
-					productId = CommonUtility.getCellValueStrinOrInt(cell);
-					productExcelObj.setExternalProductId(productId);
+				case 1://not required
 					 break;
-				case 2://Catalog Page
-					  String catalogPageNo = CommonUtility.getCellValueStrinOrInt(cell);
-					 
+				case 2:// ASI Xid
+					  productId = cell.getStringCellValue();
+					  productExcelObj.setExternalProductId(xid);
 					  break;
-				case 3://Product Name
-					 productName = CommonUtility.getCellValueStrinOrInt(cell);
-					productExcelObj.setName(productName);	
+				case 3://style
+					  productExcelObj.setAsiProdNo(CommonUtility.getCellValueStrinOrInt(cell));	
 				    break;
-				case 4://Category
-					String category = cell.getStringCellValue();
-					
+				case 4://Product name
+					String prdName = cell.getStringCellValue();
+					productExcelObj.setName(prdName.trim());
 				    break;
 					
-				case 5://Category 2
-					String category2 = cell.getStringCellValue();
+				case 5://Col
+					colorCustomerOderCode = CommonUtility.getCellValueStrinOrInt(cell);
 					
 					break;
 					
-				case 6: // Category 3
-					String category3 = cell.getStringCellValue();
-					
+				case 6: //  colorName
+					String colorName = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(colorName)){
+								listOfColors = appaAttributeParser
+							.getProductColors(colorName.trim(),colorCustomerOderCode.trim(),listOfColors);
+						productConfigObj.setColors(new ArrayList<Color>(listOfColors));
+					}
 					break;
 					
-				case 7://Category 4
-					   String category4 = cell.getStringCellValue();
-					   
+				case 7://Category 
+					   String category = cell.getStringCellValue();
+					   if(!StringUtils.isEmpty(category)){
+						   List<String> listOfCategories = Arrays.asList(category.trim());
+						   productExcelObj.setCategories(listOfCategories);
+					   }
 					break;
 					
-				case 8: // NewProduct
-					String isNewProduct = CommonUtility.getCellValueStrinOrInt(cell);
-				
+				case 8: // size
+					String sizeValue = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(sizeValue)){
+						sizeValue = sizeValue.trim();
+						productSizeValues.add(sizeValue);
+						sizeValues = appaAttributeParser.getSizeValues(sizeValue, sizeValues);
+					}
 					break;
 					
-				case 9: //Inventory_Link
-				case 10:
-				case 11://Features  
-					String  productDescription = cell.getStringCellValue();
+				case 9: // size group i.e Standard & Numbered
+					break;
+				case 10: // USC code
+					String upc = CommonUtility.getCellValueDouble(cell);
+					productExcelObj.setUpcCode(upc);
+					break;
+				case 11:
+				    String  productDescription = cell.getStringCellValue();
 					int len=productDescription.length();
 
 					 if(len>60){
@@ -220,12 +241,16 @@ public class ApparelProductsExcelMapping {
 					 productExcelObj.setDescription(productDescription);
 
 					break;
-
 					
 				case 12:
+					break;
 				case 13:
-				case 14://imprint size & Location
-					String imprintValue =cell.getStringCellValue();
+					String material = cell.getStringCellValue();
+					List<Material> listOfMaterial = apparealMaterialParser.getMaterialList(material);
+					productConfigObj.setMaterials(listOfMaterial);
+					 break;
+				case 14:
+				String imprintValue =cell.getStringCellValue();
 					if(imprintValue.contains("("))
 					{
 					String imprintSize= imprintValue.substring(imprintValue.indexOf("size")+1, imprintValue.indexOf(")"));
@@ -253,15 +278,14 @@ public class ApparelProductsExcelMapping {
 					productConfigObj.setImprintSize(ImprintSizeList);
 					productConfigObj.setAdditionalLocations(additionalLoaction);
 					productConfigObj.setImprintLocation(ImprintLocationList);
-					
-				case 15://Imprint Methods
-					String imprintMethod=cell.getStringCellValue();
+				case 15:
+				String imprintMethod=cell.getStringCellValue();
 					imprintMethodsList=imprintparserObj.getImprintMethodValues(imprintMethod);
 					productConfigObj.setImprintMethods(imprintMethodsList);
 					
 					break;
-				case 16://package
-					String packagingValue=cell.getStringCellValue();
+				case 16:
+				String packagingValue=cell.getStringCellValue();
 					packagingValue=packagingValue.replaceAll("\"",ApplicationConstants.CONST_STRING_EMPTY);
 					List<Packaging> packaging = new ArrayList<Packaging>();
 					if(!StringUtils.isEmpty(packagingValue)){
@@ -270,11 +294,9 @@ public class ApparelProductsExcelMapping {
 					packaging.add(pack);
 					productConfigObj.setPackaging(packaging);
 					}
-					
-					
 					break;
-				case 17://production Time
-					String productionTimeValue=cell.getStringCellValue();
+				case 17:
+				String productionTimeValue=cell.getStringCellValue();
 					ProductionTime proTimeObj=new ProductionTime(); 
 					proTimeObj.setBusinessDays("1");
 					proTimeObj.setDetails("Blank: 24 hours");
@@ -291,109 +313,51 @@ public class ApparelProductsExcelMapping {
 					prodTimeList.add(proTimeObj);
 					productConfigObj.setProductionTime(prodTimeList);
 					break;
-					
-					
-					
 				case 18:
-				case 19:
-				case 20:
-				case 21:
+					break;
+				case 19: 
 				case 22:
-					
-					String priceQty = CommonUtility.getCellValueDouble(cell);
-					
-					
-					case 23: // description
-				          desciption = cell.getStringCellValue();
-				          fullDesciption.append(desciption);
-				   break;
-				   
-				case 24: //DescriptionList1 (Imprint methods)
-					String imprValue = cell.getStringCellValue();
-					
-					break;
-				case 25: //DescriptionList2 (Material)
-					String materialVal = cell.getStringCellValue();
-					
-					break;
-				case 26: //DescriptionList3
-					desciption = cell.getStringCellValue();
-					
-					break;
-				case 27: //DescriptionList4
-					desciption = cell.getStringCellValue();
-					
-					break;
-				case 28: //DescriptionList5
-					desciption = cell.getStringCellValue();
-					
-					break;
-				case 29: //DescriptionList6
-					desciption = cell.getStringCellValue();
-					
-					   	break;
-				case 30: //DescriptionList7
-					desciption = cell.getStringCellValue();
-					
-					break;
-				case 31: //DescriptionList8
-					desciption = cell.getStringCellValue();
-					
+				case 25://price Qty
+					String priceQty = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(priceQty)){
+						listOfQuantity.add(priceQty);
+					}
 					break;
 					
-				case 32: //DescriptionList9
-					desciption = cell.getStringCellValue();
 					
-					break;
-				case 33:  //DescriptionList10
-					desciption = cell.getStringCellValue();
+				case 21: // list price
+				case 24:
+				case 27:
 					
-					break;
-				case 34: //Description1(Production Time)
-					String productionTime = cell.getStringCellValue();
-					
-					break;
-				case 35: //Description2
-						// Pending 
-					break;
-				case 36: //Description3 (Imprint colors)
-					      
-					  break;
-				case 37:    //Description3 (Imprint location)  
-					
+					String listPrice = CommonUtility.getCellValueDouble(cell);
+					if(!StringUtils.isEmpty(listPrice)){
+						listOfPrices.add(listPrice);
+					}
 					break;
 				case 38: //Description3 (Imprint area)
-					 
+					String itemWeightValue = CommonUtility.getCellValueDouble(cell);
+					if(!StringUtils.isEmpty(itemWeightValue)){
+						Volume volume = appaAttributeParser.getItemWeightvolume(itemWeightValue);
+						productConfigObj.setItemWeight(volume);
+					}
+					
 					break;
 				
 							
 			}  // end inner while loop
 					 
 		}
-			// set  product configuration objects
-			if(priceQuantities == null){
-				priceQuantities = CommonUtility.getValuesOfArray(listOfQuantity.toString(), 
-						                                       ApplicationConstants.CONST_DELIMITER_COMMA);
-			}
-			if(rowNumber != 0){
-				listOfCategories = CommonUtility.getStringAsList(categories.toString(), ApplicationConstants.CONST_DELIMITER_COMMA);
-				productExcelObj.setCategories(listOfCategories);
-				productConfigObj.setThemes(themeList);
-			//	productConfigObj.setImprintMethods(productImprintMethods); 
-				productConfigObj.setWarranty(listOfWarrnty);
-				productExcelObj.setPriceType("L");
+				productExcelObj.setPriceType("N");
 				String qurFlag = "n"; // by default for testing purpose
 				productExcelObj.setDescription(fullDesciption.toString());
+				String basePriceName = "Bronze,Silver,Gold";
 				if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
-					/*priceGrids = adspicPriceGridParser.getPriceGrids(listOfPrices.toString(), 
-							priceQuantities, "R", "USD",
-							         "", true, qurFlag, productName,"",priceGrids);	*/
+					priceGrids = apparelPgParser.getPriceGrids(listOfPrices.toString(), 
+							listOfQuantity.toString(), "P", "USD",
+							         "", true, qurFlag, basePriceName,"",priceGrids);	
 				}
-				
-			}
-			
 				listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-			    listOfQuantity = new StringBuilder();
+			    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			
 			}catch(Exception e){
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
@@ -433,6 +397,37 @@ public class ApparelProductsExcelMapping {
 		
 	}
 
+	public String getProductXid(Row row){
+		Cell xidCell =  row.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
+		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		if(StringUtils.isEmpty(productXid)){
+		     xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_TWO);
+		     productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		}
+		return productXid;
+	}
+	
+	public Size getProductSize(List<Value> sizeValues){
+		Size size = new Size();
+		Apparel appareal = new Apparel();
+		appareal.setValues(sizeValues);
+		appareal.setType(ApplicationConstants.SIZE_TYPE_STANDARD_AND_NUMBERED);
+		size.setApparel(appareal);
+		return size;
+	}
+	
+	public boolean isRepeateColumn(int columnIndex){
+		
+		if(columnIndex != 5 && columnIndex != 6 && columnIndex != 8){
+			return ApplicationConstants.CONST_BOOLEAN_TRUE;
+		}
+		return ApplicationConstants.CONST_BOOLEAN_FALSE;
+	}
+	
+	public List<Material> getExistingProductMaterials(Product existingProduct){
+		ProductConfigurations configuration = existingProduct.getProductConfigurations();
+		return configuration.getMaterials();
+	}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}
@@ -447,4 +442,46 @@ public class ApparelProductsExcelMapping {
 	public void setProductDaoObj(ProductDao productDaoObj) {
 		this.productDaoObj = productDaoObj;
 	}
+
+	public ApparelPriceGridParser getApparelPgParser() {
+		return apparelPgParser;
+	}
+
+	public void setApparelPgParser(ApparelPriceGridParser apparelPgParser) {
+		this.apparelPgParser = apparelPgParser;
+	}
+	public ApparelMaterialParser getApparealMaterialParser() {
+		return apparealMaterialParser;
+	}
+
+	public void setApparealMaterialParser(
+			ApparelMaterialParser apparealMaterialParser) {
+		this.apparealMaterialParser = apparealMaterialParser;
+	}
+
+	public ApparealAvailabilityParser getApparealAvailParser() {
+		return apparealAvailParser;
+	}
+
+	public void setApparealAvailParser(
+			ApparealAvailabilityParser apparealAvailParser) {
+		this.apparealAvailParser = apparealAvailParser;
+	}
+	public ApparealProductAttributeParser getAppaAttributeParser() {
+		return appaAttributeParser;
+	}
+
+	public void setAppaAttributeParser(
+			ApparealProductAttributeParser appaAttributeParser) {
+		this.appaAttributeParser = appaAttributeParser;
+	}
+
+	public ApparelImprintMethodParser getImprintparserObj() {
+		return imprintparserObj;
+	}
+
+	public void setImprintparserObj(ApparelImprintMethodParser imprintparserObj) {
+		this.imprintparserObj = imprintparserObj;
+	}
+
 }

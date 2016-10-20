@@ -25,6 +25,7 @@ import com.a4tech.ESPTemplate.product.mapping.ESPTemplateMapping;
 import com.a4tech.JulyData.excelMapping.JulyDataMapping;
 import com.a4tech.RFGLine.product.mapping.RFGLineProductExcelMapping;
 import com.a4tech.adspec.product.mapping.AdspecProductsExcelMapping;
+import com.a4tech.apparel.product.mapping.ApparelProductsExcelMapping;
 import com.a4tech.core.excelMapping.ExcelMapping;
 import com.a4tech.core.model.FileBean;
 import com.a4tech.dc.product.mapping.DCProductsExcelMapping;
@@ -68,6 +69,8 @@ public class FileUpload {
 	private ILoginService loginService;
 	private ProductDao productDao;
 	private ConvertCsvToExcel convertCsvToExcel;
+	private ApparelProductsExcelMapping apparealExcelMapping;
+
 	private static Logger _LOGGER = Logger.getLogger(Class.class);
 	
 	@RequestMapping(method = RequestMethod.GET)
@@ -205,6 +208,13 @@ public class FileUpload {
 			 case "91284":  //NewProducts
 			    	finalResult = newProductsExcelMapping.readExcel(accessToken, workbook, 
                                Integer.valueOf(asiNumber), batchId);
+			    	if (finalResult != null) {
+						parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
+					}
+			    	return ApplicationConstants.CONST_REDIRECT_URL;
+			 case "44620":  //Apparel
+			    	finalResult = apparealExcelMapping.readExcel(accessToken, workbook, 
+                            Integer.valueOf(asiNumber), batchId);
 			    	if (finalResult != null) {
 						parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 					}
@@ -442,6 +452,13 @@ public class FileUpload {
 	public void setConvertCsvToExcel(ConvertCsvToExcel convertCsvToExcel) {
 		this.convertCsvToExcel = convertCsvToExcel;
 	}
+	public ApparelProductsExcelMapping getApparealExcelMapping() {
+		return apparealExcelMapping;
+	}
 
+	public void setApparealExcelMapping(
+			ApparelProductsExcelMapping apparealExcelMapping) {
+		this.apparealExcelMapping = apparealExcelMapping;
+	}
 
 }

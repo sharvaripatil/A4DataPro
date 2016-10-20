@@ -99,6 +99,7 @@
 		<property name="adspecMapping" ref="adspecProductsExcelMappingId"/>
 		<property name="newProductsExcelMapping" ref="newProductsExcelMappingId"/>
 		<property name="convertCsvToExcel" ref="convertCsvToExcelId"/>
+		<property name="apparealExcelMapping" ref="apparelMappingId"/>
 	</bean>
 	<bean id="usbExcelMapping"
 		class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
@@ -320,7 +321,27 @@
      	   <property name="newProimprintMethodParser" ref="newProimprintMethodParserId"/> 
      	    <property name="newProPriceGridParser" ref="newProPriceGridParserId"/>
      </bean>
-     <bean id="convertCsvToExcelId" class="com.a4tech.util.ConvertCsvToExcel"/>
-     <!-- supplier 91284 configuration end -->
+    <!-- supplier 91284 configuration end -->
+    <bean id="convertCsvToExcelId" class="com.a4tech.util.ConvertCsvToExcel"/>
+    
+    <!-- supplier 44620 configuration start --> 
+     <bean id="apparelMappingId" class="com.a4tech.apparel.product.mapping.ApparelProductsExcelMapping">
+        <property name="postServiceImpl" ref="postService"/>
+     	<property name="productDaoObj" ref="productDao"/>
+     	<property name="apparelPgParser" ref="appaPriceGridParserId"/>
+     	<property name="apparealMaterialParser" ref="appaMaterialParserId"/>
+     	<property name="apparealAvailParser" ref="appaAvailabilityParserId"/>
+     	<property name="appaAttributeParser" ref="appaProductAttributeParserId"/>
+     	<property name="imprintparserObj" ref="apparelImprintMethodParserId"/>
+     </bean>
+    <bean id="appaPriceGridParserId" class="com.a4tech.apparel.products.parser.ApparelPriceGridParser"/> 
+    <bean id="appaMaterialParserId" class="com.a4tech.apparel.products.parser.ApparelMaterialParser">
+    	<property name="lookupServiceData" ref="lookupServiceData"/>
+    </bean>
+    <bean id="appaAvailabilityParserId" class="com.a4tech.apparel.products.parser.ApparealAvailabilityParser"/>
+    <bean id="appaProductAttributeParserId" class="com.a4tech.apparel.products.parser.ApparealProductAttributeParser"/>
+    <bean id="apparelImprintMethodParserId" class="com.a4tech.apparel.products.parser.ApparelImprintMethodParser"/>
+    
+     <!-- supplier 44620 configuration end --> 
 </beans>
 
