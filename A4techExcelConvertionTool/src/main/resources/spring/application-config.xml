@@ -332,15 +332,15 @@
      	<property name="apparealMaterialParser" ref="appaMaterialParserId"/>
      	<property name="apparealAvailParser" ref="appaAvailabilityParserId"/>
      	<property name="appaAttributeParser" ref="appaProductAttributeParserId"/>
-     	<property name="imprintparserObj" ref="apparelImprintMethodParserId"/>
      </bean>
     <bean id="appaPriceGridParserId" class="com.a4tech.apparel.products.parser.ApparelPriceGridParser"/> 
     <bean id="appaMaterialParserId" class="com.a4tech.apparel.products.parser.ApparelMaterialParser">
     	<property name="lookupServiceData" ref="lookupServiceData"/>
     </bean>
     <bean id="appaAvailabilityParserId" class="com.a4tech.apparel.products.parser.ApparealAvailabilityParser"/>
-    <bean id="appaProductAttributeParserId" class="com.a4tech.apparel.products.parser.ApparealProductAttributeParser"/>
-    <bean id="apparelImprintMethodParserId" class="com.a4tech.apparel.products.parser.ApparelImprintMethodParser"/>
+    <bean id="appaProductAttributeParserId" class="com.a4tech.apparel.products.parser.ApparealProductAttributeParser">
+    	<property name="lookupServiceData" ref="lookupServiceData"/>
+    </bean>
     
      <!-- supplier 44620 configuration end --> 
 </beans>

@@ -2,8 +2,6 @@ package com.a4tech.product.model;
 
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -97,21 +95,4 @@ public class Color {
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
-
-    @Override
-    public int hashCode() {
-    	int code = (name.hashCode()+alias.hashCode())*10;
-       return code;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-    	 if (other instanceof Color) {
-    		 Color color = (Color) other;
-             return (color.name.equals(this.name) && color.alias.equals(this.alias));
-         } else {
-             return false;
-         }
-    }
-
 }
