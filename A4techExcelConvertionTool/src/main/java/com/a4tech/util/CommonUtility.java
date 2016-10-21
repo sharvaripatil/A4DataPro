@@ -194,6 +194,18 @@ public class CommonUtility {
 		  source = source.replace("]", "");
 	  }
 	  
-	  return source;
+	  return source; //exponential
+  }
+  
+  public static String convertExponentValueIntoNumber(String exponentValue){
+	  try{
+		  BigDecimal bigDecimal = new BigDecimal(exponentValue);
+		  long number = bigDecimal.longValue();
+		  String value = Long.toString(number);
+		  return value;  
+	  }catch(NumberFormatException nfe){
+		  return ApplicationConstants.CONST_STRING_EMPTY;
+	  }
+	  
   }
 }

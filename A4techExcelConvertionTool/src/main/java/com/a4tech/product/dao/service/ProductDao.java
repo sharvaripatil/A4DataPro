@@ -198,7 +198,7 @@ public class ProductDao {
 								ApplicationConstants.CONST_DELIMITER_PIPE);
 					}
 					data.setLength(data.length() - 1);
-					String finalStr = "ProductID: " + key + "   " + data;
+					String finalStr = "ProductID: " + key + "   " + data + "\n";
 					bw.write(finalStr);
 					bw.newLine();
 				}
