@@ -136,11 +136,6 @@ public class ApparelMaterialParser {
         	comboObj.setName(materials[1]);
         	materialObj.setCombo(comboObj);
 		}
-        /*if(materialObj.equals(ApplicationConstants.CONST_STRING_COMBO_TEXT)){
-        	comboObj = new Combo();
-        	comboObj.setName(materials[1]);
-        	materialObj.setCombo(comboObj);
-        }*/
 		return materialObj;
 	}
 	/*
@@ -162,9 +157,11 @@ public class ApparelMaterialParser {
 	 * @return boolean
 	 */
 	public boolean isBlendMaterial(String data){
-		if(data.contains("/") && data.contains("%")){
+		if(data.contains(ApplicationConstants.CONST_DELIMITER_FSLASH) && 
+				              data.contains(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)){
 			return true;
-		}else if(data.split("/").length == ApplicationConstants.CONST_INT_VALUE_THREE){
+		}else if(data.split(ApplicationConstants.CONST_DELIMITER_FSLASH).length == 
+				                    ApplicationConstants.CONST_INT_VALUE_THREE){
 			return true;
 		}
 		return false;
