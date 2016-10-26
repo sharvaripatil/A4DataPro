@@ -143,11 +143,13 @@ public class ApparelProductsExcelMapping {
 						    	repeatRows.add(xid);
 						    }
 						    productExcelObj = new Product();
-     						/* productExcelObj = postServiceImpl.getProduct(accessToken, xid);
+     						 productExcelObj = postServiceImpl.getProduct(accessToken, xid);
 						     if(productExcelObj == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
-						     }*/
+						     }else{
+						    	 productConfigObj=productExcelObj.getProductConfigurations();
+						     }
 							
 					 }
 				}else{
@@ -223,14 +225,8 @@ public class ApparelProductsExcelMapping {
 					break;
 				case 11:
 				    String  productDescription = cell.getStringCellValue();
-					int len=productDescription.length();
-
-					 if(len>60){
-					 String newproductDescription=productDescription.substring(0, 60);
-					 productExcelObj.setDescription(newproductDescription);
-					 }else{
-						 productExcelObj.setDescription(productDescription);
-					 }
+					productExcelObj.setDescription(productDescription);
+					 
 					break;
 					
 				case 12:
