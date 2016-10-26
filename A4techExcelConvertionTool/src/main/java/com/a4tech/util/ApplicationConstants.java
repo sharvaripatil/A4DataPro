@@ -114,7 +114,9 @@ public class ApplicationConstants {
 	public static final String  TRADE_MARK_SYMBOL                       = "®";
 	public static final String  SQUARE_SYMBOL							= "";
 	public static final String  PARENTHESE_OPEN_SYMBOL                  = "(";  
-	public static final String  PARENTHESE_CLOSE_SYMBOL                  = ")";
+	public static final String  PARENTHESE_CLOSE_SYMBOL                 = ")";
+	public static final String  SQUARE_BRACKET_OPEN                     = "[";
+	public static final String  SQUARE_BRACKET_CLOSE                    = "]";
 	
 	
 	public static final String  CONST_STRING_COUNTRY_CODE_CN            = "CN";

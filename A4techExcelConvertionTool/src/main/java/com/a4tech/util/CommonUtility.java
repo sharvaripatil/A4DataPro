@@ -39,7 +39,7 @@ public class CommonUtility {
 	}
 	
 	public static String getCellValueDouble(Cell cell) {
-		String value = "";
+		String value = ApplicationConstants.CONST_STRING_EMPTY;
 		try {
 			if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 				value = cell.getStringCellValue();
@@ -55,7 +55,7 @@ public class CommonUtility {
 	}
 	
 	public static String getCellValueStrinOrInt(Cell cell) {
-		String value = "";
+		String value = ApplicationConstants.CONST_STRING_EMPTY;
 		try {
 			if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 				value = cell.getStringCellValue();
@@ -72,7 +72,7 @@ public class CommonUtility {
 	}
 	
 	public static String getCellValueStrinOrDecimal(Cell cell){
-		String value = "";
+		String value = ApplicationConstants.CONST_STRING_EMPTY;
 		try{
 	if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 		value = cell.getStringCellValue();
@@ -168,7 +168,7 @@ public class CommonUtility {
 	 * @return String,it returns finalValue  
 	 */
 	public static String removeSpecialSymbols(String value,String symbol){
-		String finalValue = value.replaceAll(symbol, "");
+		String finalValue = value.replaceAll(symbol, ApplicationConstants.CONST_STRING_EMPTY);
 		return finalValue;
 	}
 	/*@author Venkat 18/10/2016
@@ -186,14 +186,15 @@ public class CommonUtility {
 	}
 	
   public static String removeCurlyBraces(String source){
-	  if(source.contains("["))
+	  if(source.contains(ApplicationConstants.SQUARE_BRACKET_OPEN))
 	  {
-		  source = source.replace("[", "");
+		  source = source.replace(ApplicationConstants.SQUARE_BRACKET_OPEN, 
+				                                        ApplicationConstants.CONST_STRING_EMPTY);
 	  }
-	  if(source.contains("]")){
-		  source = source.replace("]", "");
+	  if(source.contains(ApplicationConstants.SQUARE_BRACKET_CLOSE)){
+		  source = source.replace(ApplicationConstants.SQUARE_BRACKET_CLOSE, 
+				                                  ApplicationConstants.CONST_STRING_EMPTY);
 	  }
-	  
 	  return source; //exponential
   }
   
