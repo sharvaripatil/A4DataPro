@@ -14,6 +14,7 @@ import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Packaging;
+import com.a4tech.product.model.Personalization;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
@@ -243,6 +244,26 @@ public class ApparealProductAttributeParser {
 		Packaging packObj = new Packaging();
 		packObj.setName(packName);
 		return packObj;
+	}
+	
+	public List<Personalization> getPersonalizationList(List<Personalization> existingPersList){
+		List<Personalization> listOfPersonalization = new ArrayList<>();
+		Personalization personalObj = null;
+		if(existingPersList != null){
+			for (Personalization personalization : existingPersList) {
+				personalObj = new Personalization();
+				  if(personalization.getType().equalsIgnoreCase("Personalization")  && 
+						          personalization.getAlias().equalsIgnoreCase("Personalized")){
+					  personalObj.setType(ApplicationConstants.CONST_STRING_PERSONALIZATION);
+					  personalObj.setAlias(ApplicationConstants.CONST_STRING_PERSONALIZATION);
+					  listOfPersonalization.add(personalObj);
+				  }else{
+					  listOfPersonalization.add(personalization);
+				  }  
+			}
+		}
+		
+		return listOfPersonalization;
 	}
 	
 	public LookupServiceData getLookupServiceData() {

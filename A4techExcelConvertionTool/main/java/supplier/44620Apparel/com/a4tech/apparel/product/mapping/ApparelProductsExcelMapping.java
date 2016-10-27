@@ -30,6 +30,7 @@ import com.a4tech.product.model.Color;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Packaging;
+import com.a4tech.product.model.Personalization;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -107,6 +108,9 @@ public class ApparelProductsExcelMapping {
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
 							 List<Color> listOfColor = appaAttributeParser.getProductColors(listOfColors,colorIdMap);
+							 List<Personalization> listOfPersonalization  = appaAttributeParser.
+									                 getPersonalizationList(productConfigObj.getPersonalization());
+							 productConfigObj.setPersonalization(listOfPersonalization);
 							    productConfigObj.setColors(listOfColor);
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productConfigObj.setSizes(getProductSize(new ArrayList<Value>(sizeValues)));
@@ -129,6 +133,7 @@ public class ApparelProductsExcelMapping {
 								listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 								productConfigObj = new ProductConfigurations();
+								listOfColors = new HashSet<>();
 								sizeValues = new HashSet<>();
 								listOfColor = new ArrayList<>();
 								imprintMethodsList = new ArrayList<>();
@@ -191,6 +196,10 @@ public class ApparelProductsExcelMapping {
 				case 6: //  colorName
 					String colorName = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(colorName)){
+						if(colorName.contains(ApplicationConstants.COLOR_NAME_NAVY)){
+							colorName = colorName.replace(ApplicationConstants.COLOR_NAME_NAVY, 
+									                       ApplicationConstants.COLOR_NAME_NAVY_BLUE);
+						}
 						listOfColors.add(colorName);
 						colorIdMap.put(colorName.trim(), colorCustomerOderCode);
 					}
@@ -225,7 +234,11 @@ public class ApparelProductsExcelMapping {
 					break;
 				case 11:
 				    String  productDescription = cell.getStringCellValue();
-					productExcelObj.setDescription(productDescription);
+				    if(productDescription.contains(ApplicationConstants.SQUARE_SYMBOL)){
+				    	productDescription = CommonUtility.removeSpecialSymbols(productDescription, 
+                                                                    ApplicationConstants.SQUARE_SYMBOL);
+				    }
+					productExcelObj.setDescription(productDescription.trim());
 					 
 					break;
 					
@@ -317,6 +330,9 @@ public class ApparelProductsExcelMapping {
 		}
 		workbook.close();
 		List<Color> listOfColor = appaAttributeParser.getProductColors(listOfColors,colorIdMap);
+		List<Personalization> listOfPersonalization  = appaAttributeParser.
+                getPersonalizationList(productConfigObj.getPersonalization());
+         productConfigObj.setPersonalization(listOfPersonalization);
          productConfigObj.setColors(listOfColor);
          productExcelObj.setPriceGrids(priceGrids);
          productConfigObj.setSizes(getProductSize(new ArrayList<Value>(sizeValues)));

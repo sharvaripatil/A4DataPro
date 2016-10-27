@@ -117,6 +117,8 @@ public class ApplicationConstants {
 	public static final String  PARENTHESE_CLOSE_SYMBOL                 = ")";
 	public static final String  SQUARE_BRACKET_OPEN                     = "[";
 	public static final String  SQUARE_BRACKET_CLOSE                    = "]";
+	public static final String  COLOR_NAME_NAVY                         = "Navy";
+	public static final String  COLOR_NAME_NAVY_BLUE                    = "Navy Blue";
 	
 	
 	public static final String  CONST_STRING_COUNTRY_CODE_CN            = "CN";

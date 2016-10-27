@@ -112,7 +112,7 @@ public class ApparelMaterialParser {
 	 */
 	public Material getMaterialValue(String name,String alias){
 		Material materialObj = new Material();
-		 CommonUtility.removeCurlyBraces(name);
+		name = CommonUtility.removeCurlyBraces(name);
 		materialObj.setName(name);
 		materialObj.setAlias(alias);
 		return materialObj;

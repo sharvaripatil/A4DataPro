@@ -190,6 +190,7 @@ public class ProductDao {
 							new OutputStreamWriter(fos))) {
 				for (Map.Entry<String, ArrayList<String>> entry : hashmap
 						.entrySet()) {
+					bw.append(System.lineSeparator());
 					String key = entry.getKey();
 					ArrayList<String> listt = entry.getValue();
 					StringBuilder data = new StringBuilder();
@@ -198,9 +199,9 @@ public class ProductDao {
 								ApplicationConstants.CONST_DELIMITER_PIPE);
 					}
 					data.setLength(data.length() - 1);
-					String finalStr = "ProductID: " + key + "   " + data + "\n";
+					String finalStr = "ProductID: " + key + " " + data;
 					bw.write(finalStr);
-					bw.newLine();
+					bw.append(System.lineSeparator());
 				}
 			}
 		
