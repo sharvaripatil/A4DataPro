@@ -14,6 +14,7 @@ import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Packaging;
+import com.a4tech.product.model.Personalization;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
@@ -126,6 +127,12 @@ public class ApparealProductAttributeParser {
 		String[] imprintMethodValues = data.split(ApplicationConstants.CONST_DELIMITER_COMMA);
 		for (String imprintMethodName : imprintMethodValues) {
 			imprintMethodObj = new ImprintMethod();
+			if(imprintMethodName.contains("Embroidery")){
+			imprintMethodName=imprintMethodName.replace("Embroidery", "Embroidered");
+		    }
+	    	if(imprintMethodName.contains(" Appliqué")){
+    		imprintMethodName=imprintMethodName.replaceAll("é", "e");
+	        }
 			  if(lookupServiceData.isImprintMethod(imprintMethodName)){
 				  imprintMethodObj.setType(imprintMethodName);
 				  imprintMethodObj.setAlias(imprintMethodName);
@@ -213,11 +220,50 @@ public class ApparealProductAttributeParser {
 		packValue = packValue.replaceAll(ApplicationConstants.CONST_STRING_NEWLINECHARS,
 				                                   ApplicationConstants.CONST_STRING_BIG_SPACE);
 		List<Packaging> listOfpackaging = new ArrayList<Packaging>();
-		Packaging pack = new Packaging();
-		pack.setName(packValue);
-		listOfpackaging.add(pack);
-		
+		Packaging pack = null;
+    	if(packValue.contains("Decorated"))
+		{
+    		for(int index=1 ;index <=2 ;index++){
+    			 pack = new Packaging();
+    			  if(index == 1){
+    				pack = getPackaging("Blank: Individually folded in polybags");  
+    			  }else if(index ==2){
+    				  pack = getPackaging("Decorated: Bulk folded");  
+    			  }
+    			  listOfpackaging.add(pack);
+    		}
+		}else{
+			pack = getPackaging(packValue);
+			listOfpackaging.add(pack);
+		}
 		return listOfpackaging;
+		
+	}
+	public  Packaging getPackaging(String packName)
+	{
+		Packaging packObj = new Packaging();
+		packObj.setName(packName);
+		return packObj;
+	}
+	
+	public List<Personalization> getPersonalizationList(List<Personalization> existingPersList){
+		List<Personalization> listOfPersonalization = new ArrayList<>();
+		Personalization personalObj = null;
+		if(existingPersList != null){
+			for (Personalization personalization : existingPersList) {
+				personalObj = new Personalization();
+				  if(personalization.getType().equalsIgnoreCase("Personalization")  && 
+						          personalization.getAlias().equalsIgnoreCase("Personalized")){
+					  personalObj.setType(ApplicationConstants.CONST_STRING_PERSONALIZATION);
+					  personalObj.setAlias(ApplicationConstants.CONST_STRING_PERSONALIZATION);
+					  listOfPersonalization.add(personalObj);
+				  }else{
+					  listOfPersonalization.add(personalization);
+				  }  
+			}
+		}
+		
+		return listOfPersonalization;
 	}
 	
 	public LookupServiceData getLookupServiceData() {

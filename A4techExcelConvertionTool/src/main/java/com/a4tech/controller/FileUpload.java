@@ -109,6 +109,9 @@ public class FileUpload {
 				return ApplicationConstants.CONST_STRING_ERROR_PAGE;
 			}
 			Workbook workbook = getWorkBook(fileBean.getFile());
+			if(workbook == null){
+				return ApplicationConstants.CONST_STRING_ERROR_PAGE;
+			}
 			int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 			request.getSession().setAttribute("batchId",
 					String.valueOf(batchId));
