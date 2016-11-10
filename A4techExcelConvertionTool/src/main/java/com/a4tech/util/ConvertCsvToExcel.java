@@ -1,6 +1,7 @@
 package com.a4tech.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -8,10 +9,13 @@ import java.util.Calendar;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.opencsv.CSVReader;
 
@@ -43,5 +47,83 @@ public class ConvertCsvToExcel {
 			_LOGGER.error("unable to convert Csv into excel: " + e);
 		}
 		return null;
+	}
+	
+	/*@author Venkat
+	 *@param  MultipartFile
+	 *@description This method is design for convert file into workbook format,also 
+	 *                                           csv file format convert into workbook
+	 *@return WorkBook
+	 */
+	public  Workbook getWorkBook(MultipartFile mfile){
+	    String fileExtension = CommonUtility.getFileExtension(mfile.getOriginalFilename());
+	    File file = convertMultiPartFileIntoFile(mfile);
+	    Workbook workBook = null;
+	    if(ApplicationConstants.CONST_STRING_XLS.equalsIgnoreCase(fileExtension)){
+	    	try(Workbook workbook1 = new HSSFWorkbook(new FileInputStream(file))) {
+				return workbook1;
+			} catch (IOException e) {
+				_LOGGER.error("unable to file convert into excelsheet"+e);
+			}
+	     }else if(ApplicationConstants.CONST_STRING_XLSX.equalsIgnoreCase(fileExtension)){
+	    	try(Workbook workBook2 = new XSSFWorkbook(file)) {
+	    		return workBook2;
+			} catch (InvalidFormatException | IOException e) {
+				_LOGGER.error("unable to file convert into excelsheet"+e);
+			}
+	    }else if(ApplicationConstants.CONST_STRING_CSV.equalsIgnoreCase(fileExtension)){
+	    	workBook = getExcel(file);
+	    	return workBook;
+	    }else{
+	    	
+	    }
+		return workBook;
+	}
+	
+	/*@author Venkat
+	 *@param  MultipartFile
+	 *@description This method is design for convert file into workbook format,also 
+	 *                                           csv file format convert into workbook
+	 *@return WorkBook
+	 */
+	public  Workbook getWorkBook(File file){
+	    String fileExtension = CommonUtility.getFileExtension(file.getName());
+	    Workbook workBook = null;
+	    if(ApplicationConstants.CONST_STRING_XLS.equalsIgnoreCase(fileExtension)){
+	    	try(Workbook workbook1 = new HSSFWorkbook(new FileInputStream(file))) {
+				return workbook1;
+			} catch (IOException e) {
+				_LOGGER.error("unable to file convert into excelsheet"+e);
+			}
+	     }else if(ApplicationConstants.CONST_STRING_XLSX.equalsIgnoreCase(fileExtension)){
+	    	try(Workbook workBook2 = new XSSFWorkbook(file)) {
+	    		return workBook2;
+			} catch (InvalidFormatException | IOException e) {
+				_LOGGER.error("unable to file convert into excelsheet"+e);
+			}
+	    }else if(ApplicationConstants.CONST_STRING_CSV.equalsIgnoreCase(fileExtension)){
+	    	workBook = getExcel(file);
+	    	return workBook;
+	    }else{
+	    	
+	    }
+		return workBook;
+	}
+	
+	/*@author Venkat
+	 *@param MultipartFile
+	 *@description This method used for converting MultiPartFile format into File format
+	 *@return  File format
+	 */
+	public File convertMultiPartFileIntoFile(MultipartFile mfile){
+		File file = null;
+		file = new File(mfile.getOriginalFilename());
+		try {
+			mfile.transferTo(file);
+		} catch (IllegalStateException | IOException e) {
+			_LOGGER.error("unable to convert MultiPartFile into File format : "+e);
+		}
+		
+		return file;
 	}
 }

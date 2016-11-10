@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.adspec.product.parser.AdspecPriceGridParser;
 import com.a4tech.adspec.product.parser.AdspecProductAttributeParser;
+import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Catalog;
@@ -33,7 +34,7 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 
-public class AdspecProductsExcelMapping {
+public class AdspecProductsExcelMapping implements IExcelParser{
 	
 	private static final Logger _LOGGER = Logger.getLogger(AdspecProductsExcelMapping.class);
 	

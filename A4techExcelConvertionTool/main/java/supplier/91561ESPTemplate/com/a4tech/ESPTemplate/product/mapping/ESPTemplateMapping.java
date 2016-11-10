@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.ESPTemplate.parser.ColorParser;
 import com.a4tech.product.ESPTemplate.parser.OriginParser;
 import com.a4tech.product.ESPTemplate.parser.PriceGridParser;
@@ -42,7 +43,7 @@ import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 
 
-public class ESPTemplateMapping {
+public class ESPTemplateMapping implements IExcelParser{
 	private static final Logger _LOGGER = Logger.getLogger(ESPTemplateMapping.class);
 	
 	private PostServiceImpl postServiceImpl;

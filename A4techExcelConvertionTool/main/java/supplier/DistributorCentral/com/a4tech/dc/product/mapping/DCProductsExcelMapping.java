@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.DCProducts.parser.ShippingEstimationParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Catalog;
@@ -43,7 +44,7 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 
-public class DCProductsExcelMapping {
+public class DCProductsExcelMapping implements IExcelParser{
 	
 	private static final Logger _LOGGER = Logger.getLogger(DCProductsExcelMapping.class);
 	
