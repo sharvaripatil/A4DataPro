@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 import com.a4tech.RFGLine.products.parser.RFGDescrptionParser;
 import com.a4tech.RFGLine.products.parser.RFGPriceGridParser;
 import com.a4tech.RFGLine.products.parser.RFGShippingEstimationParser;
+import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.ImprintMethod;
@@ -29,7 +30,7 @@ import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
-public class RFGLineProductExcelMapping {
+public class RFGLineProductExcelMapping implements IExcelParser{
 
 	private static final Logger _LOGGER = Logger
 			.getLogger(RFGLineProductExcelMapping.class);

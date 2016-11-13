@@ -23,6 +23,7 @@ import com.a4tech.apparel.products.parser.ApparealProductAttributeParser;
 import com.a4tech.apparel.products.parser.ApparelMaterialParser;
 import com.a4tech.apparel.products.parser.ApparelPriceGridParser;
 import com.a4tech.dataStore.ProductDataStore;
+import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Availability;
@@ -42,7 +43,7 @@ import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
-public class ApparelProductsExcelMapping {
+public class ApparelProductsExcelMapping implements IExcelParser{
 	
 	private static final Logger _LOGGER = Logger.getLogger(ApparelProductsExcelMapping.class);
 	
@@ -52,7 +53,7 @@ public class ApparelProductsExcelMapping {
 	private ApparelMaterialParser apparealMaterialParser;
 	private ApparealAvailabilityParser apparealAvailParser;
 	private ApparealProductAttributeParser appaAttributeParser;
-
+    @Override
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();

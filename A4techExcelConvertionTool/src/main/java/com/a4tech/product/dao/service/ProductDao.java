@@ -17,14 +17,15 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.core.errors.ErrorMessage;
-import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.core.model.ExternalAPIResponse;
 import com.a4tech.product.dao.entity.BatchEntity;
 import com.a4tech.product.dao.entity.ErrorEntity;
+import com.a4tech.product.dao.entity.FtpServerFileEntity;
 import com.a4tech.product.dao.entity.ProductEntity;
 import com.a4tech.util.ApplicationConstants;
 
@@ -219,5 +220,59 @@ public class ProductDao {
 			}
 			}
 		}
+	}
+	
+	public String getFtpFileProcessStatus(String fileName,String asiNumber){
+		  Session session = null;
+		  Transaction transaction = null;
+		  try{
+			  session = sessionFactory.openSession();
+			  transaction = session.beginTransaction();
+			  Criteria criteria = session.createCriteria(FtpServerFileEntity.class);
+	            criteria.add(Restrictions.eq("fileName", fileName));
+	            criteria.setProjection(Projections.property("fileStatus"));
+	            String data =  (String) criteria.uniqueResult();
+	            return data;
+		  }catch(Exception exce){
+			  _LOGGER.error("unable to fetch ftpFile status::"+exce.getMessage());
+		  }finally{
+			  if(session != null){
+				  try{
+					  session.close();
+				  }catch(Exception exce){
+					  _LOGGER.error("unable to close session connection: "+exce.getMessage());
+				  }
+			  }
+		  }
+		  return null;
+	}
+	
+	public void updateFtpFileStatus(String fileName,String asiNumber,String fileStatus){
+		   Session session = null;
+		   Transaction transaction  = null;
+		   try{
+			    session = sessionFactory.openSession();
+			    transaction = session.beginTransaction();
+			    FtpServerFileEntity fileEntity = new FtpServerFileEntity();
+			    fileEntity.setFileName(fileName);
+			    fileEntity.setFileStatus(fileStatus);
+			    fileEntity.setSupplierAsiNumber(asiNumber);
+			    fileEntity.setFileProcessDate(Calendar.getInstance().getTime());
+			    session.save(fileEntity);
+			    transaction.commit();
+		   }catch(Exception exe){
+			     _LOGGER.error("unable to upadte ftp file status: "+exe.getMessage());
+			     if(transaction != null){
+			    	 transaction.rollback();
+			     }
+		   }finally{
+			    if(session != null){
+			    	 try{
+			    		 session.close();
+			    	 }catch(Exception exce){
+			    		 _LOGGER.error("unable to close session connection: "+exce.getMessage());
+			    	 }
+			    }
+		   }
 	}
 }

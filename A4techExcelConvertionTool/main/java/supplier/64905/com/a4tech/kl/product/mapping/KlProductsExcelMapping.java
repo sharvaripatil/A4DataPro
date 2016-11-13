@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.kl.product.parser.KlColorAndMaterialParser;
 import com.a4tech.kl.product.parser.KlPriceGridParser;
 import com.a4tech.kl.product.parser.KlProductAttributeParser;
@@ -42,7 +43,7 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 
-public class KlProductsExcelMapping {
+public class KlProductsExcelMapping implements IExcelParser{
 	
 	private static final Logger _LOGGER = Logger.getLogger(KlProductsExcelMapping.class);
 	
@@ -52,7 +53,7 @@ public class KlProductsExcelMapping {
 	private KlColorAndMaterialParser klColorParser ;
 	private KlSizeParser klSizeParser ;
 	private ProductImprintMethodParser klImprintMethodParser;
-	ProductDao productDaoObj;
+	private ProductDao productDaoObj;
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();

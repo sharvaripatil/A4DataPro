@@ -21,7 +21,8 @@
   	<!-- hibernate -->
   	 <hibernate.version>3.6.9.Final</hibernate.version>
      <mysql.connector.version>5.1.31</mysql.connector.version>
-  
+   <!-- quatz -->
+   <quartz.version>2.2.1</quartz.version>
   </properties>
   
   
@@ -104,6 +105,12 @@
     	<artifactId>spring-orm</artifactId>
     	<version>${org.springframework-version}</version>
 	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.springframework/spring-context-support -->
+   <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+      <version>3.2.0.RELEASE</version>
+   </dependency>
 	<dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -147,6 +154,11 @@
     	<artifactId>commons-io</artifactId>
     	<version>${commons-io.version}</version>
     </dependency>
+    <dependency>
+    	<groupId>commons-net</groupId>
+    	<artifactId>commons-net</artifactId>
+    	<version>3.3</version>
+	</dependency>
     <dependency>
 		<groupId>javax.servlet</groupId>
 		<artifactId>jstl</artifactId>
@@ -209,13 +221,13 @@
      <groupId>javax.mail</groupId>
      <artifactId>mail</artifactId>
      <version>1.4</version>
- </dependency>
- <!-- https://mvnrepository.com/artifact/org.springframework/spring-context-support -->
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-context-support</artifactId>
-    <version>3.2.0.RELEASE</version>
-</dependency>
+   </dependency>
+   <!-- Quartz framework dependency -->
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>${quartz.version}</version>
+		</dependency>
   </dependencies>
   
   <build>
