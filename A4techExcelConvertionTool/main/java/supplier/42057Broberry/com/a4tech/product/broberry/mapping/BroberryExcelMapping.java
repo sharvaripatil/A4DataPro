@@ -19,12 +19,15 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.broberry.parser.BroberryProductAttributeParser;
+import com.a4tech.product.broberry.parser.BroberryProductMaterialParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Material;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -39,9 +42,29 @@ public class BroberryExcelMapping implements IExcelParser{
 	@Autowired
 	ObjectMapper mapperObj;
 	private BroberryProductAttributeParser broberryProductAttributeParser;
+	private BroberryProductMaterialParser broberryMaterialParserObj;
+
 	
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 	
+		StringBuilder FinalKeyword = new StringBuilder();
+		StringBuilder AdditionalInfo = new StringBuilder();
+		String AddionnalInfo1=null;
+		String AddionnalInfo2=null;
+		String AddionnalInfo3=null;
+        String AddionnalInfo4=null;
+		String AddionnalInfo5=null;
+		String AddionnalInfo6=null;
+		String AddionnalInfo7=null;
+		String MaterialValue1=null;
+
+
+		List<Material> listOfMaterial =new ArrayList<Material>();
+		List<Material> listOfMaterial1=new ArrayList<Material>();
+		List<String> productKeywords = new ArrayList<String>();
+		List<ProductNumber> ProductNumber = new ArrayList<ProductNumber>();
+
+
 		String productName = null;
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
@@ -154,6 +177,7 @@ public class BroberryExcelMapping implements IExcelParser{
 						break;
 			
 				case 2:// Material
+					
 					  break;
 				case 3://PRODUCT NAME
 					
@@ -188,52 +212,121 @@ public class BroberryExcelMapping implements IExcelParser{
 				case 11://DEPT
 				   
 					break;
-					
+				//////////////////////
+					//sharvari
 				case 12://CATEGORY....product category
-					
+					//remaning
 					break;
 				case 13://SUB CATEGORY
-					
+					//remaning
 					 break;
 				case 14://FABRIC WT
 					
-					
+					//remaning
 			     break;
 				case 15://FABRIC CONTENT
-				
+					/* MaterialValue1=cell.getStringCellValue();
+					 listOfMaterial = broberryMaterialParserObj.getMaterialList1(MaterialValue1);
+				*/
 					break;
 				case 16://FABRICATION
+					String MaterialValue2=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(MaterialValue2)){
+				    listOfMaterial = broberryMaterialParserObj.getMaterialList2(MaterialValue2);
+				   // productConfigObj.setMaterials(listOfMaterial);
+
+					}
 			
 					break;
 				case 17://LSW
+					 AddionnalInfo1=cell.getStringCellValue();
+		             if(!AddionnalInfo1.contains("Unassigned")){
+		             AddionnalInfo1="LSW:".concat(AddionnalInfo1);
+		             }
+		             else
+		             {
+		            	 AddionnalInfo1=""; 
+		             }
 				
 					break;
 				case 18://SILHOUTTE
+					 AddionnalInfo2=cell.getStringCellValue();
+		             if(!AddionnalInfo2.contains("Unassigned")){
+		             AddionnalInfo2=",Silhoutte:".concat(AddionnalInfo2);
+		             }
+		             else
+		             {
+		            	 AddionnalInfo2=""; 
+		             }
 					
 					break;
 				case 19: //SUB DEPT
-					String Keyword1 = cell.getStringCellValue();
-
-					
+					 String Keyword1 = cell.getStringCellValue();
+	                 if(!Keyword1.contains("Unassigned")){
+	                FinalKeyword.append(Keyword1).append(ApplicationConstants.CONST_STRING_COMMA_SEP);
+	                 }
+	                
 					break;
 				
 				case 20: //NECKLINE
+					 AddionnalInfo3=cell.getStringCellValue();
+					 if(!AddionnalInfo3.contains("Unassigned")){
+			         AddionnalInfo3=",Neckline:".concat(AddionnalInfo3);
+			         }
+					 else
+		             {
+						 AddionnalInfo3=""; 
+		             }
+				
+					
 					
 					break;
 				case 21: //DESIGN
 					String Keyword2 = cell.getStringCellValue();
-
-					
+	                if(!Keyword2.contains("Unassigned")){
+	                	FinalKeyword.append(Keyword2);
+					}
+	                String FinalKeyword1=FinalKeyword.toString();
+	                String productKeywordArr[] =  FinalKeyword1.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+					for (String string : productKeywordArr) {
+						productKeywords.add(string);
+					}
+					productExcelObj.setProductKeywords(productKeywords);
 					
 					break;
 				case 22: //SEASONALITY
-	
+					  AddionnalInfo4=cell.getStringCellValue();
+					 if(!AddionnalInfo4.contains("Unassigned")){
+				         AddionnalInfo4=",Seasonality:".concat(AddionnalInfo4);
+				         }
+					 else
+		             {
+						 AddionnalInfo4=""; 
+		             }
+				
 					break;
 				case 23: //PLF
-	
+					 AddionnalInfo5=cell.getStringCellValue();
+					 if(!AddionnalInfo5.contains("Unassigned")){
+				         AddionnalInfo5=",PLF:".concat(AddionnalInfo5);
+				         }
+					 else
+		             {
+						 AddionnalInfo5=""; 
+		             }
+				
 					break;
 	
 				case 24: //CARE INSTNS
+					 AddionnalInfo6=cell.getStringCellValue();
+					if(!AddionnalInfo6.contains("Unassigned")){
+						AddionnalInfo6=",Care Instructions:".concat(AddionnalInfo6);
+				         }
+					 else
+		             {
+						 AddionnalInfo6=""; 
+		             }
+				
 	
 					break;
 				case 25: //LONG DESC
@@ -255,7 +348,6 @@ public class BroberryExcelMapping implements IExcelParser{
 					
 					break;
 				case 27: //SEARCH KEY
-					String AdditionInfo = cell.getStringCellValue();
 
 					
 	
@@ -266,22 +358,38 @@ public class BroberryExcelMapping implements IExcelParser{
 	
 					break;
 				case 29: //FIT LENG
-					//String description = cell.getStringCellValue();
-
+					 AddionnalInfo7=cell.getStringCellValue();
+					if(!AddionnalInfo7.contains("Unassigned")){
+						AddionnalInfo7=",Fix length:".concat(AddionnalInfo7);
+				         }
+					 else
+		             {
+						 AddionnalInfo7=""; 
+		             }
+				
 					break;
 				case 30: //RETAIL COPY
 					//String description = cell.getStringCellValue();
 
 					break;
 				case 31: //LINING
-					//String description = cell.getStringCellValue();
-
+				 String AddionnalInfo8=cell.getStringCellValue();
+					if(!AddionnalInfo8.contains("Unassigned")){
+				      AddionnalInfo8=",Lining:".concat(AddionnalInfo8);
+				      }
+				  AdditionalInfo=AdditionalInfo.append(AddionnalInfo1).append(AddionnalInfo2).append(AddionnalInfo3).append(AddionnalInfo4)
+				  .append(AddionnalInfo5).append(AddionnalInfo6).append(AddionnalInfo7).append(AddionnalInfo8);	
+					String FinalAddiotionalInfo=AdditionalInfo.toString();
+                  productExcelObj.setAdditionalProductInfo(FinalAddiotionalInfo);
 					break;
+				
 				}  // end inner while loop
+				///sharvari fields
+				///////////
 					 
 		}
 				productExcelObj.setPriceType("N");
-			
+
 				
 			}catch(Exception e){
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
@@ -292,6 +400,8 @@ public class BroberryExcelMapping implements IExcelParser{
 		if(colorList!=null && !colorList.isEmpty()){
 		productConfigObj.setColors(colorList);
 		}
+	    productConfigObj.setMaterials(listOfMaterial);
+
 			productExcelObj.setProductConfigurations(productConfigObj);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	_LOGGER.info("Product Data : "
@@ -333,6 +443,9 @@ public class BroberryExcelMapping implements IExcelParser{
 	}
 
 	
+
+
+
 
 	public String getProductXid(Row row){
 		Cell xidCell =  row.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
@@ -384,12 +497,19 @@ public class BroberryExcelMapping implements IExcelParser{
 		return broberryProductAttributeParser;
 	}
 
-
-
 	public void setBroberryProductAttributeParser(
 			BroberryProductAttributeParser broberryProductAttributeParser) {
 		this.broberryProductAttributeParser = broberryProductAttributeParser;
 	}
-	
+	public BroberryProductMaterialParser getBroberryMaterialParserObj() {
+		return broberryMaterialParserObj;
+	}
+
+
+	public void setBroberryMaterialParserObj(
+			BroberryProductMaterialParser broberryMaterialParserObj) {
+		this.broberryMaterialParserObj = broberryMaterialParserObj;
+	}
+
 	
 }

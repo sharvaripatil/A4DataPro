@@ -63,7 +63,7 @@ public class FileUpload {
 			return ApplicationConstants.CONST_STRING_HOME;
 		}
 		try  {
-			accessToken = loginService.doLogin(fileBean.getAsiNumber(),
+			/*accessToken = loginService.doLogin(fileBean.getAsiNumber(),
 					fileBean.getUserName(), fileBean.getPassword());
 			if (accessToken != null) {
 				if (ApplicationConstants.CONST_STRING_UN_AUTHORIZED.equals(accessToken)) {
@@ -74,7 +74,7 @@ public class FileUpload {
 				}
 			} else {
 				return ApplicationConstants.CONST_STRING_ERROR_PAGE;
-			}
+			}*/
 			Workbook workbook = convertCsvToExcel.getWorkBook(fileBean.getFile());
 			if(workbook == null){
 				return ApplicationConstants.CONST_STRING_ERROR_PAGE;
