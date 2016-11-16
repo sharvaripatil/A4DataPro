@@ -346,9 +346,17 @@
 		<property name="postServiceImpl" ref="postService"></property>
 		<property name="productDaoObj" ref="productDao" />
 		<property name="broberryProductAttributeParser" ref="broberryProductAttributeParserId" /> 
+		<property name="broberryMaterialParserObj" ref="broberryMaterialParserObjId" /> 
 	</bean>
 	<bean id="broberryProductAttributeParserId" name="broberryProductAttributeParser"
 		class="com.a4tech.product.broberry.parser.BroberryProductAttributeParser" autowire="byName">
+	</bean>
+	<bean id="broberryMaterialParserObjId" name="broberryMaterialParserObj"
+		class="com.a4tech.product.broberry.parser.BroberryProductMaterialParser" autowire="byName">
+		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+		<property name="lookupRestServiceObj" ref="lookupRestService"/>
+		
+		
 	</bean>
     <!--supplier 42057 configuration end  --> 
      

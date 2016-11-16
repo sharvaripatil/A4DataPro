@@ -136,6 +136,7 @@ public class ApplicationConstants {
 	
 	public static final String	CONST_STRING_SHIPPING_NUMBER_UNIT_CASE   = "per Case";
 	public static final String	CONST_STRING_BIG_SPACE   				= "   ";
+	public static final String	CONST_STRING_UNCLASSIFIED_OTHER 		="UNCLASSIFIED/OTHER";
 	 public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
 	 
 	
