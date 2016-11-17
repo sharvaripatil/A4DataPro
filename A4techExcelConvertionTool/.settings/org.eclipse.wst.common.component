@@ -16,6 +16,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/32125"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/91284NewPro"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/44620Apparel"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/42057Broberry"/>
         <property name="java-output-path" value="/A4DataPro/target/classes"/>
         <property name="context-root" value="A4DataPro"/>
     </wb-module>
