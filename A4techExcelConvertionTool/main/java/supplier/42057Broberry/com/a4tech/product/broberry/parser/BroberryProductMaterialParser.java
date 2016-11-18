@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 import org.springframework.util.StringUtils;
 
 import com.a4tech.lookup.service.LookupServiceData;
@@ -167,9 +168,4 @@ public class BroberryProductMaterialParser {
 		this.lookupRestServiceObj = lookupRestServiceObj;
 	}
 
-	
-
-	
-	
-	
 }

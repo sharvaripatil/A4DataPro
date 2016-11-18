@@ -25,6 +25,8 @@ import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Material;
+import com.a4tech.product.model.Price;
+import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -38,6 +40,7 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.a4tech.v2.core.model.ProductSKUConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.a4tech.product.model.ProductNumber;
 
 public class BroberryExcelMapping implements IExcelParser{
 	
@@ -50,6 +53,7 @@ public class BroberryExcelMapping implements IExcelParser{
 	private BroberryProductAttributeParser broberryProductAttributeParser;
 	private BroberryProductMaterialParser broberryMaterialParserObj;
 	private BroberrySkuParser broberrySkuParserObj;
+
 
 	
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
@@ -74,7 +78,7 @@ public class BroberryExcelMapping implements IExcelParser{
 		String finalResult = null;
 		Set<String>  productXids = new HashSet<String>();
 		  Product productExcelObj = new Product();   
-		  Product existingApiProduct = new Product();
+		  Product existingApiProduct = null;
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		  Set<String> listOfColors = new HashSet<>();
@@ -86,6 +90,9 @@ public class BroberryExcelMapping implements IExcelParser{
 		  String upc_no;
 		  Set<String> colorSet = new HashSet<String>(); 
 		  List<Color> colorList = new ArrayList<Color>();
+		  HashMap<String, String>  productNumberMap=new HashMap<String, String>();
+		  List<ProductNumber> pnumberList = new ArrayList<ProductNumber>();
+		  String productNumber=null;
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -124,10 +131,18 @@ public class BroberryExcelMapping implements IExcelParser{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							colorList=broberryProductAttributeParser.getColorCriteria(colorSet);
-								if(colorList!=null && !colorList.isEmpty()){
+								if(!StringUtils.isEmpty(colorList)){
 								productConfigObj.setColors(colorList);
 								}
-								
+								pnumberList=broberryProductAttributeParser.getProductNumer(productNumberMap);
+								if(!StringUtils.isEmpty(pnumberList)){
+									productExcelObj.setProductNumbers(pnumberList);
+									}
+								if(!StringUtils.isEmpty(priceGrids)){//need to check whether L or N
+									productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_NET);
+									priceGrids=getPriceGrids(productName);
+									}
+								 	productExcelObj.setPriceGrids(priceGrids);
 								 	productExcelObj.setProductConfigurations(productConfigObj);
 								 	_LOGGER.info("Product Data : "
 											+ mapperObj.writeValueAsString(productExcelObj));
@@ -145,10 +160,14 @@ public class BroberryExcelMapping implements IExcelParser{
 								priceGrids = new ArrayList<PriceGrid>();
 								productConfigObj = new ProductConfigurations();
 								listOfColors = new HashSet<>();
+								
 								repeatRows.clear();
 								colorSet=new HashSet<String>(); 
 								colorList = new ArrayList<Color>();
 								AdditionalInfo=new StringBuilder();
+								productNumberMap=new HashMap<String, String>();
+								pnumberList=new ArrayList<ProductNumber>();
+								listOfMaterial=new ArrayList<Material>();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -182,6 +201,7 @@ public class BroberryExcelMapping implements IExcelParser{
 			
 				case 2:// Material
 					
+				  productNumber=CommonUtility.getCellValueStrinOrInt(cell);
 					  break;
 				case 3://PRODUCT NAME
 					
@@ -194,6 +214,9 @@ public class BroberryExcelMapping implements IExcelParser{
 					String	colorValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(colorValue)){
 						colorSet.add(colorValue);
+					}
+					if(!StringUtils.isEmpty(colorValue)&&!StringUtils.isEmpty(productNumber)){
+						productNumberMap.put(productNumber, colorValue);
 					}
 					break;
 					
@@ -389,18 +412,26 @@ public class BroberryExcelMapping implements IExcelParser{
 		}
 		workbook.close();
 		productExcelObj.setAdditionalProductInfo(AdditionalInfo.toString());
+			if(!StringUtils.isEmpty(colorSet)){
 		colorList=broberryProductAttributeParser.getColorCriteria(colorSet);
-		if(colorList!=null && !colorList.isEmpty()){
 		productConfigObj.setColors(colorList);
 		}
-		
+		if(!StringUtils.isEmpty(productNumberMap)){
+		pnumberList=broberryProductAttributeParser.getProductNumer(productNumberMap);
+		productExcelObj.setProductNumbers(pnumberList);
+		}
+		if(!StringUtils.isEmpty(priceGrids)){////need to check whether L or N
+			productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_NET);
+			priceGrids=getPriceGrids(productName);
+			}
+		 	productExcelObj.setPriceGrids(priceGrids);
+		 
 		 skuObj=broberrySkuParserObj.getProductRelationSkus(skuSet);
 		 if(skuObj!=null){
 		 productConfigObj.setColors(colorList);
 		 }
 
 			productExcelObj.setProductConfigurations(productConfigObj);
-		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
@@ -408,8 +439,6 @@ public class BroberryExcelMapping implements IExcelParser{
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
 		 		numOfProductsFailure.add("0");
-		 	}else{
-		 		
 		 	}
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
@@ -423,6 +452,8 @@ public class BroberryExcelMapping implements IExcelParser{
 		colorSet=new HashSet<String>(); 
 		colorList = new ArrayList<Color>();
 		AdditionalInfo=new StringBuilder();
+		productNumberMap=new HashMap<String, String>();
+		pnumberList=new ArrayList<ProductNumber>();
 		
 		return finalResult;
 		}catch(Exception e){
@@ -443,9 +474,6 @@ public class BroberryExcelMapping implements IExcelParser{
 
 	
 
-
-
-
 	public String getProductXid(Row row){
 		Cell xidCell =  row.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
 		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
@@ -463,6 +491,31 @@ public class BroberryExcelMapping implements IExcelParser{
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
+	
+	public static List<PriceGrid> getPriceGrids(String basePriceName) 
+	{
+		
+		List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
+		try{
+			Integer sequence = 1;
+			List<PriceConfiguration> configuration = null;
+			PriceGrid priceGrid = new PriceGrid();
+			priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
+			priceGrid.setDescription(basePriceName);
+			priceGrid.setPriceIncludes(ApplicationConstants.CONST_STRING_EMPTY);
+			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
+			priceGrid.setIsBasePrice(true);
+			priceGrid.setSequence(sequence);
+			List<Price>	listOfPrice = new ArrayList<Price>();
+			priceGrid.setPrices(listOfPrice);
+			priceGrid.setPriceConfigurations(configuration);
+			newPriceGrid.add(priceGrid);
+	}catch(Exception e){
+		_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
+	}
+		return newPriceGrid;
+}
+	
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}
@@ -495,6 +548,8 @@ public class BroberryExcelMapping implements IExcelParser{
 	public BroberryProductAttributeParser getBroberryProductAttributeParser() {
 		return broberryProductAttributeParser;
 	}
+
+
 
 	public void setBroberryProductAttributeParser(
 			BroberryProductAttributeParser broberryProductAttributeParser) {
