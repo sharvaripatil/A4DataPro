@@ -13,9 +13,13 @@ import org.springframework.util.StringUtils;
 import com.a4tech.product.broberry.mapping.BroberryExcelMapping;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Value;
+import com.a4tech.product.model.Values;
+import com.a4tech.product.model.Volume;
 import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.ProductNumber;
 import com.a4tech.util.ApplicationConstants;
+
 
 public class BroberryProductAttributeParser {
 	private static final Logger _LOGGER = Logger.getLogger(BroberryProductAttributeParser.class);
@@ -111,8 +115,26 @@ public class BroberryProductAttributeParser {
 	}
 
 
+public Volume getItemWeight(String FabricWT)
+{
+	  Volume itemWeight=new Volume();
+	  List<Values> valuesList = new ArrayList<Values>(); 
+	  List<Value> valueList = new ArrayList<Value>(); 
 
+	  Value valueObj=new Value(); 
+	  Values valuesObj=new Values(); 
 
-
+	  FabricWT=FabricWT.replaceAll("Ounces","");
+	  valueObj.setValue(FabricWT.trim());
+	  valueObj.setUnit("Oz");
+	  valueList.add(valueObj);
+	  
+	  valuesObj.setValue(valueList);
+	  valuesList.add(valuesObj);
+	  
+	  itemWeight.setValues(valuesList); 
+	return itemWeight;
+	
+}
 	
 }
