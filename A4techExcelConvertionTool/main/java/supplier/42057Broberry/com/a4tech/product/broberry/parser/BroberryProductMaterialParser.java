@@ -3,7 +3,10 @@ package com.a4tech.product.broberry.parser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+
 import org.springframework.util.StringUtils;
+
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.model.BlendMaterial;
@@ -136,10 +139,8 @@ public class BroberryProductMaterialParser {
 	
 		
 	
-	 public List<Material> getMaterialList2(String materialValue2) {
+	 public List<Material> getMaterialList2(String materialValue2,List<Material> listOfMaterial){
 		Material materialObj = new Material();
-		List<Material> listOfMaterial = new ArrayList<>();
-      //  boolean isExist= false;
         boolean isExist= lookupRestServiceObj.getMaterialsData().contains(materialValue2);
 		if(isExist==true){
 			materialObj.setName(materialValue2);
@@ -167,7 +168,4 @@ public class BroberryProductMaterialParser {
 		this.lookupRestServiceObj = lookupRestServiceObj;
 	}
 
-	
-	
-	
 }
