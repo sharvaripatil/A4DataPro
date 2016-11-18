@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import com.a4tech.product.model.Price;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -17,6 +18,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.broberry.parser.BroberryProductAttributeParser;
 import com.a4tech.product.broberry.parser.BroberryProductMaterialParser;
@@ -25,7 +27,6 @@ import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Material;
-import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
@@ -38,9 +39,9 @@ import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
-import com.a4tech.v2.core.model.ProductSKUConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.a4tech.product.model.ProductNumber;
+import com.a4tech.product.model.Size;
 
 public class BroberryExcelMapping implements IExcelParser{
 	
@@ -61,8 +62,6 @@ public class BroberryExcelMapping implements IExcelParser{
 		StringBuilder FinalKeyword = new StringBuilder();
 		StringBuilder AdditionalInfo = new StringBuilder();
 		String AddionnalInfo1=null;
-
-
 		List<Material> listOfMaterial =new ArrayList<Material>();
 		List<String> productKeywords = new ArrayList<String>();
 		List<String> listOfCategories = new ArrayList<String>();
@@ -93,6 +92,7 @@ public class BroberryExcelMapping implements IExcelParser{
 		  HashMap<String, String>  productNumberMap=new HashMap<String, String>();
 		  List<ProductNumber> pnumberList = new ArrayList<ProductNumber>();
 		  String productNumber=null;
+		  HashSet<String> sizeValuesSet = new HashSet<>();
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -138,8 +138,11 @@ public class BroberryExcelMapping implements IExcelParser{
 								if(!StringUtils.isEmpty(pnumberList)){
 									productExcelObj.setProductNumbers(pnumberList);
 									}
-								if(!StringUtils.isEmpty(priceGrids)){//need to check whether L or N
-									productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_NET);
+								if(!StringUtils.isEmpty(sizeValuesSet)){
+								productConfigObj.setSizes(broberryProductAttributeParser.getProductSize(new ArrayList<String>(sizeValuesSet)));
+								}
+								if(!StringUtils.isEmpty(priceGrids)){
+									productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
 									priceGrids=getPriceGrids(productName);
 									}
 								 	productExcelObj.setPriceGrids(priceGrids);
@@ -168,6 +171,8 @@ public class BroberryExcelMapping implements IExcelParser{
 								productNumberMap=new HashMap<String, String>();
 								pnumberList=new ArrayList<ProductNumber>();
 								listOfMaterial=new ArrayList<Material>();
+								sizeValuesSet = new HashSet<>();
+								ProductDataStore.clearSizesBrobery();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -200,7 +205,6 @@ public class BroberryExcelMapping implements IExcelParser{
 						break;
 			
 				case 2:// Material
-					
 				  productNumber=CommonUtility.getCellValueStrinOrInt(cell);
 					  break;
 				case 3://PRODUCT NAME
@@ -221,10 +225,18 @@ public class BroberryExcelMapping implements IExcelParser{
 					break;
 					
 				case 6: //  DIMENSION
+					dimension=CommonUtility.getCellValueStrinOrInt(cell);
+					if(StringUtils.isEmpty(dimension)){ 
+						dimension=ApplicationConstants.CONST_WORD_EMPTY;
+					}
 					break;
 					
 				case 7://SIZES
-					//
+					size=CommonUtility.getCellValueStrinOrInt(cell);
+					if(StringUtils.isEmpty(size)){
+						size=ApplicationConstants.CONST_WORD_EMPTY;
+					}
+					sizeValuesSet.add(dimension+ApplicationConstants.CONST_CHAR_SMALL_X+size);
 					break;
 					
 				case 8: // UPC NO
@@ -402,10 +414,7 @@ public class BroberryExcelMapping implements IExcelParser{
 				///sharvari fields
 				///////////
 					 
-		}
-				productExcelObj.setPriceType("N");
-
-				
+			}		
 			}catch(Exception e){
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
 		}
@@ -420,8 +429,13 @@ public class BroberryExcelMapping implements IExcelParser{
 		pnumberList=broberryProductAttributeParser.getProductNumer(productNumberMap);
 		productExcelObj.setProductNumbers(pnumberList);
 		}
+		
+		// productConfigObj.setMaterials(listOfMaterial);
+		if(!StringUtils.isEmpty(sizeValuesSet)){
+		productConfigObj.setSizes(broberryProductAttributeParser.getProductSize(new ArrayList<String>(sizeValuesSet)));
+		}
 		if(!StringUtils.isEmpty(priceGrids)){////need to check whether L or N
-			productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_NET);
+			productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
 			priceGrids=getPriceGrids(productName);
 			}
 		 	productExcelObj.setPriceGrids(priceGrids);
@@ -447,14 +461,15 @@ public class BroberryExcelMapping implements IExcelParser{
 		priceGrids = new ArrayList<PriceGrid>();
 		productConfigObj = new ProductConfigurations();
 		listOfColors = new HashSet<>();
-		listOfMaterial=new ArrayList<Material>();
 		repeatRows.clear();
 		colorSet=new HashSet<String>(); 
 		colorList = new ArrayList<Color>();
 		AdditionalInfo=new StringBuilder();
 		productNumberMap=new HashMap<String, String>();
 		pnumberList=new ArrayList<ProductNumber>();
-		
+		listOfMaterial=new ArrayList<Material>();
+		sizeValuesSet = new HashSet<>();
+		ProductDataStore.clearSizesBrobery();
 		return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet " +e.getMessage());
