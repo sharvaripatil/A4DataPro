@@ -347,8 +347,11 @@
 		<property name="productDaoObj" ref="productDao" />
 		<property name="broberryProductAttributeParser" ref="broberryProductAttributeParserId" /> 
 		<property name="broberryMaterialParserObj" ref="broberryMaterialParserObjId" /> 
+		<property name="broberrySkuParserObj" ref="broberrySkuParserObj" /> 
 		
 	</bean>
+	
+	
 	<bean id="broberryProductAttributeParserId" name="broberryProductAttributeParser"
 		class="com.a4tech.product.broberry.parser.BroberryProductAttributeParser" autowire="byName">
 	</bean>
@@ -356,8 +359,10 @@
 		class="com.a4tech.product.broberry.parser.BroberryProductMaterialParser" autowire="byName">
 		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
 		<property name="lookupRestServiceObj" ref="lookupRestService"/>
-		
-		
+	</bean>
+	
+	<bean id="broberrySkuParserObjId" name="broberrySkuParserObj"
+		class="com.a4tech.product.broberry.parser.BroberrySkuParser" autowire="byName">
 	</bean>
     <!--supplier 42057 configuration end  --> 
      

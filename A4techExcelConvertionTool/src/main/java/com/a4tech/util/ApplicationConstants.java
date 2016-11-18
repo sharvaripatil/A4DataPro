@@ -133,6 +133,7 @@ public class ApplicationConstants {
 	public static final String  CONST_STRING_IMPRINT_CODE             = "IMMD";
 	public static final String  CONST_STRING_NEWLINECHARS             ="(\r\n|\n)";	
 	public static final String  CONST_STRING_NEWLINE          		  ="\n";	
+	public static final String  CONST_STRING_UNASSIGNED         	  ="Unassigned";	
 	
 	public static final String	CONST_STRING_SHIPPING_NUMBER_UNIT_CASE   = "per Case";
 	public static final String	CONST_STRING_BIG_SPACE   				= "   ";
