@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import com.a4tech.product.model.Price;
 
 import org.apache.log4j.Logger;
@@ -16,6 +17,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.dataStore.ProductDataStore;
@@ -24,9 +26,13 @@ import com.a4tech.product.broberry.parser.BroberryProductAttributeParser;
 import com.a4tech.product.broberry.parser.BroberryProductMaterialParser;
 import com.a4tech.product.broberry.parser.BroberrySkuParser;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.Availability;
+import com.a4tech.product.model.AvailableVariations;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Material;
+import com.a4tech.product.model.Option;
+import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
@@ -55,6 +61,9 @@ public class BroberryExcelMapping implements IExcelParser{
 	private BroberryProductMaterialParser broberryMaterialParserObj;
 	private BroberrySkuParser broberrySkuParserObj;
 
+	public enum OPTION_SIZES {
+		REG,SHT,TLL,XTL
+	};
 
 	
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
@@ -79,7 +88,7 @@ public class BroberryExcelMapping implements IExcelParser{
 		  Product productExcelObj = new Product();   
 		  Product existingApiProduct = null;
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
-		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
+		  List<PriceGrid> priceGrids = null;
 		  Set<String> listOfColors = new HashSet<>();
 		  String colorCustomerOderCode ="";
 		  List<String> repeatRows = new ArrayList<>();
@@ -93,6 +102,8 @@ public class BroberryExcelMapping implements IExcelParser{
 		  List<ProductNumber> pnumberList = new ArrayList<ProductNumber>();
 		  String productNumber=null;
 		  HashSet<String> sizeValuesSet = new HashSet<>();
+		  HashSet<String> productOptionSet = new HashSet<String>(); // This Set used for product Availability
+		  List<Availability> listOfAvailablity=new ArrayList<Availability>();
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -131,17 +142,19 @@ public class BroberryExcelMapping implements IExcelParser{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							colorList=broberryProductAttributeParser.getColorCriteria(colorSet);
-								if(!StringUtils.isEmpty(colorList)){
+								
 								productConfigObj.setColors(colorList);
-								}
 								pnumberList=broberryProductAttributeParser.getProductNumer(productNumberMap);
-								if(!StringUtils.isEmpty(pnumberList)){
-									productExcelObj.setProductNumbers(pnumberList);
-									}
-								if(!StringUtils.isEmpty(sizeValuesSet)){
+								productExcelObj.setProductNumbers(pnumberList);
 								productConfigObj.setSizes(broberryProductAttributeParser.getProductSize(new ArrayList<String>(sizeValuesSet)));
+								if(!CollectionUtils.isEmpty(productOptionSet)){
+								productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
+								}	
+								if(!CollectionUtils.isEmpty(productOptionSet)){
+							   listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(ProductDataStore.getSizesBrobery(),productOptionSet);
+							 	productExcelObj.setAvailability(listOfAvailablity);
 								}
-								if(!StringUtils.isEmpty(priceGrids)){
+								if(CollectionUtils.isEmpty(priceGrids)){
 									productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
 									priceGrids=getPriceGrids(productName);
 									}
@@ -172,6 +185,10 @@ public class BroberryExcelMapping implements IExcelParser{
 								pnumberList=new ArrayList<ProductNumber>();
 								listOfMaterial=new ArrayList<Material>();
 								sizeValuesSet = new HashSet<>();
+								listOfAvailablity=new ArrayList<Availability>();
+								listOfCategories=new ArrayList<String>();
+								FinalKeyword=new StringBuilder();
+								productOptionSet=new HashSet<String>();
 								ProductDataStore.clearSizesBrobery();
 						 }
 						    if(!productXids.contains(xid)){
@@ -228,6 +245,10 @@ public class BroberryExcelMapping implements IExcelParser{
 					dimension=CommonUtility.getCellValueStrinOrInt(cell);
 					if(StringUtils.isEmpty(dimension)){ 
 						dimension=ApplicationConstants.CONST_WORD_EMPTY;
+					}
+					final String valueop=dimension;
+					if(Arrays.stream(OPTION_SIZES.values()).anyMatch((optionName) -> optionName.name().equals(valueop))){
+						productOptionSet.add(ApplicationConstants.OPTION_MAP.get(dimension));
 					}
 					break;
 					
@@ -295,7 +316,7 @@ public class BroberryExcelMapping implements IExcelParser{
 					String MaterialValue2=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(MaterialValue2)){
 				    listOfMaterial = broberryMaterialParserObj.getMaterialList2(MaterialValue2,listOfMaterial);
-				     productConfigObj.setMaterials(listOfMaterial);
+				     //productConfigObj.setMaterials(listOfMaterial);
 
 					}
 			
@@ -337,8 +358,8 @@ public class BroberryExcelMapping implements IExcelParser{
 					for (String string : productKeywordArr) {
 						productKeywords.add(string);
 					}
-					productExcelObj.setProductKeywords(productKeywords);
-					
+					//productExcelObj.setProductKeywords(productKeywords);
+					//umcomment this
 					break;
 				case 22: //SEASONALITY4
 					AddionnalInfo1=cell.getStringCellValue();
@@ -377,7 +398,13 @@ public class BroberryExcelMapping implements IExcelParser{
 				case 26: //CONS COPY
 	
 					String description = cell.getStringCellValue();
-					productExcelObj.setDescription(description);
+				     int length=description.length();
+				      if(length>800){
+				      String strTemp=description.substring(0, 800);
+				      int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
+				      description=(String) strTemp.subSequence(0, lenTemp);
+				     }
+				     productExcelObj.setDescription(description);
 					
 					break;
 				case 27: //SEARCH KEY
@@ -421,31 +448,29 @@ public class BroberryExcelMapping implements IExcelParser{
 		}
 		workbook.close();
 		productExcelObj.setAdditionalProductInfo(AdditionalInfo.toString());
-			if(!StringUtils.isEmpty(colorSet)){
+	
 		colorList=broberryProductAttributeParser.getColorCriteria(colorSet);
 		productConfigObj.setColors(colorList);
-		}
-		if(!StringUtils.isEmpty(productNumberMap)){
+		
+		
 		pnumberList=broberryProductAttributeParser.getProductNumer(productNumberMap);
 		productExcelObj.setProductNumbers(pnumberList);
-		}
-		
-		// productConfigObj.setMaterials(listOfMaterial);
-		if(!StringUtils.isEmpty(sizeValuesSet)){
 		productConfigObj.setSizes(broberryProductAttributeParser.getProductSize(new ArrayList<String>(sizeValuesSet)));
+		if(!CollectionUtils.isEmpty(productOptionSet)){
+		productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
 		}
-		if(!StringUtils.isEmpty(priceGrids)){////need to check whether L or N
+		if(!CollectionUtils.isEmpty(productOptionSet)){
+		listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(ProductDataStore.getSizesBrobery(),productOptionSet);
+		productExcelObj.setAvailability(listOfAvailablity);
+		}
+		if(CollectionUtils.isEmpty(priceGrids)){
 			productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
 			priceGrids=getPriceGrids(productName);
 			}
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 
 		 skuObj=broberrySkuParserObj.getProductRelationSkus(skuSet);
-		 if(skuObj!=null){
-		 productConfigObj.setColors(colorList);
-		 }
-
-			productExcelObj.setProductConfigurations(productConfigObj);
+		 productExcelObj.setProductConfigurations(productConfigObj);
 		 	_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
@@ -469,6 +494,10 @@ public class BroberryExcelMapping implements IExcelParser{
 		pnumberList=new ArrayList<ProductNumber>();
 		listOfMaterial=new ArrayList<Material>();
 		sizeValuesSet = new HashSet<>();
+		listOfAvailablity=new ArrayList<Availability>();
+		productOptionSet=new HashSet<String>();
+		listOfCategories=new ArrayList<String>();
+		FinalKeyword=new StringBuilder();
 		ProductDataStore.clearSizesBrobery();
 		return finalResult;
 		}catch(Exception e){
@@ -588,5 +617,6 @@ public class BroberryExcelMapping implements IExcelParser{
 	public void setBroberrySkuParserObj(BroberrySkuParser broberrySkuParserObj) {
 		this.broberrySkuParserObj = broberrySkuParserObj;
 	}
-
+	
+	
 }

@@ -13,8 +13,13 @@ import org.springframework.util.StringUtils;
 import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.product.broberry.mapping.BroberryExcelMapping;
 import com.a4tech.product.model.Apparel;
+import com.a4tech.product.model.Availability;
+import com.a4tech.product.model.AvailableVariations;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.Option;
+import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
@@ -52,13 +57,12 @@ public class BroberryProductAttributeParser {
 				} else {
 					//245-Mid Brown/Navy
 					String colorArray[] = value.split(ApplicationConstants.CONST_DELIMITER_FSLASH);
-					String alias = value.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH,ApplicationConstants.CONST_DELIMITER_HYPHEN);
 					String combo_color_1=ApplicationConstants.COLOR_MAP.get(colorArray[0].trim());
 					if(StringUtils.isEmpty(combo_color_1)){
 						combo_color_1=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
 					}
 					colorObj.setName(combo_color_1);
-					colorObj.setAlias(alias);
+					colorObj.setAlias(value);
 					
 					Combo comboObj = new Combo();
 					String combo_color_2=ApplicationConstants.COLOR_MAP.get(colorArray[1].trim());
@@ -141,10 +145,11 @@ public Volume getItemWeight(String FabricWT)
 }
 
 public Size getProductSize(List<String> sizeValues){
-		
 		Size size = new Size();
 		Apparel appareal = new Apparel();
 		List<Value> values=new ArrayList<>();
+		Dimension dimensionObj = new Dimension();
+		List<Values> valuesList = new ArrayList<Values>();
 		Value valueObj=new Value();
 		int count=1;
 		String sizeArr[]={};
@@ -152,32 +157,129 @@ public Size getProductSize(List<String> sizeValues){
 		for (String string : sizeValues) {
 			string=ApplicationConstants.SIZE_MAP.get(string);
 			valueObj=new Value();
+			if(string.contains("Dimension")){
+				sizeArr=string.split(ApplicationConstants.CONST_SIZE_DELIMITER);
+				//Apparel-Waist/Inseam
+				string=sizeArr[1];
+					String DimenArr[] = string.split(ApplicationConstants.CONST_DELIMITER_SEMICOLON);
+					List<Value> valuelist=new ArrayList<Value>();
+					Values valuesObj  = new Values();
+					Value valObj;
+					int valCount=1;
+					for (String value : DimenArr) {
+					String[] DimenArr1 = value.split(ApplicationConstants.CONST_DELIMITER_COLON);
+					valObj = new Value();
+						for (String value1 : DimenArr1) {
+							if(valCount==1){
+							valObj.setAttribute(value1);
+							}else if(valCount==2){
+							valObj.setValue(value1);
+							}else if(valCount==3){
+							valObj.setUnit(value1);
+							}
+							valCount++;
+						}
+						valuelist.add(valObj);
+						valCount=1;
+					}
+					valuesObj.setValue(valuelist);
+					valuesList.add(valuesObj);
+					dimensionObj.setValues(valuesList);
+					size.setDimension(dimensionObj);
+			}else{
 			if(count==1){
 				sizeArr=string.split(ApplicationConstants.CONST_SIZE_DELIMITER);
-				appareal.setType(sizeArr[0]);
+				//Apparel-Waist/Inseam
+				String tempValue=sizeArr[0];
+				if(tempValue.contains("Pants")){
+					tempValue="Apparel-Waist/Inseam";
+				}else if(tempValue.contains("Numbered")){
+					tempValue="Standard & Numbered";
+				}
+				appareal.setType(tempValue);
 				valueObj.setValue(sizeArr[1]);
 				ProductDataStore.saveSizesBrobery(sizeArr[1]);
-				//existingSizeValues.add(valueObj);
 				values.add(valueObj);
 				
 			}else{
 			sizeArr=string.split(ApplicationConstants.CONST_SIZE_DELIMITER);
 			valueObj.setValue(sizeArr[1]);
 			ProductDataStore.saveSizesBrobery(sizeArr[1]);
-			//existingSizeValues.add(valueObj);
 			values.add(valueObj);
 			}
 			count=0;
+			appareal.setValues(values);
+			size.setApparel(appareal);
+		}
 		}
 		}catch(Exception e){
 			_LOGGER.error("error while processing sizes" +e.getMessage());
 			return new Size();
 		}
-		appareal.setValues(values);
-		size.setApparel(appareal);
 		return size;
 	}
 
+public  List<Option> getOptions(ArrayList<String> optionValues) {
+	List<Option> optionList=new ArrayList<>();
+	Option optionObj=new Option();
+	   try{
+		   List<OptionValue> valuesList=new ArrayList<OptionValue>();
+			 OptionValue optionValueObj=null;
+			  for (String optionDataValue: optionValues) {
+				  optionObj=new Option();
+				  valuesList=new ArrayList<OptionValue>();
+				  optionValueObj=new OptionValue();
+				  optionValueObj.setValue(optionDataValue);
+				  valuesList.add(optionValueObj);
+				  optionObj.setOptionType("Product");
+				  optionObj.setName("Size Choice "+optionDataValue);
+				  optionObj.setValues(valuesList); 
+				  optionObj.setAdditionalInformation("");
+				  optionObj.setCanOnlyOrderOne(false);
+				  optionObj.setRequiredForOrder(true);
+				  optionList.add(optionObj);
+			  }
+			  
+	   }catch(Exception e){
+		   _LOGGER.error("Error while processing Options :"+e.getMessage());          
+	      return new ArrayList<Option>();
+	      
+	     }
+	  return optionList;
+	  
+	 }
 
+public List<Availability> getProductAvailablity(Set<String> parentList,Set<String> childList){
+	List<Availability> listOfAvailablity = new ArrayList<>();
+	try{
+	Availability  availabilityObj = new Availability();
+	AvailableVariations  AvailableVariObj = null;
+	List<AvailableVariations> listOfVariAvail = new ArrayList<>();
+	List<Object> listOfParent = null;
+	List<Object> listOfChild = null;
+	for (String ParentValue : parentList) { 
+		 for (String childValue : childList) {
+			 AvailableVariObj = new AvailableVariations();
+			 listOfParent = new ArrayList<>();
+			 listOfChild = new ArrayList<>();
+			 listOfParent.add(ParentValue);
+			 listOfChild.add(childValue);
+			 AvailableVariObj.setParentValue(listOfParent);
+			 AvailableVariObj.setChildValue(listOfChild);
+			 listOfVariAvail.add(AvailableVariObj);
+		}
+	}
+	availabilityObj.setAvailableVariations(listOfVariAvail);
+	availabilityObj.setParentCriteria(ApplicationConstants.CONST_STRING_SIZE);
+	availabilityObj.setChildCriteria("Product Option");
+	listOfAvailablity.add(availabilityObj);
+	ProductDataStore.clearSizesBrobery();
+	}catch(Exception e){
+	   _LOGGER.error("Error while processing Options :"+e.getMessage());          
+   return new ArrayList<Availability>();
+   
+	}
+	return listOfAvailablity;
+	}
 	
 }
