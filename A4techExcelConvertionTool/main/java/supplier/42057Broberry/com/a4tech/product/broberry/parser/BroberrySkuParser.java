@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.junit.internal.runners.model.EachTestNotifier;
 
 import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.ProductSKUConfiguration;
@@ -15,18 +16,16 @@ public class BroberrySkuParser {
 	private static final Logger _LOGGER = Logger.getLogger(BroberrySkuParser.class);
 
 	
-	public ProductSkus getProductRelationSkus(ProductSkus existingProductSku,String sizeValue,String colorValue ,String skuValue) {
+	public List<ProductSkus> getProductRelationSkus(List<ProductSkus> existingProductSkuList,String sizeValue,String colorValue ,String skuValue) {
 		
 		ProductSkus skuObj=new ProductSkus();
-		List<ProductSKUConfiguration> ProductSkusList =new ArrayList<ProductSKUConfiguration>();
+		List<ProductSKUConfiguration> skusConfig =new ArrayList<ProductSKUConfiguration>();
 		ProductSKUConfiguration productskuconfObj=new ProductSKUConfiguration();
 		ProductSKUConfiguration productskuconfObj1=new ProductSKUConfiguration();
-
+		
 		try {
 		
-		skuObj.setConfigurations(ProductSkusList);
-		Inventory InvenObj=new Inventory();
-		
+		Inventory InvenObj=new Inventory(); 
 		if(sizeValue.contains("_")){
 			if(sizeValue.contains("Dimension")){
 				productskuconfObj1.setCriteria("SIZE - Dimension");
@@ -39,27 +38,29 @@ public class BroberrySkuParser {
 			}
 			String sizeValue1[]=sizeValue.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			productskuconfObj1.setValue(Arrays.asList(sizeValue1[1]));
-		    ProductSkusList.add(productskuconfObj1);
+			skusConfig.add(productskuconfObj1);
 		}
 			productskuconfObj.setCriteria("Product Color");
-			productskuconfObj.setValue(Arrays.asList(colorValue));
-		    ProductSkusList.add(productskuconfObj);
+			String colorValue1[]=colorValue.split(",");
+			productskuconfObj.setValue(Arrays.asList(colorValue1[0]));
+			//productskuconfObj.setValue(Arrays.asList(colorValue1[0]));
+			skusConfig.add(productskuconfObj);
 		
 		
 		InvenObj.setInventoryLink("");
 		InvenObj.setInventoryQuantity("");
 		InvenObj.setInventoryStatus("");
-		existingProductSku.setConfigurations(ProductSkusList);
-		existingProductSku.setSKU(skuValue);
-		existingProductSku.setInventory(InvenObj);
+		skuObj.setConfigurations(skusConfig);
+		skuObj.setSKU(skuValue);
+		skuObj.setInventory(InvenObj);
 		  
-		
+		existingProductSkuList.add(skuObj); 
 		
 	} catch (Exception e) {
 		_LOGGER.error("Error while processing sku :" + e.getMessage());
 	
 	}
 	_LOGGER.info("SKU processed");
-	return existingProductSku;
+	return existingProductSkuList;
 	}
 }	

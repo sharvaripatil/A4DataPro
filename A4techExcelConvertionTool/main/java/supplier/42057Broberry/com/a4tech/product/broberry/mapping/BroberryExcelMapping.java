@@ -74,9 +74,8 @@ public class BroberryExcelMapping implements IExcelParser{
 		List<Material> listOfMaterial =new ArrayList<Material>();
 		List<String> productKeywords = new ArrayList<String>();
 		List<String> listOfCategories = new ArrayList<String>();
-		List<ProductSkus> ProductSkusList = new ArrayList<ProductSkus>();
+		List<ProductSkus> ProductSkusList = new ArrayList<>();
 		Volume itemWeight=new Volume();
-		ProductSkus skuObj= new ProductSkus();
 	
 
 		String productName = null;
@@ -160,11 +159,9 @@ public class BroberryExcelMapping implements IExcelParser{
 							   listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(ProductDataStore.getSizesBrobery(),productOptionSet);
 							 	productExcelObj.setAvailability(listOfAvailablity);
 								}
-								skuObj=broberrySkuParserObj.getProductRelationSkus(skuObj, sizeValue, finalColorValue, productRelationalSku);
-								 if(!StringUtils.isEmpty(ProductSkusList)){
-							    productExcelObj.setProductRelationSkus(ProductSkusList);
-									 }
-								  listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue1);
+								productExcelObj.setProductRelationSkus(ProductSkusList);
+								
+							  listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue1);
 								  listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue2,listOfMaterial);
 								 if(!StringUtils.isEmpty(listOfMaterial)){
 									    productConfigObj.setMaterials(listOfMaterial);
@@ -209,7 +206,7 @@ public class BroberryExcelMapping implements IExcelParser{
 								productOptionSet=new HashSet<String>();
 								listOfMaterial=new ArrayList<Material>();
 								sizeValuesSet = new HashSet<>();
-								ProductSkusList = new ArrayList<ProductSkus>();
+								ProductSkusList = new ArrayList<>();
 						        productKeywords = new ArrayList<String>();
 								ProductDataStore.clearSizesBrobery();
 
@@ -287,8 +284,8 @@ public class BroberryExcelMapping implements IExcelParser{
 					
 				    productRelationalSku = cell.getStringCellValue();
 				    sizeValue=ApplicationConstants.SIZE_MAP.get(dimension+"x"+size);
-				    finalColorValue=ApplicationConstants.COLOR_MAP.get(colorValue);
-				    ProductSkusList.add(skuObj);
+				    finalColorValue=colorValue;
+				    ProductSkusList=broberrySkuParserObj.getProductRelationSkus(ProductSkusList, sizeValue, finalColorValue, productRelationalSku);
 					
 					break;
 					
@@ -480,10 +477,11 @@ public class BroberryExcelMapping implements IExcelParser{
 		listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(ProductDataStore.getSizesBrobery(),productOptionSet);
 		productExcelObj.setAvailability(listOfAvailablity);
 		}
-		if(!StringUtils.isEmpty(ProductSkusList)){
+/*		if(!StringUtils.isEmpty(ProductSkusList)){
 			skuObj=broberrySkuParserObj.getProductRelationSkus(skuObj, sizeValue, finalColorValue, productRelationalSku);
 			productExcelObj.setProductRelationSkus(ProductSkusList);
-		    }
+		    }*/
+		productExcelObj.setProductRelationSkus(ProductSkusList);
 		  if(!StringUtils.isEmpty(listOfMaterial)){
 			listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue1);
 		   listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue2,listOfMaterial);
@@ -527,7 +525,7 @@ public class BroberryExcelMapping implements IExcelParser{
 		listOfCategories=new ArrayList<String>();
 		FinalKeyword=new StringBuilder();
 		ProductDataStore.clearSizesBrobery();
-        ProductSkusList = new ArrayList<ProductSkus>();
+       ProductSkusList = new ArrayList<ProductSkus>();
         AdditionalInfo= new StringBuilder();
 		return finalResult;
 		}catch(Exception e){
@@ -560,7 +558,7 @@ public class BroberryExcelMapping implements IExcelParser{
 	
 	public boolean isRepeateColumn(int columnIndex){
 		
-		if(columnIndex != 1&&columnIndex != 2&&columnIndex != 5 && columnIndex != 6 && columnIndex != 7){
+		if(columnIndex != 1&&columnIndex != 2&&columnIndex != 5 && columnIndex != 6 && columnIndex != 7 && columnIndex != 8){
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
