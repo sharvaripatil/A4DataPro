@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.internal.runners.model.EachTestNotifier;
+import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.ProductSKUConfiguration;
@@ -36,26 +37,26 @@ public class BroberrySkuParser {
 			else if(sizeValue.contains("Standard"))	{
 			    productskuconfObj1.setCriteria("Standard & Numbered");
 			}
+
 			String sizeValue1[]=sizeValue.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			productskuconfObj1.setValue(Arrays.asList(sizeValue1[1]));
 			skusConfig.add(productskuconfObj1);
-		}
+			}
+		
 			productskuconfObj.setCriteria("Product Color");
 			String colorValue1[]=colorValue.split(",");
 			productskuconfObj.setValue(Arrays.asList(colorValue1[0]));
-			//productskuconfObj.setValue(Arrays.asList(colorValue1[0]));
 			skusConfig.add(productskuconfObj);
-		
-		
+	
 		InvenObj.setInventoryLink("");
 		InvenObj.setInventoryQuantity("");
 		InvenObj.setInventoryStatus("");
 		skuObj.setConfigurations(skusConfig);
 		skuObj.setSKU(skuValue);
 		skuObj.setInventory(InvenObj);
-		  
-		existingProductSkuList.add(skuObj); 
 		
+		existingProductSkuList.add(skuObj); 
+			
 	} catch (Exception e) {
 		_LOGGER.error("Error while processing sku :" + e.getMessage());
 	
@@ -63,4 +64,5 @@ public class BroberrySkuParser {
 	_LOGGER.info("SKU processed");
 	return existingProductSkuList;
 	}
+	
 }	
