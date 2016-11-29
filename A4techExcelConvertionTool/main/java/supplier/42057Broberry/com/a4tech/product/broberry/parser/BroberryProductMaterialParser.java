@@ -54,7 +54,7 @@ public class BroberryProductMaterialParser {
 				    		 if(materialValue.contains("%")){
 								  String percentage = materialValue.split("%")[0];
 								  materialObj.setName("BLEND");
-								  materialObj.setAlias(values[0].split("%")[1]);  
+								  materialObj.setAlias(materialValue1); 
 								  blentMaterialObj.setName(CommonUtility.removeCurlyBraces(mtrlType));
 								  blentMaterialObj.setPercentage(percentage);
 								  listOfBlendMaterial.add(blentMaterialObj);
@@ -177,24 +177,28 @@ public class BroberryProductMaterialParser {
 		
 	
 	 public List<Material> getMaterialList(String materialValue2,List<Material> listOfMaterial){
-		Material materialObj = new Material();
-		try{
-        boolean isExist= lookupRestServiceObj.getMaterialsData().contains(materialValue2);
-		if(isExist==true){
-			materialObj.setName(materialValue2);
-		}else{
-			materialObj.setName("Other");
-		}
-		materialObj.setAlias(materialValue2);
-		listOfMaterial.add(materialObj);
-
-	   } catch (Exception e) {
-			_LOGGER.error("Error while Material2 processing :" + e.getMessage());
+			Material materialObj = new Material();
+			 List<String> listOfLookupMaterial = getMaterialType(materialValue2.toUpperCase());
+			//try{
+			//if(!listOfLookupMaterial.isEmpty()){
+			int numOfMaterials = listOfLookupMaterial.size();
+				  if(numOfMaterials == 1){ 
+					  materialObj = getMaterialValue(listOfLookupMaterial.toString(), materialValue2);
+					  listOfMaterial.add(materialObj);
+				  }
+				  else { 	
+					 materialObj = getMaterialValue("Other", materialValue2);
+					listOfMaterial.add(materialObj);
+				  }
+				return listOfMaterial;
+			/* catch (Exception e) {
+			_LOGGER.error("Error while Material1 processing :" + e.getMessage());*/
+			 //	_LOGGER.info("Material1 processed");
+			}
+		 
 		
-		}
-		_LOGGER.info("Material2 processed");
-		return listOfMaterial;
-		}
+			
+		
 
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;

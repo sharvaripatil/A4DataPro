@@ -161,10 +161,10 @@ public class BroberryExcelMapping implements IExcelParser{
 								}
 								productExcelObj.setProductRelationSkus(ProductSkusList);
 								
-							  listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue1);
+							  if(!StringUtils.isEmpty(MaterialValue1) || !StringUtils.isEmpty(MaterialValue2)){
+								  listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue1);
 								  listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue2,listOfMaterial);
-								 if(!StringUtils.isEmpty(listOfMaterial)){
-									    productConfigObj.setMaterials(listOfMaterial);
+								  productConfigObj.setMaterials(listOfMaterial);
 								  }
 								 if(!StringUtils.isEmpty(productKeywords)){
 								productExcelObj.setProductKeywords(productKeywords);
@@ -204,7 +204,6 @@ public class BroberryExcelMapping implements IExcelParser{
 								listOfCategories=new ArrayList<String>();
 								FinalKeyword=new StringBuilder();
 								productOptionSet=new HashSet<String>();
-								listOfMaterial=new ArrayList<Material>();
 								sizeValuesSet = new HashSet<>();
 								ProductSkusList = new ArrayList<>();
 						        productKeywords = new ArrayList<String>();
@@ -285,9 +284,10 @@ public class BroberryExcelMapping implements IExcelParser{
 				    productRelationalSku = cell.getStringCellValue();
 				    sizeValue=ApplicationConstants.SIZE_MAP.get(dimension+"x"+size);
 				    finalColorValue=colorValue;
+					if(!StringUtils.isEmpty(sizeValue) &&!StringUtils.isEmpty(finalColorValue) ){
 				    ProductSkusList=broberrySkuParserObj.getProductRelationSkus(ProductSkusList, sizeValue, finalColorValue, productRelationalSku);
-					
-					break;
+					}
+				    break;
 					
 				case 9: //SUGG RETL
 					
@@ -477,12 +477,12 @@ public class BroberryExcelMapping implements IExcelParser{
 		listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(ProductDataStore.getSizesBrobery(),productOptionSet);
 		productExcelObj.setAvailability(listOfAvailablity);
 		}
-/*		if(!StringUtils.isEmpty(ProductSkusList)){
+     /*  if(!StringUtils.isEmpty(ProductSkusList)){
 			skuObj=broberrySkuParserObj.getProductRelationSkus(skuObj, sizeValue, finalColorValue, productRelationalSku);
 			productExcelObj.setProductRelationSkus(ProductSkusList);
 		    }*/
 		productExcelObj.setProductRelationSkus(ProductSkusList);
-		  if(!StringUtils.isEmpty(listOfMaterial)){
+		  if(!StringUtils.isEmpty(MaterialValue1) || !StringUtils.isEmpty(MaterialValue2)){
 			listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue1);
 		   listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue2,listOfMaterial);
 		    productConfigObj.setMaterials(listOfMaterial);
