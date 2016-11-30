@@ -148,7 +148,8 @@ public class ApplicationConstants {
 	
 	 public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
 	 public static Map<String, String> SIZE_MAP =new HashMap<String, String>();
-	
+	 public static Map<String, String> OPTION_MAP =new HashMap<String, String>();
+	 
 	  public static Map<String, String> SUPPLIER_EMAIL_ID_MAP =new HashMap<String, String>();
 	  public static Map<String, String> SUPPORT_EMAIL_ID_MAP =new HashMap<String, String>();
 	    static {
@@ -1363,6 +1364,10 @@ public class ApplicationConstants {
 	    	SIZE_MAP.put("XTLx10","Standard & Numbered___10");
 	    	SIZE_MAP.put("XTLx12","Standard & Numbered___12");
 	    	SIZE_MAP.put("XXLxEMPTY","Standard & Numbered___2XL");
+	    	OPTION_MAP.put("REG","Regular");
+	    	OPTION_MAP.put("SHT","Short");
+	    	OPTION_MAP.put("TLL","Tall");
+	    	OPTION_MAP.put("XTL","Extra Tall");
 	    }
     
 }
