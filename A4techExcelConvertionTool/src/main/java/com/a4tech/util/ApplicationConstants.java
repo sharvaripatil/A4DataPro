@@ -119,6 +119,9 @@ public class ApplicationConstants {
 	public static final String  SQUARE_BRACKET_CLOSE                    = "]";
 	public static final String  COLOR_NAME_NAVY                         = "Navy";
 	public static final String  COLOR_NAME_NAVY_BLUE                    = "Navy Blue";
+	public static final String  CONST_STRING_LENGTH						= "Length";
+	public static final String  CONST_STRING_WIDTH						= "Width";
+	public static final String  CONST_STRING_HEIGHT						= "Height";
 	
 	
 	public static final String  CONST_STRING_COUNTRY_CODE_CN            = "CN";
@@ -141,6 +144,7 @@ public class ApplicationConstants {
 	public static final String  CONST_WORD_EMPTY						= "EMPTY";
 	public static final String  CONST_CHAR_SMALL_X						= "x";
 	public static final String  CONST_SIZE_DELIMITER					= "___";
+	public static final String  CHARACTERS_NUMBERS_PATTERN				= "[^a-zA-Z0-9\\s+]";
 	
 	 public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
 	 public static Map<String, String> SIZE_MAP =new HashMap<String, String>();

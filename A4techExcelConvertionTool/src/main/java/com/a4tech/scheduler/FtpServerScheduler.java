@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.a4tech.ftp.FtpDownloadFiles;
 
@@ -15,6 +16,7 @@ public class FtpServerScheduler extends QuartzJobBean{
 	@Override
 	protected void executeInternal(JobExecutionContext context)
 			throws JobExecutionException {
+		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 		_LOGGER.info("Enter scheduler class");
 
 		ftpDownloadFiles.getFtpDownloadFiles();

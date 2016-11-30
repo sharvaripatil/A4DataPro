@@ -63,6 +63,8 @@
    		<property name="restTemplate" ref="restTemplate"/>
    		<property name="imprintMethodUrl" value="${imprintMethod.lookup.url}"/>
    		<property name="materialLookupUrl" value="${materials.lookup.url}"/>
+   		<property name="shapesLookupUrl" value="${shapes.lookup.url}"/>
+   		<property name="originLookupUrl" value="${origin.lookup.url}"/>
    </bean>
    <bean id="lookupServiceData" class="com.a4tech.lookup.service.LookupServiceData">
    		<property name="lookupRestService" ref="lookupRestService"/>
@@ -175,6 +177,7 @@
 				<value>com.a4tech.product.dao.entity.ProductEntity</value>
 				<value>com.a4tech.product.dao.entity.ErrorEntity</value>
 				<value>com.a4tech.product.dao.entity.BatchEntity</value>
+				<value>com.a4tech.product.dao.entity.FtpServerFileEntity</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -382,6 +385,21 @@
 		<property name="apparealExcelMapping" ref="apparelMappingId"/>
 		<property name="espTemplateMapping" ref="espTemplateMappingId"/>
 		<property name="broberryExcelMapping" ref="broberryExcelMappingId"/>
+		<property name="bdProdcutsMapping" ref="bestDealMappingId"/>
+     </bean>
+     
+     <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
+     		<property name="productAttributeParser" ref="bestDealAttributeParserId"/>
+     		<property name="postServiceImpl" ref="postService"/>
+     		<property name="productDaoObj" ref="productDao"/>
+     		<property name="priceGridParser" ref="bestDealPriceGridParserId"/>
+     </bean>
+     
+     <bean id="bestDealAttributeParserId" class="com.a4tech.bestDeal.product.parser.BestDealAttributeParser">
+     		<property name="lookupServiceData" ref="lookupServiceData"/>
+     		<property name="priceGridParser" ref="bestDealPriceGridParserId"/>
+     </bean>
+     <bean id="bestDealPriceGridParserId" class="com.a4tech.bestDeal.product.parser.BestDealPriceGridParser">
      </bean>
 </beans>
 

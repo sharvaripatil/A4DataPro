@@ -20,26 +20,29 @@ public class FilesParsing {
 	private static final Logger _LOGGER = Logger.getLogger(FilesParsing.class);
 
 	public void ReadFtpFiles(File[] listOfFiles) {
-		_LOGGER.info("Enter ftp file read parser");
+		//_LOGGER.info("Enter ftp file read parser");
 		for (File file : listOfFiles) {
 			String fileName = file.getName();
-			String asiNumber = "";// get Asi Number from fileName (e.g.
+			String asiNumber = getAsiNumberFile(fileName);
+			//String asiNumber = "";// get Asi Number from fileName (e.g.
 									// 45907_appara.csv)
 			Workbook workBook = null;
 			boolean fileStatus = isFileProcess(fileName, asiNumber);
 			if (fileStatus) {
+				_LOGGER.info(fileName +" :"+ "file already processed");
 				continue;
 			}
-			IExcelParser excelParserImpl = excelFactory.getExcelParserObject(fileName);
+			//IExcelParser excelParserImpl = excelFactory.getExcelParserObject(fileName);
 			 String fileExtension = CommonUtility.getFileExtension(file.getName());
 			 workBook = convertCsvToExcel.getWorkBook(file);
 			 int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
-			 if(workBook != null){
+			/* if(workBook != null){
 				 excelParserImpl.readExcel("", workBook, Integer.parseInt(asiNumber), batchId);
-			 }
+			 }*/
             
 			productDao.updateFtpFileStatus(fileName, asiNumber,
 					ApplicationConstants.CONST_STRING_YES);
+			_LOGGER.info(fileName +":"+ "file parsing completed");
 		}
 
 	}
@@ -53,7 +56,10 @@ public class FilesParsing {
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
-
+    private String getAsiNumberFile(String fileName){
+    	String[] names = fileName.split("_");
+    	return names[0];
+    }
 	public ProductDao getProductDao() {
 		return productDao;
 	}

@@ -1,10 +1,9 @@
 package com.a4tech.controller;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,27 +24,26 @@ public class DownloadFileController {
 	private static Logger _LOGGER = Logger.getLogger(DownloadFileController.class);
 	
 	@RequestMapping(method = RequestMethod.GET)
-	public String gerErrorLogFile(HttpServletRequest request,
-			HttpServletResponse response,Model model) throws ServletException {
+	public void gerErrorLogFile(HttpServletRequest request,
+			HttpServletResponse response,Model model) throws ServletException, FileNotFoundException {
 
 		response.setContentType("text/html");
 		String batchId=(String) request.getSession().getAttribute("batchId"); 
 		String fileName= batchId+ApplicationConstants.CONST_STRING_DOT_TXT;
-		  response.setContentType("APPLICATION/OCTET-STREAM");
-			response.setHeader("Content-Disposition", "attachment; filename=\""
-					+ fileName + "\"");
-			String finalFilePath = ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH+fileName;
-			try(PrintWriter out = response.getWriter()){
-			List<String> fileLine = Files.readAllLines(Paths.get(finalFilePath));
-				for (String line : fileLine) {
-					out.print(line);
+		Path filePath = Paths.get(ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH,fileName);
+			if (Files.exists(filePath)) {
+				response.setContentType("APPLICATION/OCTET-STREAM");
+				response.setHeader("Content-Disposition", "attachment; filename=\""
+						+ fileName + "\"");
+				try {
+					Files.copy(filePath, response.getOutputStream());
+					response.getOutputStream().flush();
+				} catch (IOException e) {
+					_LOGGER.error("unable to read error log file: "+e.getMessage());
 				}
-			}catch (FileNotFoundException e) {
-				_LOGGER.error("Error log file is not available:"+e.getMessage());
-			}catch (Exception e) {
-				_LOGGER.error("unable to process the error log file :"+e);
+			} else{
+				throw new FileNotFoundException("file " + fileName + " was not found");
 			}
-        return "success";    
 			
 	}
 }

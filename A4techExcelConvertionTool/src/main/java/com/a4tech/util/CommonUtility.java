@@ -178,7 +178,7 @@ public class CommonUtility {
 	 */
 	public static String appendStrings(String src, String destination ,String delimiter){
 		  if(!StringUtils.isEmpty(destination)){
-			  src = src.concat(ApplicationConstants.CONST_DELIMITER_HYPHEN).concat(destination);
+			  src = src.concat(delimiter).concat(destination);
 			  return src;
 		  }else {
 			  return src;
@@ -208,5 +208,15 @@ public class CommonUtility {
 		  return ApplicationConstants.CONST_STRING_EMPTY;
 	  }
 	  
+  }
+  
+  public static String getStringLimitedChars(String value, int noOfCharacters){
+	  int len=value.length();
+      if(len>noOfCharacters){
+      String strTemp=value.substring(ApplicationConstants.CONST_NUMBER_ZERO, noOfCharacters);
+      int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
+      value= (String) strTemp.subSequence(ApplicationConstants.CONST_NUMBER_ZERO, lenTemp);
+    }
+      return value;
   }
 }

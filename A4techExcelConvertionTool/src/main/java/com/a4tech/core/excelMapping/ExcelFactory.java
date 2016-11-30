@@ -4,6 +4,7 @@ import com.a4tech.ESPTemplate.product.mapping.ESPTemplateMapping;
 import com.a4tech.RFGLine.product.mapping.RFGLineProductExcelMapping;
 import com.a4tech.adspec.product.mapping.AdspecProductsExcelMapping;
 import com.a4tech.apparel.product.mapping.ApparelProductsExcelMapping;
+import com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping;
 import com.a4tech.dc.product.mapping.DCProductsExcelMapping;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.kl.product.mapping.KlProductsExcelMapping;
@@ -25,6 +26,7 @@ public class ExcelFactory {
 	private ApparelProductsExcelMapping apparealExcelMapping;
 	private ESPTemplateMapping espTemplateMapping;
 	private BroberryExcelMapping broberryExcelMapping;
+	private BestDealProductsExcelMapping bdProdcutsMapping;
 
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -49,8 +51,9 @@ public class ExcelFactory {
 			   return espTemplateMapping;
 			   
 		   }else if(name.equalsIgnoreCase("broberry") || name.equals("42057")){
-			   return broberryExcelMapping;
-			   
+			   return broberryExcelMapping;  
+		   }else if(name.equalsIgnoreCase("bestDeal") || name.equals("47791")){
+			   return bdProdcutsMapping;
 		   }
 		return null;
 	}
@@ -144,6 +147,13 @@ public class ExcelFactory {
 	public void setBroberryExcelMapping(BroberryExcelMapping broberryExcelMapping) {
 		this.broberryExcelMapping = broberryExcelMapping;
 	}
-	
+	public BestDealProductsExcelMapping getBdProdcutsMapping() {
+		return bdProdcutsMapping;
+	}
+
+	public void setBdProdcutsMapping(BestDealProductsExcelMapping bdProdcutsMapping) {
+		this.bdProdcutsMapping = bdProdcutsMapping;
+	}
+
 	
 }

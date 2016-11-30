@@ -9,13 +9,23 @@
 	<!-- cron triggers -->
 	 <bean id="ftpServerCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 	 	<property name="jobDetail" ref="ftpServerCronJobDetails"></property>
-	 	<property name="cronExpression" value="0/20 * * * * ?"></property>
+	 	<property name="cronExpression" value="0/45 * * * * ?"></property>
 	 </bean>	
-	
+	 <bean id="ftpFilesDownloadIds" class="com.a4tech.ftp.FtpDownloadFiles">
+	 	<property name="serveraddress" value="${ftp.serverIp.address}"/>
+    	<property name="username" value="${ftp.userName}"/>
+    	<property name="password" value="${ftp.password}"/>
+    	<property name="fileParsing" ref="fileParsingId"/>
+	 </bean>
 	<!-- cron Job details -->
       <bean id="ftpServerCronJobDetails" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
       	<property name="jobClass" value="com.a4tech.scheduler.FtpServerScheduler"/>
       	<property name="durability" value="true"></property>
+      	<property name="jobDataAsMap">
+      		<map>
+      			<entry key="ftpDownloadFiles" value-ref="ftpFilesDownloadIds"></entry>
+      		</map>
+      	</property>
       </bean>		
     <!-- Scheduler factory bean to glue together jobDetails and triggers to Configure Quartz Scheduler -->
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -30,4 +40,9 @@
     		</list>
     	</property>
     </bean>
+    
+    <!-- <bean id="ftpServerSchedulerId" class="com.a4tech.scheduler.FtpServerScheduler">
+    		<property name="ftpDownloadFiles" ref="ftpFilesDownloadIds"/>
+    </bean> -->
+   
 </beans>

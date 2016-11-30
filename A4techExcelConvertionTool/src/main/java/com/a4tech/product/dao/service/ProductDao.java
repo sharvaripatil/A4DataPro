@@ -178,6 +178,9 @@ public class ProductDao {
 		prdCrit.add(Restrictions.eq("batchId",batchId));
 		  List<ProductEntity> list = prdCrit.list();
 	        for(ProductEntity arr : list){
+	        	if(StringUtils.isEmpty(arr.getProductNo())){
+	        		continue;
+	        	}
 	            ArrayList<String> arraylist = new ArrayList<String>();
 	           for (ErrorEntity productEntity2 : arr.getErrors()) {
 	            	arraylist.add(productEntity2.getError());
@@ -191,7 +194,6 @@ public class ProductDao {
 							new OutputStreamWriter(fos))) {
 				for (Map.Entry<String, ArrayList<String>> entry : hashmap
 						.entrySet()) {
-					bw.append(System.lineSeparator());
 					String key = entry.getKey();
 					ArrayList<String> listt = entry.getValue();
 					StringBuilder data = new StringBuilder();
