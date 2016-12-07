@@ -1,5 +1,7 @@
 package com.a4tech.product.service.imple;
 
+import java.util.Arrays;
+
 import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.Logger;
@@ -31,14 +33,16 @@ public class MailServiceImpl implements IMailService{
 		      MimeMessage mimeMessage = mailSender.createMimeMessage();
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		      helper.setFrom(senderMailName);
-		      helper.setTo(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
-		      helper.setCc(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
-		      helper.setSubject("Product Error Batch File");
+		      //helper.setTo("venkateswarlu.nidamanuri@a4technology.com");
+		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","amey.more@a4technology.com"};
+		      helper.setTo(toAddress);
+		     // helper.setCc(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
+		      helper.setSubject(supplierId +" "+ "Supplier Error Report");
 		      helper.setText("Kindly find the attached " +batchId +".txt Product Error File"
 		             + "\n\n\n\n Note: This is a System Generated Message Kindly Do not reply back");
 		       helper.addAttachment(file.getFilename(), file);
 			_LOGGER.info("Sending Email to : "
-					+ ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
+					+ Arrays.toString(toAddress));
 			   mailSender.send(mimeMessage);
 		       _LOGGER.info("Mail Sent Successfully !!!");
 		      } catch (javax.mail.MessagingException e) {

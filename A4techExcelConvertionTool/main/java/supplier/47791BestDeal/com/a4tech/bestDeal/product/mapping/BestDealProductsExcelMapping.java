@@ -30,6 +30,7 @@ import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.Size;
+import com.a4tech.product.model.TradeName;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
@@ -214,7 +215,7 @@ public class BestDealProductsExcelMapping implements IExcelParser{
 				case 38:
 					String color =cell.getStringCellValue();
 					if(!StringUtils.isEmpty(color)){
-						List<Color> listOfColor = productAttributeParser.getProductColor(color);
+						List<Color> listOfColor = productAttributeParser.getProductColor(color.trim());
 						productConfigObj.setColors(listOfColor);
 					}
 					break;
@@ -242,6 +243,11 @@ public class BestDealProductsExcelMapping implements IExcelParser{
 				}
 					break;
 				case 42: // trade Names ignore
+					String tradeNames = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(tradeNames)){
+						List<TradeName> listOfTradeNames = productAttributeParser.getProductTradeName(tradeNames);
+						productConfigObj.setTradeNames(listOfTradeNames);
+					}
 					break;
 				case 43: //origin
 					  String country = cell.getStringCellValue();
@@ -298,11 +304,17 @@ public class BestDealProductsExcelMapping implements IExcelParser{
 						productExcelObj = productAttributeParser.getImprintSizeAndAddlocation(imprintSize, productExcelObj);
 						priceGrids = productAttributeParser.getAdditionalUpchargeGPriceGrid(imprintSize,
 								                                                                  productExcelObj.getPriceGrids());
+						productExcelObj.setPriceGrids(priceGrids);
 					}
 					break;
 				case 53: //Price Notes
-					// ignore this column since this column depends on product option
-					// but there is no data product option data(case 46)
+					String priceNotes = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(priceNotes)){
+						productExcelObj.setCanOrderLessThanMinimum(ApplicationConstants.CONST_BOOLEAN_TRUE);
+						priceGrids = productAttributeParser.getLessThanMiniUpCharge(priceNotes, 
+								                                           productExcelObj.getPriceGrids());
+					}
+					
 					break;
 								
 							

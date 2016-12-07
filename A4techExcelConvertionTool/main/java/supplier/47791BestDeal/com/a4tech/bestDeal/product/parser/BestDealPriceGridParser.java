@@ -168,7 +168,7 @@ public class BestDealPriceGridParser {
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);
 		priceGrid.setUpchargeType(upChargeType);
-		priceGrid.setUpchargeUsageType("Other");
+		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		priceGrid.setServiceCharge("Optional");
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {

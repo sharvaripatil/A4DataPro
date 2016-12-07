@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.junit.internal.runners.model.EachTestNotifier;
-import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.ProductSKUConfiguration;

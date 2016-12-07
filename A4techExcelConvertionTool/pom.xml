@@ -1,70 +1,71 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.a4tech.product</groupId>
-  <artifactId>A4DataPro</artifactId>
-  <packaging>war</packaging>
-  <version>1.0</version>
-  <name>A4DataPro</name>
-  <url>http://maven.apache.org</url>
-  
-  <properties>
-    <java.version>1.8</java.version>
-    <log4j.version>1.2.17</log4j.version>
-    <junit.version>3.8.1</junit.version>
-    <commons-lang3.version>3.0</commons-lang3.version>
-    <commons-io.version>2.1</commons-io.version>
-    <jstl.version>1.2</jstl.version>
-  	<!-- Spring -->
-  	<org.springframework-version>4.0.3.RELEASE</org.springframework-version>
-  	<poi.version>3.13</poi.version>
-  	<!-- hibernate -->
-  	 <hibernate.version>3.6.9.Final</hibernate.version>
-     <mysql.connector.version>5.1.31</mysql.connector.version>
-   <!-- quatz -->
-   <quartz.version>2.2.1</quartz.version>
-  </properties>
-  
-  
-  <dependencies>
-    <dependency>
-    	<groupId>junit</groupId>
-    	<artifactId>junit</artifactId>
-    	<version>4.11</version>
-    	<scope>test</scope>
-    </dependency>
-    <dependency>
-    	<groupId>log4j</groupId>
-    	<artifactId>log4j</artifactId>
-    	<version>${log4j.version}</version>
-    </dependency>
-    
-    <dependency>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.a4tech.product</groupId>
+	<artifactId>A4DataPro</artifactId>
+	<packaging>war</packaging>
+	<version>${build.number}</version>
+	<name>A4DataPro</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<log4j.version>1.2.17</log4j.version>
+		<junit.version>3.8.1</junit.version>
+		<commons-lang3.version>3.0</commons-lang3.version>
+		<commons-io.version>2.1</commons-io.version>
+		<jstl.version>1.2</jstl.version>
+		<build.number>1.0</build.number>
+		<!-- Spring -->
+		<org.springframework-version>4.0.3.RELEASE</org.springframework-version>
+		<poi.version>3.13</poi.version>
+		<!-- hibernate -->
+		<hibernate.version>3.6.9.Final</hibernate.version>
+		<mysql.connector.version>5.1.31</mysql.connector.version>
+		<!-- quatz -->
+		<quartz.version>2.2.1</quartz.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>1.8</version>
 		</dependency>
-    <dependency>
+		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 			<version>2.0</version>
 		</dependency>
-    <dependency>
+		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.13</version>
 		</dependency>
-    <dependency>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.0.1</version>
-	</dependency>
-    <dependency>
-    	<groupId>javax.servlet.jsp</groupId>
-    	<artifactId>jsp-api</artifactId>
-    	<version>2.2</version>
-	</dependency>
-    <dependency>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.3.1</version>
@@ -85,205 +86,218 @@
 			<artifactId>jackson-core</artifactId>
 			<version>2.1.1</version>
 		</dependency>
-    <dependency>
+		<dependency>
 			<groupId>org.jasig.cas.client</groupId>
 			<artifactId>cas-client-core</artifactId>
 			<version>3.2.1</version>
 		</dependency>
-    <dependency>
-    	<groupId>org.springframework</groupId>
-    	<artifactId>spring-context</artifactId>
-    	<version>${org.springframework-version}</version>
-    </dependency>
-    <dependency>
-		<groupId>org.springframework</groupId>
-		<artifactId>spring-webmvc</artifactId>
-		<version>${org.springframework-version}</version>
-	</dependency>
-	<dependency>
-    	<groupId>org.springframework</groupId>
-    	<artifactId>spring-orm</artifactId>
-    	<version>${org.springframework-version}</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.springframework/spring-context-support -->
-   <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context-support</artifactId>
-      <version>3.2.0.RELEASE</version>
-   </dependency>
-	<dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>${hibernate.version}</version>
-        </dependency>
-        <dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-context-support -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>3.2.0.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>${hibernate.version}</version>
 		</dependency>
-    <dependency>
-    	<groupId>commons-dbcp</groupId>
-    	<artifactId>commons-dbcp</artifactId>
-    	<version>1.2.2</version>
-   </dependency>
-         <!-- jsr303 validation -->
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>1.1.0.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>5.1.3.Final</version>
-        </dependency>
- 
-        <!-- MySQL -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.connector.version}</version>
-        </dependency>
-    <dependency>
-    	<groupId>org.apache.commons</groupId>
-    	<artifactId>commons-lang3</artifactId>
-    	<version>${commons-lang3.version}</version>
-    </dependency>
-    <dependency>
-    	<groupId>commons-io</groupId>
-    	<artifactId>commons-io</artifactId>
-    	<version>${commons-io.version}</version>
-    </dependency>
-    <dependency>
-    	<groupId>commons-net</groupId>
-    	<artifactId>commons-net</artifactId>
-    	<version>3.3</version>
-	</dependency>
-    <dependency>
-		<groupId>javax.servlet</groupId>
-		<artifactId>jstl</artifactId>
-		<version>${jstl.version}</version>
-    </dependency>
-    <dependency>
-    	<groupId>javax.validation</groupId>
-     	<artifactId>validation-api</artifactId>
-    	<version>1.1.0.Final</version>
-    </dependency>
-    <dependency>
-   		<groupId>commons-fileupload</groupId>
-   		<artifactId>commons-fileupload</artifactId>
-   		<version>1.2.1</version> <!-- makesure correct version here -->
-   	</dependency>
-    <!-- POI dependency -->
-    <dependency>
-    	<groupId>org.apache.poi</groupId>
-    	<artifactId>poi</artifactId>
-    	<version>${poi.version}</version>
-    </dependency>
-    <dependency>
-		<groupId>org.apache.poi</groupId>
-		<artifactId>poi-scratchpad</artifactId>
-		<version>${poi.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.apache.poi</groupId>
-		<artifactId>poi-ooxml</artifactId>
-		<version>${poi.version}</version>
-    </dependency>
-    <!-- Csv Reader  -->
-    <dependency>
-    	<groupId>com.opencsv</groupId>
-    	<artifactId>opencsv</artifactId>
-    	<version>3.3</version>
-	</dependency>
-    <dependency>
-		<groupId>com.fasterxml.jackson.core</groupId>
-		<artifactId>jackson-databind</artifactId>
-		<version>2.1.2</version>
-	</dependency>
-	<dependency>
-		<groupId>com.fasterxml.jackson.core</groupId>
-		<artifactId>jackson-annotations</artifactId>
-		<version>2.1.1</version>
-	</dependency>
-	<dependency>
-		<groupId>com.fasterxml.jackson.core</groupId>
-		<artifactId>jackson-core</artifactId>
-		<version>2.1.1</version>
-	</dependency>
-	<dependency>
-		<groupId>org.codehaus.jackson</groupId>
-		<artifactId>jackson-mapper-asl</artifactId>
-		<version>1.9.13</version>
-	</dependency>
-	 <!--  mail dependency -->
-    <dependency>
-     <groupId>javax.mail</groupId>
-     <artifactId>mail</artifactId>
-     <version>1.4</version>
-   </dependency>
-   <!-- Quartz framework dependency -->
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.2.2</version>
+		</dependency>
+		<!-- jsr303 validation -->
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>1.1.0.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.1.3.Final</version>
+		</dependency>
+
+		<!-- MySQL -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.connector.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons-lang3.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons-io.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-net</groupId>
+			<artifactId>commons-net</artifactId>
+			<version>3.3</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>${jstl.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>1.1.0.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2.1</version> <!-- makesure correct version here -->
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<!-- POI dependency -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-scratchpad</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
+		<!-- Csv Reader -->
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>3.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.9.13</version>
+		</dependency>
+		<!-- mail dependency -->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<!-- Quartz framework dependency -->
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
 			<version>${quartz.version}</version>
 		</dependency>
-  </dependencies>
-  
-  <build>
+	</dependencies>
+
+	<build>
 		<sourceDirectory>src</sourceDirectory>
+		<finalName>${project.artifactId}</finalName>
 		<plugins>
 			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<warSourceDirectory>WebContent</warSourceDirectory>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
+				<version>2.3</version>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
+				<version>3.1</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-			
-	 <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.8</version>
-        <executions>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-              	<source>src/main/java</source>
-                <source>main/java/supplier/82283RFGLine</source>
-                <source>main/java/supplier/32125</source>
-                <source>main/java/supplier/64905</source>
-                <source>main/java/supplier/Sage</source>
-                <source>main/java/supplier/USBProducts</source>
-                <source>main/java/supplier/JulyData</source>
-                <source>main/java/supplier/DistributorCentral</source>
-                <source>main/java/supplier/kuku</source>
-                <source>main/java/supplier/91561ESPTemplate</source>
-                <source>main/java/supplier/40445BBI</source>
-                <source>main/java/supplier/91284NewPro</source>
-                <source>main/java/supplier/44620Apparel</source>
-                <source>main/java/supplier/42057Broberry</source>
-                <source>main/java/supplier/47791BestDeal</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<url>http://localhost:8080/manager</url>
+					<server>localhost</server>
+					<path>/A4DataPro</path>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/main/java</source>
+								<source>main/java/supplier/82283RFGLine</source>
+								<source>main/java/supplier/32125</source>
+								<source>main/java/supplier/64905</source>
+								<source>main/java/supplier/Sage</source>
+								<source>main/java/supplier/USBProducts</source>
+								<source>main/java/supplier/JulyData</source>
+								<source>main/java/supplier/DistributorCentral</source>
+								<source>main/java/supplier/kuku</source>
+								<source>main/java/supplier/91561ESPTemplate</source>
+								<source>main/java/supplier/40445BBI</source>
+								<source>main/java/supplier/91284NewPro</source>
+								<source>main/java/supplier/44620Apparel</source>
+								<source>main/java/supplier/42057Broberry</source>
+								<source>main/java/supplier/47791BestDeal</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 </project>

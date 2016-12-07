@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.ImprintMethod;
@@ -26,6 +27,7 @@ import com.a4tech.product.model.RushTimeValue;
 import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
+import com.a4tech.product.model.TradeName;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Weight;
@@ -52,7 +54,11 @@ public class BestDealAttributeParser {
 	public List<Color> getProductColor(String colorValue){
 		List<Color> listOfColor = new ArrayList<>();
 		Color colorObj = new Color();
-		colorObj.setName(colorValue);
+		if(colorValue.equalsIgnoreCase("Jade")){
+			colorObj.setName("Medium Green");
+		}else{
+			colorObj.setName(colorValue);
+		}
 		colorObj.setAlias(colorValue);
 		listOfColor.add(colorObj);
 		return listOfColor;
@@ -60,9 +66,10 @@ public class BestDealAttributeParser {
 	public List<Shape> getProductShapes(String shapeValue){
 		List<Shape> listOfShape = new ArrayList<>();
 		Shape shapeObj = new Shape();
-		if(lookupServiceData.isShape(shapeValue)){
+		if(lookupServiceData.isShape(shapeValue.toUpperCase())){
 			shapeObj.setName(shapeValue);
 			listOfShape.add(shapeObj);
+			return listOfShape;
 		}
 		return null;
 	}
@@ -108,17 +115,32 @@ public class BestDealAttributeParser {
  }
  
  public List<Material> getProductMaterial(String materialValue){
-	 List<String> materials = Arrays.asList(materialValue.split(ApplicationConstants.CONST_DELIMITER_COMMA));
 	 List<Material> listOfMaterial = new ArrayList<>();
-	 Material mtrlObj = null;
-	 for (String materialsName : materials) {
-		 mtrlObj = new Material();
-	       	  String mtrlType = lookupServiceData.getMaterialTypeValue(materialsName);
-	       	  mtrlObj.setName(mtrlType);
-	       	  mtrlObj.setAlias(materialsName);
-	       	  listOfMaterial.add(mtrlObj);
-	}
-	 
+	 Material mtrlObj =  new Material();
+	 Combo comboObj = null;
+	 if(materialValue.contains(ApplicationConstants.CONST_DELIMITER_COMMA)){
+		 String[] materils  = materialValue.split(ApplicationConstants.CONST_DELIMITER_COMMA);
+		 StringBuilder matlAlias = new StringBuilder();
+		 for (int matlIndex =0 ; matlIndex <2;matlIndex++) {
+			      String mtrlName = materils[matlIndex];
+			      String mtrlType = lookupServiceData.getMaterialTypeValue(mtrlName.toUpperCase());
+			      if(matlIndex == 0){
+			    	  mtrlObj.setName(mtrlType);
+			    	  matlAlias.append(mtrlName).append(ApplicationConstants.CONST_DELIMITER_HYPHEN);
+			      }else {
+			    	  comboObj = new Combo();
+			    	  comboObj.setName(mtrlType);
+			    	  matlAlias.append(mtrlName);
+			    	  mtrlObj.setCombo(comboObj);
+			      }
+		 }
+		 mtrlObj.setAlias(matlAlias.toString());
+	 } else{
+		 String mtrlType = lookupServiceData.getMaterialTypeValue(materialValue.toUpperCase());
+      	  mtrlObj.setName(mtrlType);
+      	  mtrlObj.setAlias(materialValue);
+	 }
+	 listOfMaterial.add(mtrlObj);
 	 return listOfMaterial;
  }
  
@@ -226,17 +248,17 @@ public class BestDealAttributeParser {
 			 for (String value : allData) {
 				    value = value.trim();
 				    if(value.contains("LINE NAME")){
-				    	/*attributeValue = getFieldName(value, "LINE NAME");
+				    	attributeValue = getFieldName(value, "LINE NAME");
 				    	List<String> lineNames = Arrays.asList(attributeValue);
-				    	existingProduct.setLineNames(lineNames);*/
+				    	existingProduct.setLineNames(lineNames);
 				    } else if(value.contains("SHIPPING WEIGHT")){
 				    	attributeValue = getFieldName(value, "SHIPPING WEIGHT");
 				    	ShippingEstimate shippingEstObj = getProductShippingWeight(attributeValue);
 				    	existingConfig.setShippingEstimates(shippingEstObj);
 				    } else if(value.contains("FOB POINT")){
-				    	/*attributeValue = getFieldName(value, "FOB POINT");
+				    	attributeValue = getFieldName(value, "FOB POINT");
 				    	List<FOBPoint> listOfFobPoint = getFobPoints(attributeValue);
-				    	existingProduct.setFobPoints(listOfFobPoint);*/
+				    	existingProduct.setFobPoints(listOfFobPoint);
 				    } else if(value.contains("PACKAGING")){
 				    	attributeValue = getFieldName(value, "PACKAGING");
 				    	List<Packaging> listOfPackaging = getProductPackaging(attributeValue);
@@ -306,7 +328,7 @@ public class BestDealAttributeParser {
 	}
 	private List<Packaging> getProductPackaging(String value){
 		   if(value.contains("Gift")){
-			   value = "Gift box";
+			   value = "Gift Boxes";
 		   }
 		List<Packaging> listOfPackaging = new ArrayList<>();
 		Packaging packagingObj = new Packaging();
@@ -353,7 +375,7 @@ public class BestDealAttributeParser {
 	}
 	
 	private List<ImprintSize> getProductImprintSize(String imprSize){
-		String imprintSizeValue = imprSize.split("IMPRINT SIZE ")[0].trim();
+		String imprintSizeValue = imprSize.split("IMPRINT SIZE ")[1].trim();
 		List<ImprintSize> listOfImprintSize = new ArrayList<>();
 		ImprintSize imprSizeObj = new ImprintSize();
 		imprSizeObj.setValue(imprintSizeValue);
@@ -371,10 +393,26 @@ public class BestDealAttributeParser {
 	}
 	public List<PriceGrid> getAdditionalUpchargeGPriceGrid(String name,List<PriceGrid> existingPriceGrid){
 		if(name.contains("Additional Engraving")){
+			String upChargeUseageType = null;
+			if(name.contains("/Piece")){
+				upChargeUseageType = "Per Quantity";
+			}else{
+				upChargeUseageType = "Other";
+			}
 			existingPriceGrid = priceGridParser.getUpchargePriceGrid("1", "10", "V",
 					 "Additional Location", "n", "USD", "Additional Engraving Location", "Add. Location Charge",
-					 "Other", 1, existingPriceGrid);
+					 upChargeUseageType, 1, existingPriceGrid);
 		} 
+		return existingPriceGrid;
+	}
+	
+	public List<PriceGrid> getLessThanMiniUpCharge(String name,List<PriceGrid> existingPriceGrid){
+		//Minimum Order Quantity required per item is indicated as the first column quantity break.
+		//There is a $40 net under minimum charge.
+		name = name.replaceAll("[^0-9]", "");
+		existingPriceGrid = priceGridParser.getUpchargePriceGrid("1", name.trim(), "Z",
+				 "Less than Minimum", "n", "USD", "Can order less than minimum", "Less than Minimum Charge",
+				 "Other", 1, existingPriceGrid);
 		return existingPriceGrid;
 	}
 	/*author : venkat
@@ -385,6 +423,14 @@ public class BestDealAttributeParser {
 	private String getFieldName(String value,String splittingValue){//LINE NAME Best Deal Awards
 		String[] names = value.split(splittingValue);
 		   return names[1];
+	}
+	
+	public List<TradeName> getProductTradeName(String Tradename){
+		List<TradeName> listOfTradeNames = new ArrayList<>();
+		TradeName tradeNameObj = new TradeName();
+		tradeNameObj.setName(Tradename);
+		listOfTradeNames.add(tradeNameObj);
+		return listOfTradeNames;
 	}
  public LookupServiceData getLookupServiceData() {
 		return lookupServiceData;
