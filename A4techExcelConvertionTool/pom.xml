@@ -24,6 +24,8 @@
 		<mysql.connector.version>5.1.31</mysql.connector.version>
 		<!-- quatz -->
 		<quartz.version>2.2.1</quartz.version>
+		<a4.tomcat.server.url></a4.tomcat.server.url>
+		<a4.tomcat.server.name></a4.tomcat.server.name>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -259,8 +261,8 @@
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-					<url>http://localhost:8080/manager</url>
-					<server>localhost</server>
+					<url>http://${a4.tomcat.server.url}/manager/text</url>
+					<server>${a4.tomcat.server.name}</server>
 					<path>/A4DataPro</path>
 				</configuration>
 			</plugin>
