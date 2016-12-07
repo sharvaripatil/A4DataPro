@@ -32,7 +32,22 @@ public class BroberryProductMaterialParser {
 		List<String> listOfLookupMaterial = getMaterialType(materialValue1.toUpperCase());
 		if(!listOfLookupMaterial.isEmpty()){
 			int numOfMaterials = listOfLookupMaterial.size();
-			  if(numOfMaterials == 1){ // this condition used to single material value(E.X 100% Cotton)
+			/////////////////
+			String valuesTempArr[]=null;
+			boolean flag=false;
+			if(materialValue1.contains("/"))
+			{
+				valuesTempArr = CommonUtility.getValuesOfArray(materialValue1,"/");
+				flag=true;
+			}else if(materialValue1.contains("_"))
+			{
+				valuesTempArr = CommonUtility.getValuesOfArray(materialValue1,"_");
+				flag=true;
+			}
+			
+			////////////////////
+			  //if(numOfMaterials == 1){ // this condition used to single material value(E.X 100% Cotton)
+			if(numOfMaterials == 1 && !flag){ // this condition used to single material value(E.X 100% Cotton)
 				  materialObj = getMaterialValue(listOfLookupMaterial.toString(), materialValue1);
 				  listOfMaterial.add(materialObj);
 			  }else if(isBlendMaterial(materialValue1)){   // this condition for blend material
@@ -55,7 +70,15 @@ public class BroberryProductMaterialParser {
 								  String percentage = materialValue.split("%")[0];
 								  materialObj.setName("BLEND");
 								  materialObj.setAlias(materialValue1); 
-								  blentMaterialObj.setName(CommonUtility.removeCurlyBraces(mtrlType));
+								  
+								  if(!StringUtils.isEmpty(mtrlType)){
+									  mtrlType=CommonUtility.removeCurlyBraces(mtrlType);
+								  }
+								  if(!StringUtils.isEmpty(mtrlType)){
+								  blentMaterialObj.setName(mtrlType);
+								  }else{
+									  blentMaterialObj.setName("Other Fabric"); 
+								  }
 								  blentMaterialObj.setPercentage(percentage);
 								  listOfBlendMaterial.add(blentMaterialObj);
 							  }
@@ -76,7 +99,10 @@ public class BroberryProductMaterialParser {
 									  secondValuePercentage = 100-Integer.parseInt(percentage);
 								  }
 								  if(!StringUtils.isEmpty(mtrlType)){
-									  blentMaterialObj.setName(CommonUtility.removeCurlyBraces(mtrlType));  
+								  mtrlType=CommonUtility.removeCurlyBraces(mtrlType);
+								  }
+								  if(!StringUtils.isEmpty(mtrlType)){
+									  blentMaterialObj.setName(mtrlType);  
 								  }else{
 									blentMaterialObj.setName("Other Fabric");  
 								  }
@@ -96,10 +122,19 @@ public class BroberryProductMaterialParser {
 								  materialObj.setName(CommonUtility.removeCurlyBraces(mtrlType));
 								  materialObj.setAlias(materialValue1);  
 							  }
-						} 
+						} //[70% Modacrylic , 25% Cotton , 5%],[59% Cotton, 39% Polyester, 2% Sp]
 				    	 String valuesTemp[]=values[2].split("%");
-				    	 materialObj.setName(valuesTemp[1]);
-				    	 materialObj.setAlias(values[2]);
+				    	 
+				    	 if( valuesTemp.length==1){
+				    		 materialObj.setName("Other");
+				    		// materialObj.setAlias(values[1]);//
+				    		 materialObj.setAlias(materialValue1);
+				    	 }else if(valuesTemp.length==2){
+				    		 //materialObj.setName(valuesTemp[1]);
+				    		 materialObj.setName(values[2].toString());
+				    		// materialObj.setName(valuesTemp[2]);
+				    		 materialObj.setAlias(materialValue1); 
+				    	 }
 				    	 comboObj.setBlendMaterials(listOfBlendMaterial);
 				    	 comboObj.setName("Blend");
 				    	 materialObj.setCombo(comboObj);
@@ -107,8 +142,12 @@ public class BroberryProductMaterialParser {
 				     }	        
 			  }
 		}else{ // used for Material is not available in lookup, then it goes in Others
+			if(materialValue1.equalsIgnoreCase("Unassigned")){
+				
+			}else{
 			materialObj = getMaterialValue("Other", materialValue1);
 			listOfMaterial.add(materialObj);
+			}
 		}
 		} catch (Exception e) {
 			_LOGGER.error("Error while Material1 processing :" + e.getMessage());
@@ -161,8 +200,11 @@ public class BroberryProductMaterialParser {
 		return false;
 	}*/
 	public boolean isBlendMaterial(String data){
-		if(data.contains("%"))
+		//if(data.contains("%"))
+		if(data.contains("/"))
 		{
+			return true;
+		}else if(data.contains("_")){
 			return true;
 		}
 		

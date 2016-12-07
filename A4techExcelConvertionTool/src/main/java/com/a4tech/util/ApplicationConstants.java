@@ -2,6 +2,7 @@ package com.a4tech.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class ApplicationConstants {
    
@@ -146,7 +147,7 @@ public class ApplicationConstants {
 	public static final String  CONST_SIZE_DELIMITER					= "___";
 	public static final String  CHARACTERS_NUMBERS_PATTERN				= "[^a-zA-Z0-9\\s+]";
 	
-	 public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
+	 public static Map<String, String> COLOR_MAP =new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);//new HashMap<String, String>();
 	 public static Map<String, String> SIZE_MAP =new HashMap<String, String>();
 	 public static Map<String, String> OPTION_MAP =new HashMap<String, String>();
 	 

@@ -7,9 +7,14 @@ import org.apache.log4j.Logger;
 import org.junit.internal.runners.model.EachTestNotifier;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.product.model.Apparel;
+import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.ProductSKUConfiguration;
 import com.a4tech.product.model.ProductSkus;
+import com.a4tech.product.model.Size;
+import com.a4tech.product.model.Value;
+import com.a4tech.product.model.Values;
 import com.a4tech.util.ApplicationConstants;
 
 
@@ -39,7 +44,39 @@ public class BroberrySkuParser {
 			}
 
 			String sizeValue1[]=sizeValue.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+			if(sizeValue.contains("Dimension")){
+				Size size = new Size();
+				Apparel appareal = new Apparel();
+				List<Value> values=new ArrayList<>();
+				Dimension dimensionObj = new Dimension();
+				List<Values> valuesList = new ArrayList<Values>();
+				Value valueObj=new Value();//Length:6:ft;Width:3/4:in
+				
+					String DimenArr[] = sizeValue1[1].split(ApplicationConstants.CONST_DELIMITER_SEMICOLON);
+					List<Object> valuelist=new ArrayList<Object>();
+					Values valuesObj  = new Values();
+					Value valObj;
+					int valCount=1;
+					for (String value : DimenArr) {
+					String[] DimenArr1 = value.split(ApplicationConstants.CONST_DELIMITER_COLON);
+					valObj = new Value();
+						for (String value1 : DimenArr1) {
+							if(valCount==1){
+							valObj.setAttribute(value1);
+							}else if(valCount==2){
+							valObj.setValue(value1);
+							}else if(valCount==3){
+							valObj.setUnit(value1);
+							}
+							valCount++;
+						}
+						valuelist.add(valObj);
+						valCount=1;
+					}
+					productskuconfObj1.setValue(valuelist);
+			}else{
 			productskuconfObj1.setValue(Arrays.asList(sizeValue1[1]));
+			}
 			skusConfig.add(productskuconfObj1);
 			}
 		
@@ -61,7 +98,6 @@ public class BroberrySkuParser {
 		_LOGGER.error("Error while processing sku :" + e.getMessage());
 	
 	}
-	_LOGGER.info("SKU processed");
 	return existingProductSkuList;
 	}
 	
