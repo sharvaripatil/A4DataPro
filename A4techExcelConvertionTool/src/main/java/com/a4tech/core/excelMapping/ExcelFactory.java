@@ -12,6 +12,7 @@ import com.a4tech.product.bbi.mapping.BBIProductsExcelMapping;
 import com.a4tech.product.broberry.mapping.BroberryExcelMapping;
 import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
 import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
+import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 
 public class ExcelFactory {
@@ -27,6 +28,7 @@ public class ExcelFactory {
 	private ESPTemplateMapping espTemplateMapping;
 	private BroberryExcelMapping broberryExcelMapping;
 	private BestDealProductsExcelMapping bdProdcutsMapping;
+	private RiversEndExcelMapping riversEndExcelMapping;
 
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -54,7 +56,10 @@ public class ExcelFactory {
 			   return broberryExcelMapping;  
 		   }else if(name.equalsIgnoreCase("bestDeal") || name.equals("47791")){
 			   return bdProdcutsMapping;
-		   }
+		   }/*else if(name.equalsIgnoreCase("riversend") || name.equals("82588")){
+			   return riversEndExcelMapping;
+		   }*/
+		   
 		return null;
 	}
 	
@@ -155,5 +160,13 @@ public class ExcelFactory {
 		this.bdProdcutsMapping = bdProdcutsMapping;
 	}
 
+	public RiversEndExcelMapping getRiversEndExcelMapping() {
+		return riversEndExcelMapping;
+	}
+
+	public void setRiversEndExcelMapping(RiversEndExcelMapping riversEndExcelMapping) {
+		this.riversEndExcelMapping = riversEndExcelMapping;
+	}
+	
 	
 }

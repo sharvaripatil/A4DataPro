@@ -386,6 +386,7 @@
 		<property name="espTemplateMapping" ref="espTemplateMappingId"/>
 		<property name="broberryExcelMapping" ref="broberryExcelMappingId"/>
 		<property name="bdProdcutsMapping" ref="bestDealMappingId"/>
+		<property name="riversEndExcelMapping" ref="riversEndExcelMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -401,5 +402,15 @@
      </bean>
      <bean id="bestDealPriceGridParserId" class="com.a4tech.bestDeal.product.parser.BestDealPriceGridParser">
      </bean>
+     
+     
+      <!-- supplier 82588 configuration end --> 
+     <bean id="riversEndExcelMappingId" class="com.a4tech.product.riversend.mapping.RiversEndExcelMapping">
+     <property name="riverEndAttributeParser" ref="riverEndAttributeParserId" /> 
+     </bean>
+     <bean id="riverEndAttributeParserId" name="riverEndAttributeParser"
+		class="com.a4tech.product.riversend.parser.RiverEndAttributeParser" autowire="byName">
+	</bean>
+        <!--supplier 82588 configuration start  -->  
 </beans>
 

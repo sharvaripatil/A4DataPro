@@ -133,7 +133,7 @@ public Volume getItemWeight(String FabricWT)
 
 	  FabricWT=FabricWT.replaceAll("Ounces","");
 	  valueObj.setValue(FabricWT.trim());
-	  valueObj.setUnit("Oz");
+	  valueObj.setUnit("oz");
 	  valueList.add(valueObj);
 	  
 	  valuesObj.setValue(valueList);
