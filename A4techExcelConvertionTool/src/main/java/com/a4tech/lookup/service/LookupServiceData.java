@@ -66,7 +66,7 @@ public class LookupServiceData {
 		}
 		    if(materialValues != null){
 		    	 for (String mtrlName : materialValues) {
-					    if(mtrlName.contains(materialName)){
+					    if(materialName.contains(mtrlName)){
 					    	return mtrlName;
 					    }
 				}

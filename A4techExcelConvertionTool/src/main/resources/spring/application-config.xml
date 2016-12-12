@@ -24,14 +24,14 @@
 	<import resource="sageMapping.xml" />
 	<import resource="kuku_mapping.xml" />
 	<!-- <import resource="quartz-context.xml"/> -->
-	<context:property-placeholder
-		location="classpath:application.properties,classpath:database.properties" />
-
+	<context:property-placeholder location="classpath:application.properties,classpath:sandbox-database.properties
+	                                       ,classpath:sandbox-externalApiEndPoints.properties"/>
 	<bean id="productService" class="com.a4tech.product.service.imple.ProductServiceImpl" />
 	<bean id="postServiceImplV2" name="postServiceImplV2"
 		class="com.a4tech.v2.service.postImpl.PostServiceImpl">
 		<property name="postApiURL" value="${product.post.v2.URL}"></property>
 	</bean>
+	
 	<bean id="product" class="com.a4tech.product.model.Product" />
 	<bean id="restTemplate" name="restTemplate"
 		class="org.springframework.web.client.RestTemplate">
@@ -55,8 +55,8 @@
 	<bean id="postService" class="com.a4tech.product.service.postImpl.PostServiceImpl">
 		<property name="restTemplate" ref="restTemplate"></property>
 		<property name="productDao" ref="productDao"></property>
-		<property name="postApiURL" value="${product.post.v3.URL}"/>
-		<property name="getProductUrl" value="${product.get.v3.URL}"/>
+		<property name="postApiURL" value="${product.post.URL}"/>
+		<property name="getProductUrl" value="${product.get.URL}"/>
 	</bean>
 
    <bean id="lookupRestService" class="com.a4tech.lookup.service.restService.LookupRestService">

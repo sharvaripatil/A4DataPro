@@ -130,11 +130,11 @@ public class FileUpload {
 																				noOfProductsFailure);
 		if (!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)) {
 			
-			/*boolean isMailSendSuccess = mailService.sendMail(asiNumber, batchId);
+			boolean isMailSendSuccess = mailService.sendMail(asiNumber, batchId);
 			if(isMailSendSuccess){
 				redirectAttributes.addFlashAttribute(ApplicationConstants.CONST_STRING_SUCCESS_MSG ,
 				                                             ApplicationConstants.MAIL_SEND_SUCCESS_MESSAGE);
-			} */
+			} 
 			
 		}
 	}
