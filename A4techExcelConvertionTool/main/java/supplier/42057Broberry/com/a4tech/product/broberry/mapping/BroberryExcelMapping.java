@@ -109,7 +109,7 @@ public class BroberryExcelMapping implements IExcelParser{
 		  String MaterialValue1=null;
 		  String MaterialValue2=null;
 		  String Keyword1 =null;
-		  String specialCharacters = "[™®’—]";
+		  String specialCharacters = "[™®-’—,]";
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -148,11 +148,16 @@ public class BroberryExcelMapping implements IExcelParser{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							colorList=broberryProductAttributeParser.getColorCriteria(colorSet);
-								
+							if(!CollectionUtils.isEmpty(colorList)){
 								productConfigObj.setColors(colorList);
+							}
+							if(!CollectionUtils.isEmpty(productNumberMap)){
 								pnumberList=broberryProductAttributeParser.getProductNumer(productNumberMap);
 								productExcelObj.setProductNumbers(pnumberList);
+							}
+							if(!CollectionUtils.isEmpty(sizeValuesSet)){
 								productConfigObj.setSizes(broberryProductAttributeParser.getProductSize(new ArrayList<String>(sizeValuesSet)));
+							}
 								if(!CollectionUtils.isEmpty(productOptionSet)){
 								productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
 								}	
@@ -160,8 +165,9 @@ public class BroberryExcelMapping implements IExcelParser{
 							   listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(ProductDataStore.getSizesBrobery(),productOptionSet);
 							 	productExcelObj.setAvailability(listOfAvailablity);
 								}
+								if(!CollectionUtils.isEmpty(ProductSkusList)){
 								productExcelObj.setProductRelationSkus(ProductSkusList);
-								
+								}
 							  if(!StringUtils.isEmpty(MaterialValue1) || !StringUtils.isEmpty(MaterialValue2)){
 								  if(MaterialValue1.toUpperCase().contains(MaterialValue2.toUpperCase())){//100% Acrylic	Acrylic
 								  }else{
@@ -174,12 +180,17 @@ public class BroberryExcelMapping implements IExcelParser{
 								 if(!StringUtils.isEmpty(productKeywords)){
 								productExcelObj.setProductKeywords(productKeywords);
 									}
-								if(CollectionUtils.isEmpty(priceGrids)){
+								/*if(CollectionUtils.isEmpty(priceGrids)){
 									productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
 									priceGrids=getPriceGrids(productName);
 									}
-								 	productExcelObj.setPriceGrids(priceGrids);
-								 	productExcelObj.setProductConfigurations(productConfigObj);
+								 	productExcelObj.setPriceGrids(priceGrids);*/
+								 /***************///upcharge grid faling for all existing products ,assigning QUR to both new and Existing products
+								 productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
+								 priceGrids=getPriceGrids(productName);
+								 productExcelObj.setPriceGrids(priceGrids);
+								 /***************/
+								 productExcelObj.setProductConfigurations(productConfigObj);
 								 	/*_LOGGER.info("Product Data : "
 											+ mapperObj.writeValueAsString(productExcelObj));
 								 	*/
@@ -227,7 +238,7 @@ public class BroberryExcelMapping implements IExcelParser{
 						     }else{
 						    	    productExcelObj=existingApiProduct;
 									productConfigObj=productExcelObj.getProductConfigurations();
-								    priceGrids = productExcelObj.getPriceGrids();
+								    //priceGrids = productExcelObj.getPriceGrids();
 						     }
 							
 					 }
@@ -289,7 +300,7 @@ public class BroberryExcelMapping implements IExcelParser{
 				    productRelationalSku = cell.getStringCellValue();
 				    sizeValue=ApplicationConstants.SIZE_MAP.get(dimension+"x"+size);
 				    finalColorValue=colorValue;
-					if(!StringUtils.isEmpty(sizeValue) &&!StringUtils.isEmpty(finalColorValue) ){
+					if(!StringUtils.isEmpty(sizeValue) &&!StringUtils.isEmpty(finalColorValue) &&!StringUtils.isEmpty(productRelationalSku)){
 				    ProductSkusList=broberrySkuParserObj.getProductRelationSkus(ProductSkusList, sizeValue, finalColorValue, productRelationalSku);
 					}
 				    break;
@@ -311,7 +322,7 @@ public class BroberryExcelMapping implements IExcelParser{
 					 if(!StringUtils.isEmpty(Category)){
 						 listOfCategories.add(Category);
 					 }
-				
+					 productExcelObj.setCategories(listOfCategories);
 					break;
 				case 13://SUB CATEGORY
 					String SubCategory=cell.getStringCellValue();
@@ -471,12 +482,17 @@ public class BroberryExcelMapping implements IExcelParser{
 		productExcelObj.setAdditionalProductInfo(AdditionalInfo.toString());
 	
 		colorList=broberryProductAttributeParser.getColorCriteria(colorSet);
+		if(!CollectionUtils.isEmpty(colorList)){
 		productConfigObj.setColors(colorList);
-		
+		}
 		
 		pnumberList=broberryProductAttributeParser.getProductNumer(productNumberMap);
+		if(!CollectionUtils.isEmpty(pnumberList)){
 		productExcelObj.setProductNumbers(pnumberList);
+		}
+		if(!CollectionUtils.isEmpty(sizeValuesSet)){
 		productConfigObj.setSizes(broberryProductAttributeParser.getProductSize(new ArrayList<String>(sizeValuesSet)));
+		}
 		if(!CollectionUtils.isEmpty(productOptionSet)){
 		productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
 		}
@@ -488,25 +504,32 @@ public class BroberryExcelMapping implements IExcelParser{
 			skuObj=broberrySkuParserObj.getProductRelationSkus(skuObj, sizeValue, finalColorValue, productRelationalSku);
 			productExcelObj.setProductRelationSkus(ProductSkusList);
 		    }*/
+		if(!CollectionUtils.isEmpty(ProductSkusList)){
 		productExcelObj.setProductRelationSkus(ProductSkusList);
-		  if(!StringUtils.isEmpty(MaterialValue1) || !StringUtils.isEmpty(MaterialValue2)){
+		}
+		if(!StringUtils.isEmpty(MaterialValue1) || !StringUtils.isEmpty(MaterialValue2)){
 			  if(MaterialValue1.toUpperCase().contains(MaterialValue2.toUpperCase())){//100% Acrylic	Acrylic
 			  }else{
 				  MaterialValue1=MaterialValue1.concat("%%%%").concat(MaterialValue2); 
 			  }
 			listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue1);
-		    //listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue2,listOfMaterial);
+			if(!CollectionUtils.isEmpty(listOfMaterial)){
 		    productConfigObj.setMaterials(listOfMaterial);
+			}
 			}
 		  if(!StringUtils.isEmpty(productKeywords)){
 			productExcelObj.setProductKeywords(productKeywords);
 		  }
-		if(CollectionUtils.isEmpty(priceGrids)){
+		  /*if(CollectionUtils.isEmpty(priceGrids)){
 			productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
 			priceGrids=getPriceGrids(productName);
 			}
-		 	productExcelObj.setPriceGrids(priceGrids);
-		 
+		 	productExcelObj.setPriceGrids(priceGrids);*/
+		 /***************///upcharge grid faling for all existing products ,assigning QUR to both new and Existing products
+		 productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
+		 priceGrids=getPriceGrids(productName);
+		 productExcelObj.setPriceGrids(priceGrids);
+		 /***************/
 		 productExcelObj.setProductConfigurations(productConfigObj);
 		 	/*_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));*/
