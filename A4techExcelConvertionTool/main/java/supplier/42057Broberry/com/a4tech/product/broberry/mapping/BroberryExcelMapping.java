@@ -109,6 +109,7 @@ public class BroberryExcelMapping implements IExcelParser{
 		  String MaterialValue1=null;
 		  String MaterialValue2=null;
 		  String Keyword1 =null;
+		  String specialCharacters = "[™®’—]";
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -399,6 +400,7 @@ public class BroberryExcelMapping implements IExcelParser{
 					break;
 				case 25: //LONG DESC
 					productName = cell.getStringCellValue();
+					productName = CommonUtility.removeSpecialSymbols(productName,specialCharacters);
 					int len=productName.length();
 					 if(len>60){
 						String strTemp=productName.substring(0, 60);
@@ -412,6 +414,7 @@ public class BroberryExcelMapping implements IExcelParser{
 				case 26: //CONS COPY
 	
 					String description = cell.getStringCellValue();
+					description = CommonUtility.removeSpecialSymbols(description,specialCharacters);
 					int length=description.length();
 					 if(length>800){
 						String strTemp=description.substring(0, 800);

@@ -7,9 +7,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.http.HttpStatus;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlRootElement
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class ExternalAPIResponse {
     @JsonProperty("StatusCode")
     private HttpStatus           statusCode;
