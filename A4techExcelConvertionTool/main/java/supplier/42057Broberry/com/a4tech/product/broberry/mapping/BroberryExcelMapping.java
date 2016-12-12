@@ -162,8 +162,12 @@ public class BroberryExcelMapping implements IExcelParser{
 								productExcelObj.setProductRelationSkus(ProductSkusList);
 								
 							  if(!StringUtils.isEmpty(MaterialValue1) || !StringUtils.isEmpty(MaterialValue2)){
+								  if(MaterialValue1.toUpperCase().contains(MaterialValue2.toUpperCase())){//100% Acrylic	Acrylic
+								  }else{
+									  MaterialValue1=MaterialValue1.concat("%%%%").concat(MaterialValue2); 
+								  }
 								  listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue1);
-								  listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue2,listOfMaterial);
+								  //listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue2,listOfMaterial);
 								  productConfigObj.setMaterials(listOfMaterial);
 								  }
 								 if(!StringUtils.isEmpty(productKeywords)){
@@ -483,8 +487,12 @@ public class BroberryExcelMapping implements IExcelParser{
 		    }*/
 		productExcelObj.setProductRelationSkus(ProductSkusList);
 		  if(!StringUtils.isEmpty(MaterialValue1) || !StringUtils.isEmpty(MaterialValue2)){
+			  if(MaterialValue1.toUpperCase().contains(MaterialValue2.toUpperCase())){//100% Acrylic	Acrylic
+			  }else{
+				  MaterialValue1=MaterialValue1.concat("%%%%").concat(MaterialValue2); 
+			  }
 			listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue1);
-		   listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue2,listOfMaterial);
+		    //listOfMaterial = broberryMaterialParserObj.getMaterialList(MaterialValue2,listOfMaterial);
 		    productConfigObj.setMaterials(listOfMaterial);
 			}
 		  if(!StringUtils.isEmpty(productKeywords)){
