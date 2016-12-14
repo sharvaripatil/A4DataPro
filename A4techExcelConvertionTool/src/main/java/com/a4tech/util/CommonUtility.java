@@ -62,6 +62,10 @@ public class CommonUtility {
 			} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				int numericValue = (int) cell.getNumericCellValue();
 				value = String.valueOf(numericValue);
+			}else if(cell.getCellType() == Cell.CELL_TYPE_ERROR){
+				//value = String.valueOf(cell.getErrorCellValue());
+				value = Byte.toString(cell.getErrorCellValue());
+				value="";
 			}
 		} catch (Exception e) {
 			_LOGGER.error("Cell value convert into String/Int format: "
@@ -157,6 +161,9 @@ public class CommonUtility {
 		} else if (response.contains("java.net.SocketTimeoutException")) {
 			errorMsgObj
 					.setReason("Product is unable to process due to ASI server not responding");
+		}else if (response.contains("Product Data issue")) {
+			errorMsgObj.setReason(response);
+			errorMsgObj.setMessage("Product Data issue in Supplier Sheet");
 		}
 		responseList.setErrors(errorList);
 		return responseList;

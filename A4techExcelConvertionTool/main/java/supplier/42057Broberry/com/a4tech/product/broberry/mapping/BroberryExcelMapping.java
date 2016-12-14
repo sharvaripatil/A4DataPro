@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.core.errors.ErrorMessage;
+import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.broberry.parser.BroberryProductAttributeParser;
@@ -110,6 +112,7 @@ public class BroberryExcelMapping implements IExcelParser{
 		  String MaterialValue2=null;
 		  String Keyword1 =null;
 		  String specialCharacters = "[™®-’—,]";
+		  int columnIndex = 0;
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -120,6 +123,7 @@ public class BroberryExcelMapping implements IExcelParser{
 	    String lastValue=null;
 	    String productId = null;
 	    String xid = null;
+	  
 		while (iterator.hasNext()) {
 			
 			try{
@@ -137,9 +141,10 @@ public class BroberryExcelMapping implements IExcelParser{
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
 				
-				int columnIndex = cell.getColumnIndex();
+				 columnIndex = cell.getColumnIndex();
 				if(columnIndex + 1 == 1){
 					xid = CommonUtility.getCellValueStrinOrInt(cell);//getProductXid(nextRow);
+					xid=xid.trim();
 					checkXid = true;
 				}else{
 					checkXid = false;
@@ -267,7 +272,7 @@ public class BroberryExcelMapping implements IExcelParser{
 				    break;
 					
 				case 5://COLOR
-						colorValue=cell.getStringCellValue();
+						colorValue=CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(colorValue)){
 						colorSet.add(colorValue);
 					}
@@ -297,7 +302,7 @@ public class BroberryExcelMapping implements IExcelParser{
 					
 				case 8: // UPC NO
 					
-				    productRelationalSku = cell.getStringCellValue();
+				    productRelationalSku = CommonUtility.getCellValueStrinOrInt(cell);
 				    sizeValue=ApplicationConstants.SIZE_MAP.get(dimension+"x"+size);
 				    finalColorValue=colorValue;
 					if(!StringUtils.isEmpty(sizeValue) &&!StringUtils.isEmpty(finalColorValue) &&!StringUtils.isEmpty(productRelationalSku)){
@@ -318,14 +323,14 @@ public class BroberryExcelMapping implements IExcelParser{
 				//////////////////////
 					//sharvari
 				case 12://CATEGORY....product category
-					String Category=cell.getStringCellValue();
+					String Category=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(Category)){
 						 listOfCategories.add(Category);
 					 }
 					 productExcelObj.setCategories(listOfCategories);
 					break;
 				case 13://SUB CATEGORY
-					String SubCategory=cell.getStringCellValue();
+					String SubCategory=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(SubCategory)){
 						 listOfCategories.add(SubCategory);
 					 }
@@ -334,7 +339,7 @@ public class BroberryExcelMapping implements IExcelParser{
 				
 					 break;
 				case 14://FABRIC WT
-					String FabricWT=cell.getStringCellValue();
+					String FabricWT=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FabricWT)&&!FabricWT.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)){
 					  itemWeight=broberryProductAttributeParser.getItemWeight(FabricWT);
 					 productConfigObj.setItemWeight(itemWeight);
@@ -343,46 +348,46 @@ public class BroberryExcelMapping implements IExcelParser{
 					
 			     break;
 				case 15://FABRIC CONTENT
-				      MaterialValue1=cell.getStringCellValue();
+				      MaterialValue1=CommonUtility.getCellValueStrinOrInt(cell);
 				
 					break;
 				case 16://FABRICATION
-					 MaterialValue2=cell.getStringCellValue();
+					 MaterialValue2=CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(MaterialValue2)){
 					 MaterialValue2=MaterialValue2.toUpperCase();
 					}
 					break;
 				case 17://LSW1
-					  AddionnalInfo1=cell.getStringCellValue();
-					 if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)){
-		            	 AdditionalInfo=AdditionalInfo.append("LSW:").append(AddionnalInfo1);
+					  AddionnalInfo1=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)&& !StringUtils.isEmpty(AddionnalInfo1)){
+						  AdditionalInfo=AdditionalInfo.append("LSW:").append(AddionnalInfo1);
 		             }
-				
 					break;
 				case 18://SILHOUTTE2
-					AddionnalInfo1=cell.getStringCellValue();
-		             if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)){
+					AddionnalInfo1=CommonUtility.getCellValueStrinOrInt(cell);
+		             if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)&& !StringUtils.isEmpty(AddionnalInfo1)){
 		            	 AdditionalInfo=AdditionalInfo.append("Silhoutte:").append(AddionnalInfo1);
 		             }
 					break;
 				case 19: //SUB DEPT
-					  Keyword1 = cell.getStringCellValue();
-	                 if(!Keyword1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)){
-	                FinalKeyword.append(Keyword1).append(ApplicationConstants.CONST_STRING_COMMA_SEP);
+					  Keyword1 = CommonUtility.getCellValueStrinOrInt(cell);
+	                 if(!Keyword1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)&& !StringUtils.isEmpty(Keyword1)){
+	                    FinalKeyword.append(Keyword1).append(ApplicationConstants.CONST_STRING_COMMA_SEP);
 	                 }
-	                
 					break;
 				
 				case 20: //NECKLINE3
-					AddionnalInfo1=cell.getStringCellValue();
-					 if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED) ){
+					AddionnalInfo1=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED) && !StringUtils.isEmpty(AddionnalInfo1)){
 						 AdditionalInfo=AdditionalInfo.append(",Neckline:").append(AddionnalInfo1);
-			         }
+					}
 					 break;
 				case 21: //DESIGN
-					String Keyword2 = cell.getStringCellValue();
+					String Keyword2 = CommonUtility.getCellValueStrinOrInt(cell);
 	                if(!Keyword2.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)&& !Keyword2.equalsIgnoreCase(Keyword1)){
+	                	 if(!StringUtils.isEmpty(Keyword2)){
 	                	FinalKeyword.append(Keyword2);
+	                	 }
 					}
 	                String FinalKeyword1=FinalKeyword.toString();
 	                String productKeywordArr[] =  FinalKeyword1.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
@@ -392,29 +397,29 @@ public class BroberryExcelMapping implements IExcelParser{
 					productExcelObj.setProductKeywords(productKeywords);
 					break;
 				case 22: //SEASONALITY4
-					AddionnalInfo1=cell.getStringCellValue();
-					 if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)){
+					AddionnalInfo1=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)&&!StringUtils.isEmpty(AddionnalInfo1)){
+						 
 					 AdditionalInfo=AdditionalInfo.append("Seasonality:").append(AddionnalInfo1);
+						 
 					 }
 				
 					break;
 				case 23: //PLF5
-					AddionnalInfo1=cell.getStringCellValue();
-					 if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)){
-				     AdditionalInfo=AdditionalInfo.append(",PLF:").append(AddionnalInfo1);
+					AddionnalInfo1=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)&&!StringUtils.isEmpty(AddionnalInfo1)){
+					AdditionalInfo=AdditionalInfo.append(",PLF:").append(AddionnalInfo1);
 					}
-					
 					break;
 	
 				case 24: //CARE INSTNS6
-					AddionnalInfo1=cell.getStringCellValue();
-					 if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)){
-					     AdditionalInfo=AdditionalInfo.append(",Care Instructions:").append(AddionnalInfo1);
-						}
-					
+					AddionnalInfo1= CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)&&!StringUtils.isEmpty(AddionnalInfo1)){
+						 AdditionalInfo=AdditionalInfo.append(",Care Instructions:").append(AddionnalInfo1);
+					}
 					break;
 				case 25: //LONG DESC
-					productName = cell.getStringCellValue();
+					productName = CommonUtility.getCellValueStrinOrInt(cell);
 					productName = CommonUtility.removeSpecialSymbols(productName,specialCharacters);
 					int len=productName.length();
 					 if(len>60){
@@ -428,7 +433,7 @@ public class BroberryExcelMapping implements IExcelParser{
 					break;
 				case 26: //CONS COPY
 	
-					String description = cell.getStringCellValue();
+					String description =CommonUtility.getCellValueStrinOrInt(cell);
 					description = CommonUtility.removeSpecialSymbols(description,specialCharacters);
 					int length=description.length();
 					 if(length>800){
@@ -450,11 +455,12 @@ public class BroberryExcelMapping implements IExcelParser{
 	
 					break;
 				case 29: //FIT LENG7 
-					AddionnalInfo1=cell.getStringCellValue();
-					 if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)){
+					AddionnalInfo1=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)&&!StringUtils.isEmpty(AddionnalInfo1)){
+						
 					     AdditionalInfo=AdditionalInfo.append(",Fix length:").append(AddionnalInfo1);
-						}
-					
+						
+					 }
 				
 					break;
 				case 30: //RETAIL COPY
@@ -462,10 +468,10 @@ public class BroberryExcelMapping implements IExcelParser{
 
 					break;
 				case 31: //LINING8 ,Lining:
-					AddionnalInfo1=cell.getStringCellValue();
-					if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED)){
+					AddionnalInfo1=CommonUtility.getCellValueStrinOrInt(cell);
+					if(!AddionnalInfo1.contains(ApplicationConstants.CONST_STRING_UNASSIGNED) &&!StringUtils.isEmpty(AddionnalInfo1)){
 					 AdditionalInfo=AdditionalInfo.append(",Lining:").append(AddionnalInfo1);
-				     }
+				    }
 					productExcelObj.setAdditionalProductInfo(AdditionalInfo.toString());
 					break;
 				
@@ -475,8 +481,12 @@ public class BroberryExcelMapping implements IExcelParser{
 					 
 			}		
 			}catch(Exception e){
-			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
-		}
+			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"at column number(increament by 1):"+columnIndex);		 
+			ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet: "
+			+e.getMessage()+" at column number(increament by 1)"+columnIndex);
+			productDaoObj.save(apiResponse.getErrors(),
+					productExcelObj.getExternalProductId()+"-Failed", asiNumber, batchId);
+			}
 		}
 		workbook.close();
 		productExcelObj.setAdditionalProductInfo(AdditionalInfo.toString());
