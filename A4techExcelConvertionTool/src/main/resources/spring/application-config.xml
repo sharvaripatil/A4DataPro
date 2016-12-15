@@ -24,8 +24,8 @@
 	<import resource="sageMapping.xml" />
 	<import resource="kuku_mapping.xml" />
 	<!-- <import resource="quartz-context.xml"/> -->
-	<context:property-placeholder location="classpath:application.properties,classpath:prod-database.properties
-	                                       ,classpath:prod-externalApiEndPoints.properties"/>
+	<context:property-placeholder location="classpath:application.properties,classpath:sandbox-database.properties
+	                                       ,classpath:sandbox-externalApiEndPoints.properties"/>
 	<bean id="productService" class="com.a4tech.product.service.imple.ProductServiceImpl" />
 	<bean id="postServiceImplV2" name="postServiceImplV2"
 		class="com.a4tech.v2.service.postImpl.PostServiceImpl">
@@ -65,6 +65,7 @@
    		<property name="materialLookupUrl" value="${materials.lookup.url}"/>
    		<property name="shapesLookupUrl" value="${shapes.lookup.url}"/>
    		<property name="originLookupUrl" value="${origin.lookup.url}"/>
+   		<property name="fobPointLookupUrl" value="${fobPoint.lookup.url}"/>
    </bean>
    <bean id="lookupServiceData" class="com.a4tech.lookup.service.LookupServiceData">
    		<property name="lookupRestService" ref="lookupRestService"/>
@@ -387,6 +388,7 @@
 		<property name="broberryExcelMapping" ref="broberryExcelMappingId"/>
 		<property name="bdProdcutsMapping" ref="bestDealMappingId"/>
 		<property name="riversEndExcelMapping" ref="riversEndExcelMappingId"/>
+		<property name="bamExcelMapping" ref="bambamProductExcelMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -412,5 +414,10 @@
 		class="com.a4tech.product.riversend.parser.RiverEndAttributeParser" autowire="byName">
 	</bean>
         <!--supplier 82588 configuration start  -->  
+        
+    <bean id="bambamProductExcelMappingId" class="com.a4tech.bambam.product.mapping.BambamProductExcelMapping">
+    	<property name="postServiceImpl" ref="postService"/>
+     	<property name="productDaoObj"   ref="productDao"/>
+    </bean>
 </beans>
 

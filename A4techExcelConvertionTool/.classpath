@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" output="target/classes" path="src/main/java">
+	<classpathentry kind="src" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="src" path="main/java/supplier/38228BamBam"/>
+	<classpathentry excluding="47791BestDeal/|44620Apparel/|91284NewPro/|82283RFGLine/|32125/|64905/|Sage/|USBProducts/|JulyData/|DistributorCentral/|kuku/|91561ESPTemplate/|40445BBI/|42057Broberry/|82588RiversEnd/|38228BamBam/" kind="src" path="main/java/supplier"/>
 	<classpathentry kind="src" path="src/test/resources"/>
 	<classpathentry kind="src" path="main/java/supplier/47791BestDeal"/>
 	<classpathentry kind="src" path="main/java/supplier/44620Apparel"/>
@@ -15,12 +17,12 @@
 	<classpathentry kind="src" path="main/java/supplier/64905"/>
 	<classpathentry kind="src" path="main/java/supplier/Sage"/>
 	<classpathentry kind="src" path="main/java/supplier/USBProducts"/>
-	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
+	<classpathentry excluding="**" kind="src" path="src/main/resources">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+	<classpathentry kind="src" path="src/test/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
