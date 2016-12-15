@@ -132,13 +132,22 @@ public class ProductDao {
 		Transaction tx  = null;
 		ErrorEntity errorEntity = null;
 		ProductEntity productEntity = new ProductEntity();
+		boolean flag=false;
 		for (ErrorMessage errorMessage : errors) {
 			if(errorMessage.getReason() == null){
 				continue;
 			}
 				errorEntity = new ErrorEntity();
+				//String tempError=errorMessage.getReason();
+				String tempMessage=errorMessage.getMessage();
+				if(tempMessage.contains("Your product could not be saved")){
+					flag=true;
+				}
 				errorEntity.setError(errorMessage.getReason());
 				productEntity.addErrorEntity(errorEntity);	  
+		}
+		if(flag){
+			productNo=productNo+"-Failed:";
 		}
 		productEntity.setSupplierAsiNumber(asiNumber);
 		productEntity.setProductNo(productNo);

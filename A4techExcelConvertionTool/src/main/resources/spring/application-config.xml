@@ -38,7 +38,7 @@
 		<constructor-arg>
 			<bean
 				class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory"
-				p:readTimeout="50000" p:connectTimeout="50000" />
+				p:readTimeout="90000" p:connectTimeout="90000" />
 		</constructor-arg>
 		<!-- <property name="messageConverters"> <list> <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"> 
 			<property name="supportedMediaTypes"> <list> <bean class="org.springframework.http.MediaType"> 
