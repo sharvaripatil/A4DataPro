@@ -29,6 +29,14 @@ public class BroberryProductMaterialParser {
 		Material materialObj = new Material();
 		List<Material> listOfMaterial = new ArrayList<>();
 		try {
+			String tempAliasValArr[]=materialValue1.split("%%%%");
+			String finalTempAliasVal="";
+			materialValue1=tempAliasValArr[0];
+			
+			if(tempAliasValArr.length==2){
+				finalTempAliasVal=tempAliasValArr[1];
+			}
+			
 		List<String> listOfLookupMaterial = getMaterialType(materialValue1.toUpperCase());
 		if(!listOfLookupMaterial.isEmpty()){
 			int numOfMaterials = listOfLookupMaterial.size();
@@ -48,7 +56,7 @@ public class BroberryProductMaterialParser {
 			////////////////////
 			  //if(numOfMaterials == 1){ // this condition used to single material value(E.X 100% Cotton)
 			if(numOfMaterials == 1 && !flag){ // this condition used to single material value(E.X 100% Cotton)
-				  materialObj = getMaterialValue(listOfLookupMaterial.toString(), materialValue1);
+				  materialObj = getMaterialValue(listOfLookupMaterial.toString(), materialValue1+" "+finalTempAliasVal);
 				  listOfMaterial.add(materialObj);
 			  }else if(isBlendMaterial(materialValue1)){   // this condition for blend material
 				  
@@ -69,7 +77,7 @@ public class BroberryProductMaterialParser {
 				    		 if(materialValue.contains("%")){
 								  String percentage = materialValue.split("%")[0];
 								  materialObj.setName("BLEND");
-								  materialObj.setAlias(materialValue1); 
+								  materialObj.setAlias(materialValue1+" "+finalTempAliasVal); 
 								  
 								  if(!StringUtils.isEmpty(mtrlType)){
 									  mtrlType=CommonUtility.removeCurlyBraces(mtrlType);
@@ -120,7 +128,7 @@ public class BroberryProductMaterialParser {
 							  }
 							  else{
 								  materialObj.setName(CommonUtility.removeCurlyBraces(mtrlType));
-								  materialObj.setAlias(materialValue1);  
+								  materialObj.setAlias(materialValue1+" "+finalTempAliasVal);  
 							  }
 						} //[70% Modacrylic , 25% Cotton , 5%],[59% Cotton, 39% Polyester, 2% Sp]
 				    	 String valuesTemp[]=values[2].split("%");
@@ -128,12 +136,19 @@ public class BroberryProductMaterialParser {
 				    	 if( valuesTemp.length==1){
 				    		 materialObj.setName("Other");
 				    		// materialObj.setAlias(values[1]);//
-				    		 materialObj.setAlias(materialValue1);
+				    		 materialObj.setAlias(materialValue1+" "+finalTempAliasVal);
 				    	 }else if(valuesTemp.length==2){
 				    		 //materialObj.setName(valuesTemp[1]);
-				    		 materialObj.setName(values[2].toString());
+				    		 //materialObj.setName(values[2].toString());/////////////////imp thingtoday
+				    		 List<String> listOfLookupMaterialTemp = getMaterialType(values[2].toString().toUpperCase());
+				    		if(!listOfLookupMaterialTemp.isEmpty()){
+				    			materialObj.setName(listOfLookupMaterialTemp.get(0));
+				    		}else{
+				    			materialObj.setName(values[2].toString());
+				    		}
+				    		
 				    		// materialObj.setName(valuesTemp[2]);
-				    		 materialObj.setAlias(materialValue1); 
+				    		 materialObj.setAlias(materialValue1+" "+finalTempAliasVal); 
 				    	 }
 				    	 comboObj.setBlendMaterials(listOfBlendMaterial);
 				    	 comboObj.setName("Blend");
@@ -145,10 +160,11 @@ public class BroberryProductMaterialParser {
 			if(materialValue1.equalsIgnoreCase("Unassigned")){
 				
 			}else{
-			materialObj = getMaterialValue("Other", materialValue1);
+			materialObj = getMaterialValue("Other", materialValue1+" "+finalTempAliasVal);
 			listOfMaterial.add(materialObj);
 			}
 		}
+		tempAliasValArr=new String[tempAliasValArr.length];;
 		} catch (Exception e) {
 			_LOGGER.error("Error while Material1 processing :" + e.getMessage());
 		
@@ -218,7 +234,7 @@ public class BroberryProductMaterialParser {
 	
 		
 	
-	 public List<Material> getMaterialList(String materialValue2,List<Material> listOfMaterial){
+	/* public List<Material> getMaterialList(String materialValue2,List<Material> listOfMaterial){
 			Material materialObj = new Material();
 			 List<String> listOfLookupMaterial = getMaterialType(materialValue2.toUpperCase());
 			//try{
@@ -233,15 +249,15 @@ public class BroberryProductMaterialParser {
 					listOfMaterial.add(materialObj);
 				  }
 				return listOfMaterial;
-			/* catch (Exception e) {
-			_LOGGER.error("Error while Material1 processing :" + e.getMessage());*/
+			 catch (Exception e) {
+			_LOGGER.error("Error while Material1 processing :" + e.getMessage());
 			 //	_LOGGER.info("Material1 processed");
 			}
 		 
 		
 			
 		
-
+*/
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;
 	}
