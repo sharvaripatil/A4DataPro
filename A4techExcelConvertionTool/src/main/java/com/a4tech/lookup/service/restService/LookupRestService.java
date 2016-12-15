@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import com.a4tech.lookup.model.FobPoints;
 import com.a4tech.lookup.model.ImprintMethods;
 import com.a4tech.lookup.model.Materials;
 import com.a4tech.lookup.model.Origin;
@@ -22,7 +23,7 @@ public class LookupRestService {
    private String materialLookupUrl;
    private String shapesLookupUrl;
    private String originLookupUrl;
-   
+   private String fobPointLookupUrl; 
 	public List<String> getImprintMethodData(){
 		 try{
 			 HttpHeaders headers = new HttpHeaders();
@@ -82,6 +83,22 @@ public class LookupRestService {
 		 }
 		return null;
 	}
+	public List<String> getFobPoints(String authToken){
+		HttpHeaders headers = new HttpHeaders();
+		try{
+			headers.add("Accept", "application/json");
+			headers.add("Content-Type", "application/json");
+	        headers.add("AuthToken", authToken);
+	        HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+	       ResponseEntity<FobPoints> response = restTemplate.exchange(fobPointLookupUrl, HttpMethod.GET, 
+	                                                                 requestEntity, FobPoints.class);
+	       FobPoints data = response.getBody();
+	      return data.getFobPoints();	
+		}catch(Exception exce){
+			_LOGGER.error("unable to get FOB Points lookup Data:"+exce.getMessage());
+		}
+		return null;
+	}
 	public String getOriginLookupUrl() {
 		return originLookupUrl;
 	}
@@ -119,5 +136,11 @@ public class LookupRestService {
 		public void setShapesLookupUrl(String shapesLookupUrl) {
 			this.shapesLookupUrl = shapesLookupUrl;
 		}
+		 public String getFobPointLookupUrl() {
+				return fobPointLookupUrl;
+		}
 
+		public void setFobPointLookupUrl(String fobPointLookupUrl) {
+			this.fobPointLookupUrl = fobPointLookupUrl;
+		}  
 }

@@ -12,7 +12,7 @@ public class LookupServiceData {
 	public static List<String> materialValues = null;
 	public static List<String> shapes = null;
 	public static List<String> listOfOrigins = null;
-	
+	public List<String> listOfFobPoints = null;
 	public  List<String> getImprintMethods(){
 		  if(imprintMethods == null){
 			  imprintMethods = lookupRestService.getImprintMethodData();
@@ -39,6 +39,12 @@ public class LookupServiceData {
 			listOfOrigins = lookupRestService.getOrigins();
 		}
 		return listOfOrigins;
+	}
+	public List<String> getFobPoints(String authToken){
+		if(listOfFobPoints == null){
+			listOfFobPoints = lookupRestService.getFobPoints(authToken);
+		}
+		return listOfFobPoints;
 	}
 	public boolean isImprintMethod(String imprintValue){
 		if(imprintMethods == null){
