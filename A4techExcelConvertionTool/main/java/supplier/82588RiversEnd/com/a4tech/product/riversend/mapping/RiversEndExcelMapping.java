@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.broberry.mapping.BroberryExcelMapping;
@@ -39,6 +40,7 @@ import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductSkus;
 import com.a4tech.product.model.Volume;
 import com.a4tech.product.riversend.parser.RiverEndAttributeParser;
+import com.a4tech.product.riversend.parser.RiverEndPriceGridParser;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -49,9 +51,10 @@ public class RiversEndExcelMapping  implements IExcelParser{
 
 	private static final Logger _LOGGER = Logger.getLogger(BroberryExcelMapping.class);
 	
-	/*private PostServiceImpl postServiceImpl;
-	private ProductDao productDaoObj;*/
+	private PostServiceImpl postServiceImpl;
+	private ProductDao productDaoObj;
 	private RiverEndAttributeParser riverEndAttributeParser;
+	private RiverEndPriceGridParser riverEndPriceGridParser;
 	@Autowired
 	ObjectMapper mapperObj;
 	
@@ -66,7 +69,6 @@ public class RiversEndExcelMapping  implements IExcelParser{
 		List<String> productKeywords = new ArrayList<String>();
 		List<String> listOfCategories = new ArrayList<String>();
 		List<ProductSkus> ProductSkusList = new ArrayList<>();
-		Volume itemWeight=new Volume();
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		String finalResult = null;
@@ -86,6 +88,7 @@ public class RiversEndExcelMapping  implements IExcelParser{
 		  String upc_no;
 		  Set<String> colorSet = new HashSet<String>(); 
 		  List<Color> colorList = new ArrayList<Color>();
+		  HashMap<String, String>  priceGridMap=new HashMap<String, String>();
 		  List<ProductNumber> pnumberList = new ArrayList<ProductNumber>();
 		  String productNumber=null;
 		  HashSet<String> sizeValuesSet = new HashSet<>();
@@ -108,6 +111,7 @@ public class RiversEndExcelMapping  implements IExcelParser{
 	    String lastValue=null;
 	    String productId = null;
 	    String xid = null;
+	    int columnIndex=0;
 		while (iterator.hasNext()) {
 			
 			try{
@@ -127,7 +131,7 @@ public class RiversEndExcelMapping  implements IExcelParser{
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
 				
-				int columnIndex = cell.getColumnIndex();
+			     columnIndex = cell.getColumnIndex();
 				
 				if(columnIndex + 1 == 1){
 					xid = getProductXid(nextRow);//CommonUtility.getCellValueStrinOrInt(cell);//
@@ -142,7 +146,12 @@ public class RiversEndExcelMapping  implements IExcelParser{
 						 if(nextRow.getRowNum() != 1){
 							colorList=riverEndAttributeParser.getColorCriteria(colorSet);
 							productConfigObj.setColors(colorList);
-							
+							if(!CollectionUtils.isEmpty(priceGridMap)){
+								productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_NET);
+								priceGrids=riverEndPriceGridParser.getPriceGrids(priceGridMap);
+								productExcelObj.setPriceGrids(priceGrids);
+								}
+							 	
 							 	
 							 productConfigObj.setSizes(riverEndAttributeParser.getProductSize(new ArrayList<String>(sizeValuesSet)));
 								 	productExcelObj.setPriceGrids(priceGrids);
@@ -150,7 +159,7 @@ public class RiversEndExcelMapping  implements IExcelParser{
 								 	_LOGGER.info("Product Data : "
 											+ mapperObj.writeValueAsString(productExcelObj));
 								 	
-							 int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -167,11 +176,13 @@ public class RiversEndExcelMapping  implements IExcelParser{
 								repeatRows.clear();
 								colorSet=new HashSet<String>(); 
 								colorList = new ArrayList<Color>();
+								
+								priceGridMap=new HashMap<String, String>();
 								pnumberList=new ArrayList<ProductNumber>();
 								
 								sizeValuesSet = new HashSet<>();
 								sizeValuesSet = new HashSet<>();
-								ProductDataStore.clearSizesBrobery();
+								//ProductDataStore.clearSizesBrobery();
 
 						 }
 						    if(!productXids.contains(xid)){
@@ -179,14 +190,14 @@ public class RiversEndExcelMapping  implements IExcelParser{
 						    	repeatRows.add(xid);
 						    }
 						    productExcelObj = new Product();
-						    //existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
+						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
 						    	    productExcelObj=existingApiProduct;
 									productConfigObj=productExcelObj.getProductConfigurations();
-								    priceGrids = productExcelObj.getPriceGrids();
+								   // priceGrids = productExcelObj.getPriceGrids();
 						     }
 							
 					 }
@@ -201,7 +212,6 @@ public class RiversEndExcelMapping  implements IExcelParser{
 				switch (columnIndex + 1) {
 					case 1://XID
 						//productId=xid;//CommonUtility.getCellValueStrinOrInt(cell);
-						//System.out.println(productId);
 						productExcelObj.setExternalProductId(xid);
 						break;
 						
@@ -268,8 +278,13 @@ public class RiversEndExcelMapping  implements IExcelParser{
 					case 16://Web Active
 						//ignore this column
 						break;
-				    case 17://Weight
-				    	//item weight
+					 case 17://Weight
+					    	//item weight
+					    	String itemWt=CommonUtility.getCellValueStrinOrInt(cell);
+					    	if(!StringUtils.isEmpty(itemWt)){
+					    		Volume 	itemWeight=	riverEndAttributeParser.getItemWeightvolume(itemWt);
+					    		productConfigObj.setItemWeight(itemWeight);
+					    	}
 						break;
 					case 18://Height
 						//ignore this column for now as sizes are present
@@ -295,6 +310,10 @@ public class RiversEndExcelMapping  implements IExcelParser{
 						break;
 					case 24://Price
 						//pricing
+						String netPrice=CommonUtility.getCellValueStrinOrDecimal(cell);
+						if(!StringUtils.isEmpty(netPrice)){
+							priceGridMap.put(sizeItemNo, sizeDsec+"___"+netPrice);
+							}
 						break;
 					case 25://Created Date
 						//ignore this column 
@@ -325,22 +344,28 @@ public class RiversEndExcelMapping  implements IExcelParser{
 				}  // end inner while loop					 
 			}		
 			}catch(Exception e){
-			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
-		}
+				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"at column number(increament by 1):"+columnIndex);		 
+				ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet: "
+				+e.getMessage()+" at column number(increament by 1)"+columnIndex);
+				productDaoObj.save(apiResponse.getErrors(),
+						productExcelObj.getExternalProductId()+"-Failed", asiNumber, batchId);
+				}
 		}
 		workbook.close();
 		colorList=riverEndAttributeParser.getColorCriteria(colorSet);
 		productConfigObj.setColors(colorList);
-		//pnumberList=broberryProductAttributeParser.getProductNumer(productNumberMap);
-		//productExcelObj.setProductNumbers(pnumberList);
 		productConfigObj.setSizes(riverEndAttributeParser.getProductSize(new ArrayList<String>(sizeValuesSet)));
-	 	productExcelObj.setPriceGrids(priceGrids);
-	 
+		
+		if(!CollectionUtils.isEmpty(priceGridMap)){
+		productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_NET);
+		priceGrids=riverEndPriceGridParser.getPriceGrids(priceGridMap);
+		productExcelObj.setPriceGrids(priceGrids);
+		}
 		 productExcelObj.setProductConfigurations(productConfigObj);
 		 	_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));
 		 	
-		 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
@@ -349,7 +374,7 @@ public class RiversEndExcelMapping  implements IExcelParser{
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
-	   // productDaoObj.saveErrorLog(asiNumber,batchId);
+	    productDaoObj.saveErrorLog(asiNumber,batchId);
 		priceGrids = new ArrayList<PriceGrid>();
 		productConfigObj = new ProductConfigurations();
 		listOfColors = new HashSet<>();
@@ -357,6 +382,7 @@ public class RiversEndExcelMapping  implements IExcelParser{
 		colorSet=new HashSet<String>(); 
 		colorList = new ArrayList<Color>();
 		AdditionalInfo=new StringBuilder();
+		priceGridMap=new HashMap<String, String>();
 		pnumberList=new ArrayList<ProductNumber>();
 		listOfMaterial=new ArrayList<Material>();
 		sizeValuesSet = new HashSet<>();
@@ -364,7 +390,7 @@ public class RiversEndExcelMapping  implements IExcelParser{
 		productOptionSet=new HashSet<String>();
 		listOfCategories=new ArrayList<String>();
 		FinalKeyword=new StringBuilder();
-		ProductDataStore.clearSizesBrobery();
+		//ProductDataStore.clearSizesBrobery();
        ProductSkusList = new ArrayList<ProductSkus>();
         AdditionalInfo= new StringBuilder();
 		return finalResult;
@@ -428,7 +454,7 @@ public class RiversEndExcelMapping  implements IExcelParser{
 		return newPriceGrid;
 }
 	
-	/*public PostServiceImpl getPostServiceImpl() {
+	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}
 
@@ -442,7 +468,7 @@ public class RiversEndExcelMapping  implements IExcelParser{
 	public void setProductDaoObj(ProductDao productDaoObj) {
 		this.productDaoObj = productDaoObj;
 	}
-	*/
+	
 	public static final String CONST_STRING_COMBO_TEXT = "Combo";
 	
 	public ObjectMapper getMapperObj() {
@@ -464,6 +490,19 @@ public class RiversEndExcelMapping  implements IExcelParser{
 	public void setRiverEndAttributeParser(
 			RiverEndAttributeParser riverEndAttributeParser) {
 		this.riverEndAttributeParser = riverEndAttributeParser;
+	}
+
+
+
+	public RiverEndPriceGridParser getRiverEndPriceGridParser() {
+		return riverEndPriceGridParser;
+	}
+
+
+
+	public void setRiverEndPriceGridParser(
+			RiverEndPriceGridParser riverEndPriceGridParser) {
+		this.riverEndPriceGridParser = riverEndPriceGridParser;
 	}
 	
 	
