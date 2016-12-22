@@ -5,24 +5,27 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.a4tech.product.model.TradeName;
 import com.a4tech.util.ApplicationConstants;
 
 public class ProductTradeNameParser {
            
 	private Logger              _LOGGER              = Logger.getLogger(getClass());
 	
-	public List<String> getTradeNameCriteria(String tradename){
-		List<String> tradenameList =new ArrayList<String>();
+	public List<TradeName> getTradeNameCriteria(String tradename){
+		List<TradeName> tradenameList =new ArrayList<>();
 		try{
 		String tradeNameValue = tradename;
 		String tradeArr[] = tradeNameValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-		
+		TradeName tradeNameObj = null;
 		for (String tempTrade : tradeArr) {
- 			tradenameList.add(tempTrade);
+			tradeNameObj = new TradeName();
+			tradeNameObj.setName(tempTrade);
+ 			tradenameList.add(tradeNameObj);
 		}
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Product TradeName :"+e.getMessage());       
-		   	return new ArrayList<String>();
+		   	return new ArrayList<TradeName>();
 		   	
 		   }
 		return tradenameList;

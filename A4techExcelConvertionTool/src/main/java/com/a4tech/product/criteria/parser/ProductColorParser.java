@@ -23,6 +23,7 @@ public class ProductColorParser {
 		
 		try{
 		Color colorObj;
+		color = color.trim();
 		String colorArr[]=color.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 		 boolean isCombo=false;
 		 List<Combo> comboList=null;

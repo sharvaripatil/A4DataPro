@@ -20,9 +20,11 @@ public class ProductImprintMethodParser {
 		String imprintArr[] = impValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 		ImprintMethod imprintObj=null;
 		for (String tempImpint : imprintArr) {
+			tempImpint = tempImpint.trim();
+			String values[] = tempImpint.split(ApplicationConstants.CONST_STRING_EQUAL);
  			imprintObj=new ImprintMethod();
- 			imprintObj.setType(tempImpint);
- 			imprintObj.setAlias(tempImpint);
+ 			imprintObj.setType(values[0]);
+ 			imprintObj.setAlias(values[1]);
  			impmthdList.add(imprintObj);
 		}
 		

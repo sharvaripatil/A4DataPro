@@ -5,12 +5,14 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import com.a4tech.product.dao.entity.SupplierLoginDetails;
+import com.a4tech.product.service.IProductDaoTest;
 
-public class ProductDaoTest {
+public class ProductDaoTestImpl  implements IProductDaoTest{
    
 	  private SessionFactory sessionFactory;
-
+      @Override
 	  public Integer addSupplierLogin(SupplierLoginDetails loginData){
+		  System.out.println("enter test dao class");
 		  Session session = null;
 		  Transaction transcation = null;
 		  try{

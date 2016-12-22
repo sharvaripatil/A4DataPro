@@ -58,7 +58,7 @@
 
 	</bean>
 	<bean id="productDao" name="productDao"
-		class="com.a4tech.product.test.ProductDaoTest">
+		class="com.a4tech.product.test.ProductDaoTestImpl">
 		<property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory"></property>
 	</bean>
 </beans>

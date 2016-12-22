@@ -7,12 +7,15 @@ import com.a4tech.util.ApplicationConstants;
 
 public class LookupServiceData {
 	
-	private LookupRestService lookupRestService;
-	public static List<String> imprintMethods = null;
-	public static List<String> materialValues = null;
-	public static List<String> shapes = null;
-	public static List<String> listOfOrigins = null;
-	public List<String> listOfFobPoints = null;
+	private LookupRestService  lookupRestService;
+	public static List<String> imprintMethods 		= null;
+	public static List<String> materialValues 		= null;
+	public static List<String> shapes 				= null;
+	public static List<String> listOfOrigins 		= null;
+	public List<String> 	   listOfFobPoints 		= null;
+	public List<String>        lineNames 			= null;
+	public List<String>        tradeNames  			= null;
+	public static List<String> categories 			= null;
 	public  List<String> getImprintMethods(){
 		  if(imprintMethods == null){
 			  imprintMethods = lookupRestService.getImprintMethodData();
@@ -45,6 +48,24 @@ public class LookupServiceData {
 			listOfFobPoints = lookupRestService.getFobPoints(authToken);
 		}
 		return listOfFobPoints;
+	}
+	public List<String> getLineNames(String authToken){
+		if(lineNames == null){
+			lineNames = lookupRestService.getLineNames(authToken);
+		}
+		return lineNames;
+	}
+	public List<String> getCategories(){
+		if(categories == null){
+			categories = lookupRestService.getCategories();
+		}
+		return categories;
+	}
+	public List<String> getTradeNames(String tradeName){
+		if(tradeNames == null){
+			tradeNames = lookupRestService.getTradeNames(tradeName);
+		}
+		return tradeNames;
 	}
 	public boolean isImprintMethod(String imprintValue){
 		if(imprintMethods == null){
