@@ -58,12 +58,10 @@ public class ExcelFactory {
 			   return broberryExcelMapping;  
 		   }else if(name.equalsIgnoreCase("bestDeal") || name.equals("47791")){
 			   return bdProdcutsMapping;
+		   }else if(name.equalsIgnoreCase("riversend") || name.equals("82588")){
+			   return riversEndExcelMapping;
 		   }/*else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
 			   return bamExcelMapping;
-		   }*/
-			   /*else if(name.equalsIgnoreCase("riversend") || name.equals("82588")){
-		   }
-			   return riversEndExcelMapping;
 		   }*/
 		   
 		return null;

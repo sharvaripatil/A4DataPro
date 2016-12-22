@@ -17,6 +17,7 @@ import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
+import com.a4tech.product.model.Volume;
 import com.a4tech.util.ApplicationConstants;
 
 public class RiverEndAttributeParser {
@@ -162,5 +163,23 @@ public class RiverEndAttributeParser {
 		}
 		return size;
 	}
-
+	
+	public Volume getItemWeightvolume(String itemWeightValue){
+		List<Value> listOfValue = null;
+		List<Values> listOfValues = null;
+		Volume volume  = new Volume();
+		Values values = new Values();
+		Value valueObj = new Value();
+		if(!itemWeightValue.equals(ApplicationConstants.CONST_STRING_ZERO)){
+			listOfValue = new ArrayList<>();
+			listOfValues = new ArrayList<>();
+			valueObj.setValue(itemWeightValue);
+			valueObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_WEIGHT);
+			listOfValue.add(valueObj);
+			values.setValue(listOfValue);
+			listOfValues.add(values);
+			volume.setValues(listOfValues);
+		}
+		return volume;
+	}
 }

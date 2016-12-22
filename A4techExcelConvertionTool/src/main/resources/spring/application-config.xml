@@ -356,9 +356,7 @@
 		<property name="postServiceImpl" ref="postService"></property>
 		<property name="productDaoObj" ref="productDao" />
 		<property name="broberryProductAttributeParser" ref="broberryProductAttributeParserId" /> 
-		<property name="broberryMaterialParserObj" ref="broberryMaterialParserObjId" /> 
-		<property name="broberrySkuParserObj" ref="broberrySkuParserObj" /> 
-		
+		<property name="broberryMaterialParserObj" ref="broberryMaterialParserObjId" />
 	</bean>
 	<bean id="broberryProductAttributeParserId" name="broberryProductAttributeParser"
 		class="com.a4tech.product.broberry.parser.BroberryProductAttributeParser" autowire="byName">
@@ -414,11 +412,16 @@
      
       <!-- supplier 82588 configuration end --> 
      <bean id="riversEndExcelMappingId" class="com.a4tech.product.riversend.mapping.RiversEndExcelMapping">
+     <property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
      <property name="riverEndAttributeParser" ref="riverEndAttributeParserId" /> 
+     <property name="riverEndPriceGridParser" ref="riverEndPriceGridParserId" /> 
+     
      </bean>
      <bean id="riverEndAttributeParserId" name="riverEndAttributeParser"
 		class="com.a4tech.product.riversend.parser.RiverEndAttributeParser" autowire="byName">
 	</bean>
+	<bean id="riverEndPriceGridParserId" class="com.a4tech.product.riversend.parser.RiverEndPriceGridParser"/>
         <!--supplier 82588 configuration start  -->  
         
     <bean id="bambamProductExcelMappingId" class="com.a4tech.bambam.product.mapping.BambamProductExcelMapping">
