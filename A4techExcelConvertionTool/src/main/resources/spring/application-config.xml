@@ -51,7 +51,9 @@
 			</property> </bean> <bean class="org.springframework.http.converter.StringHttpMessageConverter"> 
 			<constructor-arg name="defaultCharset" value="UTF-8" /> </bean> </list> </property> -->
 	</bean>
-
+    <bean id="lookupDataId" class="com.a4tech.util.LookupData">
+    	<property name="lookupServiceData" ref="lookupServiceData"/>
+    </bean>
 	<bean id="postService" class="com.a4tech.product.service.postImpl.PostServiceImpl">
 		<property name="restTemplate" ref="restTemplate"></property>
 		<property name="productDao" ref="productDao"></property>
@@ -65,6 +67,10 @@
    		<property name="materialLookupUrl" value="${materials.lookup.url}"/>
    		<property name="shapesLookupUrl" value="${shapes.lookup.url}"/>
    		<property name="originLookupUrl" value="${origin.lookup.url}"/>
+   		<property name="fobPointLookupUrl" value="${fobPoint.lookup.url}"/>
+   		<property name="lineNamesLookupUrl" value="${lineName.lookup.url}"/>
+   		<property name="tradeNameLookupUrl" value="${tradeName.lookup.url}"/>
+   		<property name="categoriesLookupUrl" value="${categories.lookup.url}"/>
    </bean>
    <bean id="lookupServiceData" class="com.a4tech.lookup.service.LookupServiceData">
    		<property name="lookupRestService" ref="lookupRestService"/>
@@ -90,6 +96,7 @@
 		<property name="productDao" ref="productDao" />
 		<property name="convertCsvToExcel" ref="convertCsvToExcelId"/>
 		<property name="excelFactory" ref="excelFactoryId"/>
+		<property name="lookupData" ref="lookupDataId"/>
 	</bean>
 	<bean id="usbExcelMapping"
 		class="com.a4tech.usbProducts.excelMapping.UsbProductsExcelMapping">
@@ -385,6 +392,7 @@
 		<property name="broberryExcelMapping" ref="broberryExcelMappingId"/>
 		<property name="bdProdcutsMapping" ref="bestDealMappingId"/>
 		<property name="riversEndExcelMapping" ref="riversEndExcelMappingId"/>
+		<property name="bamExcelMapping" ref="bambamProductExcelMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -415,5 +423,22 @@
 	</bean>
 	<bean id="riverEndPriceGridParserId" class="com.a4tech.product.riversend.parser.RiverEndPriceGridParser"/>
         <!--supplier 82588 configuration start  -->  
+        
+    <bean id="bambamProductExcelMappingId" class="com.a4tech.bambam.product.mapping.BambamProductExcelMapping">
+    	<property name="postServiceImpl" ref="postService"/>
+     	<property name="productDaoObj"   ref="productDao"/>
+     	<property name="bamProductParser" ref="bamAttributeParserId"/>
+     	<property name="bamMaterialParser" ref="bamMaterialParserId"/>
+     	<property name="bamSizeParser" ref="bamSizeParserId"/>
+     	<property name="bamShippingParser" ref="bamShippingEstimationParserId"/>
+     	<property name="bamPriceGridParser" ref="bamPriceGridParserId"/>
+    </bean>
+    <bean id="bamAttributeParserId" class="com.a4tech.bambam.product.parser.BamProductAttributeParser">
+    	<property name="lookupData" ref="lookupDataId"/>
+    </bean>
+    <bean id="bamMaterialParserId" class="com.a4tech.bambam.product.parser.BamMaterialParser"/>
+    <bean id="bamSizeParserId" class="com.a4tech.bambam.product.parser.BamSizeParser"/>
+    <bean id="bamShippingEstimationParserId" class="com.a4tech.bambam.product.parser.BamShippingEstimationParser"/>
+    <bean id="bamPriceGridParserId" class="com.a4tech.bambam.product.parser.BamPriceGridParser"></bean>
 </beans>
 

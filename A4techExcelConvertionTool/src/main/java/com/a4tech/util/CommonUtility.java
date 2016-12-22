@@ -2,6 +2,7 @@ package com.a4tech.util;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -37,15 +38,19 @@ public class CommonUtility {
 		}
 		return new ArrayList<String>();
 	}
-	
+	public static List<String> getStringAsList(String value){
+		List<String> listOfValues = Arrays.asList(value
+				.split(ApplicationConstants.CONST_STRING_COMMA_SEP));
+		return listOfValues;
+	}
 	public static String getCellValueDouble(Cell cell) {
 		String value = ApplicationConstants.CONST_STRING_EMPTY;
 		try {
 			if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
-				value = cell.getStringCellValue();
+				value = cell.getStringCellValue().trim();
 			} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				double doubleValue = cell.getNumericCellValue();
-				value = String.valueOf(doubleValue);
+				value = String.valueOf(doubleValue).trim();
 			}
 		} catch (Exception e) {
 			_LOGGER.error("Cell value convert into Double: " + e.getMessage());
@@ -58,13 +63,13 @@ public class CommonUtility {
 		String value = ApplicationConstants.CONST_STRING_EMPTY;
 		try {
 			if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
-				value = cell.getStringCellValue();
+				value = cell.getStringCellValue().trim();
 			} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				int numericValue = (int) cell.getNumericCellValue();
-				value = String.valueOf(numericValue);
+				value = String.valueOf(numericValue).trim();
 			}else if(cell.getCellType() == Cell.CELL_TYPE_ERROR){
 				//value = String.valueOf(cell.getErrorCellValue());
-				value = Byte.toString(cell.getErrorCellValue());
+				value = Byte.toString(cell.getErrorCellValue()).trim();
 				value="";
 			}
 		} catch (Exception e) {

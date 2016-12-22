@@ -15,6 +15,7 @@ public class CatalogParser {
 		List<Catalog> catalogList = new ArrayList<Catalog>();
 		try{
 		Catalog catalog = null;
+		catalogValue = catalogValue.trim();
 		String catalogArr[] = catalogValue.split(",");
 	
 
