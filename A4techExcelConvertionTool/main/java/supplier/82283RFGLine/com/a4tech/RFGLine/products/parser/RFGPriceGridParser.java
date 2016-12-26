@@ -12,6 +12,7 @@ import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
 public class RFGPriceGridParser {
@@ -34,23 +35,40 @@ public class RFGPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] discount = listOfDisc
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		
+		
+		if(!(netCost.length == ApplicationConstants.CONST_NUMBER_ZERO)){
+			if(!CommonUtility.isdescending(netCost))
+			{
+				priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
+			
+			}else{
+				priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_FALSE);
+			}
+		}else{
+			priceGrid
+			.setIsQUR(isQur.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_Y) ? ApplicationConstants.CONST_BOOLEAN_TRUE
+					: ApplicationConstants.CONST_BOOLEAN_FALSE);
+		}
+		
+		
 
 		priceGrid.setCurrency(currency);
 		//priceGrid.setPriceIncludes("plus Setup");
 		priceGrid.setDescription(priceName);
-		priceGrid
+		/*priceGrid
 				.setIsQUR(isQur.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_Y) ? ApplicationConstants.CONST_BOOLEAN_TRUE
-						: ApplicationConstants.CONST_BOOLEAN_FALSE);
+						: ApplicationConstants.CONST_BOOLEAN_FALSE);*/
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
 		if(!priceGrid.getIsQUR()){
 			listOfPrice = getPrices(prices, netCost, quantity, discount);
 		}
-	else{
+	    /*else{
 			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
-		}
-	if (!priceGrid.getIsQUR()) {
+		}*/
+     	if (!priceGrid.getIsQUR()) {
 			listOfPrice = getPrices(prices, netCost, quantity, discount);
 		} else {
 			listOfPrice = new ArrayList<Price>();

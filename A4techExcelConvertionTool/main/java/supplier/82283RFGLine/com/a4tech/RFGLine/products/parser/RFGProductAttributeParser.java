@@ -20,6 +20,8 @@ public class RFGProductAttributeParser {
 		Color colorObj = null;
 		String colorArr[] = color.split(ApplicationConstants.CONST_DELIMITER_COMMA);
 
+
+
 		for (String value : colorArr) {
 			colorObj = new Color();
 			colorObj.setName(value);
