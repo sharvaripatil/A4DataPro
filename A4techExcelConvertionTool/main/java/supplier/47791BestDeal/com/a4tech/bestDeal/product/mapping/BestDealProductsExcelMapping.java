@@ -55,6 +55,7 @@ public class BestDealProductsExcelMapping implements IExcelParser{
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
+		  productAttributeParser.getProductTradeName("BannerBams");
  		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -244,10 +245,10 @@ public class BestDealProductsExcelMapping implements IExcelParser{
 					break;
 				case 42: // trade Names ignore
 					String tradeNames = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(tradeNames)){
+					/*if(!StringUtils.isEmpty(tradeNames)){
 						List<TradeName> listOfTradeNames = productAttributeParser.getProductTradeName(tradeNames);
 						productConfigObj.setTradeNames(listOfTradeNames);
-					}
+					}*/
 					break;
 				case 43: //origin
 					  String country = cell.getStringCellValue();

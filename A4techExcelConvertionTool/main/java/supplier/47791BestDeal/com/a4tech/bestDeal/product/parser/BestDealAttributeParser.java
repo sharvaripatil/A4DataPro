@@ -248,17 +248,17 @@ public class BestDealAttributeParser {
 			 for (String value : allData) {
 				    value = value.trim();
 				    if(value.contains("LINE NAME")){
-				    	attributeValue = getFieldName(value, "LINE NAME");
+				    	/*attributeValue = getFieldName(value, "LINE NAME");
 				    	List<String> lineNames = Arrays.asList(attributeValue);
-				    	existingProduct.setLineNames(lineNames);
+				    	existingProduct.setLineNames(lineNames);*/
 				    } else if(value.contains("SHIPPING WEIGHT")){
 				    	attributeValue = getFieldName(value, "SHIPPING WEIGHT");
 				    	ShippingEstimate shippingEstObj = getProductShippingWeight(attributeValue);
 				    	existingConfig.setShippingEstimates(shippingEstObj);
 				    } else if(value.contains("FOB POINT")){
-				    	attributeValue = getFieldName(value, "FOB POINT");
+				    	/*attributeValue = getFieldName(value, "FOB POINT");
 				    	List<FOBPoint> listOfFobPoint = getFobPoints(attributeValue);
-				    	existingProduct.setFobPoints(listOfFobPoint);
+				    	existingProduct.setFobPoints(listOfFobPoint);*/
 				    } else if(value.contains("PACKAGING")){
 				    	attributeValue = getFieldName(value, "PACKAGING");
 				    	List<Packaging> listOfPackaging = getProductPackaging(attributeValue);
@@ -426,6 +426,7 @@ public class BestDealAttributeParser {
 	}
 	
 	public List<TradeName> getProductTradeName(String Tradename){
+		lookupServiceData.getTradeNames(Tradename);
 		List<TradeName> listOfTradeNames = new ArrayList<>();
 		TradeName tradeNameObj = new TradeName();
 		tradeNameObj.setName(Tradename);

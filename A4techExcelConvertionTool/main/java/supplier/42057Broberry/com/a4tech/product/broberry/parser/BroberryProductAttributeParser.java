@@ -2,7 +2,9 @@ package com.a4tech.product.broberry.parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -154,8 +156,9 @@ public Size getProductSize(List<String> sizeValues){
 		int count=1;
 		String sizeArr[]={};
 		try{
+			sizeValues=BroberryProductAttributeParser.removeDuplicateSizes(sizeValues);
 		for (String string : sizeValues) {
-			string=ApplicationConstants.SIZE_MAP.get(string);
+			//string=ApplicationConstants.SIZE_MAP.get(string);
 			valueObj=new Value();
 			if(string.contains("Dimension")){
 				sizeArr=string.split(ApplicationConstants.CONST_SIZE_DELIMITER);
@@ -219,6 +222,8 @@ public Size getProductSize(List<String> sizeValues){
 		return size;
 	}
 
+
+/*
 public  List<Option> getOptions(ArrayList<String> optionValues) {
 	List<Option> optionList=new ArrayList<>();
 	Option optionObj=new Option();
@@ -232,7 +237,8 @@ public  List<Option> getOptions(ArrayList<String> optionValues) {
 				  optionValueObj.setValue(optionDataValue);
 				  valuesList.add(optionValueObj);
 				  optionObj.setOptionType("Product");
-				  optionObj.setName("Size Choice "+optionDataValue);
+				 // optionObj.setName("Size Choice "+optionDataValue);
+				  optionObj.setName("Style "+optionDataValue);
 				  optionObj.setValues(valuesList); 
 				  optionObj.setAdditionalInformation("");
 				  optionObj.setCanOnlyOrderOne(false);
@@ -248,8 +254,103 @@ public  List<Option> getOptions(ArrayList<String> optionValues) {
 	  return optionList;
 	  
 	 }
+*/
 
-public List<Availability> getProductAvailablity(Set<String> parentList,Set<String> childList){
+
+public  List<Option> getOptions(ArrayList<String> optionValues) {
+	List<Option> optionList=new ArrayList<>();
+	Option optionObj=new Option();
+	   try{
+		   List<OptionValue> valuesList=new ArrayList<OptionValue>();
+			 OptionValue optionValueObj=null;
+			  for (String optionDataValue: optionValues) {
+				  optionValueObj=new OptionValue();
+				  optionValueObj.setValue(optionDataValue.trim());
+				  valuesList.add(optionValueObj);
+			  }
+				  optionObj.setOptionType("Product");
+				  optionObj.setName("Style");
+				  optionObj.setValues(valuesList); 
+				  optionObj.setAdditionalInformation("");
+				  optionObj.setCanOnlyOrderOne(false);
+				  optionObj.setRequiredForOrder(true);
+				  optionList.add(optionObj);
+			  //}
+			  
+	   }catch(Exception e){
+		   _LOGGER.error("Error while processing Options :"+e.getMessage());          
+	      return new ArrayList<Option>();
+	      
+	     }
+	  return optionList;
+	  
+	 }
+
+	public static  List<String> removeDuplicateSizes(List<String> sizeValues){
+		HashSet<String> sizeSet=new HashSet<String>();
+		for (String string : sizeValues) {
+		string=ApplicationConstants.SIZE_MAP.get(string);
+		sizeSet.add(string);
+		}
+		return new ArrayList<String>(sizeSet);
+	}
+	
+	
+	public static  List<String> removeDuplicateSizesForAvail(List<String> sizeValues){
+		HashSet<String> sizeSet=new HashSet<String>();
+		for (String string : sizeValues) {
+		string=ApplicationConstants.SIZE_MAP.get(string);
+		String strArr[]=string.split("___");
+		sizeSet.add(strArr[1]);
+		}
+		return new ArrayList<String>(sizeSet);
+	}
+	
+	//public List<Availability> getProductAvailablity(Set<String> parentList,Set<String> childList){
+		public List<Availability> getProductAvailablity(HashMap<String, LinkedList<String>> tempMap) {	
+		List<Availability> listOfAvailablity = new ArrayList<>();
+		try{
+		Availability  availabilityObj = new Availability();
+		AvailableVariations  AvailableVariObj = null;
+		List<AvailableVariations> listOfVariAvail = new ArrayList<>();
+		List<Object> listOfParent = null;
+		List<Object> listOfChild = null;
+		
+		for (Map.Entry<String,LinkedList<String>> entry : tempMap.entrySet()) {
+		    String ParentValue = entry.getKey();
+		    //ParentValue=ApplicationConstants.OPTION_MAP.get(ParentValue);
+		    LinkedList<String> childList = entry.getValue();
+		    List<String> childListTemp = new ArrayList<String>();
+		    for (String string : childList) {
+		    	childListTemp.add(ParentValue+ApplicationConstants.CONST_CHAR_SMALL_X+string);
+			}
+		    ParentValue=ApplicationConstants.OPTION_MAP.get(ParentValue);
+		    childListTemp=removeDuplicateSizesForAvail(childListTemp);
+		    for (String childValue : childListTemp) {
+				 AvailableVariObj = new AvailableVariations();
+				 listOfParent = new ArrayList<>();
+				 listOfChild = new ArrayList<>();
+				 listOfParent.add(childValue);
+				 listOfChild.add(ParentValue);
+				 AvailableVariObj.setParentValue(listOfParent);
+				 AvailableVariObj.setChildValue(listOfChild);
+				 listOfVariAvail.add(AvailableVariObj);
+			}
+		    
+		}
+		availabilityObj.setAvailableVariations(listOfVariAvail);
+		availabilityObj.setParentCriteria(ApplicationConstants.CONST_STRING_SIZE);
+		availabilityObj.setChildCriteria("Product Option");
+		listOfAvailablity.add(availabilityObj);
+		}catch(Exception e){
+		   _LOGGER.error("Error while processing Options :"+e.getMessage());          
+	   return new ArrayList<Availability>();
+	   
+		}
+		return listOfAvailablity;
+		}
+
+/*public List<Availability> getProductAvailablity(Set<String> parentList,Set<String> childList){
 	List<Availability> listOfAvailablity = new ArrayList<>();
 	try{
 	Availability  availabilityObj = new Availability();
@@ -281,5 +382,5 @@ public List<Availability> getProductAvailablity(Set<String> parentList,Set<Strin
 	}
 	return listOfAvailablity;
 	}
-	
+*/	
 }

@@ -24,6 +24,7 @@ import com.a4tech.product.service.IProductService;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.a4tech.util.ConvertCsvToExcel;
+import com.a4tech.util.LookupData;
 
 @Controller
 @RequestMapping({ "/", "/uploadFile.htm" })
@@ -39,6 +40,8 @@ public class FileUpload {
 	private ProductDao            productDao;
 	private ConvertCsvToExcel     convertCsvToExcel;
 	private ExcelFactory          excelFactory;
+	private LookupData            lookupData;
+
 	private static Logger _LOGGER = Logger.getLogger(Class.class);
 	
 	@RequestMapping(method = RequestMethod.GET)
@@ -79,6 +82,8 @@ public class FileUpload {
 			if(workbook == null){
 				return ApplicationConstants.CONST_STRING_ERROR_PAGE;
 			}
+			lookupData.loadLineNames(asiNumber, accessToken);
+			lookupData.loadFobPoints(asiNumber, accessToken);
 			int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 			request.getSession().setAttribute("batchId",
 					String.valueOf(batchId));
@@ -128,7 +133,7 @@ public class FileUpload {
 																				noOfProductsSuccess);
 		redirectAttributes.addFlashAttribute(ApplicationConstants.FAILURE_PRODUCTS_COUNT , 
 																				noOfProductsFailure);
-		if (!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)) {
+		/*if (!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)) {
 			
 			boolean isMailSendSuccess = mailService.sendMail(asiNumber, batchId);
 			if(isMailSendSuccess){
@@ -136,7 +141,7 @@ public class FileUpload {
 				                                             ApplicationConstants.MAIL_SEND_SUCCESS_MESSAGE);
 			} 
 			
-		}
+		}*/
 	}
 	public IProductService getProductService() {
 		return productService;
@@ -167,6 +172,12 @@ public class FileUpload {
 	public void setExcelFactory(ExcelFactory excelFactory) {
 		this.excelFactory = excelFactory;
 	}
+	public LookupData getLookupData() {
+		return lookupData;
+	}
 
+	public void setLookupData(LookupData lookupData) {
+		this.lookupData = lookupData;
+	}
 
 }

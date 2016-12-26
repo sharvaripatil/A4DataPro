@@ -2,14 +2,20 @@ package com.a4tech.util;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.a4tech.lookup.service.LookupServiceData;
 
 public class LookupData {
 	
 	public static final Map<String,String> criteriaCodeMap =new HashMap<String, String>();
 	public static final Set<String> repeateIndex = new HashSet<String>();
 	public static final Set<String> shapes = new HashSet<String>();
+	public static final Map<String,List<String>> listOfLineNames = new HashMap<>();
+	private static final Map<String, List<String>> listOfFobPoints = new HashMap<>();
+	private LookupServiceData lookupServiceData = null;
 	static{
 		
 		repeateIndex.add("1");
@@ -175,4 +181,34 @@ public class LookupData {
 		return false;
 	}
 	//public static String
+
+	public void loadLineNames(String supplierNo,String authToken){
+		List<String> SupplierLineNames = listOfLineNames.get(supplierNo);
+		if(SupplierLineNames == null){
+			SupplierLineNames = lookupServiceData.getLineNames(authToken);
+			listOfLineNames.put(supplierNo, SupplierLineNames);
+		}
+		
+	}
+	public List<String> getLineNames(String supplierNo){
+	     return	listOfLineNames.get(supplierNo);
+	}
+	public void loadFobPoints(String supplierNo,String authToken){
+		List<String> SupplierLineNames = listOfFobPoints.get(supplierNo);
+		if(SupplierLineNames == null){
+			SupplierLineNames = lookupServiceData.getFobPoints(authToken);
+			listOfFobPoints.put(supplierNo, SupplierLineNames);
+		}
+		
+	}
+	public List<String> getFobPoints(String supplierNo){
+	     return	listOfFobPoints.get(supplierNo);
+	}
+	public LookupServiceData getLookupServiceData() {
+		return lookupServiceData;
+	}
+
+	public void setLookupServiceData(LookupServiceData lookupServiceData) {
+		this.lookupServiceData = lookupServiceData;
+	}
 }

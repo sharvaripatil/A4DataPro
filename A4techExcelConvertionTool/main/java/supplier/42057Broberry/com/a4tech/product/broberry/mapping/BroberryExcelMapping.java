@@ -5,11 +5,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.a4tech.product.model.Price;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -20,36 +19,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.core.errors.ErrorMessage;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.broberry.parser.BroberryProductAttributeParser;
 import com.a4tech.product.broberry.parser.BroberryProductMaterialParser;
-import com.a4tech.product.broberry.parser.BroberrySkuParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Availability;
-import com.a4tech.product.model.AvailableVariations;
 import com.a4tech.product.model.Color;
-import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Material;
-import com.a4tech.product.model.Option;
-import com.a4tech.product.model.OptionValue;
+import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductNumber;
-import com.a4tech.product.model.ProductSkus;
-import com.a4tech.product.model.Value;
-import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.a4tech.product.model.ProductNumber;
-import com.a4tech.product.model.Size;
 
 public class BroberryExcelMapping implements IExcelParser{
 	
@@ -61,12 +50,13 @@ public class BroberryExcelMapping implements IExcelParser{
 	ObjectMapper mapperObj;
 	private BroberryProductAttributeParser broberryProductAttributeParser;
 	private BroberryProductMaterialParser broberryMaterialParserObj;
-	private BroberrySkuParser broberrySkuParserObj;
 
-	public enum OPTION_SIZES {
+	/*public enum OPTION_SIZES {
 		REG,SHT,TLL,XTL
+	};*/
+	public enum OPTION_SIZES {//removing extra tall as per revised mapping
+		REG,SHT,TLL
 	};
-
 	
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 	
@@ -76,7 +66,7 @@ public class BroberryExcelMapping implements IExcelParser{
 		List<Material> listOfMaterial =new ArrayList<Material>();
 		List<String> productKeywords = new ArrayList<String>();
 		List<String> listOfCategories = new ArrayList<String>();
-		List<ProductSkus> ProductSkusList = new ArrayList<>();
+		
 		Volume itemWeight=new Volume();
 	
 
@@ -107,7 +97,7 @@ public class BroberryExcelMapping implements IExcelParser{
 		  String colorValue=null;
 		  String sizeValue=null;
 		  String finalColorValue =null;
-		  String productRelationalSku =null;
+		  
 		  String MaterialValue1=null;
 		  String MaterialValue2=null;
 		  String Keyword1 =null;
@@ -123,7 +113,9 @@ public class BroberryExcelMapping implements IExcelParser{
 	    String lastValue=null;
 	    String productId = null;
 	    String xid = null;
-	  
+	    HashMap<String, LinkedList<String>> tempMap=new HashMap<String, LinkedList<String>>();
+		LinkedList<String> list=new LinkedList<String>();
+		LinkedList<String> listTemp=new LinkedList<String>();
 		while (iterator.hasNext()) {
 			
 			try{
@@ -163,16 +155,35 @@ public class BroberryExcelMapping implements IExcelParser{
 							if(!CollectionUtils.isEmpty(sizeValuesSet)){
 								productConfigObj.setSizes(broberryProductAttributeParser.getProductSize(new ArrayList<String>(sizeValuesSet)));
 							}
-								if(!CollectionUtils.isEmpty(productOptionSet)){
+								/*if(!CollectionUtils.isEmpty(productOptionSet)){
 								productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
 								}	
 								if(!CollectionUtils.isEmpty(productOptionSet)){
 							   listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(ProductDataStore.getSizesBrobery(),productOptionSet);
 							 	productExcelObj.setAvailability(listOfAvailablity);
+								}*/
+								//////////////////////////////////////////
+							if(!CollectionUtils.isEmpty(tempMap)){
+								String strTemp=getOptionAvail(tempMap);
+								if(strTemp.equalsIgnoreCase("NO")){
+	
+								}else if(strTemp.equalsIgnoreCase("OPTN")){
+									if(!CollectionUtils.isEmpty(productOptionSet)){
+										productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
+									}
+								}else if(strTemp.equalsIgnoreCase("OPTNAVAIL")){
+									if(!CollectionUtils.isEmpty(productOptionSet)){
+										productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
+									}
+									if(!CollectionUtils.isEmpty(productOptionSet)){
+										//listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(ProductDataStore.getSizesBrobery(),productOptionSet);
+										listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(tempMap);
+										productExcelObj.setAvailability(listOfAvailablity);
+									}	
 								}
-								if(!CollectionUtils.isEmpty(ProductSkusList)){
-								productExcelObj.setProductRelationSkus(ProductSkusList);
-								}
+							}
+							////////////////////////////////////////////////////////////////////////
+							
 							  if(!StringUtils.isEmpty(MaterialValue1) || !StringUtils.isEmpty(MaterialValue2)){
 								  if(MaterialValue1.toUpperCase().contains(MaterialValue2.toUpperCase())){//100% Acrylic	Acrylic
 								  }else{
@@ -196,9 +207,9 @@ public class BroberryExcelMapping implements IExcelParser{
 								 productExcelObj.setPriceGrids(priceGrids);
 								 /***************/
 								 productExcelObj.setProductConfigurations(productConfigObj);
-								 	/*_LOGGER.info("Product Data : "
+								 	_LOGGER.info("Product Data : "
 											+ mapperObj.writeValueAsString(productExcelObj));
-								 	*/
+								 	
 							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -226,10 +237,12 @@ public class BroberryExcelMapping implements IExcelParser{
 								FinalKeyword=new StringBuilder();
 								productOptionSet=new HashSet<String>();
 								sizeValuesSet = new HashSet<>();
-								ProductSkusList = new ArrayList<>();
+								
 						        productKeywords = new ArrayList<String>();
 								ProductDataStore.clearSizesBrobery();
-
+								tempMap=new HashMap<String, LinkedList<String>>();
+								 list=new LinkedList<String>();
+								 listTemp=new LinkedList<String>();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -297,17 +310,32 @@ public class BroberryExcelMapping implements IExcelParser{
 					if(StringUtils.isEmpty(size)){
 						size=ApplicationConstants.CONST_WORD_EMPTY;
 					}
+					
+					final String valueop1=dimension;
+					if(Arrays.stream(OPTION_SIZES.values()).anyMatch((optionName) -> optionName.name().equals(valueop1))){
+						//for (String string : Arr) {
+							if(tempMap.containsKey(valueop1)){
+							listTemp=tempMap.get(valueop1);
+							//listTemp.add(dimension+ApplicationConstants.CONST_CHAR_SMALL_X+size);
+							listTemp.add(size);
+							tempMap.replace(valueop1, listTemp);
+						}else{
+							list=new LinkedList<String>();
+							//list.add(dimension+ApplicationConstants.CONST_CHAR_SMALL_X+size);
+							list.add(size);
+							tempMap.put(valueop1,list);
+						}
+						
+						
+						//productOptionSet.add(ApplicationConstants.OPTION_MAP.get(dimension));
+					}
+					
+					
 					sizeValuesSet.add(dimension+ApplicationConstants.CONST_CHAR_SMALL_X+size);
 					break;
 					
 				case 8: // UPC NO
-					
-				    productRelationalSku = CommonUtility.getCellValueStrinOrInt(cell);
-				    sizeValue=ApplicationConstants.SIZE_MAP.get(dimension+"x"+size);
-				    finalColorValue=colorValue;
-					if(!StringUtils.isEmpty(sizeValue) &&!StringUtils.isEmpty(finalColorValue) &&!StringUtils.isEmpty(productRelationalSku)){
-				    ProductSkusList=broberrySkuParserObj.getProductRelationSkus(ProductSkusList, sizeValue, finalColorValue, productRelationalSku);
-					}
+					// As per revised mapping from client SKU has to be ignored
 				    break;
 					
 				case 9: //SUGG RETL
@@ -327,14 +355,14 @@ public class BroberryExcelMapping implements IExcelParser{
 					 if(!StringUtils.isEmpty(Category)){
 						 listOfCategories.add(Category);
 					 }
-					 productExcelObj.setCategories(listOfCategories);
+					 //productExcelObj.setCategories(listOfCategories);
 					break;
 				case 13://SUB CATEGORY
 					String SubCategory=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(SubCategory)){
 						 listOfCategories.add(SubCategory);
 					 }
-					productExcelObj.setCategories(listOfCategories);
+					//productExcelObj.setCategories(listOfCategories);
 
 				
 					 break;
@@ -503,20 +531,41 @@ public class BroberryExcelMapping implements IExcelParser{
 		if(!CollectionUtils.isEmpty(sizeValuesSet)){
 		productConfigObj.setSizes(broberryProductAttributeParser.getProductSize(new ArrayList<String>(sizeValuesSet)));
 		}
-		if(!CollectionUtils.isEmpty(productOptionSet)){
-		productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
+	/*	if(!CollectionUtils.isEmpty(productOptionSet)){
+		if(productOptionSet.size()==1){	
+		
+		}else{ 
+		
+			productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
+		
+		} 
 		}
 		if(!CollectionUtils.isEmpty(productOptionSet)){
 		listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(ProductDataStore.getSizesBrobery(),productOptionSet);
 		productExcelObj.setAvailability(listOfAvailablity);
 		}
-     /*  if(!StringUtils.isEmpty(ProductSkusList)){
-			skuObj=broberrySkuParserObj.getProductRelationSkus(skuObj, sizeValue, finalColorValue, productRelationalSku);
-			productExcelObj.setProductRelationSkus(ProductSkusList);
-		    }*/
-		if(!CollectionUtils.isEmpty(ProductSkusList)){
-		productExcelObj.setProductRelationSkus(ProductSkusList);
+     */
+		//////////////////////////////////////////
+		if(!CollectionUtils.isEmpty(tempMap)){
+		String strTemp=getOptionAvail(tempMap);
+		if(strTemp.equalsIgnoreCase("NO")){
+				
+		}else if(strTemp.equalsIgnoreCase("OPTN")){
+			if(!CollectionUtils.isEmpty(productOptionSet)){
+				productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
 		}
+		}else if(strTemp.equalsIgnoreCase("OPTNAVAIL")){
+			if(!CollectionUtils.isEmpty(productOptionSet)){
+				productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
+			}
+			if(!CollectionUtils.isEmpty(tempMap)){
+				listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(tempMap);
+				//listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(ProductDataStore.getSizesBrobery(),productOptionSet);
+				productExcelObj.setAvailability(listOfAvailablity);
+				}	
+		}
+		}
+		////////////////////////////////////////////////////////////////////////
 		if(!StringUtils.isEmpty(MaterialValue1) || !StringUtils.isEmpty(MaterialValue2)){
 			  if(MaterialValue1.toUpperCase().contains(MaterialValue2.toUpperCase())){//100% Acrylic	Acrylic
 			  }else{
@@ -541,8 +590,8 @@ public class BroberryExcelMapping implements IExcelParser{
 		 productExcelObj.setPriceGrids(priceGrids);
 		 /***************/
 		 productExcelObj.setProductConfigurations(productConfigObj);
-		 	/*_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(productExcelObj));*/
+		 	_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(productExcelObj));
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -569,8 +618,10 @@ public class BroberryExcelMapping implements IExcelParser{
 		listOfCategories=new ArrayList<String>();
 		FinalKeyword=new StringBuilder();
 		ProductDataStore.clearSizesBrobery();
-       ProductSkusList = new ArrayList<ProductSkus>();
         AdditionalInfo= new StringBuilder();
+        tempMap=new HashMap<String, LinkedList<String>>();
+        list=new LinkedList<String>();
+		listTemp=new LinkedList<String>();
 		return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet " +e.getMessage());
@@ -632,6 +683,56 @@ public class BroberryExcelMapping implements IExcelParser{
 		return newPriceGrid;
 }
 	
+	public static String getOptionAvail( HashMap<String, LinkedList<String>> tempMap){
+		String tempStr="NO";
+		if(tempMap.size()>1){
+			int len=tempMap.size();List<LinkedList<String>> lList = new ArrayList<LinkedList<String>>(tempMap.values());
+			if(len==2){
+				LinkedList<String> 	list1=new LinkedList<String>();
+				LinkedList<String>  list2=new LinkedList<String>();
+				list1=lList.get(0);
+				list2=lList.get(1);
+				
+				if(org.apache.commons.collections.CollectionUtils.isEqualCollection(list1, list2)){
+					return "OPTN";
+				}else {
+					return "OPTNAVAIL";
+				}//true
+				}else if(len==3){
+				LinkedList<String> 	list1=new LinkedList<String>();
+				LinkedList<String>  list2=new LinkedList<String>();
+				LinkedList<String> 	list3=new LinkedList<String>();
+				list1=lList.get(0);
+				list2=lList.get(1);
+				list3=lList.get(2);
+				boolean flag=true;
+				
+				if(!org.apache.commons.collections.CollectionUtils.isEqualCollection(list1, list2)){
+					flag=false;//return false here only no need to check for 3rd list
+			//	return "OPTNAVAIL";
+				}
+				if(flag){
+				if(!org.apache.commons.collections.CollectionUtils.isEqualCollection(list2, list3)){
+					flag=false;
+				}
+				}
+			
+			
+				if(!flag){
+					return "OPTNAVAIL";
+				}else{
+					return "OPTN";
+				}
+				}
+			}else if(tempMap.size()==1){
+				//return false;
+				return "NO";
+			}
+		return tempStr;
+	}
+	
+	
+	
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}
@@ -680,15 +781,4 @@ public class BroberryExcelMapping implements IExcelParser{
 			BroberryProductMaterialParser broberryMaterialParserObj) {
 		this.broberryMaterialParserObj = broberryMaterialParserObj;
 	}
-
-
-	public BroberrySkuParser getBroberrySkuParserObj() {
-		return broberrySkuParserObj;
-	}
-
-	public void setBroberrySkuParserObj(BroberrySkuParser broberrySkuParserObj) {
-		this.broberrySkuParserObj = broberrySkuParserObj;
-	}
-	
-	
 }

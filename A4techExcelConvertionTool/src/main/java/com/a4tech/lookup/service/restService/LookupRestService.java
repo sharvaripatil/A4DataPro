@@ -9,10 +9,14 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import com.a4tech.lookup.model.Categories;
+import com.a4tech.lookup.model.FobPoints;
 import com.a4tech.lookup.model.ImprintMethods;
+import com.a4tech.lookup.model.LineName;
 import com.a4tech.lookup.model.Materials;
 import com.a4tech.lookup.model.Origin;
 import com.a4tech.lookup.model.Shapes;
+import com.a4tech.lookup.model.TradeNames;
 
 public class LookupRestService {
 	
@@ -22,6 +26,10 @@ public class LookupRestService {
    private String materialLookupUrl;
    private String shapesLookupUrl;
    private String originLookupUrl;
+   private String fobPointLookupUrl;
+   private String lineNamesLookupUrl;
+   private String tradeNameLookupUrl;
+   private String categoriesLookupUrl;
    
 	public List<String> getImprintMethodData(){
 		 try{
@@ -82,6 +90,67 @@ public class LookupRestService {
 		 }
 		return null;
 	}
+	public List<String> getFobPoints(String authToken){
+		HttpHeaders headers = new HttpHeaders();
+		try{
+			headers.add("Accept", "application/json");
+			headers.add("Content-Type", "application/json");
+	        headers.add("AuthToken", authToken);
+	        HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+	       ResponseEntity<FobPoints> response = restTemplate.exchange(fobPointLookupUrl, HttpMethod.GET, 
+	                                                                 requestEntity, FobPoints.class);
+	       FobPoints data = response.getBody();
+	      return data.getFobPoints();	
+		}catch(Exception exce){
+			_LOGGER.error("unable to get FOB Points lookup Data:"+exce.getMessage());
+		}
+		return null;
+	}
+	public List<String> getTradeNames(String tradeName){
+		HttpHeaders headers = new HttpHeaders();
+		try{
+			headers.add("Accept", "application/json");
+			headers.add("Content-Type", "application/json");
+	        HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+	       ResponseEntity<TradeNames> response = restTemplate.exchange(tradeNameLookupUrl, HttpMethod.GET, 
+	                                                                 requestEntity, TradeNames.class,tradeName);
+	       TradeNames data = response.getBody();
+	      return data.getTradeNames();
+		}catch(Exception exce){
+			_LOGGER.error("unable to get tradeName lookup Data:"+exce.getMessage());
+		}
+		return null;
+	}
+	public List<String> getLineNames(String authToken){
+		HttpHeaders headers = new HttpHeaders();
+		try{
+			headers.add("Accept", "application/json");
+			headers.add("Content-Type", "application/json");
+	        headers.add("AuthToken", authToken);
+	        HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+	       ResponseEntity<LineName> response = restTemplate.exchange(lineNamesLookupUrl, HttpMethod.GET, 
+	                                                                 requestEntity, LineName.class);
+	       LineName data = response.getBody();
+	      return data.getLineNames();
+		}catch(Exception exce){
+			_LOGGER.error("unable to get LineNames lookup Data:"+exce.getMessage());
+		}
+		return null;
+	}
+	public List<String> getCategories(){
+		 try{
+			 HttpHeaders headers = new HttpHeaders();
+			 headers.add("Content-Type", "application/json");
+			 HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+			 ResponseEntity<Categories> response = restTemplate.exchange(categoriesLookupUrl, HttpMethod.GET, 
+					                                                requestEntity, Categories.class);
+			 Categories data = response.getBody();
+			 return data.getCategories();
+		 }catch(Exception exce){
+			 _LOGGER.error("unable to get Categories lookup data: "+exce.getCause());
+		 }
+		return null;
+	}
 	public String getOriginLookupUrl() {
 		return originLookupUrl;
 	}
@@ -118,6 +187,33 @@ public class LookupRestService {
 
 		public void setShapesLookupUrl(String shapesLookupUrl) {
 			this.shapesLookupUrl = shapesLookupUrl;
+		}
+		 public String getFobPointLookupUrl() {
+				return fobPointLookupUrl;
+		}
+
+		public void setFobPointLookupUrl(String fobPointLookupUrl) {
+			this.fobPointLookupUrl = fobPointLookupUrl;
+		}  
+		public String getLineNamesLookupUrl() {
+			return lineNamesLookupUrl;
+		}
+		public void setLineNamesLookupUrl(String lineNamesLookupUrl) {
+			this.lineNamesLookupUrl = lineNamesLookupUrl;
+		}
+		public String getTradeNameLookupUrl() {
+			return tradeNameLookupUrl;
+		}
+
+		public void setTradeNameLookupUrl(String tradeNameLookupUrl) {
+			this.tradeNameLookupUrl = tradeNameLookupUrl;
+		}
+		public String getCategoriesLookupUrl() {
+			return categoriesLookupUrl;
+		}
+
+		public void setCategoriesLookupUrl(String categoriesLookupUrl) {
+			this.categoriesLookupUrl = categoriesLookupUrl;
 		}
 
 }

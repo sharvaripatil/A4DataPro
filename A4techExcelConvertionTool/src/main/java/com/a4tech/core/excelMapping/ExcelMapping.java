@@ -452,7 +452,7 @@ public class ExcelMapping {
 				case 20:
 					String tradeValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(tradeValue)){
-					tradeName=tradeNameParser.getTradeNameCriteria(tradeValue);
+					//tradeName=tradeNameParser.getTradeNameCriteria(tradeValue);
 					
 					//productConfigObj.setTradeNames(tradeName);
 					
@@ -463,7 +463,7 @@ public class ExcelMapping {
 				case 21:
 					String originValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(originValue)){
-					origin=originParser.getOriginCriteria(originValue);
+					//origin=originParser.getOriginCriteria(originValue);
 					
 					//productConfigObj.setOrigins(origin);
 					
