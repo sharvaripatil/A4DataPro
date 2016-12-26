@@ -19,8 +19,9 @@ public class RFGSizeParser {
 	{
   Size sizeObj=new Size();
   Dimension dimensionObj= new Dimension();
+  
 
-  String descrSizeArr[]=descriptionSize.split("x");
+  String descrSizeArr[]=descriptionSize.split("x|X");
 
 	List<Values> valuesList = new ArrayList<Values>();
 	List<Value> valuelist =  new ArrayList<Value>();
@@ -30,18 +31,43 @@ public class RFGSizeParser {
 	{
 	if(!StringUtils.isEmpty(descrSizeArr[0]))
 	{
-		 valObj=new Value();
-		valObj.setAttribute("Width");
+		valObj=new Value();
+		descrSizeArr[0]=descrSizeArr[0].replaceAll("'", ApplicationConstants.CONST_STRING_EMPTY);
+		if(descrSizeArr[0].contains("W")){
 		descrSizeArr[0]=descrSizeArr[0].replace("W",ApplicationConstants.CONST_STRING_EMPTY);
-		valObj.setValue(descrSizeArr[0].trim());
+		valObj.setAttribute("Width");
+		}else if(descrSizeArr[0].contains("L")){
+		descrSizeArr[0]=descrSizeArr[0].replace("L",ApplicationConstants.CONST_STRING_EMPTY);
+		valObj.setAttribute("Length");
+		}else if(descrSizeArr[0].contains("H")){
+        descrSizeArr[0]=descrSizeArr[0].replace("H",ApplicationConstants.CONST_STRING_EMPTY);
+		valObj.setAttribute("Height");
+		}else
+		{
+		valObj.setAttribute("Length");
+		}
+	    valObj.setValue(descrSizeArr[0].trim());
 		valObj.setUnit(ApplicationConstants.CONST_STRING_INCHES);
 		valuelist.add(valObj);
 	}
 	 if(!StringUtils.isEmpty(descrSizeArr[1]))
 	{
 	   valObj=new Value();
-		valObj.setAttribute("Height");
+		if(descrSizeArr[1].contains("H")){
 		descrSizeArr[1]=descrSizeArr[1].replace("H",ApplicationConstants.CONST_STRING_EMPTY);
+		valObj.setAttribute("Height");}
+		
+		else if(descrSizeArr[1].contains("W")){
+		descrSizeArr[1]=descrSizeArr[1].replace("W",ApplicationConstants.CONST_STRING_EMPTY);
+		valObj.setAttribute("Width");}
+
+		else if(descrSizeArr[1].contains("D")){
+		descrSizeArr[1]=descrSizeArr[1].replace("D",ApplicationConstants.CONST_STRING_EMPTY);
+		valObj.setAttribute("Depth");}
+		
+		else{
+		valObj.setAttribute("Width");
+		}
 		valObj.setValue(descrSizeArr[1].trim());
 		valObj.setUnit(ApplicationConstants.CONST_STRING_INCHES);
 		valuelist.add(valObj);
@@ -49,10 +75,33 @@ public class RFGSizeParser {
 	 if(!StringUtils.isEmpty(descrSizeArr[2]))
 	{
 		valObj=new Value();
-		valObj.setAttribute("Depth");
+		if(descrSizeArr[2].contains("D")){
 		descrSizeArr[2]=descrSizeArr[2].replace("D",ApplicationConstants.CONST_STRING_EMPTY);
+		valObj.setAttribute("Depth");}
+
+		
+		else if(descrSizeArr[2].contains("Gusset")){
 		descrSizeArr[2]=descrSizeArr[2].replace("Gusset",ApplicationConstants.CONST_STRING_EMPTY);
+		valObj.setAttribute("Depth");
+		}
+		else if(descrSizeArr[2].contains("G")){
 		descrSizeArr[2]=descrSizeArr[2].replace("G",ApplicationConstants.CONST_STRING_EMPTY);
+		valObj.setAttribute("Depth");
+		}
+		else if(descrSizeArr[2].contains("W")){
+		descrSizeArr[2]=descrSizeArr[2].replace("W",ApplicationConstants.CONST_STRING_EMPTY);
+		valObj.setAttribute("Width");
+		}
+		else if(descrSizeArr[2].contains("H")){
+		descrSizeArr[2]=descrSizeArr[2].replace("H",ApplicationConstants.CONST_STRING_EMPTY);
+		valObj.setAttribute("Height");}
+
+		else if(descrSizeArr[2].contains("Length")){
+		descrSizeArr[2]=descrSizeArr[2].replace("Length",ApplicationConstants.CONST_STRING_EMPTY);
+		valObj.setAttribute("Length");}
+		else{
+		valObj.setAttribute("Height");}
+
 		valObj.setValue(descrSizeArr[2].trim());
 		valObj.setUnit(ApplicationConstants.CONST_STRING_INCHES);
 		valuelist.add(valObj);
@@ -64,8 +113,21 @@ public class RFGSizeParser {
 		if(!StringUtils.isEmpty(descrSizeArr[0]))
 		{
 			 valObj=new Value();
-			valObj.setAttribute("Width");
+			if(descrSizeArr[0].contains("W")){
 			descrSizeArr[0]=descrSizeArr[0].replace("W",ApplicationConstants.CONST_STRING_EMPTY);
+			valObj.setAttribute("Width");}
+			
+			else if(descrSizeArr[0].contains("L")){
+			descrSizeArr[0]=descrSizeArr[0].replace("L",ApplicationConstants.CONST_STRING_EMPTY);
+			valObj.setAttribute("Length");}
+
+			else if(descrSizeArr[0].contains("H")){
+			descrSizeArr[0]=descrSizeArr[0].replace("H",ApplicationConstants.CONST_STRING_EMPTY);
+			valObj.setAttribute("Height");}
+
+			else{
+				valObj.setAttribute("Length");}
+			
 			valObj.setValue(descrSizeArr[0].trim());
 			valObj.setUnit(ApplicationConstants.CONST_STRING_INCHES);
 			valuelist.add(valObj);
@@ -73,8 +135,19 @@ public class RFGSizeParser {
 		 if(!StringUtils.isEmpty(descrSizeArr[1]))
 		{
 		   valObj=new Value();
-			valObj.setAttribute("Height");
+		   if(descrSizeArr[1].contains("H")){
 			descrSizeArr[1]=descrSizeArr[1].replace("H",ApplicationConstants.CONST_STRING_EMPTY);
+			valObj.setAttribute("Height");}
+		    else if(descrSizeArr[1].contains("W")){
+			descrSizeArr[1]=descrSizeArr[1].replace("W",ApplicationConstants.CONST_STRING_EMPTY);
+			valObj.setAttribute("Width");
+		    }
+		    else if(descrSizeArr[1].contains("w")){
+			descrSizeArr[1]=descrSizeArr[1].replace("w",ApplicationConstants.CONST_STRING_EMPTY);
+			valObj.setAttribute("Width");
+			}
+			else{
+				valObj.setAttribute("Width");}
 			valObj.setValue(descrSizeArr[1].trim());
 			valObj.setUnit(ApplicationConstants.CONST_STRING_INCHES);
 			valuelist.add(valObj);
