@@ -27,6 +27,7 @@ import com.a4tech.product.broberry.parser.BroberryProductMaterialParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
@@ -206,6 +207,11 @@ public class BroberryExcelMapping implements IExcelParser{
 								 priceGrids=getPriceGrids(productName);
 								 productExcelObj.setPriceGrids(priceGrids);
 								 /***************/
+								 /*
+								  * As per sharon images should be removed from both new & existing product
+								  */
+								/* List<Image> images=new ArrayList<Image>(); waiting for clarification from sharon.
+								 productExcelObj.setImages(images);*/
 								 productExcelObj.setProductConfigurations(productConfigObj);
 								 	_LOGGER.info("Product Data : "
 											+ mapperObj.writeValueAsString(productExcelObj));
@@ -351,16 +357,22 @@ public class BroberryExcelMapping implements IExcelParser{
 				//////////////////////
 					//sharvari
 				case 12://CATEGORY....product category
-					String Category=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(Category)){
-						 listOfCategories.add(Category);
-					 }
+					String category=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(category)){
+						 boolean flag=broberryProductAttributeParser.getCategory(category);
+						 if(flag){
+						 listOfCategories.add(category);
+						 }
+						 }
 					 //productExcelObj.setCategories(listOfCategories);
 					break;
 				case 13://SUB CATEGORY
-					String SubCategory=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(SubCategory)){
-						 listOfCategories.add(SubCategory);
+					String subCategory=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(subCategory)){
+						 boolean flag=broberryProductAttributeParser.getCategory(subCategory);
+						 if(flag){
+							 listOfCategories.add(subCategory);
+						 }
 					 }
 					//productExcelObj.setCategories(listOfCategories);
 
@@ -589,6 +601,11 @@ public class BroberryExcelMapping implements IExcelParser{
 		 priceGrids=getPriceGrids(productName);
 		 productExcelObj.setPriceGrids(priceGrids);
 		 /***************/
+		 /*
+		  * As per sharon images should be removed from both new & existing product
+		  */
+		 /*List<Image> images=new ArrayList<Image>(); //waiting for clarification from sharon
+		 productExcelObj.setImages(images);*/
 		 productExcelObj.setProductConfigurations(productConfigObj);
 		 	_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));

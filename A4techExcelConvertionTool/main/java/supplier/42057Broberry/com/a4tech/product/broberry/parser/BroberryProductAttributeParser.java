@@ -8,11 +8,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.dataStore.ProductDataStore;
+import com.a4tech.lookup.service.LookupServiceData;
+import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.broberry.mapping.BroberryExcelMapping;
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Availability;
@@ -34,6 +37,8 @@ import com.a4tech.util.ApplicationConstants;
 
 public class BroberryProductAttributeParser {
 	private static final Logger _LOGGER = Logger.getLogger(BroberryProductAttributeParser.class);
+	private LookupServiceData lookupServiceDataObj;
+	
 	
 	public List<Color> getColorCriteria(Set <String> colorSet) {
 		Color colorObj = null;
@@ -350,6 +355,28 @@ public  List<Option> getOptions(ArrayList<String> optionValues) {
 		return listOfAvailablity;
 		}
 
+		public boolean getCategory(String value){
+			boolean flag=false;
+			try{
+			List<String> listOfLookupCategories = lookupServiceDataObj.getCategories();
+			if(listOfLookupCategories.contains(value)){
+				flag=true;
+			}	
+			}
+			catch (Exception e) {
+				_LOGGER.error("Error while getting Category look up values :"+e.getMessage()); 
+				return flag;
+			}
+			return flag;	
+		}
+
+		public LookupServiceData getLookupServiceDataObj() {
+			return lookupServiceDataObj;
+		}
+
+		public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
+			this.lookupServiceDataObj = lookupServiceDataObj;
+		}
 /*public List<Availability> getProductAvailablity(Set<String> parentList,Set<String> childList){
 	List<Availability> listOfAvailablity = new ArrayList<>();
 	try{

@@ -67,7 +67,8 @@ public class RiverEndPriceGridParser {
 			} catch (NumberFormatException nfe) {
 				price.setQty(0);
 			}
-			price.setPrice(prices);
+			//price.setPrice(prices);
+			price.setNetCost(prices);
 			price.setDiscountCode(discount);
 			priceUnit.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
 			price.setPriceUnit(priceUnit);

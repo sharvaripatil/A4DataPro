@@ -14,6 +14,7 @@ import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
@@ -181,5 +182,32 @@ public class RiverEndAttributeParser {
 			volume.setValues(listOfValues);
 		}
 		return volume;
+	}
+	
+	
+	public List<Image> getImages(List<String> imagesList){
+		
+		List<Image> imgList=new ArrayList<Image>();
+		int rank=1;
+		for (String imageStr : imagesList) {
+			Image ImgObj= new Image();
+			if(!imageStr.contains("http://")){//http://
+				imageStr="http://"+imageStr;
+			}
+			
+	        ImgObj.setImageURL(imageStr);
+	        if(rank==1){
+	        ImgObj.setRank(rank);
+	        ImgObj.setIsPrimary(ApplicationConstants.CONST_BOOLEAN_TRUE);
+	        }else{
+	        ImgObj.setRank(rank);
+	        ImgObj.setIsPrimary(ApplicationConstants.CONST_BOOLEAN_FALSE);
+	        }
+	        imgList.add(ImgObj);
+	        
+	        rank++;
+		}
+		
+		return imgList;
 	}
 }
