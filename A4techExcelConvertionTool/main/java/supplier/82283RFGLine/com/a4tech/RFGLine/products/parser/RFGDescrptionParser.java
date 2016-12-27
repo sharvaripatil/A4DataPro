@@ -27,14 +27,16 @@ public class RFGDescrptionParser {
 	private RFGPriceGridParser rfgPriceGridParserObj;
 
 	public Product getDescription(String Description,Product existingProduct,ProductConfigurations descrproductConfigObj,List<PriceGrid> priceGrids2){
-		
+		Description=Description.replaceAll("”", ApplicationConstants.CONST_VALUE_TYPE_SPACE);
 	
 	String FullDescription=null; 
 	String FullDescriptionFirst=Description;
 	FullDescriptionFirst=Description.substring(0,Description.indexOf("Bag Size:"));
 	if(Description.contains("2 Color")){
-	String FullDescriptionSecond=Description.substring(Description.indexOf("2 Color Maximum Imprint"),Description.indexOf("Additional Imprint Color:"));
+	//String FullDescriptionSecond=Description.substring(Description.indexOf("2 Color Maximum Imprint"),Description.indexOf("Additional Imprint Color:"));
+	String FullDescriptionSecond="2 Color Maximum Imprint";
 	FullDescription=FullDescriptionFirst.concat(FullDescriptionSecond);
+//	FullDescription=FullDescription.replaceAll("”", ApplicationConstants.CONST_VALUE_TYPE_SPACE);
 	FullDescription = FullDescription.replaceAll(ApplicationConstants.CONST_STRING_NEWLINECHARS,ApplicationConstants.CONST_VALUE_TYPE_SPACE);
     existingProduct.setDescription(FullDescription);
 	}
@@ -44,7 +46,7 @@ public class RFGDescrptionParser {
       
     for (String value : tempDesc) {
     	
-    	  if (value.contains("Bag Size"))
+    	if (value.contains("Bag Size"))
     	{
     	String sizeValue[]=value.split("Bag Size:");
     	sizeValue[1]=sizeValue[1].replaceAll("\"",ApplicationConstants.CONST_STRING_EMPTY);
@@ -63,17 +65,39 @@ public class RFGDescrptionParser {
     	
     	  else  if (value.contains("Comes In"))
       	{
-    	  String colorValue[]=value.split("Comes In:");
-          List<Color> colorList=attributeObj.getColorCriteria(colorValue[1]);
+    	  //String colorValue[]=value.split("Comes In:");
+    	  String colorValue=Description.substring(Description.indexOf("Comes In:")+10,Description.indexOf("Setup Charge:"));
+    	  colorValue=colorValue.replaceAll(ApplicationConstants.CONST_STRING_NEWLINECHARS,ApplicationConstants.CONST_STRING_EMPTY);
+          List<Color> colorList=attributeObj.getColorCriteria(colorValue);
           descrproductConfigObj.setColors(colorList);
      
       	}
+    	
     	  else if (value.contains("Imprint Size"))
       	{
-    	  String imprintSize[]=value.split("Imprint Size:");
-    	  List<ImprintSize> imprintSizeList= attributeObj.getImprintSize(imprintSize[1]);
+    	  if(value.contains("x"))
+    	  {
+    		  String ImprintSizeValue[]= value.split(":");
+    		  List<ImprintSize> imprintSizeList= attributeObj.getImprintSize(ImprintSizeValue[1]);
+        	  descrproductConfigObj.setImprintSize(imprintSizeList);
+    	  }
+    	  else {
+    		  
+    	  if(Description.contains("Includes")){
+          String ImprintSizeValue=Description.substring(Description.indexOf("Imprint Size:")+14,Description.indexOf("Includes"));
+          ImprintSizeValue=ImprintSizeValue.replaceAll(ApplicationConstants.CONST_STRING_NEWLINECHARS,ApplicationConstants.CONST_STRING_EMPTY);
+          List<ImprintSize> imprintSizeList= attributeObj.getImprintSize(ImprintSizeValue);
     	  descrproductConfigObj.setImprintSize(imprintSizeList);
-      	}
+        	}
+    	   else{
+    	   String ImprintSizeValue=Description.substring(Description.indexOf("Imprint Size:")+14,Description.indexOf("1 Color,"));
+           String ImprintsizeArr[]=ImprintSizeValue.split("Imprint");
+           List<ImprintSize> imprintSizeList= attributeObj.getImprintSize( ImprintsizeArr[0]);
+           imprintSizeList=attributeObj.getImprintSize( ImprintsizeArr[1]);
+     	   descrproductConfigObj.setImprintSize(imprintSizeList);
+    	   }
+      	   }
+    	   }
     	  
     	  else if (value.contains("Standard Imprint Colors"))
     	  {
@@ -99,7 +123,7 @@ public class RFGDescrptionParser {
        	    additionColorObj.setName("Additional Imprint Color");
         	AdditionalColorList.add(additionColorObj);
     		descrproductConfigObj.setAdditionalColors(AdditionalColorList);
-    		String Value[]=value.split("\\: \\$");
+    		String Value[]=value.split("\\$");
             String upchargeValue[]=Value[1].split("\\(");
             String upchargeValue2=upchargeValue[0];
 
@@ -114,7 +138,7 @@ public class RFGDescrptionParser {
              additionLocationObj.setName("Additional Imprint Location");
              AdditionalLocationList.add(additionLocationObj);
              descrproductConfigObj.setAdditionalLocations(AdditionalLocationList);
-             String Value[]=value.split("\\: \\$");
+             String Value[]=value.split("\\$");
              String upchargeValue[]=Value[1].split("\\(");
              String upchargeValue3=upchargeValue[0];
             

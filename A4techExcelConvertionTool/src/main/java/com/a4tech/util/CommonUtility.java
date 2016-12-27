@@ -235,4 +235,26 @@ public class CommonUtility {
     }
       return value;
   }
+  
+
+	public static boolean isdescending(String[] prices){
+		double[] doubleprices=convertStringArrintoDoubleArr(prices);
+		  for (int i = 0; i < doubleprices.length-1; i++) {
+		      if (doubleprices[i] < doubleprices[i+1]) {
+		          return false;
+		      }
+		  }
+		  return true; 
+		 }
+  
+	public static double[] convertStringArrintoDoubleArr(String[] value)
+	{
+		
+		double[] doubleprices = Arrays.stream(value).mapToDouble(Double::parseDouble).toArray();
+		return doubleprices;
+		
+	}
+  
+  
+  
 }
