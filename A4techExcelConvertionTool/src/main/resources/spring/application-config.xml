@@ -393,8 +393,6 @@
 		<property name="bdProdcutsMapping" ref="bestDealMappingId"/>
 		<property name="riversEndExcelMapping" ref="riversEndExcelMappingId"/>
 		<property name="bamExcelMapping" ref="bambamProductExcelMappingId"/>
-		<property name="cbExcelMapping" ref="cbExcelMappingId"/>
-		
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -442,27 +440,5 @@
     <bean id="bamSizeParserId" class="com.a4tech.bambam.product.parser.BamSizeParser"/>
     <bean id="bamShippingEstimationParserId" class="com.a4tech.bambam.product.parser.BamShippingEstimationParser"/>
     <bean id="bamPriceGridParserId" class="com.a4tech.bambam.product.parser.BamPriceGridParser"></bean>
-    
-    
-         <!--supplier 47965 configuration start  -->  
-    <bean id="cbExcelMappingId" class="com.a4tech.CutterBuck.product.mapping.CutterBuckProductExcelMapping">
-      <property name="postServiceImpl" ref="postService"/>
-      <property name="productDaoObj"   ref="productDao"/>
-      <property name="cutterBuckSizeParserObj" ref="cutterBuckSizeParserObjId"/>
-      <property name="cutterBuckMaterialParserObj" ref="cutterBuckMaterialParserObjId"/>
- 
-    </bean>
-         
-      <bean id="cutterBuckMaterialParserObjId" class="com.a4tech.CutterBuck.product.parser.CutterBuckMaterialParser">
-      <property name="lookupServiceDataObj" ref="lookupServiceData"/>
-	  <property name="lookupRestServiceObj" ref="lookupRestService"/>
-      </bean>
-       
-      <bean id="cutterBuckSizeParserObjId" class="com.a4tech.CutterBuck.product.parser.CutterBuckSizeParser"/>
-         
-
-    
-        <!--supplier 47965 configuration end  -->  
-   
 </beans>
 
