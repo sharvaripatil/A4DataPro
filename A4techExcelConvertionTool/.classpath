@@ -7,7 +7,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="main/java/supplier/38228BamBam"/>
-	<classpathentry excluding="47791BestDeal/|44620Apparel/|91284NewPro/|82283RFGLine/|32125/|64905/|Sage/|USBProducts/|JulyData/|DistributorCentral/|kuku/|91561ESPTemplate/|40445BBI/|42057Broberry/|82588RiversEnd/|38228BamBam/" kind="src" path="main/java/supplier"/>
+	<classpathentry excluding="47791BestDeal/|44620Apparel/|91284NewPro/|82283RFGLine/|32125/|64905/|Sage/|USBProducts/|JulyData/|DistributorCentral/|kuku/|91561ESPTemplate/|40445BBI/|42057Broberry/|82588RiversEnd/|38228BamBam/|47965Cutter&amp;Buck/" kind="src" path="main/java/supplier"/>
 	<classpathentry kind="src" path="src/test/resources"/>
 	<classpathentry kind="src" path="main/java/supplier/47791BestDeal"/>
 	<classpathentry kind="src" path="main/java/supplier/44620Apparel"/>
@@ -35,6 +35,11 @@
 	<classpathentry kind="src" path="main/java/supplier/40445BBI"/>
 	<classpathentry kind="src" path="main/java/supplier/42057Broberry"/>
 	<classpathentry kind="src" path="main/java/supplier/82588RiversEnd"/>
+	<classpathentry kind="src" path="main/java/supplier/47965Cutter&amp;Buck">
+		<attributes>
+			<attribute name="ignore_optional_problems" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
