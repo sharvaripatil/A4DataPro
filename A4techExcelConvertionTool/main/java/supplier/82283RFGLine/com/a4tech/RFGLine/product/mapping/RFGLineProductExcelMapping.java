@@ -34,7 +34,6 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 	private static final Logger _LOGGER = Logger
 			.getLogger(RFGLineProductExcelMapping.class);
 
-	private static final int[] Netcost1 = null;
 	
 	private PostServiceImpl postServiceImpl;
 	private RFGShippingEstimationParser shippingParserObj;
@@ -151,7 +150,7 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 						
 							 productId =  CommonUtility.getCellValueStrinOrInt(cell);
 							 productExcelObj.setExternalProductId(productId);	
-					   
+							 productExcelObj.setAsiProdNo(productId);
 
 							break;
 						case 2:// ItemName
@@ -312,11 +311,11 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 					if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
 						priceGrids = rfgPriceGridParserObj.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
 								         listOfQuantity.toString(), listOfDiscount.toString(), "USD",
-								         priceIncludes, true, "N", productName,"",priceGrids);	
+								         priceIncludes, true, "N","" ,"",priceGrids);	
 					}else{
 						priceGrids = rfgPriceGridParserObj.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
 						         listOfQuantity.toString(), listOfDiscount.toString(), "USD",
-						         priceIncludes, true, "Y", productName,"",priceGrids);	
+						         priceIncludes, true, "Y", "","",priceGrids);	
 					}
 					
 					productConfigObj.setImprintMethods(imprintMethods);
@@ -325,7 +324,7 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 					imprintMethods.add(imprintMethodObj);
 					
 					priceGrids = rfgPriceGridParserObj.getUpchargePriceGrid(Integer.toString(SetupQty),Integer.toString(SetupRetail),Integer.toString(SetupNet),SetupMargin.toString(),"Imprint Method",  
-							"false", "USD", "PRINTED",  "Imprint Method Charge", "Other", new Integer(1), priceGrids);
+							"false", "USD", "PRINTED",  "Set-up Charge", "Other", new Integer(1), priceGrids);
 
 				
 					listOfPrices = new StringBuilder();
