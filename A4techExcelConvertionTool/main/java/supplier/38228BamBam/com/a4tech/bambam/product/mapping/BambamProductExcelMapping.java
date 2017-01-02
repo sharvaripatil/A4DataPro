@@ -22,16 +22,21 @@ import com.a4tech.bambam.product.parser.BamProductAttributeParser;
 import com.a4tech.bambam.product.parser.BamShippingEstimationParser;
 import com.a4tech.bambam.product.parser.BamSizeParser;
 import com.a4tech.bambam.product.parser.BamUtility;
+import com.a4tech.bambam.product.parser.BamPackagingParser;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.AdditionalColor;
+import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintColor;
+import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Option;
@@ -50,6 +55,7 @@ import com.a4tech.product.model.Samples;
 import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
+import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.TradeName;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
@@ -65,6 +71,7 @@ public class BambamProductExcelMapping implements IExcelParser{
 	private BamSizeParser     				bamSizeParser;
 	private BamShippingEstimationParser 	bamShippingParser;
 	private BamPriceGridParser 				bamPriceGridParser;
+	private BamPackagingParser 				bamPackagingParser;		
 	
 	@Override
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
@@ -117,9 +124,6 @@ public class BambamProductExcelMapping implements IExcelParser{
 		String productNumber=null;
 		ProductNumber		pnumObj=new ProductNumber();
 		List<ProductNumber> pnumberList=new ArrayList<ProductNumber>();
-		
-		List<Option> option=new ArrayList<Option>();
-		Option optionobj= new Option();
 		String optiontype =null;
 		String optionname =null;
 		String optionvalues =null;
@@ -128,6 +132,7 @@ public class BambamProductExcelMapping implements IExcelParser{
 		String reqfororder =null;
 		List<String> repeatRows = new ArrayList<>();
 		String xid = null;
+		List<Option> listOfOptions = new ArrayList<>();
 		while (iterator.hasNext()) {
 			Inventory inventoryObj = new Inventory();
 			String shippingitemValue = null;
@@ -135,6 +140,8 @@ public class BambamProductExcelMapping implements IExcelParser{
 			String sizeGroup=null;
 			String rushService=null;
 			String prodSample=null;
+			String packagingValue = null;
+			String shippingWeightValue = null;
 			try{
 				Row nextRow = iterator.next();
 				if(nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO){
@@ -165,17 +172,9 @@ public class BambamProductExcelMapping implements IExcelParser{
 							 if(nextRow.getRowNum() != 1){
 								 System.out.println("Java object converted to JSON String, written to file");
 								 	productExcelObj.setPriceGrids(priceGrids);
-				
+								 	productConfigObj.setOptions(listOfOptions);
 								 	productExcelObj.setProductConfigurations(productConfigObj);
-								 	if (!StringUtils.isEmpty(optionname)
-											&& !StringUtils.isEmpty(optiontype)
-											&& !StringUtils.isEmpty(optionvalues)) {
-										optionobj = bamProductParser.getOptions(optiontype,
-												optionname, optionvalues, canorder,
-												reqfororder, optionadditionalinfo,BamUtility.optionValues);
-										option.add(optionobj);
-										productConfigObj.setOptions(option);
-									}
+								 	
 								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
@@ -189,13 +188,15 @@ public class BambamProductExcelMapping implements IExcelParser{
 									priceGrids = new ArrayList<PriceGrid>();
 									listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 								    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+								    listOfDiscount = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 								    upChargeQur = null;
 									UpCharCriteria = new StringBuilder();
 									priceQurFlag = null;
-									listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 									UpCharPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 									UpCharDiscount = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 									UpCharQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+									basePriceCriteria = new StringBuilder();
+									basePriceName = null;
 									skuvalue = null;
 								    Inlink = null;
 								    Instatus = null;
@@ -215,6 +216,15 @@ public class BambamProductExcelMapping implements IExcelParser{
 									ProductDataStore.clearProductColorSet();
 									repeatRows.clear();
 									BamUtility.clearOptions();
+									listOfOptions = new ArrayList<>();
+									priceIncludes = null;
+									currencyType = null;
+									priceType = null;
+									upChargeName = null;
+									upchargeType = null;
+									upChargeLevel = null;
+									serviceCharge = null;
+									packagingValue = null;
 									
 							 }
 							    if(!productXids.contains(xid)){
@@ -390,14 +400,15 @@ public class BambamProductExcelMapping implements IExcelParser{
 				case 20:
 					String themeValue=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(themeValue)) {
-								List<String> themes = bamProductParser.getThemeCriteria(themeValue.trim());
+								List<Theme> themes = bamProductParser.getThemeCriteria(themeValue.trim());
+								productConfigObj.setThemes(themes);
 							}
 					break;
 					
 				case 21:
 					String tradeValue=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(tradeValue)) {
-						List<TradeName> tradeName = bamProductParser.getTradeNameCriteria(tradeValue.trim());
+						List<TradeName> tradeName = bamProductParser.getTradeNames(tradeValue.trim());
 								productConfigObj.setTradeNames(tradeName);
 							}
 					break;
@@ -405,7 +416,7 @@ public class BambamProductExcelMapping implements IExcelParser{
 				case 22:
 					String originValue=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(originValue)) {
-								List<Origin> origin = bamProductParser.getOriginCriteria(originValue);
+								List<Origin> origin = bamProductParser.getProductOrigins(originValue);
 								productConfigObj.setOrigins(origin);
 							}
 					break;
@@ -485,7 +496,7 @@ public class BambamProductExcelMapping implements IExcelParser{
 							}
 					 
 					break;
-				case 33: //un imprinted
+				case 33: //unimprinted
 					String unImprinted = cell.getStringCellValue();
 					
 				case 34://
@@ -497,16 +508,32 @@ public class BambamProductExcelMapping implements IExcelParser{
 							}
 					break;
 				case 35: // imprintSize
-					String imprintSize = cell.getStringCellValue(); // need to be imple
+					String imprintSize = cell.getStringCellValue(); 
+					if(!StringUtils.isEmpty(imprintSize)){
+						 List<ImprintSize> listOfImprSize = bamProductParser.getImprintSize(imprintSize);
+						 productConfigObj.setImprintSize(listOfImprSize);
+					}
 					break;
 				case 36:// imprintLocation
-					String imprintLocation = cell.getStringCellValue(); // need to be imple
+					String imprintLocation = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(imprintLocation)){
+						 List<ImprintLocation> listOfImprLoc = bamProductParser.getImprintLocation(imprintLocation);
+						 productConfigObj.setImprintLocation(listOfImprLoc);
+					}
 					break;
 				case 37: // additionalColor
-					String additionalColor = cell.getStringCellValue(); // need to be imple
+					String additionalColor = cell.getStringCellValue(); 
+					if(!StringUtils.isEmpty(additionalColor)){
+						 List<AdditionalColor> listOfAddColr = bamProductParser.getAdditionalColor(additionalColor);
+						 productConfigObj.setAdditionalColors(listOfAddColr);
+					}
 					break;
 				case 38: // additionalLocation
-					String additionalLocation = cell.getStringCellValue(); // need to be imple
+					String additionalLocation = cell.getStringCellValue(); 
+					if(!StringUtils.isEmpty(additionalLocation)){
+						 List<AdditionalLocation> listOfaddLoc = bamProductParser.getAdditionalLocation(additionalLocation);
+						 productConfigObj.setAdditionalLocations(listOfaddLoc);
+					}
 					break;	
 				case 39:
 					prodSample = cell.getStringCellValue();
@@ -558,12 +585,7 @@ public class BambamProductExcelMapping implements IExcelParser{
 					break;
 					
 				case 45:
-					String packagingValue=cell.getStringCellValue();
-					if(!StringUtils.isEmpty(packagingValue)){
-						List<Packaging> packaging = bamProductParser.getPackagingValues(packagingValue.trim());
-							 productConfigObj.setPackaging(packaging);
-					     
-					}
+					 packagingValue=cell.getStringCellValue();
 					break;
 				case 46:
 					shippingitemValue = cell.getStringCellValue();
@@ -574,7 +596,7 @@ public class BambamProductExcelMapping implements IExcelParser{
                 	break;
 					
 				case 48:
-					String shippingWeightValue = cell.getStringCellValue();
+					 shippingWeightValue = cell.getStringCellValue();
 					ShippingEstimate ShipingItem = bamShippingParser.getShippingEstimatesValues(
 									shippingitemValue.trim(),
 									shippingdimensionValue.trim(),
@@ -760,33 +782,16 @@ public class BambamProductExcelMapping implements IExcelParser{
 					 currencyType = cell.getStringCellValue();
 					 break;
 				case 95:
-					if(cell.getCellType() ==  Cell.CELL_TYPE_BOOLEAN){
-						if(!StringUtils.isEmpty(String.valueOf(cell.getBooleanCellValue()))){
-							productExcelObj.setCanOrderLessThanMinimum(cell.getBooleanCellValue());
-							}else
-							{
-								productExcelObj.setCanOrderLessThanMinimum(false);
-							} 
-					}else{
-						productExcelObj.setCanOrderLessThanMinimum(false);
-					}
+				  String lessThan = cell.getStringCellValue();
+				  boolean canLess = isLessthanMinimum(lessThan);
+				  productExcelObj.setCanOrderLessThanMinimum(canLess);
 					break;
 
 				case 96:
 					 priceType = cell.getStringCellValue();
-							if (!StringUtils.isEmpty(priceType)) {
-								priceType = priceType.trim();
-								if (priceType.equalsIgnoreCase("List")) {
-									productExcelObj
-											.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
-								} else if (priceType.equalsIgnoreCase("Net")) {
-									productExcelObj
-											.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_NET);
-								}
-							} else {
-								productExcelObj
-										.setPriceType(ApplicationConstants.CONST_STRING_EMPTY);
-							}
+					 priceType = getPriceType(priceType);
+					 productExcelObj
+						.setPriceType(priceType);
 					break;
 				case 97:
 					upChargeName = cell.getStringCellValue();
@@ -978,6 +983,12 @@ public class BambamProductExcelMapping implements IExcelParser{
 				
 				//productExcelObj.setProductConfigurations(productConfigObj);l
 			}  // end inner while loop
+			if(!StringUtils.isEmpty(packagingValue)){
+				boolean shippingProce = isProcessPackageShipping(shippingWeightValue, 
+						                                         shippingdimensionValue, shippingitemValue);
+				productConfigObj = bamPackagingParser.getPackagingAndShipping(packagingValue.trim(),
+		                 												productConfigObj,shippingProce);
+			}
 			if(( (listOfPrices != null && !listOfPrices.toString().isEmpty()) || (priceQurFlag != null && priceQurFlag.equalsIgnoreCase("Y")))){
 				priceQurFlag = checkPriceQur(priceQurFlag);
 				priceGrids = bamPriceGridParser.getBasePriceGrids(
@@ -1018,11 +1029,9 @@ public class BambamProductExcelMapping implements IExcelParser{
 					if (!StringUtils.isEmpty(optionname)
 							&& !StringUtils.isEmpty(optiontype)
 							&& !StringUtils.isEmpty(optionvalues)) {
-						optionobj = bamProductParser.getOptions(optiontype,
-								optionname, optionvalues, canorder,
-								reqfororder, optionadditionalinfo);
-						option.add(optionobj);
-						productConfigObj.setOptions(option);
+						listOfOptions = bamProductParser.getOptions(optiontype.trim(),
+								optionname.trim(), optionvalues.trim(), canorder,
+								reqfororder, optionadditionalinfo,listOfOptions);
 					}
 				
 				upChargeQur = null;
@@ -1047,6 +1056,7 @@ public class BambamProductExcelMapping implements IExcelParser{
 			    canorder=null;
 			    reqfororder=null;
 			    optionadditionalinfo=null;
+			    basePriceCriteria = new StringBuilder();
 			
 			}catch(Exception e){
 				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"at column number(increament by 1):"+columnIndex);		 
@@ -1058,6 +1068,7 @@ public class BambamProductExcelMapping implements IExcelParser{
 		}
 		workbook.close();
 		   // Add repeatable sets here
+		productConfigObj.setOptions(listOfOptions);
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	productExcelObj.setProductRelationSkus(productsku);
@@ -1108,6 +1119,36 @@ public class BambamProductExcelMapping implements IExcelParser{
     	return qurValue;
     }
     
+    private String getPriceType(String priceType){
+    	if (!StringUtils.isEmpty(priceType)) {
+			priceType = priceType.trim();
+			if (priceType.equalsIgnoreCase("List")) {
+				return ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST;
+			} else if (priceType.equalsIgnoreCase("Net")) {
+				return ApplicationConstants.CONST_PRICE_TYPE_CODE_NET;
+			}
+		} 
+    	return ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST;
+    }
+    private boolean isLessthanMinimum(String value){
+    	if(!StringUtils.isEmpty(value)){
+    		value = value.trim();
+    		 if(ApplicationConstants.CONST_CHAR_Y.equalsIgnoreCase(value)){
+    			 return ApplicationConstants.CONST_BOOLEAN_TRUE;
+			  }else{
+				  return ApplicationConstants.CONST_BOOLEAN_FALSE;
+			  }
+    	}else {
+    		return ApplicationConstants.CONST_BOOLEAN_FALSE;
+    	}
+    }
+    
+    private boolean isProcessPackageShipping(String shiWt,String Shidime,String shiItems){ // 11 33 null   // null null 99
+    	if(StringUtils.isEmpty(shiWt) || StringUtils.isEmpty(Shidime) || StringUtils.isEmpty(shiItems)){
+    		return ApplicationConstants.CONST_BOOLEAN_FALSE;
+    	}
+    	return ApplicationConstants.CONST_BOOLEAN_TRUE;
+    }
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}
@@ -1155,6 +1196,13 @@ public class BambamProductExcelMapping implements IExcelParser{
 
 	public void setBamPriceGridParser(BamPriceGridParser bamPriceGridParser) {
 		this.bamPriceGridParser = bamPriceGridParser;
+	}
+	public BamPackagingParser getBamPackagingParser() {
+		return bamPackagingParser;
+	}
+
+	public void setBamPackagingParser(BamPackagingParser bamPackagingParser) {
+		this.bamPackagingParser = bamPackagingParser;
 	}
 
 }

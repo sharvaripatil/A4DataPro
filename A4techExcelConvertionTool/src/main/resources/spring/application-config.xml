@@ -185,6 +185,7 @@
 				<value>com.a4tech.product.dao.entity.ErrorEntity</value>
 				<value>com.a4tech.product.dao.entity.BatchEntity</value>
 				<value>com.a4tech.product.dao.entity.FtpServerFileEntity</value>
+				<value>com.a4tech.product.dao.entity.SupplierLoginDetails</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -432,6 +433,7 @@
      	<property name="bamSizeParser" ref="bamSizeParserId"/>
      	<property name="bamShippingParser" ref="bamShippingEstimationParserId"/>
      	<property name="bamPriceGridParser" ref="bamPriceGridParserId"/>
+     	<property name="bamPackagingParser" ref="packagingParser"/>
     </bean>
     <bean id="bamAttributeParserId" class="com.a4tech.bambam.product.parser.BamProductAttributeParser">
     	<property name="lookupData" ref="lookupDataId"/>
@@ -439,6 +441,7 @@
     <bean id="bamMaterialParserId" class="com.a4tech.bambam.product.parser.BamMaterialParser"/>
     <bean id="bamSizeParserId" class="com.a4tech.bambam.product.parser.BamSizeParser"/>
     <bean id="bamShippingEstimationParserId" class="com.a4tech.bambam.product.parser.BamShippingEstimationParser"/>
-    <bean id="bamPriceGridParserId" class="com.a4tech.bambam.product.parser.BamPriceGridParser"></bean>
+    <bean id="bamPriceGridParserId" class="com.a4tech.bambam.product.parser.BamPriceGridParser"/>
+    <bean id="packagingParser" class="com.a4tech.bambam.product.parser.BamPackagingParser"/>
 </beans>
 

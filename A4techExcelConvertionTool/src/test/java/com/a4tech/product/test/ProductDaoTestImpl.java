@@ -1,8 +1,10 @@
 package com.a4tech.product.test;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 
 import com.a4tech.product.dao.entity.SupplierLoginDetails;
 import com.a4tech.product.service.IProductDaoTest;
@@ -37,6 +39,30 @@ public class ProductDaoTestImpl  implements IProductDaoTest{
 		  }
 		  return  null;
 	  }
+      @Override
+    public void getSupplierLoginDetails() {
+    	  Session session = null;
+		  Transaction transaction = null;
+		  try{
+			  session = sessionFactory.openSession();
+			  transaction = session.beginTransaction();
+			  Criteria criteria = session.createCriteria(SupplierLoginDetails.class);
+	            criteria.add(Restrictions.eq("asiNumber", "14"));
+	            SupplierLoginDetails data =  (SupplierLoginDetails) criteria.uniqueResult();
+	            System.out.println("Data::"+data.getUserName());
+		  }catch(Exception exce){
+			 System.out.println("unable to fetch supplier login details::"+exce.getMessage());
+		  }finally{
+			  if(session != null){
+				  try{
+					  session.close();
+				  }catch(Exception exce){
+					  System.out.println("unable to close session connection: "+exce.getMessage());
+				  }
+			  }
+		  }
+		  
+	}
 	  public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}

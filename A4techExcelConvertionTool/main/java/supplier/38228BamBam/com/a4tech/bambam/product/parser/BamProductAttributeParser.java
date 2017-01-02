@@ -2,12 +2,12 @@ package com.a4tech.bambam.product.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 
+import com.a4tech.product.model.AdditionalColor;
+import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
@@ -16,7 +16,9 @@ import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintColorValue;
+import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.Option;
 import com.a4tech.product.model.OptionValue;
@@ -32,8 +34,10 @@ import com.a4tech.product.model.RushTimeValue;
 import com.a4tech.product.model.SameDayRush;
 import com.a4tech.product.model.Samples;
 import com.a4tech.product.model.Shape;
+import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.TradeName;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
 public class BamProductAttributeParser {
@@ -87,7 +91,6 @@ public class BamProductAttributeParser {
 		return catalogList;
 	}
    public List<Color> getColorValues(String color){
-	   lookupData.getLookupServiceData().getCategories();
 		List<Color> colorList=new ArrayList<Color>();
 		
 		try{
@@ -207,23 +210,26 @@ public class BamProductAttributeParser {
 		return shapeList;
 		
 	}
-    public List<String> getThemeCriteria(String theme){
+    public List<Theme> getThemeCriteria(String theme){
 		
-		List<String> themeList =new ArrayList<String>();
-		try{
-		String themeValue = theme;
-		String themeArr[] = themeValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-		
-		for (String tempTheme : themeArr) {
- 			themeList.add(tempTheme);
+		List<Theme> themeList = new ArrayList<>();
+		Theme themeObj = null;
+		try {
+			String themeArr[] = theme
+					.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+			for (String tempTheme : themeArr) {
+				themeObj = new Theme();
+				themeObj.setName(tempTheme);
+				themeList.add(themeObj);
+			}
+			return themeList;
+		} catch (Exception e) {
+			_LOGGER.error("Error while processing Product Theme :"
+					+ e.getMessage());
+			return new ArrayList<Theme>();
 		}
-		return themeList;
-		}catch(Exception e){
-			_LOGGER.error("Error while processing Product Theme :"+e.getMessage());            
-		   	return new ArrayList<String>();
-		 }
 	}
-    public List<TradeName> getTradeNameCriteria(String tradename){
+    public List<TradeName> getTradeNames(String tradename){
 		List<TradeName> tradenameList =new ArrayList<>();
 		try{
 		String tradeNameValue = tradename;
@@ -242,7 +248,7 @@ public class BamProductAttributeParser {
 		return tradenameList;
 		
 	}
-    public List<Origin> getOriginCriteria(String origin){
+    public List<Origin> getProductOrigins(String origin){
 		List<Origin> originList =new ArrayList<>();
 		try{ 
 		 origin = origin.trim();
@@ -554,6 +560,7 @@ public List<ImprintMethod> getImprintMethodValues(String imprintValue){
 		String packagingArr[] = packagingValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 		
 		for (String tempPackaging : packagingArr) {
+			tempPackaging = CommonUtility.removeCurlyBraces(tempPackaging);
 			pack = new Packaging();
 			pack.setName(tempPackaging);
  			packagingList.add(pack);
@@ -672,74 +679,30 @@ public List<ImprintMethod> getImprintMethodValues(String imprintValue){
 		   }
 		return pnumberObj;		
 	}
-	public Option getOptions(String optionTypeValue, String optionNameValue,
-			String optionValue, String canOrderValue, String reqOrderValue,
-			String optionInfoValue) {
-
-		Option optionObj=new Option();
-		   try{
-		  List<OptionValue> valuesList=new ArrayList<OptionValue>();
-		  String optionTypeArr[]=optionTypeValue.split(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
-		  String valuesArr[]=optionValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-		  OptionValue optionValueObj=null;
-		  
-		  for (String string : valuesArr) {
-			  optionValueObj=new OptionValue();
-			  optionValueObj.setValue(string);
-			  valuesList.add(optionValueObj);
-		  }
-		  
-		  boolean canordeFlag=false;
-		  boolean requiredFlag=false;
-		  if(canOrderValue.equalsIgnoreCase(ApplicationConstants.CONST_STRING_CAPITAL_Y)){
-		   canordeFlag=true;
-		  }
-		  if(reqOrderValue.equalsIgnoreCase(ApplicationConstants.CONST_STRING_CAPITAL_Y)){
-		   requiredFlag=true;
-		  }
-		  
-		  optionObj.setOptionType(optionTypeArr[0]);
-		  optionObj.setName(optionNameValue);
-		  optionObj.setValues(valuesList);
-		  optionObj.setAdditionalInformation(optionInfoValue);
-		  optionObj.setCanOnlyOrderOne(canordeFlag);
-		  optionObj.setRequiredForOrder(requiredFlag);
-		   }catch(Exception e){
-			   _LOGGER.error("Error while processing Options :"+e.getMessage());          
-		      return new Option();
-		      
-		     }
-		  return optionObj;
-		  
-   }
 	
  public List<Image> getProductImages(String images){
 	 List<Image> listOfImages = new ArrayList<>();
 	 Image imageObj = null;
 	 String imgArr[] = images.split(ApplicationConstants.CONST_DELIMITER_COMMA);
-		for(int initialImg =0;initialImg<=imgArr.length-1;initialImg++)
+		for(int initialImg =0,rankNum=1;initialImg<=imgArr.length-1;initialImg++,rankNum++)
 		{
 			imageObj = new Image();
 			 if(initialImg == ApplicationConstants.CONST_NUMBER_ZERO){
 				 imageObj.setImageURL(imgArr[initialImg]);
-				 imageObj.setRank(initialImg++);
+				 imageObj.setRank(rankNum);
 				 imageObj.setIsPrimary(ApplicationConstants.CONST_BOOLEAN_TRUE);
 			 } else if (initialImg == ApplicationConstants.CONST_INT_VALUE_ONE){
 				 imageObj.setImageURL(imgArr[initialImg]);
-				 imageObj.setRank(initialImg++);
+				 imageObj.setRank(rankNum);
 				 imageObj.setIsPrimary(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		    }
 			 listOfImages.add(imageObj);
 	   }	 
 	 return listOfImages;
  }
- public Option getOptions(String optionTypeValue, String optionNameValue,
+ public List<Option> getOptions(String optionTypeValue, String optionNameValue,
 			String optionValue, String canOrderValue, String reqOrderValue,
-			String optionInfoValue,Map<String, List<String>> mapOptionValues) {
-	   Set<String> optionTypes = mapOptionValues.keySet();
-	   for (String optionType : optionTypes) {
-		    List<String>  listOfOptVals = mapOptionValues.get(optionType);
-	   }
+			String optionInfoValue,List<Option> existingOptions) {
 
 		Option optionObj=new Option();
 		   try{
@@ -748,9 +711,15 @@ public List<ImprintMethod> getImprintMethodValues(String imprintValue){
 		  String valuesArr[]=optionValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 		  OptionValue optionValueObj=null;
 		  
-		  for (String string : valuesArr) {
+		  for (String optionVal : valuesArr) {
+			  if(optionVal.contains(ApplicationConstants.SQUARE_BRACKET_OPEN)){
+				  optionVal = CommonUtility.removeCurlyBraces(optionVal);
+				  if(optionVal.contains(ApplicationConstants.CONST_DELIMITER_COLON)){
+					  optionVal = optionVal.split(ApplicationConstants.CONST_DELIMITER_COLON)[1];
+				  }
+			  }
 			  optionValueObj=new OptionValue();
-			  optionValueObj.setValue(string);
+			  optionValueObj.setValue(optionVal);
 			  valuesList.add(optionValueObj);
 		  }
 		  
@@ -771,12 +740,67 @@ public List<ImprintMethod> getImprintMethodValues(String imprintValue){
 		  optionObj.setRequiredForOrder(requiredFlag);
 		   }catch(Exception e){
 			   _LOGGER.error("Error while processing Options :"+e.getMessage());          
-		      return new Option();
+		      return existingOptions;
 		      
-		   }
-		  return optionObj;
-		  
+		     }
+		   existingOptions.add(optionObj);
+		  return existingOptions;	  
 }
+ 
+ public List<ImprintSize> getImprintSize(String imprSizeValue){
+	 List<ImprintSize> listOfImprSize = new ArrayList<>();
+	 ImprintSize imprSizeObj = null;
+	 imprSizeValue = CommonUtility.removeCurlyBraces(imprSizeValue).trim();
+	 String[] imprSizeValues = imprSizeValue.split(ApplicationConstants.CONST_DELIMITER_COMMA);
+	 for (String sizeValue : imprSizeValues) {
+		 imprSizeObj = new ImprintSize();
+		 imprSizeObj.setValue(sizeValue);
+		 listOfImprSize.add(imprSizeObj);
+	}
+	 return listOfImprSize;
+ }
+ 
+	public List<ImprintLocation> getImprintLocation(String imprLoc) {
+		List<ImprintLocation> listOfImprLoc = new ArrayList<>();
+		ImprintLocation imprLocObj = null;
+		imprLoc = CommonUtility.removeCurlyBraces(imprLoc).trim();
+		String[] imprLocValues = imprLoc
+				.split(ApplicationConstants.CONST_DELIMITER_COMMA);
+		for (String locValue : imprLocValues) {
+			imprLocObj = new ImprintLocation();
+			imprLocObj.setValue(locValue);
+			listOfImprLoc.add(imprLocObj);
+		}
+		return listOfImprLoc;
+	}
+	
+	public List<AdditionalColor> getAdditionalColor(String addColor) {
+		List<AdditionalColor> listOfAddColors = new ArrayList<>();
+		AdditionalColor addColorObj = null;
+		addColor = CommonUtility.removeCurlyBraces(addColor).trim();
+		String[] addColors = addColor
+				.split(ApplicationConstants.CONST_DELIMITER_COMMA);
+		for (String colorName : addColors) {
+			addColorObj = new AdditionalColor();
+			addColorObj.setName(colorName);
+			listOfAddColors.add(addColorObj);
+		}
+		return listOfAddColors;
+	}
+	public List<AdditionalLocation> getAdditionalLocation(String addLoc) {
+		List<AdditionalLocation> listOfAddLoc = new ArrayList<>();
+		AdditionalLocation addLocObj = null;
+		addLoc = CommonUtility.removeCurlyBraces(addLoc).trim();
+		String[] addLocations = addLoc
+				.split(ApplicationConstants.CONST_DELIMITER_COMMA);
+		for (String locName : addLocations) {
+			addLocObj = new AdditionalLocation();
+			addLocObj.setName(locName);
+			listOfAddLoc.add(addLocObj);
+		}
+		return listOfAddLoc;
+	}
+
 	public LookupData getLookupData() {
 		return lookupData;
 	}

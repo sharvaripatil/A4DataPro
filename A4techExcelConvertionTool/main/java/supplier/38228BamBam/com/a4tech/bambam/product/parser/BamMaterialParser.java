@@ -16,9 +16,9 @@ public class BamMaterialParser {
 	 public List<Material> getMaterialCriteria(String material){//Cotton,Other=othertest,
 		//material="Acrylic Plastic:Combo:Polyethylene (PE)=Acrylic Plastic,Blend:Wool:70:Canvas:30=Blend: Wool/Canvas (70/30);
 		
-			List<Material> mtrlList=new ArrayList<Material>();
+			List<Material> mtrlList=new ArrayList<>();
 			try{
-			List<BlendMaterial> blendList=new ArrayList<BlendMaterial>();
+			List<BlendMaterial> blendList=new ArrayList<>();
 			Material mtrlObj ;
 			Combo combo;
 			BlendMaterial blendObj;

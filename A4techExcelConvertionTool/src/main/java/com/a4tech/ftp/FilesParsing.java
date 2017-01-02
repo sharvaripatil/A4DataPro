@@ -4,44 +4,53 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.a4tech.core.excelMapping.ExcelFactory;
 import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.product.dao.entity.SupplierLoginDetails;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.service.ILoginService;
+import com.a4tech.product.service.IMailService;
 import com.a4tech.util.ApplicationConstants;
-import com.a4tech.util.CommonUtility;
 import com.a4tech.util.ConvertCsvToExcel;
 
 public class FilesParsing {
 	private ProductDao productDao;
 	private ExcelFactory excelFactory;
 	private ConvertCsvToExcel convertCsvToExcel;
-	
+	@Autowired
+	private ILoginService loginService;
+	@Autowired
+	private IMailService mailService;
 	private static final Logger _LOGGER = Logger.getLogger(FilesParsing.class);
 
 	public void ReadFtpFiles(File[] listOfFiles) {
-		//_LOGGER.info("Enter ftp file read parser");
+		_LOGGER.info("Enter ftp file parser");
 		for (File file : listOfFiles) {
 			String fileName = file.getName();
 			String asiNumber = getAsiNumberFile(fileName);
-			//String asiNumber = "";// get Asi Number from fileName (e.g.
-									// 45907_appara.csv)
 			Workbook workBook = null;
 			boolean fileStatus = isFileProcess(fileName, asiNumber);
 			if (fileStatus) {
 				_LOGGER.info(fileName +" :"+ "file already processed");
 				continue;
 			}
-			//IExcelParser excelParserImpl = excelFactory.getExcelParserObject(fileName);
-			 String fileExtension = CommonUtility.getFileExtension(file.getName());
+			String accessToken = getAccessToken(asiNumber);
+			if( accessToken == null){
+				invalidSupplierDetails(asiNumber);
+				continue;
+			}
+			 IExcelParser excelParserImpl = excelFactory.getExcelParserObject(asiNumber);
 			 workBook = convertCsvToExcel.getWorkBook(file);
 			 int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
-			/* if(workBook != null){
-				 excelParserImpl.readExcel("", workBook, Integer.parseInt(asiNumber), batchId);
-			 }*/
-            
+			 if(workBook != null){
+				 processFileStatusMail(asiNumber, "ProcessStart", batchId);
+				 excelParserImpl.readExcel(accessToken, workBook, Integer.parseInt(asiNumber), batchId);
+			 }
 			productDao.updateFtpFileStatus(fileName, asiNumber,
 					ApplicationConstants.CONST_STRING_YES);
+			processFileStatusMail(asiNumber, "ProcessEnd", batchId);
 			_LOGGER.info(fileName +":"+ "file parsing completed");
 		}
 
@@ -56,9 +65,51 @@ public class FilesParsing {
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
+	
+	public String getAccessToken(String asiNumber){
+		   SupplierLoginDetails loginDetails = productDao.getSupplierLoginDetails(asiNumber);
+		String accessToken = loginService.doLogin(loginDetails.getAsiNumber(),
+				loginDetails.getUserName(), loginDetails.getPassword());
+		return accessToken;
+	}
     private String getAsiNumberFile(String fileName){
-    	String[] names = fileName.split("_");
+    	String[] names = fileName.split(ApplicationConstants.CONST_DELIMITER_UNDER_SCORE);
     	return names[0];
+    }
+    private void invalidSupplierDetails(String supplierNo){
+ 
+    	String subject = supplierNo + " "+ "Supplier Details Are Invalid";
+    	String body = "Dear Team,"
+    			      +"\n \n"+supplierNo+" "+ "supplier login details are Invalid/Expired"
+    			      +"\n\nPlease contact ASI team for update login details"
+    			      + "\n\n\n\n\n"
+    		            +"Thanks and Regards,"
+    		  			+"\nA4Tech Team";
+    	mailService.supplierLoginFailureMail(supplierNo, body, subject);
+    }
+    private void processFileStatusMail(String supplierNo,String type,int batchNo){
+    	String subject = "";;
+    	String body = "";
+    	if(type.equals("ProcessStart")){
+    		subject = supplierNo +" "+ "File Processing Start";
+    		body = "Dear Team,"
+  			      +"\n \n"+supplierNo+" "+ "File processing Start"
+  			      +"\n\n You will get separate mail once Process completed";
+    		mailService.fileProcessStart(body, subject);
+    	}else if(type.equals("ProcessEnd")){
+    		subject = supplierNo +" "+ "File Processing completed";
+    		body = "Dear Team,"
+  			      +"\n \n"+supplierNo+" "+ "File processing completed"
+  			      +"\n\nKindly find the attached " +batchNo +".txt Product Error File"
+  			+ "\n\n\n\n"
+            +"Thanks and Regards,"
+  			+"\nA4Tech Team"
+  			+"\n\n"
+    		+"Note: This is Computer Generated Mail. No need to reply.*";
+    		mailService.fileProcessCompleted(body, subject, batchNo);
+    	}else{
+    		
+    	}	
     }
 	public ProductDao getProductDao() {
 		return productDao;

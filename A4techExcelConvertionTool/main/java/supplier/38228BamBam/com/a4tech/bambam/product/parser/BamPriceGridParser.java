@@ -5,12 +5,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
 public class BamPriceGridParser {
@@ -28,6 +30,7 @@ public class BamPriceGridParser {
 		
 		
 		priceGrid.setCurrency(currency);
+		priceName = getProductonRushVal(priceName, criterias);
 		priceGrid.setDescription(priceName);
 		priceGrid.setIsQUR(isQur.equalsIgnoreCase("Y")?ApplicationConstants.CONST_BOOLEAN_TRUE:ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setIsBasePrice(isBasePrice);
@@ -79,6 +82,7 @@ public class BamPriceGridParser {
 	
 	public List<PriceConfiguration> getConfigurations(String criterias){
 		boolean optionFlag = false;
+		boolean timeFlag  = false;
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
 		try{
 		String[] config =null;
@@ -91,13 +95,25 @@ public class BamPriceGridParser {
 				String criteriaValue = LookupData.getCriteriaValue(config[0]);
 				if(isOption(config[0])){
 					optionFlag = ApplicationConstants.CONST_BOOLEAN_TRUE;
-				}else{
+				}else{ 
 					optionFlag = ApplicationConstants.CONST_BOOLEAN_FALSE;
 				}
+				if(isProductionOrRush(config[0])){
+					timeFlag = ApplicationConstants.CONST_BOOLEAN_TRUE;
+				}else{
+					timeFlag = ApplicationConstants.CONST_BOOLEAN_FALSE;
+				}
+				
 				configuraion.setCriteria(criteriaValue);
+				if(config[0].equalsIgnoreCase("LMIN")){
+					config[1] = "Can order less than minimum";
+				}
 				if(config[1].contains(",")){
 					String[] values = config[1].split(",");
 					for (String Value : values) {
+						if(timeFlag){
+							Value = Value.concat(" ").concat("business days");
+						}
 						configs = new PriceConfiguration();
 						configs.setCriteria(criteriaValue);
 						configs.setValue(Arrays.asList((Object)Value));
@@ -110,6 +126,9 @@ public class BamPriceGridParser {
 						configs.setOptionName(config[1]);
 						configs.setValue(Arrays.asList((Object)config[2]));
 					}else{
+						if(timeFlag){
+							config[1] = config[1].concat(" ").concat("business days");
+						}
 						configs.setValue(Arrays.asList((Object)config[1]));
 					}
 					priceConfiguration.add(configs);
@@ -142,7 +161,7 @@ public class BamPriceGridParser {
 		
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(upChargeName);
-		priceGrid.setIsQUR((qurFlag.equalsIgnoreCase("Y"))?ApplicationConstants.CONST_BOOLEAN_TRUE: ApplicationConstants.CONST_BOOLEAN_FALSE);
+		priceGrid.setIsQUR((qurFlag.trim().equalsIgnoreCase("Y"))?ApplicationConstants.CONST_BOOLEAN_TRUE: ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);
 		priceGrid.setUpchargeType(upChargeType);
@@ -169,6 +188,26 @@ public class BamPriceGridParser {
 	
 	public boolean isOption(String value){
 		if("IMOP".equals(value) || "PROP".equals(value) || "SHOP".equals(value)){
+			return ApplicationConstants.CONST_BOOLEAN_TRUE;
+		}
+		return ApplicationConstants.CONST_BOOLEAN_FALSE;
+	}
+	
+	public String getProductonRushVal(String basePriceName,String criteriaValue){
+		if (!StringUtils.isEmpty(criteriaValue)) {
+			if (criteriaValue.contains("RUSH")
+					|| (criteriaValue.contains("PRTM"))) {
+				basePriceName = CommonUtility.appendStrings(basePriceName,
+						ApplicationConstants.CONST_STRING_BUSINESS_DAYS,
+						ApplicationConstants.CONST_VALUE_TYPE_SPACE);
+				return basePriceName;
+			}	
+		}
+		return basePriceName;
+	}
+	
+	public boolean isProductionOrRush(String value){
+		if(value.equalsIgnoreCase("RUSH") || value.equalsIgnoreCase("PRTM")){
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;

@@ -45,6 +45,7 @@ public class FtpDownloadFiles {
 	}
 	ftpServerDisconnect();
 	File[] listOfFiles = getAllFiles();
+	_LOGGER.info("Ftp files Count::"+listOfFiles.length);
 	fileParsing.ReadFtpFiles(listOfFiles);
 	
 	} catch (IOException e) {
