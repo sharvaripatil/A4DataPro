@@ -1,4 +1,4 @@
-package com.a4tech.product.test;
+/*package com.a4tech.product.test;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,10 +18,10 @@ public class TestSupplierLogin {
 	public void addSandboxSupplierLogin(){
 		System.out.println("enter test");
 		Integer id = null;
-		/*SupplierSandboxLoginDetails sbloginDetails = new SupplierSandboxLoginDetails();
+		SupplierSandboxLoginDetails sbloginDetails = new SupplierSandboxLoginDetails();
 		sbloginDetails.setAsiNumber("12345");
 		sbloginDetails.setUserName("admin");
-		sbloginDetails.setPassword("password");*/
+		sbloginDetails.setPassword("password");
 	try{
 		// id = productDao.addSupplierLogin(sbloginDetails);
 	}catch(Exception e){
@@ -47,3 +47,4 @@ public class TestSupplierLogin {
 	}
 	
 }
+*/
