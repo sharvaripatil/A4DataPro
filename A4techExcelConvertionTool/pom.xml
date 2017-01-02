@@ -306,6 +306,8 @@
 								<source>main/java/supplier/47791BestDeal</source>
 								<source>main/java/supplier/82588RiversEnd</source>
 								<source>main/java/supplier/38228BamBam</source>
+								<source>source/main/supplier</source>
+								
 							</sources>
 						</configuration>
 					</execution>

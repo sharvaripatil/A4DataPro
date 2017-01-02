@@ -19,7 +19,6 @@ import com.a4tech.RFGLine.products.parser.RFGPriceGridParser;
 import com.a4tech.RFGLine.products.parser.RFGShippingEstimationParser;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
@@ -34,6 +33,7 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 
 	private static final Logger _LOGGER = Logger
 			.getLogger(RFGLineProductExcelMapping.class);
+
 	
 	private PostServiceImpl postServiceImpl;
 	private RFGShippingEstimationParser shippingParserObj;
@@ -54,7 +54,6 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 		ProductConfigurations productConfigObj = new ProductConfigurations();
 		ShippingEstimate ShipingItem = new ShippingEstimate();
 		Product productExcelObj = new Product();
-		FOBPoint fobPointObj=new FOBPoint();
 		StringBuilder listOfQuantity = new StringBuilder();
 		StringBuilder listOfPrices = new StringBuilder();
 		StringBuilder listOfNetPrice = new StringBuilder();
@@ -64,10 +63,10 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 		String productId = null;
 		String priceIncludes = null;
 		String quantity = null;
-		 String ShipQty1=null;
-		 String ShipWeight1=null;
-		 String ShipLength1=null;
-		 String ShipWidth1 = null;
+		String ShipQty1=null;
+	    String ShipWeight1=null;
+	    String Netcost =null;
+	    		
 		 int SetupQty=0;
 		 int SetupNet=0;
 		 int SetupRetail=0;
@@ -151,7 +150,7 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 						
 							 productId =  CommonUtility.getCellValueStrinOrInt(cell);
 							 productExcelObj.setExternalProductId(productId);	
-					   
+							 productExcelObj.setAsiProdNo(productId);
 
 							break;
 						case 2:// ItemName
@@ -171,121 +170,76 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 							String Description=cell.getStringCellValue();
 							productExcelObj= descrptionParserObj.getDescription(Description,productExcelObj,productConfigObj,priceGrids);
 							
-							priceGrids=productExcelObj.getPriceGrids();
+					    	priceGrids=productExcelObj.getPriceGrids();
 							break;
-						case 4:// OriginationZipCode
-							String fobpoint=CommonUtility.getCellValueStrinOrInt(cell);
-							List<FOBPoint> fobPointList = new ArrayList<FOBPoint>();
-							if(fobpoint.contains("33125")){
-							fobPointObj.setName("Miami, FL 33125 USA");
-							fobPointList.add(fobPointObj);
-							productExcelObj.setFobPoints(fobPointList);
-							}
-
-							break;
-
-						case 5:// ShipQty1
+				
+						case 4:// ShipQty1
 							
 							 ShipQty1 = CommonUtility.getCellValueStrinOrInt(cell);
 
 							break;
 
-						case 6: // ShipWeight1
-								 ShipWeight1 = CommonUtility.getCellValueStrinOrInt(cell);
+						case 5: // ShipWeight1
+							 ShipWeight1 = CommonUtility.getCellValueStrinOrInt(cell);
+							 ShipingItem = shippingParserObj.getShippingEstimateValues(ShipQty1, ShipWeight1);
+				               productConfigObj.setShippingEstimates(ShipingItem);
 
 							break;
-
-						case 7:// ShipLength1
-							 ShipLength1 = CommonUtility.getCellValueStrinOrInt(cell);
 							
-							break;
-
-						case 8: // ShipWidth1
-							 ShipWidth1 =CommonUtility.getCellValueStrinOrInt(cell);
-							break;
-
-						case 9: // ShipHeight1
-						    String ShipHeight1 = CommonUtility.getCellValueStrinOrInt(cell);
-						   ShipingItem = shippingParserObj.getShippingEstimateValues(ShipQty1, ShipWeight1, ShipLength1, ShipWidth1, ShipHeight1);
-			               productConfigObj.setShippingEstimates(ShipingItem);
-
-						
-							break;
-
-						case 10:// ShipQty2
-							break;
-						case 11: // ShipWeight2
-							break;
-                    	case 12: // ShipLength2
-                    		break;
-                        case 13: // ShipWidth2
-                        	break;
-						case 14: // ShipHeight2
-							break;
-						case 15:// ShipQty3
-							break;
-						case 16: // ShipWeight3
-							break;
-						case 17: // ShipLength3
-							break;
-						case 18: // ShipWidth3
-							break;
-						case 19:// ShipHeight3
-							break;
-						case 20:// ShipQty4
-							break;
-						case 21:// ShipWeight4
-							break;
-						case 22:// ShipLength4
-							break;
-                     	case 23:
-							// ProductionTime
+						case 6://production time
+							
 							String prodTimeLo=null;
 						    List<ProductionTime> productionTimeList = new ArrayList<ProductionTime>();
 						    ProductionTime productionTime = new ProductionTime();
-						     prodTimeLo=CommonUtility.getCellValueStrinOrInt(cell);
-						     productionTime.setBusinessDays(prodTimeLo);
-						     productionTime.setDetails("7-10 Working Days from Proof Approval");
-						     productionTimeList.add(productionTime);
-						     productConfigObj.setProductionTime(productionTimeList);
-						   
+						    prodTimeLo=CommonUtility.getCellValueStrinOrInt(cell);
+						    productionTime.setBusinessDays(prodTimeLo);
+						    productionTime.setDetails("7-10 Working Days from Proof Approval");
+						    productionTimeList.add(productionTime);
+						    productConfigObj.setProductionTime(productionTimeList);
+						
 							break;
-						case 24:
-							// ProductVersionName
-							break;
-						case 25:
-
-							// SetupQty1
+							
+						case 7://SetupQty1
+							
 							 SetupQty=(int) cell.getNumericCellValue();
 
-							break;
 
-						case 26:
-							// SetupNet1
+							break;
+							
+						case 8://SetupNet1
+							
 							 SetupNet=(int) cell.getNumericCellValue();
+
+
+							break;
+							
+						case 9://SetupRetail1
+							
+							 SetupRetail=(int) cell.getNumericCellValue();
+
+
+							break;
+							
+						case 10://SetupMargin1
+
+							 SetupMargin=cell.getStringCellValue();
+
+							break;
+							
+						case 11://SetupDisplay1
 
 							
 							break;
-						case 27:
-							// SetupRetail1
-							 SetupRetail=(int) cell.getNumericCellValue();
-
-							break;
-						case 28:
-							// SetupMargin1
-							 SetupMargin=cell.getStringCellValue();
-							break;
-						case 29:
-							// SetupDisplay1
-							break;
-						case 30:// Qty1
-						case 31:// Qty2
-						case 32:// Qty3
-						case 33:// Qty4
-						case 34:// Qty5
-						case 35:// Qty6
-						case 36:// Qty7
-						case 37:// Qty8
+							
+							
+						case 12:// Qty1
+						case 13:// Qty2
+						case 14:// Qty3
+						case 15:// Qty4
+						case 16:// Qty5
+						case 17:// Qty6
+						case 18:// Qty7
+						case 19:// Qty8
 							try{
 								quantity = CommonUtility.getCellValueStrinOrInt(cell);
 							     if(!StringUtils.isEmpty(quantity) && !quantity.equals("0")){
@@ -295,17 +249,17 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 								_LOGGER.info("Error in base price Quantity field "+e.getMessage());
 							}
 							break;
-						case 38:// Net1
-						case 39:// Net2
-						case 40:// Net3
-						case 41:// Net4
-						case 42:// Net5
-						case 43:// Net6
-						case 44:// Net7
-						case 45:// Net8
+						case 20:// Net1
+						case 21:// Net2
+						case 22:// Net3
+						case 23:// Net4
+						case 24:// Net5
+						case 25:// Net6
+						case 26:// Net7
+						case 27:// Net8
 
 				        	 try{
-									 String Netcost = CommonUtility.getCellValueDouble(cell);
+									  Netcost = CommonUtility.getCellValueDouble(cell);
 								     if(!StringUtils.isEmpty(Netcost) && !Netcost.equals("0")){
 							        	 listOfNetPrice.append(Netcost).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 								         }
@@ -313,14 +267,14 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 									_LOGGER.info("Error in base price Netcost field "+e.getMessage());
 								}
 							break;
-						case 46: //Retail1
-						case 47:// Retail2
-						case 48: // Retail3
-						case 49:// Retail4
-						case 50:// Retail5
-						case 51:// Retail6
-						case 52:// Retail7
-						case 53:// Retail8
+						case 28: //Retail1
+						case 29:// Retail2
+						case 30: // Retail3
+						case 31:// Retail4
+						case 32:// Retail5
+						case 33:// Retail6
+						case 34:// Retail7
+						case 35:// Retail8
 
 				        	 try{
 									 String ListPrice = CommonUtility.getCellValueDouble(cell);
@@ -331,14 +285,14 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 									 _LOGGER.info("Error in base price prices field "+e.getMessage());							break;
 								}
 				        	 break;
-						case 54:// Margin1
-						case 55:// Margin2
-						case 56:// Margin3
-						case 57:// Margin4
-						case 58:// Margin5
-						case 59:// Margin6
-						case 60:// Margin7
-						case 61:// Margin8
+						case 36:// Margin1
+						case 37:// Margin2
+						case 38:// Margin3
+						case 39:// Margin4
+						case 40:// Margin5
+						case 41:// Margin6
+						case 42:// Margin7
+						case 43:// Margin8
 							try{
 								 String Discountcode = CommonUtility.getCellValueStrinOrInt(cell);
 							     if(!StringUtils.isEmpty(Discountcode) && !Discountcode.equals("0")){
@@ -352,21 +306,16 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 						} // end inner while loop
 
 					}
-					// set product configuration objects
-		
-
-					// end inner while loop
-					
 					
 					productExcelObj.setPriceType("L");
 					if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
 						priceGrids = rfgPriceGridParserObj.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
 								         listOfQuantity.toString(), listOfDiscount.toString(), "USD",
-								         priceIncludes, true, "N", productName,"",priceGrids);	
+								         priceIncludes, true, "N","" ,"",priceGrids);	
 					}else{
 						priceGrids = rfgPriceGridParserObj.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
 						         listOfQuantity.toString(), listOfDiscount.toString(), "USD",
-						         priceIncludes, true, "Y", productName,"",priceGrids);	
+						         priceIncludes, true, "Y", "","",priceGrids);	
 					}
 					
 					productConfigObj.setImprintMethods(imprintMethods);
@@ -375,7 +324,7 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 					imprintMethods.add(imprintMethodObj);
 					
 					priceGrids = rfgPriceGridParserObj.getUpchargePriceGrid(Integer.toString(SetupQty),Integer.toString(SetupRetail),Integer.toString(SetupNet),SetupMargin.toString(),"Imprint Method",  
-							"false", "USD", "PRINTED",  "Imprint Method Charge", "Other", new Integer(1), priceGrids);
+							"false", "USD", "PRINTED",  "Set-up Charge", "Other", new Integer(1), priceGrids);
 
 				
 					listOfPrices = new StringBuilder();
