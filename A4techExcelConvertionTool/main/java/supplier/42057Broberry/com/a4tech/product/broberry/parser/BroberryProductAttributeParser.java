@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.dataStore.ProductDataStore;
@@ -20,11 +21,20 @@ import com.a4tech.product.broberry.mapping.BroberryExcelMapping;
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.AvailableVariations;
+import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.Image;
+import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Option;
 import com.a4tech.product.model.OptionValue;
+import com.a4tech.product.model.PriceGrid;
+import com.a4tech.product.model.Product;
+import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductionTime;
+import com.a4tech.product.model.Theme;
+import com.a4tech.product.model.TradeName;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
@@ -118,6 +128,7 @@ public class BroberryProductAttributeParser {
 			_LOGGER.error("Error while processing Product Number :"+e.getMessage());             
 		   	return new ArrayList<ProductNumber>();
 		   }
+		_LOGGER.info("ProductNumbers Processed");
 		return pnumberList;		
 	}
 	
@@ -224,6 +235,7 @@ public Size getProductSize(List<String> sizeValues){
 			_LOGGER.error("error while processing sizes" +e.getMessage());
 			return new Size();
 		}
+		_LOGGER.info("Sizes Processed");
 		return size;
 	}
 
@@ -262,10 +274,23 @@ public  List<Option> getOptions(ArrayList<String> optionValues) {
 */
 
 
-public  List<Option> getOptions(ArrayList<String> optionValues) {
+public  List<Option> getOptions(ArrayList<String> optionValues,Product productExcelObj) {
 	List<Option> optionList=new ArrayList<>();
+	try{
+		
+		List<Option> optionExistList=new ArrayList<Option>();
+		if(productExcelObj.getProductConfigurations()!=null){
+			if(productExcelObj.getProductConfigurations().getOptions()!=null){
+			optionExistList=productExcelObj.getProductConfigurations().getOptions();
+			}
+		}
+	
 	Option optionObj=new Option();
-	   try{
+	   
+		   for (Option option : optionExistList) {
+			   optionList.add(option);
+		}
+		   
 		   List<OptionValue> valuesList=new ArrayList<OptionValue>();
 			 OptionValue optionValueObj=null;
 			  for (String optionDataValue: optionValues) {
@@ -370,6 +395,106 @@ public  List<Option> getOptions(ArrayList<String> optionValues) {
 			return flag;	
 		}
 
+		public Product getExistingProductData(Product existingProduct , ProductConfigurations existingProductConfig){
+			
+			ProductConfigurations newProductConfigurations=new ProductConfigurations();
+			Product newProduct=new Product();
+			//PriceGrid newPriceGrid =new PriceGrid();
+			
+			//if(!StringUtils.isEmpty(productKeywords)){
+			List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
+			
+			List<String> lineNames=existingProduct.getLineNames();
+			try{
+			if(!CollectionUtils.isEmpty(lineNames)){
+				newProduct.setLineNames(lineNames);
+			}
+			List<Catalog> catalogs=existingProduct.getCatalogs();
+			if(!CollectionUtils.isEmpty(catalogs)){
+				newProduct.setCatalogs(catalogs);
+			}
+			List<Image> images=existingProduct.getImages();
+			if(!CollectionUtils.isEmpty(images)){
+				newProduct.setImages(images);
+			}
+			
+			List<String> productKeywords=existingProduct.getProductKeywords();
+			if(!CollectionUtils.isEmpty(productKeywords)){
+				newProduct.setProductKeywords(productKeywords);
+			}
+			String additionalProductInfo=existingProduct.getAdditionalProductInfo();
+			if(!StringUtils.isEmpty(additionalProductInfo)){
+				newProduct.setAdditionalProductInfo(additionalProductInfo);
+			}
+			
+			List<ImprintMethod> imprintMethods=existingProductConfig.getImprintMethods();
+			if(!CollectionUtils.isEmpty(imprintMethods)){
+				newProductConfigurations.setImprintMethods(imprintMethods);
+			}
+			List<Theme> themes=existingProductConfig.getThemes();
+			if(!CollectionUtils.isEmpty(themes)){
+				newProductConfigurations.setThemes(themes);
+			}
+			
+			 List<TradeName> tradeName=existingProductConfig.getTradeNames();
+			 if(!CollectionUtils.isEmpty(tradeName)){
+				 newProductConfigurations.setTradeNames(tradeName);
+				}
+			 
+			 List<ProductionTime> productionTime=existingProductConfig.getProductionTime();
+			 if(!CollectionUtils.isEmpty(productionTime)){
+				 newProductConfigurations.setProductionTime(productionTime);
+				}
+			
+			 List<Option> Options=existingProductConfig.getOptions();///very imp
+			 if(!CollectionUtils.isEmpty(Options)){
+			 Options=getExistingOption(Options);
+			 if(!CollectionUtils.isEmpty(Options)){
+				 newProductConfigurations.setOptions(Options);
+			 }
+			}
+			 
+			 newPriceGrid= existingProduct.getPriceGrids();//very imp
+			 if(!CollectionUtils.isEmpty(newPriceGrid)){
+				 newPriceGrid=getUpcharegPriceGrid(newPriceGrid);
+				 newProduct.setPriceGrids(newPriceGrid);
+			 }
+			 
+			newProduct.setPriceType(existingProduct.getPriceType());
+			newProduct.setProductConfigurations(newProductConfigurations);
+			}catch(Exception e){
+				_LOGGER.error("Error while processing Existing Product Data " +e.getMessage());
+			}
+			 _LOGGER.info("Completed processing Existing Data");
+			return newProduct;
+			
+		}
+		
+		
+		public static List<Option> getExistingOption(List<Option> Options){
+			List<Option> newOptions=new ArrayList<Option>();
+			for (Option option : Options) {
+				if(option.getOptionType().equalsIgnoreCase("Shipping")){
+					newOptions.add(option);
+				}
+			}
+			return newOptions;
+		}
+		
+		public static List<PriceGrid>  getUpcharegPriceGrid(List<PriceGrid> newPriceGrid ){
+			List<PriceGrid> upchgPriceGrid=new ArrayList<PriceGrid>();
+			
+			for (PriceGrid priceGrid : newPriceGrid) {
+				if(priceGrid.getIsBasePrice()==false && priceGrid.getUpchargeType().equalsIgnoreCase("Shipping Charge")){
+					upchgPriceGrid.add(priceGrid);
+			}
+			}
+			return upchgPriceGrid;
+		
+		}
+		
+		
+		
 		public LookupServiceData getLookupServiceDataObj() {
 			return lookupServiceDataObj;
 		}

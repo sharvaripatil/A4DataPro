@@ -80,10 +80,8 @@ public class BroberryExcelMapping implements IExcelParser{
 		  Product existingApiProduct = null;
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  List<PriceGrid> priceGrids = null;
-		  Set<String> listOfColors = new HashSet<>();
-		  String colorCustomerOderCode ="";
+		  
 		  List<String> repeatRows = new ArrayList<>();
-		  Map<String, String> colorIdMap = new HashMap<>();
 		  String size=null;
 		  String dimension=null;
 		  String upc_no;
@@ -104,6 +102,7 @@ public class BroberryExcelMapping implements IExcelParser{
 		  String Keyword1 =null;
 		  String specialCharacters = "[™®-’—,]";
 		  int columnIndex = 0;
+		  boolean existingFlag=false;
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -143,8 +142,11 @@ public class BroberryExcelMapping implements IExcelParser{
 					checkXid = false;
 				}
 				if(checkXid){
+					try{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
+							 productExcelObj.setAdditionalProductInfo(AdditionalInfo.toString());
+							 
 							colorList=broberryProductAttributeParser.getColorCriteria(colorSet);
 							if(!CollectionUtils.isEmpty(colorList)){
 								productConfigObj.setColors(colorList);
@@ -170,17 +172,19 @@ public class BroberryExcelMapping implements IExcelParser{
 	
 								}else if(strTemp.equalsIgnoreCase("OPTN")){
 									if(!CollectionUtils.isEmpty(productOptionSet)){
-										productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
+										productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet),productExcelObj));
+										_LOGGER.info("Options Processed");
 									}
 								}else if(strTemp.equalsIgnoreCase("OPTNAVAIL")){
 									if(!CollectionUtils.isEmpty(productOptionSet)){
-										productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
+										productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet),productExcelObj));
 									}
 									if(!CollectionUtils.isEmpty(productOptionSet)){
 										//listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(ProductDataStore.getSizesBrobery(),productOptionSet);
 										listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(tempMap);
 										productExcelObj.setAvailability(listOfAvailablity);
 									}	
+									_LOGGER.info("Options & Availablity Processed");
 								}
 							}
 							////////////////////////////////////////////////////////////////////////
@@ -203,18 +207,16 @@ public class BroberryExcelMapping implements IExcelParser{
 									}
 								 	productExcelObj.setPriceGrids(priceGrids);*/
 								 /***************///upcharge grid faling for all existing products ,assigning QUR to both new and Existing products
-								 productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
-								 priceGrids=getPriceGrids(productName);
+								 priceGrids=getPriceGrids(productName,productExcelObj);
+								
+								if(!existingFlag){//existingFlag
+									 productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
+								 }
 								 productExcelObj.setPriceGrids(priceGrids);
 								 /***************/
-								 /*
-								  * As per sharon images should be removed from both new & existing product
-								  */
-								/* List<Image> images=new ArrayList<Image>(); waiting for clarification from sharon.
-								 productExcelObj.setImages(images);*/
 								 productExcelObj.setProductConfigurations(productConfigObj);
-								 	_LOGGER.info("Product Data : "
-											+ mapperObj.writeValueAsString(productExcelObj));
+								 	/*_LOGGER.info("Product Data : "
+											+ mapperObj.writeValueAsString(productExcelObj));*/
 								 	
 							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
@@ -228,7 +230,6 @@ public class BroberryExcelMapping implements IExcelParser{
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 								priceGrids = new ArrayList<PriceGrid>();
 								productConfigObj = new ProductConfigurations();
-								listOfColors = new HashSet<>();
 								
 								repeatRows.clear();
 								colorSet=new HashSet<String>(); 
@@ -249,6 +250,7 @@ public class BroberryExcelMapping implements IExcelParser{
 								tempMap=new HashMap<String, LinkedList<String>>();
 								 list=new LinkedList<String>();
 								 listTemp=new LinkedList<String>();
+								 
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -259,13 +261,19 @@ public class BroberryExcelMapping implements IExcelParser{
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
+						    	 existingFlag=false;
 						     }else{
-						    	    productExcelObj=existingApiProduct;
-									productConfigObj=productExcelObj.getProductConfigurations();
-								    //priceGrids = productExcelObj.getPriceGrids();
+						    	 _LOGGER.info("Existing Xid available,Processing existing Data");
+						    	 productExcelObj=broberryProductAttributeParser.getExistingProductData(existingApiProduct,existingApiProduct.getProductConfigurations());
+						    	 productConfigObj=productExcelObj.getProductConfigurations();
+								 existingFlag=true;
 						     }
 							
 					 }
+				}catch(Exception e){
+					_LOGGER.error("error in first block -1"+e.getMessage());
+				}
+					 
 				}else{
 					if(productXids.contains(xid) && repeatRows.size() != 1){
 						 if(isRepeateColumn(columnIndex+1)){
@@ -375,7 +383,6 @@ public class BroberryExcelMapping implements IExcelParser{
 						 }
 					 }
 					//productExcelObj.setCategories(listOfCategories);
-
 				
 					 break;
 				case 14://FABRIC WT
@@ -443,7 +450,6 @@ public class BroberryExcelMapping implements IExcelParser{
 					 AdditionalInfo=AdditionalInfo.append("Seasonality:").append(AddionnalInfo1);
 						 
 					 }
-				
 					break;
 				case 23: //PLF5
 					AddionnalInfo1=CommonUtility.getCellValueStrinOrInt(cell);
@@ -469,7 +475,6 @@ public class BroberryExcelMapping implements IExcelParser{
 					}
 					productExcelObj.setName(productName);
 					 
-	
 					break;
 				case 26: //CONS COPY
 	
@@ -482,7 +487,6 @@ public class BroberryExcelMapping implements IExcelParser{
 						description=(String) strTemp.subSequence(0, lenTemp);
 					}
 					productExcelObj.setDescription(description);
-					
 					break;
 				case 27: //SEARCH KEY
 
@@ -501,7 +505,6 @@ public class BroberryExcelMapping implements IExcelParser{
 					     AdditionalInfo=AdditionalInfo.append(",Fix length:").append(AddionnalInfo1);
 						
 					 }
-				
 					break;
 				case 30: //RETAIL COPY
 					//String description = cell.getStringCellValue();
@@ -564,11 +567,11 @@ public class BroberryExcelMapping implements IExcelParser{
 				
 		}else if(strTemp.equalsIgnoreCase("OPTN")){
 			if(!CollectionUtils.isEmpty(productOptionSet)){
-				productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
+				productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet),productExcelObj));
 		}
 		}else if(strTemp.equalsIgnoreCase("OPTNAVAIL")){
 			if(!CollectionUtils.isEmpty(productOptionSet)){
-				productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet)));
+				productConfigObj.setOptions(broberryProductAttributeParser.getOptions(new ArrayList<String>(productOptionSet),productExcelObj));
 			}
 			if(!CollectionUtils.isEmpty(tempMap)){
 				listOfAvailablity =broberryProductAttributeParser.getProductAvailablity(tempMap);
@@ -597,18 +600,17 @@ public class BroberryExcelMapping implements IExcelParser{
 			}
 		 	productExcelObj.setPriceGrids(priceGrids);*/
 		 /***************///upcharge grid faling for all existing products ,assigning QUR to both new and Existing products
-		 productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
-		 priceGrids=getPriceGrids(productName);
+		 //productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
+		 priceGrids=getPriceGrids(productName,productExcelObj); 
+		 
+		 if(!existingFlag){//existingFlag
+			 productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
+		 }
 		 productExcelObj.setPriceGrids(priceGrids);
 		 /***************/
-		 /*
-		  * As per sharon images should be removed from both new & existing product
-		  */
-		 /*List<Image> images=new ArrayList<Image>(); //waiting for clarification from sharon
-		 productExcelObj.setImages(images);*/
 		 productExcelObj.setProductConfigurations(productConfigObj);
-		 	_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(productExcelObj));
+		 	/*_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(productExcelObj));*/
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -621,7 +623,7 @@ public class BroberryExcelMapping implements IExcelParser{
 	    productDaoObj.saveErrorLog(asiNumber,batchId);
 		priceGrids = new ArrayList<PriceGrid>();
 		productConfigObj = new ProductConfigurations();
-		listOfColors = new HashSet<>();
+		
 		repeatRows.clear();
 		colorSet=new HashSet<String>(); 
 		colorList = new ArrayList<Color>();
@@ -676,11 +678,21 @@ public class BroberryExcelMapping implements IExcelParser{
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
 	
-	public static List<PriceGrid> getPriceGrids(String basePriceName) 
+	public static List<PriceGrid> getPriceGrids(String basePriceName,Product productExcelObj) 
 	{
 		
 		List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
+		List<PriceGrid> existPriceGrid=new ArrayList<PriceGrid>();
+		
 		try{
+			if(productExcelObj.getPriceGrids()!=null){
+				existPriceGrid=productExcelObj.getPriceGrids();
+			}
+			
+			for (PriceGrid expriceGrid : existPriceGrid) {
+				newPriceGrid.add(expriceGrid);
+			}
+			
 			Integer sequence = 1;
 			List<PriceConfiguration> configuration = null;
 			PriceGrid priceGrid = new PriceGrid();
@@ -697,6 +709,7 @@ public class BroberryExcelMapping implements IExcelParser{
 	}catch(Exception e){
 		_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
 	}
+		_LOGGER.info("PriceGrid Processed");
 		return newPriceGrid;
 }
 	
