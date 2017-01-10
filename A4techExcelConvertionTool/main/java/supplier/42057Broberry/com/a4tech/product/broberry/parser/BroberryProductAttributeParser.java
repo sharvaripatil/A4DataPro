@@ -149,11 +149,24 @@ public Volume getItemWeight(String FabricWT)
 	  Value valueObj=new Value(); 
 	  Values valuesObj=new Values(); 
 
-	  FabricWT=FabricWT.replaceAll("Ounces","");
-	  valueObj.setValue(FabricWT.trim());
-	  valueObj.setUnit("oz");
+	  if(FabricWT.contains("Ounces")){
+		  FabricWT=FabricWT.replaceAll("Ounces","");
+		  valueObj.setValue(FabricWT.trim());
+		  valueObj.setUnit("oz");
+	  }else if(FabricWT.contains("Grams")){
+		  FabricWT=FabricWT.replaceAll("Grams","");
+		  valueObj.setValue(FabricWT.trim());
+		  valueObj.setUnit("grams");
+	  }else if(FabricWT.contains("Millimeters")){
+		  FabricWT=FabricWT.replaceAll("Millimeters","");
+		  valueObj.setValue(FabricWT.trim());
+		  valueObj.setUnit("oz");
+	  }else{
+		  valueObj.setValue(FabricWT.trim());
+		  valueObj.setUnit("oz");
+	  }
+	  //FabricWT=FabricWT.replaceAll("Ounces","");
 	  valueList.add(valueObj);
-	  
 	  valuesObj.setValue(valueList);
 	  valuesList.add(valuesObj);
 	  
@@ -402,10 +415,19 @@ public  List<Option> getOptions(ArrayList<String> optionValues,Product productEx
 			//PriceGrid newPriceGrid =new PriceGrid();
 			
 			//if(!StringUtils.isEmpty(productKeywords)){
-			List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
+			List<String> listCategories=new ArrayList<String>();
 			
-			List<String> lineNames=existingProduct.getLineNames();
+					
+					
+			List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
 			try{
+				listCategories=existingProduct.getCategories();
+				if(!CollectionUtils.isEmpty(listCategories)){
+					newProduct.setCategories(listCategories);
+				}
+				
+			List<String> lineNames=existingProduct.getLineNames();
+			
 			if(!CollectionUtils.isEmpty(lineNames)){
 				newProduct.setLineNames(lineNames);
 			}
