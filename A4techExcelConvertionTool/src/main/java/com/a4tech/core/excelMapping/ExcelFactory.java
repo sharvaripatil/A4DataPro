@@ -15,6 +15,7 @@ import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
 import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
+import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 
 public class ExcelFactory {
 	private AdspecProductsExcelMapping adspecMapping;
@@ -31,6 +32,7 @@ public class ExcelFactory {
 	private BestDealProductsExcelMapping bdProdcutsMapping;
 	private RiversEndExcelMapping riversEndExcelMapping;
 	private BambamProductExcelMapping bamExcelMapping;
+    private CutterBuckExcelMapping cbExcelMapping;
 	
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -60,7 +62,10 @@ public class ExcelFactory {
 			   return bdProdcutsMapping;
 		   }else if(name.equalsIgnoreCase("riversend") || name.equals("82588")){
 			   return riversEndExcelMapping;
-		   }/*else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
+		   }/*else if(name.equalsIgnoreCase("cbExcel") || name.equals("47965")){
+			   return cbExcelMapping;
+		   }*/
+		   /*else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
 			   return bamExcelMapping;
 		   }*/
 		   
@@ -179,5 +184,18 @@ public class ExcelFactory {
 	public void setBamExcelMapping(BambamProductExcelMapping bamExcelMapping) {
 		this.bamExcelMapping = bamExcelMapping;
 	}
-	
+
+	public CutterBuckExcelMapping getCbExcelMapping() {
+		return cbExcelMapping;
+	}
+
+	public void setCbExcelMapping(CutterBuckExcelMapping cbExcelMapping) {
+		this.cbExcelMapping = cbExcelMapping;
+	}
+
+
+
 }
+
+
+

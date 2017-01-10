@@ -40,16 +40,6 @@
 				class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory"
 				p:readTimeout="90000" p:connectTimeout="90000" />
 		</constructor-arg>
-		<!-- <property name="messageConverters"> <list> <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"> 
-			<property name="supportedMediaTypes"> <list> <bean class="org.springframework.http.MediaType"> 
-			<constructor-arg name="type" value="application"/> <constructor-arg name="subtype" 
-			value="json"/> <constructor-arg name="charset" value="UTF-8" /> </bean> </list> 
-			</property> </bean> <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"> 
-			<property name="supportedMediaTypes"> <list> <bean class="org.springframework.http.MediaType"> 
-			<constructor-arg name="type" value="application"/> <constructor-arg name="subtype" 
-			value="xml"/> <constructor-arg name="charset" value="UTF-8" /> </bean> </list> 
-			</property> </bean> <bean class="org.springframework.http.converter.StringHttpMessageConverter"> 
-			<constructor-arg name="defaultCharset" value="UTF-8" /> </bean> </list> </property> -->
 	</bean>
     <bean id="lookupDataId" class="com.a4tech.util.LookupData">
     	<property name="lookupServiceData" ref="lookupServiceData"/>
@@ -394,6 +384,7 @@
 		<property name="bdProdcutsMapping" ref="bestDealMappingId"/>
 		<property name="riversEndExcelMapping" ref="riversEndExcelMappingId"/>
 		<property name="bamExcelMapping" ref="bambamProductExcelMappingId"/>
+		<property name="cbExcelMapping" ref="cbExcelMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -441,5 +432,32 @@
     <bean id="bamSizeParserId" class="com.a4tech.bambam.product.parser.BamSizeParser"/>
     <bean id="bamShippingEstimationParserId" class="com.a4tech.bambam.product.parser.BamShippingEstimationParser"/>
     <bean id="bamPriceGridParserId" class="com.a4tech.bambam.product.parser.BamPriceGridParser"></bean>
+    
+      <!--supplier 82588 configuration end  -->  
+    
+    <!--supplier 47965 configuration start  -->  
+    <bean id="cbExcelMappingId" class="com.a4tech.supplier.mapper.CutterBuckExcelMapping">
+      <property name="postServiceImpl" ref="postService"/>
+      <property name="productDaoObj"   ref="productDao"/>
+      <property name="cutterBuckSizeParserObj" ref="cutterBuckSizeParserObjId"/>
+      <property name="cutterBuckMaterialParserObj" ref="cutterBuckMaterialParserObjId"/>
+ 
+    </bean>
+       <bean id="cutterBuckMaterialParserObjId" class="parser.cutter.CutterBuckMaterialParser">
+      <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+	  <property name="lookupRestServiceObj" ref="lookupRestService"/>
+      </bean>
+       
+      <bean id="cutterBuckSizeParserObjId" class="parser.cutter.CutterBuckSizeParser"/> 
+         
+
+    
+        <!--supplier 47965 configuration end  -->  
+    
+    
+    
+    
+    
+    
 </beans>
 
