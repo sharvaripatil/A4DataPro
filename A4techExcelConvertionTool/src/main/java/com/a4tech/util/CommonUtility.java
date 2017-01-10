@@ -51,6 +51,10 @@ public class CommonUtility {
 			} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				double doubleValue = cell.getNumericCellValue();
 				value = String.valueOf(doubleValue).trim();
+			}else if(cell.getCellType() == Cell.CELL_TYPE_ERROR){
+				//value = String.valueOf(cell.getErrorCellValue());
+				value = Byte.toString(cell.getErrorCellValue()).trim();
+				value="";
 			}
 		} catch (Exception e) {
 			_LOGGER.error("Cell value convert into Double: " + e.getMessage());

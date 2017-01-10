@@ -169,7 +169,7 @@ public class BroberryProductMaterialParser {
 			_LOGGER.error("Error while Material1 processing :" + e.getMessage());
 		
 		}
-		_LOGGER.info("Material1 processed");
+		_LOGGER.info("Material processed");
 		return listOfMaterial;
 		}
 	
