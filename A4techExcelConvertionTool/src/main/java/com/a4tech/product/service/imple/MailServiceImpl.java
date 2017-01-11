@@ -34,7 +34,7 @@ public class MailServiceImpl implements IMailService{
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		      helper.setFrom(senderMailName);
 		      //helper.setTo("venkateswarlu.nidamanuri@a4technology.com");
-		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","amey.more@a4technology.com"};
+		      String[] toAddress = {"amey.more@a4technology.com"};
 		      helper.setTo(toAddress);
 		     // helper.setCc(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
 		      helper.setSubject(supplierId +" "+ "Supplier Error Report");
