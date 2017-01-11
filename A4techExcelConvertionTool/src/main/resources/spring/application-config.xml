@@ -436,22 +436,37 @@
     
     <!--supplier 47965 configuration start  -->  
     <bean id="cbExcelMappingId" class="com.a4tech.supplier.mapper.CutterBuckExcelMapping">
-      <property name="postServiceImpl" ref="postService"/>
-      <property name="productDaoObj"   ref="productDao"/>
+<!--       <property name="postServiceImpl" ref="postService"/>
+ -->    
+   <property name="productDaoObj"   ref="productDao"/>
+      
       <property name="cutterBuckSizeParserObj" ref="cutterBuckSizeParserObjId"/>
       <property name="cutterBuckMaterialParserObj" ref="cutterBuckMaterialParserObjId"/>
- 
-    </bean>
-       <bean id="cutterBuckMaterialParserObjId" class="parser.cutter.CutterBuckMaterialParser">
+      <property name="cutterBuckPriceObj" ref="CutterBuckPriceObjId"/>
+      <property name="cutterBuckSheetObj" ref="cutterBuckSheetObjId"/>
+
+      
+      </bean>
+      
+      <bean id="cutterBuckMaterialParserObjId" class="parser.cutter.CutterBuckMaterialParser">
       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
 	  <property name="lookupRestServiceObj" ref="lookupRestService"/>
       </bean>
        
       <bean id="cutterBuckSizeParserObjId" class="parser.cutter.CutterBuckSizeParser"/> 
          
+      <bean id="CutterBuckPriceObjId" class="parser.cutter.CutterBuckPriceGridParser"/> 
 
-    
-        <!--supplier 47965 configuration end  -->  
+     <bean id="cutterBuckSheetObjId" class="parser.cutter.CutterBuckSheetParser">
+      <property name="postServiceImpl" ref="postService"/>
+      <property name="productDaoObj"   ref="productDao"/>
+      <property name="cbColorProductNumberObj"   ref="cbColorProductNumberObjId"/>
+      
+     </bean>
+     
+      <bean id="cbColorProductNumberObjId" class="parser.cutter.CBColorProductNumberParser"/>
+     
+           <!--supplier 47965 configuration end  -->  
     
     
     
