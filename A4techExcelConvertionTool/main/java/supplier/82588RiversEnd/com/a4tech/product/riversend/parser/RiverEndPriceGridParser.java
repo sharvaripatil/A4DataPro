@@ -16,7 +16,7 @@ import com.a4tech.util.ApplicationConstants;
 
 public class RiverEndPriceGridParser {
 	
-	public List<PriceGrid> getPriceGrids(HashMap<String, String> priceGridMap) {
+	public List<PriceGrid> getPriceGrids(HashMap<String, String> priceGridMap,boolean flag) {
 		List<PriceGrid> newPriceGridList=new ArrayList<>();
 		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
@@ -34,18 +34,24 @@ public class RiverEndPriceGridParser {
 	       priceName=priceArr[0];
 	       priceValue=priceArr[1];
 	       
+	       String basePriceName=priceName;
+	       
 	       priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_TRUE);
 	       priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		  priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
 		  priceGrid.setProductNumber(pricegridNumber);
-		  priceGrid.setDescription(priceName);
+		  basePriceName=basePriceName.replaceAll("%%%",",");
+		  basePriceName=basePriceName.replaceAll("&","/");
+		  basePriceName=basePriceName.replaceAll(" w/","/");
+		  basePriceName=basePriceName.replaceAll(" W/","/");
+		  priceGrid.setDescription(basePriceName);
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
 			listOfPrice = getPrices(priceValue, "1", "P","1"); //imp step
 		
 		priceGrid.setPrices(listOfPrice);
 		//if (criterias != null && !criterias.isEmpty()) {
-		configuration = getConfigurations(priceName);//imp code
+		configuration = getConfigurations(priceName,flag);//imp code
 		//}
 		
 		priceGrid.setPriceConfigurations(configuration);
@@ -67,7 +73,8 @@ public class RiverEndPriceGridParser {
 			} catch (NumberFormatException nfe) {
 				price.setQty(0);
 			}
-			price.setPrice(prices);
+			//price.setPrice(prices);
+			price.setNetCost(prices);
 			price.setDiscountCode(discount);
 			priceUnit.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
 			price.setPriceUnit(priceUnit);
@@ -76,9 +83,10 @@ public class RiverEndPriceGridParser {
 		return listOfPrices;
 	}
 
-	public static List<PriceConfiguration> getConfigurations(String criteriaValue) {
+	public static List<PriceConfiguration> getConfigurations(String criteriaValue,boolean flag) {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
 		//String[] config = null;
+		if(!flag){
 		PriceConfiguration configs = new PriceConfiguration();
 			//config = criterias.split(ApplicationConstants.CONST_SIZE_DELIMITER);
 			//String criteriaValue = LookupData.getCriteriaValue(config[0]);
@@ -86,6 +94,45 @@ public class RiverEndPriceGridParser {
 			configs.setValue(Arrays.asList((Object) criteriaValue));
 			//configs.setValue(Arrays.asList((Object) config[1]));
 			priceConfiguration.add(configs);
+		//return priceConfiguration;
+		}else{
+			String arr[]=criteriaValue.split("%%%");
+			String colorValue=arr[0];
+			String sizeValue=arr[1];
+			
+			if(colorValue.contains(",")){
+				String tempArr[]=colorValue.split(",");
+				for (String strColor : tempArr) {
+					PriceConfiguration configColor = new PriceConfiguration();
+					configColor.setCriteria("Product Color");
+					strColor=strColor.replaceAll("&","/");
+					strColor=strColor.replaceAll(" w/","/");
+					strColor=strColor.replaceAll(" W/","/");
+					configColor.setValue(Arrays.asList((Object) strColor));
+					priceConfiguration.add(configColor);
+				}
+
+				PriceConfiguration configSize = new PriceConfiguration();
+				configSize.setCriteria("Size");
+				configSize.setValue(Arrays.asList((Object) sizeValue));
+				priceConfiguration.add(configSize);
+				
+			}else{
+				PriceConfiguration configColor = new PriceConfiguration();
+				configColor.setCriteria("Product Color");
+				colorValue=colorValue.replaceAll("&","/");
+				colorValue=colorValue.replaceAll(" w/","/");
+				colorValue=colorValue.replaceAll(" W/","/");
+				configColor.setValue(Arrays.asList((Object) colorValue));
+				priceConfiguration.add(configColor);
+				
+				PriceConfiguration configSize = new PriceConfiguration();
+				configSize.setCriteria("Size");
+				configSize.setValue(Arrays.asList((Object) sizeValue));
+				priceConfiguration.add(configSize);
+			}
+			
+		}
 		return priceConfiguration;
 	}
 

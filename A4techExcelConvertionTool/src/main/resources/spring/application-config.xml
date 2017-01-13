@@ -351,6 +351,7 @@
 	</bean>
 	<bean id="broberryProductAttributeParserId" name="broberryProductAttributeParser"
 		class="com.a4tech.product.broberry.parser.BroberryProductAttributeParser" autowire="byName">
+		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
 	</bean>
 	<bean id="broberryMaterialParserObjId" name="broberryMaterialParserObj"
 		class="com.a4tech.product.broberry.parser.BroberryProductMaterialParser" autowire="byName">
