@@ -64,9 +64,9 @@ public class ExcelFactory {
 		   }/*else if(name.equalsIgnoreCase("cbExcel") || name.equals("47965")){
 			   return cbExcelMapping;
 		   }*/
-		   /*else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
+		   else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
 			   return bamExcelMapping;
-		   }*/
+		   }
 		   
 		return null;
 	}

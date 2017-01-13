@@ -11,6 +11,7 @@ import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
+import com.a4tech.product.model.Value;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
@@ -80,18 +81,18 @@ public class BamPriceGridParser {
 		return listOfPrices;
 	}
 	
-	public List<PriceConfiguration> getConfigurations(String criterias){
+	public List<PriceConfiguration> getConfigurations(String criterias){//ADLN:[Mold: 1 side medallion]	
 		boolean optionFlag = false;
 		boolean timeFlag  = false;
-		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
+		List<PriceConfiguration> listOfpriceConfiguration = new ArrayList<>();
 		try{
 		String[] config =null;
 		PriceConfiguration configs = null;
 		if(criterias.contains(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID)){
 			String[] configuraions = criterias.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			for (String criteria : configuraions) {
-				PriceConfiguration configuraion = new PriceConfiguration();
-		        config = criteria.split(":");
+				configs = new PriceConfiguration();
+		        config = criteria.split(":",ApplicationConstants.CONST_INT_VALUE_TWO);//DIMS:Length:1 1/4:in
 				String criteriaValue = LookupData.getCriteriaValue(config[0]);
 				if(isOption(config[0])){
 					optionFlag = ApplicationConstants.CONST_BOOLEAN_TRUE;
@@ -103,12 +104,17 @@ public class BamPriceGridParser {
 				}else{
 					timeFlag = ApplicationConstants.CONST_BOOLEAN_FALSE;
 				}
-				
-				configuraion.setCriteria(criteriaValue);
+				if(config[0].equalsIgnoreCase("DIMS")){
+					criteriaValue = "Size";
+				}
+				//configuraion.setCriteria(criteriaValue);
 				if(config[0].equalsIgnoreCase("LMIN")){
 					config[1] = "Can order less than minimum";
 				}
-				if(config[1].contains(",")){
+				if(criteriaValue.equalsIgnoreCase("Size")){
+					configs = getSizeConfiguration(criteria);
+					listOfpriceConfiguration.add(configs);
+				} else if(config[1].contains(",")){
 					String[] values = config[1].split(",");
 					for (String Value : values) {
 						if(timeFlag){
@@ -116,22 +122,63 @@ public class BamPriceGridParser {
 						}
 						configs = new PriceConfiguration();
 						configs.setCriteria(criteriaValue);
+						if(Value.contains(ApplicationConstants.SQUARE_BRACKET_OPEN)){
+							Value = CommonUtility.removeCurlyBraces(Value);
+						}
 						configs.setValue(Arrays.asList((Object)Value));
-						priceConfiguration.add(configs);
+						listOfpriceConfiguration.add(configs);
 					}					
 				}else{
 					configs = new PriceConfiguration();
 					configs.setCriteria(criteriaValue);
 					if(optionFlag){
-						configs.setOptionName(config[1]);
-						configs.setValue(Arrays.asList((Object)config[2]));
-					}else{
-						if(timeFlag){
-							config[1] = config[1].concat(" ").concat("business days");
+						String optionName = config[1];
+						String optionValue = config[2];
+						if(optionName.contains(ApplicationConstants.SQUARE_BRACKET_OPEN)){
+							optionName = CommonUtility.removeCurlyBraces(optionName);
 						}
-						configs.setValue(Arrays.asList((Object)config[1]));
+						String[] optValues = CommonUtility.getValuesOfArray(optionValue, ApplicationConstants.CONST_STRING_COMMA_SEP);
+						for (String optVal : optValues) {
+							configs = new PriceConfiguration();
+							configs.setCriteria(criteriaValue);
+							configs.setOptionName(optionName);
+							if(optVal.contains(ApplicationConstants.SQUARE_BRACKET_OPEN)){
+								optVal = CommonUtility.removeCurlyBraces(optVal);
+							}
+							configs.setValue(Arrays.asList((Object)optVal));
+							listOfpriceConfiguration.add(configs);
+						}
+						/*if(optionName.contains(ApplicationConstants.SQUARE_BRACKET_OPEN)){
+							optionName = CommonUtility.removeCurlyBraces(optionName);
+						}
+						if(optionValue.contains(ApplicationConstants.SQUARE_BRACKET_OPEN)){
+							optionValue = CommonUtility.removeCurlyBraces(optionValue);
+						}
+						if(optionValue.contains(ApplicationConstants.CONST_STRING_COMMA_SEP)){
+							List<Object> listOfValues = new ArrayList<>();
+							Object obj = null;
+							String[] optValues = CommonUtility.getValuesOfArray(optionValue, ApplicationConstants.CONST_STRING_COMMA_SEP);
+							for (String optVal : optValues) {
+								obj = new Object();
+								listOfValues.add(optVal);
+							}
+							configs.setValue(listOfValues);
+						}else{
+							configs.setValue(Arrays.asList((Object)optionValue));
+						}
+						configs.setOptionName(optionName);*/
+						
+					}else{
+						String val = config[1];
+						if(timeFlag){
+							val = val.concat(" ").concat("business days");
+						}
+						if(val.contains(ApplicationConstants.SQUARE_BRACKET_OPEN)){
+							val = CommonUtility.removeCurlyBraces(val);
+						}
+						configs.setValue(Arrays.asList((Object)val));
 					}
-					priceConfiguration.add(configs);
+					listOfpriceConfiguration.add(configs);
 				}
 			}
 			
@@ -141,12 +188,12 @@ public class BamPriceGridParser {
 			String criteriaValue = LookupData.getCriteriaValue(config[0]);
 			configs.setCriteria(criteriaValue);
 			configs.setValue(Arrays.asList((Object)config[1]));
-			priceConfiguration.add(configs);
+			listOfpriceConfiguration.add(configs);
 		}
 		}catch(Exception e){
 			_LOGGER.error("Error creating price configuration: "+e.getMessage());
 		}
-		return priceConfiguration;
+		return listOfpriceConfiguration;
 	}
 	
 	public List<PriceGrid> getUpchargePriceGrid(String quantity,String prices ,String discounts, String upChargeCriterias , String qurFlag,String currency
@@ -211,6 +258,25 @@ public class BamPriceGridParser {
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
+	}
+	
+	public PriceConfiguration getSizeConfiguration(String configVal){
+		  PriceConfiguration configObj = new PriceConfiguration();
+		  configVal = configVal.replace("DIMS:", "");
+		  String[] sizeVal = configVal.split(ApplicationConstants.CONST_DELIMITER_SEMICOLON);
+		  Value valObj = null;
+		  List<Object> listOfSize = new ArrayList<>();
+		  for (String val : sizeVal) {
+			   valObj = new Value();
+			     String[] sVals = val.split(ApplicationConstants.CONST_DELIMITER_COLON);
+			     valObj.setAttribute(sVals[0]);//DIMS:Length:2 1/4:in	
+				 valObj.setValue(sVals[1]);
+				 valObj.setUnit(sVals[2]);
+				 listOfSize.add(valObj);
+		}
+		  configObj.setValue(listOfSize);
+		  configObj.setCriteria("Size");
+ 		return configObj;
 	}
 
 }

@@ -24,8 +24,8 @@
 	<import resource="sageMapping.xml" />
 	<import resource="kuku_mapping.xml" />
 	<!-- <import resource="quartz-context.xml"/> -->
-	<context:property-placeholder location="classpath:application.properties,classpath:prod-database.properties
-	                                       ,classpath:prod-externalApiEndPoints.properties"/>
+	<context:property-placeholder location="classpath:application.properties,classpath:sandbox-database.properties
+	                                       ,classpath:sandbox-externalApiEndPoints.properties"/>
 	<bean id="productService" class="com.a4tech.product.service.imple.ProductServiceImpl" />
 	<bean id="postServiceImplV2" name="postServiceImplV2"
 		class="com.a4tech.v2.service.postImpl.PostServiceImpl">
@@ -420,20 +420,10 @@
     	<property name="postServiceImpl" ref="postService"/>
      	<property name="productDaoObj"   ref="productDao"/>
      	<property name="bamProductParser" ref="bamAttributeParserId"/>
-     	<property name="bamMaterialParser" ref="bamMaterialParserId"/>
-     	<property name="bamSizeParser" ref="bamSizeParserId"/>
-     	<property name="bamShippingParser" ref="bamShippingEstimationParserId"/>
-     	<property name="bamPriceGridParser" ref="bamPriceGridParserId"/>
-     	<property name="bamPackagingParser" ref="packagingParser"/>
     </bean>
     <bean id="bamAttributeParserId" class="com.a4tech.bambam.product.parser.BamProductAttributeParser">
-    	<property name="lookupData" ref="lookupDataId"/>
+        <property name="lookupServiceData" ref="lookupServiceData"/>
     </bean>
-    <bean id="bamMaterialParserId" class="com.a4tech.bambam.product.parser.BamMaterialParser"/>
-    <bean id="bamSizeParserId" class="com.a4tech.bambam.product.parser.BamSizeParser"/>
-    <bean id="bamShippingEstimationParserId" class="com.a4tech.bambam.product.parser.BamShippingEstimationParser"/>
-    <bean id="bamPriceGridParserId" class="com.a4tech.bambam.product.parser.BamPriceGridParser"/>
-    <bean id="packagingParser" class="com.a4tech.bambam.product.parser.BamPackagingParser"/>
     
       <!--supplier 82588 configuration end  -->  
     

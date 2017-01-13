@@ -39,6 +39,9 @@ public class FtpDownloadFiles {
 		if(!ftpFile.isFile()){
 			continue;
 		}
+		if(ftpFile.isDirectory()){
+			//ftpFile.get
+		}
          output = new FileOutputStream("D:\\A4 ESPUpdate\\FtpFiles" + "/" + ftpFile.getName());
          //get the file from the remote system
          fClient.retrieveFile(ftpFile.getName(), output);   
