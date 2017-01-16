@@ -61,7 +61,19 @@ public class RiversEndExcelMapping  implements IExcelParser{
 	@Autowired
 	ObjectMapper mapperObj;
 	
-
+	public static List<String> XIDS = new ArrayList<String>();
+	static {
+		XIDS.add("3063-4992075");
+		XIDS.add("3063-6163832");
+		XIDS.add("3063-4998422");
+		XIDS.add("3063-6163870");
+		XIDS.add("3063-4992074");	
+		XIDS.add("3063-4992381");
+		XIDS.add("3063-4991993");
+		XIDS.add("3063-550325278");
+		XIDS.add("3063-6180955");
+		XIDS.add("3063-6163863");
+	}
 	
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 	
@@ -175,9 +187,11 @@ public class RiversEndExcelMapping  implements IExcelParser{
 								}
 							  productExcelObj.setLineNames(new ArrayList<String>());
 								 productExcelObj.setProductConfigurations(productConfigObj);
-								 	_LOGGER.info("Product Data : "
-											+ mapperObj.writeValueAsString(productExcelObj));
-								 	
+								 	/*_LOGGER.info("Product Data : "
+											+ mapperObj.writeValueAsString(productExcelObj));*/
+								 	if(XIDS.contains(productExcelObj.getExternalProductId().trim())){
+								 		productExcelObj.setAvailability(new ArrayList<Availability>());
+								 	}
 							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -423,9 +437,12 @@ public class RiversEndExcelMapping  implements IExcelParser{
 			}
 		productExcelObj.setLineNames(new ArrayList<String>());
 		 productExcelObj.setProductConfigurations(productConfigObj);
-		 	_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(productExcelObj));
+		 	/*_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(productExcelObj));*/
 		 	
+		 	if(XIDS.contains(productExcelObj.getExternalProductId().trim())){
+		 		productExcelObj.setAvailability(new ArrayList<Availability>());
+		 	}
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
