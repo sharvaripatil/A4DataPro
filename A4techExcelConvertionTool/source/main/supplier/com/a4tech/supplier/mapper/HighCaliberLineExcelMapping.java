@@ -12,6 +12,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import parser.highcaliberline.HighCaliberAttributeParser;
@@ -20,6 +22,8 @@ import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Artwork;
+import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintColorValue;
 import com.a4tech.product.model.ImprintLocation;
@@ -34,14 +38,17 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class HighCaliberLineExcelMapping implements IExcelParser{
 
-
+	
 	private static final Logger _LOGGER = Logger.getLogger(HighCaliberLineExcelMapping.class);
 	PostServiceImpl postServiceImpl;
 	ProductDao productDaoObj;
 	HighCaliberAttributeParser highCaliberAttributeParser;
+	@Autowired
+	ObjectMapper mapperObj;
 	/*ProductSizeParser sizeParser;
 	ProductImprintMethodParser imprintMethodParser;
 	BBIPriceGridParser bbiPriceGridParser;*/
@@ -79,6 +86,7 @@ public class HighCaliberLineExcelMapping implements IExcelParser{
 		  String copyChrg=null;
 		  String artWrkVal=null;
 		  String productDescription=null;
+		  boolean existingFlag=false;
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -124,6 +132,8 @@ public class HighCaliberLineExcelMapping implements IExcelParser{
 								   // Add repeatable sets here
 								 	productExcelObj.setPriceGrids(priceGrids);
 								 	productExcelObj.setProductConfigurations(productConfigObj);
+								 	 _LOGGER.info("Product Data : "
+												+ mapperObj.writeValueAsString(productExcelObj));
 								 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
@@ -148,9 +158,11 @@ public class HighCaliberLineExcelMapping implements IExcelParser{
 								     if(existingApiProduct == null){
 								    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 								    	 productExcelObj = new Product();
+								    	 existingFlag=false;
 								     }else{//need to confirm what existing data client wnts
 								    	    productExcelObj=existingApiProduct;
 											productConfigObj=productExcelObj.getProductConfigurations();
+											existingFlag=true;
 										   // priceGrids = productExcelObj.getPriceGrids();
 								     }
 						 }
@@ -215,16 +227,29 @@ public class HighCaliberLineExcelMapping implements IExcelParser{
 						//ignore this column
 						break;
 					case 7://Web Link
-
+						String productDataSheet=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(productDataSheet)){
+						productExcelObj.setProductDataSheet(productDataSheet);
+						}
 						break;
 					case 8://ART Template Url
 
 						break;
 					case 9://Download Image Url
-
+						if(!existingFlag){//image only for new product
+						String image=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(image)){
+							List<Image> listOfImages = highCaliberAttributeParser.getImages(image);
+							productExcelObj.setImages(listOfImages);
+							}
+						 }
 						break;
 					case 10://Item Color
-
+						String colorValue=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(colorValue)){
+							 List<Color> colorList=highCaliberAttributeParser.getColorCriteria(colorValue);
+							productConfigObj.setColors(colorList);
+							}
 						break;
 					case 11://Item Size
 
@@ -385,7 +410,8 @@ public class HighCaliberLineExcelMapping implements IExcelParser{
 	
 	 	productExcelObj.setPriceGrids(priceGrids);
 	 	productExcelObj.setProductConfigurations(productConfigObj);
-
+	 	_LOGGER.info("Product Data : "
+				+ mapperObj.writeValueAsString(productExcelObj));
 	 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 	 	if(num ==1){
 	 		numOfProductsSuccess.add("1");
