@@ -12,7 +12,14 @@ import org.springframework.util.StringUtils;
 import com.a4tech.product.broberry.mapping.BroberryExcelMapping;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.Image;
+import com.a4tech.product.model.NumberOfItems;
+import com.a4tech.product.model.ProductionTime;
+import com.a4tech.product.model.RushTime;
+import com.a4tech.product.model.RushTimeValue;
+import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
 
 public class HighCaliberAttributeParser {
@@ -128,4 +135,87 @@ public class HighCaliberAttributeParser {
 		}
 		return result;
 	}
+	
+	public ShippingEstimate getShippingEstimates(String shippinglen,String shippingWid,String shippingH, String shippingWeightValue,
+			String noOfitem) {
+		ShippingEstimate ItemObject = new ShippingEstimate();
+		try{
+		List<NumberOfItems> listOfNumberOfItems = new ArrayList<NumberOfItems>();
+		List<Weight> listOfWeight = new ArrayList<Weight>();
+		NumberOfItems itemObj = new NumberOfItems();
+	
+			List<Dimensions> dimenlist = new ArrayList<Dimensions>();
+			Dimensions dimensionObj = new Dimensions();
+			
+				if(!StringUtils.isEmpty(shippinglen)){
+				dimensionObj.setLength(shippinglen);
+				dimensionObj.setLengthUnit("in");
+				}
+				if(!StringUtils.isEmpty(shippingWid)){
+				dimensionObj.setWidth(shippingWid);
+				dimensionObj.setWidthUnit("in");
+				}
+				if(!StringUtils.isEmpty(shippingH)){
+				dimensionObj.setHeight(shippingH);
+				dimensionObj.setHeightUnit("in");
+				}
+				dimenlist.add(dimensionObj);
+				ItemObject.setDimensions(dimensionObj);
+				
+				//shippingWeightValue
+				if(!StringUtils.isEmpty(shippingWeightValue)){
+					Weight weightObj = new Weight();
+					weightObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_WEIGHT);
+					weightObj.setValue(shippingWeightValue);
+					listOfWeight.add(weightObj);
+					ItemObject.setWeight(listOfWeight);
+				}
+				
+				//shippingNoofItem
+				if(!StringUtils.isEmpty(noOfitem)){
+					itemObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_NUMBER_UNIT_CARTON);
+					itemObj.setValue(noOfitem);
+					listOfNumberOfItems.add(itemObj);
+					ItemObject.setNumberOfItems(listOfNumberOfItems);
+				}
+		}catch(Exception e){
+			_LOGGER.error("Error while processing Shipping Estimate :"+e.getMessage());
+			return new ShippingEstimate();
+		}
+		return ItemObject;
+
+	}
+	
+	public List<ProductionTime> getProdTimeCriteria(String prodTimeValue,String DetailsValue,List<ProductionTime> prodTimeList){
+		//List<ProductionTime> prodTimeList =new ArrayList<ProductionTime>();
+		try{
+			ProductionTime prodTimeObj= new ProductionTime();
+	 					prodTimeObj.setBusinessDays(prodTimeValue);
+	 					prodTimeObj.setDetails(DetailsValue);
+	 			prodTimeList.add(prodTimeObj);//}
+			}catch(Exception e){
+			_LOGGER.error("Error while processing Production Time :"+e.getMessage());
+	        return new ArrayList<ProductionTime>();
+		   }return prodTimeList;
+		}
+	
+	public RushTime getRushTimeValues(String rushTimeValue,String details){
+		RushTime rushObj=new RushTime();
+		try{ 
+		List<RushTimeValue> rushValueTimeList =new ArrayList<RushTimeValue>();
+		RushTimeValue rushValueObj=new RushTimeValue();
+ 		rushValueObj.setBusinessDays(rushTimeValue);
+ 		rushValueObj.setDetails(details);
+ 		rushValueTimeList.add(rushValueObj);
+ 		rushObj.setAvailable(true);
+		rushObj.setRushTimeValues(rushValueTimeList);
+		}catch(Exception e){
+			_LOGGER.error("Error while processing RushTime :"+e.getMessage());             
+		   	return new RushTime();
+		   	
+		   }
+		return rushObj;
+		
+	}
+	
 }

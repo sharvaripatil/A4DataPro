@@ -462,11 +462,12 @@
      <property name="postServiceImpl" ref="postService"/>
      <property name="productDaoObj" ref="productDao"/>
      <property name="highCaliberAttributeParser" ref="highCaliberAttributeParserId" /> 
-     
+     <property name="highCalPriceGridParser" ref="highCalPriceGridParserId" /> 
      </bean>
      <bean id="highCaliberAttributeParserId" name="highCaliberAttributeParser"
 		class="parser.highcaliberline.HighCaliberAttributeParser" autowire="byName">
 	</bean>
+	<bean id="highCalPriceGridParserId" class="parser.highcaliberline.HighCaliberPriceGridParser" autowire="byName"/>
         <!--supplier 43442 configuration start  -->  
     
     
