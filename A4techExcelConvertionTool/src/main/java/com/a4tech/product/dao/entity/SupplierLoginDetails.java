@@ -1,12 +1,15 @@
 package com.a4tech.product.dao.entity;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-@MappedSuperclass
-public abstract class SupplierLoginDetails {
+import javax.persistence.Table;
+
+@Entity
+@Table(name="supplier_login_details")
+public class SupplierLoginDetails {
 	@Id
 	@Column(name="ID")
 	@GeneratedValue(strategy=GenerationType.AUTO)

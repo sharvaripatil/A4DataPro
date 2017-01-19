@@ -43,8 +43,6 @@
 				<value>com.a4tech.product.dao.entity.BatchEntity</value>
 				<value>com.a4tech.product.dao.entity.FtpServerFileEntity</value>
 				<value>com.a4tech.product.dao.entity.SupplierLoginDetails</value>
-				<value>com.a4tech.product.dao.entity.SupplierSandboxLoginDetails</value>
-				<value>com.a4tech.product.dao.entity.SupplierProdLoginDetails</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
