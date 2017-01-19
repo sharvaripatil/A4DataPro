@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.junit.internal.runners.model.EachTestNotifier;
 import org.springframework.util.StringUtils;
 
 import parser.cutter.CutterBuckMaterialParser;
@@ -30,6 +31,7 @@ import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.Size;
+import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -38,7 +40,7 @@ public class CutterBuckExcelMapping implements IExcelParser{
 
 
 	
-	//private PostServiceImpl postServiceImpl;  
+	private PostServiceImpl postServiceImpl;  
 	private ProductDao productDaoObj;
 
 	private CutterBuckMaterialParser cutterBuckMaterialParserObj;
@@ -46,7 +48,7 @@ public class CutterBuckExcelMapping implements IExcelParser{
 	private CutterBuckPriceGridParser cutterBuckPriceObj;
     private CutterBuckSheetParser cutterBuckSheetObj;
     private HashMap<String, Product> SheetMap =new HashMap<String, Product>();
-
+    private HashMap<String, String> ProductNoMap =new HashMap<String, String>();
  
 	@Override
 	public String readExcel(String accessToken, Workbook workbook,
@@ -59,15 +61,17 @@ public class CutterBuckExcelMapping implements IExcelParser{
 		List<Material> listOfMaterial = new ArrayList<>();
 		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
+		ArrayList<Product> test = new ArrayList<>();
 
-		
+
+		Product existingApiProduct = null;
 		Product productExcelObj = new Product();
 		String productName = null;
 		String finalResult = null;
 		String productId = null;
 		String NetCost=null;
 		String ListPrice=null;
-		
+		String asiProdNo = null;
 		
 
 		try{
@@ -89,7 +93,10 @@ public class CutterBuckExcelMapping implements IExcelParser{
 			Iterator<Row> iterator = sheet.iterator();
 
 			while (iterator.hasNext()) {
-
+                 // for (int j=0;j<5;j++) {
+					
+				 
+	
 				try{
 					Row nextRow = iterator.next();
 
@@ -133,12 +140,15 @@ public class CutterBuckExcelMapping implements IExcelParser{
 									productXids.add(xid);
 								}
 								productExcelObj = new Product();
-							   /*  if(productExcelObj == null){
-							    	
-							    	 productExcelObj = new Product();
-							     }else{
-										productConfigObj=productExcelObj.getProductConfigurations();
-							     }*/
+							
+								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
+								   if(existingApiProduct == null){
+								    	 productExcelObj = new Product();
+								     }else{
+								    	   productExcelObj=existingApiProduct;
+											productConfigObj=productExcelObj.getProductConfigurations();
+											priceGrids = productExcelObj.getPriceGrids();
+								    }
 							}
 						}
 
@@ -152,7 +162,6 @@ public class CutterBuckExcelMapping implements IExcelParser{
 							 
 						case 2:// Style Number
 						
-							String asiProdNo = null;
 						    if(cell.getCellType() == Cell.CELL_TYPE_STRING){ 
 						      asiProdNo = String.valueOf(cell.getStringCellValue());
 						    }else if
@@ -263,7 +272,7 @@ public class CutterBuckExcelMapping implements IExcelParser{
 					priceGrids = cutterBuckPriceObj.getPriceGrids(ListPrice,NetCost, 
 					         1, "USD", "", true, "N", productName,"",priceGrids);	
 					
-						
+					
 			      
 					workbook.close();
 				} catch (IOException e) {
@@ -275,13 +284,21 @@ public class CutterBuckExcelMapping implements IExcelParser{
 						
 			productExcelObj.setPriceGrids(priceGrids);
 			productExcelObj.setProductConfigurations(productConfigObj);
-			SheetMap.put(productId,productExcelObj);
+			
+	        // test.add(productExcelObj);
+	        SheetMap.put(productId,productExcelObj);	
+	        ProductNoMap.put(productId, asiProdNo);
 			}
+			
 			}
           else{
-			cutterBuckSheetObj.readMapper(accessToken, workbook, asiNumber, batchId,SheetMap);
-			}
-			}
+            
+        	 // cutterBuckSheetObj.readMapper(accessToken, workbook, asiNumber, batchId,test);
+      			cutterBuckSheetObj.readMapper(accessToken, workbook, asiNumber, batchId,SheetMap,ProductNoMap);
+        	  }
+			  }
+			  
+			
 			
 			return finalResult;
 		}catch(Exception e){
@@ -351,6 +368,21 @@ public class CutterBuckExcelMapping implements IExcelParser{
 		SheetMap = sheetMap;
 	}
 
-	
+	public PostServiceImpl getPostServiceImpl() {
+		return postServiceImpl;
+	}
+	public void setPostServiceImpl(PostServiceImpl postServiceImpl) {
+		this.postServiceImpl = postServiceImpl;
+	}
+
+	public HashMap<String, String> getProductNoMap() {
+		return ProductNoMap;
+	}
+
+
+	public void setProductNoMap(HashMap<String, String> productNoMap) {
+		ProductNoMap = productNoMap;
+	}
+
 			}
 

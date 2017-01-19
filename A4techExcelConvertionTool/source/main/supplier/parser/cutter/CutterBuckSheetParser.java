@@ -19,8 +19,6 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
-import com.a4tech.product.model.ImprintMethod;
-import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductNumber;
@@ -38,17 +36,18 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 	private CBColorProductNumberParser cbColorProductNumberObj;
 
 	public String readMapper(String accessToken, Workbook workbook,
-			Integer asiNumber, int batchId, HashMap<String, Product> SheetMap) {
+			Integer asiNumber, int batchId, HashMap<String, Product> SheetMap, HashMap<String, String> productNoMap) {
 
 		CutterBuckExcelMapping cutterBuckObj = new CutterBuckExcelMapping();
-
+	
+		  
+		  
 		int columnIndex = 0;
 
 		Set<String> productXids = new HashSet<String>();
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 	    Set<String> colorSet = new HashSet<String>(); 
-		Product existingApiProduct = null;
 		List<String> repeatRows = new ArrayList<>();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
 		Product productExcelObj = new Product();
@@ -57,16 +56,12 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 		HashMap<String, String> productNumberMap = new HashMap<String, String>();
 		List<ProductNumber> pnumberList = new ArrayList<ProductNumber>();
 	    List<Color> colorList = new ArrayList<Color>();
-		String ExistProductID = null;
+	    List<String> XidList = new ArrayList<String>();
 		String xid = null;
 		String colorValue =null;
-	
+		String productNumber=null;
+		 String prdXid =null;
 
-		for (Entry<String, Product> entry : SheetMap.entrySet()) {
-			ExistProductID = entry.getKey();
-			productExcelObj = entry.getValue();
-
-		}
 		try {
 
 			_LOGGER.info("Total sheets in excel::"
@@ -76,18 +71,29 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 		Iterator<Row> iterator = sheet.iterator();
 		
 		while (iterator.hasNext()) {
-
+		
 			try {
 				Row nextRow = iterator.next();
-
+               
+           
 				if (nextRow.getRowNum() < 4)
 					continue;
+				 Cell cell1 =  nextRow.getCell(0);
+	              prdXid = cell1.getStringCellValue();
+	                if(!XidList.contains(prdXid))
+	                {
+	                   productExcelObj=SheetMap.get(prdXid);
+	    			   productConfigObj=productExcelObj.getProductConfigurations();
+	                }  
+	                
+	                
+	            
 				Iterator<Cell> cellIterator = nextRow.cellIterator();
 				if (productId != null) {
 					productXids.add(productId);
 				}
 				boolean checkXid = false;
-
+				
 				while (cellIterator.hasNext()) {
 					Cell cell = cellIterator.next();
 				
@@ -96,101 +102,89 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 					if (columnIndex + 1 == 1) {
 						xid = CommonUtility.getCellValueStrinOrInt(cell);//getProductXid(nextRow);
 						xid=xid.trim();
+						
 						checkXid = true;
 					} else {
 						checkXid = false;
 					}
+					
 					if (checkXid) {
 						if (!productXids.contains(xid)) {
-							if (nextRow.getRowNum() != 1) {
-					
-								if(!CollectionUtils.isEmpty(colorList)){
+						if(nextRow.getRowNum() != 1){
+								
+							if(!CollectionUtils.isEmpty(colorList)){
 									productConfigObj.setColors(colorList);
 								}
-								
-								
-								System.out
-										.println("Java object converted to JSON String, written to file");
-						
-/*
-								productExcelObj
-										.setProductConfigurations(productConfigObj);*/
-								int num = postServiceImpl.postProduct(
-										accessToken, productExcelObj,
-										asiNumber, batchId);
-								if (num == 1) {
-									numOfProductsSuccess.add("1");
-								} else if (num == 0) {
-									numOfProductsFailure.add("0");
-								} else {
-
+								if(!CollectionUtils.isEmpty(pnumberList)){
+								productExcelObj.setProductNumbers(pnumberList);
 								}
-								_LOGGER.info("list size>>>>>>>"
-										+ numOfProductsSuccess.size());
-								_LOGGER.info("Failure list size>>>>>>>"
-										+ numOfProductsFailure.size());
-								
-							//	productConfigObj = new ProductConfigurations();
-								repeatRows.clear();
-
-
+							     productExcelObj.setProductConfigurations(productConfigObj);
+						 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+						 	if(num ==1){
+						 		numOfProductsSuccess.add("1");
+						 	}else if(num == 0){
+						 		numOfProductsFailure.add("0");
+						 	}else{
+						 		
+						 	}
+						 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
+						 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
+						 	repeatRows.clear();
+						   colorList = new ArrayList<Color>();
+						 	pnumberList =  new ArrayList<ProductNumber>();
+							productConfigObj = new ProductConfigurations();
+						 	
+						 
+						 	
 							}
 							if (!productXids.contains(xid)) {
 								productXids.add(xid);
 						    	repeatRows.add(xid);
-							}
-							  productExcelObj = new Product();
-							    existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
-							     if(existingApiProduct == null){
-							    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
-							    	 productExcelObj = new Product();
-							     }else{
-							    	    productExcelObj=existingApiProduct;
-										productConfigObj=productExcelObj.getProductConfigurations();
-							     }
-									
+							}		
 						 }
-					}else{
+				     	}else{
+
 						if(productXids.contains(xid) && repeatRows.size() != 1){
 							 if(isRepeateColumn(columnIndex+1)){
 								 continue;
 							 }
 						}
 					}
-
-		
-		
-
-
 							switch (columnIndex + 1) {
 
 							case 1:// XID
-
-								productId = CommonUtility.getCellValueStrinOrInt(cell);
-								productExcelObj.setExternalProductId(productId);
+						   productId = CommonUtility.getCellValueStrinOrInt(cell);
+							   productExcelObj.setExternalProductId(productId);	
+							
 								break;
 
 							case 2:// MaterialNumber
-							
-
+								 productNumber=CommonUtility.getCellValueStrinOrInt(cell);
 								break;
 
 							case 3:// ColorName
+								
 								  colorValue = CommonUtility.getCellValueStrinOrInt(cell);
 								 if(!StringUtils.isEmpty(colorValue)){
 									colorSet.add(colorValue);
 								}
 								colorList=cbColorProductNumberObj.getColorCriteria(colorSet);
-								/*if(!StringUtils.isEmpty(colorValue)&&!StringUtils.isEmpty(productNumber)){
+								productConfigObj.setColors(colorList);
+
+								
+								if(!StringUtils.isEmpty(colorValue)&&!StringUtils.isEmpty(productNumber)){
 									productNumberMap.put(productNumber, colorValue);
 								}
-                                */
+								pnumberList=cbColorProductNumberObj.getProductNumer(productNumberMap);
+								productExcelObj.setProductNumbers(pnumberList);
+
+
 								break;
 
 							} // end inner while loop
 
 						}
-
+				
 			   //  productId = null;
 
 			} catch (Exception e) {
@@ -199,30 +193,32 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 						+ " "
 						+ e.getMessage() +"for column"+columnIndex+1);
 			}
+		
+		 	XidList.add(prdXid);
+		 	
+			if(!CollectionUtils.isEmpty(colorList)){
+				productConfigObj.setColors(colorList);
+			}
+			if(!CollectionUtils.isEmpty(pnumberList)){
+			productExcelObj.setProductNumbers(pnumberList);
+			}
+		     productExcelObj.setProductConfigurations(productConfigObj);
+			
+		
 		}
+	
 		workbook.close();
-		//colorList=cbColorProductNumberObj.getColorCriteria(colorSet);
-		if(!CollectionUtils.isEmpty(colorList)){
-			productConfigObj.setColors(colorList);
-		}
-	    productExcelObj.setProductConfigurations(productConfigObj);
-
+	
+	
+		
 		int num = postServiceImpl.postProduct(accessToken, productExcelObj,
 				asiNumber, batchId);
-		if (num == 1) {
-			numOfProductsSuccess.add("1");
-		} else if (num == 0) {
-			numOfProductsFailure.add("0");
-		} else {
-
-		}
 		_LOGGER.info("list size>>>>>>" + numOfProductsSuccess.size());
 		_LOGGER.info("Failure list size>>>>>>"
 				+ numOfProductsFailure.size());
 		finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
 	    productDaoObj.saveErrorLog(asiNumber,batchId);
-		//productConfigObj = new ProductConfigurations();
-		repeatRows.clear();
+ 	 
 		return finalResult;
 	} catch (Exception e) {
 		_LOGGER.error("Error while Processing excel sheet ,Error message: "
@@ -241,7 +237,17 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 	}
 
 }
-				
+			
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
   public boolean isRepeateColumn(int columnIndex){
 		
 		if(columnIndex != 1){
@@ -251,6 +257,7 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 	}
   
 
+  
 
 	public CBColorProductNumberParser getCbColorProductNumberObj() {
 		return cbColorProductNumberObj;

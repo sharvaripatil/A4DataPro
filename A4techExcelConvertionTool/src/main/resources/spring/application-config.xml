@@ -437,9 +437,9 @@
     
     <!--supplier 47965 configuration start  -->  
     <bean id="cbExcelMappingId" class="com.a4tech.supplier.mapper.CutterBuckExcelMapping">
-<!--       <property name="postServiceImpl" ref="postService"/>
- -->    
-   <property name="productDaoObj"   ref="productDao"/>
+      <property name="postServiceImpl" ref="postService"/>
+    
+      <property name="productDaoObj"   ref="productDao"/>
       
       <property name="cutterBuckSizeParserObj" ref="cutterBuckSizeParserObjId"/>
       <property name="cutterBuckMaterialParserObj" ref="cutterBuckMaterialParserObjId"/>
