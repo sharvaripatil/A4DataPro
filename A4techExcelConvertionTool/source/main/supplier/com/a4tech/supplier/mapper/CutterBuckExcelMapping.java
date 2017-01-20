@@ -270,7 +270,7 @@ public class CutterBuckExcelMapping implements IExcelParser{
 					productExcelObj.setPriceType("B");
 					 
 					priceGrids = cutterBuckPriceObj.getPriceGrids(ListPrice,NetCost, 
-					         1, "USD", "", true, "N", productName,"",priceGrids);	
+					         1, "USD", "", true, "N", productName,""/*,priceGrids*/);	
 					
 					
 			      
@@ -287,7 +287,7 @@ public class CutterBuckExcelMapping implements IExcelParser{
 			
 	        // test.add(productExcelObj);
 	        SheetMap.put(productId,productExcelObj);	
-	        ProductNoMap.put(productId, asiProdNo);
+	        ProductNoMap.put(asiProdNo,productId);
 			}
 			
 			}

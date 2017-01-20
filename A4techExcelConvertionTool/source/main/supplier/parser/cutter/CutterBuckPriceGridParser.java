@@ -11,13 +11,13 @@ public class CutterBuckPriceGridParser {
 
 	public List<PriceGrid> getPriceGrids(String listPrice, String netCost,
 			Integer listOfQuan, String currency, String priceInclude, boolean isBasePrice,
-			String isQur, String priceName, String criterias,
-			List<PriceGrid> existingPriceGrid) {
+			String isQur, String priceName, String criterias/*,
+			List<PriceGrid> existingPriceGrid*/) {
 		
 		
 		Integer sequence = 1;
 		PriceGrid priceGrid = new PriceGrid();
-		
+		List<PriceGrid> listPriceGrid=new ArrayList<PriceGrid>();
 		List<Price> listOfPrices = new ArrayList<Price>();
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(priceName);
@@ -35,8 +35,8 @@ public class CutterBuckPriceGridParser {
 
 		priceGrid.setPrices(listOfPrices);
 		}
-		existingPriceGrid.add(priceGrid);
+		listPriceGrid.add(priceGrid);
 		
-		return existingPriceGrid;
+		return listPriceGrid;
 	}
 }
