@@ -438,7 +438,8 @@
       <property name="cutterBuckMaterialParserObj" ref="cutterBuckMaterialParserObjId"/>
       <property name="cutterBuckPriceObj" ref="CutterBuckPriceObjId"/>
       <property name="cutterBuckSheetObj" ref="cutterBuckSheetObjId"/>
-
+      <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+	  <property name="lookupRestServiceObj" ref="lookupRestService"/>
       
       </bean>
       

@@ -24,6 +24,8 @@ import parser.cutter.CutterBuckSheetParser;
 import parser.cutter.CutterBuckSizeParser;
 
 import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.lookup.service.LookupServiceData;
+import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Origin;
@@ -39,7 +41,8 @@ public class CutterBuckExcelMapping implements IExcelParser{
 
 
 
-	
+	private LookupServiceData lookupServiceDataObj;
+	private LookupRestService lookupRestServiceObj;
 	private PostServiceImpl postServiceImpl;  
 	private ProductDao productDaoObj;
 
@@ -57,7 +60,8 @@ public class CutterBuckExcelMapping implements IExcelParser{
 
 		Set<String> productXids = new HashSet<String>();
 
-	    List<String> lineNamesList=new ArrayList<String>();
+		List<String> listOfLookupLinenames =new ArrayList<String>();
+		List<String> listOfLinenames =new ArrayList<String>();
 		List<Material> listOfMaterial = new ArrayList<>();
 		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
@@ -134,6 +138,8 @@ public class CutterBuckExcelMapping implements IExcelParser{
 									productExcelObj
 											.setProductConfigurations(productConfigObj);
 									 productExcelObj.setPriceGrids(priceGrids);
+									 listOfLinenames =new ArrayList<String>();
+
 								}
 								productConfigObj = new ProductConfigurations();
 								if (!productXids.contains(xid)) {
@@ -249,18 +255,13 @@ public class CutterBuckExcelMapping implements IExcelParser{
 							
 						case 10://Label
 							String Linename=cell.getStringCellValue();
-							if(Linename.contains("CBUK"))
-							{
-								lineNamesList.add(Linename);
-							}
-							else if(Linename.contains("Clique"))
-							{
-								lineNamesList.add(Linename);
-							}
-							
-							productExcelObj.setLineNames(lineNamesList);
-
-							
+							String value=null;
+						    listOfLookupLinenames = lookupServiceDataObj.getLineNames(value);
+						    if(listOfLookupLinenames.contains(Linename))
+						    {
+						    listOfLinenames.add(Linename);
+						    }
+						    productExcelObj.setLineNames(listOfLinenames);			
 							break;
 					
 						} // end inner while loop
@@ -281,7 +282,7 @@ public class CutterBuckExcelMapping implements IExcelParser{
 				}
 						
 										
-						
+				listOfLinenames =new ArrayList<String>();
 			productExcelObj.setPriceGrids(priceGrids);
 			productExcelObj.setProductConfigurations(productConfigObj);
 			
@@ -384,5 +385,31 @@ public class CutterBuckExcelMapping implements IExcelParser{
 		ProductNoMap = productNoMap;
 	}
 
+
+
+	public LookupServiceData getLookupServiceDataObj() {
+		return lookupServiceDataObj;
+	}
+
+
+
+	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
+		this.lookupServiceDataObj = lookupServiceDataObj;
+	}
+
+
+
+	public LookupRestService getLookupRestServiceObj() {
+		return lookupRestServiceObj;
+	}
+
+
+
+	public void setLookupRestServiceObj(LookupRestService lookupRestServiceObj) {
+		this.lookupRestServiceObj = lookupRestServiceObj;
+	}
+
+
+	
 			}
 
