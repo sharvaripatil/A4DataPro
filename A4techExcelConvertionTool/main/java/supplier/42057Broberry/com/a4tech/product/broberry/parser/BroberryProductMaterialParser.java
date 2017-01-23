@@ -29,6 +29,36 @@ public class BroberryProductMaterialParser {
 		Material materialObj = new Material();
 		List<Material> listOfMaterial = new ArrayList<>();
 		try {
+			if(isComboMtrl(materialValue1)){
+				
+				String ComboValue[]={};
+				String MaterialForCombo=materialValue1;
+				MaterialForCombo=MaterialForCombo.replace("%%%%", " ");
+		 		
+				materialValue1=materialValue1.replaceAll("%","");
+				
+		 		materialValue1=materialValue1.replaceAll("88 Polyvinyl Chloride/12 PlyWATERPROOF","Polyester:Vinyl");
+			    materialValue1=materialValue1.replaceAll( "80 PVC/20 PolyesterWATERPROOF","PVC:Polyester");
+				materialValue1=materialValue1.replaceAll("62 Cotton/38 PVCWATERPROOF","Cotton:PVC");
+				
+				
+				
+				Combo comboObj = new Combo();
+				ComboValue=materialValue1.split(":");
+				
+	    		 //for (String materialValue : ComboValue) {
+	    			 materialObj = new Material();
+					 //materialObj = getMaterialValue(listOfLookupMaterial.toString(), materialValue1+" "+finalTempAliasVal);
+	    			 materialObj.setName(ComboValue[0]);
+	    			 materialObj.setAlias(MaterialForCombo);
+	    			 comboObj.setName(ComboValue[1]);
+	    			 materialObj.setCombo(comboObj);
+	    		// }
+	    		 listOfMaterial.add(materialObj);
+				return listOfMaterial;
+				
+			}
+			
 			String tempAliasValArr[]=materialValue1.split("%%%%");
 			String finalTempAliasVal="";
 			materialValue1=tempAliasValArr[0];
@@ -231,7 +261,25 @@ public class BroberryProductMaterialParser {
 		return false;
 	}
 		
-	
+	public static boolean  isComboMtrl(String material){
+		boolean flag=false;
+		if(material.equalsIgnoreCase("88% Polyvinyl Chloride/12% Ply%%%%WATERPROOF")){
+			flag=true;
+		}else if(material.equalsIgnoreCase("80% PVC/20% Polyester%%%%WATERPROOF")){
+			flag=true;
+		}else if(material.equalsIgnoreCase("62% Cotton/38% PVC%%%%WATERPROOF")){
+			flag=true;
+		}
+		/*String MaterialForCombo=materialValue1.replaceAll("%","");
+ 		materialValue1=materialValue1.replaceAll("%","");
+ 		
+ 		materialValue1=materialValue1.replaceAll("88 Polyvinyl Chloride/12 PlyWATERPROOF","Polyester:Vinyl");
+	    materialValue1=materialValue1.replaceAll( "80 PVC/20 PolyesterWATERPROOF","PVC:Polyester");
+		materialValue1=materialValue1.replaceAll("62 Cotton/38 PVCWATERPROOF","Cotton:PVC");*/
+		
+		
+		return flag;
+	}
 		
 	
 	/* public List<Material> getMaterialList(String materialValue2,List<Material> listOfMaterial){

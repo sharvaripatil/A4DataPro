@@ -148,7 +148,10 @@ public Volume getItemWeight(String FabricWT)
 
 	  Value valueObj=new Value(); 
 	  Values valuesObj=new Values(); 
-
+	  
+	   if(FabricWT.contains("Millimeters")){
+		  
+	  }else{
 	  if(FabricWT.contains("Ounces")){
 		  FabricWT=FabricWT.replaceAll("Ounces","");
 		  valueObj.setValue(FabricWT.trim());
@@ -157,10 +160,6 @@ public Volume getItemWeight(String FabricWT)
 		  FabricWT=FabricWT.replaceAll("Grams","");
 		  valueObj.setValue(FabricWT.trim());
 		  valueObj.setUnit("grams");
-	  }else if(FabricWT.contains("Millimeters")){
-		  FabricWT=FabricWT.replaceAll("Millimeters","");
-		  valueObj.setValue(FabricWT.trim());
-		  valueObj.setUnit("oz");
 	  }else{
 		  valueObj.setValue(FabricWT.trim());
 		  valueObj.setUnit("oz");
@@ -169,8 +168,8 @@ public Volume getItemWeight(String FabricWT)
 	  valueList.add(valueObj);
 	  valuesObj.setValue(valueList);
 	  valuesList.add(valuesObj);
-	  
 	  itemWeight.setValues(valuesList); 
+	  }
 	return itemWeight;
 	
 }

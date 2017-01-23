@@ -52,7 +52,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class RiversEndExcelMapping  implements IExcelParser{
 
 
-	private static final Logger _LOGGER = Logger.getLogger(BroberryExcelMapping.class);
+	private static final Logger _LOGGER = Logger.getLogger(RiversEndExcelMapping.class);
 	
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
@@ -60,8 +60,6 @@ public class RiversEndExcelMapping  implements IExcelParser{
 	private RiverEndPriceGridParser riverEndPriceGridParser;
 	@Autowired
 	ObjectMapper mapperObj;
-	
-
 	
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 	
@@ -175,8 +173,8 @@ public class RiversEndExcelMapping  implements IExcelParser{
 								}
 							  productExcelObj.setLineNames(new ArrayList<String>());
 								 productExcelObj.setProductConfigurations(productConfigObj);
-								 	_LOGGER.info("Product Data : "
-											+ mapperObj.writeValueAsString(productExcelObj));
+								 	/*_LOGGER.info("Product Data : "
+											+ mapperObj.writeValueAsString(productExcelObj));*/
 								 	
 							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
@@ -423,8 +421,8 @@ public class RiversEndExcelMapping  implements IExcelParser{
 			}
 		productExcelObj.setLineNames(new ArrayList<String>());
 		 productExcelObj.setProductConfigurations(productConfigObj);
-		 	_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(productExcelObj));
+		 	/*_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(productExcelObj));*/
 		 	
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
