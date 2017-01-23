@@ -54,8 +54,7 @@ public class ExcelFactory {
 		   }else if(name.equalsIgnoreCase("newProducts") || name.equals("91284")){
 			   return newProductsExcelMapping;
 		   }else if(name.equalsIgnoreCase("espTemplate") || name.equals("91561")){
-			   return espTemplateMapping;
-			   
+			   return espTemplateMapping;   
 		   }else if(name.equalsIgnoreCase("broberry") || name.equals("42057")){
 			   return broberryExcelMapping;  
 		   }else if(name.equalsIgnoreCase("bestDeal") || name.equals("47791")){
@@ -65,9 +64,9 @@ public class ExcelFactory {
 		   }/*else if(name.equalsIgnoreCase("cbExcel") || name.equals("47965")){
 			   return cbExcelMapping;
 		   }*/
-		   /*else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
+		   else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
 			   return bamExcelMapping;
-		   }*/
+		   }
 		   
 		return null;
 	}
@@ -196,6 +195,3 @@ public class ExcelFactory {
 
 
 }
-
-
-

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.a4tech.product.dao.entity.SupplierSandboxLoginDetails;
 import com.a4tech.product.service.IProductDaoTest;
 @ContextConfiguration(locations ="classpath:application-config-test.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -15,7 +14,7 @@ public class TestSupplierLogin {
 	@Autowired
 	private IProductDaoTest productDao;
 
-	@Test
+	//@Test
 	public void addSandboxSupplierLogin(){
 		System.out.println("enter test");
 		Integer id = null;
@@ -24,7 +23,7 @@ public class TestSupplierLogin {
 		sbloginDetails.setUserName("admin");
 		sbloginDetails.setPassword("password");
 	try{
-		 id = productDao.addSupplierLogin(sbloginDetails);
+		// id = productDao.addSupplierLogin(sbloginDetails);
 	}catch(Exception e){
 		System.out.println("exce:"+e.getMessage());
 	}
@@ -33,6 +32,10 @@ public class TestSupplierLogin {
 		long excepted = 1l;
 		Assert.assertEquals(1l, excepted);
 		
+	}
+	@Test
+	public void getSupplierLoginDetails(){
+		productDao.getSupplierLoginDetails();
 	}
 	
 	public IProductDaoTest getProductDao() {

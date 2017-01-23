@@ -113,6 +113,12 @@ public class LookupServiceData {
 		}
 		return listOfOrigins.contains(countryName);
 	}
+     public boolean isCategory(String categoryName){
+    	 if(categories == null){
+    		 categories = getCategories();
+ 		}
+ 		return categories.contains(categoryName);
+     }
 	public LookupRestService getLookupRestService() {
 		return lookupRestService;
 	}

@@ -27,6 +27,7 @@ import com.a4tech.product.dao.entity.BatchEntity;
 import com.a4tech.product.dao.entity.ErrorEntity;
 import com.a4tech.product.dao.entity.FtpServerFileEntity;
 import com.a4tech.product.dao.entity.ProductEntity;
+import com.a4tech.product.dao.entity.SupplierLoginDetails;
 import com.a4tech.util.ApplicationConstants;
 
 
@@ -285,5 +286,29 @@ public class ProductDao {
 			    	 }
 			    }
 		   }
+	}
+	
+	public SupplierLoginDetails getSupplierLoginDetails(String asiNumber){
+		  Session session = null;
+		  Transaction transaction = null;
+		  try{
+			  session = sessionFactory.openSession();
+			  transaction = session.beginTransaction();
+			  Criteria criteria = session.createCriteria(SupplierLoginDetails.class);
+	            criteria.add(Restrictions.eq("asiNumber", asiNumber));
+	            SupplierLoginDetails data =  (SupplierLoginDetails) criteria.uniqueResult();
+	            return data;
+		  }catch(Exception exce){
+			  _LOGGER.error("unable to fetch supplier login details::"+exce.getMessage());
+		  }finally{
+			  if(session != null){
+				  try{
+					  session.close();
+				  }catch(Exception exce){
+					  _LOGGER.error("unable to close session connection: "+exce.getMessage());
+				  }
+			  }
+		  }
+		  return null;
 	}
 }
