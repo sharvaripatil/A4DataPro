@@ -17,6 +17,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Product;
@@ -96,8 +97,10 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 				while (cellIterator.hasNext()) {
 					Cell cell = cellIterator.next();
 				
+					
 					 columnIndex = cell.getColumnIndex();
-
+				     
+////////////////////////////////
 					if (columnIndex + 1 == 1) {
 					
 						xid = CommonUtility.getCellValueStrinOrInt(cell);//getProductXid(nextRow);
@@ -128,6 +131,7 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 								productExcelObj.setProductNumbers(pnumberList);
 								}
 							     productExcelObj.setProductConfigurations(productConfigObj);
+							     if(!StringUtils.isEmpty(productExcelObj.getExternalProductId())){
 						 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 						 	if(num ==1){
 						 		numOfProductsSuccess.add("1");
@@ -136,6 +140,7 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 						 	}else{
 						 		
 						 	}
+							   }
  						 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 						 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 						 	repeatRows.clear();
@@ -197,16 +202,17 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 		                }  
 					
 				     	}
-							switch (columnIndex + 1) {
+							switch (columnIndex + 1 ) {
 
 							case 1:// XID
+								
 						       productId = CommonUtility.getCellValueStrinOrInt(cell);
 						       if(productId.contains(""))
 						       {
 						    	   productId=prdXid;
 						       }
 							   productExcelObj.setExternalProductId(productId);	
-							
+							  
 								break;
 
 							case 2:// MaterialNumber
@@ -226,9 +232,11 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 									productNumberMap.put(productNumber, colorValue);
 								}
 								pnumberList=cbColorProductNumberObj.getProductNumer(productNumberMap);
-
-
+								
+								
 								break;
+								
+						 
 
 							} // end inner while loop
 
@@ -236,12 +244,13 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 				
 		
 
-			} catch (Exception e) {
-				_LOGGER.error("Error while Processing ProductId and cause :"
-						+ productExcelObj.getExternalProductId()
-						+ " "
-						+ e.getMessage() +"for column"+columnIndex+1);
-			}
+			} catch(Exception e){
+			    _LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"at column number(increament by 1):"+columnIndex);   
+			    ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet: "
+			    +e.getMessage()+" at column number(increament by 1)"+columnIndex);
+			    productDaoObj.save(apiResponse.getErrors(),
+			      productExcelObj.getExternalProductId()+"-Failed", asiNumber, batchId);
+			    }
 		
 		
 		 	
@@ -256,9 +265,11 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 		}
 	     productExcelObj.setProductConfigurations(productConfigObj);
 	
-		
-		int num = postServiceImpl.postProduct(accessToken, productExcelObj,
+	     if(!StringUtils.isEmpty(productExcelObj.getExternalProductId())){
+
+	 	 int num = postServiceImpl.postProduct(accessToken, productExcelObj,
 				asiNumber, batchId);
+	     }
 
 		_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 	 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());

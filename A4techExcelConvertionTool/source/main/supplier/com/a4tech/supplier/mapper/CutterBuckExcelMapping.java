@@ -123,8 +123,10 @@ public class CutterBuckExcelMapping implements IExcelParser{
 							} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 								xid = String.valueOf((int) cell
 										.getNumericCellValue());
-							} else {
-
+							} else if(xid==null){
+								 Cell cell2 =  nextRow.getCell(1);  
+								 xid=CommonUtility.getCellValueStrinOrInt(cell2);
+								
 							}
 							checkXid = true;
 						} else {
@@ -163,7 +165,13 @@ public class CutterBuckExcelMapping implements IExcelParser{
 						case 1://XID
 							
 							 productId =  CommonUtility.getCellValueStrinOrInt(cell);
+							 if(!StringUtils.isEmpty(productId)){
 							 productExcelObj.setExternalProductId(productId);
+					      	}else{
+					      		 productId=xid;
+								 productExcelObj.setExternalProductId(productId);
+						      		
+					      	}
 							 break;
 							 
 						case 2:// Style Number
@@ -174,13 +182,8 @@ public class CutterBuckExcelMapping implements IExcelParser{
 						     (cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 						      asiProdNo = String.valueOf((int)cell.getNumericCellValue());
 						     }
-						    if(!StringUtils.isEmpty(productId)&& !productId.contains("#N/A")){
 						     productExcelObj.setAsiProdNo(asiProdNo);	
-						    }else
-						    {
-							  productExcelObj.setAsiProdNo(asiProdNo);	
-						   	  productExcelObj.setExternalProductId(asiProdNo);
-						    }
+						   
 
 							break;
 						case 3:// Style Description
