@@ -1,9 +1,13 @@
 package com.a4tech.ftp;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.a4tech.core.excelMapping.ExcelFactory;
@@ -42,7 +46,17 @@ public class FilesParsing {
 				continue;
 			}
 			 IExcelParser excelParserImpl = excelFactory.getExcelParserObject(asiNumber);
-			 workBook = convertCsvToExcel.getWorkBook(file);
+			// workBook = convertCsvToExcel.getWorkBook(file);
+			 FileInputStream inputStream;
+			try {
+				inputStream = new FileInputStream(new File(file.getPath()));
+				workBook = new XSSFWorkbook(inputStream);
+			} catch (FileNotFoundException e) {
+				_LOGGER.error("Ftp file is not available in machine: "+e.getMessage());
+			} catch (IOException e) {
+				
+				_LOGGER.error("Ftp file is not available in machine: "+e.getMessage());
+			}
 			 int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 			 if(workBook != null){
 				 processFileStatusMail(asiNumber, "ProcessStart", batchId);

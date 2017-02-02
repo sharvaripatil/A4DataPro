@@ -9,6 +9,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import com.a4tech.lookup.model.Catalog;
+import com.a4tech.lookup.model.Catalogs;
 import com.a4tech.lookup.model.Categories;
 import com.a4tech.lookup.model.FobPoints;
 import com.a4tech.lookup.model.ImprintMethods;
@@ -30,7 +32,9 @@ public class LookupRestService {
    private String lineNamesLookupUrl;
    private String tradeNameLookupUrl;
    private String categoriesLookupUrl;
+   private String catalogLookupUrl;
    
+	
 	public List<String> getImprintMethodData(){
 		 try{
 			 HttpHeaders headers = new HttpHeaders();
@@ -151,6 +155,22 @@ public class LookupRestService {
 		 }
 		return null;
 	}
+	public List<Catalog> getCatalogs(String authToken){
+		HttpHeaders headers = new HttpHeaders();
+		try{
+			headers.add("Accept", "application/json");
+			headers.add("Content-Type", "application/json");
+	        headers.add("AuthToken", authToken);
+	        HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+	       ResponseEntity<Catalogs> response = restTemplate.exchange(catalogLookupUrl, HttpMethod.GET, 
+	                                                                 requestEntity, Catalogs.class);
+	       Catalogs data = response.getBody();
+	      return data.getListOfCatalog();
+		}catch(Exception exce){
+			_LOGGER.error("unable to get Supplier Catalog lookup Data:"+exce.getMessage());
+		}
+		return null;
+	}
 	public String getOriginLookupUrl() {
 		return originLookupUrl;
 	}
@@ -215,5 +235,13 @@ public class LookupRestService {
 		public void setCategoriesLookupUrl(String categoriesLookupUrl) {
 			this.categoriesLookupUrl = categoriesLookupUrl;
 		}
+		public String getCatalogLookupUrl() {
+			return catalogLookupUrl;
+		}
+
+		public void setCatalogLookupUrl(String catalogLookupUrl) {
+			this.catalogLookupUrl = catalogLookupUrl;
+		}
+
 
 }
