@@ -22,8 +22,10 @@ import com.a4tech.apparel.products.parser.ApparealAvailabilityParser;
 import com.a4tech.apparel.products.parser.ApparealProductAttributeParser;
 import com.a4tech.apparel.products.parser.ApparelMaterialParser;
 import com.a4tech.apparel.products.parser.ApparelPriceGridParser;
+import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Availability;
@@ -80,6 +82,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 		StringJoiner listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		StringJoiner listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String xid = null;
+		 int columnIndex=0;
 		while (iterator.hasNext()) {
 			
 			try{
@@ -97,7 +100,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
 				
-				int columnIndex = cell.getColumnIndex();
+				 columnIndex = cell.getColumnIndex();
 				if(columnIndex + 1 == 1){
 					xid = getProductXid(nextRow);
 					checkXid = true;
@@ -119,6 +122,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 							 	List<Availability> listOfAvailablity = apparealAvailParser.
 							 			getProductAvailablity(ProductDataStore.getColorNames(), 
 							 					                              productSizeValues);
+							 	_LOGGER.info("color Names participate in avail:: "+ProductDataStore.getColorNames());
 							 	productExcelObj.setAvailability(listOfAvailablity);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
@@ -155,6 +159,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 						    	 productExcelObj = new Product();
 						     }else{
 						    	 productConfigObj=productExcelObj.getProductConfigurations();
+						    	 productExcelObj.setAvailability(new ArrayList<>());
 						     }
 							
 					 }
@@ -177,14 +182,16 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				    break;
 				case 4://Product name
 					String prdName = cell.getStringCellValue();
-					if(prdName.contains(ApplicationConstants.SQUARE_SYMBOL)){
+					prdName = prdName.replaceAll("[^a-zA-Z0-9 ]", "");
+					/*if(prdName.contains(ApplicationConstants.SQUARE_SYMBOL)){
 						prdName = CommonUtility.removeSpecialSymbols(prdName, 
 								                                      ApplicationConstants.SQUARE_SYMBOL);
-					}else if(prdName.contains(ApplicationConstants.TRADE_MARK_SYMBOL)){
-								prdName = CommonUtility.removeSpecialSymbols(
-										    prdName,ApplicationConstants.TRADE_MARK_SYMBOL);
-					}else{
-						
+					}
+					if(prdName.contains("®")){
+						prdName = prdName.replaceAll("®", "");
+					}*/
+					if(prdName.contains("Olympian")){
+						prdName = prdName.replaceAll("Olympian", "");
 					}
 					productExcelObj.setName(prdName.trim());
 				    break;
@@ -209,7 +216,8 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				case 7://Category 
 					   String category = cell.getStringCellValue();
 					   if(!StringUtils.isEmpty(category)){
-						   List<String> listOfCategories = Arrays.asList(category.trim());
+						   List<String> listOfCategories = appaAttributeParser.
+						                      getProductCategories(category);
 						   productExcelObj.setCategories(listOfCategories);
 					   }
 					break;
@@ -235,10 +243,17 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 					break;
 				case 11:
 				    String  productDescription = cell.getStringCellValue();
-				    if(productDescription.contains(ApplicationConstants.SQUARE_SYMBOL)){
+				    productDescription = productDescription.replaceAll("[^a-zA-Z0-9 ]", "");
+				   /* if(productDescription.contains(ApplicationConstants.SQUARE_SYMBOL)){
 				    	productDescription = CommonUtility.removeSpecialSymbols(productDescription, 
                                                                     ApplicationConstants.SQUARE_SYMBOL);
 				    }
+				    if(productDescription.contains("²")){
+				    	productDescription = productDescription.replaceAll("²", "");
+				    }
+				    if(productDescription.contains("®")){
+				    	productDescription = productDescription.replaceAll("®", "");
+					}*/
 					productExcelObj.setDescription(productDescription.trim());
 					 
 					break;
@@ -326,7 +341,11 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			}catch(Exception e){
-			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
+				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"at column number(increament by 1):"+columnIndex);		 
+				ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet: "
+				+e.getMessage()+" at column number(increament by 1)"+columnIndex);
+				productDaoObj.save(apiResponse.getErrors(),
+						productExcelObj.getExternalProductId()+"-Failed", asiNumber, batchId);
 		}
 		}
 		workbook.close();
@@ -377,7 +396,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 	public String getProductXid(Row row){
 		Cell xidCell =  row.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
 		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
-		if(StringUtils.isEmpty(productXid)){
+		if(StringUtils.isEmpty(productXid) || "N/A".equalsIgnoreCase(productXid)){
 		     xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_TWO);
 		     productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
 		}
