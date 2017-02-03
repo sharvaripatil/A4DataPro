@@ -464,10 +464,20 @@
        <property name="postServiceImpl" ref="postService"/>
        <property name="productDaoObj"   ref="productDao"/>
        <property name="crystalDObj"   ref="crystalDObjId"/>
+       <property name="crymaterialObj"   ref="crymaterialObjId"/>
+       <property name="cdpriceObj"   ref="cdpriceObjId"/>
+       
        
        </bean>
     
-    <bean id="crystalDObjId" class="parser.crystal.CrystalDProductAttributeParser"/> 
+     <bean id="crystalDObjId" class="parser.crystal.CrystalDProductAttributeParser"/> 
+    
+     <bean id="crymaterialObjId" class="parser.crystal.CrystalDMaterialParser"> 
+     <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     <property name="lookupRestServiceObj" ref="lookupRestService"/>
+	 </bean>
+    
+     <bean id="cdpriceObjId" class="parser.crystal.CrystalDPriceGridParser"/> 
     
       <!--supplier 47759 configuration end  -->  
     

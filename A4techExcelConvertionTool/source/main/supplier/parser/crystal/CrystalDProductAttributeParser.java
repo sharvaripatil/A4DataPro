@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.Option;
+import com.a4tech.product.model.OptionValue;
+import com.a4tech.product.model.Personalization;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
@@ -90,19 +94,70 @@ public class CrystalDProductAttributeParser {
 	    
 	     }
 	   
-	   valuesList.add(valuesObj);
+	     valuesList.add(valuesObj);
 	     dimensionObj.setValues(valuesList);
-	   
-	
 	  }
 	  sizeObj.setDimension(dimensionObj);
-		 
-	  
-	  
 	return sizeObj;
-
-		
 	}
+
+
+
+	public List<ImprintMethod> getImprintMethod(String imprintMethodValue, List<ImprintMethod> exstimprintMethodsList) {
+		
+		if(imprintMethodValue.contains("Blank"))
+		{
+			imprintMethodValue=imprintMethodValue.replaceAll("Blank-Imprint Extra","UNIMPRINTED");
+		}
+		//List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+		ImprintMethod imprintMethodObj= new ImprintMethod();
+		String ImprintValue[]=imprintMethodValue.split(",");
+		
+		for (String Value : ImprintValue) {
+			imprintMethodObj = new ImprintMethod();
+			imprintMethodObj.setType(CrystalDApplicationConstant.IMPRINT_METHOD_MAP.get(Value.trim()));
+			imprintMethodObj.setAlias(Value);
+			//imprintMethodObj.setAlias(CrystalDApplicationConstant.IMPRINT_METHOD_MAP.get(Value.trim()));
+			exstimprintMethodsList.add(imprintMethodObj);
+		}
+	
+		return exstimprintMethodsList;
+	}
+
+
+
+	public List<Option> getImprintOption(String tempImprintOptionValue) {
+		List<Option> optionList = new ArrayList<Option>();
+		List<OptionValue> valuesList = new ArrayList<OptionValue>();
+		OptionValue optionValueObj=new OptionValue();
+		Option optionObj=new Option();
+		
+		optionObj.setOptionType("Imprint");
+		optionObj.setName("Additional Imprinting Option");
+		optionValueObj.setValue(tempImprintOptionValue);
+		valuesList.add(optionValueObj);
+		optionObj.setValues(valuesList);
+		optionList.add(optionObj);
+		
+		return optionList;
+	}
+
+
+
+	public List<Personalization> getPeronalization(String allNotes) {
+		
+		List<Personalization> listPersonlization=new ArrayList<Personalization>();
+		if(allNotes.contains("Personalization")){
+			Personalization perslznObj=new Personalization();
+			perslznObj.setAlias("PERSONALIZATION");
+			perslznObj.setType("PERSONALIZATION");
+			listPersonlization.add(perslznObj);
+		}
+		return listPersonlization;
+	}
+	
+	
+	
 	
 	
 	
