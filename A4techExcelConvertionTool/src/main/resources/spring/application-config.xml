@@ -23,7 +23,7 @@
 	</bean>
 	<import resource="sageMapping.xml" />
 	<import resource="kuku_mapping.xml" />
-	<!-- <import resource="quartz-context.xml"/> -->
+	<!-- <import resource="ftpSchedular.xml"/>   -->
 	<context:property-placeholder location="classpath:application.properties,classpath:sandbox-database.properties
 	                                       ,classpath:sandbox-externalApiEndPoints.properties"/>
 	<bean id="productService" class="com.a4tech.product.service.imple.ProductServiceImpl" />
@@ -61,6 +61,7 @@
    		<property name="lineNamesLookupUrl" value="${lineName.lookup.url}"/>
    		<property name="tradeNameLookupUrl" value="${tradeName.lookup.url}"/>
    		<property name="categoriesLookupUrl" value="${categories.lookup.url}"/>
+   		<property name="catalogLookupUrl"    value="${catalog.lookup.url}"/>
    </bean>
    <bean id="lookupServiceData" class="com.a4tech.lookup.service.LookupServiceData">
    		<property name="lookupRestService" ref="lookupRestService"/>
@@ -422,11 +423,23 @@
     	<property name="postServiceImpl" ref="postService"/>
      	<property name="productDaoObj"   ref="productDao"/>
      	<property name="bamProductParser" ref="bamAttributeParserId"/>
+     	<property name="bamSizeParser" ref="bamParserSizeId"/>
+     	<property name="bamLookupData" ref="bamLookupDataId"/>
+     	<property name="bamOptionParser" ref="bamOptionParserId"/>
+     	<property name="bamPriceGridParser" ref="bamPriceGridParserId"/>
     </bean>
     <bean id="bamAttributeParserId" class="com.a4tech.bambam.product.parser.BamProductAttributeParser">
         <property name="lookupServiceData" ref="lookupServiceData"/>
+         <property name="bamLookupData" ref="bamLookupDataId"/>
     </bean>
-    
+    <bean id="bamParserSizeId" class="com.a4tech.bambam.product.parser.BamSizeParser"></bean>
+    <bean id="bamLookupDataId" class="com.a4tech.bambam.util.BamLookupData">
+    <property name="lookupServiceData" ref="lookupServiceData"></property>
+    </bean>
+    <bean id="bamOptionParserId" class="com.a4tech.bambam.product.parser.BamOptionParser">
+    	<property name="bamPriceGridParser" ref="bamPriceGridParserId"/>
+    </bean>
+    <bean id="bamPriceGridParserId" class="com.a4tech.bambam.product.parser.BamPriceGridParser"></bean>
       <!--supplier 82588 configuration end  -->  
     
       <!--supplier 47965 configuration start  -->  

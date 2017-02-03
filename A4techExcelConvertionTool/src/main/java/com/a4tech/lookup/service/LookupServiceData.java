@@ -2,6 +2,7 @@ package com.a4tech.lookup.service;
 
 import java.util.List;
 
+import com.a4tech.lookup.model.Catalog;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.util.ApplicationConstants;
 
@@ -16,6 +17,7 @@ public class LookupServiceData {
 	public List<String>        lineNames 			= null;
 	public List<String>        tradeNames  			= null;
 	public static List<String> categories 			= null;
+	public static List<Catalog>       catalogs      = null;
 	public  List<String> getImprintMethods(){
 		  if(imprintMethods == null){
 			  imprintMethods = lookupRestService.getImprintMethodData();
@@ -118,6 +120,13 @@ public class LookupServiceData {
     		 categories = getCategories();
  		}
  		return categories.contains(categoryName);
+     }
+     
+     public List<Catalog> getCatalog(String authToken){
+    	 if(catalogs == null){
+    		 catalogs = lookupRestService.getCatalogs(authToken);
+    	 }
+    	 return catalogs;
      }
 	public LookupRestService getLookupRestService() {
 		return lookupRestService;

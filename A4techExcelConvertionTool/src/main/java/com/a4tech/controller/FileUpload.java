@@ -133,7 +133,7 @@ public class FileUpload {
 																				noOfProductsSuccess);
 		redirectAttributes.addFlashAttribute(ApplicationConstants.FAILURE_PRODUCTS_COUNT , 
 																				noOfProductsFailure);
-	/*	if (!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)) {
+		if (!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)) {
 			
 			boolean isMailSendSuccess = mailService.sendMail(asiNumber, batchId);
 			if(isMailSendSuccess){
@@ -141,7 +141,7 @@ public class FileUpload {
 				                                             ApplicationConstants.MAIL_SEND_SUCCESS_MESSAGE);
 			} 
 			
-		}*/
+		}
 	}
 	public IProductService getProductService() {
 		return productService;

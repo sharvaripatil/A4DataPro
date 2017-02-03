@@ -46,6 +46,7 @@ public class FtpDownloadFiles {
          //get the file from the remote system
          fClient.retrieveFile(ftpFile.getName(), output);   
 	}
+	//listDirectory(fClient, "/", "", 0);
 	ftpServerDisconnect();
 	File[] listOfFiles = getAllFiles();
 	_LOGGER.info("Ftp files Count::"+listOfFiles.length);
@@ -89,6 +90,32 @@ public void ftpServerDisconnect(){
 		}
 	
 	}
+}
+ private void listDirectory(FTPClient ftpClient, String parentDir,
+        String currentDir, int level) throws IOException {
+	OutputStream output = null;
+    String dirToList = parentDir;
+    if (!currentDir.equals("")) {
+        dirToList += "/" + currentDir;
+    }
+    FTPFile[] subFiles = ftpClient.listFiles(dirToList);
+    if (subFiles != null && subFiles.length > 0) {
+        for (FTPFile ftpFile : subFiles) {
+            String currentFileName = ftpFile.getName();
+            if (currentFileName.equals(".")
+                    || currentFileName.equals("..")) {
+                // skip parent directory and directory itself
+                continue;
+            }
+            if (ftpFile.isDirectory()) {
+                listDirectory(ftpClient, dirToList, currentFileName, level + 1);
+            } else {
+            	 output = new FileOutputStream("D:\\A4 ESPUpdate\\FtpFiles" + "/" + ftpFile.getName());
+                 //get the file from the remote system
+            	 ftpClient.retrieveFile(ftpFile.getName(), output);
+            }
+        }
+    }
 }
 	public String getServeraddress() {
 		return serveraddress;
