@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.util.StringUtils;
+
+import com.a4tech.apparel.product.mapping.ApparelColorMapping;
 import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Color;
-import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
@@ -22,24 +24,45 @@ import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
 import com.a4tech.util.ApplicationConstants;
-import com.a4tech.util.CommonUtility;
 
 public class ApparealProductAttributeParser {
 	private LookupServiceData lookupServiceData;
 	
 	public List<Color> getProductColors(Set<String> colorNames,Map<String, String> ids){
 		 Color colorObj = null;
-		 Combo comboObj = null;
-		 List<Combo> listOfCombo = null;
-		 String[] colors;
-		 String aliasName ="";
+		// Combo comboObj = null;
+		// List<Combo> listOfCombo = null;
+		// String[] colors;
+		 //String aliasName ="";
 		 List<Color> listtOfColor = new ArrayList<>();
 		 for (String colorName : colorNames) {
 			 colorObj = new Color();
-			 listOfCombo = new ArrayList<>();
+			 //listOfCombo = new ArrayList<>();
 			 colorName = colorName.trim();
+			/* if(colorName.contains("Grey")){
+				 colorName = colorName.replaceAll("Grey", "Gray");
+			 }*/
+			 String colorVal = "";
+			 String finalColorGroup = "";
 			String colorCode = ids.get(colorName);
-		    if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
+			if(colorCode.length() == 2){
+				colorCode = "0"+colorCode;
+			} else if(colorCode.length() == 1){
+				colorCode = "00"+colorCode;
+			}
+			if(colorName.contains("/")){
+				colorName = colorName.replaceAll("/", "-");
+			}
+			colorVal = colorName + " " +colorCode;
+			finalColorGroup = ApparelColorMapping.getColorGroup(colorVal);
+			if(StringUtils.isEmpty(finalColorGroup)){
+				finalColorGroup = "Other";
+			}
+			ProductDataStore.saveColorNames(colorName);
+			colorObj.setName(finalColorGroup);
+			colorObj.setAlias(colorName);
+			listtOfColor.add(colorObj);
+		    /*if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
 			 colors = colorName.split(ApplicationConstants.CONST_DELIMITER_FSLASH);
 			 String primaryColor = colors[ApplicationConstants.CONST_NUMBER_ZERO];
 			 String secondaryColor = colors[ApplicationConstants.CONST_INT_VALUE_ONE];
@@ -86,8 +109,8 @@ public class ApparealProductAttributeParser {
 			  colorObj.setAlias(colorName);
 			  colorObj.setCustomerOrderCode(colorCode);
 			  ProductDataStore.saveColorNames(colorName);
-		  }
-		listtOfColor.add(colorObj);
+		  }*/
+		
 	}
 		return listtOfColor;
 	}
@@ -129,11 +152,12 @@ public class ApparealProductAttributeParser {
 			imprintMethodObj = new ImprintMethod();
 			if(imprintMethodName.contains("Embroidery")){
 			imprintMethodName=imprintMethodName.replace("Embroidery", "Embroidered");
-		    }
-	    	if(imprintMethodName.contains(" Appliqué")){
-    		imprintMethodName=imprintMethodName.replaceAll("é", "e");
+		    } else if(imprintMethodName.contains(" Appliqué")){
+    		  imprintMethodName=imprintMethodName.replaceAll("é", "e");
+	        } else if(imprintMethodName.contains("Screen Print")){
+	        	imprintMethodName = "Silkscreen";
 	        }
-			  if(lookupServiceData.isImprintMethod(imprintMethodName)){
+			  if(lookupServiceData.isImprintMethod(imprintMethodName.toUpperCase())){
 				  imprintMethodObj.setType(imprintMethodName);
 				  imprintMethodObj.setAlias(imprintMethodName);
 			  }else{
@@ -265,7 +289,13 @@ public class ApparealProductAttributeParser {
 		
 		return listOfPersonalization;
 	}
-	
+	public List<String> getProductCategories(String categoryVal){
+		List<String> listOfCategories = new ArrayList<>();
+		if(lookupServiceData.isCategory(categoryVal)){
+			listOfCategories.add(categoryVal);
+		}
+		return listOfCategories;
+	}
 	public LookupServiceData getLookupServiceData() {
 		return lookupServiceData;
 	}
