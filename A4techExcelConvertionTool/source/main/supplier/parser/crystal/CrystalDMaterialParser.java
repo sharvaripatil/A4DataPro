@@ -19,8 +19,12 @@ public class CrystalDMaterialParser {
 		Material materialObj = new Material();
 		List<Material> listOfMaterial = new ArrayList<>();
 
-		String finalTempAliasVal = materialValue1;
-
+		//String finalTempAliasVal = materialValue1;
+		String finalTempAliasArr[]=materialValue1.split(",");
+				
+		for (String MaterailValue : finalTempAliasArr) {
+			
+		String MaterailCombo =MaterailValue;
 		List<String> listOfLookupMaterial = getMaterialType(materialValue1
 				.toUpperCase());
 
@@ -28,13 +32,13 @@ public class CrystalDMaterialParser {
 
 		if (!listOfLookupMaterial.isEmpty()) {
 
-			if (materialValue1.contains("/")) { // combo for 1 value in lookup
+			if (MaterailCombo.contains("/")) { // combo for 1 value in lookup
 												
 				if (numOfMaterials == 1) {
 					materialObj = new Material();
 					materialObj = getMaterialValue(
-							listOfLookupMaterial.toString(), finalTempAliasVal);
-					materialObj.setAlias(finalTempAliasVal);
+							listOfLookupMaterial.toString(), MaterailValue);
+					materialObj.setAlias(MaterailValue);
 					Combo comboObj = new Combo();
 					comboObj.setName("Other");
 					materialObj.setCombo(comboObj);
@@ -49,7 +53,7 @@ public class CrystalDMaterialParser {
 					String Combo2 = listOfLookupMaterial.get(1);
 					Combo comboObj = new Combo();
 					materialObj.setName(Combo1);
-					materialObj.setAlias(finalTempAliasVal);
+					materialObj.setAlias(MaterailValue);
 					comboObj.setName(Combo2);
 					materialObj.setCombo(comboObj);
 
@@ -59,17 +63,17 @@ public class CrystalDMaterialParser {
 				}
 			} else { //only sing value present in lookup
 				materialObj = getMaterialValue(listOfLookupMaterial.toString(),
-						finalTempAliasVal);
+						MaterailValue);
 				listOfMaterial.add(materialObj);
 			}
 
 		} else { // used for Material is not available in lookup, then it goes in Others
 					
-			materialObj = getMaterialValue("Other", finalTempAliasVal);
+			materialObj = getMaterialValue("Other", MaterailValue);
 			listOfMaterial.add(materialObj);
 
 		}
-
+		}
 		return listOfMaterial;
 	}
 

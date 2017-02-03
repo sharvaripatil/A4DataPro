@@ -112,6 +112,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 		String AllNotes=null;
 		String AddInfo=null;
 		String description =null;
+		String MaterialValue=null;
 
 		
 
@@ -310,8 +311,8 @@ public class CrystalDExcelMapping implements IExcelParser {
 					
 					break;
 				case 13://Material
-					String MaterialValue=cell.getStringCellValue();
-					listOfMaterial = crymaterialObj.getMaterialList(MaterialValue);
+					 MaterialValue=cell.getStringCellValue();
+					//listOfMaterial = crymaterialObj.getMaterialList(MaterialValue);
 					
 					
 					 break;
@@ -419,6 +420,9 @@ public class CrystalDExcelMapping implements IExcelParser {
 
 					break;
 				case 27://Material Type
+					String MaterialType=cell.getStringCellValue();
+					MaterialValue=MaterialValue.concat(",").concat(MaterialType);
+					listOfMaterial = crymaterialObj.getMaterialList(MaterialValue);
 
 					break;
 				case 28://Imprint Process
