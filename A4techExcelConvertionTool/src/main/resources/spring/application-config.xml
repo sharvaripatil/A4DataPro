@@ -175,6 +175,7 @@
 				<value>com.a4tech.product.dao.entity.ErrorEntity</value>
 				<value>com.a4tech.product.dao.entity.BatchEntity</value>
 				<value>com.a4tech.product.dao.entity.FtpServerFileEntity</value>
+				<value>parser.highcaliberline.HighCalColorEntity</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -468,6 +469,12 @@
 		class="parser.highcaliberline.HighCaliberAttributeParser" autowire="byName">
 	</bean>
 	<bean id="highCalPriceGridParserId" class="parser.highcaliberline.HighCaliberPriceGridParser" autowire="byName"/>
+	
+	<bean id="highCaliberConstants" class="parser.highcaliberline.HighCaliberConstants" autowire="byName">
+	 
+	  <property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory"></property>
+     </bean>
+	
         <!--supplier 43442 configuration start  -->  
     
     

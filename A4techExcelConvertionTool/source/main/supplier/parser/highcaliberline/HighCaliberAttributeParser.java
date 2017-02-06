@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
@@ -54,8 +56,12 @@ public class HighCaliberAttributeParser {
 		//Set <String> colorSet =new HashSet<String>();
 		Color colorObj = null;
 		List<Color> colorList = new ArrayList<Color>();
-		
+		//HighCaliberConstants
 		try {
+		 Map<String, String> HCLCOLOR_MAP =HighCaliberConstants.getHCLCOLOR_MAP();
+				 //=new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
+		 
+		 
 			//colorSet.add(colorValue);
 			//Iterator<String> colorIterator=colorSet.iterator();
 			List<Combo> comboList = null;
@@ -73,13 +79,15 @@ public class HighCaliberAttributeParser {
 				comboList = new ArrayList<Combo>();
     			isCombo = isComboColors(strColor);
     			if(isCombo){
-    				if(HighCaliberConstants.HCLCOLOR_MAP.get(strColor.trim())!=null){
+    				//if(HighCaliberConstants.HCLCOLOR_MAP.get(strColor.trim())!=null){
+    				if(HCLCOLOR_MAP.get(strColor.trim())!=null){
     					isCombo=false;
     				}
     			}
     			
 				if (!isCombo) {
-					String colorName=HighCaliberConstants.HCLCOLOR_MAP.get(strColor.trim());
+					//String colorName=HighCaliberConstants.HCLCOLOR_MAP.get(strColor.trim());
+					String colorName=HCLCOLOR_MAP.get(strColor.trim());
 					if(StringUtils.isEmpty(colorName)){
 						colorName=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
 					}
@@ -90,7 +98,8 @@ public class HighCaliberAttributeParser {
 					//245-Mid Brown/Navy
 					String colorArray[] = strColor.split(ApplicationConstants.CONST_DELIMITER_FSLASH);
 					//if(colorArray.length==2){
-					String combo_color_1=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[0].trim());
+					//String combo_color_1=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[0].trim());
+					String combo_color_1=HCLCOLOR_MAP.get(colorArray[0].trim());
 					if(StringUtils.isEmpty(combo_color_1)){
 						combo_color_1=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
 					}
@@ -98,14 +107,16 @@ public class HighCaliberAttributeParser {
 					colorObj.setAlias(strColor);
 					
 					Combo comboObj = new Combo();
-					String combo_color_2=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[1].trim());
+					//String combo_color_2=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[1].trim());
+					String combo_color_2=HCLCOLOR_MAP.get(colorArray[1].trim());
 					if(StringUtils.isEmpty(combo_color_2)){
 						combo_color_2=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
 					}
 					comboObj.setName(combo_color_2.trim());
 					comboObj.setType(ApplicationConstants.CONST_STRING_SECONDARY);
 					if(colorArray.length==3){
-						String combo_color_3=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[2].trim());
+						//String combo_color_3=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[2].trim());
+						String combo_color_3=HCLCOLOR_MAP.get(colorArray[2].trim());
 						if(StringUtils.isEmpty(combo_color_3)){
 							combo_color_3=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
 						}
@@ -164,19 +175,29 @@ public class HighCaliberAttributeParser {
 				
 				//shippingWeightValue
 				if(!StringUtils.isEmpty(shippingWeightValue)){
-					Weight weightObj = new Weight();
-					weightObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_WEIGHT);
-					weightObj.setValue(shippingWeightValue);
-					listOfWeight.add(weightObj);
-					ItemObject.setWeight(listOfWeight);
+					if(shippingWeightValue.equalsIgnoreCase("0")){
+					
+					}else{
+						Weight weightObj = new Weight();
+						weightObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_WEIGHT);
+						weightObj.setValue(shippingWeightValue);
+						listOfWeight.add(weightObj);
+						ItemObject.setWeight(listOfWeight);
+					}
+				
 				}
 				
 				//shippingNoofItem
 				if(!StringUtils.isEmpty(noOfitem)){
+					if(noOfitem.equalsIgnoreCase("0")){
+						
+					}else{
 					itemObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_NUMBER_UNIT_CARTON);
 					itemObj.setValue(noOfitem);
 					listOfNumberOfItems.add(itemObj);
 					ItemObject.setNumberOfItems(listOfNumberOfItems);
+					}
+			
 				}
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Shipping Estimate :"+e.getMessage());

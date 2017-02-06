@@ -2,10 +2,12 @@ package com.a4tech.supplier.mapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -14,12 +16,15 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
 import parser.highcaliberline.HighCaliberAttributeParser;
 import parser.highcaliberline.HighCaliberPriceGridParser;
+
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Artwork;
+import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintColor;
@@ -50,6 +55,23 @@ public class HighCaliberLineExcelMapping implements IExcelParser{
 	@Autowired
 	ObjectMapper mapperObj;
 	HighCaliberPriceGridParser highCalPriceGridParser;
+	
+	public static List<String> xidList = new ArrayList<String>();
+	static {
+		xidList.add("746-200198431");
+		xidList.add("746-200192596");
+		xidList.add("746-200192578");
+		xidList.add("746-200198441");
+		xidList.add("746-200218409");
+		xidList.add("746-4996045");
+		xidList.add("746-4963527");
+		xidList.add("746-550041893");
+		xidList.add("746-200262278");
+		xidList.add("746-200324832");
+		xidList.add("746-200324883");
+		xidList.add("746-200257276");
+	}
+	
 	@SuppressWarnings("finally")
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId){
 		int columnIndex = 0;
@@ -120,37 +142,99 @@ public class HighCaliberLineExcelMapping implements IExcelParser{
 					if(checkXid){
 						 if(!productXids.contains(xid)){
 							 if(nextRow.getRowNum() != 1){
+								 
+								 boolean prod1flag=false;
+								 boolean prod2flag=false;
+								 boolean rushflag=false;
+								 boolean priceFlag=false;
+								 String flag="";
 								 if(!StringUtils.isEmpty(finalProdTimeVal)&& !StringUtils.isEmpty(listOfPricesProd1.toString())){
-										////imp code
-										priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd1.toString(),listOfQuantityProd1.toString(), 
-												"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-												"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
-												finalProdTimeVal +" business days","Production Time",1,priceGrids);	
+									 prod1flag=true;
+									 priceFlag=true;
+									}else{
+										prod1flag=false;
+										flag="false;";
 									}
 								 
 								 if(!StringUtils.isEmpty(finalRushTimeVal)&& !StringUtils.isEmpty(listOfPricesRush.toString())){
-										
-										priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesRush.toString(),listOfQuantityRush.toString(), 
-												"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-												"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
-												finalRushTimeVal +" business days","Rush Service",2,priceGrids);	
+									 rushflag=true;
+									 priceFlag=true;
+									}else{
+										flag=flag+"false;";
+										rushflag=false;
 									}
 								 
 								 if(!StringUtils.isEmpty(finalProdTimeVal2)&& !StringUtils.isEmpty(listOfPricesProd2.toString())){
 										////imp code
-										priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd2.toString(),listOfQuantityProd2.toString(), 
-												"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-												"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
-												finalProdTimeVal2 +" business days","Production Time",3,priceGrids);	
+									 	prod2flag=true;
+									 	priceFlag=true;
+									}else{
+										flag=flag+"false;";
+										prod2flag=false;
 									}
 								 	
+								 if(priceFlag){
+								 String tempCount[]=flag.split(";");
+								 int countt=tempCount.length;//Integer.parseInt(tempCount.toString());
+								 if(countt>1){
+									 ///i have to create a price grid based on all criterias
+									 
+									 
+									 if(prod1flag){
+										 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd1.toString(),listOfQuantityProd1.toString(), 
+													"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+													"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+													finalProdTimeVal +" business days",null,1,priceGrids);
+									 }else if(rushflag){
+										 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesRush.toString(),listOfQuantityRush.toString(), 
+													"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+													"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+													finalRushTimeVal +" business days",null,2,priceGrids);
+									 }else if(prod2flag){
+										 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd2.toString(),listOfQuantityProd2.toString(), 
+													"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+													"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+													finalProdTimeVal2 +" business days",null,3,priceGrids);
+									 }
+									 
+								 }else{
+									 if(!StringUtils.isEmpty(finalProdTimeVal)&& !StringUtils.isEmpty(listOfPricesProd1.toString())){
+										 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd1.toString(),listOfQuantityProd1.toString(), 
+													"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+													"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+													finalProdTimeVal +" business days","Production Time",1,priceGrids);
+										}
+									 if(!StringUtils.isEmpty(finalRushTimeVal)&& !StringUtils.isEmpty(listOfPricesRush.toString())){
+										 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesRush.toString(),listOfQuantityRush.toString(), 
+													"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+													"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+													finalRushTimeVal +" business days","Rush Service",2,priceGrids);
+										}
+									 if(!StringUtils.isEmpty(finalProdTimeVal2)&& !StringUtils.isEmpty(listOfPricesProd2.toString())){
+											priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd2.toString(),listOfQuantityProd2.toString(), 
+													"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+													"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+													finalProdTimeVal2 +" business days","Production Time",3,priceGrids);
+										}
+									 }
+								 }
+								 
+								 
+								 
+								 if(CollectionUtils.isEmpty(priceGrids)){
+										priceGrids = highCalPriceGridParser.getPriceGridsQur();	
+									}
 								 
 								   // Add repeatable sets here
-								 productExcelObj.setPriceType("L");//need to cofirm
+								 	productExcelObj.setPriceType("L");
 								 	productExcelObj.setPriceGrids(priceGrids);
 								 	productExcelObj.setProductConfigurations(productConfigObj);
-								 	 _LOGGER.info("Product Data : "
-												+ mapperObj.writeValueAsString(productExcelObj));
+								 	 /*_LOGGER.info("Product Data : "
+												+ mapperObj.writeValueAsString(productExcelObj));*/
+								 	
+								 	if(xidList.contains(productExcelObj.getExternalProductId().trim())){
+								 		productExcelObj.setAvailability(new ArrayList<Availability>());
+								 	}
 								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
@@ -264,13 +348,13 @@ public class HighCaliberLineExcelMapping implements IExcelParser{
 
 						break;
 					case 9://Download Image Url
-						if(!existingFlag){//image only for new product
+						/*if(!existingFlag){//image only for new product
 						String image=CommonUtility.getCellValueStrinOrInt(cell);
 						if(!StringUtils.isEmpty(image)){
 							List<Image> listOfImages = highCaliberAttributeParser.getImages(image);
 							productExcelObj.setImages(listOfImages);
 							}
-						 }
+						 }*/
 						break;
 					case 10://Item Color
 						String colorValue=CommonUtility.getCellValueStrinOrInt(cell);
@@ -650,34 +734,93 @@ public class HighCaliberLineExcelMapping implements IExcelParser{
 	}
 	workbook.close();
 	
+	
+	boolean prod1flag=false;
+	 boolean prod2flag=false;
+	 boolean rushflag=false;
+	 boolean priceFlag=false;
+	 String flag="";
 	 if(!StringUtils.isEmpty(finalProdTimeVal)&& !StringUtils.isEmpty(listOfPricesProd1.toString())){
-			////imp code
-			priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd1.toString(),listOfQuantityProd1.toString(), 
-					"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-					"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
-					finalProdTimeVal +" business days","Production Time",1,priceGrids);	
+		 prod1flag=true;
+		 priceFlag=true;
+		}else{
+			prod1flag=false;
+			flag="false;";
 		}
 	 
 	 if(!StringUtils.isEmpty(finalRushTimeVal)&& !StringUtils.isEmpty(listOfPricesRush.toString())){
-			
-			priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesRush.toString(),listOfQuantityRush.toString(), 
-					"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-					"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
-					finalRushTimeVal +" business days","Rush Service",2,priceGrids);	
+		 rushflag=true;
+		 priceFlag=true;
+		}else{
+			flag=flag+"false;";
+			rushflag=false;
 		}
 	 
 	 if(!StringUtils.isEmpty(finalProdTimeVal2)&& !StringUtils.isEmpty(listOfPricesProd2.toString())){
 			////imp code
-			priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd2.toString(),listOfQuantityProd2.toString(), 
-					"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-					"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
-					finalProdTimeVal2 +" business days","Production Time",3,priceGrids);	
+		 	prod2flag=true;
+		 	priceFlag=true;
+		}else{
+			flag=flag+"false;";
+			prod2flag=false;
 		}
+	 	
+	 if(priceFlag){
+	 String tempCount[]=flag.split(";");
+	 int countt=tempCount.length;//Integer.parseInt(tempCount.toString());
+	 if(countt>1){
+		 ///i have to create a price grid based on all criterias
+		 if(prod1flag){
+			 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd1.toString(),listOfQuantityProd1.toString(), 
+						"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+						"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+						finalProdTimeVal +" business days",null,1,priceGrids);
+		 }else if(rushflag){
+			 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesRush.toString(),listOfQuantityRush.toString(), 
+						"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+						"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+						finalRushTimeVal +" business days",null,2,priceGrids);
+		 }else if(prod2flag){
+			 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd2.toString(),listOfQuantityProd2.toString(), 
+						"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+						"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+						finalProdTimeVal2 +" business days",null,3,priceGrids);
+		 }
+		 
+	 }else{
+		 if(!StringUtils.isEmpty(finalProdTimeVal)&& !StringUtils.isEmpty(listOfPricesProd1.toString())){
+			 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd1.toString(),listOfQuantityProd1.toString(), 
+						"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+						"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+						finalProdTimeVal +" business days","Production Time",1,priceGrids);
+			}
+		 if(!StringUtils.isEmpty(finalRushTimeVal)&& !StringUtils.isEmpty(listOfPricesRush.toString())){
+			 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesRush.toString(),listOfQuantityRush.toString(), 
+						"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+						"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+						finalRushTimeVal +" business days","Rush Service",2,priceGrids);
+			}
+		 if(!StringUtils.isEmpty(finalProdTimeVal2)&& !StringUtils.isEmpty(listOfPricesProd2.toString())){
+				priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd2.toString(),listOfQuantityProd2.toString(), 
+						"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+						"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+						finalProdTimeVal2 +" business days","Production Time",3,priceGrids);
+			}
+		 }
+	 }
+	 
+	 if(CollectionUtils.isEmpty(priceGrids)){
+			priceGrids = highCalPriceGridParser.getPriceGridsQur();	
+		}
+	 
 	 productExcelObj.setPriceType("L");//need to cofirm
 	 	productExcelObj.setPriceGrids(priceGrids);
 	 	productExcelObj.setProductConfigurations(productConfigObj);
-	 	_LOGGER.info("Product Data : "
-				+ mapperObj.writeValueAsString(productExcelObj));
+	 	/*_LOGGER.info("Product Data : "
+				+ mapperObj.writeValueAsString(productExcelObj));*/
+	 	if(xidList.contains(productExcelObj.getExternalProductId().trim())){
+	 		productExcelObj.setAvailability(new ArrayList<Availability>());
+	 	}
 	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 	 	if(num ==1){
 	 		numOfProductsSuccess.add("1");
@@ -739,7 +882,7 @@ public class HighCaliberLineExcelMapping implements IExcelParser{
 	
 	
 	public static String removeSpecialChar(String tempValue){
-		tempValue=tempValue.replaceAll("(Day|Service|R|Days|Hour|Hours|Week|Weeks|Rush|s)", "");
+		tempValue=tempValue.replaceAll("(Day|Service|Days|Hour|Hours|Week|Weeks|Rush|R|u|s|h)", "");
 		tempValue=tempValue.replaceAll("\\(","");
 		tempValue=tempValue.replaceAll("\\)","");
 	return tempValue;

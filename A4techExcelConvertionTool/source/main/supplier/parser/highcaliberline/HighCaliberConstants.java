@@ -1,11 +1,75 @@
 package parser.highcaliberline;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
 public class HighCaliberConstants {
 	public static Map<String, String> HCLCOLOR_MAP =new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);//new HashMap<String, String>();
-static {
+	private static Logger _LOGGER = Logger.getLogger(HighCaliberConstants.class);
+
+ static SessionFactory sessionFactory;
+	//public static Map<String, String> COLOR_MAP =new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);//new HashMap<String, String>();
+	public static Map<String, String>  Colormap(){
+		
+		Session session = null;
+		
+		try{
+			 session = sessionFactory.openSession();
+		Criteria colorCri = session.createCriteria(HighCalColorEntity.class);
+		  List<HighCalColorEntity> colorList = colorCri.list();
+	        for(HighCalColorEntity tempColor : colorList){
+	        	if(StringUtils.isEmpty(tempColor.getColorvalue())){
+	        		continue;
+	        	}
+	        	String strTemp[]={};
+	        	strTemp= tempColor.getColorvalue().split("===");
+	        	HCLCOLOR_MAP.put(strTemp[0].trim(),strTemp[1].trim());
+	        }
+	}catch(Exception ex){
+		_LOGGER.error("Error in dao block for highcaliber colors: "+ex.getMessage());
+	}finally{
+		if(session !=null){
+			try{
+				session.close();
+			}catch(Exception ex){
+				_LOGGER.warn("Error while close session object in highcaliber color class");
+			}
+			}
+		}
+		
+		return HCLCOLOR_MAP;
+	
+	}
+	
+	
+	
+	public static Map<String, String> getHCLCOLOR_MAP() {
+		if(CollectionUtils.isEmpty(HCLCOLOR_MAP)){
+			HCLCOLOR_MAP=Colormap();
+		}
+		
+		
+		return HCLCOLOR_MAP;
+	}
+	public static void setHCLCOLOR_MAP(Map<String, String> hCLCOLOR_MAP) {
+		HCLCOLOR_MAP = hCLCOLOR_MAP;
+	}
+	public SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+	
+/*static {
 	HCLCOLOR_MAP.put("Yellow","Medium Yellow");
 	HCLCOLOR_MAP.put("Forest Green","Dark Green");
 	HCLCOLOR_MAP.put("Teal","Medium Green");
@@ -109,5 +173,5 @@ static {
 	HCLCOLOR_MAP.put("White / Grey","Medium White");
 	HCLCOLOR_MAP.put("White / Orange","Medium White");
 	HCLCOLOR_MAP.put("White / Pink","Medium White");
-	}
+	}*/
 }

@@ -140,4 +140,28 @@ public class HighCaliberPriceGridParser {
 		return priceConfiguration;
 	}
 
+	
+	public List<PriceGrid> getPriceGridsQur( ) 
+	{
+		List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
+		try{
+			Integer sequence = 1;
+			List<PriceConfiguration> configuration = null;
+			PriceGrid priceGrid = new PriceGrid();
+			priceGrid.setIsBasePrice(true);
+			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
+			priceGrid.setDescription(ApplicationConstants.CONST_STRING_EMPTY);
+			priceGrid.setPriceIncludes(ApplicationConstants.CONST_STRING_EMPTY);
+			priceGrid.setSequence(sequence);
+			priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
+			List<Price>	listOfPrice = new ArrayList<Price>();
+			priceGrid.setPrices(listOfPrice);
+			//priceGrid.setPriceConfigurations(configuration);
+			newPriceGrid.add(priceGrid);
+	}catch(Exception e){
+		_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
+	}
+		_LOGGER.info("PriceGrid Processed");
+		return newPriceGrid;
+}
 }
