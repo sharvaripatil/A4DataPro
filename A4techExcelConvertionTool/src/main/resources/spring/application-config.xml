@@ -177,6 +177,7 @@
 				<value>com.a4tech.product.dao.entity.BatchEntity</value>
 				<value>com.a4tech.product.dao.entity.FtpServerFileEntity</value>
 				<value>com.a4tech.product.dao.entity.SupplierLoginDetails</value>
+				<value>parser.highcaliberline.HighCalColorEntity</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -387,6 +388,8 @@
 		<property name="riversEndExcelMapping" ref="riversEndExcelMappingId"/>
 		<property name="bamExcelMapping" ref="bambamProductExcelMappingId"/>
 		<property name="cbExcelMapping" ref="cbExcelMappingId"/>
+		<property name="hcLineExcelMapping" ref="highCaliberLineExcelMappingId"/>
+		
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
