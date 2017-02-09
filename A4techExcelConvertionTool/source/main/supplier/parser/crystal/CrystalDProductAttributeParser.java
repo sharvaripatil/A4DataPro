@@ -155,10 +155,24 @@ public class CrystalDProductAttributeParser {
 		}
 		return listPersonlization;
 	}
-	
-	
-	
-	
-	
+
+
+
+	public List<Option> getProductOption(String productOption) {
+		List<Option> ProdoptionList = new ArrayList<Option>();
+		List<OptionValue> ProdvaluesList = new ArrayList<OptionValue>();
+		OptionValue ProdoptionValueObj=new OptionValue();
+		Option ProdoptionObj=new Option();
+		
+		ProdoptionObj.setOptionType("Product");
+		ProdoptionObj.setName("Copy Change Option");
+		ProdoptionValueObj.setValue("Copy Change");
+		ProdvaluesList.add(ProdoptionValueObj);
+		ProdoptionObj.setValues(ProdvaluesList);
+		ProdoptionObj.setAdditionalInformation(productOption);
+		ProdoptionList.add(ProdoptionObj);
+
+		return ProdoptionList;
+	}
 	
 }

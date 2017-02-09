@@ -2,6 +2,7 @@ package com.a4tech.supplier.mapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +23,8 @@ import com.a4tech.apparel.product.mapping.ApparelProductsExcelMapping;
 import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
@@ -73,6 +76,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 		List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
 		List<ImprintMethod> exstimprintMethodsList = new ArrayList<ImprintMethod>();
 		List<Option> optionList = new ArrayList<Option>();
+		List<Option> productoptionList = new ArrayList<Option>();
 		StringBuilder listOfQuantity = new StringBuilder();
 		StringBuilder listOfPrices = new StringBuilder();
 		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
@@ -113,7 +117,10 @@ public class CrystalDExcelMapping implements IExcelParser {
 		String AddInfo=null;
 		String description =null;
 		String MaterialValue=null;
-
+		 HashMap<String, Object>  priceGridMap=new HashMap<String, Object>();
+		 HashMap<String, Object>  productNoMap=new HashMap<String, Object>();
+		 List<String> listOfXID= new ArrayList<String>();
+		 String asiProdNo = null;
 		
 
 
@@ -128,6 +135,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
 			if (xid != null) {
 				productXids.add(productId);
+				 repeatRows.add(xid);
 			}
 			 boolean checkXid  = false;
 			
@@ -167,6 +175,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 							    productConfigObj.setMaterials(listOfMaterial);	
 							    productConfigObj.setImprintMethods(imprintMethodsList);
 							    productConfigObj.setOptions(optionList);
+							    productConfigObj.setOptions(productoptionList);
 							    productExcelObj.setPriceGrids(priceGrids);
 							    if(!StringUtils.isEmpty(listPersonlization)){
 							     productConfigObj.setPersonalization(listPersonlization);
@@ -195,12 +204,16 @@ public class CrystalDExcelMapping implements IExcelParser {
 						    	imprintMethodsList = new ArrayList<ImprintMethod>();
 						    	exstimprintMethodsList=new ArrayList<ImprintMethod>();
 						    	optionList = new ArrayList<Option>();
+						    	productoptionList=new ArrayList<Option>();
 						    	priceGrids = new ArrayList<PriceGrid>();
 						    	listOfQuantity = new StringBuilder();
 								listOfPrices = new StringBuilder();
 								listPersonlization=new ArrayList<Personalization>();
 								listOfNotes = new StringBuilder();
 								AddInfo=null;
+								listOfXID= new ArrayList<String>();
+								priceGridMap=new HashMap<String, Object>();
+							    productNoMap=new HashMap<String, Object>();
 								repeatRows.clear();
 								
 						 }
@@ -210,15 +223,28 @@ public class CrystalDExcelMapping implements IExcelParser {
 						    }
 						 //   productExcelObj = new Product();
 						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid);
+
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
-						  	   productExcelObj=existingApiProduct;
-								productConfigObj=productExcelObj.getProductConfigurations();
+//						  	   productExcelObj=existingApiProduct;
+								productConfigObj=existingApiProduct.getProductConfigurations();
+						    	String confthruDate=existingApiProduct.getPriceConfirmedThru();
+						    	List<Color> colorL=productConfigObj.getColors();
+						    	 List<Image> Img=existingApiProduct.getImages();
+						    	 productExcelObj.setPriceConfirmedThru(confthruDate);
+						    	 productExcelObj.setImages(Img);
+						    	 productConfigObj.setColors(colorL);
+						     
 						     }
-							
 					 }
+				}else{
+					if(productXids.contains(xid) && repeatRows.size() != 1){
+						 if(isRepeateColumn(columnIndex+1)){
+							 continue;
+						 }
+					}
 				}
 				switch (columnIndex+1) {
 				case 1://XID
@@ -226,7 +252,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 	
 					 break;
 				case 2:// Item
-					String asiProdNo =  CommonUtility.getCellValueStrinOrInt(cell);
+					 asiProdNo =  CommonUtility.getCellValueStrinOrInt(cell);
 				     productExcelObj.setAsiProdNo(asiProdNo);	
 
 					
@@ -321,9 +347,11 @@ public class CrystalDExcelMapping implements IExcelParser {
 					if(Notes1.contains("Price"))
 					{
 						PriceInclude=Notes1;
-					} if(!Notes1.contains("Price") && !Notes1.contains("Personalization") && !Notes1.contains("Colorfill") )
+					} if(!Notes1.contains("Price") && !Notes1.contains("Personalization") && !Notes1.contains("Colorfill")&& !StringUtils.isEmpty(Notes1) )
 					{
 						AddInfo=Notes1.concat(" ");
+					}else{
+						AddInfo="";
 					}
 				
 			       break;
@@ -333,7 +361,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 						{
 							PriceInclude=Notes2;
 						}
-					  if(!Notes2.contains("Price") && !Notes2.contains("Personalization") && !Notes2.contains("Colorfill") )
+					  if(!Notes2.contains("Price") && !Notes2.contains("Personalization") && !Notes2.contains("Colorfill") && !StringUtils.isEmpty(Notes2))
 						{
 							AddInfo=AddInfo.concat( Notes2).concat(" ");
 						}
@@ -345,7 +373,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 					{
 						PriceInclude=Notes3;
 					}
-					 if(!Notes3.contains("Price") && !Notes3.contains("Personalization") && !Notes3.contains("Colorfill") )
+					 if(!Notes3.contains("Price") && !Notes3.contains("Personalization") && !Notes3.contains("Colorfill") && !StringUtils.isEmpty(Notes3))
 					{
 						AddInfo=AddInfo.concat( Notes3).concat(" ");
 					}
@@ -357,7 +385,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 					{
 						PriceInclude=Notes4;
 					}
-					 else if(!Notes4.contains("Price") && !Notes4.contains("Personalization") && !Notes4.contains("Colorfill") )
+					 else if(!Notes4.contains("Price") && !Notes4.contains("Personalization") && !Notes4.contains("Colorfill")&& !StringUtils.isEmpty(Notes4) )
 					{
 						AddInfo=AddInfo.concat( Notes4).concat(" ");
 					}
@@ -365,7 +393,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 					break;
 				case 18://Notes5
 					Notes5=cell.getStringCellValue();
-					if(!Notes5.contains("Price") && !Notes5.contains("Personalization") && !Notes5.contains("Colorfill") )
+					if(!Notes5.contains("Price") && !Notes5.contains("Personalization") && !Notes5.contains("Colorfill") && !StringUtils.isEmpty(Notes5))
 					{
 						AddInfo=AddInfo.concat( Notes5);
 					}
@@ -384,6 +412,11 @@ public class CrystalDExcelMapping implements IExcelParser {
 					
 					break;
 				case 22://Services
+					String ProductOption=cell.getStringCellValue();
+					if(ProductOption.contains("Copy Change")){
+					productoptionList=crystalDObj.getProductOption(ProductOption);
+					}
+					
 
 					break;
 				case 23://Process
@@ -421,7 +454,9 @@ public class CrystalDExcelMapping implements IExcelParser {
 					break;
 				case 27://Material Type
 					String MaterialType=cell.getStringCellValue();
+					if(!MaterialValue.equalsIgnoreCase(MaterialType)){
 					MaterialValue=MaterialValue.concat(",").concat(MaterialType);
+					}
 					listOfMaterial = crymaterialObj.getMaterialList(MaterialValue);
 
 					break;
@@ -475,11 +510,28 @@ public class CrystalDExcelMapping implements IExcelParser {
 				  // end inner while loop
 				 }	 
 			}
+			
+			
+			
+			priceGridMap.put(xid, asiProdNo+"%%%"+listOfPrices+"___"+listOfQuantity);
+			productNoMap.put(xid, ShippingDimension);
+			listOfXID.add(xid);
+						
+			if(listOfXID.size()==1){
 				productExcelObj.setPriceType("L");
-				
 				priceGrids = cdpriceObj.getPriceGrids(listOfPrices.toString(),
 				         listOfQuantity.toString(), "R", "USD",
 				         PriceInclude, true, "N",productName ,""/*,priceGrids*/);
+			
+			}else
+			{
+				//priceGridMap.put(asiProdNo, asiProdNo+"%%%"+listOfPrices+"___"+listOfQuantity);
+				
+				productExcelObj.setPriceType("L");
+				
+				
+			}
+			
 				
 				
 				if(AllNotes.contains("Personalization extra"))
@@ -510,6 +562,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 		    productConfigObj.setMaterials(listOfMaterial);	
 		    productConfigObj.setImprintMethods(imprintMethodsList);
 		    productConfigObj.setOptions(optionList);
+		    productConfigObj.setOptions(productoptionList);
 		    productExcelObj.setPriceGrids(priceGrids);
 		    if(!StringUtils.isEmpty(listPersonlization)){
 		    productConfigObj.setPersonalization(listPersonlization);
@@ -542,12 +595,16 @@ public class CrystalDExcelMapping implements IExcelParser {
 	    	imprintMethodsList = new ArrayList<ImprintMethod>();
 	    	exstimprintMethodsList=new ArrayList<ImprintMethod>();
 	    	optionList = new ArrayList<Option>();
+	    	productoptionList=new ArrayList<Option>();
 	    	priceGrids = new ArrayList<PriceGrid>();
 	    	listOfQuantity = new StringBuilder();
 			listOfPrices = new StringBuilder();
 			listPersonlization=new ArrayList<Personalization>();
 			listOfNotes = new StringBuilder();
 			AddInfo=null;
+			listOfXID=new ArrayList<String>();
+			priceGridMap=new HashMap<String, Object>();
+		    productNoMap=new HashMap<String, Object>();
 			repeatRows.clear();
 	        return finalResult;
 		
@@ -565,7 +622,17 @@ public class CrystalDExcelMapping implements IExcelParser {
 				_LOGGER.info("Total no of product:"+numOfProductsSuccess.size() );
 		}
 	
-}
+   }
+	
+	   public boolean isRepeateColumn(int columnIndex){
+		
+		if(columnIndex != 2 && columnIndex != 5 && columnIndex != 9 &&
+		   columnIndex != 29 && columnIndex != 30 && columnIndex != 31 &&
+		   columnIndex != 32 && columnIndex != 33 && columnIndex != 34){
+			return ApplicationConstants.CONST_BOOLEAN_TRUE;
+		}
+		return ApplicationConstants.CONST_BOOLEAN_FALSE;
+	}
 	
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;

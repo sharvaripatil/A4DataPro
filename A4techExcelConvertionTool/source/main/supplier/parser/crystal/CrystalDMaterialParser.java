@@ -21,7 +21,8 @@ public class CrystalDMaterialParser {
 
 		//String finalTempAliasVal = materialValue1;
 		String finalTempAliasArr[]=materialValue1.split(",");
-				
+		
+		
 		for (String MaterailValue : finalTempAliasArr) {
 			
 		String MaterailCombo =MaterailValue;
@@ -74,6 +75,7 @@ public class CrystalDMaterialParser {
 
 		}
 		}
+		
 		return listOfMaterial;
 	}
 
