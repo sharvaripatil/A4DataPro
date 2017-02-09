@@ -389,6 +389,7 @@
 		<property name="bamExcelMapping" ref="bambamProductExcelMappingId"/>
 		<property name="cbExcelMapping" ref="cbExcelMappingId"/>
 		<property name="hcLineExcelMapping" ref="highCaliberLineExcelMappingId"/>
+		<property name="wholeSaleExcelMapping" ref="wholeSaleExcelMappingId"/>
 		
      </bean>
      
