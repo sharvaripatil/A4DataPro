@@ -388,6 +388,8 @@
 		<property name="bamExcelMapping" ref="bambamProductExcelMappingId"/>
 		<property name="cbExcelMapping" ref="cbExcelMappingId"/>
 		<property name="cdExcelMapping" ref="cdExcelMappingId"/>
+		<property name="goldcanadaExcelMapping" ref="goldcanadaExcelMappingId"/>
+		
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -493,10 +495,44 @@
      <bean id="cdpriceObjId" class="parser.crystal.CrystalDPriceGridParser"/> 
     
       <!--supplier 47759 configuration end  -->  
+      
+      
     
+     <!--supplier 57711 configuration Start  -->  
+   
+       <bean id="goldcanadaExcelMappingId" class="com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping">
+       <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj"   ref="productDao"/>
+       <property name="gcdimensionObj"   ref="gcdimensionObjId"/>
+       <property name="gcimprintMethodParser"   ref="gcimprintMethodParserId"/>
+       <property name="gcOriginParser"   ref="gcOriginParserId"/>
+       <property name="gcRushTimeParser"   ref="gcRushTimeParserId"/>
+       <property name="gcPackagingParser"   ref="gcPackagingParserId"/>
+       <property name="gcShippingParser"   ref="gcShippingParserId"/>
+       <property name="gcPricegridParser"   ref="gcPricegridParserId"/>
+       <property name="gcImprintSizeParser"   ref="gcImprintSizeParserId"/>
+       <property name="gccolorparser"   ref="gccolorparserId"/>
+      
+       
+       
+       </bean>
+
+
+     <bean id="gcdimensionObjId" class="parser.goldstarcanada.GoldstarCanadaDimensionParser"/> 
+     <bean id="gcimprintMethodParserId" class="parser.goldstarcanada.GoldstarCanadaImprintMethodParser"/> 
+     <bean id="gcOriginParserId" class="parser.goldstarcanada.GoldstarCanadaOriginParser"/> 
+     <bean id="gcRushTimeParserId" class="parser.goldstarcanada.GoldstarCanadaRushTimeParser"/> 
+     <bean id="gcPackagingParserId" class="parser.goldstarcanada.GoldstarCanadaPackagingParser"/>    
+     <bean id="gcPricegridParserId" class="parser.goldstarcanada.GoldstarCanadaPriceGridParser"/> 
+     <bean id="gcShippingParserId" class="parser.goldstarcanada.GoldstarCanadaShippingEstimateParser"/> 
+     <bean id="gcImprintSizeParserId" class="parser.goldstarcanada.GoldstarCanadaImprintsizeParser"/> 
+     <bean id="gccolorparserId" class="parser.goldstarcanada.GoldstarCanadaColorParser"/> 
+     
+     
+     
+
     
-    
-    
+     <!--supplier 57711 configuration end  -->  
     
 </beans>
 

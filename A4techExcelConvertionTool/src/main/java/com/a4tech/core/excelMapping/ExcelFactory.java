@@ -19,6 +19,7 @@ import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
+import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 
 public class ExcelFactory {
 	private AdspecProductsExcelMapping adspecMapping;
@@ -37,6 +38,7 @@ public class ExcelFactory {
 	private BambamProductExcelMapping bamExcelMapping;
     private CutterBuckExcelMapping cbExcelMapping;
     private CrystalDExcelMapping cdExcelMapping;
+    private GoldstarCanadaExcelMapping goldcanadaExcelMapping;
  //   private CutterBuckSheetParser cbSheetParser;
 	
 	public  IExcelParser getExcelParserObject(String name){
@@ -74,6 +76,9 @@ public class ExcelFactory {
 		   }
 		   else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
 			   return bamExcelMapping;
+		   }
+		   else if(name.equalsIgnoreCase("goldCanada") || name.equals("57711")){
+			   return goldcanadaExcelMapping;
 		   }
 		   
 		return null;
@@ -206,6 +211,15 @@ public class ExcelFactory {
 
 	public void setCdExcelMapping(CrystalDExcelMapping cdExcelMapping) {
 		this.cdExcelMapping = cdExcelMapping;
+	}
+
+	public GoldstarCanadaExcelMapping getGoldcanadaExcelMapping() {
+		return goldcanadaExcelMapping;
+	}
+
+	public void setGoldcanadaExcelMapping(
+			GoldstarCanadaExcelMapping goldcanadaExcelMapping) {
+		this.goldcanadaExcelMapping = goldcanadaExcelMapping;
 	}
 
 
