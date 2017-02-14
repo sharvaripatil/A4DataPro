@@ -503,6 +503,8 @@
        <bean id="goldcanadaExcelMappingId" class="com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping">
        <property name="postServiceImpl" ref="postService"/>
        <property name="productDaoObj"   ref="productDao"/>
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+	   <property name="lookupRestServiceObj" ref="lookupRestService"/>
        <property name="gcdimensionObj"   ref="gcdimensionObjId"/>
        <property name="gcimprintMethodParser"   ref="gcimprintMethodParserId"/>
        <property name="gcOriginParser"   ref="gcOriginParserId"/>

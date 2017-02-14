@@ -1,6 +1,7 @@
 package com.a4tech.supplier.mapper;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +26,8 @@ import parser.goldstarcanada.GoldstarCanadaRushTimeParser;
 import parser.goldstarcanada.GoldstarCanadaShippingEstimateParser;
 
 import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.lookup.service.LookupServiceData;
+import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
@@ -56,6 +59,8 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 	
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
+	private LookupServiceData lookupServiceDataObj;
+	private LookupRestService lookupRestServiceObj;
 	private GoldstarCanadaDimensionParser gcdimensionObj;
 	private GoldstarCanadaImprintMethodParser gcimprintMethodParser;
 	private GoldstarCanadaOriginParser gcOriginParser;
@@ -126,7 +131,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 		String ListPrice =null;
 		String Discountcode = null;
 		String decorationMethod =null;
-		String priceConfirmedThru =null;
+		Date priceConfirmedThru =null;
 		String FirstImprintsize1=null;
 		String FirstImprintunit1=null;
 		String FirstImprinttype1=null;
@@ -139,6 +144,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 		String SecondImprintsize2=null;
 		String SecondImprintunit2=null;
 		String SecondImprinttype2=null;
+		String CatYear=null;
 	    StringBuilder ImprintSizevalue = new StringBuilder();
 	  
 		
@@ -161,6 +167,9 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 		Size size=new Size();
 		List<Image> listOfImages= new ArrayList<Image>();
 	    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
+	    List<com.a4tech.lookup.model.Catalog> catalogsList=new ArrayList<>(); 
+	   // List<Catalog> catalogList=new ArrayList<Catalog>(); 
+	    Catalog catlogObj=new Catalog();
 		Product existingApiProduct = null;
 		
 		while (iterator.hasNext()) {
@@ -268,27 +277,38 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						productExcelObj.setName(productName);
      					
 				case 4://CatYear(Not used)
+					 CatYear=CommonUtility.getCellValueStrinOrInt(cell);
 					
 					
 				    break;
 					
 				case 5://PriceConfirmedThru
-					/* priceConfirmedThru = cell.getStringCellValue();*/
+					 priceConfirmedThru = cell.getDateCellValue();
 		
 					break;
 					
 				case 6: //  product status ,discontinued
 					break;
 					
-				case 7://Cat1Name
+				case 7://Category
 					
 					break;
 					
-				case 8: // Cat2Name
+				case 8: // Category
 
 					break;
 					
 				case 9: //Catalogs page number, Page1
+					String PageNO=CommonUtility.getCellValueStrinOrInt(cell);
+					String value=null;
+					catalogsList = lookupServiceDataObj.getCatalog(value);
+					if(catalogsList.contains(CatYear)){
+						catlogObj.setCatalogName(CatYear);
+						catlogObj.setCatalogPage(PageNO);
+						catalogList.add(catlogObj);
+						productExcelObj.setCatalogs(catalogList);
+					}
+					
 
 					break;
 					
@@ -914,11 +934,8 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 				case 118: //Verified
 					String verified=cell.getStringCellValue();
 					if(verified.equalsIgnoreCase("True")){
-					String strArr[]=priceConfirmedThru.split("/");
-					priceConfirmedThru=strArr[2]+"/"+strArr[0]+"/"+strArr[1];
-					priceConfirmedThru=priceConfirmedThru.replaceAll("/", "-");
-					 
-					productExcelObj.setPriceConfirmedThru(priceConfirmedThru);
+					String priceConfimedThruString=priceConfirmedThru.toString();
+					productExcelObj.setPriceConfirmedThru(priceConfimedThruString);
 					}
 					break;
 			
@@ -1118,6 +1135,22 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 
 	public void setGccolorparser(GoldstarCanadaColorParser gccolorparser) {
 		this.gccolorparser = gccolorparser;
+	}
+
+	public LookupServiceData getLookupServiceDataObj() {
+		return lookupServiceDataObj;
+	}
+
+	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
+		this.lookupServiceDataObj = lookupServiceDataObj;
+	}
+
+	public LookupRestService getLookupRestServiceObj() {
+		return lookupRestServiceObj;
+	}
+
+	public void setLookupRestServiceObj(LookupRestService lookupRestServiceObj) {
+		this.lookupRestServiceObj = lookupRestServiceObj;
 	}
 
 
