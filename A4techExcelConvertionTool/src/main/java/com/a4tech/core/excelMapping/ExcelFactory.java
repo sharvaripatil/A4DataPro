@@ -58,8 +58,6 @@ public class ExcelFactory {
 			   return rfgLineProductExcelMapping;
 		   }else if(name.equalsIgnoreCase("bbi") || name.equals("40445")){
 			   return bbiProductsExcelMapping;
-		   }else if(name.equalsIgnoreCase("newProducts") || name.equals("91284")){
-			   return newProductsExcelMapping;
 		   }else if(name.equalsIgnoreCase("espTemplate") || name.equals("91561")){
 			   return espTemplateMapping;   
 		   }else if(name.equalsIgnoreCase("broberry") || name.equals("42057")){
