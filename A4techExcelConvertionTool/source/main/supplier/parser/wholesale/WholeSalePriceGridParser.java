@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.CollectionUtils;
+
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
@@ -14,13 +16,17 @@ import com.a4tech.util.LookupData;
 
 public class WholeSalePriceGridParser  {
 	private Logger              _LOGGER       =  Logger.getLogger(WholeSalePriceGridParser.class);
-	public List<PriceGrid> getPriceGrids(String listOfPrices,
-		    String listOfQuan, String discountCodes,
-			String currency, String priceInclude, boolean isBasePrice,
-			String qurFlag, String priceName, String criterias,Integer sequence,
-			List<PriceGrid> existingPriceGrid) 
+	public List<PriceGrid> getPriceGrids(String listOfPrices, String listOfQuan, String discountCodes,String currency, String priceInclude,
+			 boolean isBasePrice,String qurFlag, String priceName, 
+			 String criterias,Integer sequence,String upChargeType,String upchargeUsageType,
+			 List<PriceGrid> existingPriceGrid) 
 			{
 		try{
+			if(CollectionUtils.isEmpty(existingPriceGrid)){
+				existingPriceGrid=new ArrayList<PriceGrid>();
+			}
+			
+			
 		//Integer sequence = 1;
 		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
@@ -35,6 +41,14 @@ public class WholeSalePriceGridParser  {
 		priceGrid
 				.setIsQUR(qurFlag.equalsIgnoreCase(ApplicationConstants.CONST_STRING_FALSE) ? ApplicationConstants.CONST_BOOLEAN_FALSE
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);
+		if(!isBasePrice){
+			priceGrid.setServiceCharge(ApplicationConstants.CONST_STRING_SERVICECHARGE);
+			priceGrid.setUpchargeType(upChargeType);
+			priceGrid.setUpchargeUsageType(upchargeUsageType);
+			//UpchargeUsageType
+		}
+		
+		
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;

@@ -19,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import parser.wholesale.WholeSaleAttributeParser;
+import parser.wholesale.WholeSalePriceGridParser;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
@@ -51,15 +52,13 @@ import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WholeSaleExcelMapping  implements IExcelParser{
-
-
-	private static final Logger _LOGGER = Logger.getLogger(RiversEndExcelMapping.class);
-	
+	private static final Logger _LOGGER = Logger.getLogger(WholeSaleExcelMapping.class);
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
 	@Autowired
 	ObjectMapper mapperObj;
 	WholeSaleAttributeParser wholeSaleAttributeParser;
+	WholeSalePriceGridParser wholeSalePriceGridParser;
 	private LookupServiceData lookupServiceDataObj;
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 	
@@ -100,6 +99,9 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 		  String descOne=null;
 		  List<ImprintMethod> imprintMethodList = new ArrayList<ImprintMethod>();
 		  String imprintMethodValue=null;
+		  String impucVal=null;
+		  String upcDicountCode=null;
+		  String upcPriceIncludes="";
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -113,7 +115,6 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 	    int columnIndex=0;
 	    boolean existingFlag=false;
 		while (iterator.hasNext()) {
-			
 			try{
 			Row nextRow = iterator.next();
 			if(nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO){
@@ -140,6 +141,14 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 				if(checkXid){
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
+							 
+							if(!StringUtils.isEmpty(imprintMethodValue) && !StringUtils.isEmpty(impucVal) && !StringUtils.isEmpty(upcDicountCode))
+								{
+								 priceGrids = wholeSalePriceGridParser.getPriceGrids(impucVal,"1",upcDicountCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,upcPriceIncludes, 
+										ApplicationConstants.CONST_BOOLEAN_FALSE, ApplicationConstants.CONST_STRING_FALSE, imprintMethodValue,
+										"Imprint Method",2,ApplicationConstants.CONST_STRING_SETUP_CHARGE,"Per Order",priceGrids);
+								}
+							productExcelObj.setPriceType("L");
 							productExcelObj.setPriceGrids(priceGrids);
 							productExcelObj.setProductConfigurations(productConfigObj);
 							_LOGGER.info("Product Data : "
@@ -161,16 +170,14 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 								repeatRows.clear();
 								colorSet=new HashSet<String>(); 
 								colorList = new ArrayList<Color>();
-								
-								priceGridMap=new HashMap<String, String>();
-								priceGridMapTemp=new HashMap<String, String>();
 								pnumberList=new ArrayList<ProductNumber>();
-								
-								sizeValuesSet = new HashSet<>();
 								sizeValuesSet = new HashSet<>();
 								descOne=null;
 								imprintMethodList = new ArrayList<ImprintMethod>();
 								imprintMethodValue=null;
+								impucVal=null;
+								upcDicountCode=null;
+								upcPriceIncludes="";
 								//ProductDataStore.clearSizesBrobery();
 
 						 }
@@ -188,10 +195,9 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 						    	 _LOGGER.info("Existing Xid available,Processing existing Data");
 						    	 productExcelObj=wholeSaleAttributeParser.getExistingProductData(existingApiProduct,existingApiProduct.getProductConfigurations(),accessToken);
 						    	 productConfigObj=productExcelObj.getProductConfigurations();
-									 existingFlag=true;
-								   // priceGrids = productExcelObj.getPriceGrids();
+								 existingFlag=true;
+								 // priceGrids = productExcelObj.getPriceGrids();
 						     }
-							
 					 }
 				}else{
 					if(productXids.contains(xid) && repeatRows.size() != 1){
@@ -243,11 +249,11 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 						case 6://FEATURES
 							String descTwo=CommonUtility.getCellValueStrinOrInt(cell);
 							if(!StringUtils.isEmpty(descTwo)){
-							String tempdescTwo=productExcelObj.getDescription();
-							
-							if(!StringUtils.isEmpty(tempdescTwo)){
-								descTwo=tempdescTwo+descTwo;
-								int length=descOne.length();
+								if(!StringUtils.isEmpty(descOne)){
+									descTwo=descOne+descTwo;
+								}
+							if(!StringUtils.isEmpty(descTwo)){
+								int length=descTwo.length();
 								 if(length>800){
 									String strTemp=descTwo.substring(0, 800);
 									int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
@@ -317,15 +323,24 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 						break;
 
 						case 16://Setup
-
+							//upcharges for imprint method
+							 impucVal=CommonUtility.getCellValueStrinOrDecimal(cell);//getCellValueStrinOrInt(cell);
+							 if(!StringUtils.isEmpty(impucVal)){
+								 impucVal=removeSpecialChar(impucVal.toUpperCase());
+							 }
+							
 						break;
 
 						case 17://Setup Class
-
+							 upcDicountCode=CommonUtility.getCellValueStrinOrInt(cell);
+							 if(!StringUtils.isEmpty(upcDicountCode)){
+								 upcDicountCode=removeSpecialChar(upcDicountCode.toUpperCase());
+							 }
+							
 						break;
 
 						case 18://Notes
-
+							 upcPriceIncludes=CommonUtility.getCellValueStrinOrInt(cell);
 						break;
 
 						case 19://Production Time
@@ -420,6 +435,14 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 		}*/
 		
 		//productExcelObj.setPriceGrids(priceGrids);
+		
+		if(!StringUtils.isEmpty(imprintMethodValue) && !StringUtils.isEmpty(impucVal) && !StringUtils.isEmpty(upcDicountCode))
+		{
+		 priceGrids = wholeSalePriceGridParser.getPriceGrids(impucVal,"1",upcDicountCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,upcPriceIncludes, 
+				ApplicationConstants.CONST_BOOLEAN_FALSE, ApplicationConstants.CONST_STRING_FALSE, imprintMethodValue,
+				"Imprint Method",2,ApplicationConstants.CONST_STRING_SETUP_CHARGE,"Per Order",priceGrids);
+		}
+	productExcelObj.setPriceType("L");
 		 productExcelObj.setProductConfigurations(productConfigObj);
 		 	_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));
@@ -447,12 +470,13 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 		sizeValuesSet = new HashSet<>();
 		listOfCategories=new ArrayList<String>();
 		FinalKeyword=new StringBuilder();
-		//ProductDataStore.clearSizesBrobery();
-       ProductSkusList = new ArrayList<ProductSkus>();
         AdditionalInfo= new StringBuilder();
         descOne=null;
         imprintMethodList = new ArrayList<ImprintMethod>();
         imprintMethodValue=null;
+        impucVal=null;
+		upcDicountCode=null;
+		upcPriceIncludes="";
 		return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet " +e.getMessage());
@@ -490,7 +514,7 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
 	
-	public static List<PriceGrid> getPriceGrids(String basePriceName) 
+	/*public static List<PriceGrid> getPriceGrids(String basePriceName) 
 	{
 		
 		List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
@@ -513,7 +537,7 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 	}
 		return newPriceGrid;
 }
-	
+	*/
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}
@@ -562,14 +586,29 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
 		this.lookupServiceDataObj = lookupServiceDataObj;
 	}
+	
+	
+
+	public WholeSalePriceGridParser getWholeSalePriceGridParser() {
+		return wholeSalePriceGridParser;
+	}
+
+
+
+	public void setWholeSalePriceGridParser(
+			WholeSalePriceGridParser wholeSalePriceGridParser) {
+		this.wholeSalePriceGridParser = wholeSalePriceGridParser;
+	}
 
 
 
 	public static String removeSpecialChar(String tempValue){
-		tempValue=tempValue.replaceAll("(Day|Service|Days|Hour|Hours|Week|Weeks|Rush|day|service|days|hour|hours|week|weeks|Rush|R|u|s|h)", "");
+		tempValue=tempValue.replaceAll("(CLASS|Day|Service|Days|Hour|Hours|Week|Weeks|Rush|day|service|days|hour|hours|week|weeks|Rush|R|u|s|h|$)", "");
 		tempValue=tempValue.replaceAll("\\(","");
 		tempValue=tempValue.replaceAll("\\)","");
 	return tempValue;
 
 	}
+	
+	
 }

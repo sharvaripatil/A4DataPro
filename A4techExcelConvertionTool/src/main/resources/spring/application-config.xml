@@ -506,12 +506,16 @@
      <property name="postServiceImpl" ref="postService"/>
      <property name="productDaoObj" ref="productDao"/>
      <property name="wholeSaleAttributeParser" ref="wholeSaleAttributeParserId" />  
+     <property name="wholeSalePriceGridParser" ref="wholeSalePriceGridParserId"/>
      <property name="lookupServiceDataObj" ref="lookupServiceData"/>
      </bean>
      
      <bean id="wholeSaleAttributeParserId" name="wholeSaleProductAttributeParser"
 		class="parser.wholesale.WholeSaleAttributeParser" autowire="byName">
 		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+	</bean>
+	<bean id="wholeSalePriceGridParserId" name="wholeSalePriceGridParserObj"
+		class="parser.wholesale.WholeSalePriceGridParser" autowire="byName">
 	</bean>
         <!-- supplier WholeSale configuration end --> 
     
