@@ -19,6 +19,7 @@ import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
+import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 
 public class ExcelFactory {
 	private AdspecProductsExcelMapping adspecMapping;
@@ -37,8 +38,10 @@ public class ExcelFactory {
 	private BambamProductExcelMapping bamExcelMapping;
     private CutterBuckExcelMapping cbExcelMapping;
     private CrystalDExcelMapping cdExcelMapping;
- //   private CutterBuckSheetParser cbSheetParser;
+	private HighCaliberLineExcelMapping hcLineExcelMapping;
 	
+	
+
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -74,6 +77,8 @@ public class ExcelFactory {
 		   }
 		   else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
 			   return bamExcelMapping;
+		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
+			   return hcLineExcelMapping;
 		   }
 		   
 		return null;
@@ -199,13 +204,21 @@ public class ExcelFactory {
 	public void setCbExcelMapping(CutterBuckExcelMapping cbExcelMapping) {
 		this.cbExcelMapping = cbExcelMapping;
 	}
-
+	
 	public CrystalDExcelMapping getCdExcelMapping() {
 		return cdExcelMapping;
 	}
 
 	public void setCdExcelMapping(CrystalDExcelMapping cdExcelMapping) {
 		this.cdExcelMapping = cdExcelMapping;
+	}
+
+	public HighCaliberLineExcelMapping getHcLineExcelMapping() {
+		return hcLineExcelMapping;
+	}
+
+	public void setHcLineExcelMapping(HighCaliberLineExcelMapping hcLineExcelMapping) {
+		this.hcLineExcelMapping = hcLineExcelMapping;
 	}
 
 
