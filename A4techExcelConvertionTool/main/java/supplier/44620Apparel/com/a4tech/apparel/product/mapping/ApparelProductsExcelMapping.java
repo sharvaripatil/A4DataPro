@@ -30,7 +30,6 @@ import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
-import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Packaging;
@@ -73,8 +72,6 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 		  Set<String> productSizeValues = new HashSet<String>(); // This Set used for product Availability
 		  List<String> repeatRows = new ArrayList<>();
 		  Map<String, String> colorIdMap = new HashMap<>();
-		  List<Image> imageList = new ArrayList<Image>();
-		  
  		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -163,8 +160,6 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 						     }else{
 						    	 productConfigObj=productExcelObj.getProductConfigurations();
 						    	 productExcelObj.setAvailability(new ArrayList<>());
-						    	 imageList=productExcelObj.getImages();
-						    	 productExcelObj.setImages(imageList);
 						     }
 							
 					 }
