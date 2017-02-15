@@ -1,17 +1,13 @@
 package parser.goldstarcanada;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 import org.apache.log4j.Logger;
-
 import com.a4tech.product.model.Price;
-import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
 import com.a4tech.util.ApplicationConstants;
-import com.a4tech.util.LookupData;
+
 
 public class GoldstarCanadaPriceGridParser {
 
@@ -82,7 +78,7 @@ public class GoldstarCanadaPriceGridParser {
 		return listOfPrices;
 	}
 
-	public List<PriceConfiguration> getConfigurations(String criterias,String UpchargeName) {
+/*	public List<PriceConfiguration> getConfigurations(String criterias,String UpchargeName) {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
 		String[] config = null;
 		PriceConfiguration configs = null;
@@ -129,8 +125,8 @@ public class GoldstarCanadaPriceGridParser {
 		}
 		return priceConfiguration;
 	}
-
-	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
+*/
+	/*public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
 			String discounts, String upChargeCriterias, String qurFlag,
 			String currency, String upChargeName, String upChargeType,
 			String upchargeUsageType, Integer upChargeSequence,
@@ -171,6 +167,6 @@ public class GoldstarCanadaPriceGridParser {
 			_LOGGER.error("Error while processing UpchargePriceGrid: "+e.getMessage());
 		}
 		return existingPriceGrid;
-	}
+	}*/
 
 }

@@ -3,7 +3,7 @@ package parser.goldstarcanada;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class gcApplicationConstatnt {
+public class GoldstartCanadaApplicationConstatnt {
 
 	public static Map<String, String> COLOR_MAP =new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
 	

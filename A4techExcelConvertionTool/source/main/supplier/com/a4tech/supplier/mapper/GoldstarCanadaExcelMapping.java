@@ -26,6 +26,7 @@ import parser.goldstarcanada.GoldstarCanadaRushTimeParser;
 import parser.goldstarcanada.GoldstarCanadaShippingEstimateParser;
 
 import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.lookup.model.Themes;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.dao.service.ProductDao;
@@ -46,7 +47,6 @@ import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
-import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
@@ -80,22 +80,35 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  String productId = null;
-		  String currencyType = null;
-		  String priceQurFlag = null;
-		  String priceType    = null;
-		  String basePriceName = null;
-		
-		  String upChargeName = null;
-		  String upChargeQur = null;
-		  String upchargeType = null;
-		  String upChargeDetails = null;
-		  String upChargeLevel = null;
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		  
 		  StringBuilder dimensionValue = new StringBuilder();
 		  StringBuilder dimensionUnits = new StringBuilder();
 		  StringBuilder dimensionType = new StringBuilder();
 		  Dimension finalDimensionObj=new Dimension();
+		  StringBuilder listOfQuantity = new StringBuilder();
+		  StringBuilder listOfPrices = new StringBuilder();
+		  StringBuilder priceIncludes = new StringBuilder();
+		  StringBuilder pricesPerUnit = new StringBuilder();
+		  StringBuilder ImprintSizevalue = new StringBuilder();
+	
+			List<Color> colorList = new ArrayList<Color>();
+			List<ImprintLocation> listImprintLocation = new ArrayList<ImprintLocation>();
+			List<ImprintMethod> listOfImprintMethods = new ArrayList<ImprintMethod>();
+			List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
+			List<String> productKeywords = new ArrayList<String>();
+			List<Theme> themeList = new ArrayList<Theme>();
+			List<Catalog> catalogList = new ArrayList<Catalog>();
+			List<String> complianceList = new ArrayList<String>();
+			List<Image> listOfImages= new ArrayList<Image>();
+		    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
+		    List<com.a4tech.lookup.model.Catalog> catalogsList=new ArrayList<>();
+		    List<Values> valuesList =new ArrayList<Values>();
+			RushTime rushTime  = new RushTime();
+			Size size=new Size();
+		    Catalog catlogObj=new Catalog();
+
+		  
 
 		try{
 			 
@@ -105,33 +118,20 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 		_LOGGER.info("Started Processing Product");
 		
 		
-		StringBuilder listOfQuantity = new StringBuilder();
-		StringBuilder listOfPrices = new StringBuilder();
-		StringBuilder listOfDiscount = new StringBuilder();
+		
+		
 	
-		String		priceCode = null;
-		StringBuilder pricesPerUnit = new StringBuilder();
+		String priceCode = null;
+		String productName = null;
 		String quoteUponRequest  = null;
-		StringBuilder priceIncludes = new StringBuilder();
 		String quantity = null;
-		String optiontype =null;
-		String optionname =null;
-		String optionvalues =null;
-		String optionadditionalinfo =null;
-		String canorder =null;
-		String reqfororder =null;
-		String shippingWeightValue=null;
-		String imprintValue=null;
-		String imprintColorValue=null;
 		String cartonL = null;
 		String cartonW = null;
 		String cartonH = null;
 		String weightPerCarton = null;
 		String unitsPerCarton = null;
-		String ListPrice =null;
-		String Discountcode = null;
 		String decorationMethod =null;
-		Date priceConfirmedThru =null;
+		 Date  priceConfirmedThru =null;
 		String FirstImprintsize1=null;
 		String FirstImprintunit1=null;
 		String FirstImprinttype1=null;
@@ -145,31 +145,9 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 		String SecondImprintunit2=null;
 		String SecondImprinttype2=null;
 		String CatYear=null;
-	    StringBuilder ImprintSizevalue = new StringBuilder();
-	  
-		
-		
-		
-		
-		
-		
-		
-		List<Color> colorList = new ArrayList<Color>();
-		String productName = null;
-		List<ImprintLocation> listImprintLocation = new ArrayList<ImprintLocation>();
-		List<ImprintMethod> listOfImprintMethods = new ArrayList<ImprintMethod>();
-		List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
-		RushTime rushTime  = new RushTime();
-		List<String> productKeywords = new ArrayList<String>();
-		List<Theme> themeList = new ArrayList<Theme>();
-		List<Catalog> catalogList = new ArrayList<Catalog>();
-		List<String> complianceList = new ArrayList<String>();
-		Size size=new Size();
-		List<Image> listOfImages= new ArrayList<Image>();
-	    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
-	    List<com.a4tech.lookup.model.Catalog> catalogsList=new ArrayList<>(); 
-	   // List<Catalog> catalogList=new ArrayList<Catalog>(); 
-	    Catalog catlogObj=new Catalog();
+		Cell cell2Data = null;
+		String prodTimeLo = null;
+	   
 		Product existingApiProduct = null;
 		
 		while (iterator.hasNext()) {
@@ -189,14 +167,17 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 				Cell cell = cellIterator.next();
 				String xid = null;
 				int columnIndex = cell.getColumnIndex();
+				  cell2Data =  nextRow.getCell(1);
 				if(columnIndex + 1 == 1){
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 						xid = cell.getStringCellValue();
 					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 						xid = String.valueOf((int)cell.getNumericCellValue());
-					}else{
-						
-					}
+					}else {
+						  String ProdNo=CommonUtility.getCellValueStrinOrInt(cell2Data);
+						  xid=ProdNo;
+
+						}
 					checkXid = true;
 				}else{
 					checkXid = false;
@@ -205,6 +186,27 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
+							 
+							
+								ShippingEstimate shipping = gcShippingParser.getShippingEstimateValues(cartonL, cartonW,
+										                               cartonH, weightPerCarton, unitsPerCarton);
+								productConfigObj.setImprintLocation(listImprintLocation);
+								productConfigObj.setImprintMethods(listOfImprintMethods);
+								productConfigObj.setThemes(themeList);
+								productConfigObj.setRushTime(rushTime);
+								productConfigObj.setShippingEstimates(shipping);
+								productConfigObj.setProductionTime(listOfProductionTime);
+								valuesList =gcdimensionObj.getValues(dimensionValue.toString(),
+										                                            dimensionUnits.toString(), dimensionType.toString());
+						        finalDimensionObj.setValues(valuesList);	
+								size.setDimension(finalDimensionObj);
+								if(!StringUtils.isEmpty(size) || size !=null ){
+								productConfigObj.setSizes(size);}
+								if(!StringUtils.isEmpty(imprintSizeList)){
+								productConfigObj.setImprintSize(imprintSizeList);}
+								productExcelObj.setImages(listOfImages);
+								productConfigObj.setColors(colorList);
+								
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
@@ -223,6 +225,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 								productConfigObj = new ProductConfigurations();
 								themeList = new ArrayList<Theme>();
 								finalDimensionObj = new Dimension();
+								 valuesList = new ArrayList<>();
 								catalogList = new ArrayList<Catalog>();
 								productKeywords = new ArrayList<String>();
 								listOfProductionTime = new ArrayList<ProductionTime>();
@@ -231,6 +234,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 								listOfImprintMethods = new ArrayList<ImprintMethod>();
 								listOfImages= new ArrayList<Image>();
 								imprintSizeList =new ArrayList<ImprintSize>();
+								size=new Size();
 								colorList = new ArrayList<Color>();
 								
 						 }
@@ -242,14 +246,14 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
-//						  	   productExcelObj=existingApiProduct;
+						  	   productExcelObj=existingApiProduct;
 								productConfigObj=existingApiProduct.getProductConfigurations();
-						    	String confthruDate=existingApiProduct.getPriceConfirmedThru();
+						    /*	String confthruDate=existingApiProduct.getPriceConfirmedThru();
 						    	List<Color> colorL=productConfigObj.getColors();
 						    	 List<Image> Img=existingApiProduct.getImages();
 						    	 productExcelObj.setPriceConfirmedThru(confthruDate);
 						    	 productExcelObj.setImages(Img);
-						    	 productConfigObj.setColors(colorL);
+						    	 productConfigObj.setColors(colorL);*/
 						     
 						     }
 							//productExcelObj = new Product();
@@ -258,15 +262,20 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 				
 
 				switch (columnIndex + 1) {
-				case 1://ExternalProductID
-					   productExcelObj.setExternalProductId(xid);
+			
+				case 1://xid
+					   productExcelObj.setExternalProductId(xid.trim());
 					
 					 break;
-				case 2://AsiProdNo
+				
+				case 2://ProductID
+					
+					 break;
+				case 3://AsiProdNo
 					 String asiProdNo=CommonUtility.getCellValueStrinOrInt(cell);
 					     productExcelObj.setAsiProdNo(asiProdNo);		
 					  break;
-				case 3://Name
+				case 4://Name
 					 productName = cell.getStringCellValue();
 						int len=productName.length();
 						 if(len>60){
@@ -276,29 +285,29 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						}
 						productExcelObj.setName(productName);
      					
-				case 4://CatYear(Not used)
+				case 5://CatYear(Not used)
 					 CatYear=CommonUtility.getCellValueStrinOrInt(cell);
 					
 					
 				    break;
 					
-				case 5://PriceConfirmedThru
+				case 6://PriceConfirmedThru
 					 priceConfirmedThru = cell.getDateCellValue();
 		
 					break;
 					
-				case 6: //  product status ,discontinued
+				case 7: //  product status ,discontinued
 					break;
 					
-				case 7://Category
+				case 8://Category
 					
 					break;
 					
-				case 8: // Category
+				case 9: // Category
 
 					break;
 					
-				case 9: //Catalogs page number, Page1
+				case 10: //Catalogs page number, Page1
 					String PageNO=CommonUtility.getCellValueStrinOrInt(cell);
 					String value=null;
 					catalogsList = lookupServiceDataObj.getCatalog(value);
@@ -312,12 +321,12 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 
 					break;
 					
-				case 10:  
+				case 11:  
 						//Catalogs(Not used),Page2
 					
 					break;
 					
-				case 11:  //Description
+				case 12:  //Description
 					String description =CommonUtility.getCellValueStrinOrInt(cell);
 					int length=description.length();
 					if(length>800){
@@ -329,7 +338,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 									
 					break;
 				
-				case 12:  // keywords
+				case 13:  // keywords
 					String productKeyword = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(productKeyword)){
 					String productKeywordArr[] = productKeyword.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
@@ -340,7 +349,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					}
 					break;
 
-				case 13: //Colors
+				case 14: //Colors
 				String colorValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(colorValue)){
 						colorList=gccolorparser.getColorCriteria(colorValue);
@@ -348,21 +357,25 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					}	
 					break;
 					
-				case 14: // Themes
+				case 15: // Themes
 					String themeValue=cell.getStringCellValue();
-					if(!StringUtils.isEmpty(themeValue)){
+					//if(!StringUtils.isEmpty(themeValue)){
 						Theme themeObj=null;
-						String themeValueArr[] = themeValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-						for (String string : themeValueArr) {
+						String Value=null;
+						List<String>themeLookupList = lookupServiceDataObj.getTheme(Value);
+						String themeValueArr[] = themeValue.toUpperCase().split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+						for (String themvalue : themeValueArr) {
 							themeObj=new Theme();
-							themeObj.setName(string);
+							if(themeLookupList.contains(themvalue.trim())){
+							themeObj.setName(themvalue);
 							themeList.add(themeObj);
 							}
-						}
+							}
+						//}
 					
 					break;
 					
-				case 15://size --  value
+				case 16://size --  value
 						String dimensionValue1= null;
 					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
 				         dimensionValue1 =cell.getStringCellValue();
@@ -374,7 +387,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					   }
 					
 					break;
-				case 16: //size -- Unit
+				case 17: //size -- Unit
 					  String dimensionUnits1 = null;
 					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
 						 dimensionUnits1 =cell.getStringCellValue();
@@ -382,11 +395,11 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						 dimensionUnits1 =String.valueOf((int)cell.getNumericCellValue());
 					 }
 					 if(dimensionUnits1 != null && !dimensionUnits1.isEmpty()){
-						 dimensionUnits.append(dimensionUnits1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+						 dimensionUnits.append(dimensionUnits1.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
 					  break;
 				
-				case 17: //size -- type
+				case 18: //size -- type
 					String dimensionType1 =null;
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
 						dimensionType1 =cell.getStringCellValue();
@@ -400,7 +413,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					 
 					break;
 				
-				 case 18: //size
+				 case 19: //size
 					 String dimensionValue2 =null;
 					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
 						 dimensionValue2 =cell.getStringCellValue();
@@ -413,7 +426,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 				
 					break;
 					
-				case 19:  //size
+				case 20:  //size
 					String dimensionUnits2 =null;
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
 						dimensionUnits2 =cell.getStringCellValue();
@@ -421,11 +434,11 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 							 dimensionUnits2 =String.valueOf((int)cell.getNumericCellValue());
 						 }
 					if(dimensionUnits2 != null && !dimensionUnits2.isEmpty()){
-						dimensionUnits.append(dimensionUnits2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+						dimensionUnits.append(dimensionUnits2.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					break;
 					
-				case 20: //size
+				case 21: //size
 					String  dimensionType2 = null;
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
 						dimensionType2 =cell.getStringCellValue();
@@ -438,7 +451,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					
 					break;
 					
-				case 21: //size
+				case 22: //size
 					String dimensionValue3  = null;
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
 						dimensionValue3 =cell.getStringCellValue();
@@ -451,7 +464,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					break;
 					
 					
-				case 22: //size
+				case 23: //size
 					String dimensionUnits3 = null;
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
 						dimensionUnits3 =cell.getStringCellValue();
@@ -459,11 +472,11 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 							 dimensionUnits3 =String.valueOf((int)cell.getNumericCellValue());
 						 }
 					if(dimensionUnits3 != null && !dimensionUnits3.isEmpty()){
-						 dimensionUnits.append(dimensionUnits3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+						 dimensionUnits.append(dimensionUnits3.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 				   break;
 					
-				case 23: //size
+				case 24: //size
 					String dimensionType3 = null;
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){	
 						dimensionType3 =cell.getStringCellValue();
@@ -478,13 +491,13 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					
 				   break;
 				   
-				case 24:  // Quantities
-				case 25: 
+				case 25:  // Quantities
 				case 26: 
 				case 27: 
-				case 28:
+				case 28: 
 				case 29:
-					/*try{
+				case 30:
+					try{
 						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 							quantity = cell.getStringCellValue();
 					         if(!StringUtils.isEmpty(quantity) && !quantity.equals("0")){
@@ -500,15 +513,15 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					}catch (Exception e) {
 						_LOGGER.info("Error in base price Quantity field "+e.getMessage());
 					}
-					*/
+					
 					   	break;
-				case 30:  // prices --list price
-				case 31:
+				case 31:  // prices --list price
 				case 32:
 				case 33:
 				case 34:
 				case 35:
-				 /*try{
+				case 36:
+				 try{
 					 if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 							quantity = cell.getStringCellValue();
 					         if(!StringUtils.isEmpty(quantity)&& !quantity.equals("0")){
@@ -523,20 +536,20 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						}  
 				 }catch (Exception e) {
 					_LOGGER.info("Error in base price prices field "+e.getMessage());
-				}*/
+				}
 					
 					    break; 
-				case 36: // price code -- discount
+				case 37: // price code -- discount
 					    
-/*						priceCode = cell.getStringCellValue();
-*/					     break;
-				case 37:       // pricesPerUnit
-				case 38:
+				priceCode = cell.getStringCellValue();	
+					     break;
+				case 38:       // pricesPerUnit
 				case 39:
 				case 40:
 				case 41:
 				case 42:
-				/*	try{
+				case 43:
+					try{
 						
 					}catch (Exception e) {
 						_LOGGER.info("Error in pricePerUnit field "+e.getMessage());
@@ -552,24 +565,24 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 				        	 pricesPerUnit.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
 					}else{
-					}  */
+					}  
 					      break;
-				case 43:
-					 //    quoteUponRequest = cell.getStringCellValue();
+				case 44:
+					     quoteUponRequest = cell.getStringCellValue();
 					      break;
-				case 44:  // priceIncludeClr
+				case 45:  // priceIncludeClr
 					    
-					    //  priceIncludes.append(cell.getStringCellValue()).append(" ");
+					      priceIncludes.append(cell.getStringCellValue()).append(" ");
 					     break;
-				case 45: // priceIncludeSide
+				case 46: // priceIncludeSide
 						
-						//priceIncludes.append(cell.getStringCellValue()).append(" ");
+						priceIncludes.append(cell.getStringCellValue()).append(" ");
 						break;
-				case 46: // priceIncludeLoc
-					//	priceIncludes.append(cell.getStringCellValue());
+				case 47: // priceIncludeLoc
+						priceIncludes.append(cell.getStringCellValue());
 						break;
 						
-				case 47:    //setup charge   
+				case 48:    //setup charge   
 					/* try{
 						  ListPrice = CommonUtility.getCellValueDouble(cell);
 					     if(!StringUtils.isEmpty(ListPrice) && !ListPrice.equals("0")){
@@ -579,7 +592,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						 _LOGGER.info("Error in base price prices field "+e.getMessage());							
 					}*/
 				  break;
-				case 48://setup discount code
+				case 49://setup discount code
 					
 					/*try{
 						  Discountcode = CommonUtility.getCellValueStrinOrInt(cell);
@@ -590,8 +603,6 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 			        	 _LOGGER.info("Error in pricePerUnit field "+e.getMessage());
 					}*/
 				  break;
-				case 49:
-							break;
 				case 50:
 							break;
 				case 51:
@@ -606,10 +617,10 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 							break;
 				case 56:
 							break;
-				case 57:	
-							break; 
-				case 58:
+				case 57:
 							break;
+				case 58:	
+							break; 
 				case 59:
 							break;
 				case 60:
@@ -627,10 +638,12 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 				case 66:
 							break;
 				case 67:
-			          		break; 
+							break;
 				case 68:
-					       break;
+			          		break; 
 				case 69:
+					       break;
+				case 70:
 				String IsEnvironmentallyFriendly = cell.getStringCellValue();
 			
 					if(IsEnvironmentallyFriendly.equalsIgnoreCase("true"))			
@@ -641,8 +654,6 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						themeList.add(themeObj1);
 					}
 					break;
-				case 70:
-					break;
 				case 71:
 					break;
 				case 72:
@@ -651,35 +662,37 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					break;
 				case 74:
 					break;
-				case 75: // Imprint size1
+				case 75:
+					break;
+				case 76: // Imprint size1
 					FirstImprintsize1=cell.getStringCellValue();
 					
 					
 					    break;
 					    
-				case 76: //// Imprint size1 unit
+				case 77: //// Imprint size1 unit
 					FirstImprintunit1=cell.getStringCellValue();
 					FirstImprintunit1=GoldstarCanadaLookupData.Dimension1Units.get(FirstImprintunit1);
 					   	break;
 					   	
-				case 77:   // Imprint size1 Type
+				case 78:   // Imprint size1 Type
 					FirstImprinttype1=cell.getStringCellValue();
 					FirstImprinttype1=GoldstarCanadaLookupData.Dimension1Type.get(FirstImprinttype1);
 						break;
 						
 				  
-				case 78: // // Imprint size2
+				case 79: // // Imprint size2
 					FirstImprintsize2=cell.getStringCellValue();
 					  	break;
 					  	
-				case 79:	// Imprint size2 Unit
+				case 80:	// Imprint size2 Unit
 					FirstImprintunit2=cell.getStringCellValue();
 					FirstImprintunit2=GoldstarCanadaLookupData.Dimension1Units.get(FirstImprintunit2);
 
 					
 					    break;
 					    
-				case 80: // Imprint size2 Type
+				case 81: // Imprint size2 Type
 					FirstImprinttype2=cell.getStringCellValue();
 					FirstImprinttype2=GoldstarCanadaLookupData.Dimension1Type.get(FirstImprinttype2);
 
@@ -687,7 +700,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					
 					break;
 					  	
-				case 81:  // Imprint location
+				case 82:  // Imprint location
 					
 					String imprintLocation = cell.getStringCellValue();
 					if(!imprintLocation.isEmpty()){
@@ -696,12 +709,12 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						listImprintLocation.add(locationObj);
 					}
 					 break;
-				case 82:  // Second Imprintsize1
+				case 83:  // Second Imprintsize1
 					SecondImprintsize1=cell.getStringCellValue();
 				
 					   	break;
 					   	
-				case 83:  // Second Imprintsize1 unit
+				case 84:  // Second Imprintsize1 unit
 					SecondImprintunit1=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(SecondImprintunit1)){
 					SecondImprintunit1=GoldstarCanadaLookupData.Dimension1Units.get(SecondImprintunit1);
@@ -709,7 +722,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					
 						break;
 						
-				case 84:  // Second Imprintsize1 type
+				case 85:  // Second Imprintsize1 type
 					SecondImprinttype1=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(SecondImprinttype1)){
 					SecondImprinttype1=GoldstarCanadaLookupData.Dimension1Type.get(SecondImprinttype1);
@@ -717,11 +730,11 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					
 					  break;
 					  
-				case 85: // Second Imprintsize2
+				case 86: // Second Imprintsize2
 					SecondImprintsize2=cell.getStringCellValue();
 					break;
 					
-				case 86: //Second Imprintsize2 Unit
+				case 87: //Second Imprintsize2 Unit
 					SecondImprintunit2=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(SecondImprintunit2)){
 					SecondImprintunit2=GoldstarCanadaLookupData.Dimension1Units.get(SecondImprintunit2);
@@ -729,7 +742,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 
 					break;
 					
-				case 87: // Second Imprintsize2 type	
+				case 88: // Second Imprintsize2 type	
 					SecondImprinttype2=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(SecondImprinttype2)){
 					SecondImprinttype2=GoldstarCanadaLookupData.Dimension1Type.get(SecondImprinttype2);
@@ -747,7 +760,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					
 					  break;
 					  
-				case 88: // Second Imprint location
+				case 89: // Second Imprint location
 					String imprintLocation2 = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintLocation2)){
 						ImprintLocation locationObj2 = new ImprintLocation();
@@ -755,12 +768,12 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						listImprintLocation.add(locationObj2);
 					}
 					break;
-				case 89: // DecorationMethod
+				case 90: // DecorationMethod
 					 decorationMethod = cell.getStringCellValue();
 					listOfImprintMethods = gcimprintMethodParser.getImprintMethodValues(decorationMethod,listOfImprintMethods);
 					 break; 
 					 
-				case 90: //NoDecoration
+				case 91: //NoDecoration
 					String noDecoration = cell.getStringCellValue();
 					if(noDecoration.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
 						listOfImprintMethods = gcimprintMethodParser.getImprintMethodValues(noDecoration,
@@ -768,14 +781,14 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					}
 					
 					 break;
-				case 91: //NoDecorationOffered
+				case 92: //NoDecorationOffered
 					String noDecorationOffered = cell.getStringCellValue();
 					if(noDecorationOffered.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
 						listOfImprintMethods = gcimprintMethodParser.getImprintMethodValues(noDecorationOffered,
                                 listOfImprintMethods);
 					}
 					 break;
-				case 92: //NewPictureURL
+				case 93: //NewPictureURL
 					String ImageValue1=cell.getStringCellValue();
 					 Image image = new Image();
 					 if(!StringUtils.isEmpty(ImageValue1)){
@@ -786,11 +799,11 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 				      listOfImages.add(image);
 					  }
 					break;
-				case 93:  //NewPictureFile  -- not used
+				case 94:  //NewPictureFile  -- not used
 					break;
-				case 94: //ErasePicture -- not used
+				case 95: //ErasePicture -- not used
 					break;
-				case 95: //NewBlankPictureURL
+				case 96: //NewBlankPictureURL
 					String ImageValue2=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(ImageValue2))
 					{
@@ -802,16 +815,16 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					}
 				
 					break;
-				case 96: //NewBlankPictureFile -- not used
+				case 97: //NewBlankPictureFile -- not used
 					break;
-				case 97://EraseBlankPicture  -- not used
+				case 98://EraseBlankPicture  -- not used
 					break;
 					 
-				case 98: //PicExists   -- not used
+				case 99: //PicExists   -- not used
 					break;
-				case 99: //NotPictured  -- not used
+				case 100: //NotPictured  -- not used
 					break;
-				case 100: //MadeInCountry
+				case 101: //MadeInCountry
 					
 					String madeInCountry = cell.getStringCellValue();
 					if(!madeInCountry.isEmpty()){
@@ -820,7 +833,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					}
 					break;
 					
-				case 101:// AssembledInCountry
+				case 102:// AssembledInCountry
 			     String additionalProductInfo = cell.getStringCellValue();
 			     if(!StringUtils.isEmpty(additionalProductInfo))
 			       {
@@ -828,7 +841,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 			       }
 				
 					break;
-				case 102: //DecoratedInCountry
+				case 103: //DecoratedInCountry
 					String additionalImprintInfo = cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(additionalImprintInfo))
 					   {
@@ -836,7 +849,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					   }
 					
 					break;
-				case 103: //ComplianceList  -- No data
+				case 104: //ComplianceList  -- No data
 					String complnceValuet=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(complnceValuet))
 					   {
@@ -845,7 +858,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					   }
 					break;
 					
-				case 104://ComplianceMemo  -- No data
+				case 105://ComplianceMemo  -- No data
 					String productDataSheet=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(productDataSheet))
 					   {
@@ -853,131 +866,114 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					   }
 					break;
 					
-				case 105: //ProdTimeLo
-					String prodTimeLo = null;
-					ProductionTime productionTime = new ProductionTime();
-					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						prodTimeLo = cell.getStringCellValue();
-					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						prodTimeLo = String.valueOf(cell.getNumericCellValue());
-					}else{
-						
-					}
+				case 106: //ProdTimeLo
+				   prodTimeLo = CommonUtility.getCellValueStrinOrInt(cell);
+					/*ProductionTime productionTime = new ProductionTime();
+					
 					productionTime.setBusinessDays(prodTimeLo);
-					listOfProductionTime.add(productionTime);
+					listOfProductionTime.add(productionTime);*/
 					break;
-				case 106: //ProdTimeHi
-					String prodTimeHi = null;
+				case 107: //ProdTimeHi
+					String prodTimeHi = CommonUtility.getCellValueStrinOrInt(cell);
+					ProductionTime productionTime = new ProductionTime();
 					ProductionTime productionTime1 = new ProductionTime();
-					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						prodTimeHi = cell.getStringCellValue();
-					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						prodTimeHi = String.valueOf(cell.getNumericCellValue());
-					}else{
-						
+
+					if(prodTimeLo.equalsIgnoreCase(prodTimeHi))
+					{
+						productionTime.setBusinessDays(prodTimeHi);
+						listOfProductionTime.add(productionTime);
 					}
-					productionTime1.setBusinessDays(prodTimeHi);
-					listOfProductionTime.add(productionTime1);
+					else
+					{
+						productionTime.setBusinessDays(prodTimeLo);
+						productionTime1.setBusinessDays(prodTimeHi);
+						listOfProductionTime.add(productionTime);
+						listOfProductionTime.add(productionTime1);
+
+					}
+					
+					
+					
 					break;
-				case 107://RushProdTimeLo
+				case 108://RushProdTimeLo
 					String rushProdTimeLo  = cell.getStringCellValue();
 					if(!rushProdTimeLo.equals(ApplicationConstants.CONST_STRING_ZERO)){
 						rushTime = gcRushTimeParser.getRushTimeValues(rushProdTimeLo, rushTime);
 					}
 					
 					 break; 	 
-				case 108://RushProdTimeH
+				case 109://RushProdTimeH
 					String rushProdTimeH  = cell.getStringCellValue();
 					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO)){
 						rushTime = gcRushTimeParser.getRushTimeValues(rushProdTimeH, rushTime);
 					}
 					break;
 					
-				case 109://Packaging
+				case 110://Packaging
 				
 					String pack  = cell.getStringCellValue();
 					List<Packaging> listOfPackaging = gcPackagingParser.getPackageValues(pack);
 					productConfigObj.setPackaging(listOfPackaging);
 					break;
 					
-				case 110: //CartonL
+				case 111: //CartonL
 					 cartonL  = cell.getStringCellValue();
 					
 					break;
-				case 111://CartonW
+				case 112://CartonW
 					cartonW  = cell.getStringCellValue();
 					break;
 	
-				case 112://CartonH
+				case 113://CartonH
 					cartonH  = cell.getStringCellValue();
 					break;
-				case 113: //WeightPerCarton
+				case 114: //WeightPerCarton
 					weightPerCarton  = cell.getStringCellValue();
 					break;
-				case 114: //UnitsPerCarton
+				case 115: //UnitsPerCarton
 					unitsPerCarton  = cell.getStringCellValue();
 					break;
 					
-				case 115: //ShipPointCountry
+				case 116: //ShipPointCountry
 
 					break;
 					
-				case 116: //ShipPointZip
+				case 117: //ShipPointZip
 					
 					break;
 					
-				case 117: //Comment
+				case 118: //Comment
 					
 
 					break;
 					
-				case 118: //Verified
+				case 119: //Verified
 					String verified=cell.getStringCellValue();
 					if(verified.equalsIgnoreCase("True")){
-					String priceConfimedThruString=priceConfirmedThru.toString();
+					String priceConfimedThruString="2017-12-31T00:00:00";
 					productExcelObj.setPriceConfirmedThru(priceConfimedThruString);
 					}
 					break;
 			
-				case 119: //UpdateInventory
+				case 120: //UpdateInventory
 					
 					break;
 				
-				case 120: //InventoryOnHand
+				case 121: //InventoryOnHand
 					
 					break;
 					
-				case 121: //InventoryOnHandAdd
+				case 122: //InventoryOnHandAdd
 					break;
 					
-				case 122: //InventoryMemo
+				case 123: //InventoryMemo
 				break;
 			
 			}  // end inner while loop
 					 
 		}
 			// set  product configuration objects
-			List<String> listOfCategories = new ArrayList<String>();
-			productExcelObj.setCategories(listOfCategories);
-			ShippingEstimate shipping = gcShippingParser.getShippingEstimateValues(cartonL, cartonW,
-					                               cartonH, weightPerCarton, unitsPerCarton);
-			productConfigObj.setImprintLocation(listImprintLocation);
-			productConfigObj.setImprintMethods(listOfImprintMethods);
-			productConfigObj.setThemes(themeList);
-			productConfigObj.setRushTime(rushTime);
-			productConfigObj.setShippingEstimates(shipping);
-			productConfigObj.setProductionTime(listOfProductionTime);
-			List<Values> valuesList =gcdimensionObj.getValues(dimensionValue.toString(),
-					                                            dimensionUnits.toString(), dimensionType.toString());
-            finalDimensionObj.setValues(valuesList);	
-			size.setDimension(finalDimensionObj);
-			productConfigObj.setSizes(size);
-			productConfigObj.setImprintSize(imprintSizeList);
-			productExcelObj.setImages(listOfImages);
-			productConfigObj.setColors(colorList);
-			dimensionValue = new  StringBuilder();
-			dimensionUnits = new  StringBuilder();
-			dimensionType = new  StringBuilder();
+			
 			
 			 // end inner while loop
 			productExcelObj.setPriceType("L");
@@ -988,31 +984,40 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 			}
 			
 		
-			if( decorationMethod != null && !decorationMethod.toString().isEmpty())
+		/*	if( decorationMethod != null && !decorationMethod.toString().isEmpty())
 			{
 			
 			priceGrids = gcPricegridParser.getUpchargePriceGrid("1", ListPrice, Discountcode, "Imprint Method", 
 							"false", "USD", decorationMethod, "Imprint Method Charge", "Other", new Integer(1), priceGrids);
 			}
+				*/
 				
-				
-				upChargeQur = null;
-				priceQurFlag = null;
-				listOfPrices = new StringBuilder();
-			    listOfQuantity = new StringBuilder();
-			    optiontype=null;
-			    optionname=null;
-			    optionvalues=null;
-			    canorder=null;
-			    reqfororder=null;
-			    optionadditionalinfo=null;
-			    listOfImages= new ArrayList<Image>();
 			
+			    
 			}catch(Exception e){
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
 		}
 		}
 		workbook.close();
+	
+		ShippingEstimate shipping = gcShippingParser.getShippingEstimateValues(cartonL, cartonW,
+				                               cartonH, weightPerCarton, unitsPerCarton);
+		productConfigObj.setImprintLocation(listImprintLocation);
+		productConfigObj.setImprintMethods(listOfImprintMethods);
+		productConfigObj.setThemes(themeList);
+		productConfigObj.setRushTime(rushTime);
+		productConfigObj.setShippingEstimates(shipping);
+		productConfigObj.setProductionTime(listOfProductionTime);
+		valuesList =gcdimensionObj.getValues(dimensionValue.toString(),
+				                                            dimensionUnits.toString(), dimensionType.toString());
+        finalDimensionObj.setValues(valuesList);	
+		size.setDimension(finalDimensionObj);
+		if(!StringUtils.isEmpty(size) || size !=null ){
+		productConfigObj.setSizes(size);}
+		if(!StringUtils.isEmpty(imprintSizeList)){
+		productConfigObj.setImprintSize(imprintSizeList);}
+		productExcelObj.setImages(listOfImages);
+		productConfigObj.setColors(colorList);
 		
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
@@ -1029,6 +1034,25 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
 	       productDaoObj.saveErrorLog(asiNumber,batchId);
+		    
+		    priceGrids = new ArrayList<PriceGrid>();
+			listOfPrices = new StringBuilder();
+		    listOfQuantity = new StringBuilder();
+			productConfigObj = new ProductConfigurations();
+			themeList = new ArrayList<Theme>();
+			finalDimensionObj = new Dimension();
+			 valuesList = new ArrayList<>();
+			catalogList = new ArrayList<Catalog>();
+			productKeywords = new ArrayList<String>();
+			listOfProductionTime = new ArrayList<ProductionTime>();
+			rushTime = new RushTime();
+			listImprintLocation = new ArrayList<ImprintLocation>();
+			listOfImprintMethods = new ArrayList<ImprintMethod>();
+			listOfImages= new ArrayList<Image>();
+			imprintSizeList =new ArrayList<ImprintSize>();
+			size=new Size();
+			colorList = new ArrayList<Color>();
+		    
 	       return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet "+e.getMessage());

@@ -1,9 +1,8 @@
 package parser.goldstarcanada;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
@@ -32,18 +31,18 @@ public class GoldstarCanadaColorParser {
 			for (int i=0;i<1;i++) {
 			    	colorObj =  new Color();
 					Combo combovalue = new Combo();
-					combovalue.setName(gcApplicationConstatnt.COLOR_MAP.get(colorArr1[1]).trim());
+					combovalue.setName(GoldstartCanadaApplicationConstatnt.COLOR_MAP.get(colorArr1[1]).trim());
 					combovalue.setType("trim");
 					combolist.add(combovalue);
 				
 				colorObj.setCombos(combolist);
-				colorObj.setName(gcApplicationConstatnt.COLOR_MAP.get(colorArr1[0]).trim());
+				colorObj.setName(GoldstartCanadaApplicationConstatnt.COLOR_MAP.get(colorArr1[0]).trim());
 				colorObj.setAlias(outervalue);
 				//colorlist.add(colorObj);
 				//colorlist.add(colorObj);
 			}
 			} else {
-				colorObj.setName(gcApplicationConstatnt.COLOR_MAP.get(outervalue).trim());
+				colorObj.setName(GoldstartCanadaApplicationConstatnt.COLOR_MAP.get(outervalue).trim());
 				colorObj.setAlias(outervalue);
 				//colorlist.add(colorObj);
 				

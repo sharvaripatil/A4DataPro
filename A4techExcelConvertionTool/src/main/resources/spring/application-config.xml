@@ -62,6 +62,7 @@
    		<property name="tradeNameLookupUrl" value="${tradeName.lookup.url}"/>
    		<property name="categoriesLookupUrl" value="${categories.lookup.url}"/>
    		<property name="catalogLookupUrl"    value="${catalog.lookup.url}"/>
+   	    <property name="themeLookupUrl"    value="${themes.lookup.url}"/>
    </bean>
    <bean id="lookupServiceData" class="com.a4tech.lookup.service.LookupServiceData">
    		<property name="lookupRestService" ref="lookupRestService"/>
