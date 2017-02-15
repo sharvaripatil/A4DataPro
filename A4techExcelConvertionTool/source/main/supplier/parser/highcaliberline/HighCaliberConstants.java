@@ -15,9 +15,9 @@ public class HighCaliberConstants {
 	public static Map<String, String> HCLCOLOR_MAP =new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);//new HashMap<String, String>();
 	private static Logger _LOGGER = Logger.getLogger(HighCaliberConstants.class);
 
- static SessionFactory sessionFactory;
+    static SessionFactory sessionFactory;
 	//public static Map<String, String> COLOR_MAP =new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);//new HashMap<String, String>();
-	public static Map<String, String>  Colormap(){
+/*	public static Map<String, String>  Colormap(){
 		
 		Session session = null;
 		
@@ -61,7 +61,7 @@ public class HighCaliberConstants {
 	}
 	public static void setHCLCOLOR_MAP(Map<String, String> hCLCOLOR_MAP) {
 		HCLCOLOR_MAP = hCLCOLOR_MAP;
-	}
+	}*/
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
@@ -69,7 +69,7 @@ public class HighCaliberConstants {
 		this.sessionFactory = sessionFactory;
 	}
 	
-/*static {
+  static {
 	HCLCOLOR_MAP.put("Yellow","Medium Yellow");
 	HCLCOLOR_MAP.put("Forest Green","Dark Green");
 	HCLCOLOR_MAP.put("Teal","Medium Green");
@@ -173,5 +173,5 @@ public class HighCaliberConstants {
 	HCLCOLOR_MAP.put("White / Grey","Medium White");
 	HCLCOLOR_MAP.put("White / Orange","Medium White");
 	HCLCOLOR_MAP.put("White / Pink","Medium White");
-	}*/
+	}
 }

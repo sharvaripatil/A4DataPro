@@ -53,21 +53,14 @@ public class HighCaliberAttributeParser {
 	
 	public List<Color> getColorCriteria(String colorValue) {
 		
-		//Set <String> colorSet =new HashSet<String>();
 		Color colorObj = null;
 		List<Color> colorList = new ArrayList<Color>();
 		//HighCaliberConstants
 		try {
-		 Map<String, String> HCLCOLOR_MAP =HighCaliberConstants.getHCLCOLOR_MAP();
-				 //=new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
-		 
-		 
-			//colorSet.add(colorValue);
-			//Iterator<String> colorIterator=colorSet.iterator();
+		//Map<String, String> HCLCOLOR_MAP=new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
+		// Map<String, String> HCLCOLOR_MAP =HighCaliberConstants.getHCLCOLOR_MAP();
 			List<Combo> comboList = null;
-		//while (colorIterator.hasNext()) {
-			String value = colorValue;//(String) colorIterator.next();
-			
+			String value = colorValue;
 			String tempcolorArray[]=value.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 			for (String colorVal : tempcolorArray) {
 			String strColor=colorVal;
@@ -79,15 +72,15 @@ public class HighCaliberAttributeParser {
 				comboList = new ArrayList<Combo>();
     			isCombo = isComboColors(strColor);
     			if(isCombo){
-    				//if(HighCaliberConstants.HCLCOLOR_MAP.get(strColor.trim())!=null){
-    				if(HCLCOLOR_MAP.get(strColor.trim())!=null){
+    				if(HighCaliberConstants.HCLCOLOR_MAP.get(strColor.trim())!=null){
+    				//if(HCLCOLOR_MAP.get(strColor.trim())!=null){
     					isCombo=false;
     				}
     			}
     			
 				if (!isCombo) {
-					//String colorName=HighCaliberConstants.HCLCOLOR_MAP.get(strColor.trim());
-					String colorName=HCLCOLOR_MAP.get(strColor.trim());
+					String colorName=HighCaliberConstants.HCLCOLOR_MAP.get(strColor.trim());
+					//String colorName=HCLCOLOR_MAP.get(strColor.trim());
 					if(StringUtils.isEmpty(colorName)){
 						colorName=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
 					}
@@ -98,8 +91,8 @@ public class HighCaliberAttributeParser {
 					//245-Mid Brown/Navy
 					String colorArray[] = strColor.split(ApplicationConstants.CONST_DELIMITER_FSLASH);
 					//if(colorArray.length==2){
-					//String combo_color_1=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[0].trim());
-					String combo_color_1=HCLCOLOR_MAP.get(colorArray[0].trim());
+					String combo_color_1=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[0].trim());
+					//String combo_color_1=HCLCOLOR_MAP.get(colorArray[0].trim());
 					if(StringUtils.isEmpty(combo_color_1)){
 						combo_color_1=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
 					}
@@ -107,16 +100,16 @@ public class HighCaliberAttributeParser {
 					colorObj.setAlias(strColor);
 					
 					Combo comboObj = new Combo();
-					//String combo_color_2=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[1].trim());
-					String combo_color_2=HCLCOLOR_MAP.get(colorArray[1].trim());
+					String combo_color_2=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[1].trim());
+					//String combo_color_2=HCLCOLOR_MAP.get(colorArray[1].trim());
 					if(StringUtils.isEmpty(combo_color_2)){
 						combo_color_2=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
 					}
 					comboObj.setName(combo_color_2.trim());
 					comboObj.setType(ApplicationConstants.CONST_STRING_SECONDARY);
 					if(colorArray.length==3){
-						//String combo_color_3=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[2].trim());
-						String combo_color_3=HCLCOLOR_MAP.get(colorArray[2].trim());
+						String combo_color_3=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[2].trim());
+						//String combo_color_3=HCLCOLOR_MAP.get(colorArray[2].trim());
 						if(StringUtils.isEmpty(combo_color_3)){
 							combo_color_3=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
 						}
