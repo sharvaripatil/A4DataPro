@@ -19,6 +19,7 @@ import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
+import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 
 public class ExcelFactory {
 	private AdspecProductsExcelMapping adspecMapping;
@@ -38,6 +39,8 @@ public class ExcelFactory {
     private CutterBuckExcelMapping cbExcelMapping;
  //   private CutterBuckSheetParser cbSheetParser;
 	private HighCaliberLineExcelMapping hcLineExcelMapping;
+	private WholeSaleExcelMapping wholeSaleExcelMapping;
+	
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -55,8 +58,6 @@ public class ExcelFactory {
 			   return rfgLineProductExcelMapping;
 		   }else if(name.equalsIgnoreCase("bbi") || name.equals("40445")){
 			   return bbiProductsExcelMapping;
-		   }else if(name.equalsIgnoreCase("newProducts") || name.equals("91284")){
-			   return newProductsExcelMapping;
 		   }else if(name.equalsIgnoreCase("espTemplate") || name.equals("91561")){
 			   return espTemplateMapping;   
 		   }else if(name.equalsIgnoreCase("broberry") || name.equals("42057")){
@@ -75,7 +76,10 @@ public class ExcelFactory {
 			   return bamExcelMapping;
 		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
 			   return hcLineExcelMapping;
+		   }else if(name.equalsIgnoreCase("wholeSale") || name.equals("91284")){
+			   return wholeSaleExcelMapping;
 		   }
+		   
 		   
 		return null;
 	}
@@ -208,6 +212,16 @@ public class ExcelFactory {
 	public void setHcLineExcelMapping(HighCaliberLineExcelMapping hcLineExcelMapping) {
 		this.hcLineExcelMapping = hcLineExcelMapping;
 	}
+
+	public WholeSaleExcelMapping getWholeSaleExcelMapping() {
+		return wholeSaleExcelMapping;
+	}
+
+	public void setWholeSaleExcelMapping(WholeSaleExcelMapping wholeSaleExcelMapping) {
+		this.wholeSaleExcelMapping = wholeSaleExcelMapping;
+	}
+	
+	
 /*	public CutterBuckSheetParser getCbSheetParser() {
 		return cbSheetParser;
 	}
