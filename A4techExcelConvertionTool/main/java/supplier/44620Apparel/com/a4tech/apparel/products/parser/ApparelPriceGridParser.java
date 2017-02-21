@@ -2,7 +2,10 @@ package com.a4tech.apparel.products.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
@@ -12,6 +15,7 @@ import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
 public class ApparelPriceGridParser {
@@ -26,6 +30,7 @@ public class ApparelPriceGridParser {
 		try{
 		Integer sequence = 1;
 		PriceGrid priceGrid = new PriceGrid();
+		List<PriceConfiguration> configuration = null;
 		String[] pricesForNetCost = listOfNetCost
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] listOfQuans = listOfQuan
@@ -39,6 +44,11 @@ public class ApparelPriceGridParser {
 		priceGrid
 				.setIsQUR(qurFlag.equals("n") ? ApplicationConstants.CONST_BOOLEAN_FALSE
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);
+		if(!CommonUtility.isdescending(pricesForNetCost))
+		{
+			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
+		
+		}
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
@@ -49,9 +59,9 @@ public class ApparelPriceGridParser {
 		}
 		priceGrid.setPrices(listOfPrice);
 		if (criterias != null && !criterias.isEmpty()) {
-			//configuration = getConfigurations(criterias);
+			configuration = getBasePriceConfigurations(criterias);
 		}
-		//priceGrid.setPriceConfigurations(configuration);
+		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
@@ -188,6 +198,90 @@ public class ApparelPriceGridParser {
 			return quantis[ApplicationConstants.CONST_INT_VALUE_ONE];
 		}
 		return "";
+	}
+	
+	public List<PriceGrid> sizePrices(Map<String, String> sizesData,List<PriceGrid> existingPriceGrid){
+		String price = "";
+		int firstSize = 1;
+		String sizeValues = "";
+		if (isSingleBasePrice(sizesData.values())) {
+			Set<String> basePriceName = sizesData.keySet();
+			Collection<String> priceVals = sizesData.values();
+			String finalpriceNames = String.join(",", basePriceName);
+			String priceVal = priceVals.iterator().next();
+			existingPriceGrid = sizePrices("",finalpriceNames, priceVal, existingPriceGrid);
+		} else {
+			for (Map.Entry<String, String> sizeEntry : sizesData.entrySet()) {
+				String key = sizeEntry.getKey();
+				String val = sizeEntry.getValue();
+				if (firstSize == 1) {
+					price = val;
+					sizeValues = key;
+				} else {
+					if (price.equalsIgnoreCase(val)) {
+						sizeValues = sizeValues + "," + key;
+					} else {
+						if (!StringUtils.isEmpty(sizeValues)) {
+							existingPriceGrid = sizePrices(sizeValues, sizeValues,price, existingPriceGrid);
+						}
+						sizeValues = key;
+						price = val;
+					}
+				}
+
+				firstSize++;
+			}
+			if (!StringUtils.isEmpty(sizeValues)) {
+				existingPriceGrid = sizePrices(sizeValues, sizeValues,price, existingPriceGrid);
+			}
+		}
+		return existingPriceGrid;
+
+	}
+	
+	private List<PriceGrid> sizePrices(String criteriaValues,String basePriceName,String price,List<PriceGrid> existingPriceGrid){
+		String[] prices = price.split("%%%");
+		String listOfPrices = prices[0];
+		String listOfQuantity = prices[1];
+		existingPriceGrid = getPriceGrids(listOfPrices.toString(), 
+				listOfQuantity.toString(), "P", "USD",
+				         "", true, "n", basePriceName,criteriaValues,existingPriceGrid);
+		return existingPriceGrid;
+	}
+	
+	public List<PriceConfiguration> getBasePriceConfigurations(String criteria) {
+		List<PriceConfiguration> listOfpriceConfiguration = new ArrayList<PriceConfiguration>();
+		PriceConfiguration configuraion = null;
+		String[] criterias = criteria.split(",");
+		
+		try{
+			for (String CriteriaVal : criterias) {
+				configuraion = new PriceConfiguration();
+				configuraion.setCriteria("Size");
+				configuraion.setValue(Arrays.asList(CriteriaVal));
+				listOfpriceConfiguration.add(configuraion);
+			}
+		
+		}catch(Exception e){
+			_LOGGER.error("Error while base price configuration create: "+e.getMessage());
+		}
+		return listOfpriceConfiguration;
+	}
+	private boolean isSingleBasePrice(Collection<String> prices){
+		int priceIndex = 1;
+		String firstPrice = "";
+		for (String priceVal : prices) {
+			   if(priceIndex == 1){
+				   firstPrice = priceVal;
+			   }
+			   if(!firstPrice.equalsIgnoreCase(priceVal)){
+				   return false;
+			   }
+			
+			priceIndex++;
+		}
+		
+		return true;
 	}
 
 }

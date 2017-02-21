@@ -1,10 +1,12 @@
 package com.a4tech.apparel.products.parser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.apparel.product.mapping.ApparelColorMapping;
@@ -17,8 +19,11 @@ import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.Personalization;
+import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductSKUConfiguration;
+import com.a4tech.product.model.ProductSkus;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
@@ -157,6 +162,7 @@ public class ApparealProductAttributeParser {
 	        } else if(imprintMethodName.contains("Screen Print")){
 	        	imprintMethodName = "Silkscreen";
 	        }
+			imprintMethodName = imprintMethodName.trim();
 			  if(lookupServiceData.isImprintMethod(imprintMethodName.toUpperCase())){
 				  imprintMethodObj.setType(imprintMethodName);
 				  imprintMethodObj.setAlias(imprintMethodName);
@@ -288,6 +294,55 @@ public class ApparealProductAttributeParser {
 		}
 		
 		return listOfPersonalization;
+	}
+	public List<ProductSkus> getProductSkus(String colorVal,String sizeVal,String skuVal,
+			                     List<ProductSkus> existingSkus){
+		ProductSkus productSku = new ProductSkus();
+		ProductSKUConfiguration colorSkuConfig = getSkuConfiguration("Product Color", colorVal);
+		ProductSKUConfiguration sizeSkuConfig = getSkuConfiguration("Standard & Numbered", sizeVal);
+		List<ProductSKUConfiguration> listSkuConfigs = new ArrayList<>();
+		listSkuConfigs.add(colorSkuConfig);
+		listSkuConfigs.add(sizeSkuConfig);
+		productSku.setSKU(skuVal);
+		productSku.setConfigurations(listSkuConfigs);
+		existingSkus.add(productSku);
+		return existingSkus;
+		
+	}
+	private ProductSKUConfiguration getSkuConfiguration(String criteria,String val){
+		ProductSKUConfiguration skuConfig = new ProductSKUConfiguration();
+		skuConfig.setCriteria(criteria);
+		skuConfig.setValue(Arrays.asList(val));
+		return skuConfig;
+	}
+	public Product getExistingProductData(Product existingProduct){
+		List<PriceGrid> newPriceGrids = new ArrayList<>();
+		List<PriceGrid> oldPriceGrid = existingProduct.getPriceGrids();
+		if(!CollectionUtils.isEmpty(oldPriceGrid)){
+			for (PriceGrid priceGrid : oldPriceGrid) {
+				   if(priceGrid.getIsBasePrice()){
+					   continue;
+				   } else if(isnewPriceGrid(priceGrid.getUpchargeType())){
+					   continue;
+				   } else {
+					   newPriceGrids.add(priceGrid);
+				   }
+			}
+			existingProduct.setPriceGrids(newPriceGrids);
+		} else {
+			return existingProduct;
+		}
+		return existingProduct;
+	}
+	private boolean isnewPriceGrid(String chargeType){
+		if(chargeType.equalsIgnoreCase("Imprint Method Charge") || chargeType.equalsIgnoreCase("Personalization") 
+				|| chargeType.equalsIgnoreCase("Product Material Charge") || chargeType.equalsIgnoreCase("Packaging Charge") 
+				|| chargeType.equalsIgnoreCase("Product Color Charge") || chargeType.equalsIgnoreCase("Product Size Charge")
+				){
+			return true;
+		}
+		return false;
+		
 	}
 	public List<String> getProductCategories(String categoryVal){
 		List<String> listOfCategories = new ArrayList<>();

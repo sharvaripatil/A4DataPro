@@ -15,29 +15,31 @@ import com.a4tech.util.ApplicationConstants;
  *@return List of Availability              
  */
 public class ApparealAvailabilityParser {
-	
-	public List<Availability> getProductAvailablity(Set<String> parentList,Set<String> childList){
+	//public List<Availability> getProductAvailablity(Set<String> parentList,Set<String> childList){
+	public List<Availability> getProductAvailablity(Set<String> childList ,Set<String> parentList){
 		List<Availability> listOfAvailablity = new ArrayList<>();
 		Availability  availabilityObj = new Availability();
 		AvailableVariations  AvailableVariObj = null;
 		List<AvailableVariations> listOfVariAvail = new ArrayList<>();
 		List<Object> listOfParent = null;
 		List<Object> listOfChild = null;
-		for (String ParentValue : parentList) { 
-			 for (String childValue : childList) {
+		for (String ParentValue : parentList) { //String childValue : childList
+			 for (String childValue : childList) {//String ParentValue : parentList
 				 AvailableVariObj = new AvailableVariations();
 				 listOfParent = new ArrayList<>();
 				 listOfChild = new ArrayList<>();
-				 listOfParent.add(ParentValue);
-				 listOfChild.add(childValue);
+				 listOfParent.add(ParentValue.trim());
+				 listOfChild.add(childValue.trim());
 				 AvailableVariObj.setParentValue(listOfParent);
 				 AvailableVariObj.setChildValue(listOfChild);
 				 listOfVariAvail.add(AvailableVariObj);
 			}
 		}
 		availabilityObj.setAvailableVariations(listOfVariAvail);
-		availabilityObj.setParentCriteria(ApplicationConstants.CONST_STRING_PRODUCT_COLOR);
-		availabilityObj.setChildCriteria(ApplicationConstants.CONST_STRING_SIZE);
+		//availabilityObj.setParentCriteria(ApplicationConstants.CONST_STRING_PRODUCT_COLOR);
+		//availabilityObj.setChildCriteria(ApplicationConstants.CONST_STRING_SIZE);
+		availabilityObj.setParentCriteria(ApplicationConstants.CONST_STRING_SIZE);
+		availabilityObj.setChildCriteria(ApplicationConstants.CONST_STRING_PRODUCT_COLOR);
 		listOfAvailablity.add(availabilityObj);
 		
 		return listOfAvailablity;
