@@ -162,6 +162,7 @@ public class ApparealProductAttributeParser {
 	        } else if(imprintMethodName.contains("Screen Print")){
 	        	imprintMethodName = "Silkscreen";
 	        }
+			imprintMethodName = imprintMethodName.trim();
 			  if(lookupServiceData.isImprintMethod(imprintMethodName.toUpperCase())){
 				  imprintMethodObj.setType(imprintMethodName);
 				  imprintMethodObj.setAlias(imprintMethodName);
