@@ -391,9 +391,8 @@
 		<property name="cbExcelMapping" ref="cbExcelMappingId"/>
 		<property name="cdExcelMapping" ref="cdExcelMappingId"/>
 		<property name="goldcanadaExcelMapping" ref="goldcanadaExcelMappingId"/>
-	
  		<property name="hcLineExcelMapping" ref="highCaliberLineExcelMappingId"/>
-		
+		<property name="wholeSaleExcelMapping" ref="wholeSaleExcelMappingId"/>
 
      </bean>
      
