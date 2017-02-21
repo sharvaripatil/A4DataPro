@@ -18,6 +18,7 @@ import com.a4tech.lookup.model.LineName;
 import com.a4tech.lookup.model.Materials;
 import com.a4tech.lookup.model.Origin;
 import com.a4tech.lookup.model.Shapes;
+import com.a4tech.lookup.model.Themes;
 import com.a4tech.lookup.model.TradeNames;
 
 public class LookupRestService {
@@ -33,6 +34,7 @@ public class LookupRestService {
    private String tradeNameLookupUrl;
    private String categoriesLookupUrl;
    private String catalogLookupUrl;
+   private String themeLookupUrl;
    
 	
 	public List<String> getImprintMethodData(){
@@ -171,6 +173,23 @@ public class LookupRestService {
 		}
 		return null;
 	}
+	
+	public List<String> getTheme(String authToken) {
+		try{
+			 HttpHeaders headers = new HttpHeaders();
+			 headers.add("Content-Type", "application/json");
+			 HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+			 ResponseEntity<Themes> response = restTemplate.exchange(themeLookupUrl, HttpMethod.GET, 
+					                                                requestEntity, Themes.class);
+			 Themes data = response.getBody();
+			 return data.getThemes();
+		 }catch(Exception exce){
+			 _LOGGER.error("unable to get thems lookup data: "+exce.getCause());
+		 }
+		return null;
+	}
+
+	
 	public String getOriginLookupUrl() {
 		return originLookupUrl;
 	}
@@ -243,5 +262,14 @@ public class LookupRestService {
 			this.catalogLookupUrl = catalogLookupUrl;
 		}
 
+		public String getThemeLookupUrl() {
+			return themeLookupUrl;
+		}
+
+		public void setThemeLookupUrl(String themeLookupUrl) {
+			this.themeLookupUrl = themeLookupUrl;
+		}
+
+		
 
 }
