@@ -102,6 +102,8 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 		  String impucVal=null;
 		  String upcDicountCode=null;
 		  String upcPriceIncludes="";
+		  StringBuilder listOfQuantity = new StringBuilder();
+		  StringBuilder listOfPrices = new StringBuilder();
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -114,12 +116,29 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 	    String xid = null;
 	    int columnIndex=0;
 	    boolean existingFlag=false;
+	    String q1 = null,q2= null,q3= null,q4= null,q5= null,q6=null;
+	    String baseDiscCode=null;
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
-			if(nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO){
-				continue;
+			if (nextRow.getRowNum() == 0){
+				Cell cell1=nextRow.getCell(8);
+				q1=cell1.getStringCellValue();
+				
+				cell1=nextRow.getCell(9);
+				q2=cell1.getStringCellValue();
+				cell1=nextRow.getCell(10);
+				q3=cell1.getStringCellValue();
+				cell1=nextRow.getCell(11);
+				q4=cell1.getStringCellValue();
+				cell1=nextRow.getCell(12);
+				q5=cell1.getStringCellValue();
+				cell1=nextRow.getCell(13);
+				q6=cell1.getStringCellValue();
+				
 			}
+			if (nextRow.getRowNum() == 0)
+				continue;
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
 			if(xid != null){
 				productXids.add(xid);
@@ -141,7 +160,11 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 				if(checkXid){
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
-							 
+							priceGrids=	 new ArrayList<PriceGrid>();
+							priceGrids = wholeSalePriceGridParser.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), baseDiscCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,"",
+										ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, "",
+										ApplicationConstants.CONST_STRING_EMPTY,1,null,null,priceGrids);	
+							
 							if(!StringUtils.isEmpty(imprintMethodValue) && !StringUtils.isEmpty(impucVal) && !StringUtils.isEmpty(upcDicountCode))
 								{
 								 priceGrids = wholeSalePriceGridParser.getPriceGrids(impucVal,"1",upcDicountCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,upcPriceIncludes, 
@@ -151,8 +174,8 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 							productExcelObj.setPriceType("L");
 							productExcelObj.setPriceGrids(priceGrids);
 							productExcelObj.setProductConfigurations(productConfigObj);
-							_LOGGER.info("Product Data : "
-									+ mapperObj.writeValueAsString(productExcelObj));
+							/*_LOGGER.info("Product Data : "
+									+ mapperObj.writeValueAsString(productExcelObj));*/
 							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -166,7 +189,6 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 								priceGrids = new ArrayList<PriceGrid>();
 								productConfigObj = new ProductConfigurations();
 								listOfColors = new HashSet<>();
-								
 								repeatRows.clear();
 								colorSet=new HashSet<String>(); 
 								colorList = new ArrayList<Color>();
@@ -178,6 +200,9 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 								impucVal=null;
 								upcDicountCode=null;
 								upcPriceIncludes="";
+								listOfPrices = new StringBuilder();
+								listOfQuantity=new StringBuilder();
+								baseDiscCode=null;
 								//ProductDataStore.clearSizesBrobery();
 
 						 }
@@ -272,6 +297,8 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 							 if(!StringUtils.isEmpty(imprintMethodValue)&& !imprintMethodValue.equalsIgnoreCase("BLANK")){
 								 if(imprintMethodValue.contains("Laser")){
 									 imprintMethodValue="Laser Engraved";
+									}else if(imprintMethodValue.toUpperCase().contains("TRANSFOR")){
+										imprintMethodValue="Printed";	
 									}
 						   // imprintMethodValue=CommonUtility.getCellValueStrinOrInt(cell);
 						    imprintMethodList=wholeSaleAttributeParser.getImprintCriteria(imprintMethodValue, imprintMethodList);
@@ -295,31 +322,64 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 						break;
 
 						case 9://QTY/ 6
-
+							String	listPrice1=null;
+							listPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
+							if(!StringUtils.isEmpty(listPrice1)){
+					        	 listOfPrices.append(listPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					        	 listOfQuantity.append(q1.toUpperCase().replace("QTY/","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
 						break;
 
 						case 10://QTY/50
-
+							String	listPrice2=null;
+							listPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
+							if(!StringUtils.isEmpty(listPrice2)){
+					        	 listOfPrices.append(listPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					        	 listOfQuantity.append(q2.toUpperCase().replace("QTY/","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
 						break;
 
 						case 11://QTY/100
-
+							String	listPrice3=null;
+							listPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
+							if(!StringUtils.isEmpty(listPrice3)){
+					        	 listOfPrices.append(listPrice3).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					        	 listOfQuantity.append(q3.toUpperCase().replace("QTY/","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
 						break;
 
 						case 12://QTY/250
-
+							String	listPrice4=null;
+							listPrice4=CommonUtility.getCellValueStrinOrDecimal(cell);
+							if(!StringUtils.isEmpty(listPrice4)){
+					        	 listOfPrices.append(listPrice4).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					        	 listOfQuantity.append(q4.toUpperCase().replace("QTY/","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
 						break;
 
 						case 13://QTY/500
-
+							String	listPrice5=null;
+							listPrice5=CommonUtility.getCellValueStrinOrDecimal(cell);
+							if(!StringUtils.isEmpty(listPrice5)){
+					        	 listOfPrices.append(listPrice5).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					        	 listOfQuantity.append(q5.toUpperCase().replace("QTY/","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
 						break;
 
 						case 14://QTY/1000
-
+							String	listPrice6=null;
+							listPrice6=CommonUtility.getCellValueStrinOrDecimal(cell);
+							if(!StringUtils.isEmpty(listPrice6)){
+					        	 listOfPrices.append(listPrice6).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					        	 listOfQuantity.append(q6.toUpperCase().replace("QTY/","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
 						break;
 
 						case 15://Price Class 
-
+							baseDiscCode = cell.getStringCellValue();
+							 if(!StringUtils.isEmpty(baseDiscCode)){
+								 baseDiscCode=baseDiscCode.toUpperCase().replace("CLASS", "").trim();
+							 }
 						break;
 
 						case 16://Setup
@@ -436,17 +496,23 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 		
 		//productExcelObj.setPriceGrids(priceGrids);
 		
+		priceGrids=	 new ArrayList<PriceGrid>();
+		priceGrids = wholeSalePriceGridParser.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), baseDiscCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,"",
+					ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, "",
+					ApplicationConstants.CONST_STRING_EMPTY,1,null,null,priceGrids);	
+		
 		if(!StringUtils.isEmpty(imprintMethodValue) && !StringUtils.isEmpty(impucVal) && !StringUtils.isEmpty(upcDicountCode))
-		{
-		 priceGrids = wholeSalePriceGridParser.getPriceGrids(impucVal,"1",upcDicountCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,upcPriceIncludes, 
-				ApplicationConstants.CONST_BOOLEAN_FALSE, ApplicationConstants.CONST_STRING_FALSE, imprintMethodValue,
-				"Imprint Method",2,ApplicationConstants.CONST_STRING_SETUP_CHARGE,"Per Order",priceGrids);
-		}
-	productExcelObj.setPriceType("L");
-		 productExcelObj.setProductConfigurations(productConfigObj);
-		 	_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(productExcelObj));
-		 	int num =postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+			{
+			 priceGrids = wholeSalePriceGridParser.getPriceGrids(impucVal,"1",upcDicountCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,upcPriceIncludes, 
+					ApplicationConstants.CONST_BOOLEAN_FALSE, ApplicationConstants.CONST_STRING_FALSE, imprintMethodValue,
+					"Imprint Method",2,ApplicationConstants.CONST_STRING_SETUP_CHARGE,"Per Order",priceGrids);
+			}
+		productExcelObj.setPriceType("L");
+		productExcelObj.setPriceGrids(priceGrids);
+		productExcelObj.setProductConfigurations(productConfigObj);
+		 	/*_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(productExcelObj));*/
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
@@ -477,6 +543,9 @@ public class WholeSaleExcelMapping  implements IExcelParser{
         impucVal=null;
 		upcDicountCode=null;
 		upcPriceIncludes="";
+		listOfPrices = new StringBuilder();
+		listOfQuantity=new StringBuilder();
+		baseDiscCode=null;
 		return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet " +e.getMessage());
@@ -507,8 +576,8 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 	}
 	
 	public boolean isRepeateColumn(int columnIndex){
-		
-		if(columnIndex != 1&&columnIndex != 3&&columnIndex != 4 && columnIndex != 6 && columnIndex != 9 && columnIndex != 24){
+		if(columnIndex != 1){
+		//if(columnIndex != 1&&columnIndex != 3&&columnIndex != 4 && columnIndex != 6 && columnIndex != 9 && columnIndex != 24){
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
@@ -603,7 +672,7 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 
 
 	public static String removeSpecialChar(String tempValue){
-		tempValue=tempValue.replaceAll("(CLASS|Day|Service|Days|Hour|Hours|Week|Weeks|Rush|day|service|days|hour|hours|week|weeks|Rush|R|u|s|h|$)", "");
+		tempValue=tempValue.replaceAll("(CLASS|Day|DAYS|Service|Days|Hour|Hours|Week|Weeks|Rush|day|service|days|hour|hours|week|weeks|Rush|R|u|s|h|$)", "");
 		tempValue=tempValue.replaceAll("\\(","");
 		tempValue=tempValue.replaceAll("\\)","");
 	return tempValue;
