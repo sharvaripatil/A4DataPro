@@ -487,6 +487,7 @@
        
        </bean>
     
+
      <bean id="crystalDObjId" class="parser.crystal.CrystalDProductAttributeParser"/> 
     
      <bean id="crymaterialObjId" class="parser.crystal.CrystalDMaterialParser"> 
@@ -500,7 +501,10 @@
     
     
 
-    <!-- supplier 43442 configuration end --> 
+
+
+    <!-- supplier 43442 configuration start --> 
+
      <bean id="highCaliberLineExcelMappingId" class="com.a4tech.supplier.mapper.HighCaliberLineExcelMapping" autowire="byName">
      <property name="postServiceImpl" ref="postService"/>
      <property name="productDaoObj" ref="productDao"/>
@@ -517,7 +521,29 @@
 	  <property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory"></property>
      </bean>
 	
+
         <!--supplier 43442 configuration start  -->  
+
+
+
+        
+        <!-- supplier WholeSale configuration start -->
+        <bean id="wholeSaleExcelMappingId" class="com.a4tech.supplier.mapper.WholeSaleExcelMapping" autowire="byName">
+     <property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="wholeSaleAttributeParser" ref="wholeSaleAttributeParserId" />  
+     <property name="wholeSalePriceGridParser" ref="wholeSalePriceGridParserId"/>
+     <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     </bean>
+     
+     <bean id="wholeSaleAttributeParserId" name="wholeSaleProductAttributeParser"
+		class="parser.wholesale.WholeSaleAttributeParser" autowire="byName">
+		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+	</bean>
+	<bean id="wholeSalePriceGridParserId" name="wholeSalePriceGridParserObj"
+		class="parser.wholesale.WholeSalePriceGridParser" autowire="byName">
+	</bean>
+        <!-- supplier WholeSale configuration end --> 
 
     
     
