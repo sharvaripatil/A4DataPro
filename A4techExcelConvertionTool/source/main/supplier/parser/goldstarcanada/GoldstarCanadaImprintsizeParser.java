@@ -8,20 +8,19 @@ public class GoldstarCanadaImprintsizeParser {
 
 	public List<ImprintSize> getimprintsize(StringBuilder firstImprintSize) {
 		
+		String ImprintSizeValue=firstImprintSize.toString().replace("null x null","");
+		ImprintSizeValue=ImprintSizeValue.replace("null", "");
 	    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
-	    ImprintSize impsizeobj=new ImprintSize();
+	    ImprintSize impsizeobj;
 	    
-		String ImprintsizeArr[]=firstImprintSize.toString().split(",");
+		String ImprintsizeArr[]=ImprintSizeValue.split(",");
 		
 		
 	   for (String Value : ImprintsizeArr) {
 		   impsizeobj=new ImprintSize();
 		   impsizeobj.setValue(Value);
 		   imprintSizeList.add(impsizeobj);
-	      }
-		
-	     
-		
+	      }		
 		
 		
 		

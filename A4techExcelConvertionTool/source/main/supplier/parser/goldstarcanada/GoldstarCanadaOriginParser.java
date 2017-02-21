@@ -15,6 +15,8 @@ public class GoldstarCanadaOriginParser {
 			originValue = ApplicationConstants.CONST_STRING_COUNTRY_NAME_CHINA;
 		}else if(originValue.equalsIgnoreCase(ApplicationConstants.CONST_STRING_COUNTRY_CODE_US)){
 			originValue = ApplicationConstants.CONST_STRING_COUNTRY_NAME_USA;
+		}else if(originValue.equalsIgnoreCase("CN")){
+			originValue = ApplicationConstants.CONST_STRING_COUNTRY_NAME_CHINA;
 		}else{
 			
 		}

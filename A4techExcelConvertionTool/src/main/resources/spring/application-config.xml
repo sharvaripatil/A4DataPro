@@ -178,6 +178,7 @@
 				<value>com.a4tech.product.dao.entity.BatchEntity</value>
 				<value>com.a4tech.product.dao.entity.FtpServerFileEntity</value>
 				<value>com.a4tech.product.dao.entity.SupplierLoginDetails</value>
+				<!-- <value>parser.highcaliberline.HighCalColorEntity</value> -->
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -390,7 +391,10 @@
 		<property name="cbExcelMapping" ref="cbExcelMappingId"/>
 		<property name="cdExcelMapping" ref="cdExcelMappingId"/>
 		<property name="goldcanadaExcelMapping" ref="goldcanadaExcelMappingId"/>
+	
+ 		<property name="hcLineExcelMapping" ref="highCaliberLineExcelMappingId"/>
 		
+
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -474,7 +478,7 @@
        <!--supplier 47965 configuration end  -->  
     
     
-    
+ 
      <!--supplier 47759 configuration Start  -->  
        <bean id="cdExcelMappingId" class="com.a4tech.supplier.mapper.CrystalDExcelMapping">
        <property name="postServiceImpl" ref="postService"/>
@@ -530,12 +534,32 @@
      <bean id="gcShippingParserId" class="parser.goldstarcanada.GoldstarCanadaShippingEstimateParser"/> 
      <bean id="gcImprintSizeParserId" class="parser.goldstarcanada.GoldstarCanadaImprintsizeParser"/> 
      <bean id="gccolorparserId" class="parser.goldstarcanada.GoldstarCanadaColorParser"/> 
-     
-     
-     
+
+
+     <!--supplier 57711 configuration end  -->  
+
+
+    <!-- supplier 43442 configuration end --> 
+     <bean id="highCaliberLineExcelMappingId" class="com.a4tech.supplier.mapper.HighCaliberLineExcelMapping" autowire="byName">
+     <property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="highCaliberAttributeParser" ref="highCaliberAttributeParserId" /> 
+     <property name="highCalPriceGridParser" ref="highCalPriceGridParserId" /> 
+     </bean>
+     <bean id="highCaliberAttributeParserId" name="highCaliberAttributeParser"
+		class="parser.highcaliberline.HighCaliberAttributeParser" autowire="byName">
+	</bean>
+	<bean id="highCalPriceGridParserId" class="parser.highcaliberline.HighCaliberPriceGridParser" autowire="byName"/>
+	
+	<bean id="highCaliberConstants" class="parser.highcaliberline.HighCaliberConstants" autowire="byName">
+	 
+	  <property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory"></property>
+     </bean>
+	
+        <!--supplier 43442 configuration start  -->  
 
     
-     <!--supplier 57711 configuration end  -->  
+
     
 </beans>
 

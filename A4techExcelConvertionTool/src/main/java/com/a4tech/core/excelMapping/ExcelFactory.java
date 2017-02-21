@@ -19,7 +19,11 @@ import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
+
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
+
+import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
+
 
 public class ExcelFactory {
 	private AdspecProductsExcelMapping adspecMapping;
@@ -40,7 +44,11 @@ public class ExcelFactory {
     private CrystalDExcelMapping cdExcelMapping;
     private GoldstarCanadaExcelMapping goldcanadaExcelMapping;
  //   private CutterBuckSheetParser cbSheetParser;
+
+	private HighCaliberLineExcelMapping hcLineExcelMapping;
+
 	
+
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -79,6 +87,10 @@ public class ExcelFactory {
 		   }
 		   else if(name.equalsIgnoreCase("goldCanada") || name.equals("57711")){
 			   return goldcanadaExcelMapping;
+
+		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
+			   return hcLineExcelMapping;
+
 		   }
 		   
 		return null;
@@ -204,7 +216,7 @@ public class ExcelFactory {
 	public void setCbExcelMapping(CutterBuckExcelMapping cbExcelMapping) {
 		this.cbExcelMapping = cbExcelMapping;
 	}
-
+	
 	public CrystalDExcelMapping getCdExcelMapping() {
 		return cdExcelMapping;
 	}
@@ -213,6 +225,7 @@ public class ExcelFactory {
 		this.cdExcelMapping = cdExcelMapping;
 	}
 
+
 	public GoldstarCanadaExcelMapping getGoldcanadaExcelMapping() {
 		return goldcanadaExcelMapping;
 	}
@@ -220,6 +233,14 @@ public class ExcelFactory {
 	public void setGoldcanadaExcelMapping(
 			GoldstarCanadaExcelMapping goldcanadaExcelMapping) {
 		this.goldcanadaExcelMapping = goldcanadaExcelMapping;
+	}
+	public HighCaliberLineExcelMapping getHcLineExcelMapping() {
+		return hcLineExcelMapping;
+	}
+
+	public void setHcLineExcelMapping(HighCaliberLineExcelMapping hcLineExcelMapping) {
+		this.hcLineExcelMapping = hcLineExcelMapping;
+
 	}
 
 

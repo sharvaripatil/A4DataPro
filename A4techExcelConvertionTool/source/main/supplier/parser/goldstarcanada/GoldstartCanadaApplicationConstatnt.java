@@ -26,14 +26,14 @@ public class GoldstartCanadaApplicationConstatnt {
     	COLOR_MAP.put("silver","Silver Metal");
     	COLOR_MAP.put("lime green","Bright Green");
     	COLOR_MAP.put("dark red","Dark Red");
-    	COLOR_MAP.put("gunmetal","Medium Gray");
+    	COLOR_MAP.put("Gunmetal Gray","Medium Gray");
     	COLOR_MAP.put("Tean Green","Medium Green");
     	COLOR_MAP.put("Burgundy Red Trim","Dark Red");
     	COLOR_MAP.put("Brown","Medium Brown");
     	COLOR_MAP.put("Dark Blue","Dark Blue");
     	COLOR_MAP.put("Gun metal","Medium Gray");
-    	COLOR_MAP.put("Teal","Medium Green");
-    	COLOR_MAP.put("Magenta","Medium Pink");
+    	COLOR_MAP.put("Teal Green","Medium Green");
+    	COLOR_MAP.put("Magenta Pink","Medium Pink");
     	COLOR_MAP.put("Navy Blue","Dark Blue");
     	COLOR_MAP.put("Assorted","Assorted");
     	COLOR_MAP.put("White","Medium White");
@@ -64,7 +64,7 @@ public class GoldstartCanadaApplicationConstatnt {
     	COLOR_MAP.put("Neon Yellow","Bright Yellow");
     	COLOR_MAP.put("Clear","Clear");
     	COLOR_MAP.put("Champagne","Medium White");
-    	COLOR_MAP.put("Aqua","Light Blue");
+    	COLOR_MAP.put("Aqua Blue","Light Blue");
     	COLOR_MAP.put("Rainbow","Multi Color");
     	COLOR_MAP.put("Opal","Medium White");
     	COLOR_MAP.put("Silver Glitter","Silver Metal");
@@ -91,9 +91,17 @@ public class GoldstartCanadaApplicationConstatnt {
     	COLOR_MAP.put("Taupe","Medium Purple");
     	COLOR_MAP.put("Indigo","Dark Blue");
     	COLOR_MAP.put("Steel","Dark Gray");
+    	COLOR_MAP.put("Rainbow Blue","Medium Blue");
+    	COLOR_MAP.put("Black Grip","Medium Black");
+    	COLOR_MAP.put("Dark Gray","Dark Gray");
+    	COLOR_MAP.put("Bright Green","Bright Green");
+    	COLOR_MAP.put("Chrome","Other");
+    	COLOR_MAP.put("Natural Beige","Other");
 
-		
-		
+
+
+    	
+    	
 		
 	}
 

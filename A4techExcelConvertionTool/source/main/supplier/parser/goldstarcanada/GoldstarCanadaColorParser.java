@@ -42,7 +42,8 @@ public class GoldstarCanadaColorParser {
 				//colorlist.add(colorObj);
 			}
 			} else {
-				colorObj.setName(GoldstartCanadaApplicationConstatnt.COLOR_MAP.get(outervalue).trim());
+				outervalue=outervalue.trim();
+				colorObj.setName(GoldstartCanadaApplicationConstatnt.COLOR_MAP.get(outervalue));
 				colorObj.setAlias(outervalue);
 				//colorlist.add(colorObj);
 				
