@@ -62,6 +62,7 @@
    		<property name="tradeNameLookupUrl" value="${tradeName.lookup.url}"/>
    		<property name="categoriesLookupUrl" value="${categories.lookup.url}"/>
    		<property name="catalogLookupUrl"    value="${catalog.lookup.url}"/>
+   	    <property name="themeLookupUrl"    value="${themes.lookup.url}"/>
    </bean>
    <bean id="lookupServiceData" class="com.a4tech.lookup.service.LookupServiceData">
    		<property name="lookupRestService" ref="lookupRestService"/>
@@ -388,8 +389,11 @@
 		<property name="riversEndExcelMapping" ref="riversEndExcelMappingId"/>
 		<property name="bamExcelMapping" ref="bambamProductExcelMappingId"/>
 		<property name="cbExcelMapping" ref="cbExcelMappingId"/>
-		<property name="hcLineExcelMapping" ref="highCaliberLineExcelMappingId"/>
-		
+		<property name="cdExcelMapping" ref="cdExcelMappingId"/>
+		<property name="goldcanadaExcelMapping" ref="goldcanadaExcelMappingId"/>
+ 		<property name="hcLineExcelMapping" ref="highCaliberLineExcelMappingId"/>
+		<property name="wholeSaleExcelMapping" ref="wholeSaleExcelMappingId"/>
+
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -444,19 +448,16 @@
     <bean id="bamPriceGridParserId" class="com.a4tech.bambam.product.parser.BamPriceGridParser"></bean>
       <!--supplier 82588 configuration end  -->  
     
-    <!--supplier 47965 configuration start  -->  
-    <bean id="cbExcelMappingId" class="com.a4tech.supplier.mapper.CutterBuckExcelMapping">
+      <!--supplier 47965 configuration start  -->  
+      <bean id="cbExcelMappingId" class="com.a4tech.supplier.mapper.CutterBuckExcelMapping">
       <property name="postServiceImpl" ref="postService"/>
-    
       <property name="productDaoObj"   ref="productDao"/>
-      
       <property name="cutterBuckSizeParserObj" ref="cutterBuckSizeParserObjId"/>
       <property name="cutterBuckMaterialParserObj" ref="cutterBuckMaterialParserObjId"/>
       <property name="cutterBuckPriceObj" ref="CutterBuckPriceObjId"/>
       <property name="cutterBuckSheetObj" ref="cutterBuckSheetObjId"/>
       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
 	  <property name="lookupRestServiceObj" ref="lookupRestService"/>
-      
       </bean>
       
       <bean id="cutterBuckMaterialParserObjId" class="parser.cutter.CutterBuckMaterialParser">
@@ -465,23 +466,83 @@
       </bean>
        
       <bean id="cutterBuckSizeParserObjId" class="parser.cutter.CutterBuckSizeParser"/> 
-         
       <bean id="CutterBuckPriceObjId" class="parser.cutter.CutterBuckPriceGridParser"/> 
-
-     <bean id="cutterBuckSheetObjId" class="parser.cutter.CutterBuckSheetParser">
+      <bean id="cutterBuckSheetObjId" class="parser.cutter.CutterBuckSheetParser">
       <property name="postServiceImpl" ref="postService"/>
       <property name="productDaoObj"   ref="productDao"/>
       <property name="cbColorProductNumberObj"   ref="cbColorProductNumberObjId"/>
-      
-     </bean>
+      </bean>
      
       <bean id="cbColorProductNumberObjId" class="parser.cutter.CBColorProductNumberParser"/>
-     
-           <!--supplier 47965 configuration end  -->  
+       <!--supplier 47965 configuration end  -->  
     
     
+ 
+     <!--supplier 47759 configuration Start  -->  
+       <bean id="cdExcelMappingId" class="com.a4tech.supplier.mapper.CrystalDExcelMapping">
+       <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj"   ref="productDao"/>
+       <property name="crystalDObj"   ref="crystalDObjId"/>
+       <property name="crymaterialObj"   ref="crymaterialObjId"/>
+       <property name="cdpriceObj"   ref="cdpriceObjId"/>
+       
+       
+       </bean>
     
+
+     <bean id="crystalDObjId" class="parser.crystal.CrystalDProductAttributeParser"/> 
+    
+     <bean id="crymaterialObjId" class="parser.crystal.CrystalDMaterialParser"> 
+     <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     <property name="lookupRestServiceObj" ref="lookupRestService"/>
+	 </bean>
+    
+     <bean id="cdpriceObjId" class="parser.crystal.CrystalDPriceGridParser"/> 
+    
+      <!--supplier 47759 configuration end  -->  
+      
+      
+    
+     <!--supplier 57711 configuration Start  -->  
+   
+       <bean id="goldcanadaExcelMappingId" class="com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping">
+       <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj"   ref="productDao"/>
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+	   <property name="lookupRestServiceObj" ref="lookupRestService"/>
+       <property name="gcdimensionObj"   ref="gcdimensionObjId"/>
+       <property name="gcimprintMethodParser"   ref="gcimprintMethodParserId"/>
+       <property name="gcOriginParser"   ref="gcOriginParserId"/>
+       <property name="gcRushTimeParser"   ref="gcRushTimeParserId"/>
+       <property name="gcPackagingParser"   ref="gcPackagingParserId"/>
+       <property name="gcShippingParser"   ref="gcShippingParserId"/>
+       <property name="gcPricegridParser"   ref="gcPricegridParserId"/>
+       <property name="gcImprintSizeParser"   ref="gcImprintSizeParserId"/>
+       <property name="gccolorparser"   ref="gccolorparserId"/>
+      
+       
+       
+       </bean>
+
+
+     <bean id="gcdimensionObjId" class="parser.goldstarcanada.GoldstarCanadaDimensionParser"/> 
+     <bean id="gcimprintMethodParserId" class="parser.goldstarcanada.GoldstarCanadaImprintMethodParser"/> 
+     <bean id="gcOriginParserId" class="parser.goldstarcanada.GoldstarCanadaOriginParser"/> 
+     <bean id="gcRushTimeParserId" class="parser.goldstarcanada.GoldstarCanadaRushTimeParser"/> 
+     <bean id="gcPackagingParserId" class="parser.goldstarcanada.GoldstarCanadaPackagingParser"/>    
+     <bean id="gcPricegridParserId" class="parser.goldstarcanada.GoldstarCanadaPriceGridParser"/> 
+     <bean id="gcShippingParserId" class="parser.goldstarcanada.GoldstarCanadaShippingEstimateParser"/> 
+     <bean id="gcImprintSizeParserId" class="parser.goldstarcanada.GoldstarCanadaImprintsizeParser"/> 
+     <bean id="gccolorparserId" class="parser.goldstarcanada.GoldstarCanadaColorParser"/> 
+
+
+     <!--supplier 57711 configuration end  -->  
+
+
+
+
     <!-- supplier 43442 configuration start --> 
+
      <bean id="highCaliberLineExcelMappingId" class="com.a4tech.supplier.mapper.HighCaliberLineExcelMapping" autowire="byName">
      <property name="postServiceImpl" ref="postService"/>
      <property name="productDaoObj" ref="productDao"/>
@@ -498,7 +559,11 @@
 	  <property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory"></property>
      </bean>
 	
-        <!--supplier 43442 configuration end  -->  
+
+        <!--supplier 43442 configuration start  -->  
+
+
+
         
         <!-- supplier WholeSale configuration start -->
         <bean id="wholeSaleExcelMappingId" class="com.a4tech.supplier.mapper.WholeSaleExcelMapping" autowire="byName">
@@ -517,8 +582,9 @@
 		class="parser.wholesale.WholeSalePriceGridParser" autowire="byName">
 	</bean>
         <!-- supplier WholeSale configuration end --> 
+
     
-    
+
     
 </beans>
 

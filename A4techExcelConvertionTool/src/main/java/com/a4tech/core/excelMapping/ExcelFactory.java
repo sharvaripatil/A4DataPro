@@ -17,9 +17,15 @@ import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
 import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
+import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
+
+import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
+
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
+
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
+
 
 public class ExcelFactory {
 	private AdspecProductsExcelMapping adspecMapping;
@@ -37,10 +43,17 @@ public class ExcelFactory {
 	private RiversEndExcelMapping riversEndExcelMapping;
 	private BambamProductExcelMapping bamExcelMapping;
     private CutterBuckExcelMapping cbExcelMapping;
+    private CrystalDExcelMapping cdExcelMapping;
+    private GoldstarCanadaExcelMapping goldcanadaExcelMapping;
  //   private CutterBuckSheetParser cbSheetParser;
+
 	private HighCaliberLineExcelMapping hcLineExcelMapping;
+
+
 	private WholeSaleExcelMapping wholeSaleExcelMapping;
 	
+
+
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -69,15 +82,21 @@ public class ExcelFactory {
 		   }else if(name.equalsIgnoreCase("cbExcel") || name.equals("47965")){
 			   return cbExcelMapping;
 		   }
-		 /*  else if(name.equalsIgnoreCase("sheetParser") || name.equals("47965")){
-			   return cbSheetParser;
-		   }*/
+		   else if(name.equalsIgnoreCase("cdExcel") || name.equals("47759")){
+			   return cdExcelMapping;
+		   }
 		   else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
 			   return bamExcelMapping;
+		   }
+		   else if(name.equalsIgnoreCase("goldCanada") || name.equals("57711")){
+			   return goldcanadaExcelMapping;
+
 		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
 			   return hcLineExcelMapping;
+
 		   }else if(name.equalsIgnoreCase("wholeSale") || name.equals("91284")){
 			   return wholeSaleExcelMapping;
+
 		   }
 		   
 		   
@@ -205,13 +224,32 @@ public class ExcelFactory {
 		this.cbExcelMapping = cbExcelMapping;
 	}
 	
+	public CrystalDExcelMapping getCdExcelMapping() {
+		return cdExcelMapping;
+	}
+
+	public void setCdExcelMapping(CrystalDExcelMapping cdExcelMapping) {
+		this.cdExcelMapping = cdExcelMapping;
+	}
+
+
+	public GoldstarCanadaExcelMapping getGoldcanadaExcelMapping() {
+		return goldcanadaExcelMapping;
+	}
+
+	public void setGoldcanadaExcelMapping(
+			GoldstarCanadaExcelMapping goldcanadaExcelMapping) {
+		this.goldcanadaExcelMapping = goldcanadaExcelMapping;
+	}
 	public HighCaliberLineExcelMapping getHcLineExcelMapping() {
 		return hcLineExcelMapping;
 	}
 
 	public void setHcLineExcelMapping(HighCaliberLineExcelMapping hcLineExcelMapping) {
 		this.hcLineExcelMapping = hcLineExcelMapping;
+
 	}
+
 
 	public WholeSaleExcelMapping getWholeSaleExcelMapping() {
 		return wholeSaleExcelMapping;
@@ -222,13 +260,9 @@ public class ExcelFactory {
 	}
 	
 	
-/*	public CutterBuckSheetParser getCbSheetParser() {
-		return cbSheetParser;
-	}
 
-	public void setCbSheetParser(CutterBuckSheetParser cbSheetParser) {
-		this.cbSheetParser = cbSheetParser;
-	}*/
+
+
 
 
 
