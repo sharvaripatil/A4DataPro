@@ -105,6 +105,7 @@ public class CrystalDProductAttributeParser {
 
 	public List<ImprintMethod> getImprintMethod(String imprintMethodValue, List<ImprintMethod> exstimprintMethodsList) {
 		
+		imprintMethodValue=imprintMethodValue.replaceAll("™","");
 		if(imprintMethodValue.contains("Blank"))
 		{
 			imprintMethodValue=imprintMethodValue.replaceAll("Blank-Imprint Extra","UNIMPRINTED");

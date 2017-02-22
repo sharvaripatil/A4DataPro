@@ -20,8 +20,8 @@ public class CrystalDPriceGridParser {
 	public List<PriceGrid> getPriceGrids(String listOfPrices,
 		    String listOfQuan, String listOfDisc,
 			String currency, String priceInclude, boolean isBasePrice,
-			String isQur, String priceName, String criterias/*,*/
-			/*List<PriceGrid> existingPriceGrid*/) {
+			String isQur, String priceName, String criterias/*,
+			List<PriceGrid> existingPriceGrid*/) {
 
 		Integer sequence = 1;
 		List<PriceGrid> priceGridsList = new ArrayList<PriceGrid>();

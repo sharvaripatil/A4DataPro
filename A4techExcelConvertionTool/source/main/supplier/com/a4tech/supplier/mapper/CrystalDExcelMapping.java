@@ -129,7 +129,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 			
 			try{
 			Row nextRow = iterator.next();
-			if(nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO){
+			if(nextRow.getRowNum() < 1){
 				continue;
 			}
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
@@ -532,7 +532,6 @@ public class CrystalDExcelMapping implements IExcelParser {
 				
 			}
 			
-				
 				
 				if(AllNotes.contains("Personalization extra"))
 				{
