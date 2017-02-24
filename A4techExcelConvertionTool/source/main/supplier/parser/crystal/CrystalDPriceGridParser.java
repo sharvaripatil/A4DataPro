@@ -10,6 +10,7 @@ import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
+import com.a4tech.product.model.Value;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.LookupData;
 
@@ -183,6 +184,115 @@ public class CrystalDPriceGridParser {
 			priceConfiguration.add(configs);
 		}
 		return priceConfiguration;
+	}
+
+	
+	
+	
+
+	public List<PriceGrid> getRepeatablePriceGrids(String listOfPrices,
+		    String listOfQuan, String listOfDisc,
+			String currency, String priceInclude, boolean isBasePrice,
+			String isQur, String priceName, String criterias, String productNo, List<Value> ExstngvalueObj, List<PriceGrid> exstingPriceGrid) {
+
+			Integer sequence = 1;
+	
+		List<PriceConfiguration> priceConfigurationList = new ArrayList<PriceConfiguration>();
+		PriceConfiguration PriceConfigurationObj=new PriceConfiguration();
+		
+		PriceGrid priceGrid = new PriceGrid();
+		
+		
+
+		
+		String[] prices = listOfPrices
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		String[] quantity = listOfQuan
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		String[] discount = listOfDisc
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		
+		
+
+  	priceGrid.setIsQUR(isQur.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_Y) ? ApplicationConstants.CONST_BOOLEAN_TRUE
+					: ApplicationConstants.CONST_BOOLEAN_FALSE);
+		
+		
+
+		priceGrid.setCurrency(currency);
+		priceGrid.setDescription(priceName);
+		priceGrid.setIsBasePrice(isBasePrice);
+		priceGrid.setSequence(sequence);
+		priceGrid.setPriceIncludes(priceInclude);
+		priceGrid.setProductNumber(productNo);
+		
+		PriceConfigurationObj.setCriteria("Size");
+		
+		List<Object>valueObjList=new ArrayList<>();
+		Object obj= new Object();
+		if(ExstngvalueObj.size() == 2){
+			
+			
+			for(int i=0;i<2;i++)
+			{
+				obj= new Object();
+				obj=ExstngvalueObj.get(i);
+				valueObjList.add(obj);
+			}
+			
+			
+		}
+		else if (ExstngvalueObj.size() == 3){
+			
+			for(int i=0;i<3;i++)
+			{
+				obj= new Object();
+				obj=ExstngvalueObj.get(i);
+				valueObjList.add(obj);
+			}
+		
+		
+		}
+	/*	Object obj= new Object();
+		Object obj1= new Object();
+		Object obj2= new Object();
+
+
+		obj=ExstngvalueObj.get(0);
+		obj1=ExstngvalueObj.get(1);
+		obj2=ExstngvalueObj.get(2);
+		
+
+		List<Object>valueObjList=new ArrayList<>();
+		valueObjList.add(obj);
+		valueObjList.add(obj1);
+		valueObjList.add(obj2);*/
+
+		
+		PriceConfigurationObj.setValue(valueObjList);
+		
+		priceConfigurationList.add(PriceConfigurationObj);
+		priceGrid.setPriceConfigurations(priceConfigurationList);
+		
+		List<Price> listOfPrice = null;
+     	if (!priceGrid.getIsQUR()) {
+			listOfPrice = getPrices(prices, quantity, discount);
+		} else {
+			listOfPrice = new ArrayList<Price>();
+		}
+		if(listOfPrice != null && !listOfPrice.isEmpty()){
+			priceGrid.setPrices(listOfPrice);
+		}
+		exstingPriceGrid.add(priceGrid);
+		
+		
+		
+		
+		
+		return exstingPriceGrid;
+		
+		
+		
 	}
 
 
