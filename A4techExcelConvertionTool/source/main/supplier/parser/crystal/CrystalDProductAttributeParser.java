@@ -40,7 +40,7 @@ public class CrystalDProductAttributeParser {
 	  Size sizeObj=new Size();
 	  String ShippingDimensionValue=shippingDimension.toString();
 	  ShippingDimensionValue=ShippingDimensionValue.replaceAll("\"", "").replaceAll("Height includes chain and key ring", "").replaceAll("Width includes chain and key ring", "");
-	
+	  ShippingDimensionValue=ShippingDimensionValue.replaceAll(",,", ",");
 	  String DimValueArr[]=ShippingDimensionValue.split(",");
 	  
 	  Dimension dimensionObj= new Dimension();
@@ -56,8 +56,10 @@ public class CrystalDProductAttributeParser {
 		  
 	   String SizeValueArr[]=OutreLoop.split("x");
 	
+	   int i=0;
 	   for (String Value : SizeValueArr) {
 			 valObj=new Value();
+			 i++;
 		   
 		if(Value.contains("W"))
 		{
@@ -73,7 +75,7 @@ public class CrystalDProductAttributeParser {
 		}
 		else if(Value.contains("Dia"))
 		{
-			valObj.setAttribute("Dia");
+			valObj.setAttribute("Diameter");
 			Value=Value.replaceAll("[^//0-9x-]", "").replaceAll("-", " ");
 			valObj.setValue(Value);
 		}
@@ -83,10 +85,30 @@ public class CrystalDProductAttributeParser {
 			Value=Value.replaceAll("[^//0-9x-]", "").replaceAll("-", " ");
 			valObj.setValue(Value);
 		}
-		else
+		else if(Value.contains("L"))
 		{
+			valObj.setAttribute("Length");
 			Value=Value.replaceAll("[^//0-9x-]", "").replaceAll("-", " ");
 			valObj.setValue(Value);
+		}
+		
+		else
+		{
+			
+			Value=Value.replaceAll("[^//0-9x-]", "").replaceAll("-", " ");
+			valObj.setValue(Value);
+			if(i==1)
+			{
+				valObj.setAttribute("Length");
+			}
+			else if(i==2)
+			{
+				valObj.setAttribute("Width");
+			}
+			else if(i==3)
+			{
+				valObj.setAttribute("Height");
+			}
 		}
 		valObj.setUnit("in");
 		valuelist.add(valObj);   
@@ -105,6 +127,7 @@ public class CrystalDProductAttributeParser {
 
 	public List<ImprintMethod> getImprintMethod(String imprintMethodValue, List<ImprintMethod> exstimprintMethodsList) {
 		
+		imprintMethodValue=imprintMethodValue.replaceAll("™","");
 		if(imprintMethodValue.contains("Blank"))
 		{
 			imprintMethodValue=imprintMethodValue.replaceAll("Blank-Imprint Extra","UNIMPRINTED");
@@ -134,7 +157,7 @@ public class CrystalDProductAttributeParser {
 		
 		optionObj.setOptionType("Imprint");
 		optionObj.setName("Additional Imprinting Option");
-		optionValueObj.setValue(tempImprintOptionValue);
+		optionValueObj.setValue(tempImprintOptionValue.trim());
 		valuesList.add(optionValueObj);
 		optionObj.setValues(valuesList);
 		optionList.add(optionObj);
