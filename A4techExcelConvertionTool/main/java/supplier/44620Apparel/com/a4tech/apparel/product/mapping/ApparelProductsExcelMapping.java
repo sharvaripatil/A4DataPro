@@ -17,6 +17,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.apparel.products.parser.ApparealAvailabilityParser;
@@ -31,6 +32,7 @@ import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Packaging;
@@ -139,6 +141,8 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 							 					                              productSizeValues);
 							 	_LOGGER.info("color Names participate in avail:: "+ProductDataStore.getColorNames());
 							 	productExcelObj.setAvailability(listOfAvailablity);
+							 	List<Image> listOfImage = getProductImages(productExcelObj.getImages());
+							 	productExcelObj.setImages(listOfImage);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -403,7 +407,8 @@ public class ApparelProductsExcelMapping implements IExcelParser{
         	productExcelObj.setAvailability(listOfAvailablity);
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
-	
+		 	List<Image> listOfImage = getProductImages(productExcelObj.getImages());
+		 	productExcelObj.setImages(listOfImage);
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -465,7 +470,13 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 		ProductConfigurations configuration = existingProduct.getProductConfigurations();
 		return configuration.getMaterials();
 	}
-
+    private List<Image> getProductImages(List<Image> images){
+    	  if(!CollectionUtils.isEmpty(images)){
+    		  return images;
+    	  } else{
+    		 return new ArrayList<>();
+    	  }
+    }
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}

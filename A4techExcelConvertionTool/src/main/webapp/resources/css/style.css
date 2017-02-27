@@ -218,7 +218,7 @@ ul.navbar-nav {
 	opacity: 0.3;
 }
 .form-bottom {
-	padding: 55px 25px 85px 25px;
+	padding: 55px 25px 55px 25px;
 	background: rgba(34, 34, 34, 0.9);/*rgb(34, 34, 34);*/
 	-moz-border-radius: 0 0 4px 4px;
 	-webkit-border-radius: 0 0 4px 4px;

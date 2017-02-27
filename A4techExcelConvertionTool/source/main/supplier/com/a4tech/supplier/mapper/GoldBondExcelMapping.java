@@ -2,12 +2,9 @@ package com.a4tech.supplier.mapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -19,21 +16,18 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.core.errors.ErrorMessageList;
-import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Apparel;
-import com.a4tech.product.model.ImprintMethod;
-import com.a4tech.product.model.Material;
-import com.a4tech.product.model.PriceGrid;
+import com.a4tech.product.model.Color;
+import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.model.ProductSkus;
 import com.a4tech.product.model.Size;
-import com.a4tech.product.model.Value;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
+
+import parser.goldbond.GoldbondAttributeParser;
 
 public class GoldBondExcelMapping implements IExcelParser{
 	
@@ -41,22 +35,18 @@ public class GoldBondExcelMapping implements IExcelParser{
 	
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
-    @Override
+	private GoldbondAttributeParser gbAttributeParser;
+    
+	@Override
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		String finalResult = null;
 		Set<String>  productXids = new HashSet<String>();
-		  Product productExcelObj = new Product();   
-		  ProductConfigurations productConfigObj=new ProductConfigurations();
-			List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
-		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
-		  Set<String> listOfColors = new HashSet<>();
-		  String colorCustomerOderCode ="";
-		  Set<Value> sizeValues = new HashSet<>();
- 		try{
-			 
+		  Product productExcelObj = new Product();
+		  ProductConfigurations productConfiguration = new ProductConfigurations();
+ 		try{ 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 	    Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
@@ -64,10 +54,13 @@ public class GoldBondExcelMapping implements IExcelParser{
 		
 		StringJoiner listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		StringJoiner listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		StringJoiner listOfDiscounts = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		StringJoiner listOfColors    = new StringJoiner(ApplicationConstants.CONST_STRING_COMMA_SEP);
 		String xid = null;
 		int columnIndex=0;
 		// String listPrice = "";
 		// String priceQty  = "";
+		StringJoiner productDescription = new StringJoiner(" ");
 		while (iterator.hasNext()) {
 			
 			try{
@@ -95,7 +88,10 @@ public class GoldBondExcelMapping implements IExcelParser{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
-							
+							 String desc = finalDescriptionValue(productExcelObj.getDescription(), productDescription.toString());
+							 productExcelObj.setDescription(desc);
+							    List<Color> listOfColor = gbAttributeParser.getProductColors(listOfColors.toString());
+							    productConfiguration.setColors(listOfColor);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -106,7 +102,10 @@ public class GoldBondExcelMapping implements IExcelParser{
 							 	}
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
-								
+							 	productDescription = new StringJoiner(" ");
+							 	listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							    listOfColors    = new StringJoiner(ApplicationConstants.CONST_STRING_COMMA_SEP);
 								
 						 }
 						    if(!productXids.contains(xid)){
@@ -117,8 +116,10 @@ public class GoldBondExcelMapping implements IExcelParser{
 						     if(productExcelObj == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
+						    	 productConfiguration = new ProductConfigurations();
 						     }else{
-						    	 
+						    	 productExcelObj = gbAttributeParser.keepExistingProductData(productExcelObj);
+						    	 productConfiguration = productExcelObj.getProductConfigurations();
 						     }
 							
 					 }
@@ -127,91 +128,58 @@ public class GoldBondExcelMapping implements IExcelParser{
 				}
 				
 				switch (columnIndex+1) {
-				case 1:
+				case 1: //xid
 					 break;
 				case 2:
-					
+					 
 					  break;
 				case 3:
-					 
+					 String asiPrdNo = cell.getStringCellValue();
+					  productExcelObj.setAsiProdNo(asiPrdNo);
 				    break;
-				case 4:
-					
-					
-				    break;
-					
-				case 5:
-				
-					
+				case 4:// description
+					String prdName = cell.getStringCellValue();
+					prdName = prdName.replaceAll("[^a-zA-Z0-9%/-! ]", "");
+					productExcelObj.setName(prdName);
 					break;
-					
+				case 5:	
 				case 6: 
-				
-					
-					break;
-					
 				case 7:
-					 
-					   
-					break;
-					
 				case 8: 
-				
-					
-					break;
-					
 				case 9: 
-					break;
 				case 10: 
-					 
-					
-					break;
 				case 11:
-				   
-					break;
-					
 				case 12:
-					break;
 				case 13:
-				
-					
-					 break;
 				case 14:
-				
-					
-			     break;
-				case 15:
-		
-					break;
+					String description = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(description)){
+						description = description.replaceAll("[^a-zA-Z0-9%/-! ]", "");
+						productDescription.add(description);
+					}
+					 break;
+				case 15:// qty
 				case 16:
-		
-				
-					break;
 				case 17:
-			
-				
-					break;
 				case 18:
-					break;
 				case 19: 
+					String priceQty = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(priceQty)){
+						listOfQuantity.add(priceQty);
+					}
 					break;
-				case 20:
-					break;
+			 
+				case 20://netPricing 
 				case 21:
-					
-					break;
-					
 				case 22: 
-					break;
 				case 23:
-					break;
 				case 24:
-					
+					String netPricing = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(netPricing)){
+						listOfPrices.add(netPricing);
+					}
 					break;
-				case 25: 
-					
-					
-					
+				case 25: // ignore all coulmns until case 48
 					break;
 					
 				case 26:
@@ -293,26 +261,20 @@ public class GoldBondExcelMapping implements IExcelParser{
 					break;
 				case 48:
 					break;
-				case 49:
-					
+				case 49: 
 					break;
-				case 50: 
-					
-					break;
+				case 50: // discount
 				case 51:
-					 break;
 				case 52:
-					
-					  break;
 				case 53:
-					 
-				    break;
 				case 54:
-					
-					
+					String discountCode = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(discountCode)){
+						listOfDiscounts.add(discountCode);
+					}
 				    break;
 					
-				case 55:
+				case 55: // ignore until cases 104
 				
 					
 					break;
@@ -480,118 +442,55 @@ public class GoldBondExcelMapping implements IExcelParser{
 				    break;
 				case 104:
 					
-					
-				    break;
-					
+					break;
 				case 105:
-				
-					
+					String multiColorCharge = cell.getStringCellValue();
+					productExcelObj = gbAttributeParser.getAdditionalColor(productExcelObj, multiColorCharge);
+				    
 					break;
-					
-				case 106: 
-				
-					
-					break;
-					
+				case 106: //color
 				case 107:
-					 
-					   
-					break;
-					
 				case 108: 
-				
-					
-					break;
-					
 				case 109: 
-					break;
 				case 110: 
-					 
-					
-					break;
-					
 				case 111:
-					 break;
 				case 112:
-					
-					  break;
 				case 113:
-					 
-				    break;
 				case 114:
-					
-					
-				    break;
-					
 				case 115:
-				
-					
-					break;
-					
 				case 116: 
-				
-					
-					break;
-					
 				case 117:
-					 
-					   
-					break;
-					
 				case 118: 
-				
-					
-					break;
-					
 				case 119: 
-					break;
 				case 120: 
-					 
-					
-					break;
 				case 121:
-					 break;
 				case 122:
-					
-					  break;
 				case 123:
-					 
-				    break;
-				case 124:
-					
-					
-				    break;
-					
+				case 124:	
 				case 125:
-				
-					
-					break;
-					
 				case 126: 
-				
-					
-					break;
-					
 				case 127:
-					 
-					   
-					break;
-					
 				case 128: 
-				
-					
-					break;
-					
-				case 129: 
-					break;
+				case 129: // end colors
 				case 130: 
-					 
-					
+					String color = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(color)){
+						listOfColors.add(color);
+					}
 					break;
 				case 131:
-					 break;
-				case 132:
-					
+					String size = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(size)){
+						Size sizeVals = gbAttributeParser.getProductSize(size);
+						productConfiguration.setSizes(sizeVals);
+					}
+					break;
+				case 132: // imprint size
+					String imprintSize = cell.getStringCellValue();
+					if(StringUtils.isEmpty(imprintSize)){
+						List<ImprintSize> listOfImprintSizes = gbAttributeParser.getProductImprintSize(imprintSize);
+						productConfiguration.setImprintSize(listOfImprintSizes);
+					}
 					  break;
 				case 133:
 					 
@@ -621,9 +520,10 @@ public class GoldBondExcelMapping implements IExcelParser{
 					
 					break;
 					
-				case 139: 
+				case 139: // proof charge
+					//for pre-production proofs (as per comment)
 					break;
-				case 140: 
+				case 140: // reverse side imprint
 					 
 					
 					break;
@@ -678,27 +578,22 @@ public class GoldBondExcelMapping implements IExcelParser{
 					
 					
 				    break;
-					
 				case 155:
 				
 					
 					break;
-					
 				case 156: 
 				
 					
 					break;
-					
 				case 157:
 					 
 					   
 					break;
-					
 				case 158: 
 				
 					
 					break;
-					
 				case 159: 
 					break;
 				case 160: 
@@ -965,6 +860,9 @@ public class GoldBondExcelMapping implements IExcelParser{
 					
 					
 					break;
+				case 231:
+					
+					break;
 					
 				
 							
@@ -973,16 +871,6 @@ public class GoldBondExcelMapping implements IExcelParser{
 		}
 				productExcelObj.setPriceType("N");
 				String qurFlag = "n"; // by default for testing purpose
-			
-			
-				/*if(!finalSizes.contains(sizeValue)){
-					finalSizes = sizeValue +",";
-				}*/
-				/*if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
-					priceGrids = apparelPgParser.getPriceGrids(listOfPrices.toString(), 
-							listOfQuantity.toString(), "P", "USD",
-							         "", true, qurFlag, basePriceName,"",priceGrids);	
-				}*/
 				listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			}catch(Exception e){
@@ -994,8 +882,10 @@ public class GoldBondExcelMapping implements IExcelParser{
 		}
 		}
 		workbook.close();
-		
-	
+		 List<Color> listOfColor = gbAttributeParser.getProductColors(listOfColors.toString());
+		 productConfiguration.setColors(listOfColor);
+		 String desc = finalDescriptionValue(productExcelObj.getDescription(), productDescription.toString());
+		 productExcelObj.setDescription(desc);
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -1004,7 +894,6 @@ public class GoldBondExcelMapping implements IExcelParser{
 		 	}else{
 		 		
 		 	}
-		 	ProductDataStore.clearProductColorSet();
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
@@ -1035,29 +924,14 @@ public class GoldBondExcelMapping implements IExcelParser{
 		}
 		return productXid;
 	}
-	
-	public Size getProductSize(List<Value> sizeValues){
-		Size size = new Size();
-		Apparel appareal = new Apparel();
-		appareal.setValues(sizeValues);
-		appareal.setType(ApplicationConstants.SIZE_TYPE_STANDARD_AND_NUMBERED);
-		size.setApparel(appareal);
-		return size;
-	}
-	
-	public boolean isRepeateColumn(int columnIndex){
-		if(columnIndex != 5 && columnIndex != 6 && columnIndex != 8 && columnIndex != 10 
-				                                &&!(columnIndex >= 19 && columnIndex <= 27)){
-			return ApplicationConstants.CONST_BOOLEAN_TRUE;
+	private String finalDescriptionValue(String existingDesc,String newDesc){
+		if(!StringUtils.isEmpty(existingDesc)){
+			newDesc = newDesc + " "+existingDesc;
+			return newDesc;
+		} else{
+			return newDesc;
 		}
-		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
-	
-	public List<Material> getExistingProductMaterials(Product existingProduct){
-		ProductConfigurations configuration = existingProduct.getProductConfigurations();
-		return configuration.getMaterials();
-	}
-
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}
@@ -1072,6 +946,14 @@ public class GoldBondExcelMapping implements IExcelParser{
 	public void setProductDaoObj(ProductDao productDaoObj) {
 		this.productDaoObj = productDaoObj;
 	}
+	public GoldbondAttributeParser getGbAttributeParser() {
+		return gbAttributeParser;
+	}
+
+	public void setGbAttributeParser(GoldbondAttributeParser gbAttributeParser) {
+		this.gbAttributeParser = gbAttributeParser;
+	}
+
 
 	
 }
