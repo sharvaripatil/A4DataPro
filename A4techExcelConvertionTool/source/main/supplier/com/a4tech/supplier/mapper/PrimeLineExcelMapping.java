@@ -2,6 +2,7 @@ package com.a4tech.supplier.mapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import parser.primeline.PrimeLineAttributeParser;
+import parser.primeline.PrimeLineColorTabParser;
 import parser.wholesale.WholeSaleAttributeParser;
 import parser.wholesale.WholeSalePriceGridParser;
 
@@ -25,6 +28,7 @@ import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.FOBPoint;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.PriceGrid;
@@ -32,22 +36,25 @@ import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductionTime;
+import com.a4tech.product.model.RushTime;
+import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class WholeSaleExcelMapping  implements IExcelParser{
-	private static final Logger _LOGGER = Logger.getLogger(WholeSaleExcelMapping.class);
+public class PrimeLineExcelMapping  implements IExcelParser{
+	private static final Logger _LOGGER = Logger.getLogger(PrimeLineExcelMapping.class);
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
 	@Autowired
 	ObjectMapper mapperObj;
-	WholeSaleAttributeParser wholeSaleAttributeParser;
-	WholeSalePriceGridParser wholeSalePriceGridParser;
 	private LookupServiceData lookupServiceDataObj;
+	PrimeLineColorTabParser primeLineColorTabParser;
+	PrimeLineAttributeParser primeLineAttributeParser;
+	 private HashMap<String, Product> sheetMap =new HashMap<String, Product>();
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
-	
+		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		String finalResult = null;
@@ -72,10 +79,20 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 		  String upcPriceIncludes="";
 		  StringBuilder listOfQuantity = new StringBuilder();
 		  StringBuilder listOfPrices = new StringBuilder();
+		  String shippingitemValue="";
+			String shippingWeightValue="";
+			String shippingdimensionValue="";
+			String dimLen="";
+			String dimHieght="";
+			String dimWidth="";
+			List<String> listOfCategories = new ArrayList<>();
+		  
 		try{
-			 
-		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-	    Sheet sheet = workbook.getSheetAt(0);
+			_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
+	 for(int i=0;i<2;i++)
+		{
+		if(i==0){
+		Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
 	    String productId = null;
@@ -84,13 +101,13 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 	    boolean existingFlag=false;
 	    String q1 = null,q2= null,q3= null,q4= null,q5= null,q6=null;
 	    String baseDiscCode=null;
+	   // List<String> imagesList   = new ArrayList<String>();
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
-			if (nextRow.getRowNum() == 0){
+			/*if (nextRow.getRowNum() == 0){
 				Cell cell1=nextRow.getCell(8);
 				q1=cell1.getStringCellValue();
-				
 				cell1=nextRow.getCell(9);
 				q2=cell1.getStringCellValue();
 				cell1=nextRow.getCell(10);
@@ -100,9 +117,8 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 				cell1=nextRow.getCell(12);
 				q5=cell1.getStringCellValue();
 				cell1=nextRow.getCell(13);
-				q6=cell1.getStringCellValue();
-				
-			}
+				//q6=cell1.getStringCellValue();
+			}*/
 			if (nextRow.getRowNum() == 0)
 				continue;
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
@@ -127,7 +143,7 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							priceGrids=	 new ArrayList<PriceGrid>();
-							priceGrids = wholeSalePriceGridParser.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), baseDiscCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,"",
+							/*priceGrids = wholeSalePriceGridParser.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), baseDiscCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,"",
 										ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, "",
 										ApplicationConstants.CONST_STRING_EMPTY,1,null,null,priceGrids);	
 							
@@ -136,22 +152,24 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 								 priceGrids = wholeSalePriceGridParser.getPriceGrids(impucVal,"1",upcDicountCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,upcPriceIncludes, 
 										ApplicationConstants.CONST_BOOLEAN_FALSE, ApplicationConstants.CONST_STRING_FALSE, imprintMethodValue,
 										"Imprint Method",2,ApplicationConstants.CONST_STRING_SETUP_CHARGE,"Per Order",priceGrids);
-								}
+								}*/
 							productExcelObj.setPriceType("L");
 							productExcelObj.setPriceGrids(priceGrids);
 							productExcelObj.setProductConfigurations(productConfigObj);
-							/*_LOGGER.info("Product Data : "
+							sheetMap.put(productId,productExcelObj);
+							/*
+							_LOGGER.info("Product Data from sheet 1: "
 									+ mapperObj.writeValueAsString(productExcelObj));*/
-							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 /*int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
 							 		numOfProductsFailure.add("0");
 							 	}else{
 							 		
-							 	}
+							 	}*//*
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
-							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
+							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());*/
 								priceGrids = new ArrayList<PriceGrid>();
 								productConfigObj = new ProductConfigurations();
 								repeatRows.clear();
@@ -168,8 +186,13 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 								listOfPrices = new StringBuilder();
 								listOfQuantity=new StringBuilder();
 								baseDiscCode=null;
-								//ProductDataStore.clearSizesBrobery();
-
+								shippingitemValue="";
+								shippingWeightValue="";
+								shippingdimensionValue="";
+								 dimLen="";
+								 dimHieght="";
+								 dimWidth="";
+								 listOfCategories=new ArrayList<String>();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -183,7 +206,7 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 						    	 existingFlag=false;
 						     }else{
 						    	 _LOGGER.info("Existing Xid available,Processing existing Data");
-						    	 productExcelObj=wholeSaleAttributeParser.getExistingProductData(existingApiProduct,existingApiProduct.getProductConfigurations(),accessToken);
+						    	 productExcelObj=primeLineAttributeParser.getExistingProductData(existingApiProduct,existingApiProduct.getProductConfigurations(),accessToken);
 						    	 productConfigObj=productExcelObj.getProductConfigurations();
 								 existingFlag=true;
 								 // priceGrids = productExcelObj.getPriceGrids();
@@ -196,250 +219,157 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 						 }
 					}
 				}
-		
 				switch (columnIndex + 1) {
 					    case 1://XID
-						//productId=xid;//CommonUtility.getCellValueStrinOrInt(cell);
+						productId=xid;//CommonUtility.getCellValueStrinOrInt(cell);
 						productExcelObj.setExternalProductId(xid);
 						break;
-						case 2://Item#
-							//product number based on color
+						case 2://ITEMID
 						break;
-
-						case 3://Description
-							String productName = CommonUtility.getCellValueStrinOrInt(cell);
-							//productName = CommonUtility.removeSpecialSymbols(productName,specialCharacters);
-							int len=productName.length();
-							 if(len>60){
-								String strTemp=productName.substring(0, 60);
-								int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
-								productName=(String) strTemp.subSequence(0, lenTemp);
-							}
+						case 3://ITEMNAME
+							String productName=CommonUtility.getCellValueStrinOrDecimal(cell);
 							productExcelObj.setName(productName);
-							 
-						break;
-
-						case 4://Category
-							//already processed while doing get..
-						break;
-
-						case 5://MKT DECRIPTION
-							descOne=CommonUtility.getCellValueStrinOrInt(cell);
-							if(!StringUtils.isEmpty(descOne)){
-								int length=descOne.length();
-								 if(length>800){
-									String strTemp=descOne.substring(0, 800);
-									int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
-									descOne=(String) strTemp.subSequence(0, lenTemp);
-								}
-								productExcelObj.setDescription(descOne);
-							}
-						break;
-
-						case 6://FEATURES
-							String descTwo=CommonUtility.getCellValueStrinOrInt(cell);
-							if(!StringUtils.isEmpty(descTwo)){
-								if(!StringUtils.isEmpty(descOne)){
-									descTwo=descOne+descTwo;
-								}
-							if(!StringUtils.isEmpty(descTwo)){
-								int length=descTwo.length();
-								 if(length>800){
-									String strTemp=descTwo.substring(0, 800);
-									int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
-									descTwo=(String) strTemp.subSequence(0, lenTemp);
-								}
-							}
-							productExcelObj.setDescription(descTwo);
-							}
-						break;
-
-						case 7://Print Method
-						imprintMethodValue=CommonUtility.getCellValueStrinOrInt(cell);
-						if(!existingFlag)
-						{
-							
-							 if(!StringUtils.isEmpty(imprintMethodValue)&& !imprintMethodValue.equalsIgnoreCase("BLANK")){
-								 if(imprintMethodValue.contains("Laser")){
-									 imprintMethodValue="Laser Engraved";
-									}else if(imprintMethodValue.toUpperCase().contains("TRANSFOR")){
-										imprintMethodValue="Printed";	
+							break;
+						case 4://NEW?
+							break;
+						case 5://CUSTOM?
+							break;
+						case 6://DISCOUNT?
+							break;
+						case 7://RUSH?
+							String rushTime=CommonUtility.getCellValueStrinOrDecimal(cell);
+							if(!StringUtils.isEmpty(rushTime)){
+								String tempRushVal=rushTime;
+									if(rushTime.contains("Week") || rushTime.contains("Weeks")){
+										rushTime=removeSpecialChar(rushTime);
+										rushTime=rushTime.trim();
+										if(rushTime.contains("-")){
+											String arrTemp[]=rushTime.split("-");
+											rushTime=arrTemp[1];
+											int inWeekVal=5 * Integer.parseInt(rushTime);
+											rushTime=Integer.toString(inWeekVal);
+											
+										}else{
+											rushTime=removeSpecialChar(rushTime);
+											rushTime=rushTime.trim();
+											int inWeekVal=5 * Integer.parseInt(rushTime);
+											rushTime=Integer.toString(inWeekVal);
+										}
 									}
-						   // imprintMethodValue=CommonUtility.getCellValueStrinOrInt(cell);
-						    imprintMethodList=wholeSaleAttributeParser.getImprintCriteria(imprintMethodValue, imprintMethodList);
-						    productConfigObj.setImprintMethods(imprintMethodList);
-						}
-						}else{
-							imprintMethodValue=null;
-						}
-						break;
-
-						case 8://Imprint Area
-							String impSize=CommonUtility.getCellValueStrinOrInt(cell);
-							if(!StringUtils.isEmpty(impSize)){
-								List<ImprintSize> imprintSizeList=new ArrayList<ImprintSize>();
-								ImprintSize impsObj=new ImprintSize();
-								impsObj.setValue(impSize);
-								imprintSizeList.add(impsObj);
-								productConfigObj.setImprintSize(imprintSizeList);
-							}
-							
-						break;
-
-						case 9://QTY/ 6
-							String	listPrice1=null;
-							listPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
-							if(!StringUtils.isEmpty(listPrice1)){
-					        	 listOfPrices.append(listPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					        	 listOfQuantity.append(q1.toUpperCase().replace("QTY/","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					         }
-						break;
-
-						case 10://QTY/50
-							String	listPrice2=null;
-							listPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
-							if(!StringUtils.isEmpty(listPrice2)){
-					        	 listOfPrices.append(listPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					        	 listOfQuantity.append(q2.toUpperCase().replace("QTY/","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					         }
-						break;
-
-						case 11://QTY/100
-							String	listPrice3=null;
-							listPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
-							if(!StringUtils.isEmpty(listPrice3)){
-					        	 listOfPrices.append(listPrice3).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					        	 listOfQuantity.append(q3.toUpperCase().replace("QTY/","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					         }
-						break;
-
-						case 12://QTY/250
-							String	listPrice4=null;
-							listPrice4=CommonUtility.getCellValueStrinOrDecimal(cell);
-							if(!StringUtils.isEmpty(listPrice4)){
-					        	 listOfPrices.append(listPrice4).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					        	 listOfQuantity.append(q4.toUpperCase().replace("QTY/","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					         }
-						break;
-
-						case 13://QTY/500
-							String	listPrice5=null;
-							listPrice5=CommonUtility.getCellValueStrinOrDecimal(cell);
-							if(!StringUtils.isEmpty(listPrice5)){
-					        	 listOfPrices.append(listPrice5).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					        	 listOfQuantity.append(q5.toUpperCase().replace("QTY/","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					         }
-						break;
-
-						case 14://QTY/1000
-							String	listPrice6=null;
-							listPrice6=CommonUtility.getCellValueStrinOrDecimal(cell);
-							if(!StringUtils.isEmpty(listPrice6)){
-					        	 listOfPrices.append(listPrice6).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					        	 listOfQuantity.append(q6.toUpperCase().replace("QTY/","").trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					         }
-						break;
-
-						case 15://Price Class 
-							baseDiscCode = cell.getStringCellValue();
-							 if(!StringUtils.isEmpty(baseDiscCode)){
-								 baseDiscCode=baseDiscCode.toUpperCase().replace("CLASS", "").trim();
-							 }
-						break;
-
-						case 16://Setup
-							//upcharges for imprint method
-							 impucVal=CommonUtility.getCellValueStrinOrDecimal(cell);//getCellValueStrinOrInt(cell);
-							 if(!StringUtils.isEmpty(impucVal)){
-								 impucVal=removeSpecialChar(impucVal.toUpperCase());
-							 }
-							
-						break;
-
-						case 17://Setup Class
-							 upcDicountCode=CommonUtility.getCellValueStrinOrInt(cell);
-							 if(!StringUtils.isEmpty(upcDicountCode)){
-								 upcDicountCode=removeSpecialChar(upcDicountCode.toUpperCase());
-							 }
-							
-						break;
-
-						case 18://Notes
-							 upcPriceIncludes=CommonUtility.getCellValueStrinOrInt(cell);
-						break;
-
-						case 19://Production Time
-						String	prodTime =CommonUtility.getCellValueStrinOrInt(cell);
-						 List<ProductionTime> prodTimeList=new ArrayList<ProductionTime>();
-						 String detailsValue="";
-							if(!StringUtils.isEmpty(prodTime)){
-								if(prodTime.toLowerCase().contains("week")){
-									prodTime=removeSpecialChar(prodTime);
-									if(prodTime.contains("-")){
-										String arrTemp[]=prodTime.split("-");
-										prodTime=arrTemp[1];
-										int inWeekVal=5 * Integer.parseInt(prodTime.trim());
-										prodTime=Integer.toString(inWeekVal);
-										detailsValue="Day";
-									}else{
-										prodTime=removeSpecialChar(prodTime);
-										int inWeekVal=5 * Integer.parseInt(prodTime.trim());
-										prodTime=Integer.toString(inWeekVal);
-										detailsValue="Day";
+									if(rushTime.contains("Hour")|| rushTime.contains("Hours")){
+										rushTime="1";
 									}
+									if(rushTime.contains("Day") || rushTime.contains("Days")){
+										rushTime=removeSpecialChar(rushTime);
+										rushTime=rushTime.trim();
+									}
+									rushTime=rushTime.replaceAll("-","");
+									RushTime rushObj=primeLineAttributeParser.getRushTimeValues(rushTime.trim(), tempRushVal);
+									productConfigObj.setRushTime(rushObj);
 								}
-								
-								if(prodTime.toLowerCase().contains("hour")){
-									prodTime=removeSpecialChar(prodTime);
-									prodTime="1";
-									detailsValue="Day";
-								}
-								
-								if(prodTime.toLowerCase().contains("day")){
-									prodTime=removeSpecialChar(prodTime);
-									detailsValue="Day";
-								}
-								
-							    prodTimeList=wholeSaleAttributeParser.getProdTimeCriteria(prodTime.trim(), detailsValue,prodTimeList);
-								productConfigObj.setProductionTime(prodTimeList);
+							break;
+						case 8://WEBSITEIMAGEPATH
+							String largeImage = CommonUtility.getCellValueStrinOrDecimal(cell);
+							if(!StringUtils.isEmpty(largeImage)){
+								//imagesList.add(largeImage);
+							List<Image> listOfImages = primeLineAttributeParser.getImages(largeImage);
+							productExcelObj.setImages(listOfImages);
 							}
 							break;
-						
-						
-						case 20://F.O.B
-							if(!existingFlag)
-							{
-							List<String> fobPointsTemp=lookupServiceDataObj.getFobPoints(accessToken);
-							if(!CollectionUtils.isEmpty(fobPointsTemp)){
-							String tempValue=null;
-							for (String string : fobPointsTemp) {
-								if(string.toUpperCase().contains("NY")){
-									tempValue=string;
-								}
-							}
-							if(!StringUtils.isEmpty(tempValue)){
-								List<FOBPoint>	fobPoints=new ArrayList<FOBPoint>();
-								FOBPoint fobObj=new FOBPoint();
-								fobObj.setName(tempValue);
-								fobPoints.add(fobObj);
-								productExcelObj.setFobPoints(fobPoints);
-								//fobPoints.add(e)
-							}
-							}
-							}
+							/*case 9://QUANTITYBREAK1
+							break;
+						case 10://QUANTITYBREAK2
+							break;
+						case 11://QUANTITYBREAK3
+							break;
+						case 12://QUANTITYBREAK4
+							break;
+						case 13://QUANTITYBREAK5
+							break;
+						case 14://NETPRICE1
+							break;
+						case 15://NETPRICE2
+							break;
+						case 16://NETPRICE3
+							break;
+						case 17://NETPRICE4
+							break;
+						case 18://NETPRICE5
+							break;
+						case 19://GROSSPRICE1
+							break;
+						case 20://GROSSPRICE2
+							break;
+						case 21://GROSSPRICE2
+							break;
+						case 22://GROSSPRICE4
+							break;
+						case 23://GROSSPRICE5
+							break;
+						case 24://NETPRICE_CAD1
+							break;
+						case 25://NETPRICE_CAD2
+							break;
+						case 26://NETPRICE_CAD3
+							break;
+						case 27://NETPRICE_CAD4
+							break;
+						case 28://NETPRICE_CAD5
+							break;
+						case 29://GROSSPRICE_CAD1
+							break;
+						case 30://GROSSPRICE_CAD2
+							break;
+						case 31://GROSSPRICE_CAD2
+							break;
+						case 32://GROSSPRICE_CAD4
+							break;
+						case 33://GROSSPRICE_CAD5
 							break;
 							
-						case 21://BLANKS
-							
-							String unImprintVal=CommonUtility.getCellValueStrinOrInt(cell);
-							 if(!StringUtils.isEmpty(unImprintVal)&& !unImprintVal.equalsIgnoreCase("BLANK")){
-							if(unImprintVal.equalsIgnoreCase("Yes")){
-						    imprintMethodList=wholeSaleAttributeParser.getImprintCriteria("UNIMPRT", imprintMethodList);
-						    productConfigObj.setImprintMethods(imprintMethodList);
-							}
-							 }
+							*/
+						case 34://PIECESPERCARTON
+							shippingitemValue=CommonUtility.getCellValueStrinOrDecimal(cell);
 							break;
-						
+						case 35://WEIGHTPERCARTON
+							shippingWeightValue=CommonUtility.getCellValueStrinOrDecimal(cell);
+							break;
+						case 36://CARTONLENGTH
+							dimLen=CommonUtility.getCellValueStrinOrDecimal(cell);
+							
+							break;
+						case 37://CARTONHEIGHT
+							dimHieght=CommonUtility.getCellValueStrinOrDecimal(cell);
+							break;
+						case 38://CARTONWIDTH
+							dimWidth=CommonUtility.getCellValueStrinOrDecimal(cell);
+							ShippingEstimate shippObject=primeLineAttributeParser.getShippingEstimates(shippingitemValue,shippingWeightValue,
+									  dimLen, dimHieght, dimWidth);
+							productConfigObj.setShippingEstimates(shippObject);
+							break;
+							
+						case 39://LxHxW IGNORE filed
+							break;
+						case 40://AX_CATEGORY
+							String category=CommonUtility.getCellValueStrinOrDecimal(cell);
+							if(!StringUtils.isEmpty(category)){
+							primeLineAttributeParser.getCategories(category,listOfCategories);
+							}
+							break;
+						case 41://AX_SUBCATEGORY
+							String category1=CommonUtility.getCellValueStrinOrDecimal(cell);
+							if(!StringUtils.isEmpty(category1)){
+							primeLineAttributeParser.getCategories(category1,listOfCategories);
+							}
+							break;
+						case 42://AX_WEBCATEGORY
+							String category2=CommonUtility.getCellValueStrinOrDecimal(cell);
+							if(!StringUtils.isEmpty(category2)){
+							primeLineAttributeParser.getCategories(category2,listOfCategories);
+							}
+							break;
+						case 43://DISCOUNTCODE
+							break;
 				}  // end inner while loop					 
 			}		
 			}catch(Exception e){
@@ -462,7 +392,7 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 		//productExcelObj.setPriceGrids(priceGrids);
 		
 		priceGrids=	 new ArrayList<PriceGrid>();
-		priceGrids = wholeSalePriceGridParser.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), baseDiscCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,"",
+		/*priceGrids = wholeSalePriceGridParser.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), baseDiscCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,"",
 					ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, "",
 					ApplicationConstants.CONST_STRING_EMPTY,1,null,null,priceGrids);	
 		
@@ -471,13 +401,13 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 			 priceGrids = wholeSalePriceGridParser.getPriceGrids(impucVal,"1",upcDicountCode,ApplicationConstants.CONST_STRING_CURRENCY_USD,upcPriceIncludes, 
 					ApplicationConstants.CONST_BOOLEAN_FALSE, ApplicationConstants.CONST_STRING_FALSE, imprintMethodValue,
 					"Imprint Method",2,ApplicationConstants.CONST_STRING_SETUP_CHARGE,"Per Order",priceGrids);
-			}
+			}*/
 		productExcelObj.setPriceType("L");
 		productExcelObj.setPriceGrids(priceGrids);
 		productExcelObj.setProductConfigurations(productConfigObj);
 		 	/*_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));*/
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	/*int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
@@ -486,7 +416,8 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
-	    productDaoObj.saveErrorLog(asiNumber,batchId);
+	    productDaoObj.saveErrorLog(asiNumber,batchId);*/
+		sheetMap.put(productId,productExcelObj);
 		priceGrids = new ArrayList<PriceGrid>();
 		productConfigObj = new ProductConfigurations();
 		repeatRows.clear();
@@ -503,6 +434,21 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 		listOfPrices = new StringBuilder();
 		listOfQuantity=new StringBuilder();
 		baseDiscCode=null;
+		shippingitemValue="";
+		shippingWeightValue="";
+		shippingdimensionValue="";
+		dimLen="";
+		 dimHieght="";
+		 dimWidth="";
+		 listOfCategories=new ArrayList<String>();
+				}else if(i==1){
+					sheetMap=primeLineColorTabParser.readColorTab( accessToken, workbook , asiNumber , batchId,sheetMap);
+				}else if(i==2){
+					System.out.println("Hi");
+				}else if(i==3){
+					
+				}
+			}
 		return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet " +e.getMessage());
@@ -526,7 +472,7 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 		Cell xidCell =  row.getCell(0);
 		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
 		if(StringUtils.isEmpty(productXid) || productXid.trim().equalsIgnoreCase("#N/A")){
-		     xidCell = row.getCell(3);
+		     xidCell = row.getCell(1);
 		     productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
 		}
 		return productXid;
@@ -588,42 +534,39 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 	public void setMapperObj(ObjectMapper mapperObj) {
 		this.mapperObj = mapperObj;
 	}
-
-
-
-	public WholeSaleAttributeParser getWholeSaleAttributeParser() {
-		return wholeSaleAttributeParser;
-	}
-
-
-
-	public void setWholeSaleAttributeParser(
-			WholeSaleAttributeParser wholeSaleAttributeParser) {
-		this.wholeSaleAttributeParser = wholeSaleAttributeParser;
-	}
-	
 	
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;
 	}
 
-
-
 	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
 		this.lookupServiceDataObj = lookupServiceDataObj;
 	}
-	
-	
 
-	public WholeSalePriceGridParser getWholeSalePriceGridParser() {
-		return wholeSalePriceGridParser;
+	
+	public PrimeLineColorTabParser getPrimeLineColorTabParser() {
+		return primeLineColorTabParser;
 	}
 
 
 
-	public void setWholeSalePriceGridParser(
-			WholeSalePriceGridParser wholeSalePriceGridParser) {
-		this.wholeSalePriceGridParser = wholeSalePriceGridParser;
+	public void setPrimeLineColorTabParser(
+			PrimeLineColorTabParser primeLineColorTabParser) {
+		this.primeLineColorTabParser = primeLineColorTabParser;
+	}
+	
+	
+
+
+	public PrimeLineAttributeParser getPrimeLineAttributeParser() {
+		return primeLineAttributeParser;
+	}
+
+
+
+	public void setPrimeLineAttributeParser(
+			PrimeLineAttributeParser primeLineAttributeParser) {
+		this.primeLineAttributeParser = primeLineAttributeParser;
 	}
 
 

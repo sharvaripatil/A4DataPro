@@ -158,7 +158,7 @@ public class WholeSalePriceGridParser  {
 		List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
 		try{
 			Integer sequence = 1;
-			List<PriceConfiguration> configuration = null;
+			//List<PriceConfiguration> configuration = null;
 			PriceGrid priceGrid = new PriceGrid();
 			priceGrid.setIsBasePrice(true);
 			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);

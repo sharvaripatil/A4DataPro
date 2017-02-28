@@ -19,11 +19,9 @@ import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
-
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
-
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
-
+import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 
 
@@ -46,11 +44,9 @@ public class ExcelFactory {
     private CrystalDExcelMapping cdExcelMapping;
     private GoldstarCanadaExcelMapping goldcanadaExcelMapping;
  //   private CutterBuckSheetParser cbSheetParser;
-
 	private HighCaliberLineExcelMapping hcLineExcelMapping;
-
-
 	private WholeSaleExcelMapping wholeSaleExcelMapping;
+	private PrimeLineExcelMapping primeLineExcelMapping;
 	
 
 
@@ -96,6 +92,9 @@ public class ExcelFactory {
 
 		   }else if(name.equalsIgnoreCase("wholeSale") || name.equals("91284")){
 			   return wholeSaleExcelMapping;
+
+		   }else if(name.equalsIgnoreCase("prime") || name.equals("79530")){
+			   return primeLineExcelMapping;
 
 		   }
 		   
@@ -257,6 +256,14 @@ public class ExcelFactory {
 
 	public void setWholeSaleExcelMapping(WholeSaleExcelMapping wholeSaleExcelMapping) {
 		this.wholeSaleExcelMapping = wholeSaleExcelMapping;
+	}
+
+	public PrimeLineExcelMapping getPrimeLineExcelMapping() {
+		return primeLineExcelMapping;
+	}
+
+	public void setPrimeLineExcelMapping(PrimeLineExcelMapping primeLineExcelMapping) {
+		this.primeLineExcelMapping = primeLineExcelMapping;
 	}
 	
 	
