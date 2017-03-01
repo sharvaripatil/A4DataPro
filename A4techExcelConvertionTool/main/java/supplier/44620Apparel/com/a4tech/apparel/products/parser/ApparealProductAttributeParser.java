@@ -19,6 +19,7 @@ import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.Personalization;
+import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -152,20 +153,30 @@ public class ApparealProductAttributeParser {
 		data = data.replaceAll("(&|and|or)", ApplicationConstants.CONST_DELIMITER_COMMA);
 		ImprintMethod	imprintMethodObj = null;	
 		List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+		
 		String[] imprintMethodValues = data.split(ApplicationConstants.CONST_DELIMITER_COMMA);
 		for (String imprintMethodName : imprintMethodValues) {
 			imprintMethodObj = new ImprintMethod();
+			String alias = "";
 			if(imprintMethodName.contains("Embroidery")){
+				alias = imprintMethodName.trim().toUpperCase();
 			imprintMethodName=imprintMethodName.replace("Embroidery", "Embroidered");
 		    } else if(imprintMethodName.contains(" Appliqué")){
     		  imprintMethodName=imprintMethodName.replaceAll("é", "e");
+    		  alias = imprintMethodName.trim().toUpperCase();
 	        } else if(imprintMethodName.contains("Screen Print")){
+	        	 alias = imprintMethodName.trim().toUpperCase();
 	        	imprintMethodName = "Silkscreen";
 	        }
-			imprintMethodName = imprintMethodName.trim();
-			  if(lookupServiceData.isImprintMethod(imprintMethodName.toUpperCase())){
+			imprintMethodName = imprintMethodName.trim().toUpperCase();
+			  if(lookupServiceData.isImprintMethod(imprintMethodName)){
 				  imprintMethodObj.setType(imprintMethodName);
-				  imprintMethodObj.setAlias(imprintMethodName);
+				  if(StringUtils.isEmpty(alias)){
+					  imprintMethodObj.setAlias(imprintMethodName);
+				  } else{
+					  imprintMethodObj.setAlias(alias);
+				  }
+				  
 			  }else{
 				  imprintMethodObj.setType(ApplicationConstants.CONST_VALUE_TYPE_OTHER);
 				  imprintMethodObj.setAlias(imprintMethodName);
@@ -322,7 +333,7 @@ public class ApparealProductAttributeParser {
 			for (PriceGrid priceGrid : oldPriceGrid) {
 				   if(priceGrid.getIsBasePrice()){
 					   continue;
-				   } else if(isnewPriceGrid(priceGrid.getUpchargeType())){
+				   } else if(isnewPriceGrid(priceGrid.getPriceConfigurations())){
 					   continue;
 				   } else {
 					   newPriceGrids.add(priceGrid);
@@ -334,12 +345,14 @@ public class ApparealProductAttributeParser {
 		}
 		return existingProduct;
 	}
-	private boolean isnewPriceGrid(String chargeType){
-		if(chargeType.equalsIgnoreCase("Imprint Method Charge") || chargeType.equalsIgnoreCase("Personalization") 
-				|| chargeType.equalsIgnoreCase("Product Material Charge") || chargeType.equalsIgnoreCase("Packaging Charge") 
-				|| chargeType.equalsIgnoreCase("Product Color Charge") || chargeType.equalsIgnoreCase("Product Size Charge")
-				){
-			return true;
+	private boolean isnewPriceGrid(List<PriceConfiguration> priceConfig){
+		 for (PriceConfiguration priceConfiguration : priceConfig) {
+			   if(priceConfiguration.getCriteria().equalsIgnoreCase("Material") ||
+					   priceConfiguration.getCriteria().equalsIgnoreCase("Packaging") ||
+					   priceConfiguration.getCriteria().equalsIgnoreCase("Product Color") ||
+					   priceConfiguration.getCriteria().equalsIgnoreCase("Size") ){
+				   return true;
+			   }
 		}
 		return false;
 		

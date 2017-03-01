@@ -393,8 +393,8 @@
 		<property name="goldcanadaExcelMapping" ref="goldcanadaExcelMappingId"/>
  		<property name="hcLineExcelMapping" ref="highCaliberLineExcelMappingId"/>
 		<property name="wholeSaleExcelMapping" ref="wholeSaleExcelMappingId"/>
-		<property name="milestoneExcelMapping" ref="milestoneExcelMappingId"/>
-		
+		<property name="milestoneExcelMapping" ref="milestoneExcelMappingId"/>		
+		<property name="goldBandExcelMapping" ref="goldBondExcelMappingId"/>
 
      </bean>
      
@@ -585,6 +585,7 @@
 	</bean>
         <!-- supplier WholeSale configuration end --> 
 
+
      <!-- supplier Milestone configuration start -->
       <bean id="milestoneExcelMappingId" class="com.a4tech.supplier.mapper.MilestoneExcelMapping">
       <property name="postServiceImpl" ref="postService"/>
@@ -604,6 +605,18 @@
     
     
      <!-- supplier Milestone configuration end --> 
+
+    <bean id="goldBondExcelMappingId" class="com.a4tech.supplier.mapper.GoldBondExcelMapping">
+    	 <property name="postServiceImpl" ref="postService"/>
+         <property name="productDaoObj" ref="productDao"/>
+         <property name="gbAttributeParser" ref="goldbondAttributeParserId"/>
+    </bean>
+    <bean id="goldbondAttributeParserId" class="parser.goldbond.GoldbondAttributeParser">
+    	<property name="gbPriceGridParser" ref="goldbondPriceGridParser"/>
+    </bean>
+     <bean id="goldbondPriceGridParser" class="parser.goldbond.GoldbondPriceGridParser"/>
+     
+
     
 </beans>
 

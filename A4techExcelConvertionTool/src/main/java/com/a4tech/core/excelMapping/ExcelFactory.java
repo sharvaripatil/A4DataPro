@@ -19,6 +19,7 @@ import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
+import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
@@ -43,16 +44,19 @@ public class ExcelFactory {
     private CutterBuckExcelMapping cbExcelMapping;
     private CrystalDExcelMapping cdExcelMapping;
     private GoldstarCanadaExcelMapping goldcanadaExcelMapping;
+
     private MilestoneExcelMapping milestoneExcelMapping;
  //   private CutterBuckSheetParser cbSheetParser;
 
 	private HighCaliberLineExcelMapping hcLineExcelMapping;
 
 
+
+
+
 	private WholeSaleExcelMapping wholeSaleExcelMapping;
+	private GoldBondExcelMapping  goldBandExcelMapping;
 	
-
-
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -92,15 +96,21 @@ public class ExcelFactory {
 
 		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
 			   return hcLineExcelMapping;
-
 		   }else if(name.equalsIgnoreCase("wholeSale") || name.equals("91284")){
+
 			   return wholeSaleExcelMapping;
 
 		   }
 		   else if(name.equalsIgnoreCase("milestone") || name.equals("71173")){
 			   return milestoneExcelMapping;
 
+		   
+
+			  
+		   }else if(name.equalsIgnoreCase("goldBond") || name.equals("57653")){
+			   return goldBandExcelMapping;
 		   }
+
 		   
 		return null;
 	}
@@ -261,6 +271,7 @@ public class ExcelFactory {
 		this.wholeSaleExcelMapping = wholeSaleExcelMapping;
 	}
 
+
 	public MilestoneExcelMapping getMilestoneExcelMapping() {
 		return milestoneExcelMapping;
 	}
@@ -268,6 +279,16 @@ public class ExcelFactory {
 	public void setMilestoneExcelMapping(MilestoneExcelMapping milestoneExcelMapping) {
 		this.milestoneExcelMapping = milestoneExcelMapping;
 	}
+
+	public GoldBondExcelMapping getGoldBandExcelMapping() {
+		return goldBandExcelMapping;
+	}
+
+	public void setGoldBandExcelMapping(GoldBondExcelMapping goldBandExcelMapping) {
+		this.goldBandExcelMapping = goldBandExcelMapping;
+	}
+
+
 	
 
 }

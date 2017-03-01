@@ -29,14 +29,15 @@
 <div class="top-content">
   <div class="inner-bg">
     <div class="container logo">
-     <div class="row"> <img src="resources/img/testlogo.png" alt="" height="80px"/> <br/><br/></div>
+     <div class="row"> <img src="resources/img/testlogo.png" alt="" height="80px"/> <br/><br/>
+     </div>
     <!--   <div class="row">
         <div class="col-sm-8 col-sm-offset-2 text">
           <h1><strong>A<sup>4</sup></strong> DataPro </h1>
         </div>
       </div> -->
       <div class="row">
-        <div class="col-sm-6 book"> <img src="resources/img/ebook.png" alt="" height="384px"> </div>
+        <div class="col-sm-6 book"> <img src="resources/img/ebook.png" alt="" height="384px"><br/><a href="loginFtp" style="margin-top:1%" class="btn btn-success btn-lg">Login Ftp Page</a></div>
         <div class="col-sm-5">
           <div class="form-bottom">
             <form:form name="uploadBean" enctype="multipart/form-data" modelAttribute="filebean">
@@ -79,11 +80,15 @@
                   </svg>
                   <span>Choose a file&hellip;</span></label>
                   <p id="asifile" class="txt_red"></p>
+                 
               </div>
               <!--  <form:button value="submit" class="btn1 btn-primary btn-lg pull-right btn-success has-spinner" id="submit">Submit</form:button>   -->
              <form:button value="submit" class="btn1 btn-primary btn-lg pull-right" id="load" data-loading-text="<i class='fa fa-spinner fa-spin '></i>Uploading.." onclick="return validateForm()">Submit</form:button>
+               
             </form:form>
+         
           </div>
+        
         </div>
       </div>
     </div>
