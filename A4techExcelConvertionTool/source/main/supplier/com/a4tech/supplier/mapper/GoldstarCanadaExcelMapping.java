@@ -271,7 +271,8 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 								 dimensionValue = new StringBuilder();
 								 dimensionUnits = new StringBuilder();
 								 dimensionType = new StringBuilder();
-								
+								 priceIncludes = new StringBuilder();
+								 priceIncludesValue=null;
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid.trim());
@@ -588,11 +589,11 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					      break;
 				case 45:  // priceIncludeClr
 					    
-					      priceIncludes.append(cell.getStringCellValue()).append("");
+					      priceIncludes.append(cell.getStringCellValue()).append(" ");
 					     break;
 				case 46: // priceIncludeSide
 						
-						priceIncludes.append(cell.getStringCellValue()).append("");
+						priceIncludes.append(cell.getStringCellValue()).append(" ");
 						
 						break;
 				case 47: // priceIncludeLoc
@@ -948,7 +949,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 				case 107: //ProdTimeHi
 					String prodTimeHi = CommonUtility.getCellValueStrinOrInt(cell);
 					ProductionTime productionTime = new ProductionTime();
-					ProductionTime productionTime1 = new ProductionTime();
+				
 
 					if(prodTimeLo.equalsIgnoreCase(prodTimeHi))
 					{
@@ -957,15 +958,12 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					}
 					else
 					{
-						productionTime.setBusinessDays(prodTimeLo);
-						productionTime1.setBusinessDays(prodTimeHi);
+						String prodTimeTotal="";
+						prodTimeTotal=prodTimeTotal.concat(prodTimeLo).concat("-").concat(prodTimeHi);
+						productionTime.setBusinessDays(prodTimeTotal);
 						listOfProductionTime.add(productionTime);
-						listOfProductionTime.add(productionTime1);
-
+					
 					}
-					
-					
-					
 					break;
 				case 108://RushProdTimeLo
 					String rushProdTimeLo  = cell.getStringCellValue();
@@ -1179,7 +1177,9 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 			 dimensionValue = new StringBuilder();
 			 dimensionUnits = new StringBuilder();
 			 dimensionType = new StringBuilder();
-
+			 priceIncludesValue=null;
+			 priceIncludes = new StringBuilder();
+			 
 	       return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet "+e.getMessage());
