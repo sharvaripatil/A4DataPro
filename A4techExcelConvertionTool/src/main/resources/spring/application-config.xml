@@ -599,7 +599,9 @@
       </bean>
  
     <bean id="MilestoneColorParserId" class="parser.milestone.MilestoneColorParser" />
-    <bean id="attrtiParserObjId" class="parser.milestone.ProductAttributeParser" />
+    <bean id="attrtiParserObjId" class="parser.milestone.ProductAttributeParser" >
+    <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+    </bean>
     <bean id="pricegridParserObjId" class="parser.milestone.MilestonePriceGridParser" />
      
     

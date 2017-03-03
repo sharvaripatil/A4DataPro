@@ -2,53 +2,43 @@ package com.a4tech.supplier.mapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
-
 import parser.milestone.MilestoneColorParser;
+import parser.milestone.MilestoneLookupData;
 import parser.milestone.MilestonePriceGridParser;
 import parser.milestone.ProductAttributeParser;
-
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductionTime;
-import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
-import com.a4tech.sage.product.parser.CatalogParser;
-import com.a4tech.sage.product.parser.DimensionParser;
-import com.a4tech.sage.product.parser.ImprintMethodParser;
-import com.a4tech.sage.product.parser.OriginParser;
-import com.a4tech.sage.product.parser.PackagingParser;
-import com.a4tech.sage.product.parser.PriceGridParser;
-import com.a4tech.sage.product.parser.RushTimeParser;
-import com.a4tech.sage.product.parser.ShippingEstimateParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -65,33 +55,47 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 	private MilestonePriceGridParser pricegridParserObj;
 
 
-	private CatalogParser   catalogParser;
-	private PriceGridParser priceGridParser;
-	private ImprintMethodParser imprintMethodParser;
-	private OriginParser       originParser;
-	private RushTimeParser    rushTimeParser;
-	private PackagingParser	packagingParser;
-	private ShippingEstimateParser shippingEstimateParser;
 
 
 	
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
-		List<String> numOfProductsSuccess = new ArrayList<String>();
-		List<String> numOfProductsFailure = new ArrayList<String>();
-		String finalResult = null;
-		Set<String>  productXids = new HashSet<String>();
+		  List<String> numOfProductsSuccess = new ArrayList<String>();
+		  List<String> numOfProductsFailure = new ArrayList<String>();
+		
+		  Set<String>  productXids = new HashSet<String>();
+		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
+		  List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
+		  List<ImprintLocation> listImprintLocation = new ArrayList<ImprintLocation>();
+		  List<ImprintMethod> listOfImprintMethods = new ArrayList<ImprintMethod>();
+		  List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
+		  List<String> productKeywords = new ArrayList<String>();
+		  List<Theme> themeList = new ArrayList<Theme>();
+		  List<Catalog> catalogList = new ArrayList<Catalog>();
+		  List<Values> valuesList =new ArrayList<Values>();
+		  List<FOBPoint> FobPointsList = new ArrayList<FOBPoint>();
+		  List<Color> color = new ArrayList<Color>();
+
+
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
-		  String productId = null;
-		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
-		  
-		  StringBuilder dimensionValue = new StringBuilder();
-		  StringBuilder dimensionUnits = new StringBuilder();
-		  StringBuilder dimensionType = new StringBuilder();
 		  Dimension finalDimensionObj=new Dimension();
 		  Size size=new Size();
+		  FOBPoint fobPintObj=new FOBPoint();
+		  String productName = null;
+		  String productId = null;
+		  String finalResult = null;
 		  
+			StringBuilder listOfQuantity = new StringBuilder();
+			StringBuilder listOfPrices = new StringBuilder();
+			StringBuilder listOfDiscount = new StringBuilder();
+			StringBuilder priceIncludes = new StringBuilder();
+			StringBuilder pricesPerUnit = new StringBuilder();
+			StringBuilder dimensionValue = new StringBuilder();
+			StringBuilder dimensionUnits = new StringBuilder();
+			StringBuilder dimensionType = new StringBuilder();
+			StringBuilder ImprintSizevalue = new StringBuilder();
+
 
 		try{
 			 
@@ -99,17 +103,10 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 	    Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
-		
-		
-		StringBuilder listOfQuantity = new StringBuilder();
-		StringBuilder listOfPrices = new StringBuilder();
-		StringBuilder listOfDiscount = new StringBuilder();
 	
 		String themeValue=null;
-		String		priceCode = null;
-		StringBuilder pricesPerUnit = new StringBuilder();
-		String quoteUponRequest  = null;
-		StringBuilder priceIncludes = new StringBuilder();
+		String priceCode = null;
+		String quoteUponRequest=null;
 		String quantity = null;
 		String cartonL = null;
 		String cartonW = null;
@@ -121,18 +118,23 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 		String decorationMethod =null;
 		Product existingApiProduct=null;
 		String priceIncludesValue=null;
+		String FirstImprintsize1=null;
+		String FirstImprintunit1=null;
+		String FirstImprinttype1=null;
+		String FirstImprintsize2=null;
+		String FirstImprintunit2=null;
+		String FirstImprinttype2=null;
+		String SecondImprintsize1=null;
+		String SecondImprintunit1=null;
+		String SecondImprinttype1=null;
+		String SecondImprintsize2=null;
+		String SecondImprintunit2=null;
+		String SecondImprinttype2=null;
+		String imprintLocation = null;
+		String prodTimeLo = null;
 		
-		List<Color> color = new ArrayList<Color>();
-		String productName = null;
-		List<ImprintLocation> listImprintLocation = new ArrayList<ImprintLocation>();
-		List<ImprintMethod> listOfImprintMethods = new ArrayList<ImprintMethod>();
-		List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
-		RushTime rushTime  = new RushTime();
-		List<String> productKeywords = new ArrayList<String>();
-		List<Theme> themeList = new ArrayList<Theme>();
-		List<Catalog> catalogList = new ArrayList<Catalog>();
-		List<Values> valuesList =new ArrayList<Values>();
 		
+	
 		
 		while (iterator.hasNext()) {
 			
@@ -167,8 +169,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 7){
 							 System.out.println("Java object converted to JSON String, written to file");
-							 	productExcelObj.setPriceGrids(priceGrids);
-							 	productExcelObj.setProductConfigurations(productConfigObj);
+							 	
 							 	if(!StringUtils.isEmpty(themeValue) ){
 								productConfigObj.setThemes(themeList);
 								}
@@ -182,6 +183,19 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 								size.setDimension(finalDimensionObj);
 								productConfigObj.setSizes(size);
 								}
+								imprintSizeList=attrtiParserObj.getimprintsize(ImprintSizevalue);
+								if(imprintSizeList!=null){
+								productConfigObj.setImprintSize(imprintSizeList);}
+								productConfigObj.setProductionTime(listOfProductionTime);	
+
+								ShippingEstimate shipping = attrtiParserObj.getShippingEstimateValues(cartonL, cartonW,
+					                    cartonH, weightPerCarton, unitsPerCarton);
+								productConfigObj.setShippingEstimates(shipping);
+								productConfigObj.setImprintMethods(listOfImprintMethods);
+								
+								productExcelObj.setPriceGrids(priceGrids);
+							 	productExcelObj.setProductConfigurations(productConfigObj);
+
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -192,18 +206,32 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 							 	}
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
-								priceGrids = new ArrayList<PriceGrid>();
-								listOfPrices = new StringBuilder();
-							    listOfQuantity = new StringBuilder();
-								productConfigObj = new ProductConfigurations();
-								themeList = new ArrayList<Theme>();
-								finalDimensionObj = new Dimension();
-								catalogList = new ArrayList<Catalog>();
-								productKeywords = new ArrayList<String>();
-								listOfProductionTime = new ArrayList<ProductionTime>();
-								rushTime = new RushTime();
-								listImprintLocation = new ArrayList<ImprintLocation>();
-								listOfImprintMethods = new ArrayList<ImprintMethod>();
+								   
+						         ImprintSizevalue = new StringBuilder();
+								 listOfQuantity = new StringBuilder();
+								 listOfPrices = new StringBuilder();
+								 listOfDiscount = new StringBuilder();
+								 priceIncludes = new StringBuilder();
+								 pricesPerUnit = new StringBuilder();
+								 dimensionValue = new StringBuilder();
+								 dimensionUnits = new StringBuilder();
+								 dimensionType = new StringBuilder();
+						       
+								  priceGrids = new ArrayList<PriceGrid>();
+								  imprintSizeList =new ArrayList<ImprintSize>();
+								  listImprintLocation = new ArrayList<ImprintLocation>();
+								  listOfImprintMethods = new ArrayList<ImprintMethod>();
+								  listOfProductionTime = new ArrayList<ProductionTime>();
+								  productKeywords = new ArrayList<String>();
+								  themeList = new ArrayList<Theme>();
+								  catalogList = new ArrayList<Catalog>();
+								  valuesList =new ArrayList<Values>();
+								  FobPointsList = new ArrayList<FOBPoint>();
+								  color = new ArrayList<Color>();
+								  
+								  finalDimensionObj=new Dimension();
+								  size=new Size();
+								  fobPintObj=new FOBPoint();
 								
 						 }
 						 if(!productXids.contains(xid)){
@@ -214,19 +242,11 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
-						  	   productExcelObj=existingApiProduct;
+						  	    productExcelObj=existingApiProduct;
 								productConfigObj=existingApiProduct.getProductConfigurations();
-						        /*String confthruDate=existingApiProduct.getPriceConfirmedThru();
-						        productExcelObj.setPriceConfirmedThru(confthruDate);
-						    	 List<Image> Img=existingApiProduct.getImages();
-						    	 productExcelObj.setImages(Img);
-						    	 themeList=productConfigObj.getThemes();
-						    	 productConfigObj.setThemes(themeList);
-						    	 List<Availability> AvailibilityList=null;
-						    	 productExcelObj.setAvailability(AvailibilityList);
-						    	 List<ProductNumber> ProductNumberList=null;
-						    	 productExcelObj.setProductNumbers(ProductNumberList);*/
-						    	 
+						        List<Image> Img=existingApiProduct.getImages();
+						    	productExcelObj.setImages(Img);
+						    	
 						     
 						     }
 							//productExcelObj = new Product();
@@ -275,14 +295,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					break;
 					
 				case 7://Catalogs
-					   String catalogValue = cell.getStringCellValue();
-						if(!StringUtils.isEmpty(catalogValue)){
-						Catalog catalogObj=new Catalog();
-						catalogObj.setCatalogName(catalogValue);
-						catalogList.add(catalogObj);
-						productExcelObj.setCatalogs(catalogList);
-						}
-					
+					 
 					break;
 					
 				case 8: // Catalogs(Not used)
@@ -525,7 +538,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 						break;
 						
 				case 47:    //setup charge   
-					 try{
+				 try{
 						  ListPrice = CommonUtility.getCellValueDouble(cell);
 					     if(!StringUtils.isEmpty(ListPrice) && !ListPrice.equals("0")){
 				        	 listOfPrices.append(ListPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -587,7 +600,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				case 68:
 					       break;
 				case 69:
-					String IsEnvironmentallyFriendly = cell.getStringCellValue();
+					/*String IsEnvironmentallyFriendly = cell.getStringCellValue();
 					
 					if(IsEnvironmentallyFriendly.equalsIgnoreCase("true"))			
 					{ Theme themeObj1 = new Theme();
@@ -595,36 +608,79 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 						themeObj1.setName("Eco Friendly");	
 
 						themeList.add(themeObj1);
-					}
+					}*/
 					break;
 				case 70:
+					break;
 				case 71:
+					break;
 				case 72:
+					break;
 				case 73:
+					break;
 				case 74:
+					break;
 				case 75: // Imprint size1
+					 FirstImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(FirstImprintsize1) || FirstImprintsize1 !=  null ){
+					 ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize1).append(" ");
+					
+					 }
 					
 					    break;
 					    
 				case 76: //// Imprint size1 unit
+					FirstImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
+					
+					 if(!StringUtils.isEmpty(FirstImprintunit1) || FirstImprintunit1 !=  null ){
+					FirstImprintunit1=MilestoneLookupData.Dimension1Units.get(FirstImprintunit1);
+					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit1).append(" ");;
+					 }	 
 					   	break;
 					   	
 				case 77:   // Imprint size1 Type    
+					FirstImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
+					
+					   if(!StringUtils.isEmpty(FirstImprinttype1) || FirstImprinttype1 !=  null ){
+						FirstImprinttype1=MilestoneLookupData.Dimension1Type.get(FirstImprinttype1);
+						ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype1).append(" ").append("x");
+					   }
 						break;
 						
 				  
 				case 78: // // Imprint size2
+					FirstImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
+					
+					 if(!StringUtils.isEmpty(FirstImprintsize2) || FirstImprinttype1 != null ){
+					ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize2).append(" ");
+					 }
 					  	break;
 					  	
 				case 79:	// Imprint size2 Unit
+                     FirstImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
+					
+					
+				    if(!StringUtils.isEmpty(FirstImprintunit2) || FirstImprintunit2 !=  null ){
+					FirstImprintunit2=MilestoneLookupData.Dimension1Units.get(FirstImprintunit2);
+					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit2).append(" ");
+				    }
+
 					    break;
 					    
 				case 80: // Imprint size2 Type
+                    FirstImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
+					
+				    if(!StringUtils.isEmpty(FirstImprinttype2) || FirstImprinttype2 !=  null ){
+
+					FirstImprinttype2=MilestoneLookupData.Dimension1Type.get(FirstImprinttype2);
+					ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype2).append(" ");
+				    }
 					  	break;
 					  	
 				case 81:  // Imprint location
 					
-					String imprintLocation = cell.getStringCellValue();
+
+					 imprintLocation = cell.getStringCellValue();
 					if(!imprintLocation.isEmpty()){
 						ImprintLocation locationObj = new ImprintLocation();
 						locationObj.setValue(imprintLocation);
@@ -632,52 +688,88 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					}
 					 break;
 				case 82:  // Second Imprintsize1
+                    SecondImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
+					
+				    if(!StringUtils.isEmpty(SecondImprintsize1) || SecondImprintsize1 !=  null ){
+
+					ImprintSizevalue=ImprintSizevalue.append(SecondImprintsize1).append(" ");
+				    }
 					   	break;
 					   	
 				case 83:  // Second Imprintsize1 unit
+					SecondImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
+					
+				    if(!StringUtils.isEmpty(SecondImprintunit1) || SecondImprintunit1 != null ){
+					SecondImprintunit1=MilestoneLookupData.Dimension1Units.get(SecondImprintunit1);
+					ImprintSizevalue=ImprintSizevalue.append(SecondImprintunit1).append(" ");
+
+					}
 						break;
 						
 				case 84:  // Second Imprintsize1 type
+					SecondImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
+					
+				    if(!StringUtils.isEmpty(SecondImprinttype1) || SecondImprinttype1 !=  null ){
+					SecondImprinttype1=MilestoneLookupData.Dimension1Type.get(SecondImprinttype1);
+					ImprintSizevalue=ImprintSizevalue.append(SecondImprinttype1).append(" ").append("x");
+
+					}
 					  break;
 					  
 				case 85: // Second Imprintsize2
+					SecondImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
+					
+				    if(!StringUtils.isEmpty(SecondImprintsize2) || SecondImprintsize2 !=  null ){
+				    ImprintSizevalue=ImprintSizevalue.append(SecondImprintsize2).append(" ");
+				    
+				    }
+
 					break;
 					
 				case 86: //Second Imprintsize2 Unit
+					SecondImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
+				    if(!StringUtils.isEmpty(SecondImprintunit2) || SecondImprintunit2 !=  null ){
+					SecondImprintunit2=MilestoneLookupData.Dimension1Units.get(SecondImprintunit2);
+					ImprintSizevalue=ImprintSizevalue.append(SecondImprintunit2).append(" ");
+
+					}
+
 					break;
 					
-				case 87: // Second Imprintsize2 type	
+				case 87: // Second Imprintsize2 type
+					SecondImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
+				    if(!StringUtils.isEmpty(SecondImprinttype2) || SecondImprinttype2 != null ){
+					SecondImprinttype2=MilestoneLookupData.Dimension1Type.get(SecondImprinttype2);
+					ImprintSizevalue=ImprintSizevalue.append(SecondImprinttype2).append(" ");
+
+					}
+					
 					  break;
 					  
 				case 88: // Second Imprint location
-					String imprintLocation2 = cell.getStringCellValue();
+				String imprintLocation2 = cell.getStringCellValue();
 					if(!imprintLocation2.isEmpty()){
 						ImprintLocation locationObj2 = new ImprintLocation();
-						locationObj2.setValue(imprintLocation2);
+						locationObj2.setValue(imprintLocation2.trim());
 						listImprintLocation.add(locationObj2);
 					}
 					break;
 				case 89: // DecorationMethod
-				 decorationMethod = cell.getStringCellValue();
-					listOfImprintMethods = imprintMethodParser.getImprintMethodValues(decorationMethod,listOfImprintMethods);
-					 break; 
+				   decorationMethod = cell.getStringCellValue();
+					listOfImprintMethods = attrtiParserObj.getImprintMethodValues(decorationMethod);
+					
+					
+					break; 
 					 
 				case 90: //NoDecoration
-					String noDecoration = cell.getStringCellValue();
-					if(noDecoration.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
-						listOfImprintMethods = imprintMethodParser.getImprintMethodValues(noDecoration,
-                                listOfImprintMethods);
-					}
+				
 					
 					 break;
 				case 91: //NoDecorationOffered
-					String noDecorationOffered = cell.getStringCellValue();
-					if(noDecorationOffered.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
-						listOfImprintMethods = imprintMethodParser.getImprintMethodValues(noDecorationOffered,
-                                listOfImprintMethods);
-					}
+
 					 break;
-					 /*				case 92: //NewPictureURL
+					 
+			   case 92: //NewPictureURL
 					break;
 				case 93:  //NewPictureFile  -- not used
 					break;
@@ -698,23 +790,19 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					
 					String madeInCountry = cell.getStringCellValue();
 					if(!madeInCountry.isEmpty()){
-						List<Origin> listOfOrigin = originParser.getOriginValues(madeInCountry);
+						List<Origin> listOfOrigin = attrtiParserObj.getOriginValues(madeInCountry);
 						productConfigObj.setOrigins(listOfOrigin);
 					}
 					break;
 					
-				case 101:// AssembledInCountry
-					String assembledInCountry = cell.getStringCellValue();
-					if(!assembledInCountry.isEmpty()){
-						assembledInCountry = originParser.getCountryCodeConvertName(assembledInCountry);
-						productExcelObj.setAdditionalProductInfo(assembledInCountry);
-					}
+					case 101:// AssembledInCountry
+				
 					break;
 				case 102: //DecoratedInCountry
 					String decoratedInCountry = cell.getStringCellValue();
 					if(!decoratedInCountry.isEmpty()){
-						decoratedInCountry = originParser.getCountryCodeConvertName(decoratedInCountry);
-						productExcelObj.setAdditionalProductInfo(decoratedInCountry);
+						decoratedInCountry = attrtiParserObj.getCountryCodeConvertName(decoratedInCountry);
+ 						productExcelObj.setAdditionalProductInfo("Decorated country is: " +decoratedInCountry);
 					}
 					break;
 				case 103: //ComplianceList  -- No data
@@ -722,75 +810,74 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				case 104://ComplianceMemo  -- No data
 					break;
 				case 105: //ProdTimeLo
-					String prodTimeLo = null;
-					ProductionTime productionTime = new ProductionTime();
-					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						prodTimeLo = cell.getStringCellValue();
-					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						prodTimeLo = String.valueOf(cell.getNumericCellValue());
-					}else{
-						
-					}
-					productionTime.setBusinessDays(prodTimeLo);
-					listOfProductionTime.add(productionTime);
+					   prodTimeLo = CommonUtility.getCellValueStrinOrInt(cell);
+			
 					break;
 				case 106: //ProdTimeHi
-					String prodTimeHi = null;
-					ProductionTime productionTime1 = new ProductionTime();
-					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						prodTimeHi = cell.getStringCellValue();
-					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						prodTimeHi = String.valueOf(cell.getNumericCellValue());
-					}else{
-						
+					String prodTimeHi = CommonUtility.getCellValueStrinOrInt(cell);
+					ProductionTime productionTime = new ProductionTime();
+				
+
+					if(prodTimeLo.equalsIgnoreCase(prodTimeHi))
+					{
+						productionTime.setBusinessDays(prodTimeHi);
+						listOfProductionTime.add(productionTime);
 					}
-					productionTime1.setBusinessDays(prodTimeHi);
-					listOfProductionTime.add(productionTime1);
-					break;
-				case 107://RushProdTimeLo
-					String rushProdTimeLo  = cell.getStringCellValue();
-					if(!rushProdTimeLo.equals(ApplicationConstants.CONST_STRING_ZERO)){
-						rushTime = rushTimeParser.getRushTimeValues(rushProdTimeLo, rushTime);
-					}
+					else
+					{
+						String prodTimeTotal="";
+						prodTimeTotal=prodTimeTotal.concat(prodTimeLo).concat("-").concat(prodTimeHi);
+						productionTime.setBusinessDays(prodTimeTotal);
+						listOfProductionTime.add(productionTime);
 					
+					}
+					break;
+					
+			     case 107://RushProdTimeLo
 					 break; 	 
 				case 108://RushProdTimeH
-					String rushProdTimeH  = cell.getStringCellValue();
-					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO)){
-						rushTime = rushTimeParser.getRushTimeValues(rushProdTimeH, rushTime);
-					}
 					break;
 					
 				case 109://Packaging
 				
 					String pack  = cell.getStringCellValue();
-					List<Packaging> listOfPackaging = packagingParser.getPackageValues(pack);
+					List<Packaging> listOfPackaging = attrtiParserObj.getPackageValues(pack);
 					productConfigObj.setPackaging(listOfPackaging);
 					break;
 					
-				case 110: //CartonL
-					 cartonL  = cell.getStringCellValue();
+					case 110: //CartonL
+					cartonL  = CommonUtility.getCellValueStrinOrInt(cell);
 					
 					break;
 				case 111://CartonW
-					cartonW  = cell.getStringCellValue();
+					cartonW  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
 	
 				case 112://CartonH
-					cartonH  = cell.getStringCellValue();
+					cartonH  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
 				case 113: //WeightPerCarton
-					weightPerCarton  = cell.getStringCellValue();
+					weightPerCarton  =CommonUtility.getCellValueStrinOrInt(cell);
 					break;
 				case 114: //UnitsPerCarton
-					unitsPerCarton  = cell.getStringCellValue();
+					unitsPerCarton  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
 					
-				case 115: //ShipPointCountry
+		    	case 115: //ShipPointCountry
 
 					break;
 					
 				case 116: //ShipPointZip
+					String FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
+					String FOBLooup=null;
+					List<String>fobLookupList = lookupServiceDataObj.getFobPoints(FOBLooup);
+					if(fobLookupList.contains(FOBValue))
+					{
+						fobPintObj.setName(FOBValue);
+						FobPointsList.add(fobPintObj);
+						productExcelObj.setFobPoints(FobPointsList);
+					}
+					
 					
 					break;
 					
@@ -800,21 +887,26 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					break;
 					
 				case 118: //Verified
+				
+				   String verified=cell.getStringCellValue();
+					if(verified.equalsIgnoreCase("True")){
+					String priceConfimedThruString="2017-12-31T00:00:00";
+					productExcelObj.setPriceConfirmedThru(priceConfimedThruString);
+					}
 					break;
 			
-				case 119: //UpdateInventory
+			    case 119: //UpdateInventory
 					
 					break;
-				
 				case 120: //InventoryOnHand
 					
 					break;
-					
 				case 121: //InventoryOnHandAdd
-					break;
 					
+					break;
 				case 122: //InventoryMemo
-				break;*/
+					
+				    break;
 			
 			}  // end inner while loop
 					 
@@ -834,7 +926,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 			if( decorationMethod != null && !decorationMethod.toString().isEmpty())
 			{
 			
-			priceGrids = priceGridParser.getUpchargePriceGrid("1", ListPrice, Discountcode, "Imprint Method", 
+			priceGrids = pricegridParserObj.getUpchargePriceGrid("1", ListPrice, Discountcode, "Imprint Method", 
 							"false", "USD", decorationMethod, "Imprint Method Charge", "Other", new Integer(1), priceGrids);
 			}
 				
@@ -846,21 +938,35 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 		}
 		workbook.close();
 		
-		 	productExcelObj.setPriceGrids(priceGrids);
-		 	productExcelObj.setProductConfigurations(productConfigObj);
+		 	
 		 	if(!StringUtils.isEmpty(themeValue) ){
 			productConfigObj.setThemes(themeList);
 			}
+		 	
 		 	String DimensionRef=null;
 			DimensionRef=dimensionValue.toString();
 			if(!StringUtils.isEmpty(DimensionRef)){
 			valuesList =attrtiParserObj.getValues(dimensionValue.toString(),
 	                dimensionUnits.toString(), dimensionType.toString());
-			
 	        finalDimensionObj.setValues(valuesList);	
 			size.setDimension(finalDimensionObj);
 			productConfigObj.setSizes(size);
 			}
+			
+			imprintSizeList=attrtiParserObj.getimprintsize(ImprintSizevalue);
+			 imprintSizeList.removeAll(Collections.singleton(null));
+			if(imprintSizeList!=null){
+			productConfigObj.setImprintSize(imprintSizeList);}
+			
+			productConfigObj.setProductionTime(listOfProductionTime);
+			ShippingEstimate shipping = attrtiParserObj.getShippingEstimateValues(cartonL, cartonW,
+                    cartonH, weightPerCarton, unitsPerCarton);
+			productConfigObj.setShippingEstimates(shipping);
+			productConfigObj.setImprintMethods(listOfImprintMethods);
+			
+			productExcelObj.setPriceGrids(priceGrids);
+		 	productExcelObj.setProductConfigurations(productConfigObj);
+		 	
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -873,6 +979,38 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
 	       productDaoObj.saveErrorLog(asiNumber,batchId);
+	       
+	       
+	       
+	       
+	   
+	         ImprintSizevalue = new StringBuilder();
+			 listOfQuantity = new StringBuilder();
+			 listOfPrices = new StringBuilder();
+			 listOfDiscount = new StringBuilder();
+			 priceIncludes = new StringBuilder();
+			 pricesPerUnit = new StringBuilder();
+			 dimensionValue = new StringBuilder();
+			 dimensionUnits = new StringBuilder();
+			 dimensionType = new StringBuilder();
+	       
+			  priceGrids = new ArrayList<PriceGrid>();
+			  imprintSizeList =new ArrayList<ImprintSize>();
+			  listImprintLocation = new ArrayList<ImprintLocation>();
+			  listOfImprintMethods = new ArrayList<ImprintMethod>();
+			  listOfProductionTime = new ArrayList<ProductionTime>();
+			  productKeywords = new ArrayList<String>();
+			  themeList = new ArrayList<Theme>();
+			  catalogList = new ArrayList<Catalog>();
+			  valuesList =new ArrayList<Values>();
+			  FobPointsList = new ArrayList<FOBPoint>();
+			  color = new ArrayList<Color>();
+			  
+			  finalDimensionObj=new Dimension();
+			  size=new Size();
+			  fobPintObj=new FOBPoint();
+
+	       
 	       return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet "+e.getMessage());
@@ -896,57 +1034,6 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 
 	public void setPostServiceImpl(PostServiceImpl postServiceImpl) {
 		this.postServiceImpl = postServiceImpl;
-	}
-	public CatalogParser getCatalogParser() {
-		return catalogParser;
-	}
-
-	public void setCatalogParser(CatalogParser catalogParser) {
-		this.catalogParser = catalogParser;
-	}
-
-	public PriceGridParser getPriceGridParser() {
-		return priceGridParser;
-	}
-
-	public void setPriceGridParser(PriceGridParser priceGridParser) {
-		this.priceGridParser = priceGridParser;
-	}
-	public ImprintMethodParser getImprintMethodParser() {
-		return imprintMethodParser;
-	}
-
-	public void setImprintMethodParser(ImprintMethodParser imprintMethodParser) {
-		this.imprintMethodParser = imprintMethodParser;
-	}
-	public OriginParser getOriginParser() {
-		return originParser;
-	}
-
-	public void setOriginParser(OriginParser originParser) {
-		this.originParser = originParser;
-	}
-	public RushTimeParser getRushTimeParser() {
-		return rushTimeParser;
-	}
-
-	public void setRushTimeParser(RushTimeParser rushTimeParser) {
-		this.rushTimeParser = rushTimeParser;
-	}
-	public PackagingParser getPackagingParser() {
-		return packagingParser;
-	}
-
-	public void setPackagingParser(PackagingParser packagingParser) {
-		this.packagingParser = packagingParser;
-	}
-	public ShippingEstimateParser getShippingEstimateParser() {
-		return shippingEstimateParser;
-	}
-
-	public void setShippingEstimateParser(
-			ShippingEstimateParser shippingEstimateParser) {
-		this.shippingEstimateParser = shippingEstimateParser;
 	}
 
 	public ProductDao getProductDaoObj() {
@@ -991,7 +1078,6 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 	}
 
 
-	
 	
 	
 	
