@@ -3,8 +3,12 @@ package parser.crystal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.a4tech.product.model.Availability;
+import com.a4tech.product.model.AvailableVariations;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Option;
 import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Personalization;
@@ -198,4 +202,39 @@ public class CrystalDProductAttributeParser {
 		return ProdoptionList;
 	}
 	
+	
+	public List<Availability> getProductAvailability(List<ImprintLocation> imprintLocationList, 
+		List<ImprintSize> imprintSizeList){
+		
+		List<Availability>  availabilityList= new ArrayList<Availability>(); 
+		Availability avaibltyObj=new Availability();
+		
+		List<AvailableVariations>  avaiVaraitionList= new ArrayList<AvailableVariations>(); 
+		AvailableVariations VariationObj=new AvailableVariations();
+		
+		List<Object>  locationList= new ArrayList<Object>(); 
+		List<Object>  sizeList= new ArrayList<Object>(); 
+
+		avaibltyObj.setParentCriteria("Imprint Location");
+		avaibltyObj.setChildCriteria("Imprint Size");
+		
+	
+		for (ImprintLocation LocationVal : imprintLocationList) { //String childValue : childList
+			 for (ImprintSize sizeValue : imprintSizeList) {//String ParentValue : parentList
+				 VariationObj = new AvailableVariations();
+				 locationList = new ArrayList<>();
+				 sizeList = new ArrayList<>();
+				 locationList.add(LocationVal.getValue().toString().trim());
+				 sizeList.add(sizeValue.getValue().toString().trim());
+				 VariationObj.setParentValue(locationList);
+				 VariationObj.setChildValue(sizeList);
+				 avaiVaraitionList.add(VariationObj);
+			}
+		}
+		
+		avaibltyObj.setAvailableVariations(avaiVaraitionList);
+		availabilityList.add(avaibltyObj);
+		
+		return availabilityList;	
+	}
 }

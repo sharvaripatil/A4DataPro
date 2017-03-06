@@ -487,7 +487,7 @@
        <property name="crystalDObj"   ref="crystalDObjId"/>
        <property name="crymaterialObj"   ref="crymaterialObjId"/>
        <property name="cdpriceObj"   ref="cdpriceObjId"/>
-       
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
        
        </bean>
     

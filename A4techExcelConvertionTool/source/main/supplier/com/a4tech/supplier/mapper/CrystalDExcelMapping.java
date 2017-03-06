@@ -19,9 +19,12 @@ import parser.crystal.CrystalDPriceGridParser;
 import parser.crystal.CrystalDProductAttributeParser;
 import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
+import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
@@ -31,6 +34,7 @@ import com.a4tech.product.model.Personalization;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Volume;
@@ -44,6 +48,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 	
 	private PostServiceImpl postServiceImpl;  
 	private ProductDao productDaoObj;
+	private LookupServiceData lookupServiceDataObj;
 	private CrystalDProductAttributeParser crystalDObj;
 	private CrystalDMaterialParser crymaterialObj;
 	private CrystalDPriceGridParser cdpriceObj;
@@ -85,6 +90,12 @@ public class CrystalDExcelMapping implements IExcelParser {
 		StringBuilder AlllistOfPrices = new StringBuilder();
 		String RefListOfQuantity="";
 		String RefListOfPrices="";
+		List<ImprintLocation> imprintLocationList=new ArrayList<ImprintLocation>();
+		List<Shape> shapeList=new ArrayList<Shape>();
+		Shape shapeObj=new Shape();
+		List<Availability>  availabilityList= new ArrayList<Availability>(); 
+
+		
  		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -180,7 +191,17 @@ public class CrystalDExcelMapping implements IExcelParser {
 							     productConfigObj.setPersonalization(listPersonlization);
 								 }
 							    productExcelObj.setAdditionalProductInfo(AddInfo);
+							    productConfigObj.setImprintLocation(imprintLocationList);
+							    productConfigObj.setShapes(shapeList);
 							    productExcelObj.setProductConfigurations(productConfigObj);
+							    if(ImprintSize2.contains(":")){
+							    	availabilityList=crystalDObj.getProductAvailability(imprintLocationList, imprintSizeList);	
+							    	productExcelObj.setAvailability(availabilityList);
+							    }else
+							    {
+							    	availabilityList=new ArrayList<>();
+							    	productExcelObj.setAvailability(availabilityList);
+							    }
 
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
@@ -213,6 +234,10 @@ public class CrystalDExcelMapping implements IExcelParser {
 								AllProductNoList = new ArrayList<String>();
 								AlllistOfQuantity = new StringBuilder();
 								AlllistOfPrices = new StringBuilder();
+								imprintLocationList=new ArrayList<ImprintLocation>();
+								shapeList=new ArrayList<Shape>();
+						        shapeObj=new Shape();
+						        availabilityList= new ArrayList<Availability>(); 
 								repeatRows.clear();
 								
 						 }
@@ -286,7 +311,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 						int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
 						description=(String) strTemp.subSequence(0, lenTemp);
 					}
-					//productExcelObj.setDescription(description);		
+					productExcelObj.setDescription(description);		
 				
 				    break;
 				case 5://Weight
@@ -317,12 +342,23 @@ public class CrystalDExcelMapping implements IExcelParser {
 					
 				case 9: // Image Area1
 					 ImprintSize1=cell.getStringCellValue();
+					 if(ImprintSize1.contains(":")){
+						 ImprintLocation impLocationObj1=new ImprintLocation();
+						 impLocationObj1.setValue(ImprintSize1);
+						 imprintLocationList.add(impLocationObj1);
+					 }
 					
 					break;
 				case 10: // Image Area2
 					 ImprintSize2=cell.getStringCellValue();
-
-					
+					 if(ImprintSize2.contains(":")){
+						 ImprintLocation impLocationObj2=new ImprintLocation();
+						 impLocationObj2.setValue(ImprintSize2);
+						 imprintLocationList.add(impLocationObj2);
+						 
+						 
+					 }
+					 
 					break;
 				case 11://Image Area3
 					String ImprintSize3=cell.getStringCellValue();
@@ -333,11 +369,10 @@ public class CrystalDExcelMapping implements IExcelParser {
 				    	imprintSizeObj=new ImprintSize();
 				    	imprintSizeObj.setValue(Value);
 					    imprintSizeList.add(imprintSizeObj);
-
 					}
+				 
+				
 					//FinalImprintSize=null;
-
-				   
 					break;
 				case 12://Packaging
 					String packagingValue=cell.getStringCellValue();
@@ -348,7 +383,6 @@ public class CrystalDExcelMapping implements IExcelParser {
 				case 13://Material
 					 MaterialValue=cell.getStringCellValue();
 					//listOfMaterial = crymaterialObj.getMaterialList(MaterialValue);
-					
 					
 					 break;
 				case 14://Notes1
@@ -408,6 +442,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 					}
 					listOfNotes=listOfNotes.append(Notes1).append(Notes2).append(Notes3).append(Notes4).append(Notes5);
 				    AllNotes=listOfNotes.toString();
+				    AllNotes=AllNotes.replace("Price includes", "");
 					listPersonlization=crystalDObj.getPeronalization(AllNotes);
 					
 					break;
@@ -449,15 +484,37 @@ public class CrystalDExcelMapping implements IExcelParser {
 					break;
 				case 26://Shapes Sizes
 					
-					String description1 =CommonUtility.getCellValueStrinOrInt(cell);
-					int length1=description1.length();
+					String Shape =CommonUtility.getCellValueStrinOrInt(cell);
+					Shape=Shape.toUpperCase();
+					Shape=Shape.replaceAll("Gem", "circle");
+					Shape=Shape.replaceAll("/", ",");
+					List<String> lookupShapeList=lookupServiceDataObj.getShapeValues();
+					if(Shape.contains(",")){
+					String ShapeArr[]=Shape.split(",");
+					for (String value : ShapeArr) {
+						if(lookupShapeList.contains(value.toUpperCase().trim()))
+						{
+							shapeObj=new Shape();
+							shapeObj.setName(value);
+							shapeList.add(shapeObj);
+						}
+					}
+					}else
+					{
+						if(lookupShapeList.contains(Shape))
+						{
+							shapeObj.setName(Shape);
+							shapeList.add(shapeObj);
+						}
+					}
+				/*int length1=description1.length();
 					if(length1>800){
 						String strTemp=description.substring(0, 800);
 						int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
 						description1=(String) strTemp.subSequence(0, lenTemp);
 					}
 					description=description.concat("").concat(description1);
-					productExcelObj.setDescription(description);
+					productExcelObj.setDescription(description);*/
 					
 					
 
@@ -540,11 +597,11 @@ public class CrystalDExcelMapping implements IExcelParser {
 				List<Value> valueObj=sizeObj.getDimension().getValues().get(i).getValue(); 	
 				priceGrids = cdpriceObj.getRepeatablePriceGrids( AlllistOfPricesArr[i],
 						AlllistOfQuantityArr[i], "R", "USD",
-				         PriceInclude, true, "N",productName ,"",ProductNo,valueObj,priceGrids);
+				         PriceInclude.replace("Price includes", ""), true, "N",productName ,"",ProductNo,valueObj,priceGrids);
 			}}else{
 				priceGrids = cdpriceObj.getPriceGrids(listOfPrices.toString(),
 				         listOfQuantity.toString(), "R", "USD",
-				         PriceInclude, true, "N",productName ,""/*,priceGrids*/);
+				         PriceInclude.replace("Price includes", ""), true, "N",productName ,""/*,priceGrids*/);
 			}
 				
 				if(AllNotes.contains("Personalization extra"))
@@ -582,8 +639,17 @@ public class CrystalDExcelMapping implements IExcelParser {
 		    productConfigObj.setPersonalization(listPersonlization);
 		    }
 		    productExcelObj.setAdditionalProductInfo(AddInfo);
-		 	productExcelObj.setProductConfigurations(productConfigObj);
-
+		    productConfigObj.setImprintLocation(imprintLocationList);
+		    productConfigObj.setShapes(shapeList);
+		    productExcelObj.setProductConfigurations(productConfigObj);
+		    if(ImprintSize2.contains(":")){
+		    	availabilityList=crystalDObj.getProductAvailability(imprintLocationList, imprintSizeList);	
+		    	productExcelObj.setAvailability(availabilityList);
+		    }else
+		    {
+		    	availabilityList=new ArrayList<>();
+		    	productExcelObj.setAvailability(availabilityList);
+		    }
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -619,6 +685,10 @@ public class CrystalDExcelMapping implements IExcelParser {
 			AllProductNoList = new ArrayList<String>();
 			 AlllistOfQuantity = new StringBuilder();
 			 AlllistOfPrices = new StringBuilder();
+			 imprintLocationList=new ArrayList<ImprintLocation>();
+			 shapeList=new ArrayList<Shape>();
+	         shapeObj=new Shape();
+	         availabilityList= new ArrayList<Availability>(); 
 			repeatRows.clear();
 	        return finalResult;
 		
@@ -689,6 +759,14 @@ public class CrystalDExcelMapping implements IExcelParser {
 
 	public void setCdpriceObj(CrystalDPriceGridParser cdpriceObj) {
 		this.cdpriceObj = cdpriceObj;
+	}
+
+	public LookupServiceData getLookupServiceDataObj() {
+		return lookupServiceDataObj;
+	}
+
+	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
+		this.lookupServiceDataObj = lookupServiceDataObj;
 	}
 	
 	

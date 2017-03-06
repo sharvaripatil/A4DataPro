@@ -355,8 +355,8 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					String PageNO=CommonUtility.getCellValueStrinOrInt(cell);
 					String value=null;
 					catalogsList = lookupServiceDataObj.getCatalog(value);
-					if(catalogsList.contains(CatYear)){
-						catlogObj.setCatalogName(CatYear);
+					if(CatYear.contains("2017")){
+						catlogObj.setCatalogName("2017 Goldstar Canada");
 						catlogObj.setCatalogPage(PageNO);
 						catalogList.add(catlogObj);
 						productExcelObj.setCatalogs(catalogList);

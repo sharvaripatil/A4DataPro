@@ -82,6 +82,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 		  Dimension finalDimensionObj=new Dimension();
 		  Size size=new Size();
 		  FOBPoint fobPintObj=new FOBPoint();
+		  ShippingEstimate shipping = new ShippingEstimate();
 		  String productName = null;
 		  String productId = null;
 		  String finalResult = null;
@@ -184,13 +185,16 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 								productConfigObj.setSizes(size);
 								}
 								imprintSizeList=attrtiParserObj.getimprintsize(ImprintSizevalue);
-								if(imprintSizeList!=null){
+								if(FirstImprintsize1 != "" || FirstImprintsize2 !="" ||
+										SecondImprintsize1 != "" ||	SecondImprintsize2 !=""){
 								productConfigObj.setImprintSize(imprintSizeList);}
 								productConfigObj.setProductionTime(listOfProductionTime);	
 
-								ShippingEstimate shipping = attrtiParserObj.getShippingEstimateValues(cartonL, cartonW,
+								shipping = attrtiParserObj.getShippingEstimateValues(cartonL, cartonW,
 					                    cartonH, weightPerCarton, unitsPerCarton);
+								if(!unitsPerCarton.contains("0")){
 								productConfigObj.setShippingEstimates(shipping);
+								}
 								productConfigObj.setImprintMethods(listOfImprintMethods);
 								
 								productExcelObj.setPriceGrids(priceGrids);
@@ -232,6 +236,8 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 								  finalDimensionObj=new Dimension();
 								  size=new Size();
 								  fobPintObj=new FOBPoint();
+								  shipping = new ShippingEstimate();
+								  productConfigObj = new ProductConfigurations();
 								
 						 }
 						 if(!productXids.contains(xid)){
@@ -622,7 +628,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					break;
 				case 75: // Imprint size1
 					 FirstImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(FirstImprintsize1) || FirstImprintsize1 !=  null ){
+					 if(!StringUtils.isEmpty(FirstImprintsize1) || FirstImprintsize1 !=  ""){
 					 ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize1).append(" ");
 					
 					 }
@@ -632,7 +638,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				case 76: //// Imprint size1 unit
 					FirstImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 					
-					 if(!StringUtils.isEmpty(FirstImprintunit1) || FirstImprintunit1 !=  null ){
+					 if(!StringUtils.isEmpty(FirstImprintunit1) || FirstImprintunit1 !=  ""){
 					FirstImprintunit1=MilestoneLookupData.Dimension1Units.get(FirstImprintunit1);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit1).append(" ");;
 					 }	 
@@ -641,7 +647,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				case 77:   // Imprint size1 Type    
 					FirstImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 					
-					   if(!StringUtils.isEmpty(FirstImprinttype1) || FirstImprinttype1 !=  null ){
+					   if(!StringUtils.isEmpty(FirstImprinttype1) || FirstImprinttype1 !=  ""){
 						FirstImprinttype1=MilestoneLookupData.Dimension1Type.get(FirstImprinttype1);
 						ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype1).append(" ").append("x");
 					   }
@@ -651,7 +657,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				case 78: // // Imprint size2
 					FirstImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 					
-					 if(!StringUtils.isEmpty(FirstImprintsize2) || FirstImprinttype1 != null ){
+					 if(!StringUtils.isEmpty(FirstImprintsize2) || FirstImprintsize2 != "" ){
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize2).append(" ");
 					 }
 					  	break;
@@ -660,7 +666,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
                      FirstImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 					
 					
-				    if(!StringUtils.isEmpty(FirstImprintunit2) || FirstImprintunit2 !=  null ){
+				    if(!StringUtils.isEmpty(FirstImprintunit2) || FirstImprintunit2 !=  "" ){
 					FirstImprintunit2=MilestoneLookupData.Dimension1Units.get(FirstImprintunit2);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit2).append(" ");
 				    }
@@ -670,7 +676,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				case 80: // Imprint size2 Type
                     FirstImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 					
-				    if(!StringUtils.isEmpty(FirstImprinttype2) || FirstImprinttype2 !=  null ){
+				    if(!StringUtils.isEmpty(FirstImprinttype2) || FirstImprinttype2 !=  "" ){
 
 					FirstImprinttype2=MilestoneLookupData.Dimension1Type.get(FirstImprinttype2);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype2).append(" ");
@@ -690,7 +696,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				case 82:  // Second Imprintsize1
                     SecondImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 					
-				    if(!StringUtils.isEmpty(SecondImprintsize1) || SecondImprintsize1 !=  null ){
+				    if(!StringUtils.isEmpty(SecondImprintsize1) || SecondImprintsize1 !=  "" ){
 
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprintsize1).append(" ");
 				    }
@@ -699,7 +705,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				case 83:  // Second Imprintsize1 unit
 					SecondImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 					
-				    if(!StringUtils.isEmpty(SecondImprintunit1) || SecondImprintunit1 != null ){
+				    if(!StringUtils.isEmpty(SecondImprintunit1) || SecondImprintunit1 != "" ){
 					SecondImprintunit1=MilestoneLookupData.Dimension1Units.get(SecondImprintunit1);
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprintunit1).append(" ");
 
@@ -709,7 +715,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				case 84:  // Second Imprintsize1 type
 					SecondImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 					
-				    if(!StringUtils.isEmpty(SecondImprinttype1) || SecondImprinttype1 !=  null ){
+				    if(!StringUtils.isEmpty(SecondImprinttype1) || SecondImprinttype1 !=  "" ){
 					SecondImprinttype1=MilestoneLookupData.Dimension1Type.get(SecondImprinttype1);
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprinttype1).append(" ").append("x");
 
@@ -719,7 +725,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				case 85: // Second Imprintsize2
 					SecondImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 					
-				    if(!StringUtils.isEmpty(SecondImprintsize2) || SecondImprintsize2 !=  null ){
+				    if(!StringUtils.isEmpty(SecondImprintsize2) || SecondImprintsize2 !=  "" ){
 				    ImprintSizevalue=ImprintSizevalue.append(SecondImprintsize2).append(" ");
 				    
 				    }
@@ -728,7 +734,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					
 				case 86: //Second Imprintsize2 Unit
 					SecondImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprintunit2) || SecondImprintunit2 !=  null ){
+				    if(!StringUtils.isEmpty(SecondImprintunit2) || SecondImprintunit2 !=  "" ){
 					SecondImprintunit2=MilestoneLookupData.Dimension1Units.get(SecondImprintunit2);
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprintunit2).append(" ");
 
@@ -738,7 +744,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					
 				case 87: // Second Imprintsize2 type
 					SecondImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprinttype2) || SecondImprinttype2 != null ){
+				    if(!StringUtils.isEmpty(SecondImprinttype2) || SecondImprinttype2 != "" ){
 					SecondImprinttype2=MilestoneLookupData.Dimension1Type.get(SecondImprinttype2);
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprinttype2).append(" ");
 
@@ -954,14 +960,19 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 			}
 			
 			imprintSizeList=attrtiParserObj.getimprintsize(ImprintSizevalue);
-			 imprintSizeList.removeAll(Collections.singleton(null));
-			if(imprintSizeList!=null){
+		   
+			if(FirstImprintsize1 != "" || FirstImprintsize2 !="" ||
+					SecondImprintsize1 != "" ||	SecondImprintsize2 !=""){
 			productConfigObj.setImprintSize(imprintSizeList);}
 			
 			productConfigObj.setProductionTime(listOfProductionTime);
-			ShippingEstimate shipping = attrtiParserObj.getShippingEstimateValues(cartonL, cartonW,
-                    cartonH, weightPerCarton, unitsPerCarton);
+			
+			shipping = attrtiParserObj.getShippingEstimateValues(cartonL, cartonW,
+                       cartonH, weightPerCarton, unitsPerCarton);
+			if(!unitsPerCarton.contains("0")){
 			productConfigObj.setShippingEstimates(shipping);
+			}
+			
 			productConfigObj.setImprintMethods(listOfImprintMethods);
 			
 			productExcelObj.setPriceGrids(priceGrids);
@@ -1009,6 +1020,8 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 			  finalDimensionObj=new Dimension();
 			  size=new Size();
 			  fobPintObj=new FOBPoint();
+			  shipping = new ShippingEstimate();
+			  productConfigObj = new ProductConfigurations();
 
 	       
 	       return finalResult;
