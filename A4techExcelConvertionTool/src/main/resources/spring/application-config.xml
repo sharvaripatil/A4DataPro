@@ -590,6 +590,7 @@
      <property name="lookupServiceDataObj" ref="lookupServiceData"/>
       <property name="primeLineColorTabParser" ref="primeLineColorTabParserId"/>
       <property name="primeLineAttributeParser" ref="primeLineAttributeParserId"/>
+      <property name="primeLinePriceGridParser" ref="primeLinePriceGridParserId"/>
      </bean>
      <bean id="primeLineColorTabParserId" name="primeLineColorTabParserObj"
 		class="parser.primeline.PrimeLineColorTabParser" autowire="byName">
@@ -601,6 +602,9 @@
 		class="parser.primeline.PrimeLineAttributeParser" autowire="byName">
 		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
 	</bean>
+	<bean id="primeLinePriceGridParserId" name="primeLinePriceGridParserObj"
+		class="parser.primeline.PrimeLinePriceGridParser" autowire="byName">
+		</bean>
         <!-- supplier PrimeLine configuration end --> 
 
     

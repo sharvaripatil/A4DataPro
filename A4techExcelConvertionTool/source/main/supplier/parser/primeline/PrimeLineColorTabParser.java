@@ -62,6 +62,7 @@ public class PrimeLineColorTabParser {
 	    String xid = null;
 	    int columnIndex=0;
 	    String temp=null;
+	    String colorValue=null;
 	    while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
@@ -99,6 +100,7 @@ public class PrimeLineColorTabParser {
 								//productConfigObj = new ProductConfigurations();
 								repeatRows.clear();
 								colorList = new ArrayList<Color>();
+								colorValue=null;
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -135,8 +137,23 @@ public class PrimeLineColorTabParser {
 						break;
 						case 3://COLOR
 
-							String value =  CommonUtility.getCellValueStrinOrInt(cell);
-							String tempcolorArray[]=value.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+							colorValue =  CommonUtility.getCellValueStrinOrInt(cell);
+							
+						
+			            	
+							break;
+
+						case 4://CONFIG
+							
+							String custColorCode =  CommonUtility.getCellValueStrinOrInt(cell);
+							if(!StringUtils.isEmpty(custColorCode)){
+							
+							}else{
+								custColorCode="";
+							}
+							
+							if(!StringUtils.isEmpty(colorValue)){
+							String tempcolorArray[]=colorValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 							for (String colorVal : tempcolorArray) {
 							String strColor=colorVal;
 							strColor=strColor.replaceAll("&","/");
@@ -147,18 +164,19 @@ public class PrimeLineColorTabParser {
 								comboList = new ArrayList<Combo>();
 				    			isCombo = isComboColors(strColor);
 								if (!isCombo) {
-									String colorName=MappingClass.COLOR_MAP.get(strColor.trim());
+									String colorName=PrimeLineConstants.PRIMECOLOR_MAP.get(strColor.trim());
 									if(StringUtils.isEmpty(colorName)){
 										colorName=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
 									}
 									colorObj.setName(colorName);
 									colorObj.setAlias(colorVal.trim());
+									colorObj.setCustomerOrderCode(custColorCode);
 									colorList.add(colorObj);
 								} else {
 									//245-Mid Brown/Navy
 									String colorArray[] = strColor.split(ApplicationConstants.CONST_DELIMITER_FSLASH);
 									//if(colorArray.length==2){
-									String combo_color_1=MappingClass.COLOR_MAP.get(colorArray[0].trim());
+									String combo_color_1=PrimeLineConstants.PRIMECOLOR_MAP.get(colorArray[0].trim());
 									if(StringUtils.isEmpty(combo_color_1)){
 										combo_color_1=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
 									}
@@ -166,14 +184,14 @@ public class PrimeLineColorTabParser {
 									colorObj.setAlias(strColor);
 									
 									Combo comboObj = new Combo();
-									String combo_color_2=MappingClass.COLOR_MAP.get(colorArray[1].trim());
+									String combo_color_2=PrimeLineConstants.PRIMECOLOR_MAP.get(colorArray[1].trim());
 									if(StringUtils.isEmpty(combo_color_2)){
 										combo_color_2=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
 									}
 									comboObj.setName(combo_color_2.trim());
 									comboObj.setType(ApplicationConstants.CONST_STRING_SECONDARY);
 									if(colorArray.length==3){
-										String combo_color_3=MappingClass.COLOR_MAP.get(colorArray[2].trim());
+										String combo_color_3=PrimeLineConstants.PRIMECOLOR_MAP.get(colorArray[2].trim());
 										if(StringUtils.isEmpty(combo_color_3)){
 											combo_color_3=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
 										}
@@ -184,14 +202,12 @@ public class PrimeLineColorTabParser {
 									}
 									comboList.add(comboObj);
 									colorObj.setCombos(comboList);
+									colorObj.setCustomerOrderCode(custColorCode);
 									colorList.add(colorObj);
 								 	}
 						}
-						
-			            	
-							break;
-
-						case 4://CONFIG
+							}
+							
 							break;
 						
 				}  // end inner while loop					 
@@ -213,6 +229,7 @@ public class PrimeLineColorTabParser {
 		sheetMapReturn.put(productId, productExcelObj);
 	    //productDaoObj.saveErrorLog(asiNumber,batchId);
 		repeatRows.clear();
+		colorValue=null;
 		//colorList = new ArrayList<Color>();
 		return sheetMapReturn;
 		}catch(Exception e){
