@@ -492,7 +492,9 @@
        </bean>
     
 
-     <bean id="crystalDObjId" class="parser.crystal.CrystalDProductAttributeParser"/> 
+     <bean id="crystalDObjId" class="parser.crystal.CrystalDProductAttributeParser"> 
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+    </bean>
     
      <bean id="crymaterialObjId" class="parser.crystal.CrystalDMaterialParser"> 
      <property name="lookupServiceDataObj" ref="lookupServiceData"/>
