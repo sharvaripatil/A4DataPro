@@ -7,10 +7,12 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties
 public class Image implements Comparator<Image>{
 
     @JsonProperty("ImageURL")
@@ -21,6 +23,11 @@ public class Image implements Comparator<Image>{
     private Boolean isPrimary;
     @JsonProperty("Configurations")
     private List<Configurations> configurations;
+    @JsonProperty("Isvirtualized")
+    private Boolean isvirtualized;
+    @JsonProperty("Description")
+    private String description;
+    
 
     public List<Configurations> getConfigurations() {
 		return configurations;
@@ -55,13 +62,28 @@ public class Image implements Comparator<Image>{
     public Boolean getIsPrimary() {
         return isPrimary;
     }
-
     @JsonProperty("IsPrimary")
     public void setIsPrimary(Boolean isPrimary) {
         this.isPrimary = isPrimary;
     }
+    @JsonProperty("Isvirtualized")
+	public Boolean getIsvirtualized() {
+		return isvirtualized;
+	}
+	@JsonProperty("Isvirtualized")
+	public void setIsvirtualized(Boolean isvirtualized) {
+		this.isvirtualized = isvirtualized;
+	} 
+	@JsonProperty("Description")
+    public String getDescription() {
+		return description;
+	}
+	@JsonProperty("Description")
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    @Override
+	@Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
@@ -84,6 +106,7 @@ public class Image implements Comparator<Image>{
 			o2.setRank(0);
 		return o1.getRank()-o2.getRank();
 	}
+
 
    
 }

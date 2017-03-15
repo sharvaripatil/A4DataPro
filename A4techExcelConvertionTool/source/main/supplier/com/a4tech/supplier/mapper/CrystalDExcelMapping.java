@@ -125,6 +125,9 @@ public class CrystalDExcelMapping implements IExcelParser {
 		String description =null;
 		String MaterialValue=null;
 		String asiProdNo = null;
+		String ImprintLoc1[] = null;
+		String ImprintLoc2[] =null;
+	    String ImprintLoc3[]=null;
 		int columnIndex =0;
 				
 		while (iterator.hasNext()) {			
@@ -228,14 +231,14 @@ public class CrystalDExcelMapping implements IExcelParser {
 						    	productXids.add(xid);
 						    	repeatRows.add(xid);
 						    }
-						 //   productExcelObj = new Product();
+						    productExcelObj = new Product();
 						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid);
 
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
-//						  	   productExcelObj=existingApiProduct;
+		//				  	   productExcelObj=existingApiProduct;
 								productConfigObj=existingApiProduct.getProductConfigurations();
 						    	String confthruDate=existingApiProduct.getPriceConfirmedThru();
 						    	List<Color> colorL=productConfigObj.getColors();
@@ -313,7 +316,8 @@ public class CrystalDExcelMapping implements IExcelParser {
 					 ImprintSize1=cell.getStringCellValue();
 					 if(ImprintSize1.contains(":")){
 						 ImprintLocation impLocationObj1=new ImprintLocation();
-						 impLocationObj1.setValue(ImprintSize1);
+						 ImprintLoc1=ImprintSize1.split(":");
+						 impLocationObj1.setValue(ImprintLoc1[0]);
 						 imprintLocationList.add(impLocationObj1);
 					 }
 					
@@ -322,15 +326,34 @@ public class CrystalDExcelMapping implements IExcelParser {
 					 ImprintSize2=cell.getStringCellValue();
 					 if(ImprintSize2.contains(":")){
 						 ImprintLocation impLocationObj2=new ImprintLocation();
-						 impLocationObj2.setValue(ImprintSize2);
+						  ImprintLoc2=ImprintSize2.split(":");
+						 impLocationObj2.setValue(ImprintLoc2[0]);
 						 imprintLocationList.add(impLocationObj2);
 					 }
 					 
 					break;
 				case 11://Image Area3
-					String ImprintSize3=cell.getStringCellValue();
+					String ImprintSize3=cell.getStringCellValue();  
+					 if(ImprintSize3.contains(":") && !StringUtils.isEmpty(ImprintSize3)){
+						 ImprintLocation impLocationObj3=new ImprintLocation();
+						  ImprintLoc3=ImprintSize3.split(":");
+						 impLocationObj3.setValue(ImprintLoc3[0]);
+						 imprintLocationList.add(impLocationObj3);
+					 }
+					if(ImprintSize1.contains(":") && ImprintSize3.contains(":") ){
+						
+					FinalImprintSize=FinalImprintSize.append(ImprintLoc1[1]).append(",").append(ImprintLoc2[1]).
+			    		          append(",").append(ImprintLoc3[1]);
+					
+					}
+					else if(ImprintSize1.contains(":") )
+					{
+					 FinalImprintSize=FinalImprintSize.append(ImprintLoc1[1]).append(",").append(ImprintLoc2[1]);
+					}
+					else{ 
 				    FinalImprintSize=FinalImprintSize.append(ImprintSize1).append(",").append(ImprintSize2).
 				    		          append(",").append(ImprintSize3);
+					}
 				    String FinalImprintSizeArr[]=FinalImprintSize.toString().split(",");
 				    for (String Value : FinalImprintSizeArr) {
 				    	imprintSizeObj=new ImprintSize();
