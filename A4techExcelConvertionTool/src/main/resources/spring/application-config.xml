@@ -591,6 +591,7 @@
       <property name="primeLineColorTabParser" ref="primeLineColorTabParserId"/>
       <property name="primeLineAttributeParser" ref="primeLineAttributeParserId"/>
       <property name="primeLinePriceGridParser" ref="primeLinePriceGridParserId"/>
+      <property name="primeLineFeatureTabParser" ref="primeLineFeatureTabParserId"/>
      </bean>
      <bean id="primeLineColorTabParserId" name="primeLineColorTabParserObj"
 		class="parser.primeline.PrimeLineColorTabParser" autowire="byName">
@@ -605,6 +606,11 @@
 	<bean id="primeLinePriceGridParserId" name="primeLinePriceGridParserObj"
 		class="parser.primeline.PrimeLinePriceGridParser" autowire="byName">
 		</bean>
+		<bean id="primeLineFeatureTabParserId" name="primeLineFeatureTabParserObj"
+		class="parser.primeline.PrimeLineFeatureTabParser" autowire="byName">
+		 <property name="productDaoObj" ref="productDao"/>
+		 <property name="primeLineAttriObj" ref="primeLineAttributeParserId"/>
+	</bean>
         <!-- supplier PrimeLine configuration end --> 
 
     

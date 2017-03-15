@@ -1,4 +1,5 @@
 package parser.primeline;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,56 +14,51 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
-import com.a4tech.product.model.Image;
-import com.a4tech.product.model.ImprintMethod;
-import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.model.ProductNumber;
-import com.a4tech.product.riversend.parser.MappingClass;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class PrimeLineColorTabParser {
+public class PrimeLineFeatureTabParser {
 
-	private static final Logger _LOGGER = Logger.getLogger(PrimeLineColorTabParser.class);
-	private PostServiceImpl postServiceImpl;
+
+	private static final Logger _LOGGER = Logger.getLogger(PrimeLineFeatureTabParser.class);
 	private ProductDao productDaoObj;
+	private PrimeLineAttributeParser primeLineAttriObj;
 	@Autowired
 	ObjectMapper mapperObj;
-	private LookupServiceData lookupServiceDataObj;
-	public HashMap<String, Product> readColorTab(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId,
+	
+	public HashMap<String, Product> readFeatureTab(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId,
 			HashMap<String, Product> sheetMap){
 		HashMap<String, Product> sheetMapReturn=new HashMap<String, Product>();
+		//HashMap<String, ArrayList<String>> featureMap=new HashMap<String,ArrayList<String>>();
+		
 		Product existingApiProduct = null;
 		Set<String>  productXids = new HashSet<String>();
 		List<String> repeatRows = new ArrayList<>();
-		List<Color> colorList = new ArrayList<Color>();
-		Color colorObj = null;
-		List<Combo> comboList = null;
+		  
 		try{
 		Product	productExcelObj=new Product();
 		ProductConfigurations productConfigObj=new ProductConfigurations();
 	    _LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-		Sheet sheet = workbook.getSheetAt(1);
+		Sheet sheet = workbook.getSheetAt(2);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
 	    String productId = null;
 	    String xid = null;
 	    int columnIndex=0;
 	    String temp=null;
-	    String colorValue=null;
+	    String detailTypeValue=null;
+	    String detailValue=null;
 	    while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
@@ -79,7 +75,9 @@ public class PrimeLineColorTabParser {
 			boolean checkXid  = false;
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
-			    columnIndex = cell.getColumnIndex();
+				
+			     columnIndex = cell.getColumnIndex();
+				
 				if(columnIndex + 1 == 1){
 					xid = getProductXid(nextRow);//CommonUtility.getCellValueStrinOrInt(cell);//
 					checkXid = true;
@@ -90,14 +88,19 @@ public class PrimeLineColorTabParser {
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							 //int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
-							 productConfigObj.setColors(colorList);
-							 productExcelObj.setProductConfigurations(productConfigObj);
-							 _LOGGER.info("Product Data from sheet 2 color tab: "+ mapperObj.writeValueAsString(productExcelObj));
+							 //process all the detail type values over here send here
+							 //for the primeline attribute parser processing  based on the detailvalue type
+							 
+							 //if(!StringUtils.isEmpty(detailTypeValue) && !StringUtils.isEmpty(detailValue)){
+							// productExcelObj=primeLineAttriObj.featureCritriaparser(productExcelObj,productConfigObj,detailTypeValue,detailValue);
+							 _LOGGER.info("Product Data from sheet 3 feature tab: "+ mapperObj.writeValueAsString(productExcelObj));
 							 sheetMapReturn.put(productId, productExcelObj);
+							 //}
 								//productConfigObj = new ProductConfigurations();
 								repeatRows.clear();
-								colorList = new ArrayList<Color>();
-								colorValue=null;
+								
+								detailTypeValue=null;
+								detailValue=null;
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -132,74 +135,16 @@ public class PrimeLineColorTabParser {
 						case 2://ITEMID
 							
 						break;
-						case 3://COLOR
-							colorValue =  CommonUtility.getCellValueStrinOrInt(cell);
+						case 3://DETAILTYPE
+							detailTypeValue=CommonUtility.getCellValueStrinOrInt(cell);
 							break;
 
-						case 4://CONFIG
-							
-							String custColorCode =  CommonUtility.getCellValueStrinOrInt(cell);
-							if(!StringUtils.isEmpty(custColorCode)){
-							
-							}else{
-								custColorCode="";
-							}
-							
-							if(!StringUtils.isEmpty(colorValue)){
-							String tempcolorArray[]=colorValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-							for (String colorVal : tempcolorArray) {
-							String strColor=colorVal;
-							strColor=strColor.replaceAll("&","/");
-							strColor=strColor.replaceAll(" w/","/");
-							strColor=strColor.replaceAll(" W/","/");
-							boolean isCombo = false;
-								colorObj = new Color();
-								comboList = new ArrayList<Combo>();
-				    			isCombo = isComboColors(strColor);
-								if (!isCombo) {
-									String colorName=PrimeLineConstants.PRIMECOLOR_MAP.get(strColor.trim());
-									if(StringUtils.isEmpty(colorName)){
-										colorName=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
-									}
-									colorObj.setName(colorName);
-									colorObj.setAlias(colorVal.trim());
-									colorObj.setCustomerOrderCode(custColorCode);
-									colorList.add(colorObj);
-								} else {
-									//245-Mid Brown/Navy
-									String colorArray[] = strColor.split(ApplicationConstants.CONST_DELIMITER_FSLASH);
-									//if(colorArray.length==2){
-									String combo_color_1=PrimeLineConstants.PRIMECOLOR_MAP.get(colorArray[0].trim());
-									if(StringUtils.isEmpty(combo_color_1)){
-										combo_color_1=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
-									}
-									colorObj.setName(combo_color_1);
-									colorObj.setAlias(strColor);
-									
-									Combo comboObj = new Combo();
-									String combo_color_2=PrimeLineConstants.PRIMECOLOR_MAP.get(colorArray[1].trim());
-									if(StringUtils.isEmpty(combo_color_2)){
-										combo_color_2=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
-									}
-									comboObj.setName(combo_color_2.trim());
-									comboObj.setType(ApplicationConstants.CONST_STRING_SECONDARY);
-									if(colorArray.length==3){
-										String combo_color_3=PrimeLineConstants.PRIMECOLOR_MAP.get(colorArray[2].trim());
-										if(StringUtils.isEmpty(combo_color_3)){
-											combo_color_3=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
-										}
-										Combo comboObj2 = new Combo();
-										comboObj2.setName(combo_color_3.trim());
-										comboObj2.setType(ApplicationConstants.CONST_STRING_TRIM);
-										comboList.add(comboObj2);
-									}
-									comboList.add(comboObj);
-									colorObj.setCombos(comboList);
-									colorObj.setCustomerOrderCode(custColorCode);
-									colorList.add(colorObj);
-								 	}
-								}
-							}
+						case 4://DETAIL
+							 detailValue=CommonUtility.getCellValueStrinOrInt(cell);
+							 if(!StringUtils.isEmpty(detailTypeValue) && !StringUtils.isEmpty(detailValue)){
+							 productExcelObj=primeLineAttriObj.featureCritriaparser(productExcelObj,productConfigObj,detailTypeValue,detailValue);
+							 //sheetMapReturn.put(productId, productExcelObj);
+							 }
 							break;
 				}  // end inner while loop					 
 			}		
@@ -213,14 +158,20 @@ public class PrimeLineColorTabParser {
 		}
 		workbook.close();
 		
-		 productConfigObj.setColors(colorList);
-		 productExcelObj.setProductConfigurations(productConfigObj);
-		 _LOGGER.info("Product Data from sheet 2 color tab: "
-					+ mapperObj.writeValueAsString(productExcelObj));
-		sheetMapReturn.put(productId, productExcelObj);
-	    productDaoObj.saveErrorLog(asiNumber,batchId);
+		// productConfigObj.setColors(colorList);
+		//if(!StringUtils.isEmpty(detailTypeValue) && !StringUtils.isEmpty(detailValue)){
+			// productExcelObj=primeLineAttriObj.featureCritriaparser(productExcelObj,productConfigObj,detailTypeValue,detailValue);
+			 _LOGGER.info("Product Data from sheet 3 feature tab: "+ mapperObj.writeValueAsString(productExcelObj));
+			 sheetMapReturn.put(productId, productExcelObj);
+			// }
+				//productConfigObj = new ProductConfigurations();
+				repeatRows.clear();
+				
+				detailTypeValue=null;
+				detailValue=null;
+		productDaoObj.saveErrorLog(asiNumber,batchId);
 		repeatRows.clear();
-		colorValue=null;
+		detailTypeValue=null;
 		//colorList = new ArrayList<Color>();
 		return sheetMapReturn;
 		}catch(Exception e){
@@ -248,18 +199,11 @@ public class PrimeLineColorTabParser {
 	}
 	
 	public boolean isRepeateColumn(int columnIndex){
-		if(columnIndex != 1 && columnIndex != 3 && columnIndex != 4){
+		if(columnIndex != 1 && columnIndex != 2 && columnIndex != 3 && columnIndex != 4){
 		//if(columnIndex != 1&&columnIndex != 3&&columnIndex != 4 && columnIndex != 6 && columnIndex != 9 && columnIndex != 24){
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
-	}
-	public PostServiceImpl getPostServiceImpl() {
-		return postServiceImpl;
-	}
-
-	public void setPostServiceImpl(PostServiceImpl postServiceImpl) {
-		this.postServiceImpl = postServiceImpl;
 	}
 	public ProductDao getProductDaoObj() {
 		return productDaoObj;
@@ -279,12 +223,12 @@ public class PrimeLineColorTabParser {
 		this.mapperObj = mapperObj;
 	}
 	
-	public LookupServiceData getLookupServiceDataObj() {
-		return lookupServiceDataObj;
+	public PrimeLineAttributeParser getPrimeLineAttriObj() {
+		return primeLineAttriObj;
 	}
 
-	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
-		this.lookupServiceDataObj = lookupServiceDataObj;
+	public void setPrimeLineAttriObj(PrimeLineAttributeParser primeLineAttriObj) {
+		this.primeLineAttriObj = primeLineAttriObj;
 	}
 
 	public static String removeSpecialChar(String tempValue){
@@ -301,8 +245,4 @@ public class PrimeLineColorTabParser {
 		}
 		return result;
 	}
-	
-	
-
-
 }

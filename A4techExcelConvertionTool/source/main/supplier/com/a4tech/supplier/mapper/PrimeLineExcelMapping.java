@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 import parser.primeline.PrimeLineAttributeParser;
 import parser.primeline.PrimeLineColorTabParser;
 import parser.primeline.PrimeLineConstants;
+import parser.primeline.PrimeLineFeatureTabParser;
 import parser.primeline.PrimeLinePriceGridParser;
 
 import com.a4tech.core.errors.ErrorMessageList;
@@ -53,6 +54,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 	PrimeLineColorTabParser primeLineColorTabParser;
 	PrimeLineAttributeParser primeLineAttributeParser;
 	PrimeLinePriceGridParser primeLinePriceGridParser;
+	PrimeLineFeatureTabParser primeLineFeatureTabParser;
 	 private HashMap<String, Product> sheetMap =new HashMap<String, Product>();
 	 private HashMap<String, StringBuilder>  priceMap=new HashMap<String, StringBuilder>();
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
@@ -79,7 +81,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 		  
 		try{
 			_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-	 for(int i=0;i<2;i++)
+	 for(int i=0;i<3;i++)
 		{
 		if(i==0){
 		Sheet sheet = workbook.getSheetAt(0);
@@ -129,6 +131,10 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 									String listPrices=tempArr[0];
 									String listQuan=tempArr[1];
 									String	disCodes=tempArr[2];
+									if(name.contains(":")){
+										String tempStrr[]=name.split(":");
+										name=tempStrr[1];
+									}
 									
 									priceGrids = primeLinePriceGridParser.getPriceGrids(listPrices,listQuan,disCodes,"USD","",
 											true, "False", name, 
@@ -144,6 +150,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 								List<String> sizList=new ArrayList<String>();
 								String criteriaName="";
 								String criteriaValue="";
+								String optionNamee="";
 								
 								int count=1;
 								for (Map.Entry<String, StringBuilder> priceEntry : priceMap.entrySet()) {
@@ -155,7 +162,6 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 									}*/
 									
 									//matList.add(name);
-									
 									// I have to add different criteria list
 									if(PrimeLineConstants.CRITPRICE_MAP.containsKey(priceMapKey)){
 									String critMapValue=PrimeLineConstants.CRITPRICE_MAP.get(priceMapKey);
@@ -177,7 +183,11 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 										criteriaName="Shape";
 										shpList.add(criteriaValue);
 									}else if(criteriaName.toUpperCase().contains("OPTION")){//option parsing
-										criteriaName="Product Option";
+										//criteriaName="Product Option";
+										if(criteriaName.contains("@@@@@")){
+											String tempName[]=criteriaName.split("@@@@@");
+											optionNamee=tempName[1];
+											}
 										opntnList.add(criteriaValue);
 									}else if(criteriaName.toUpperCase().contains("CAPACITY")){//sizes(capacity)
 										criteriaName="Size";
@@ -202,7 +212,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 								}
 								// create option criteria over here
 								if(!CollectionUtils.isEmpty(opntnList)){
-								List<Option> listOfOption =	primeLineAttributeParser.getOptions(opntnList);
+								List<Option> listOfOption =	primeLineAttributeParser.getOptions(opntnList,optionNamee);
 								productConfigObj.setOptions(listOfOption);
 								}
 								// create size criteria over here
@@ -217,6 +227,9 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 							productExcelObj.setPriceType("L");
 							productExcelObj.setPriceGrids(priceGrids);
 							productExcelObj.setProductConfigurations(productConfigObj);
+							
+							_LOGGER.info("Product Data from sheet 1: "
+									+ mapperObj.writeValueAsString(productExcelObj));
 							sheetMap.put(productId,productExcelObj);
 							/*
 							_LOGGER.info("Product Data from sheet 1: "
@@ -245,6 +258,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 								listOfPrices = new StringBuilder();
 								listOfDiscCodes=new StringBuilder();
 								priceMap=new HashMap<String, StringBuilder>();
+								
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -503,8 +517,15 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 				}  // end inner while loop					 
 			}		
 		
-			if(!StringUtils.isEmpty(listOfPrices.toString()) && !StringUtils.isEmpty(listOfQuantity.toString())){
+			//if(!StringUtils.isEmpty(listOfPrices.toString()) && !StringUtils.isEmpty(listOfQuantity.toString())){
 			//priceMap.put(productName, listOfPrices.append("@@@@@").append(listOfQuantity).append("@@@@@").append(listOfDiscCodes));
+			if(!StringUtils.isEmpty(listOfPrices.toString())){	
+			if(StringUtils.isEmpty(listOfDiscCodes.toString())){
+					listOfDiscCodes.append("Z___Z___Z___Z___Z"); 
+				}
+				if(StringUtils.isEmpty(listOfQuantity.toString())){
+					listOfDiscCodes.append("1___1___1___1___1"); 
+				}
 				priceMap.put(xid+":"+productName, listOfPrices.append("@@@@@").append(listOfQuantity).append("@@@@@").append(listOfDiscCodes));
 			}
 			
@@ -523,87 +544,147 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 		priceGrids=	 new ArrayList<PriceGrid>();
 		//priceGrids = primeLinePriceGridParser.getPriceGrids(priceMap);	
 		if(!CollectionUtils.isEmpty(priceMap)){
-			if(priceMap.size()==1){
-				for (Map.Entry<String, StringBuilder> priceEntry : priceMap.entrySet()) {
-					String tempStr=priceEntry.getValue().toString();
-					String name=priceEntry.getKey().toString();
-					String tempArr[]=tempStr.split("@@@@@");
-					String listPrices=tempArr[0];
-					String listQuan=tempArr[1];
-					String	disCodes=tempArr[2];
-					
-					priceGrids = primeLinePriceGridParser.getPriceGrids(listPrices,listQuan,disCodes,"USD","",
-							true, "False", name, 
-							null, 1,null, null,
-							priceGrids);//,productExcelObj);
-				
-				}	
-			}else{
-				List<String> matList=new ArrayList<String>();
-				int count=1;
-				for (Map.Entry<String, StringBuilder> priceEntry : priceMap.entrySet()) {
-					String tempStr=priceEntry.getValue().toString();
-					String name=priceEntry.getKey().toString();
-					if(name.contains("(") && name.contains(")") ){
-					name = name.substring(name.indexOf("(")+1,name.indexOf(")"));
-					}
-					matList.add(name);
-					String tempArr[]=tempStr.split("@@@@@");
-					String listPrices=tempArr[0];
-					String listQuan=tempArr[1];
-					String	disCodes=tempArr[2];
-					priceGrids = primeLinePriceGridParser.getPriceGrids(listPrices,listQuan,disCodes,"USD","",
-							true, "False", name, 
-							"Material", count,null, null,
-							priceGrids);//,productExcelObj);
-					count++;
-					
+		if(priceMap.size()==1){
+			for (Map.Entry<String, StringBuilder> priceEntry : priceMap.entrySet()) {
+				String tempStr=priceEntry.getValue().toString();
+				String name=priceEntry.getKey().toString();
+				String tempArr[]=tempStr.split("@@@@@");
+				String listPrices=tempArr[0];
+				String listQuan=tempArr[1];
+				String	disCodes=tempArr[2];
+				if(name.contains(":")){
+					String tempStrr[]=name.split(":");
+					name=tempStrr[1];
 				}
-				// create material criteria over here
-				List<Material> listOfProductMaterial =	primeLineAttributeParser.getMaterials(matList);
-				productConfigObj.setMaterials(listOfProductMaterial);
 				
-			}
-		 }else{//QUR
-			 priceGrids= getPriceGrids(productName);
-		 }
+				priceGrids = primeLinePriceGridParser.getPriceGrids(listPrices,listQuan,disCodes,"USD","",
+						true, "False", name, 
+						null, 1,null, null,
+						priceGrids);//,productExcelObj);
 			
+			}	
+		}else{
+			
+			List<String> matList=new ArrayList<String>();
+			List<String> shpList =new ArrayList<String>();
+			List<String> opntnList=new ArrayList<String>();
+			List<String> sizList=new ArrayList<String>();
+			String criteriaName="";
+			String criteriaValue="";
+			String optionNamee="";
+			
+			int count=1;
+			for (Map.Entry<String, StringBuilder> priceEntry : priceMap.entrySet()) {
+				
+				String priceMapKey=priceEntry.getKey().toString();
+				String priceMapValue=priceEntry.getValue().toString();
+				/*if(name.contains("(") && name.contains(")") ){
+				name = name.substring(name.indexOf("(")+1,name.indexOf(")"));
+				}*/
+				
+				//matList.add(name);
+				// I have to add different criteria list
+				if(PrimeLineConstants.CRITPRICE_MAP.containsKey(priceMapKey)){
+				String critMapValue=PrimeLineConstants.CRITPRICE_MAP.get(priceMapKey);
+				
+				//String tempKeyArr[]=tempStrKey.split(":");
+				String pricingArr[]=priceMapValue.split("@@@@@");
+				String listPrices=pricingArr[0];
+				String listQuan=pricingArr[1];
+				String	disCodes=pricingArr[2];
+				
+				String criteriArray[]=critMapValue.split("#####");
+				criteriaName=criteriArray[0];
+				criteriaValue=criteriArray[1];
+				
+				if(criteriaName.toUpperCase().contains("MATERIAL")){//material parsing
+					criteriaName="Material";
+					matList.add(criteriaValue);
+				}else if(criteriaName.toUpperCase().contains("SHAPE")){//shape parsing
+					criteriaName="Shape";
+					shpList.add(criteriaValue);
+				}else if(criteriaName.toUpperCase().contains("OPTION")){//option parsing
+					//criteriaName="Product Option";
+					if(criteriaName.contains("@@@@@")){
+						String tempName[]=criteriaName.split("@@@@@");
+						optionNamee=tempName[1];
+						}
+					opntnList.add(criteriaValue);
+				}else if(criteriaName.toUpperCase().contains("CAPACITY")){//sizes(capacity)
+					criteriaName="Size";
+					sizList.add(criteriaValue);
+				}
+				priceGrids = primeLinePriceGridParser.getPriceGrids(listPrices,listQuan,disCodes,"USD","",
+						true, "False", criteriaValue, 
+						criteriaName, count,null, null,
+						priceGrids);//,productExcelObj);
+				count++;
+			  }
+			}
+			// create material criteria over here
+			if(!CollectionUtils.isEmpty(matList)){
+			List<Material> listOfProductMaterial =	primeLineAttributeParser.getMaterials(matList);
+			productConfigObj.setMaterials(listOfProductMaterial);
+			}
+			// create shapes criteria over here
+			if(!CollectionUtils.isEmpty(shpList)){
+			List<Shape> listOfShapes =	primeLineAttributeParser.getProductShapes(shpList);
+			productConfigObj.setShapes(listOfShapes);
+			}
+			// create option criteria over here
+			if(!CollectionUtils.isEmpty(opntnList)){
+			List<Option> listOfOption =	primeLineAttributeParser.getOptions(opntnList,optionNamee);
+			productConfigObj.setOptions(listOfOption);
+			}
+			// create size criteria over here
+			if(!CollectionUtils.isEmpty(sizList)){
+			Size sizesObj =	primeLineAttributeParser.getSizes(sizList);
+			productConfigObj.setSizes(sizesObj);
+			}
+		}
+	 }else{//QUR
+		 priceGrids= getPriceGrids(productName);
+	 }
 		productExcelObj.setPriceType("L");
 		productExcelObj.setPriceGrids(priceGrids);
 		productExcelObj.setProductConfigurations(productConfigObj);
-		 	/*_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(productExcelObj));*/
-		 	/*int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		
+		_LOGGER.info("Product Data from sheet 1: "
+				+ mapperObj.writeValueAsString(productExcelObj));
+		sheetMap.put(productId,productExcelObj);
+		/*
+		_LOGGER.info("Product Data from sheet 1: "
+				+ mapperObj.writeValueAsString(productExcelObj));*/
+		 /*int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
 		 		numOfProductsFailure.add("0");
-		 	}
-		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
-		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
-	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
-	    productDaoObj.saveErrorLog(asiNumber,batchId);*/
-		sheetMap.put(productId,productExcelObj);
-		priceGrids = new ArrayList<PriceGrid>();
-		productConfigObj = new ProductConfigurations();
-		repeatRows.clear();
-		listOfQuantity = new StringBuilder();
-		listOfPrices = new StringBuilder();
-		listOfDiscCodes=new StringBuilder();
-		baseDiscCode=null;
-		shippingitemValue="";
-		shippingWeightValue="";
-		dimLen="";
-		 dimHieght="";
-		 dimWidth="";
-		 listOfCategories=new ArrayList<String>();
-		 priceMap=new HashMap<String, StringBuilder>();
+		 	}else{
+		 		
+		 	}*//*
+		 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
+		 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());*/
+			priceGrids = new ArrayList<PriceGrid>();
+			productConfigObj = new ProductConfigurations();
+			repeatRows.clear();
+			baseDiscCode=null;
+			shippingitemValue="";
+			shippingWeightValue="";
+			dimLen="";
+			dimHieght="";
+			dimWidth="";
+			listOfCategories=new ArrayList<String>();
+			listOfQuantity = new StringBuilder();
+			listOfPrices = new StringBuilder();
+			listOfDiscCodes=new StringBuilder();
+			priceMap=new HashMap<String, StringBuilder>();
 				}else if(i==1){
 					sheetMap=primeLineColorTabParser.readColorTab( accessToken, workbook , asiNumber , batchId,sheetMap);
 				}else if(i==2){
-					System.out.println("Hi");
+					sheetMap=primeLineFeatureTabParser.readFeatureTab(accessToken, workbook, asiNumber, batchId, sheetMap);
 				}else if(i==3){
-					
+					System.out.println("Hi");
 				}
 			}
 		return finalResult;
@@ -742,6 +823,20 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 		this.primeLinePriceGridParser = primeLinePriceGridParser;
 	}
 	
+	
+	public PrimeLineFeatureTabParser getPrimeLineFeatureTabParser() {
+		return primeLineFeatureTabParser;
+	}
+
+
+
+	public void setPrimeLineFeatureTabParser(
+			PrimeLineFeatureTabParser primeLineFeatureTabParser) {
+		this.primeLineFeatureTabParser = primeLineFeatureTabParser;
+	}
+
+
+
 	public static String removeSpecialChar(String tempValue){
 		tempValue=tempValue.replaceAll("(CLASS|Day|DAYS|Service|Days|Hour|Hours|Week|Weeks|Rush|day|service|days|hour|hours|week|weeks|Rush|R|u|s|h|®|™|$)", "");
 		tempValue=tempValue.replaceAll("\\(","");
