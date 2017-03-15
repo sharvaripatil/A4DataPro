@@ -1,41 +1,81 @@
 package parser.goldstarcanada;
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.a4tech.lookup.service.LookupServiceData;
+import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.model.ImprintMethod;
-import com.a4tech.util.ApplicationConstants;
+
 
 public class GoldstarCanadaImprintMethodParser {
 	
-	public List<ImprintMethod> getImprintMethodValues(String imprintMethodValue,
+	private LookupServiceData lookupServiceDataObj;
+	private LookupRestService lookupRestServiceObj;
+	
+	public List<ImprintMethod> getImprintMethodValues(String imprintMethod,
 			                                           List<ImprintMethod> imprintMethodList){
-		 ImprintMethod imprMethod = null;
-		if(imprintMethodValue.equals(ApplicationConstants.CONST_STRING_HOT_FOIL_STAMPED)){
+		List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
+		imprintMethod=imprintMethod.replace("4-color process", "Full Color");
+		imprintMethod=imprintMethod.replace("Pad printed", "Pad Print");
+		imprintMethod=imprintMethod.replace("Screen printed", "Silkscreen");
+		ImprintMethod imprMethod = new ImprintMethod();
+		
+		if(imprintMethod.contains("Laser"))
+		{
 			imprMethod = new ImprintMethod();
-			imprMethod.setAlias(ApplicationConstants.CONST_STRING_HOT_STAMPED);
-			imprMethod.setType(ApplicationConstants.CONST_STRING_HOT_STAMPED);
-			imprintMethodList.add(imprMethod);
-		}else if(imprintMethodValue.contains(ApplicationConstants.CONST_DELIMITER_COMMA)){
-			String[] methodValues = imprintMethodValue.split(ApplicationConstants.CONST_DELIMITER_COMMA);
-			for (String imprMethodValue : methodValues) {
-				imprMethod = new ImprintMethod();
-				imprMethod.setAlias(imprMethodValue);
-				imprMethod.setType(imprMethodValue);
-				imprintMethodList.add(imprMethod);
-			}
-		}else if(imprintMethodValue.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
-			imprMethod = new ImprintMethod();
-			imprMethod.setAlias(ApplicationConstants.CONST_STRING_UNIMPRINTED);
-			imprMethod.setType(ApplicationConstants.CONST_STRING_UNIMPRINTED);
-			imprintMethodList.add(imprMethod);
-		} else{
-			imprMethod = new ImprintMethod();
-			imprMethod.setAlias(imprintMethodValue);
-			imprMethod.setType(imprintMethodValue);
-			imprintMethodList.add(imprMethod);
+			 imprMethod.setAlias("Laser Engraved");
+			 imprMethod.setType("Laser Engraved");
+			 imprintMethodsList.add(imprMethod);
 		}
-		return imprintMethodList;
+
+		else{
+		
+		List<String> finalImprintValues = getImprintValue(imprintMethod.toUpperCase().trim());	
+		for (String innerValue : finalImprintValues) {
+		    	 imprMethod = new ImprintMethod();
+				 imprMethod.setAlias(innerValue);
+				 imprMethod.setType(innerValue);
+				 imprintMethodsList.add(imprMethod);  
+		}
+		}
+		return imprintMethodsList;
 	}
 
+	
+	public List<String> getImprintValue(String value){
+		List<String> imprintLookUpValue = lookupServiceDataObj.getImprintMethods();
+		List<String> finalImprintValues = imprintLookUpValue.stream()
+				                                  .filter(impntName -> value.contains(impntName))
+				                                  .collect(Collectors.toList());
+                                                 
+				
+		return finalImprintValues;	
+	}
+
+	public LookupServiceData getLookupServiceDataObj() {
+		return lookupServiceDataObj;
+	}
+
+	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
+		this.lookupServiceDataObj = lookupServiceDataObj;
+	}
+
+	public LookupRestService getLookupRestServiceObj() {
+		return lookupRestServiceObj;
+	}
+
+	public void setLookupRestServiceObj(LookupRestService lookupRestServiceObj) {
+		this.lookupRestServiceObj = lookupRestServiceObj;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 }

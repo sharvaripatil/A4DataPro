@@ -221,19 +221,23 @@ public class CrystalDProductAttributeParser {
 		avaibltyObj.setParentCriteria("Imprint Location");
 		avaibltyObj.setChildCriteria("Imprint Size");
 		
-	
-		for (ImprintLocation LocationVal : imprintLocationList) { //String childValue : childList
-			 for (ImprintSize sizeValue : imprintSizeList) {//String ParentValue : parentList
+	  for(int i=0;i<imprintLocationList.size();i++){
+		String LocArr=imprintLocationList.get(i).getValue().toString().trim();
+		String SizeArr=imprintSizeList.get(i).getValue().toString().trim();
+
+		//for (ImprintLocation LocationVal : imprintLocationList) { //String childValue : childList
+			// for (ImprintSize sizeValue : imprintSizeList) {//String ParentValue : parentList
 				 VariationObj = new AvailableVariations();
 				 locationList = new ArrayList<>();
 				 sizeList = new ArrayList<>();
-				 locationList.add(LocationVal.getValue().toString().trim());
-				 sizeList.add(sizeValue.getValue().toString().trim());
+				 locationList.add(LocArr);
+				 sizeList.add(SizeArr);
 				 VariationObj.setParentValue(locationList);
 				 VariationObj.setChildValue(sizeList);
 				 avaiVaraitionList.add(VariationObj);
-			}
-		}
+	}
+			//}
+	//	}
 		
 		avaibltyObj.setAvailableVariations(avaiVaraitionList);
 		availabilityList.add(avaibltyObj);
