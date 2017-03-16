@@ -61,7 +61,6 @@ public class PrimeLineColorTabParser {
 	    String productId = null;
 	    String xid = null;
 	    int columnIndex=0;
-	    String temp=null;
 	    String colorValue=null;
 	    while (iterator.hasNext()) {
 			try{
@@ -105,7 +104,7 @@ public class PrimeLineColorTabParser {
 						    }
 						    existingApiProduct=sheetMap.get(xid);
 						     if(existingApiProduct == null){
-						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
+						    	 _LOGGER.info("Existing Xid is not available in Map,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
 						    	    productExcelObj=existingApiProduct;

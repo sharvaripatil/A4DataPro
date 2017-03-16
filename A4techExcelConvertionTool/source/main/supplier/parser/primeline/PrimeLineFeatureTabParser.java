@@ -17,13 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.core.errors.ErrorMessageList;
-import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Color;
-import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,7 +37,6 @@ public class PrimeLineFeatureTabParser {
 			HashMap<String, Product> sheetMap){
 		HashMap<String, Product> sheetMapReturn=new HashMap<String, Product>();
 		//HashMap<String, ArrayList<String>> featureMap=new HashMap<String,ArrayList<String>>();
-		
 		Product existingApiProduct = null;
 		Set<String>  productXids = new HashSet<String>();
 		List<String> repeatRows = new ArrayList<>();
@@ -49,14 +44,12 @@ public class PrimeLineFeatureTabParser {
 		try{
 		Product	productExcelObj=new Product();
 		ProductConfigurations productConfigObj=new ProductConfigurations();
-	    _LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 		Sheet sheet = workbook.getSheetAt(2);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
 	    String productId = null;
 	    String xid = null;
 	    int columnIndex=0;
-	    String temp=null;
 	    String detailTypeValue=null;
 	    String detailValue=null;
 	    while (iterator.hasNext()) {
@@ -90,9 +83,8 @@ public class PrimeLineFeatureTabParser {
 							 //int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 //process all the detail type values over here send here
 							 //for the primeline attribute parser processing  based on the detailvalue type
-							 
 							 //if(!StringUtils.isEmpty(detailTypeValue) && !StringUtils.isEmpty(detailValue)){
-							// productExcelObj=primeLineAttriObj.featureCritriaparser(productExcelObj,productConfigObj,detailTypeValue,detailValue);
+							 //productExcelObj=primeLineAttriObj.featureCritriaparser(productExcelObj,productConfigObj,detailTypeValue,detailValue);
 							 _LOGGER.info("Product Data from sheet 3 feature tab: "+ mapperObj.writeValueAsString(productExcelObj));
 							 sheetMapReturn.put(productId, productExcelObj);
 							 //}
@@ -108,7 +100,7 @@ public class PrimeLineFeatureTabParser {
 						    }
 						    existingApiProduct=sheetMap.get(xid);
 						     if(existingApiProduct == null){
-						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
+						    	 _LOGGER.info("Existing Xid is not available in Map,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
 						    	    productExcelObj=existingApiProduct;
@@ -143,7 +135,6 @@ public class PrimeLineFeatureTabParser {
 							 detailValue=CommonUtility.getCellValueStrinOrInt(cell);
 							 if(!StringUtils.isEmpty(detailTypeValue) && !StringUtils.isEmpty(detailValue)){
 							 productExcelObj=primeLineAttriObj.featureCritriaparser(productExcelObj,productConfigObj,detailTypeValue,detailValue);
-							 //sheetMapReturn.put(productId, productExcelObj);
 							 }
 							break;
 				}  // end inner while loop					 
@@ -160,15 +151,14 @@ public class PrimeLineFeatureTabParser {
 		
 		// productConfigObj.setColors(colorList);
 		//if(!StringUtils.isEmpty(detailTypeValue) && !StringUtils.isEmpty(detailValue)){
-			// productExcelObj=primeLineAttriObj.featureCritriaparser(productExcelObj,productConfigObj,detailTypeValue,detailValue);
+			 //productExcelObj=primeLineAttriObj.featureCritriaparser(productExcelObj,productConfigObj,detailTypeValue,detailValue);
 			 _LOGGER.info("Product Data from sheet 3 feature tab: "+ mapperObj.writeValueAsString(productExcelObj));
 			 sheetMapReturn.put(productId, productExcelObj);
-			// }
+			 //}
 				//productConfigObj = new ProductConfigurations();
-				repeatRows.clear();
-				
-				detailTypeValue=null;
-				detailValue=null;
+		repeatRows.clear();
+		detailTypeValue=null;
+		detailValue=null;
 		productDaoObj.saveErrorLog(asiNumber,batchId);
 		repeatRows.clear();
 		detailTypeValue=null;
