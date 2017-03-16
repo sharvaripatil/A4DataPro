@@ -3,17 +3,24 @@ package parser.crystal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.a4tech.lookup.service.LookupServiceData;
+import com.a4tech.product.model.Availability;
+import com.a4tech.product.model.AvailableVariations;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Option;
 import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Personalization;
+import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
 
 public class CrystalDProductAttributeParser {
+	private LookupServiceData lookupServiceDataObj;
 
 	public  Volume getItemWeight(String ItemWT) {
 		
@@ -40,7 +47,7 @@ public class CrystalDProductAttributeParser {
 	  Size sizeObj=new Size();
 	  String ShippingDimensionValue=shippingDimension.toString();
 	  ShippingDimensionValue=ShippingDimensionValue.replaceAll("\"", "").replaceAll("Height includes chain and key ring", "").replaceAll("Width includes chain and key ring", "");
-	
+	  ShippingDimensionValue=ShippingDimensionValue.replaceAll(",,", ",");
 	  String DimValueArr[]=ShippingDimensionValue.split(",");
 	  
 	  Dimension dimensionObj= new Dimension();
@@ -56,8 +63,10 @@ public class CrystalDProductAttributeParser {
 		  
 	   String SizeValueArr[]=OutreLoop.split("x");
 	
+	   int i=0;
 	   for (String Value : SizeValueArr) {
 			 valObj=new Value();
+			 i++;
 		   
 		if(Value.contains("W"))
 		{
@@ -73,7 +82,7 @@ public class CrystalDProductAttributeParser {
 		}
 		else if(Value.contains("Dia"))
 		{
-			valObj.setAttribute("Dia");
+			valObj.setAttribute("Diameter");
 			Value=Value.replaceAll("[^//0-9x-]", "").replaceAll("-", " ");
 			valObj.setValue(Value);
 		}
@@ -83,10 +92,30 @@ public class CrystalDProductAttributeParser {
 			Value=Value.replaceAll("[^//0-9x-]", "").replaceAll("-", " ");
 			valObj.setValue(Value);
 		}
-		else
+		else if(Value.contains("L"))
 		{
+			valObj.setAttribute("Length");
 			Value=Value.replaceAll("[^//0-9x-]", "").replaceAll("-", " ");
 			valObj.setValue(Value);
+		}
+		
+		else
+		{
+			
+			Value=Value.replaceAll("[^//0-9x-]", "").replaceAll("-", " ");
+			valObj.setValue(Value);
+			if(i==1)
+			{
+				valObj.setAttribute("Length");
+			}
+			else if(i==2)
+			{
+				valObj.setAttribute("Width");
+			}
+			else if(i==3)
+			{
+				valObj.setAttribute("Height");
+			}
 		}
 		valObj.setUnit("in");
 		valuelist.add(valObj);   
@@ -105,6 +134,7 @@ public class CrystalDProductAttributeParser {
 
 	public List<ImprintMethod> getImprintMethod(String imprintMethodValue, List<ImprintMethod> exstimprintMethodsList) {
 		
+		imprintMethodValue=imprintMethodValue.replaceAll("™","");
 		if(imprintMethodValue.contains("Blank"))
 		{
 			imprintMethodValue=imprintMethodValue.replaceAll("Blank-Imprint Extra","UNIMPRINTED");
@@ -134,7 +164,7 @@ public class CrystalDProductAttributeParser {
 		
 		optionObj.setOptionType("Imprint");
 		optionObj.setName("Additional Imprinting Option");
-		optionValueObj.setValue(tempImprintOptionValue);
+		optionValueObj.setValue(tempImprintOptionValue.trim());
 		valuesList.add(optionValueObj);
 		optionObj.setValues(valuesList);
 		optionList.add(optionObj);
@@ -174,5 +204,88 @@ public class CrystalDProductAttributeParser {
 
 		return ProdoptionList;
 	}
+	
+	
+	public List<Availability> getProductAvailability(List<ImprintLocation> imprintLocationList, 
+		List<ImprintSize> imprintSizeList){
+		
+		List<Availability>  availabilityList= new ArrayList<Availability>(); 
+		Availability avaibltyObj=new Availability();
+		
+		List<AvailableVariations>  avaiVaraitionList= new ArrayList<AvailableVariations>(); 
+		AvailableVariations VariationObj=new AvailableVariations();
+		
+		List<Object>  locationList= new ArrayList<Object>(); 
+		List<Object>  sizeList= new ArrayList<Object>(); 
+
+		avaibltyObj.setParentCriteria("Imprint Location");
+		avaibltyObj.setChildCriteria("Imprint Size");
+		
+	  for(int i=0;i<imprintLocationList.size();i++){
+		String LocArr=imprintLocationList.get(i).getValue().toString().trim();
+		String SizeArr=imprintSizeList.get(i).getValue().toString().trim();
+
+		//for (ImprintLocation LocationVal : imprintLocationList) { //String childValue : childList
+			// for (ImprintSize sizeValue : imprintSizeList) {//String ParentValue : parentList
+				 VariationObj = new AvailableVariations();
+				 locationList = new ArrayList<>();
+				 sizeList = new ArrayList<>();
+				 locationList.add(LocArr);
+				 sizeList.add(SizeArr);
+				 VariationObj.setParentValue(locationList);
+				 VariationObj.setChildValue(sizeList);
+				 avaiVaraitionList.add(VariationObj);
+	}
+			//}
+	//	}
+		
+		avaibltyObj.setAvailableVariations(avaiVaraitionList);
+		availabilityList.add(avaibltyObj);
+		
+		return availabilityList;	
+	}
+	
+	
+	
+	public List<Shape> getShapeList(String Shape){
+	List<Shape> shapeList=new ArrayList<Shape>();
+	Shape shapeObj=new Shape();
+	
+	Shape=Shape.toUpperCase();
+	Shape=Shape.replaceAll("Gem", "circle");
+	Shape=Shape.replaceAll("/", ",");
+	List<String> lookupShapeList=lookupServiceDataObj.getShapeValues();
+	if(Shape.contains(",")){
+	String ShapeArr[]=Shape.split(",");
+	for (String value : ShapeArr) {
+		if(lookupShapeList.contains(value.toUpperCase().trim()))
+		{
+			shapeObj=new Shape();
+			shapeObj.setName(value);
+			shapeList.add(shapeObj);
+		}
+	}
+	}else
+	{   if(lookupShapeList.contains(Shape))
+		{
+			shapeObj.setName(Shape);
+			shapeList.add(shapeObj);
+		}
+	}
+	return shapeList;
+	}
+
+
+
+	public LookupServiceData getLookupServiceDataObj() {
+		return lookupServiceDataObj;
+	}
+
+
+
+	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
+		this.lookupServiceDataObj = lookupServiceDataObj;
+	}
+	
 	
 }
