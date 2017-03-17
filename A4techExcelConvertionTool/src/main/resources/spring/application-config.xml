@@ -395,6 +395,8 @@
 		<property name="wholeSaleExcelMapping" ref="wholeSaleExcelMappingId"/>
 		<property name="goldBandExcelMapping" ref="goldBondExcelMappingId"/>
 		<property name="proGolfMapping" ref="proGolfMappingId"></property>
+		<property name="milestoneExcelMapping" ref="milestoneExcelMappingId"/>	
+		<property name="pslMapping" ref="pslMappingId"/>	
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -486,12 +488,15 @@
        <property name="crystalDObj"   ref="crystalDObjId"/>
        <property name="crymaterialObj"   ref="crymaterialObjId"/>
        <property name="cdpriceObj"   ref="cdpriceObjId"/>
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
        
        
        </bean>
     
 
-     <bean id="crystalDObjId" class="parser.crystal.CrystalDProductAttributeParser"/> 
+     <bean id="crystalDObjId" class="parser.crystal.CrystalDProductAttributeParser"> 
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+    </bean>
     
      <bean id="crymaterialObjId" class="parser.crystal.CrystalDMaterialParser"> 
      <property name="lookupServiceDataObj" ref="lookupServiceData"/>
@@ -527,7 +532,10 @@
 
 
      <bean id="gcdimensionObjId" class="parser.goldstarcanada.GoldstarCanadaDimensionParser"/> 
-     <bean id="gcimprintMethodParserId" class="parser.goldstarcanada.GoldstarCanadaImprintMethodParser"/> 
+     <bean id="gcimprintMethodParserId" class="parser.goldstarcanada.GoldstarCanadaImprintMethodParser"> 
+     <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     <property name="lookupRestServiceObj" ref="lookupRestService"/>
+     </bean>
      <bean id="gcOriginParserId" class="parser.goldstarcanada.GoldstarCanadaOriginParser"/> 
      <bean id="gcRushTimeParserId" class="parser.goldstarcanada.GoldstarCanadaRushTimeParser"/> 
      <bean id="gcPackagingParserId" class="parser.goldstarcanada.GoldstarCanadaPackagingParser"/>    
@@ -583,6 +591,30 @@
 		class="parser.wholesale.WholeSalePriceGridParser" autowire="byName">
 	</bean>
         <!-- supplier WholeSale configuration end --> 
+
+
+     <!-- supplier Milestone configuration start -->
+      <bean id="milestoneExcelMappingId" class="com.a4tech.supplier.mapper.MilestoneExcelMapping">
+      <property name="postServiceImpl" ref="postService"/>
+      <property name="productDaoObj" ref="productDao"/>
+      <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+      <property name="colorParserObj" ref="MilestoneColorParserId" />  
+      <property name="attrtiParserObj" ref="attrtiParserObjId" /> 
+      <property name="pricegridParserObj" ref="pricegridParserObjId" /> 
+      
+      
+      </bean>
+ 
+    <bean id="MilestoneColorParserId" class="parser.milestone.MilestoneColorParser" />
+    <bean id="attrtiParserObjId" class="parser.milestone.ProductAttributeParser" >
+    <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+    </bean>
+    <bean id="pricegridParserObjId" class="parser.milestone.MilestonePriceGridParser" />
+     
+    
+    
+     <!-- supplier Milestone configuration end --> 
+
     <bean id="goldBondExcelMappingId" class="com.a4tech.supplier.mapper.GoldBondExcelMapping">
     	 <property name="postServiceImpl" ref="postService"/>
          <property name="productDaoObj" ref="productDao"/>
@@ -625,5 +657,25 @@
      	<property name="lookupServiceData" ref="lookupServiceData"/>
      </bean>
      <bean id="proGolfPriceGridParserId" class="parser.proGolf.ProGolfPriceGridParser"></bean>
+      <!-- supplier PSL configuration start -->
+
+    <bean id="pslMappingId" class="com.a4tech.supplier.mapper.PSLMapping">
+      <property name="postServiceImpl" ref="postService"/>
+      <property name="productDaoObj" ref="productDao"/>
+      <property name="attributObj" ref="attributObjId"/>
+      
+    </bean>
+
+     <bean id="attributObjId" class="parser.psl.PSLProductAttributeParser">
+     <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     <property name="lookupRestServiceObj" ref="lookupRestService"/>
+     </bean>
+
+
+
+
+
+
+  <!-- supplier PSL configuration end -->
 </beans>
 

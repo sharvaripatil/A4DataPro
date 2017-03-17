@@ -3,17 +3,24 @@ package parser.crystal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.a4tech.lookup.service.LookupServiceData;
+import com.a4tech.product.model.Availability;
+import com.a4tech.product.model.AvailableVariations;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Option;
 import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Personalization;
+import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
 
 public class CrystalDProductAttributeParser {
+	private LookupServiceData lookupServiceDataObj;
 
 	public  Volume getItemWeight(String ItemWT) {
 		
@@ -197,5 +204,88 @@ public class CrystalDProductAttributeParser {
 
 		return ProdoptionList;
 	}
+	
+	
+	public List<Availability> getProductAvailability(List<ImprintLocation> imprintLocationList, 
+		List<ImprintSize> imprintSizeList){
+		
+		List<Availability>  availabilityList= new ArrayList<Availability>(); 
+		Availability avaibltyObj=new Availability();
+		
+		List<AvailableVariations>  avaiVaraitionList= new ArrayList<AvailableVariations>(); 
+		AvailableVariations VariationObj=new AvailableVariations();
+		
+		List<Object>  locationList= new ArrayList<Object>(); 
+		List<Object>  sizeList= new ArrayList<Object>(); 
+
+		avaibltyObj.setParentCriteria("Imprint Location");
+		avaibltyObj.setChildCriteria("Imprint Size");
+		
+	  for(int i=0;i<imprintLocationList.size();i++){
+		String LocArr=imprintLocationList.get(i).getValue().toString().trim();
+		String SizeArr=imprintSizeList.get(i).getValue().toString().trim();
+
+		//for (ImprintLocation LocationVal : imprintLocationList) { //String childValue : childList
+			// for (ImprintSize sizeValue : imprintSizeList) {//String ParentValue : parentList
+				 VariationObj = new AvailableVariations();
+				 locationList = new ArrayList<>();
+				 sizeList = new ArrayList<>();
+				 locationList.add(LocArr);
+				 sizeList.add(SizeArr);
+				 VariationObj.setParentValue(locationList);
+				 VariationObj.setChildValue(sizeList);
+				 avaiVaraitionList.add(VariationObj);
+	}
+			//}
+	//	}
+		
+		avaibltyObj.setAvailableVariations(avaiVaraitionList);
+		availabilityList.add(avaibltyObj);
+		
+		return availabilityList;	
+	}
+	
+	
+	
+	public List<Shape> getShapeList(String Shape){
+	List<Shape> shapeList=new ArrayList<Shape>();
+	Shape shapeObj=new Shape();
+	
+	Shape=Shape.toUpperCase();
+	Shape=Shape.replaceAll("Gem", "circle");
+	Shape=Shape.replaceAll("/", ",");
+	List<String> lookupShapeList=lookupServiceDataObj.getShapeValues();
+	if(Shape.contains(",")){
+	String ShapeArr[]=Shape.split(",");
+	for (String value : ShapeArr) {
+		if(lookupShapeList.contains(value.toUpperCase().trim()))
+		{
+			shapeObj=new Shape();
+			shapeObj.setName(value);
+			shapeList.add(shapeObj);
+		}
+	}
+	}else
+	{   if(lookupShapeList.contains(Shape))
+		{
+			shapeObj.setName(Shape);
+			shapeList.add(shapeObj);
+		}
+	}
+	return shapeList;
+	}
+
+
+
+	public LookupServiceData getLookupServiceDataObj() {
+		return lookupServiceDataObj;
+	}
+
+
+
+	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
+		this.lookupServiceDataObj = lookupServiceDataObj;
+	}
+	
 	
 }

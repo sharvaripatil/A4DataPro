@@ -92,8 +92,21 @@ public class ProductConfigurations {
 
     @JsonProperty("ShippingEstimates")
     private ShippingEstimate    shippingEstimates    = null;
+    
+    @JsonProperty("Battery")
+    private List<BatteryInformation>    batteryInformation    = null;
+    
+    @JsonProperty("Battery")
+	public List<BatteryInformation> getBatteryInformation() {
+		return batteryInformation;
+	}
 
-    @JsonProperty("Colors")
+    @JsonProperty("Battery")
+	public void setBatteryInformation(List<BatteryInformation> batteryInformation) {
+		this.batteryInformation = batteryInformation;
+	}
+
+	@JsonProperty("Colors")
     @XmlElementWrapper(name = "Colors")
     @XmlElement(name = "Color")
     public List<Color> getColors() {

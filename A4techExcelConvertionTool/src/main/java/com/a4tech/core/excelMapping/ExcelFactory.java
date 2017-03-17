@@ -24,6 +24,8 @@ import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
+import com.a4tech.supplier.mapper.MilestoneExcelMapping;
+import com.a4tech.supplier.mapper.PSLMapping;
 
 
 public class ExcelFactory {
@@ -49,6 +51,8 @@ public class ExcelFactory {
 	private WholeSaleExcelMapping wholeSaleExcelMapping;
 	private GoldBondExcelMapping  goldBandExcelMapping;
 	private ProGolfMapping proGolfMapping;
+	private MilestoneExcelMapping milestoneExcelMapping;
+	private PSLMapping pslMapping;
 	
 
 	public  IExcelParser getExcelParserObject(String name){
@@ -96,7 +100,9 @@ public class ExcelFactory {
 			   return goldBandExcelMapping;
 		   }*/else if(name.equalsIgnoreCase("proGolg") || name.equals("79680")){
 			   return proGolfMapping;
-		   }
+		   } else if(name.equalsIgnoreCase("psl") || name.equals("75613")){
+		   return pslMapping;
+	      }
 		   
 		return null;
 	}
@@ -256,6 +262,16 @@ public class ExcelFactory {
 	public void setWholeSaleExcelMapping(WholeSaleExcelMapping wholeSaleExcelMapping) {
 		this.wholeSaleExcelMapping = wholeSaleExcelMapping;
 	}
+
+
+	public MilestoneExcelMapping getMilestoneExcelMapping() {
+		return milestoneExcelMapping;
+	}
+
+	public void setMilestoneExcelMapping(MilestoneExcelMapping milestoneExcelMapping) {
+		this.milestoneExcelMapping = milestoneExcelMapping;
+	}
+
 	public GoldBondExcelMapping getGoldBandExcelMapping() {
 		return goldBandExcelMapping;
 	}
@@ -270,6 +286,13 @@ public class ExcelFactory {
 
 	public void setProGolfMapping(ProGolfMapping proGolfMapping) {
 		this.proGolfMapping = proGolfMapping;
+	}
+	public PSLMapping getPslMapping() {
+		return pslMapping;
+	}
+
+	public void setPslMapping(PSLMapping pslMapping) {
+		this.pslMapping = pslMapping;
 	}
 
 }
