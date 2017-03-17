@@ -110,6 +110,7 @@ public class ApplicationConstants {
 	public static final String  CONST_STRING_DOT_TXT                    = ".txt";
 	public static final int     CONST_INT_VALUE_TWO                     =  2;
 	public static final int     CONST_INT_VALUE_THREE                   =  3;
+	public static final int     CONST_INT_VALUE_FIVE                    =  5;
 	public static final String  CONST_STRING_OTHER_FABRIC				= "Other Fabric";
 	public static final String  CONST_STRING_PRODUCT_COLOR              = "Product Color";
 	public static final String  CONST_STRING_SIZE 		                = "Size";

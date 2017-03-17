@@ -1,8 +1,11 @@
 package com.a4tech.util;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -254,7 +257,47 @@ public class CommonUtility {
 		return doubleprices;
 		
 	}
-  
-  
-  
+	/*
+	 * Author      : venkat
+	 * Description : This method used to check price confirm through date is future date or past date,if date is past no need
+	 *                assign value
+	 *  Param      : string date(supplier given date)
+	 *  Return     : true/false 
+	 */
+	public static boolean isPriceConfirmThroughDate(String date){
+		Date current = new Date();
+		String myFormatString = "yy-MM-dd";
+		SimpleDateFormat dateFormat = new SimpleDateFormat(myFormatString);
+		Date supplierGivenDate;
+		try {
+			supplierGivenDate = dateFormat.parse(date);
+			Long supplierGivenTime = supplierGivenDate.getTime();
+			Date nextDate = new Date(supplierGivenTime);
+			if (nextDate.after(current) || (nextDate.equals(current))) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (ParseException exce) {
+			_LOGGER.error("unable to parse dates: " + exce.getMessage());
+		}
+		return false;
+	}
+    /*Author :Venakt
+     * Description : this method can used to convert production time weeks into business days
+     *               e.g. : 4 weeks into 20 business days  
+     * 
+     */
+	public static String convertProductionTimeWeekIntoDays(String productionTime) {
+		if (productionTime.contains("-")) {
+			String[] productionTimes = productionTime.split("-");
+			int productionStartTime = Integer.parseInt(productionTimes[0]) * ApplicationConstants.CONST_INT_VALUE_FIVE;
+			int productionEndTime = Integer.parseInt(productionTimes[0]) * ApplicationConstants.CONST_INT_VALUE_FIVE;
+			productionTime = productionStartTime + "-" + productionEndTime;
+		} else {
+			int productionStartTime = Integer.parseInt(productionTime) * ApplicationConstants.CONST_INT_VALUE_FIVE;
+			productionTime = productionStartTime + "";
+		}
+		return productionTime;
+	}
 }

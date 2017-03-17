@@ -21,9 +21,8 @@ import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
-
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
-
+import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 
 
@@ -49,7 +48,9 @@ public class ExcelFactory {
 	private HighCaliberLineExcelMapping hcLineExcelMapping;
 	private WholeSaleExcelMapping wholeSaleExcelMapping;
 	private GoldBondExcelMapping  goldBandExcelMapping;
+	private ProGolfMapping proGolfMapping;
 	
+
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -93,7 +94,9 @@ public class ExcelFactory {
 			   return wholeSaleExcelMapping;
 		   }/*else if(name.equalsIgnoreCase("goldBond") || name.equals("57653")){
 			   return goldBandExcelMapping;
-		   }*/
+		   }*/else if(name.equalsIgnoreCase("proGolg") || name.equals("79680")){
+			   return proGolfMapping;
+		   }
 		   
 		return null;
 	}
@@ -261,12 +264,12 @@ public class ExcelFactory {
 		this.goldBandExcelMapping = goldBandExcelMapping;
 	}
 
-	
-	
+	public ProGolfMapping getProGolfMapping() {
+		return proGolfMapping;
+	}
 
-
-
-
-
+	public void setProGolfMapping(ProGolfMapping proGolfMapping) {
+		this.proGolfMapping = proGolfMapping;
+	}
 
 }
