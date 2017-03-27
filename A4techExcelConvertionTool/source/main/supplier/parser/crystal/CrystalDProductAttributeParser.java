@@ -6,7 +6,9 @@ import java.util.List;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.AvailableVariations;
+import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
@@ -156,23 +158,6 @@ public class CrystalDProductAttributeParser {
 
 
 
-	public List<Option> getImprintOption(String tempImprintOptionValue) {
-		List<Option> optionList = new ArrayList<Option>();
-		List<OptionValue> valuesList = new ArrayList<OptionValue>();
-		OptionValue optionValueObj=new OptionValue();
-		Option optionObj=new Option();
-		
-		optionObj.setOptionType("Imprint");
-		optionObj.setName("Additional Imprinting Option");
-		optionValueObj.setValue(tempImprintOptionValue.trim());
-		valuesList.add(optionValueObj);
-		optionObj.setValues(valuesList);
-		optionList.add(optionObj);
-		
-		return optionList;
-	}
-
-
 
 	public List<Personalization> getPeronalization(String allNotes) {
 		
@@ -187,23 +172,56 @@ public class CrystalDProductAttributeParser {
 	}
 
 
-
-	public List<Option> getProductOption(String productOption) {
-		List<Option> ProdoptionList = new ArrayList<Option>();
-		List<OptionValue> ProdvaluesList = new ArrayList<OptionValue>();
-		OptionValue ProdoptionValueObj=new OptionValue();
-		Option ProdoptionObj=new Option();
+	public Option getImprintOption1(String ImprintOption) {
 		
-		ProdoptionObj.setOptionType("Product");
-		ProdoptionObj.setName("Copy Change Option");
-		ProdoptionValueObj.setValue("Copy Change");
-		ProdvaluesList.add(ProdoptionValueObj);
-		ProdoptionObj.setValues(ProdvaluesList);
-		ProdoptionObj.setAdditionalInformation(productOption);
-		ProdoptionList.add(ProdoptionObj);
-
-		return ProdoptionList;
+		List<OptionValue> ImprintOptList1 = new ArrayList<OptionValue>();
+		OptionValue ImprintOptValueObj=new OptionValue();
+		Option ImprintOptObj=new Option();
+		
+		ImprintOptObj.setOptionType("Imprint");
+		ImprintOptObj.setName("Copy Change Option");
+		ImprintOptValueObj.setValue("Copy Change");
+		ImprintOptList1.add(ImprintOptValueObj);
+		ImprintOptObj.setValues(ImprintOptList1);
+		
+		return ImprintOptObj;
 	}
+	
+
+
+	public Option getImprintOption2(String tempImprintOptionValue) {
+		//List<Option> optionList = new ArrayList<Option>();
+		List<OptionValue> valuesList = new ArrayList<OptionValue>();
+		OptionValue optionValueObj=new OptionValue();
+		Option optionObj=new Option();
+		
+		optionObj.setOptionType("Imprint");
+		optionObj.setName("Additional Imprinting Option");
+		optionValueObj.setValue(tempImprintOptionValue.trim());
+		valuesList.add(optionValueObj);
+		optionObj.setValues(valuesList);
+	//	optionList.add(optionObj);
+		
+		return optionObj;
+	}
+
+
+	/*public Option getImprintOptOption(String ImprintOptOption) {
+		//List<Option> ImprintOptList = new ArrayList<Option>();
+		List<OptionValue> ImprintOptList1 = new ArrayList<OptionValue>();
+		OptionValue ImprintOptValueObj=new OptionValue();
+		Option ImprintOptObj=new Option();
+		
+		ImprintOptObj.setOptionType("Imprint");
+		ImprintOptObj.setName("Copy Change Option");
+		ImprintOptValueObj.setValue("Copy Change");
+		ImprintOptList1.add(ImprintOptValueObj);
+		ImprintOptObj.setValues(ImprintOptList1);
+	//	ImprintOptObj.setAdditionalInformation(productOption);
+	//	ProdoptionList.add(ProdoptionObj);
+
+		return ImprintOptObj;
+	}*/
 	
 	
 	public List<Availability> getProductAvailability(List<ImprintLocation> imprintLocationList, 
@@ -276,6 +294,64 @@ public class CrystalDProductAttributeParser {
 	}
 
 
+	
+	public List<Image> getImage(List<Image> Img, Size sizeObj) {
+		Image  imgObj=new Image();
+		List<Image> ImgList=new ArrayList<Image>();
+		List<Configurations> confList=new ArrayList<>();
+		Configurations confObj=new Configurations();
+		
+	    
+		for (int i = 0; i < Img.size(); i++) {
+			List<Value> valueObj=sizeObj.getDimension().getValues().get(i).getValue(); 	
+			
+			List<Object>valueObjList=new ArrayList<>();            	
+        	imgObj=new Image();
+			
+			confList=new ArrayList<>();
+		    confObj=new Configurations();
+			confObj.setCriteria("Size");
+		    valueObjList=new ArrayList<>();
+			Object obj= new Object();
+			if(valueObj.size() == 2){
+				for(int j=0;j<2;j++)
+				{
+					obj= new Object();
+					obj=valueObj.get(j);
+					valueObjList.add(obj);
+				}
+			}
+			else if (valueObj.size() == 3){
+				for(int j=0;j<3;j++)
+				{
+					obj= new Object();
+					obj=valueObj.get(j);
+					valueObjList.add(obj);
+				}
+			}
+		
+			 confObj.setValue(valueObjList);
+			 confList.add(confObj);
+			 
+			 imgObj.setConfigurations(confList);
+			 imgObj.setDescription(Img.get(i).getDescription());
+			 imgObj.setImageURL(Img.get(i).getImageURL());
+			 imgObj.setIsPrimary(Img.get(i).getIsPrimary());
+			 imgObj.setIsvirtualized(Img.get(i).getIsvirtualized());
+			 imgObj.setRank(Img.get(i).getRank());
+			 ImgList.add(imgObj);
+			 confList=new ArrayList<>();
+		     confObj=new Configurations();
+			}
+	    		
+		return ImgList;
+	}
+
+	
+	
+	
+	
+	
 
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;
@@ -286,6 +362,13 @@ public class CrystalDProductAttributeParser {
 	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
 		this.lookupServiceDataObj = lookupServiceDataObj;
 	}
+
+
+
+	
+
+
+	
 	
 	
 }

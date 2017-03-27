@@ -19,11 +19,14 @@ import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.BatteryInformation;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.Theme;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -49,6 +52,7 @@ public class PSLMapping implements IExcelParser {
 		      List<Packaging> listOfPackaging = new ArrayList<Packaging>();
 		      List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
 		      List<String> complianceList = new ArrayList<String>();
+		      List<Material> listOfMaterial = new ArrayList<>();
 
 
 
@@ -79,7 +83,7 @@ public class PSLMapping implements IExcelParser {
 				
 				try{
 				Row nextRow = iterator.next();
-				if (nextRow.getRowNum() < 1)
+				if (nextRow.getRowNum() < 2)
 					continue;
 				Iterator<Cell> cellIterator = nextRow.cellIterator();
 				if(productId != null){
@@ -132,15 +136,27 @@ public class PSLMapping implements IExcelParser {
 							 if(!productXids.contains(xid)){
 							    	productXids.add(xid.trim());
 							    }
-//							    existingApiProduct = postServiceImpl.getProduct(accessToken, xid=xid.replace("\t",""));
-//							     if(existingApiProduct == null){
-//							    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
-//							    	 productExcelObj = new Product();
-//							     }else{
-//							  	    productExcelObj=existingApiProduct;
-//									productConfigObj=existingApiProduct.getProductConfigurations();
-//							     
-//							     }
+						        existingApiProduct = postServiceImpl.getProduct(accessToken, xid=xid.replace("\t",""));
+							     if(existingApiProduct == null){
+							    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
+							    	 productExcelObj = new Product();
+							     }else{
+							  	  //  productExcelObj=existingApiProduct;
+								 //   productConfigObj=existingApiProduct.getProductConfigurations();
+							    	 
+							    	 List<Image> Img=existingApiProduct.getImages();
+							    	 productExcelObj.setImages(Img);
+							    	 
+							    	 List<Theme>themeList=productConfigObj.getThemes();
+							    	 productConfigObj.setThemes(themeList);
+							    	 
+							    	 List<String>categoriesList=existingApiProduct.getCategories();
+							    	 productExcelObj.setCategories(categoriesList);
+							    	 
+							    	 List<String>keywordList=existingApiProduct.getProductKeywords();
+							    	 productExcelObj.setProductKeywords(keywordList);
+							    	 
+							     }
 								//productExcelObj = new Product();
 						 }
 					}
@@ -293,9 +309,12 @@ public class PSLMapping implements IExcelParser {
 						
 						break;
 					case 30://Materials
-				
-						
-						   	break;
+						String MaterialValue=cell.getStringCellValue();
+						if(!StringUtils.isEmpty(MaterialValue)){
+						listOfMaterial = attributObj.getMaterialList(MaterialValue);
+						productConfigObj.setMaterials(listOfMaterial);
+					}
+						break;
 					case 31:  //HS code
 						
 						break;

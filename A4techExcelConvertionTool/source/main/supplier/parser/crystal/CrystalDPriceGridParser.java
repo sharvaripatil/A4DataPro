@@ -43,7 +43,7 @@ public class CrystalDPriceGridParser {
 		
 
 		priceGrid.setCurrency(currency);
-		priceGrid.setDescription(priceName);
+		priceGrid.setDescription("");
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
 		priceGrid.setPriceIncludes(priceInclude);
@@ -220,7 +220,20 @@ public class CrystalDPriceGridParser {
 		
 
 		priceGrid.setCurrency(currency);
-		priceGrid.setDescription(priceName);
+		
+		String DescCriteria="";
+		for (int i=0;i<ExstngvalueObj.size();i++) {
+			DescCriteria=DescCriteria.concat(ExstngvalueObj.get(i).toString());
+			if(i < ExstngvalueObj.size()-1)
+			{
+				DescCriteria=DescCriteria.concat(" x");
+			}
+			
+		}
+		DescCriteria=DescCriteria.replaceAll("[^0-9x%/ ]", "");
+		priceGrid.setDescription(DescCriteria);
+		
+		
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
 		priceGrid.setPriceIncludes(priceInclude);
