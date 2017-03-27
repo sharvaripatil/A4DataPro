@@ -282,19 +282,25 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
-						  	   productExcelObj=existingApiProduct;
-								productConfigObj=existingApiProduct.getProductConfigurations();
+						  	//   productExcelObj=existingApiProduct;
+							//	productConfigObj=existingApiProduct.getProductConfigurations();
 						        String confthruDate=existingApiProduct.getPriceConfirmedThru();
 						        productExcelObj.setPriceConfirmedThru(confthruDate);
+						        
 						    	 List<Image> Img=existingApiProduct.getImages();
 						    	 productExcelObj.setImages(Img);
+						    	 
 						    	 themeList=productConfigObj.getThemes();
 						    	 productConfigObj.setThemes(themeList);
+						    	 
 						    	 List<Availability> AvailibilityList=null;
 						    	 productExcelObj.setAvailability(AvailibilityList);
+						    	 
 						    	 List<ProductNumber> ProductNumberList=null;
 						    	 productExcelObj.setProductNumbers(ProductNumberList);
 						    	 
+						    	 List<String>categoriesList=existingApiProduct.getCategories();
+						    	 productExcelObj.setCategories(categoriesList);
 						     
 						     }
 							//productExcelObj = new Product();
@@ -419,11 +425,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 							themeObj.setName(themvalue.trim());
 							themeList.add(themeObj);
 							}
-							
 							}
-						
-						//}
-					
 					break;
 					
 				case 16://size --  value
@@ -1014,15 +1016,15 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					
 				case 118: //Comment
 					 FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
-					String FOBLooup=null;
-					List<String>fobLookupList = lookupServiceDataObj.getFobPoints(FOBLooup);
+					//String FOBLooup=null;
+					//List<String>fobLookupList = lookupServiceDataObj.getFobPoints(FOBLooup);
 				
 					if(FOBValue.contains("CA"))
 					{
 						fobPintObj.setName("San Diego, CA 92131 USA");
 						FobPointsList.add(fobPintObj);
 					}
-					else if(fobLookupList.contains("TN"))
+					else if(FOBValue.contains("TN"))
 					{
 						fobPintObj.setName("Shelbyville, TN 37162 USA");
 						FobPointsList.add(fobPintObj);
@@ -1106,9 +1108,9 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 				                               cartonH, weightPerCarton, unitsPerCarton);
 		productConfigObj.setImprintLocation(listImprintLocation);
 		productConfigObj.setImprintMethods(listOfImprintMethods);
-		if(!StringUtils.isEmpty(themeValue) ){
+	//	if(!StringUtils.isEmpty(themeValue) ){
 		productConfigObj.setThemes(themeList);
-		}
+	//	}
 		productConfigObj.setRushTime(rushTime);
 		productConfigObj.setShippingEstimates(shipping);
 		productConfigObj.setProductionTime(listOfProductionTime);	

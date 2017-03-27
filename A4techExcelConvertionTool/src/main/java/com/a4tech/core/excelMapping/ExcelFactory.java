@@ -109,6 +109,9 @@ public class ExcelFactory {
 	      else if(name.equalsIgnoreCase("psl") || name.equals("75613")){
 		   return pslMapping;
 	      }
+	      else if(name.equalsIgnoreCase("milestone") || name.equals("71173")){
+			   return milestoneExcelMapping;
+		      }
 		   
 		return null;
 	}
