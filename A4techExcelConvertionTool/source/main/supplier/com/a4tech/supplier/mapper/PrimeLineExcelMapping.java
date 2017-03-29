@@ -22,6 +22,7 @@ import parser.primeline.PrimeLineAttributeParser;
 import parser.primeline.PrimeLineColorTabParser;
 import parser.primeline.PrimeLineConstants;
 import parser.primeline.PrimeLineFeatureTabParser;
+import parser.primeline.PrimeLineImprintTabParser;
 import parser.primeline.PrimeLinePriceGridParser;
 
 import com.a4tech.core.errors.ErrorMessageList;
@@ -55,6 +56,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 	PrimeLineAttributeParser primeLineAttributeParser;
 	PrimeLinePriceGridParser primeLinePriceGridParser;
 	PrimeLineFeatureTabParser primeLineFeatureTabParser;
+	PrimeLineImprintTabParser primeLineImprintTabParser;
 	 private HashMap<String, Product> sheetMap =new HashMap<String, Product>();
 	 private HashMap<String, StringBuilder>  priceMap=new HashMap<String, StringBuilder>();
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
@@ -81,7 +83,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 		  
 		try{
 			_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-	 for(int i=0;i<3;i++)
+	 for(int i=0;i<5;i++)
 		{
 		if(i==0){
 		Sheet sheet = workbook.getSheetAt(0);
@@ -298,6 +300,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 						break;
 						case 3://ITEMNAME
 						    productName=CommonUtility.getCellValueStrinOrDecimal(cell);
+						    productName=CommonUtility.removeRestrictSymbols(productName);
 						    String tempName=productName;
 							int len=tempName.length();
 							 if(len>60){
@@ -684,7 +687,9 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 				}else if(i==2){
 					sheetMap=primeLineFeatureTabParser.readFeatureTab(accessToken, workbook, asiNumber, batchId, sheetMap);
 				}else if(i==3){
-					System.out.println("Hi");
+					sheetMap=primeLineImprintTabParser.readImprintTab(accessToken, workbook, asiNumber, batchId, sheetMap);
+				}else if(i==4){
+					finalResult=postingProducts(accessToken,asiNumber,batchId,sheetMap);
 				}
 			}
 		return finalResult;
@@ -705,6 +710,32 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 	}
 
 	
+
+	private String postingProducts(String accessToken,Integer asiNumber,int batchId,HashMap<String, Product> sheetMap) {
+		List<String> numOfProductsSuccess = new ArrayList<String>();
+		List<String> numOfProductsFailure = new ArrayList<String>();
+		
+		for (Map.Entry<String, Product> productEntry : sheetMap.entrySet())
+		{
+			try{
+			Product productExcelObj=productEntry.getValue();
+			int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	if(num ==1){
+		 		numOfProductsSuccess.add("1");
+		 	}else if(num == 0){
+		 		numOfProductsFailure.add("0");
+		 	}
+			}catch(Exception e){
+				_LOGGER.error("Error while posting product  "+e.getMessage());
+			}
+		}
+	 	
+	 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
+	 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
+	 	String  finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
+	 	productDaoObj.saveErrorLog(asiNumber,batchId);
+		return finalResult;
+	}
 
 	public String getProductXid(Row row){
 		Cell xidCell =  row.getCell(0);
@@ -833,6 +864,19 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 	public void setPrimeLineFeatureTabParser(
 			PrimeLineFeatureTabParser primeLineFeatureTabParser) {
 		this.primeLineFeatureTabParser = primeLineFeatureTabParser;
+	}
+
+
+
+	public PrimeLineImprintTabParser getPrimeLineImprintTabParser() {
+		return primeLineImprintTabParser;
+	}
+
+
+
+	public void setPrimeLineImprintTabParser(
+			PrimeLineImprintTabParser primeLineImprintTabParser) {
+		this.primeLineImprintTabParser = primeLineImprintTabParser;
 	}
 
 

@@ -255,6 +255,40 @@ public class CommonUtility {
 		
 	}
   
+	/*
+	 * author Amey 27/3/2016
+	 * @description This method is remove restrict symbol in given value
+	 * chars are replace as per feedback provided by michael
+	 */
+	public static String removeRestrictSymbols(String value){
+		value=value.replaceAll("±", "");
+		value=value.replaceAll("’", "single quote");
+		value=value.replaceAll("`", "single quote");
+		value=value.replaceAll("‘", "single quote");
+		value=value.replaceAll("“", "double quote");
+		value=value.replaceAll("”", "double quote");
+		value=value.replaceAll("–", "dash");
+		value=value.replaceAll("®", "(R)");
+		value=value.replaceAll("™", "(TM)");
+		value=value.replaceAll("°", " the word degrees");
+		value=value.replaceAll("×", "x");
+		value=value.replaceAll("¿", "");
+		value=value.replaceAll("•", "");
+		value=value.replaceAll("…", "Three periods");
+		value=value.replaceAll("€", "");
+		value=value.replaceAll("\\|", ",");
+		value=value.replaceAll("½", "1/2");
+		value=value.replaceAll("¾", "3/4");
+		value=value.replaceAll("¼", "1/4");
+		
+		value=value.replaceAll("<", "");
+		value=value.replaceAll(">", "");
+		value=value.replaceAll("", "");
+		value=value.replaceAll("—", "");
+		value=value.replaceAll("¡", "");
+		value=value.replaceAll("ñ", "");
+		return value;
+	}
   
   
 }

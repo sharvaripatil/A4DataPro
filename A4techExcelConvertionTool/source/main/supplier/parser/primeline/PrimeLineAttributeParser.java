@@ -2,18 +2,23 @@ package parser.primeline;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.lookup.service.LookupServiceData;
+import com.a4tech.product.model.Availability;
+import com.a4tech.product.model.AvailableVariations;
+import com.a4tech.product.model.BatteryInformation;
 import com.a4tech.product.model.Capacity;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.Image;
+import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
@@ -43,7 +48,7 @@ public class PrimeLineAttributeParser {
 	
 	public Product featureCritriaparser(Product featureExcelObj,ProductConfigurations featureProductconfigs,String detailType,String detail){
 		try{
-		if(detailType.contains("Imprint Area")){
+		if(detailType.toUpperCase().contains("IMPRINT AREA")){
 		List<ImprintSize> listOfImprintSize=featureProductconfigs.getImprintSize();
 		if(CollectionUtils.isEmpty(listOfImprintSize)){
 				listOfImprintSize=new ArrayList<ImprintSize>();
@@ -51,53 +56,58 @@ public class PrimeLineAttributeParser {
 		  listOfImprintSize=getProductImprintSize(detail,listOfImprintSize);
 		  featureProductconfigs.setImprintSize(listOfImprintSize);
 		
-		}else if(detailType.contains("Imprint Method")){//pending
-			List<ImprintMethod> listOfImprintMethods=featureProductconfigs.getImprintMethods();
+		}else if(detailType.toUpperCase().contains("IMPRINT METHOD")){//ignore for item feature tab
+			/*List<ImprintMethod> listOfImprintMethods=featureProductconfigs.getImprintMethods();
 			if(CollectionUtils.isEmpty(listOfImprintMethods)){
 				listOfImprintMethods=new ArrayList<ImprintMethod>();
 			}
 			PrimeLineAttributeParser.getImprintMethods(detail, listOfImprintMethods);
 			//productconfigs.setImprintMethods(imprintMethods);
-		
-		}else if(detailType.contains("Keywords")){
+		*/
+		}else if(detailType.toUpperCase().contains("KEYWORDS")){
 			ArrayList<String> productKeywordsOld=(ArrayList<String>) featureExcelObj.getProductKeywords();
 			ArrayList<String> productKeywordsNew = (ArrayList<String>) CommonUtility.getStringAsList(detail,ApplicationConstants.CONST_DELIMITER_COMMA);
 			if(!CollectionUtils.isEmpty(productKeywordsOld)){
 				productKeywordsNew.addAll(productKeywordsOld);
 			}
 			featureExcelObj.setProductKeywords(productKeywordsNew);
-		}else if(detailType.contains("Note") || detailType.contains("Closeout Price Note") || detailType.contains("Price Note") ||
-				detailType.contains("Ideas") || detailType.contains("Artwork")){
+		}else if(detailType.toUpperCase().contains("NOTE") || detailType.toUpperCase().contains("PRICE NOTE") || detailType.toUpperCase().contains("IDEAS") 
+				|| detailType.toUpperCase().contains("ARTWORK")){
 			//String distriComments="";
 			String distriCommentsTemp=	featureExcelObj.getDistributorOnlyComments();
 			if(!StringUtils.isEmpty(distriCommentsTemp)){
 				distriCommentsTemp=distriCommentsTemp+detail;
 				detail=distriCommentsTemp;
 			}
+			detail=CommonUtility.removeRestrictSymbols(detail);
 			featureExcelObj.setDistributorOnlyComments(detail);
-			
-			
-		}else if(detailType.contains("Packaging")){
+		}else if(detailType.toUpperCase().contains("PACKAGING")){
 			List<Packaging> listOfPackaging=featureProductconfigs.getPackaging();
 			if(CollectionUtils.isEmpty(listOfPackaging)){
 				listOfPackaging=new ArrayList<Packaging>();
 			}
 			listOfPackaging=getPackaging(detail, listOfPackaging);
 			featureProductconfigs.setPackaging(listOfPackaging);
-		}else if(detailType.contains("Delivery")){//prod time //data is invalid not able to recognise the time from it
-			//pending
-		}else if(detailType.contains("Batteries")){//battery //same goes for battery need to confirm with them
-			//pending
-		}else if(detailType.contains("Size")){//size 
+		}else if(detailType.toUpperCase().contains("DELIVERY")){//prod time //data is invalid not able to recognise the time from it
+			//IGNORE for item feature tab
+		}else if(detailType.toUpperCase().contains("BATTERIES")){//battery //same goes for battery need to confirm with them
+			List<BatteryInformation> batteryOld=featureProductconfigs.getBatteryInformation();
+			List<BatteryInformation> batteryNew=new ArrayList<BatteryInformation>(); 
+			 batteryNew = getBatteyInfo(detail, batteryNew);
+			if(!CollectionUtils.isEmpty(batteryOld)){
+				batteryNew.addAll(batteryOld);
+			}
+			featureProductconfigs.setBatteryInformation(batteryNew);
+		}else if(detailType.toUpperCase().contains("SIZE")){//size //IGNORE for item feature
 			// if sizes are not present in itemmaster tab den only assign it to the product.
 			//sizes are very complex will be done at last
-			Size newSize=featureProductconfigs.getSizes();
+			//Size newSize=featureProductconfigs.getSizes();
 			//newSize.
 			//if(newSize.toString().equals("{}")){// i am looking for some other alternative
-			if(newSize!=null){// i am looking for some other alternative
-				//newSize.s
-			}
-		}else if(detailType.contains("Colors")){//colors
+			//if(newSize!=null){// i am looking for some other alternative
+			//newSize.s
+			//}
+		}else if(detailType.toUpperCase().contains("COLORS")){//colors
 			// if colors are not present in itemmaster tab den only assign it to the product.
 			List<Color> colorList =featureProductconfigs.getColors(); 
 			if(CollectionUtils.isEmpty(colorList)){
@@ -105,7 +115,7 @@ public class PrimeLineAttributeParser {
 				colorListNew=PrimeLineAttributeParser.getColor(detail,colorListNew);//here send value of detail as list
 				featureProductconfigs.setColors(colorListNew);
 			}
-		}else if(detailType.contains("Ink Cartridge")){//option
+		}else if(detailType.toUpperCase().contains("CARTRIDGE")){//option
 			// this is little tricky// if option is present in itemmaster tab keep that
 			List<Option> listOfOption=featureProductconfigs.getOptions();
 			// create option criteria over here
@@ -117,7 +127,6 @@ public class PrimeLineAttributeParser {
 							opntnList=CommonUtility.getStringAsList(detail);
 							listOfOptionNew =	getOptions(opntnList,"Ink Cartridge");
 							featureProductconfigs.setOptions(listOfOptionNew);
-							
 						}else{//set value for additional product info
 							String additionalInfo=	featureExcelObj.getAdditionalProductInfo();
 							if(!StringUtils.isEmpty(additionalInfo)){
@@ -127,8 +136,20 @@ public class PrimeLineAttributeParser {
 							featureExcelObj.setAdditionalProductInfo(detail);
 						}
 						}
-		}else if(detailType.contains("Romance Copy")){//dont know
-			
+		    }else if(detailType.toUpperCase().contains("ROMANCE")){
+			    String descValue=	featureExcelObj.getDescription();
+			    if(!StringUtils.isEmpty(descValue)){
+				descValue=descValue+detail;
+				detail=descValue;
+			    }
+			detail=CommonUtility.removeRestrictSymbols(detail);
+			int length=detail.length();
+			 if(length>800){
+				String strTemp=detail.substring(0, 800);
+				int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
+				detail=(String) strTemp.subSequence(0, lenTemp);
+			}
+			featureExcelObj.setDescription(detail);
 		}
 		featureExcelObj.setProductConfigurations(featureProductconfigs);
 	}catch(Exception e){
@@ -319,6 +340,11 @@ public class PrimeLineAttributeParser {
 				newProduct.setCategories(listCategories);
 			}
 		 
+			String descValue=existingProduct.getDescription();
+			if(!StringUtils.isEmpty(descValue) ){//
+				newProduct.setDescription(descValue);
+			}
+			
 		newProduct.setProductConfigurations(newProductConfigurations);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Existing Product Data " +e.getMessage());
@@ -499,19 +525,34 @@ public class PrimeLineAttributeParser {
 		return result;
 	}
 	
-	public static List<ImprintMethod> getImprintMethods(String value,List<ImprintMethod> listOfImprintMethods){
-		//List<ImprintMethod> listOfImprintMethods = new ArrayList<ImprintMethod>();
-		ImprintMethod imprintMethodObj =new ImprintMethod();
-		if(lookupServiceDataObj.isImprintMethod(value)){
-			imprintMethodObj.setAlias(value);
-			imprintMethodObj.setType(value);
-		}else{
-			imprintMethodObj.setAlias(value);
-			imprintMethodObj.setType("OTHER");
+	public List<ImprintMethod> getImprintMethods(List<String> listOfImprintMethods){
+		List<ImprintMethod> listOfImprintMethodsNew = new ArrayList<ImprintMethod>();
+		for (String value : listOfImprintMethods) {
+			ImprintMethod imprintMethodObj =new ImprintMethod();
+			if(lookupServiceDataObj.isImprintMethod(value)){
+				imprintMethodObj.setAlias(value);
+				imprintMethodObj.setType(value);
+			}else{
+				imprintMethodObj.setAlias(value);
+				imprintMethodObj.setType("OTHER");
+			}
+			listOfImprintMethodsNew.add(imprintMethodObj);
 		}
-		listOfImprintMethods.add(imprintMethodObj);
-		return listOfImprintMethods;
 		
+		
+		return listOfImprintMethodsNew;
+		
+	}
+	
+	public List<ImprintSize> getProductImprintSize(List<String> listOfImprintSize){
+		//String imprintSizeValue = imprSize.split("IMPRINT SIZE ")[1].trim();
+		List<ImprintSize> listOfImprintS = new ArrayList<>();
+		for (String imprintSizeValue : listOfImprintSize) {
+			ImprintSize imprSizeObj = new ImprintSize();
+			imprSizeObj.setValue(imprintSizeValue);
+			listOfImprintS.add(imprSizeObj);
+		}
+		return listOfImprintS;
 	}
 	
 	public List<String> getProductKeywords(String value){
@@ -535,6 +576,55 @@ public class PrimeLineAttributeParser {
 			listOfPackaging.add(packObj);
 		}
 		return listOfPackaging;
+	}
+	
+	public static List<BatteryInformation> getBatteyInfo(String BatteryInfo,List<BatteryInformation> batteryInfoList) {
+		//List<BatteryInformation> batteryInfoList = new ArrayList<BatteryInformation>();
+		BatteryInformation batinfoObj=new BatteryInformation();
+		batinfoObj.setName(BatteryInfo);
+		batteryInfoList.add(batinfoObj);
+		return batteryInfoList;
+	}
+	
+	
+	public List<ImprintLocation>  getImprintLocationVal(List<String> listOfImprintValues){
+		
+		List<ImprintLocation> listOfImprintLoc=new ArrayList<ImprintLocation>();
+		for (String value : listOfImprintValues) {
+			ImprintLocation imprintLocation = new ImprintLocation();
+			  imprintLocation.setValue(value);
+			  listOfImprintLoc.add(imprintLocation);
+		}
+		  return listOfImprintLoc;
+	  }
+	
+	public List<Availability> getProductAvailablity(Set<String> childList ,Set<String> parentList,String childCriteria,String parentCriteria,List<Availability> listOfAvailablity){
+		//List<Availability> listOfAvailablity = new ArrayList<>();
+		if(CollectionUtils.isEmpty(listOfAvailablity)){
+			listOfAvailablity= new ArrayList<>();
+		}
+		Availability  availabilityObj = new Availability();
+		AvailableVariations  AvailableVariObj = null;
+		List<AvailableVariations> listOfVariAvail = new ArrayList<>();
+		List<Object> listOfParent = null;
+		List<Object> listOfChild = null;
+		for (String ParentValue : parentList) { //String childValue : childList
+			 for (String childValue : childList) {//String ParentValue : parentList
+				 AvailableVariObj = new AvailableVariations();
+				 listOfParent = new ArrayList<>();
+				 listOfChild = new ArrayList<>();
+				 listOfParent.add(ParentValue.trim());
+				 listOfChild.add(childValue.trim());
+				 AvailableVariObj.setParentValue(listOfParent);
+				 AvailableVariObj.setChildValue(listOfChild);
+				 listOfVariAvail.add(AvailableVariObj);
+			}
+		}
+		availabilityObj.setAvailableVariations(listOfVariAvail);
+		availabilityObj.setParentCriteria(parentCriteria);
+		availabilityObj.setChildCriteria(childCriteria);
+		listOfAvailablity.add(availabilityObj);
+		return listOfAvailablity;
 	}
 	
 	public LookupServiceData getLookupServiceDataObj() {

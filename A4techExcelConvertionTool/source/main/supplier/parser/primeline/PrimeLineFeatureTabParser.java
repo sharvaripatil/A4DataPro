@@ -46,7 +46,7 @@ public class PrimeLineFeatureTabParser {
 		ProductConfigurations productConfigObj=new ProductConfigurations();
 		Sheet sheet = workbook.getSheetAt(2);
 		Iterator<Row> iterator = sheet.iterator();
-		_LOGGER.info("Started Processing Product");
+		_LOGGER.info("Started Processing Products in itemfeature tab");
 	    String productId = null;
 	    String xid = null;
 	    int columnIndex=0;

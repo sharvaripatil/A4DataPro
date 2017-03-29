@@ -57,7 +57,7 @@ public class PrimeLineColorTabParser {
 	    _LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 		Sheet sheet = workbook.getSheetAt(1);
 		Iterator<Row> iterator = sheet.iterator();
-		_LOGGER.info("Started Processing Product");
+		_LOGGER.info("Started Processing Product in color tab");
 	    String productId = null;
 	    String xid = null;
 	    int columnIndex=0;
