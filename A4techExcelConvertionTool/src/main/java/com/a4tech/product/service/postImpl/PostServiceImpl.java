@@ -131,6 +131,91 @@ public class PostServiceImpl implements PostService {
 	 }
 	return null;
   }
+	
+	public int deleteProduct(String authTokens, String productId,int asiNumber ,int batchId) throws IOException {
+
+		try {String deleteProductUrl="https://sandbox-productservice.asicentral.com/api/v4/product/";
+			productId="3558-55093AWDD";
+			 HttpHeaders headers = new HttpHeaders();
+			 headers.add("Accept",  "application/json");
+			 headers.add("Content-Type", "application/json");
+			 headers.add("AuthToken", authTokens);
+			
+			 HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+		     ResponseEntity<ErrorMessageList> getResponse  =	restTemplate.exchange(deleteProductUrl+productId, HttpMethod.DELETE, requestEntity, 
+		    		 ErrorMessageList.class);
+		     
+		     /*ResponseEntity<ExternalAPIResponse> response = restTemplate
+						.exchange(postApiURL, HttpMethod.DELETE, requestEntity,
+								ExternalAPIResponse.class);*/
+				_LOGGER.info("Result : " + getResponse);
+		    // Product product = getResponse.getBody();
+		    _LOGGER.info("Product from API::"
+					+ mapperObj.writeValueAsString(getResponse));
+		     return 1; 
+		  } catch (HttpClientErrorException hce) {
+			String response = hce.getResponseBodyAsString();
+			try {
+				_LOGGER.info("ASI Error Response Msg :" + response);
+				ErrorMessageList apiResponse = mapperObj.readValue(response,
+						ErrorMessageList.class);
+				productDao.save(apiResponse.getErrors(),
+						productId, asiNumber, batchId);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				_LOGGER.error("unable to connect External API System:"
+						+ e.getCause());
+				return -1;
+			}
+			return 0;
+
+		} catch (HttpServerErrorException serverEx) {
+			String serverResponse = serverEx.getResponseBodyAsString();
+
+			ErrorMessageList apiResponse;
+			try {
+				apiResponse = mapperObj.readValue(serverResponse,
+						ErrorMessageList.class);
+				productDao.save(apiResponse.getErrors(),
+						productId, asiNumber, batchId);
+				_LOGGER.info("Error JSON:" + apiResponse);
+
+			} catch (JsonParseException | JsonMappingException e) {
+				_LOGGER.error("Error while reading ErrorMessageList object to JSON:"
+						+ e.getCause());
+			}
+			return 0;
+
+		} catch (Exception hce) {
+			_LOGGER.error("Exception while posting product to ExternalAPI", hce);
+			String serverErrorMsg = hce.getMessage();
+			if (serverErrorMsg != null
+					&& serverErrorMsg
+							.equalsIgnoreCase("500 Internal Server Error")) {
+				_LOGGER.info("internal server msg received from ExternalAPI ");
+				ErrorMessageList errorMsgList = CommonUtility
+						.responseconvertErrorMessageList(serverErrorMsg);
+				productDao.save(errorMsgList.getErrors(),
+						productId, asiNumber, batchId);
+				return 0;
+			} else if (hce.getCause() != null) {
+				String errorMsg = hce.getCause().toString();
+				if (errorMsg.contains("java.net.UnknownHostException")
+						|| errorMsg.contains("java.net.NoRouteToHostException")
+						|| errorMsg.contains("java.net.SocketTimeoutException")) {
+					ErrorMessageList errorMsgList = CommonUtility
+							.responseconvertErrorMessageList(errorMsg);
+					productDao.save(errorMsgList.getErrors(),
+							productId, asiNumber, batchId);
+					return 0;
+				}
+			} else {
+
+			}
+			return -1;
+		}
+
+	}
 
 	public RestTemplate getRestTemplate() {
 		return restTemplate;

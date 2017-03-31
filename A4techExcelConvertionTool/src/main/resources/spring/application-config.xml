@@ -396,6 +396,7 @@
 		<property name="milestoneExcelMapping" ref="milestoneExcelMappingId"/>		
 		<property name="goldBandExcelMapping" ref="goldBondExcelMappingId"/>
 		<property name="pslMapping" ref="pslMappingId"/>
+		<property name="tomaxUsaMapping" ref="TomaxUsaMappingId"/>
 		
 
      </bean>
@@ -638,14 +639,19 @@
      <property name="lookupServiceDataObj" ref="lookupServiceData"/>
      <property name="lookupRestServiceObj" ref="lookupRestService"/>
      </bean>
-
-
-
-
-
-
   <!-- supplier PSL configuration end -->
   
-    
+  	<!-- supplier 91435 Tomax USA configuration start -->
+     <bean id="TomaxUsaMappingId" class="com.a4tech.supplier.mapper.TomaxUsaMapping" autowire="byName">
+     <property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="tomaxUsaAttributeParser" ref="tomaxUsaAttributeParserId" /> 
+     <property name="tomaxUsaPricegridParser" ref="tomaxUsaPricegridParserId" /> 
+     </bean>
+     <bean id="tomaxUsaAttributeParserId" name="tomaxUsaAttributeParserObj"
+		class="parser.tomaxusa.TomaxUsaAttributeParser" autowire="byName">
+	</bean>
+	<bean id="tomaxUsaPricegridParserId" class="parser.tomaxusa.TomaxUsaPricegridParser" autowire="byName"/>
+     <!--supplier 91435 Tomax USA configuration start  -->  
 </beans>
 

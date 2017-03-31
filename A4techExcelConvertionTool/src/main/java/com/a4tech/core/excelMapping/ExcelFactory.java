@@ -24,6 +24,7 @@ import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
+import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 
 
@@ -45,20 +46,13 @@ public class ExcelFactory {
     private CutterBuckExcelMapping cbExcelMapping;
     private CrystalDExcelMapping cdExcelMapping;
     private GoldstarCanadaExcelMapping goldcanadaExcelMapping;
-
     private MilestoneExcelMapping milestoneExcelMapping;
  //   private CutterBuckSheetParser cbSheetParser;
-
 	private HighCaliberLineExcelMapping hcLineExcelMapping;
-
-
-
-
-
 	private WholeSaleExcelMapping wholeSaleExcelMapping;
 	private GoldBondExcelMapping  goldBandExcelMapping;
 	private PSLMapping pslMapping;
-	
+	private TomaxUsaMapping tomaxUsaMapping;
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -112,7 +106,9 @@ public class ExcelFactory {
 	      else if(name.equalsIgnoreCase("milestone") || name.equals("71173")){
 			   return milestoneExcelMapping;
 		      }
-		   
+	      else if(name.equalsIgnoreCase("tomaxusa") || name.equals("91435")){
+			   return tomaxUsaMapping;
+		      }
 		return null;
 	}
 	
@@ -297,7 +293,11 @@ public class ExcelFactory {
 		this.pslMapping = pslMapping;
 	}
 
+	public TomaxUsaMapping getTomaxUsaMapping() {
+		return tomaxUsaMapping;
+	}
 
-	
-
+	public void setTomaxUsaMapping(TomaxUsaMapping tomaxUsaMapping) {
+		this.tomaxUsaMapping = tomaxUsaMapping;
+	}	
 }
