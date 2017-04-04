@@ -104,7 +104,7 @@ public class PrimeLineFeatureTabParser {
 						    	 productExcelObj = new Product();
 						     }else{
 						    	    productExcelObj=existingApiProduct;
-									productConfigObj=productExcelObj.getProductConfigurations();
+									productConfigObj=existingApiProduct.getProductConfigurations();
 									if(productConfigObj==null){
 										productConfigObj=new ProductConfigurations();
 									}

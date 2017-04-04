@@ -1,7 +1,12 @@
 package parser.primeline;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -73,14 +78,19 @@ public class PrimeLineAttributeParser {
 			featureExcelObj.setProductKeywords(productKeywordsNew);
 		}else if(detailType.toUpperCase().contains("NOTE") || detailType.toUpperCase().contains("PRICE NOTE") || detailType.toUpperCase().contains("IDEAS") 
 				|| detailType.toUpperCase().contains("ARTWORK")){
-			//String distriComments="";
-			String distriCommentsTemp=	featureExcelObj.getDistributorOnlyComments();
-			if(!StringUtils.isEmpty(distriCommentsTemp)){
-				distriCommentsTemp=distriCommentsTemp+detail;
-				detail=distriCommentsTemp;
-			}
-			detail=CommonUtility.removeRestrictSymbols(detail);
-			featureExcelObj.setDistributorOnlyComments(detail);
+			if(detail.startsWith("<") || (detail.contains("<") && detail.contains(">"))){
+				   
+			   }else{
+					//String distriComments="";
+					String distriCommentsTemp=	featureExcelObj.getDistributorOnlyComments();
+					if(!StringUtils.isEmpty(distriCommentsTemp)){
+						distriCommentsTemp=distriCommentsTemp+" ";
+						distriCommentsTemp=distriCommentsTemp+detail;
+						detail=distriCommentsTemp;
+					}
+					detail=CommonUtility.removeRestrictSymbols(detail);
+					featureExcelObj.setDistributorOnlyComments(detail);
+			   }
 		}else if(detailType.toUpperCase().contains("PACKAGING")){
 			List<Packaging> listOfPackaging=featureProductconfigs.getPackaging();
 			if(CollectionUtils.isEmpty(listOfPackaging)){
@@ -137,19 +147,25 @@ public class PrimeLineAttributeParser {
 						}
 						}
 		    }else if(detailType.toUpperCase().contains("ROMANCE")){
-			    String descValue=	featureExcelObj.getDescription();
-			    if(!StringUtils.isEmpty(descValue)){
-				descValue=descValue+detail;
-				detail=descValue;
-			    }
-			detail=CommonUtility.removeRestrictSymbols(detail);
-			int length=detail.length();
-			 if(length>800){
-				String strTemp=detail.substring(0, 800);
-				int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
-				detail=(String) strTemp.subSequence(0, lenTemp);
-			}
-			featureExcelObj.setDescription(detail);
+			   if(detail.startsWith("<") || (detail.contains("<") && detail.contains(">"))){
+				   
+			   }else{
+			    	String descValue=	featureExcelObj.getDescription();
+				    if(!StringUtils.isEmpty(descValue)){
+				    	descValue=descValue+". ";
+					descValue=descValue+detail;
+					detail=descValue;
+				    }
+				detail=CommonUtility.removeRestrictSymbols(detail);
+				int length=detail.length();
+				if(length>800){
+					String strTemp=detail.substring(0, 800);
+					int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
+					detail=(String) strTemp.subSequence(0, lenTemp);
+				}
+				featureExcelObj.setDescription(detail);
+			    
+			   }
 		}
 		featureExcelObj.setProductConfigurations(featureProductconfigs);
 	}catch(Exception e){
@@ -598,17 +614,36 @@ public class PrimeLineAttributeParser {
 		  return listOfImprintLoc;
 	  }
 	
-	public List<Availability> getProductAvailablity(Set<String> childList ,Set<String> parentList,String childCriteria,String parentCriteria,List<Availability> listOfAvailablity){
+	public List<Availability> getProductAvailablity(HashMap<String, HashSet<String>> availMap,String parent,String child, List<Availability> existingListOfAvailablity ){
 		//List<Availability> listOfAvailablity = new ArrayList<>();
-		if(CollectionUtils.isEmpty(listOfAvailablity)){
-			listOfAvailablity= new ArrayList<>();
+		if(CollectionUtils.isEmpty(existingListOfAvailablity)){
+			existingListOfAvailablity= new ArrayList<>();
 		}
 		Availability  availabilityObj = new Availability();
 		AvailableVariations  AvailableVariObj = null;
 		List<AvailableVariations> listOfVariAvail = new ArrayList<>();
 		List<Object> listOfParent = null;
 		List<Object> listOfChild = null;
-		for (String ParentValue : parentList) { //String childValue : childList
+		
+		for (Map.Entry<String, HashSet<String>> entrySet   : availMap.entrySet()) {
+			 String parentKey = entrySet.getKey();
+			 HashSet<String> childValues = entrySet.getValue();
+			 for (String childValue : childValues) {//String ParentValue : parentList
+				 AvailableVariObj = new AvailableVariations();
+				 listOfParent = new ArrayList<>();
+				 listOfChild = new ArrayList<>();
+				 listOfParent.add(parentKey.trim());
+				 listOfChild.add(childValue.trim());
+				 AvailableVariObj.setParentValue(listOfParent);
+				 AvailableVariObj.setChildValue(listOfChild);
+				 listOfVariAvail.add(AvailableVariObj);
+			}
+			 	availabilityObj.setAvailableVariations(listOfVariAvail);
+				availabilityObj.setParentCriteria(parent);
+				availabilityObj.setChildCriteria(child);
+			}
+		existingListOfAvailablity.add(availabilityObj);
+		/*for (String ParentValue : parentList) { //String childValue : childList
 			 for (String childValue : childList) {//String ParentValue : parentList
 				 AvailableVariObj = new AvailableVariations();
 				 listOfParent = new ArrayList<>();
@@ -621,11 +656,11 @@ public class PrimeLineAttributeParser {
 			}
 		}
 		availabilityObj.setAvailableVariations(listOfVariAvail);
-		availabilityObj.setParentCriteria(parentCriteria);
-		availabilityObj.setChildCriteria(childCriteria);
-		listOfAvailablity.add(availabilityObj);
-		return listOfAvailablity;
-	}
+		availabilityObj.setParentCriteria(parent);
+		availabilityObj.setChildCriteria(child);
+		listOfAvailablity.add(availabilityObj);*/
+		return existingListOfAvailablity;
+	}	
 	
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;

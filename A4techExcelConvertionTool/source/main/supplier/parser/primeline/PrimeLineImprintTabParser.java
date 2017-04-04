@@ -50,7 +50,7 @@ public class PrimeLineImprintTabParser {
 		Product existingApiProduct = null;
 		Set<String>  productXids = new HashSet<String>();
 		List<String> repeatRows = new ArrayList<>();
-		  
+		
 		try{
 		Product	productExcelObj=new Product();
 		ProductConfigurations productConfigObj=new ProductConfigurations();
@@ -69,6 +69,8 @@ public class PrimeLineImprintTabParser {
 	    String setUpChrgValue=null;
 	    String runChrgValue=null;
 	    Map<String, String> priceMap=new HashMap<String, String>();
+	    HashMap<String, HashSet<String>> availMapIMTD=new HashMap<String, HashSet<String>>();
+	    HashMap<String, HashSet<String>> availMapIMLOC=new HashMap<String, HashSet<String>>();
 	    List<Availability> availibilityList=new ArrayList<Availability>();
 	    while (iterator.hasNext()) {
 			try{
@@ -112,11 +114,15 @@ public class PrimeLineImprintTabParser {
 						        List<ImprintLocation> listOfImprintLoc= primeLineAttriObj.getImprintLocationVal(new ArrayList<String>(imprintLocSet));
 							 	productConfigObj.setImprintLocation(listOfImprintLoc);
 						     	}
-						    if(!CollectionUtils.isEmpty(imprintSizeSet) && !CollectionUtils.isEmpty(imprintMhtdSet)){
-						    	availibilityList=primeLineAttriObj.getProductAvailablity(imprintSizeSet,imprintMhtdSet,"Imprint Size" ,"Imprint Method",availibilityList);
+						    //if(!CollectionUtils.isEmpty(imprintSizeSet) && !CollectionUtils.isEmpty(imprintMhtdSet)){
+						    if(!CollectionUtils.isEmpty(availMapIMTD)){
+						    	//availibilityList=primeLineAttriObj.getProductAvailablity(imprintSizeSet,imprintMhtdSet,"Imprint Size" ,"Imprint Method",availibilityList);
+						    	availibilityList=primeLineAttriObj.getProductAvailablity(availMapIMTD,"Imprint Method","Imprint Size",availibilityList);
 						    }
-					    	if(!CollectionUtils.isEmpty(imprintSizeSet) && !CollectionUtils.isEmpty(imprintLocSet)){
-					    		availibilityList=primeLineAttriObj.getProductAvailablity(imprintSizeSet,imprintLocSet,"Imprint Size" ,"Imprint Location",availibilityList);
+					    	//if(!CollectionUtils.isEmpty(imprintSizeSet) && !CollectionUtils.isEmpty(imprintLocSet)){
+						    if(!CollectionUtils.isEmpty(availMapIMLOC)){
+					    		//availibilityList=primeLineAttriObj.getProductAvailablity(imprintSizeSet,imprintLocSet,"Imprint Size" ,"Imprint Location",availibilityList);
+					    		availibilityList=primeLineAttriObj.getProductAvailablity(availMapIMLOC,"Imprint Location","Imprint Size",availibilityList);
 					    	}
 					    	 if(!CollectionUtils.isEmpty(availibilityList)){
 					    	productExcelObj.setAvailability(availibilityList);
@@ -166,6 +172,8 @@ public class PrimeLineImprintTabParser {
 							    imprintMhtdSet=new HashSet<String>();
 							    priceMap=new HashMap<String, String>();
 							    availibilityList=new ArrayList<Availability>();
+							    availMapIMLOC=new HashMap<String, HashSet<String>>();
+							    availMapIMTD=new HashMap<String, HashSet<String>>();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -213,12 +221,23 @@ public class PrimeLineImprintTabParser {
 							imprintMethodVal=CommonUtility.getCellValueStrinOrInt(cell);
 							if(!StringUtils.isEmpty(imprintMethodVal)){
 							imprintMhtdSet.add(imprintMethodVal);
+							
 							}
 							break;							
 						case 6://IMPRINTSIZE
 							imprintSizeVal=CommonUtility.getCellValueStrinOrInt(cell);
 							if(!StringUtils.isEmpty(imprintSizeVal)){
 							imprintSizeSet.add(imprintSizeVal);
+							if(availMapIMTD.containsKey(imprintMethodVal)){
+							HashSet<String> tempSet=availMapIMTD.get(imprintMethodVal);
+							tempSet.add(imprintSizeVal);
+							availMapIMTD.replace(imprintMethodVal, tempSet);
+								//availMapIMTD.put(key, value);
+							}else{
+								HashSet<String> newSet=new HashSet<String>();
+								newSet.add(imprintSizeVal);
+								availMapIMTD.put(imprintMethodVal, newSet);
+							}
 							}
 							break;
 						case 7://IMPRINTLOCATION
@@ -226,6 +245,17 @@ public class PrimeLineImprintTabParser {
 							imprintLocVal=CommonUtility.getCellValueStrinOrInt(cell);
 							if(!StringUtils.isEmpty(imprintLocVal)){
 							imprintLocSet.add(imprintLocVal);
+								
+								if(availMapIMLOC.containsKey(imprintLocVal)){
+									HashSet<String> tempSetLoc=availMapIMLOC.get(imprintLocVal);
+									tempSetLoc.add(imprintSizeVal);
+									availMapIMLOC.replace(imprintLocVal, tempSetLoc);
+										//availMapIMTD.put(key, value);
+									}else{
+										HashSet<String> newSetLoc=new HashSet<String>();
+										newSetLoc.add(imprintSizeVal);
+										availMapIMLOC.put(imprintLocVal, newSetLoc);
+									}
 							}
 							break;
 						case 8://IMPRINTNETSETUPCHARGE //ignore
@@ -278,12 +308,16 @@ public class PrimeLineImprintTabParser {
 	        List<ImprintLocation> listOfImprintLoc= primeLineAttriObj.getImprintLocationVal(new ArrayList<String>(imprintLocSet));
 		 	productConfigObj.setImprintLocation(listOfImprintLoc);
 	     	}
-	    if(!CollectionUtils.isEmpty(imprintSizeSet) && !CollectionUtils.isEmpty(imprintMhtdSet)){
-	    	availibilityList=primeLineAttriObj.getProductAvailablity(imprintSizeSet,imprintMhtdSet,"Imprint Size" ,"Imprint Method",availibilityList);
+	  //if(!CollectionUtils.isEmpty(imprintSizeSet) && !CollectionUtils.isEmpty(imprintMhtdSet)){
+	    if(!CollectionUtils.isEmpty(availMapIMTD)){
+	    	//availibilityList=primeLineAttriObj.getProductAvailablity(imprintSizeSet,imprintMhtdSet,"Imprint Size" ,"Imprint Method",availibilityList);
+	    	availibilityList=primeLineAttriObj.getProductAvailablity(availMapIMTD,"Imprint Method","Imprint Size",availibilityList);
 	    }
-   	if(!CollectionUtils.isEmpty(imprintSizeSet) && !CollectionUtils.isEmpty(imprintLocSet)){
-   		availibilityList=primeLineAttriObj.getProductAvailablity(imprintSizeSet,imprintLocSet,"Imprint Size" ,"Imprint Location",availibilityList);
-   	}
+    	//if(!CollectionUtils.isEmpty(imprintSizeSet) && !CollectionUtils.isEmpty(imprintLocSet)){
+	    if(!CollectionUtils.isEmpty(availMapIMLOC)){
+    		//availibilityList=primeLineAttriObj.getProductAvailablity(imprintSizeSet,imprintLocSet,"Imprint Size" ,"Imprint Location",availibilityList);
+    		availibilityList=primeLineAttriObj.getProductAvailablity(availMapIMLOC,"Imprint Location","Imprint Size",availibilityList);
+    	}
    	 if(!CollectionUtils.isEmpty(availibilityList)){
    	productExcelObj.setAvailability(availibilityList);
    	 }
@@ -332,6 +366,8 @@ public class PrimeLineImprintTabParser {
 		    imprintMhtdSet=new HashSet<String>();
 		    priceMap=new HashMap<String, String>();
 		    availibilityList=new ArrayList<Availability>();
+		    availMapIMLOC=new HashMap<String, HashSet<String>>();
+		    availMapIMTD=new HashMap<String, HashSet<String>>();
 		productDaoObj.saveErrorLog(asiNumber,batchId);
 		return sheetMapReturn;
 		}catch(Exception e){
