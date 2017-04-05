@@ -135,7 +135,7 @@ public class PostServiceImpl implements PostService {
 	public int deleteProduct(String authTokens, String productId,int asiNumber ,int batchId) throws IOException {
 
 		try {String deleteProductUrl="https://sandbox-productservice.asicentral.com/api/v4/product/";
-			productId="3558-55093AWDD";
+			//productId="3558-55093AWDD";
 			 HttpHeaders headers = new HttpHeaders();
 			 headers.add("Accept",  "application/json");
 			 headers.add("Content-Type", "application/json");
@@ -144,13 +144,8 @@ public class PostServiceImpl implements PostService {
 			 HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
 		     ResponseEntity<ErrorMessageList> getResponse  =	restTemplate.exchange(deleteProductUrl+productId, HttpMethod.DELETE, requestEntity, 
 		    		 ErrorMessageList.class);
-		     
-		     /*ResponseEntity<ExternalAPIResponse> response = restTemplate
-						.exchange(postApiURL, HttpMethod.DELETE, requestEntity,
-								ExternalAPIResponse.class);*/
 				_LOGGER.info("Result : " + getResponse);
-		    // Product product = getResponse.getBody();
-		    _LOGGER.info("Product from API::"
+		    _LOGGER.info("Delete Response from ASI::"
 					+ mapperObj.writeValueAsString(getResponse));
 		     return 1; 
 		  } catch (HttpClientErrorException hce) {

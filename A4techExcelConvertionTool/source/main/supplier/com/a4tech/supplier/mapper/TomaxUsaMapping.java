@@ -58,6 +58,7 @@ public class TomaxUsaMapping implements IExcelParser{
 		Set<String>  productXids = new HashSet<String>();
 		ArrayList<String>  xidSet = new ArrayList<String>();
 		List<String> repeatRows = new ArrayList<>();
+		HashSet<String> tempSet=new HashSet<String>();
 		  
 		try{
 			 for(int i=0;i<2;i++){
@@ -111,28 +112,55 @@ public class TomaxUsaMapping implements IExcelParser{
 					switch (columnIndex + 1) {
 						    case 1://XID
 							//productId=xid;
-						    	if(xid.toUpperCase().contains("TOMAX")){
+						    	
+						    	if(!StringUtils.isEmpty(xid))
+								{
+								if(xid.toUpperCase().contains("TOMAX")){
 									
 								}else{
 								xidSet.add(xid);
+								}
 								}
 							break;
 						
 					}  // end inner while loop					 
 				}		
 			}
+			if(!StringUtils.isEmpty(xid))
+			{
 			if(xid.toUpperCase().contains("TOMAX")){
 				
 			}else{
 			xidSet.add(xid);
-			HashSet<String> tempSet=new HashSet<String>(xidSet);
 			}
+			}
+			tempSet=new HashSet<String>(xidSet);
 			// do deletion thing over here
+			System.out.println(tempSet);
+			System.out.println(tempSet.size() +" - Size");
+			xidSet=new ArrayList<String>();
+			xidSet.add("TestProdSD1");
+			xidSet.add("3558-TES30ASD");
+			xidSet.add("TestProdSD3");
+			xidSet.add("TestProdSD4");
+			
+			for (String string : xidSet) {
+				int num=	postServiceImpl.deleteProduct(accessToken, string, asiNumber, batchId);
+	 	if(num ==1){
+	 		numOfProductsSuccess.add("1");
+	 	}else if(num == 0){
+	 		numOfProductsFailure.add("0");
+	 	}
+			}
+		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
+		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
+	       //finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
+	       productDaoObj.saveErrorLog(asiNumber,batchId);
+				
 			postServiceImpl.deleteProduct(accessToken, productId, asiNumber, batchId);
 			}else if(i==1){
-				postServiceImpl.deleteProduct(accessToken, "123", asiNumber, batchId);
-						//sheetMap=primeLineColorTabParser.readColorTab( accessToken, workbook , asiNumber , batchId,sheetMap);
-					}
+				
+			}
 				}
 			return finalResult;
 		}catch(Exception e){
