@@ -202,9 +202,8 @@ public class ProGolfImagesMapping{
 	     productExcelObj.setProductConfigurations(productConfigObj);
 	
 	     if(!StringUtils.isEmpty(productExcelObj.getExternalProductId())){
-
-	 	 int num = postServiceImpl.postProduct(accessToken, productExcelObj,
-				asiNumber, batchId);
+	 	    postServiceImpl.postProduct(accessToken, productExcelObj,
+					asiNumber, batchId);
 	     }
 
 		_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());

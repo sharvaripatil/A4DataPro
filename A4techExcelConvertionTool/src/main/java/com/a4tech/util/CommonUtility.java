@@ -15,6 +15,8 @@ import org.springframework.util.StringUtils;
 import com.a4tech.core.errors.ErrorMessage;
 import com.a4tech.core.errors.ErrorMessageList;
 
+import parser.proGolf.ProGolfColorMapping;
+
 public class CommonUtility {
 	
    private static Logger _LOGGER = Logger.getLogger(CommonUtility.class);
@@ -239,7 +241,12 @@ public class CommonUtility {
       return value;
   }
   
-
+   /*
+    * description : this method used to check price values is descending or not,
+    *                      if values are not descending order then return false
+    *      e.g. : 15,12,10  -- return true
+    *             15,12,15  -- return false
+    */
 	public static boolean isdescending(String[] prices){
 		double[] doubleprices=convertStringArrintoDoubleArr(prices);
 		  for (int i = 0; i < doubleprices.length-1; i++) {
@@ -292,7 +299,7 @@ public class CommonUtility {
 		if (productionTime.contains("-")) {
 			String[] productionTimes = productionTime.split("-");
 			int productionStartTime = Integer.parseInt(productionTimes[0]) * ApplicationConstants.CONST_INT_VALUE_FIVE;
-			int productionEndTime = Integer.parseInt(productionTimes[0]) * ApplicationConstants.CONST_INT_VALUE_FIVE;
+			int productionEndTime = Integer.parseInt(productionTimes[1]) * ApplicationConstants.CONST_INT_VALUE_FIVE;
 			productionTime = productionStartTime + "-" + productionEndTime;
 		} else {
 			int productionStartTime = Integer.parseInt(productionTime) * ApplicationConstants.CONST_INT_VALUE_FIVE;
@@ -300,4 +307,44 @@ public class CommonUtility {
 		}
 		return productionTime;
 	}
+	/*
+	 * Author      : venkat
+	 * Description : this method used to extract values between specialCharacter like (1132),{01245}..
+	 *               e.g. I/p : Regular Left (041238) - Colors Available
+	 *                    O/p :041238 
+	 */
+	public static String extractValueSpecialCharacter(String specialCharOpen,String specialCharClose,String src){
+		String finalVal = src.substring(src.indexOf(specialCharOpen) + 1, src.indexOf(specialCharClose));
+		return finalVal;
+	}
+	/* Author       : Venkat
+	 * Description : This method used for color value is part of color grouping or not,if all colors are 
+	 *              part of color grouping then we need to create combo other wise it treate as single color only        
+	 * Parm         : String colorValue
+	 * Retrun      : true(all colors are part of color mapping group)
+	 * 
+	 */
+	 public static boolean isComboColor(String colorValue){
+	    	String[] colorVals = CommonUtility.getValuesOfArray(colorValue, ",");
+	    	String mainColor       = null;
+	    	String secondaryColor  = null;
+	    	String thirdColor      = null;
+	    	if(colorVals.length == ApplicationConstants.CONST_INT_VALUE_TWO){
+	    		 mainColor = ProGolfColorMapping.getColorGroup(colorVals[0].trim());
+	    		 secondaryColor = ProGolfColorMapping.getColorGroup(colorVals[1].trim());
+	    		 if(mainColor != null && secondaryColor != null){
+	    			 return true;
+	    		 }
+	    	} else if(colorVals.length == ApplicationConstants.CONST_INT_VALUE_THREE){
+	    		 mainColor      = ProGolfColorMapping.getColorGroup(colorVals[0].trim());
+	    		 secondaryColor = ProGolfColorMapping.getColorGroup(colorVals[1].trim());
+	    		 thirdColor     = ProGolfColorMapping.getColorGroup(colorVals[2].trim());
+	    		 if(mainColor != null && secondaryColor != null && thirdColor != null){
+	    			 return true;
+	    		 }
+	    	} else{
+	    		
+	    	}
+	    	return false;
+	    }
 }

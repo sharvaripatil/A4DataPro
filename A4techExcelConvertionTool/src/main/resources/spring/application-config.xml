@@ -52,17 +52,18 @@
 	</bean>
 
    <bean id="lookupRestService" class="com.a4tech.lookup.service.restService.LookupRestService">
-   		<property name="restTemplate" ref="restTemplate"/>
-   		<property name="imprintMethodUrl" value="${imprintMethod.lookup.url}"/>
-   		<property name="materialLookupUrl" value="${materials.lookup.url}"/>
-   		<property name="shapesLookupUrl" value="${shapes.lookup.url}"/>
-   		<property name="originLookupUrl" value="${origin.lookup.url}"/>
-   		<property name="fobPointLookupUrl" value="${fobPoint.lookup.url}"/>
-   		<property name="lineNamesLookupUrl" value="${lineName.lookup.url}"/>
-   		<property name="tradeNameLookupUrl" value="${tradeName.lookup.url}"/>
+   		<property name="restTemplate"        ref="restTemplate"/>
+   		<property name="imprintMethodUrl"    value="${imprintMethod.lookup.url}"/>
+   		<property name="materialLookupUrl"   value="${materials.lookup.url}"/>
+   		<property name="shapesLookupUrl"     value="${shapes.lookup.url}"/>
+   		<property name="originLookupUrl"     value="${origin.lookup.url}"/>
+   		<property name="fobPointLookupUrl"   value="${fobPoint.lookup.url}"/>
+   		<property name="lineNamesLookupUrl"  value="${lineName.lookup.url}"/>
+   		<property name="tradeNameLookupUrl"  value="${tradeName.lookup.url}"/>
    		<property name="categoriesLookupUrl" value="${categories.lookup.url}"/>
    		<property name="catalogLookupUrl"    value="${catalog.lookup.url}"/>
-   	    <property name="themeLookupUrl"    value="${themes.lookup.url}"/>
+   	    <property name="themeLookupUrl"      value="${themes.lookup.url}"/>
+   	    <property name="packagesLookupUrl"   value="${packages.lookup.url}"/>
    </bean>
    <bean id="lookupServiceData" class="com.a4tech.lookup.service.LookupServiceData">
    		<property name="lookupRestService" ref="lookupRestService"/>
@@ -645,6 +646,7 @@
      </bean>
      <bean id="productPricingMappingId" class="parser.proGolf.ProGolfPricingMapping">
      	<property name="proGolfPriceGridParser" ref="proGolfPriceGridParserId"/>
+     	<property name="proGolfAttributeParser" ref="proInfoAttributeParserId"/>
      </bean>
      <bean id="productVariationMappingId" class="parser.proGolf.ProGolfVariationMapping">
      	<property name="proGolfPriceGridParser" ref="proGolfPriceGridParserId"/>
@@ -652,9 +654,12 @@
      <bean id="productImagesMappingId" class="parser.proGolf.ProGolfImagesMapping"></bean>
      <bean id="productShippingMappingId" class="parser.proGolf.ProGolfShippingMapping">
      	<property name="proGolfAttributeParser" ref="proInfoAttributeParserId"/>
+     	 <property name="postServiceImpl" ref="postService"/>
+         <property name="productDaoObj" ref="productDao"/>
      </bean>
      <bean id="proInfoAttributeParserId" class="parser.proGolf.ProGolfInformationAttributeParser">
      	<property name="lookupServiceData" ref="lookupServiceData"/>
+     	 <property name="proGolfPriceGridParser" ref="proGolfPriceGridParserId"/>
      </bean>
      <bean id="proGolfPriceGridParserId" class="parser.proGolf.ProGolfPriceGridParser"></bean>
       <!-- supplier PSL configuration start -->

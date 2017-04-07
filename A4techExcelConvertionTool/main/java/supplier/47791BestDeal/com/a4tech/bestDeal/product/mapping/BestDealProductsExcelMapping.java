@@ -30,7 +30,6 @@ import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.Size;
-import com.a4tech.product.model.TradeName;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;

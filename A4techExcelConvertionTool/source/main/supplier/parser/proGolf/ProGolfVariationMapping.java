@@ -1,7 +1,6 @@
 package parser.proGolf;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.PriceGrid;
@@ -25,7 +25,7 @@ public class ProGolfVariationMapping{
 	private static final Logger _LOGGER = Logger.getLogger(ProGolfVariationMapping.class);
     private ProGolfPriceGridParser proGolfPriceGridParser;
 	
-	public Map<String, Product> readMapper(HashMap<String, Product> productMaps, Sheet sheet) {
+	public Map<String, Product> readMapper(Map<String, Product> productMaps, Sheet sheet) {
 
 		int columnIndex = 0;
 
@@ -33,7 +33,7 @@ public class ProGolfVariationMapping{
 		List<String> repeatRows = new ArrayList<>();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
 		Product productExcelObj = new Product();
-		String productId = null;
+		//String productId = null;
 		String xid = null;
 		String prdXid = null;
 		List<String> productIds = new ArrayList<>();
@@ -43,6 +43,7 @@ public class ProGolfVariationMapping{
 		StringJoiner listOfDiscount = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String priceType = "";
 		List<PriceGrid> priceGrids = null;
+		boolean isSinglePriceGrid = true;// this sheet has contain single price grid only 
 		try {
 			Iterator<Row> iterator = sheet.iterator();
 			Product existingProduct = null;
@@ -52,7 +53,7 @@ public class ProGolfVariationMapping{
 				try {
 					Row nextRow = iterator.next();
 
-					if (nextRow.getRowNum() == 0) {
+					if (nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO) {
 						headerRow = nextRow;
 						continue;
 					}
@@ -98,6 +99,9 @@ public class ProGolfVariationMapping{
 									repeatRows.add(xid);
 								}
 								priceGrids = existingProduct.getPriceGrids();
+								if(CollectionUtils.isEmpty(priceGrids)){
+									priceGrids = new ArrayList<>();
+								}
 
 							}
 						} else {
@@ -146,6 +150,15 @@ public class ProGolfVariationMapping{
 						} // end inner while loop
 
 					}
+					if(!priceType.equalsIgnoreCase("special")){
+						if(isSinglePriceGrid){
+							priceGrids = proGolfPriceGridParser.getBasePriceGrid(listOfPrices.toString(), 
+									listOfQuantity.toString(), listOfDiscount.toString(), "USD",
+									         "", true, false, priceType,"",priceGrids,"","");	
+							isSinglePriceGrid = false;
+						}
+				    	
+				    }	
 				} catch (Exception e) {
 					_LOGGER.error(
 							"Error while Processing ProductId and cause :" + productExcelObj.getExternalProductId()
@@ -155,15 +168,14 @@ public class ProGolfVariationMapping{
 			 if(!priceType.equalsIgnoreCase("special")){
 			    	priceGrids = proGolfPriceGridParser.getBasePriceGrid(listOfPrices.toString(), 
 							listOfQuantity.toString(), listOfDiscount.toString(), "USD",
-							         "", true, false, priceType,"",priceGrids);	
+							         "", true, false, priceType,"",priceGrids,"","");	
 			    }	
-			productExcelObj.setProductConfigurations(productConfigObj);
-
 			if (!StringUtils.isEmpty(productExcelObj.getExternalProductId())) {
 
 			}
 			repeatRows.clear();
-			productConfigObj = new ProductConfigurations();
+			existingProduct.setPriceGrids(priceGrids);
+			productMaps.put(prdXid, existingProduct);
 			return productMaps;
 		} catch (Exception e) {
 			_LOGGER.error(

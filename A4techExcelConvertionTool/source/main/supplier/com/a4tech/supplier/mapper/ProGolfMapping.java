@@ -8,14 +8,12 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import com.a4tech.excel.service.IExcelParser;
-import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Product;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
 
-import parser.proGolf.ProGolfImprintChargesMapping;
 import parser.proGolf.ProGolfImagesMapping;
-import parser.proGolf.ProGolfProductInformationMapping;
+import parser.proGolf.ProGolfImprintChargesMapping;
 import parser.proGolf.ProGolfPricingMapping;
+import parser.proGolf.ProGolfProductInformationMapping;
 import parser.proGolf.ProGolfShippingMapping;
 import parser.proGolf.ProGolfVariationMapping;
 
@@ -32,35 +30,30 @@ public class ProGolfMapping implements IExcelParser{
 	@Override
 	public String readExcel(String accessToken, Workbook workbook, Integer asiNumber, int batchId) {
 		_LOGGER.info("mapping process start ProGolf supplier File");
-		int processSheetNo =1;
 		Map<String, Product> productsMap = new LinkedHashMap<>();
+		String finalResult = "";
 		for (Sheet sheet : workbook) {
 			 String sheetName = sheet.getSheetName().trim();
 			  _LOGGER.info("Sheet Name::"+sheetName);
-			 /* if(sheetName.contains("mapping") || sheetName.contains("Mapping") 
-					                        || sheetName.equalsIgnoreCase("Color Mapping")){
-				  continue;
-			  }
-			  */
 			  if("Product Information".equalsIgnoreCase(sheetName)){
 				  productsMap=  prodInfoMapping.readMapper(accessToken,sheet,productsMap);
 			  } else if("Product Pricing".equalsIgnoreCase(sheetName)){
-				  
+				  productsMap = productPricingMapping.readMapper(productsMap, sheet);
 			  } else if("Imprint Charges".equalsIgnoreCase(sheetName)){
-				  
+				  productsMap = imprintChargesMapping.readMapper(productsMap, sheet);
 			  } else if("Product Images".equalsIgnoreCase(sheetName)){
-				  
+				 // no need to mapping for images since supplier images does not meet asi standrd
 			  } else if("Product Shipping".equalsIgnoreCase(sheetName)){
-				  
+				  finalResult = productShippingMapping.readMapper(productsMap, sheet, accessToken, asiNumber, batchId);
 			  } else if("Product Variation".equalsIgnoreCase(sheetName)){
-				  
+				  //productsMap = productVariationMapping.readMapper(productsMap, sheet);
+				  // only required while uploading "Callaway 2017 website export - mapped file only"
 			  } else{
 				  _LOGGER.info("sheet is not processed: "+sheetName);
 			  }
-			  processSheetNo++;
 			
 		}
-		return "";
+		return finalResult;
 	}
 	
 	public ProGolfProductInformationMapping getProdInfoMapping() {
