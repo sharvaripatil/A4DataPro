@@ -361,6 +361,12 @@ public class PrimeLineAttributeParser {
 				newProduct.setDescription(descValue);
 			}
 			
+			Size sizesValue=existingProductConfig.getSizes();
+			if(sizesValue!=null ){
+				newProductConfigurations.setSizes(sizesValue);
+			}
+			
+			
 		newProduct.setProductConfigurations(newProductConfigurations);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Existing Product Data " +e.getMessage());
