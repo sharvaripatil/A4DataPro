@@ -48,7 +48,7 @@ public class ProductAttributeParser {
 	
 
 	public List<ImprintSize> getimprintsize(StringBuilder firstImprintSize) {
-		String ImprintSizeValue=firstImprintSize.toString().replace("null x null","");
+		String ImprintSizeValue=firstImprintSize.toString().replaceAll("xnull","");
 		ImprintSizeValue=ImprintSizeValue.replace("null", "");
 	    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
 	    ImprintSize impsizeobj;
@@ -168,6 +168,14 @@ public class ProductAttributeParser {
 		List<ImprintMethod> imprintMethodList = new ArrayList<ImprintMethod>();
 		List<String> listOfLookupMaterial = getImprintValue(imprintMethodValue.toUpperCase());
 		
+		if(imprintMethodValue.contains("PRINTED"))
+		{
+			imprMethod.setAlias("PRINTED");
+			imprMethod.setType("PRINTED");
+			imprintMethodList.add(imprMethod);	
+		}
+		
+		else{
 		for (String imprintMthodValue : listOfLookupMaterial) {
 			imprMethod = new ImprintMethod();
 		if(!imprintMethodValue.equalsIgnoreCase("Engraved") && imprintMthodValue.equalsIgnoreCase("Engraved") ){
@@ -177,6 +185,7 @@ public class ProductAttributeParser {
 			imprMethod.setAlias(imprintMthodValue);
 			imprMethod.setType(imprintMthodValue);
 			imprintMethodList.add(imprMethod);
+		}
 		}
 		}
 		

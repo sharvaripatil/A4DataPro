@@ -14,8 +14,11 @@ import java.util.stream.Collectors;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.model.BatteryInformation;
+import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Packaging;
+import com.a4tech.util.CommonUtility;
 
 public class PSLProductAttributeParser {
 	
@@ -84,15 +87,93 @@ public class PSLProductAttributeParser {
 		for (String Value : complainceArr) {
 			complianceList.add(Value);
 		}
-		
-		
-		
 		return complianceList;
 	}
 	
 	
+	public List<Material> getMaterialList(String materialValue) {
+		String MaterialCombo =materialValue;
+		List<Material> listOfMaterial = new ArrayList<>();
+		Material materialObj = new Material();
+		MaterialCombo=MaterialCombo.replace("+", ",").replace("Cloth","Other Fabric").replace("/", ",");
+		if(MaterialCombo.contains(",")){
+		String MaterialArr[]=MaterialCombo.split(",");
+		MaterialCombo="";
+		MaterialCombo=MaterialCombo.concat(MaterialArr[0]).concat(",").concat(MaterialArr[1]);
+		}
+		if(MaterialCombo.contains("Abs plastic") || MaterialCombo.contains("Abs plastics"))
+		{
+			List<String> listOfLookupMaterial = getMaterialType(MaterialCombo
+					.toUpperCase());
+			materialObj = new Material();
+			String Combo1 = "Other";
+			String Combo2 = listOfLookupMaterial.get(2);
+			Combo comboObj = new Combo();
+			materialObj.setName(Combo1);
+			materialObj.setAlias(materialValue);
+			comboObj.setName(Combo2);
+			materialObj.setCombo(comboObj);
+			listOfMaterial.add(materialObj);
+		}
+		else{
+			if(MaterialCombo.contains("Abs") || MaterialCombo.contains("ABS"))
+			{
+			 MaterialCombo=MaterialCombo.replace("Abs", "Abs  ").replace("ABS", "ABS  ");
+			}
+		List<String> listOfLookupMaterial = getMaterialType(MaterialCombo
+					.toUpperCase());
+	    int numOfMaterials = listOfLookupMaterial.size();
+		if (!listOfLookupMaterial.isEmpty()) {
+			if (numOfMaterials == 1) {
+				materialObj = new Material();
+				materialObj = getMaterialValue(
+						listOfLookupMaterial.toString(), MaterialCombo);
+				listOfMaterial.add(materialObj);
+			}else
+			{
+				materialObj = new Material();
+				String Combo1 = listOfLookupMaterial.get(0);
+				String Combo2 = listOfLookupMaterial.get(1);
+				Combo comboObj = new Combo();
+				materialObj.setName(Combo1);
+				materialObj.setAlias(materialValue);
+				comboObj.setName(Combo2);
+				if(materialValue.contains(" Cloth"))
+				{
+			     comboObj.setName(listOfLookupMaterial.get(2));
+				}
+				materialObj.setCombo(comboObj);
+				listOfMaterial.add(materialObj);
+			}
+		}else
+		{
+			materialObj = getMaterialValue("Other", materialValue);
+			listOfMaterial.add(materialObj);
+		}
+		}
+		return listOfMaterial;
+	}
 	
+	
+	
+	public List<String> getMaterialType(String value) {
+		List<String> listOfLookupMaterials = lookupServiceDataObj
+				.getMaterialValues();
+		List<String> finalMaterialValues = listOfLookupMaterials.stream()
+				.filter(mtrlName -> value.contains(mtrlName))
+				.collect(Collectors.toList());
 
+		return finalMaterialValues;
+	}
+	
+	public Material getMaterialValue(String name, String alias) {
+		Material materialObj = new Material();
+		name = CommonUtility.removeCurlyBraces(name);
+		materialObj.setName(name);
+		materialObj.setAlias(alias);
+		return materialObj;
+	}
+		
 	public List<String> getImprintValue(String value){
 		List<String> imprintLookUpValue = lookupServiceDataObj.getImprintMethods();
 		List<String> finalImprintValues = imprintLookUpValue.stream()
