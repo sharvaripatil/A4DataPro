@@ -22,6 +22,7 @@ import com.a4tech.product.model.BatteryInformation;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Option;
+import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
@@ -108,8 +109,13 @@ public class ProGolfImprintChargesMapping {
 								if (nextRow.getRowNum() != 1) {
 									productExcelObj.setProductConfigurations(productConfigObj);
 									existingProduct.setPriceGrids(existingPriceGrid);
-									existingProduct = removeDecorativeASPriceDescription(existingProduct);
+									//existingProduct = removeDecorativeASPriceDescription(existingProduct);
 									existingProduct = createImprintOptionAndImprintMethod(existingProduct);
+									if(isOptionImprintMethodBasePrice(productConfigObj.getOptions())){
+										existingProduct = proGolfInfoAttriParser.setBasePriceGridImprintMethodAndOptions(existingProduct);
+									} else {
+										existingProduct = removeDecorativeASPriceDescription(existingProduct);
+									}
 									productMaps.put(existingProduct.getProductLevelSku(), existingProduct);
 									repeatRows.clear();
 									existingProduct = productMaps.get(prdXid);
@@ -320,8 +326,13 @@ public class ProGolfImprintChargesMapping {
 			repeatRows.clear();
 			productExcelObj.setProductConfigurations(productConfigObj);
 			existingProduct.setPriceGrids(existingPriceGrid);
-			existingProduct = removeDecorativeASPriceDescription(existingProduct);
+			//existingProduct = removeDecorativeASPriceDescription(existingProduct);
 			existingProduct = createImprintOptionAndImprintMethod(existingProduct);
+			if(isOptionImprintMethodBasePrice(productConfigObj.getOptions())){
+				existingProduct = proGolfInfoAttriParser.setBasePriceGridImprintMethodAndOptions(existingProduct);
+			} else {
+				existingProduct = removeDecorativeASPriceDescription(existingProduct);
+			}
 			productMaps.put(prdXid, existingProduct);
 			return productMaps;
 		} catch (Exception e) {
@@ -409,7 +420,7 @@ public class ProGolfImprintChargesMapping {
     	List<PriceGrid> newPriceGrid = new ArrayList<>();
     	int basePriceCount = countNoOfBasePriceGrids(oldPriceGrids);
     	for (PriceGrid priceGrid : oldPriceGrids) {
-			  if(priceGrid.getIsBasePrice()== true && priceGrid.getDescription().equalsIgnoreCase("decorative")){
+			  if(priceGrid.getIsBasePrice() && priceGrid.getDescription().equalsIgnoreCase("decorative")){
 				// caller method used to collecting existing imprint methods values if type is decorative
 		    		String imprintMethodvals = getImprintMethodValues(config.getImprintMethods());
 		    		if(StringUtils.isEmpty(imprintMethodvals)){
@@ -492,9 +503,9 @@ public class ProGolfImprintChargesMapping {
     	PriceConfiguration priceConfigObj = null;
     	String[] vals = CommonUtility.getValuesOfArray(imprintMethodVals, ",");
     	for (String imprMethodVal : vals) {
-    		if(imprMethodVal.equalsIgnoreCase("UNIMPRINTED")){
+    		/*if(imprMethodVal.equalsIgnoreCase("UNIMPRINTED")){
     			continue;
-    		}
+    		}*/
     		priceConfigObj = new PriceConfiguration();
     		priceConfigObj.setCriteria("Imprint Method");
     		priceConfigObj.setValue(Arrays.asList(imprMethodVal));
@@ -510,6 +521,35 @@ public class ProGolfImprintChargesMapping {
 			}
 		}
     	return basePriceCount;
+    }
+    /*Author : Venkat
+     * Description : This method used to check price grid need to participate imprint method and Option or not
+     * Param :List<Option> 
+     * Return : true/fase,if option value contains "Wilson Staff" it returns True
+     * 
+     */
+    private boolean isOptionImprintMethodBasePrice(List<Option> listOfOption){
+    	List<OptionValue> listOfOptionVal = null;
+    	if(CollectionUtils.isEmpty(listOfOption)){
+    		return false;
+    	}
+    	for (Option option : listOfOption) {
+			  if(option.getOptionType().equalsIgnoreCase("Product")){
+				  listOfOptionVal = option.getValues();
+				  break;
+			  }
+		}
+    	if(listOfOptionVal != null){
+    		if(listOfOptionVal.size() < 2){
+    			return false;
+    		}
+    		for (OptionValue optionValue : listOfOptionVal) {
+				 if(optionValue.getValue().contains("Wilson Staff")){
+					 return true;
+				 }
+			}
+    	}
+    	return false;
     }
 	public void setProGolfPriceGridParser(ProGolfPriceGridParser proGolfPriceGridParser) {
 		this.proGolfPriceGridParser = proGolfPriceGridParser;

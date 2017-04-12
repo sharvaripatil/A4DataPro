@@ -24,6 +24,7 @@ import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.Option;
 import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Packaging;
+import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -43,9 +44,8 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 public class ProGolfInformationAttributeParser {
-	private LookupServiceData lookupServiceData ;
+	private LookupServiceData lookupServiceData;
 	private ProGolfPriceGridParser proGolfPriceGridParser;
-	
 	private static List<String> fobPoints = null;
 	
 	public List<TradeName> getTradeNames(String value){
@@ -69,7 +69,8 @@ public class ProGolfInformationAttributeParser {
 	private List<Value> getSizeValues(String sizeVals){
 		List<Value> listOfValue = new ArrayList<>();
 		Value valueObj = null;
-		String[] sizes = CommonUtility.getValuesOfArray(sizeVals, ApplicationConstants.CONST_DELIMITER_SPLITTING_PIPE);
+		String[] sizes = CommonUtility.getValuesOfArray(sizeVals, 
+				ApplicationConstants.CONST_DELIMITER_SPLITTING_PIPE);
 		for (String sizeVal : sizes) {
 			valueObj = new Value();
 			sizeVal = getStandrdSizeValues(sizeVal);
@@ -90,7 +91,7 @@ public class ProGolfInformationAttributeParser {
 			sizeVal = sizeVal.replaceAll("LARGE", "L");
 			sizeVal = sizeVal.replaceAll("large", "L");
 		}
-		if(sizeVal.equalsIgnoreCase("OSFM")){
+		if(sizeVal.equalsIgnoreCase("OSFM")) {
 			sizeVal = "One Size";
 		}
 		if(sizeVal.contains("XL")){
@@ -107,12 +108,13 @@ public class ProGolfInformationAttributeParser {
 		}
 		return sizeVal;
 	}
-	public ProductConfigurations getImprintSizes(String value,ProductConfigurations existingConfig){
+	public ProductConfigurations getImprintSizes(String value, ProductConfigurations existingConfig){
 		List<ImprintSize> listOfImprintSize = new ArrayList<>();
 		List<ImprintLocation> listOfImprintLocation = new ArrayList<>();
 		ImprintSize imprintSize = null;
 		ImprintLocation imprintLoc = null;
-		String[] imprSizes = CommonUtility.getValuesOfArray(value, ApplicationConstants.CONST_DELIMITER_SPLITTING_PIPE);
+		String[] imprSizes = CommonUtility.getValuesOfArray(value, 
+				                      ApplicationConstants.CONST_DELIMITER_SPLITTING_PIPE);
 		for (String imprSize : imprSizes) {
 			if(imprSize.contains(":")){
 				String[] sizess = imprSize.split(":");
@@ -194,7 +196,7 @@ public class ProGolfInformationAttributeParser {
 					colorName = "Yellow/Black";
 				}
 				if (colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
-					/*if(CommonUtility.isComboColor(colorName)){
+					if(CommonUtility.isComboColor(colorName)){
 						List<Combo> listOfCombo = null;
 						String[] comboColors = CommonUtility.getValuesOfArray(colorName,
 								ApplicationConstants.CONST_DELIMITER_FSLASH);
@@ -228,8 +230,8 @@ public class ProGolfInformationAttributeParser {
 							colorObj.setName(ApplicationConstants.CONST_VALUE_TYPE_OTHER);
 							colorObj.setAlias(colorName);
 						}
-					}*/
-					List<Combo> listOfCombo = null;
+					}
+					/*List<Combo> listOfCombo = null;
 					String[] comboColors = CommonUtility.getValuesOfArray(colorName,
 							ApplicationConstants.CONST_DELIMITER_FSLASH);
 					String colorFirstName = ProGolfColorMapping.getColorGroup(comboColors[0].trim());
@@ -250,7 +252,7 @@ public class ProGolfInformationAttributeParser {
 					}
 					String alias = colorName.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH, "-");
 					colorObj.setAlias(alias);
-					colorObj.setCombos(listOfCombo);
+					colorObj.setCombos(listOfCombo);*/
 					
 				} else {
 					colorGroup = ApplicationConstants.CONST_VALUE_TYPE_OTHER;
@@ -359,10 +361,10 @@ public class ProGolfInformationAttributeParser {
 			productConfig.setImprintSize(listOfImprintSize);
 		} else if(value.contains("Ball Type")){
 			List<String> optionVals = getListOfOptionValues(productConfig.getOptions());
-			for (String optionVal : optionVals) {
+			/*for (String optionVal : optionVals) {
 				priceGrids = proGolfPriceGridParser.getBasePriceGrid("", "", "", "USD", "", true, true, optionVal,
 						"PROP:"+optionVal, priceGrids, "", "Golf Ball Model");
-			}
+			}*/
 		}
 		else if(value.contains("Minimum")){
 			distributorComments = distributorComments.replaceAll("\\|", "");
@@ -782,7 +784,61 @@ public class ProGolfInformationAttributeParser {
     	existingImprintSizes.add(imprSizeObj);
     	return existingImprintSizes;
     }
-   
+   public Product setBasePriceGridImprintMethodAndOptions(Product product){
+	   List<PriceGrid> existingPriceGrid = product.getPriceGrids();
+	   ProductConfigurations existingConfig = product.getProductConfigurations();
+	   List<ImprintMethod> imprintMethods = existingConfig.getImprintMethods();
+	   List<Option> listOfOptions = existingConfig.getOptions();
+		List<OptionValue> listOfOptionVal = null;
+	   for (Option option : listOfOptions) {
+			  if(option.getOptionType().equalsIgnoreCase("Product")){
+				  listOfOptionVal = option.getValues();
+				  break;
+			  }
+		}
+	   List<PriceGrid> newPriceGrid = new ArrayList<>();
+	   String optionVal = listOfOptionVal.stream().map(OptionValue::getValue).collect(Collectors.joining(","));
+	   String imprintMethodVal = imprintMethods.stream().map(ImprintMethod::getAlias).collect(Collectors.joining());
+	   String[] optionVals = CommonUtility.getValuesOfArray(optionVal, ",");
+	   String option1 = optionVals[0];
+	   String option2 = optionVals[1];
+	   existingPriceGrid = proGolfPriceGridParser.getBasePriceGrid("", "", "", 
+			   "USD", "", true, true, "QUR grid", 
+			   "", existingPriceGrid, "", "Golf Ball Model");
+	   for (PriceGrid priceGrid : existingPriceGrid) {
+		    if(priceGrid.getIsBasePrice() && priceGrid.getDescription().equalsIgnoreCase("decorative")){
+		    	List<PriceConfiguration> listOfPriceConfig = new ArrayList<>();
+		    	PriceConfiguration config1 = getOptionPriceConfiguration("Imprint Method", imprintMethodVal, "");
+		    	PriceConfiguration config2 = getOptionPriceConfiguration("Product Option", option1, "Golf Ball Model");
+		    	listOfPriceConfig.add(config1);
+		    	listOfPriceConfig.add(config2);
+		    	priceGrid.setPriceConfigurations(listOfPriceConfig);
+		    	newPriceGrid.add(priceGrid);
+		    } else if(priceGrid.getIsBasePrice() && priceGrid.getDescription().equalsIgnoreCase("QUR grid")) {
+		    	List<PriceConfiguration> listOfPriceConfig = new ArrayList<>();
+		    	PriceConfiguration config1 = getOptionPriceConfiguration("Imprint Method", imprintMethodVal, "");
+		    	PriceConfiguration config2 = getOptionPriceConfiguration("Product Option", option2, "Golf Ball Model");
+		    	listOfPriceConfig.add(config1);
+		    	listOfPriceConfig.add(config2);
+		    	priceGrid.setPriceConfigurations(listOfPriceConfig);
+		    	newPriceGrid.add(priceGrid);
+		    }
+		    else {
+		    	newPriceGrid.add(priceGrid);
+		    }
+	}
+	  product.setPriceGrids(newPriceGrid);
+	   return product;
+   }
+  private PriceConfiguration getOptionPriceConfiguration(String criteria,String Value,String optionName){
+	  PriceConfiguration config = new PriceConfiguration();
+	  config.setCriteria(criteria);
+	  config.setValue(Arrays.asList(Value));
+	  if(!StringUtils.isEmpty(optionName)){
+		  config.setOptionName(optionName);
+	  }
+	  return config;
+  }
 	public LookupServiceData getLookupServiceData() {
 		return lookupServiceData;
 	}
