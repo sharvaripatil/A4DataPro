@@ -38,9 +38,9 @@ public class ProGolfMapping implements IExcelParser{
 			  if("Product Information".equalsIgnoreCase(sheetName)){
 				  productsMap=  prodInfoMapping.readMapper(accessToken,sheet,productsMap);
 			  } else if("Product Pricing".equalsIgnoreCase(sheetName)){
-				  productsMap = productPricingMapping.readMapper(productsMap, sheet);
+				 productsMap = productPricingMapping.readMapper(productsMap, sheet);
 			  } else if("Imprint Charges".equalsIgnoreCase(sheetName)){
-				  productsMap = imprintChargesMapping.readMapper(productsMap, sheet);
+				 productsMap = imprintChargesMapping.readMapper(productsMap, sheet);
 			  } else if("Product Images".equalsIgnoreCase(sheetName)){
 				 // no need to mapping for images since supplier images does not meet asi standrd
 			  } else if("Product Shipping".equalsIgnoreCase(sheetName)){

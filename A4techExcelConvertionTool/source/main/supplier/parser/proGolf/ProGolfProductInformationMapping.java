@@ -170,6 +170,9 @@ public class ProGolfProductInformationMapping {
 						case "Description":
 							String desc = cell.getStringCellValue();
 							desc = removeSpecialWords(desc);
+							if(desc.contains(productExcelObj.getAsiProdNo())){
+								desc = desc.replaceAll(productExcelObj.getAsiProdNo(), "");
+							}
 							productExcelObj.setDescription(desc);
 							break;
 						case "Linename":

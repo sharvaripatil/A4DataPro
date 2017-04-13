@@ -2,7 +2,9 @@ package parser.proGolf;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.util.CollectionUtils;
@@ -296,7 +298,14 @@ public class ProGolfInformationAttributeParser {
 			if(value.equalsIgnoreCase("Lead Time:|Lead Time: Stock Products 1-2 Business Days                      Logoed Products 2-4 Weeks")){
 				value = "Lead Time:|Lead Time: Stock Products 1-2 Business Days,Logoed Products 2-4 Weeks";
 			}
-			value = removeTrailData(value, ".*:");
+			//it is remove "|Lead Time:" if any data follow by leadTime
+			value = value.substring(value.indexOf(":") + 1);
+			if(value.contains("Lead Time")){//Lead Time|3-5 Business Days
+				value = value.replaceAll("Lead Time", "");
+				value = value.replaceAll("\\|", "");
+			}
+			value = value.trim();
+			//value = removeTrailData(value, ".*:");
 			if(value.contains(";")){
 				values = CommonUtility.getValuesOfArray(value, ApplicationConstants.CONST_DELIMITER_SEMICOLON);
 			} else{
@@ -315,25 +324,26 @@ public class ProGolfInformationAttributeParser {
 			sameDayRush.setAvailable(true);
 			sameDayRush.setDetails("");
 			priceGrids = proGolfPriceGridParser.getUpchargePriceGrid("1", "20", "A",
-					"SDRU", false, "USD", "Same Day Service", "Rush Service Charge", "Optional",
+					"SDRU", false, "USD", "Same Day Service", "Rush Service Charge", "Other",
 					1, priceGrids, "","dozen");
+			productConfig.setSameDayRush(sameDayRush);
 		} else if(value.equalsIgnoreCase("|2 day production: $14.00 (A) additional per dozen")){
 			RushTime rushTime = getProductRushTime("2", productConfig.getRushTime());
 			productConfig.setRushTime(rushTime);
 			priceGrids = proGolfPriceGridParser.getUpchargePriceGrid("1", "14", "A",
-					"RUSH", false, "USD", "2 business days", "Rush Service Charge", "Optional",
+					"RUSH", false, "USD", "2 business days", "Rush Service Charge", "Other",
 					1, priceGrids, "","dozen");
 		} else if(value.equalsIgnoreCase("|3 day production: $10.00 (A) additional per dozen")){
 			RushTime rushTime = getProductRushTime("3", productConfig.getRushTime());
 			productConfig.setRushTime(rushTime);
 			priceGrids = proGolfPriceGridParser.getUpchargePriceGrid("1", "14", "A",
-					"RUSH", false, "USD", "3 business days", "Rush Service Charge", "Optional",
+					"RUSH", false, "USD", "3 business days", "Rush Service Charge", "Other",
 					1, priceGrids, "","dozen");
 		} else if(value.equalsIgnoreCase("|4 day production: $8.00 (A) additional per dozen")){
 			RushTime rushTime = getProductRushTime("4", productConfig.getRushTime());
 			productConfig.setRushTime(rushTime);
 			priceGrids = proGolfPriceGridParser.getUpchargePriceGrid("1", "14", "A",
-					"RUSH", false, "USD", "4 business days", "Rush Service Charge", "Optional",
+					"RUSH", false, "USD", "4 business days", "Rush Service Charge", "Other",
 					1, priceGrids, "","dozen");
 		} else if(value.contains("Imprint Area")){
 			value = value.substring(value.indexOf("|") + 1);
@@ -429,10 +439,10 @@ public class ProGolfInformationAttributeParser {
 		if(CollectionUtils.isEmpty(existingProductionTime)){
 			existingProductionTime = new ArrayList<>();
 		}
-		for (String productionTime : productionTimeValues) {
+		for (String productionTimes : productionTimeValues) {
 			productionTimeObj = new ProductionTime();
-			String details = productionTime;
-			productionTime = productionTime.replaceAll("\\(.*?\\)", "").trim();
+			String details = productionTimes;
+			String productionTime = productionTimes.replaceAll("\\(.*?\\)", "").trim();
 			productionTime = productionTime.replaceAll("[^0-9-]", "").trim();
 			if(StringUtils.isEmpty(productionTime)){
 				continue;
@@ -450,7 +460,11 @@ public class ProGolfInformationAttributeParser {
 					details = details.replaceAll("business days", "");
 					details = details.replaceAll("Business Days", "");
 				}
-				productionTimeObj.setDetails(details);
+				if(!productionTime.equalsIgnoreCase(details.trim())){
+					productionTimeObj.setDetails(details);
+				} else{
+					productionTimeObj.setDetails("");
+				}
 				existingProductionTime.add(productionTimeObj);
 			}
 		}
@@ -497,6 +511,7 @@ public class ProGolfInformationAttributeParser {
 			existingImprintMethods = new ArrayList<>();
 		}
 		for (String imprintMethodVal : imprintMethodVals) {
+			imprintMethodVal = imprintMethodVal.trim();
 			if(imprintMethodVal.equalsIgnoreCase("Stock Product")){
 				continue;
 			} else if(imprintMethodVal.equalsIgnoreCase("N/A")){
@@ -705,11 +720,31 @@ public class ProGolfInformationAttributeParser {
 		listOfPackaging.add(packObj);
 		return listOfPackaging;
 	}
-	private Availability getCololrOptionAvailablity(List<String> colors ,String optionValue){
+	private Availability getCololrOptionAvailablity(Map<String, String> colorOptionMap){
 		Availability  availabilityObj = new Availability();
 		AvailableVariations  AvailableVariObj = null;
 		List<AvailableVariations> listOfVariAvail = new ArrayList<>();
 		List<Object> listOfParent = null;
+		List<Object> listOfChild = null;
+		for (Map.Entry<String, String> colorOptionEntry: colorOptionMap.entrySet()) {
+			String optionVal = colorOptionEntry.getKey();
+			String[] colors = colorOptionEntry.getValue().split(",");;
+			//String[] colors = colorsMap.get(optionVal).split(",");
+			 for (String childValue : colors) {
+				 AvailableVariObj = new AvailableVariations();
+				 listOfParent = new ArrayList<>();
+				 listOfChild = new ArrayList<>();
+				 listOfParent.add(optionVal.trim());
+				 listOfChild.add(childValue.trim());
+				 AvailableVariObj.setParentValue(listOfParent);
+				 AvailableVariObj.setChildValue(listOfChild);
+				 listOfVariAvail.add(AvailableVariObj);
+			 }
+		}
+		//Availability  availabilityObj = new Availability();
+		//AvailableVariations  AvailableVariObj = null;
+		//List<AvailableVariations> listOfVariAvail = new ArrayList<>();
+		/*List<Object> listOfParent = null;
 		List<Object> listOfChild = null;
 			 for (String childValue : colors) {
 				 AvailableVariObj = new AvailableVariations();
@@ -720,10 +755,11 @@ public class ProGolfInformationAttributeParser {
 				 AvailableVariObj.setParentValue(listOfParent);
 				 AvailableVariObj.setChildValue(listOfChild);
 				 listOfVariAvail.add(AvailableVariObj);
-			 }
+			 }*/
 		availabilityObj.setAvailableVariations(listOfVariAvail);
 		availabilityObj.setParentCriteria("Product Option");
 		availabilityObj.setChildCriteria("Product Color");
+		availabilityObj.setParentOptionName("Hand");
 		return availabilityObj;
 	}
 	private Product getAvailabilityAndProductNumbers(String values,Product productObj){
@@ -731,20 +767,29 @@ public class ProGolfInformationAttributeParser {
 		List<Availability> listOfAvailability = new ArrayList<>();
 		ProductNumber productNumberObj = null;
 		Availability  availabilityObj  = null;
-		String[] availables = values.split(".");
+		String[] availables = values.split("\\.");
+		Map<String, String> colorsMap = new HashMap<>();
 		for (String  value: availables) {
+			if(StringUtils.isEmpty(value) || value.equals(" ")){
+				continue;
+			}
 			String[] vals = value.split(":");
 			String colors = vals[1].trim();
 			String optionVal = vals[0].trim();
 			optionVal = optionVal.replaceAll("- Colors Available", "");
+			if(optionVal.contains("Colors")){
+				optionVal = optionVal.replaceAll("- Colors available", "");
+			}
+			optionVal = optionVal.replaceAll("\\|", "").trim();
 			String optionProductNo = CommonUtility.extractValueSpecialCharacter("(", ")", optionVal);
 			optionVal = optionVal.replaceAll("\\(.+?\\)","").trim();
 			//String finalOptionValue  = getOptionValue(optionVal);
 			productNumberObj = getProductNumbers(optionProductNo, optionVal);
-			availabilityObj = getCololrOptionAvailablity(Arrays.asList(colors.split(",")), optionVal);
-			listOfAvailability.add(availabilityObj);
+			colorsMap.put(optionVal, colors);
 			listOfProductNumber.add(productNumberObj);
 		}
+		availabilityObj = getCololrOptionAvailablity(colorsMap);
+		listOfAvailability.add(availabilityObj);
 		productObj.setAvailability(listOfAvailability);
 		productObj.setProductNumbers(listOfProductNumber);
 		return productObj;
@@ -768,8 +813,8 @@ public class ProGolfInformationAttributeParser {
     	List<Configurations> listOfConfig = new ArrayList<>();
     	Configurations configObj = new Configurations();
     	configObj.setCriteria("Product Option");
-    	configObj.setOptionName("Product Option");
-    	configObj.setValue(Arrays.asList("value"));
+    	configObj.setOptionName("Hand");
+    	configObj.setValue(Arrays.asList(value));
     	listOfConfig.add(configObj);
     	productNumberObj.setConfigurations(listOfConfig);
     	return productNumberObj;

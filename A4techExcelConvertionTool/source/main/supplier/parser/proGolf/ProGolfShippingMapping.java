@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.FOBPoint;
+import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ShippingEstimate;
@@ -220,6 +221,28 @@ public class ProGolfShippingMapping {
 				} else {
 				}
 			}
+			//This code used only for product present single tab remaining tabs absent case only
+			//e.g. club_way file product having single tab
+			/*for (Map.Entry<String, Product> products: productMaps.entrySet()) {
+				String skuValue = products.getKey();
+				Product product = products.getValue();
+				List<PriceGrid> listOfPricegrid = setDefaultPriceGrid(product.getPriceGrids());
+				product.setPriceGrids(listOfPricegrid);
+				if(skuValue.equals("2001")){
+					String distributorOnlyComments = product.getDistributorOnlyComments();
+					if(distributorOnlyComments.contains("|")){
+						distributorOnlyComments = distributorOnlyComments.replaceAll("\\|", "");
+						product.setDistributorOnlyComments(distributorOnlyComments);
+					}
+					int num = postServiceImpl.postProduct(accessToken, product, asiNumber, batchId);
+					if (num == 1) {
+						numOfProductsSuccess.add("1");
+					} else if (num == 0) {
+						numOfProductsFailure.add("0");
+					} else {
+					}
+				}
+			}*/
 			_LOGGER.info("list size>>>>>>>" + numOfProductsSuccess.size());
 			_LOGGER.info("Failure list size>>>>>>>" + numOfProductsFailure.size());
 			repeatRows.clear();
@@ -271,7 +294,23 @@ public class ProGolfShippingMapping {
 		String skuVal = CommonUtility.getCellValueStrinOrInt(xidCell);
 		return skuVal;
 	}
-
+  private List<PriceGrid> setDefaultPriceGrid(List<PriceGrid> listOfPriceGrid){
+	  if(!CollectionUtils.isEmpty(listOfPriceGrid)){
+		  return listOfPriceGrid;
+	  } else {
+		  listOfPriceGrid = new ArrayList<>();
+	  }
+	  PriceGrid priceGrid = new PriceGrid();
+	  priceGrid.setCurrency("USD");
+	  priceGrid.setDescription("");
+	  priceGrid.setIsBasePrice(true);
+	  priceGrid.setIsQUR(true);
+	  priceGrid.setSequence(1);
+	  priceGrid.setPrices(new ArrayList<>());
+	 // priceGrid.setPriceConfigurations(new ArrayList<>());
+	  listOfPriceGrid.add(priceGrid);
+	  return listOfPriceGrid;
+  }
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}
