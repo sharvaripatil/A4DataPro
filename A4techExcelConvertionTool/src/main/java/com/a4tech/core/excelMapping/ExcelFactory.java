@@ -22,9 +22,11 @@ import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
+import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
+import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 
 
@@ -50,9 +52,13 @@ public class ExcelFactory {
  //   private CutterBuckSheetParser cbSheetParser;
 	private HighCaliberLineExcelMapping hcLineExcelMapping;
 	private WholeSaleExcelMapping wholeSaleExcelMapping;
+	private PrimeLineExcelMapping primeLineExcelMapping;
 	private GoldBondExcelMapping  goldBandExcelMapping;
 	private PSLMapping pslMapping;
 	private TomaxUsaMapping tomaxUsaMapping;
+	private ProGolfMapping proGolfMapping;
+
+
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -92,12 +98,15 @@ public class ExcelFactory {
 
 		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
 			   return hcLineExcelMapping;
-		   }else if(name.equalsIgnoreCase("wholeSale") || name.equals("91284")){
 
+		   }else if(name.equalsIgnoreCase("wholeSale") || name.equals("91284")){
 			   return wholeSaleExcelMapping;
 			  
 		   }else if(name.equalsIgnoreCase("goldBond") || name.equals("57653")){
 			   return goldBandExcelMapping;
+		   }else if(name.equalsIgnoreCase("prime") || name.equals("79530")){
+			   return primeLineExcelMapping;
+
 		   }
 	 
 	      else if(name.equalsIgnoreCase("psl") || name.equals("75613")){
@@ -268,6 +277,14 @@ public class ExcelFactory {
 		this.wholeSaleExcelMapping = wholeSaleExcelMapping;
 	}
 
+	public PrimeLineExcelMapping getPrimeLineExcelMapping() {
+		return primeLineExcelMapping;
+	}
+
+	public void setPrimeLineExcelMapping(PrimeLineExcelMapping primeLineExcelMapping) {
+		this.primeLineExcelMapping = primeLineExcelMapping;
+	}
+
 
 	public MilestoneExcelMapping getMilestoneExcelMapping() {
 		return milestoneExcelMapping;
@@ -285,6 +302,13 @@ public class ExcelFactory {
 		this.goldBandExcelMapping = goldBandExcelMapping;
 	}
 
+	public ProGolfMapping getProGolfMapping() {
+		return proGolfMapping;
+	}
+
+	public void setProGolfMapping(ProGolfMapping proGolfMapping) {
+		this.proGolfMapping = proGolfMapping;
+	}
 	public PSLMapping getPslMapping() {
 		return pslMapping;
 	}

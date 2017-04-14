@@ -152,6 +152,7 @@ public class LookupData {
 		criteriaCodeMap.put("SHES","Shipping Estimate");
 		criteriaCodeMap.put("SHOP","Shipping Option");
 		criteriaCodeMap.put("WARR","Warranty Information");
+		criteriaCodeMap.put("Size", "Size");// this is used to base price configuration
 		
 		shapes.add("CUSTOM");
 		shapes.add("Circle");

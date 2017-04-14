@@ -98,6 +98,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 		 String skuColorVal = "";
 		 String upcCode = "";
 		 List<ProductSkus> listProductSkus = new ArrayList<>();
+		 String productNo = "";
 		while (iterator.hasNext()) {
 			
 			try{
@@ -139,10 +140,11 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 							 	List<Availability> listOfAvailablity = apparealAvailParser.
 							 			getProductAvailablity(ProductDataStore.getColorNames(), 
 							 					                              productSizeValues);
-							 	_LOGGER.info("color Names participate in avail:: "+ProductDataStore.getColorNames());
 							 	productExcelObj.setAvailability(listOfAvailablity);
 							 	List<Image> listOfImage = getProductImages(productExcelObj.getImages());
 							 	productExcelObj.setImages(listOfImage);
+									productExcelObj = appaAttributeParser.getExistingProductData(productExcelObj,
+											productConfigObj.getImprintMethods());
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -168,6 +170,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 								sizeBasePrice = new LinkedHashMap<>();
 								setSizes = new HashSet<>(); 
 								listProductSkus = new ArrayList<>();
+								productNo = "";
 								
 						 }
 						    if(!productXids.contains(xid)){
@@ -202,7 +205,8 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 					  productExcelObj.setExternalProductId(xid);
 					  break;
 				case 3://style
-					  productExcelObj.setAsiProdNo(CommonUtility.getCellValueStrinOrInt(cell));	
+					productNo = CommonUtility.getCellValueStrinOrInt(cell);
+					  productExcelObj.setAsiProdNo(productNo);	
 				    break;
 				case 4://Product name
 					String prdName = cell.getStringCellValue();
@@ -279,6 +283,10 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				    if(productDescription.contains("®")){
 				    	productDescription = productDescription.replaceAll("®", "");
 					}*/
+				    productDescription = productDescription.trim();
+				    if(productDescription.contains(productNo.trim())){
+				    	productDescription = productDescription.replaceAll(productNo, "");
+				    }
 					productExcelObj.setDescription(productDescription.trim());
 					 
 					break;
@@ -287,14 +295,22 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 					break;
 				case 13:
 					String material = cell.getStringCellValue();
-					List<Material> listOfMaterial = apparealMaterialParser.getMaterialList(material);
-					productConfigObj.setMaterials(listOfMaterial);
+					if(!StringUtils.isEmpty(material)){
+						material = material.trim();
+						if(!StringUtils.isEmpty(material)){
+							List<Material> listOfMaterial = apparealMaterialParser.getMaterialList(material);
+							productConfigObj.setMaterials(listOfMaterial);
+						}
+					}
 					 break;
 				case 14:
 					String imprintValue =cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintValue)){
-						productExcelObj = appaAttributeParser.setImrintSizeAndLocation(
-								                                       imprintValue, productExcelObj);
+						imprintValue = imprintValue.trim();
+						if(!StringUtils.isEmpty(imprintValue)){
+							productExcelObj = appaAttributeParser.setImrintSizeAndLocation(
+                                    imprintValue, productExcelObj);
+						}
 					} 
 			     break;
 				case 15:
@@ -409,6 +425,8 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	List<Image> listOfImage = getProductImages(productExcelObj.getImages());
 		 	productExcelObj.setImages(listOfImage);
+		 	productExcelObj = appaAttributeParser.getExistingProductData(productExcelObj,
+					productConfigObj.getImprintMethods());
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");

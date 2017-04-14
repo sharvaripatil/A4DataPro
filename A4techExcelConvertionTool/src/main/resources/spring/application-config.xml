@@ -52,17 +52,18 @@
 	</bean>
 
    <bean id="lookupRestService" class="com.a4tech.lookup.service.restService.LookupRestService">
-   		<property name="restTemplate" ref="restTemplate"/>
-   		<property name="imprintMethodUrl" value="${imprintMethod.lookup.url}"/>
-   		<property name="materialLookupUrl" value="${materials.lookup.url}"/>
-   		<property name="shapesLookupUrl" value="${shapes.lookup.url}"/>
-   		<property name="originLookupUrl" value="${origin.lookup.url}"/>
-   		<property name="fobPointLookupUrl" value="${fobPoint.lookup.url}"/>
-   		<property name="lineNamesLookupUrl" value="${lineName.lookup.url}"/>
-   		<property name="tradeNameLookupUrl" value="${tradeName.lookup.url}"/>
+   		<property name="restTemplate"        ref="restTemplate"/>
+   		<property name="imprintMethodUrl"    value="${imprintMethod.lookup.url}"/>
+   		<property name="materialLookupUrl"   value="${materials.lookup.url}"/>
+   		<property name="shapesLookupUrl"     value="${shapes.lookup.url}"/>
+   		<property name="originLookupUrl"     value="${origin.lookup.url}"/>
+   		<property name="fobPointLookupUrl"   value="${fobPoint.lookup.url}"/>
+   		<property name="lineNamesLookupUrl"  value="${lineName.lookup.url}"/>
+   		<property name="tradeNameLookupUrl"  value="${tradeName.lookup.url}"/>
    		<property name="categoriesLookupUrl" value="${categories.lookup.url}"/>
    		<property name="catalogLookupUrl"    value="${catalog.lookup.url}"/>
-   	    <property name="themeLookupUrl"    value="${themes.lookup.url}"/>
+   	    <property name="themeLookupUrl"      value="${themes.lookup.url}"/>
+   	    <property name="packagesLookupUrl"   value="${packages.lookup.url}"/>
    </bean>
    <bean id="lookupServiceData" class="com.a4tech.lookup.service.LookupServiceData">
    		<property name="lookupRestService" ref="lookupRestService"/>
@@ -393,8 +394,10 @@
 		<property name="goldcanadaExcelMapping" ref="goldcanadaExcelMappingId"/>
  		<property name="hcLineExcelMapping" ref="highCaliberLineExcelMappingId"/>
 		<property name="wholeSaleExcelMapping" ref="wholeSaleExcelMappingId"/>
-		<property name="milestoneExcelMapping" ref="milestoneExcelMappingId"/>		
 		<property name="goldBandExcelMapping" ref="goldBondExcelMappingId"/>
+		<property name="primeLineExcelMapping" ref="primeLineExcelMappingId"/>
+		<property name="proGolfMapping" ref="proGolfMappingId"></property>
+		<property name="milestoneExcelMapping" ref="milestoneExcelMappingId"/>	
 		<property name="pslMapping" ref="pslMappingId"/>
 		<property name="tomaxUsaMapping" ref="TomaxUsaMappingId"/>
 		
@@ -491,6 +494,7 @@
        <property name="crymaterialObj"   ref="crymaterialObjId"/>
        <property name="cdpriceObj"   ref="cdpriceObjId"/>
        <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+       
        
        </bean>
     
@@ -592,6 +596,45 @@
 		class="parser.wholesale.WholeSalePriceGridParser" autowire="byName">
 	</bean>
         <!-- supplier WholeSale configuration end --> 
+        
+        <!-- supplier PrimeLine configuration start -->
+        <bean id="primeLineExcelMappingId" class="com.a4tech.supplier.mapper.PrimeLineExcelMapping" autowire="byName">
+     <property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+      <property name="primeLineColorTabParser" ref="primeLineColorTabParserId"/>
+      <property name="primeLineAttributeParser" ref="primeLineAttributeParserId"/>
+      <property name="primeLinePriceGridParser" ref="primeLinePriceGridParserId"/>
+      <property name="primeLineFeatureTabParser" ref="primeLineFeatureTabParserId"/>
+      <property name="primeLineImprintTabParser" ref="primeLineImprintTabParserId"/>
+     </bean>
+     <bean id="primeLineColorTabParserId" name="primeLineColorTabParserObj"
+		class="parser.primeline.PrimeLineColorTabParser" autowire="byName">
+		<property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+	</bean>
+	  <bean id="primeLineAttributeParserId" name="primeLineAttributeParserObj"
+		class="parser.primeline.PrimeLineAttributeParser" autowire="byName">
+		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+	</bean>
+	<bean id="primeLinePriceGridParserId" name="primeLinePriceGridParserObj"
+		class="parser.primeline.PrimeLinePriceGridParser" autowire="byName">
+		</bean>
+		<bean id="primeLineFeatureTabParserId" name="primeLineFeatureTabParserObj"
+		class="parser.primeline.PrimeLineFeatureTabParser" autowire="byName">
+		 <property name="productDaoObj" ref="productDao"/>
+		 <property name="primeLineAttriObj" ref="primeLineAttributeParserId"/>
+	</bean>
+	
+	
+		<bean id="primeLineImprintTabParserId" name="primeLineImprintTabParserObj"
+		class="parser.primeline.PrimeLineImprintTabParser" autowire="byName">
+		 <property name="productDaoObj" ref="productDao"/>
+		 <property name="primeLineAttriObj" ref="primeLineAttributeParserId"/>
+		 <property name="primeLinePriceGridParser" ref="primeLinePriceGridParserId"/>
+	</bean>
+        <!-- supplier PrimeLine configuration end --> 
 
 
      <!-- supplier Milestone configuration start -->
@@ -625,8 +668,44 @@
     	<property name="gbPriceGridParser" ref="goldbondPriceGridParser"/>
     </bean>
      <bean id="goldbondPriceGridParser" class="parser.goldbond.GoldbondPriceGridParser"/>
-     
-  <!-- supplier PSL configuration start -->
+     <bean id="proGolfMappingId" class="com.a4tech.supplier.mapper.ProGolfMapping">
+         <property name="prodInfoMapping" ref="productInfoMappingId"/>
+         <property name="imprintChargesMapping" ref="imprintChargesMappingId"/>
+         <property name="productPricingMapping" ref="productPricingMappingId"/>
+         <property name="productVariationMapping" ref="productVariationMappingId"/>
+         <property name="productImagesMapping" ref="productImagesMappingId"/>
+         <property name="productShippingMapping" ref="productShippingMappingId"/>
+              
+     </bean>
+     <bean id="productInfoMappingId" class="parser.proGolf.ProGolfProductInformationMapping">
+     	 <property name="postServiceImpl" ref="postService"/>
+         <property name="productDaoObj" ref="productDao"/>
+         <property name="proInfoAttributeParser" ref="proInfoAttributeParserId"/>
+         <property name="proGolfPriceGridParser" ref="proGolfPriceGridParserId"/>
+     </bean>
+     <bean id="imprintChargesMappingId" class="parser.proGolf.ProGolfImprintChargesMapping">
+     	<property name="proGolfPriceGridParser" ref="proGolfPriceGridParserId"/>
+     	<property name="proGolfInfoAttriParser" ref="proInfoAttributeParserId"/>
+     </bean>
+     <bean id="productPricingMappingId" class="parser.proGolf.ProGolfPricingMapping">
+     	<property name="proGolfPriceGridParser" ref="proGolfPriceGridParserId"/>
+     	<property name="proGolfAttributeParser" ref="proInfoAttributeParserId"/>
+     </bean>
+     <bean id="productVariationMappingId" class="parser.proGolf.ProGolfVariationMapping">
+     	<property name="proGolfPriceGridParser" ref="proGolfPriceGridParserId"/>
+     </bean>
+     <bean id="productImagesMappingId" class="parser.proGolf.ProGolfImagesMapping"></bean>
+     <bean id="productShippingMappingId" class="parser.proGolf.ProGolfShippingMapping">
+     	<property name="proGolfAttributeParser" ref="proInfoAttributeParserId"/>
+     	 <property name="postServiceImpl" ref="postService"/>
+         <property name="productDaoObj" ref="productDao"/>
+     </bean>
+     <bean id="proInfoAttributeParserId" class="parser.proGolf.ProGolfInformationAttributeParser">
+     	<property name="lookupServiceData" ref="lookupServiceData"/>
+     	 <property name="proGolfPriceGridParser" ref="proGolfPriceGridParserId"/>
+     </bean>
+     <bean id="proGolfPriceGridParserId" class="parser.proGolf.ProGolfPriceGridParser"></bean>
+      <!-- supplier PSL configuration start -->
 
     <bean id="pslMappingId" class="com.a4tech.supplier.mapper.PSLMapping">
       <property name="postServiceImpl" ref="postService"/>
