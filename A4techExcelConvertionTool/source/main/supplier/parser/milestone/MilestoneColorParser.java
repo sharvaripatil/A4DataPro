@@ -55,7 +55,7 @@ public class MilestoneColorParser {
 			
 			}else {
 				colorObj = new Color();
-				colorObj.setName(colorValue);
+				colorObj.setName(MilestoneLookupData.COLOR_MAP.get(colorValue.trim()));
 				colorObj.setAlias(colorValue);
 				colorlist.add(colorObj);
 			}

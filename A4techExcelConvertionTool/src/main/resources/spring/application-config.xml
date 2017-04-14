@@ -631,6 +631,7 @@
       <property name="postServiceImpl" ref="postService"/>
       <property name="productDaoObj" ref="productDao"/>
       <property name="attributObj" ref="attributObjId"/>
+      <property name="pslPriceGridObj" ref="pslPriceGridObjId"/>
       
     </bean>
 
@@ -639,6 +640,7 @@
      <property name="lookupRestServiceObj" ref="lookupRestService"/>
      </bean>
 
+     <bean id="pslPriceGridObjId" class="parser.psl.PSLPriceGridParser"/>
 
 
 

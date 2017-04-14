@@ -11,13 +11,22 @@ import java.util.List;
 
 import java.util.stream.Collectors;
 
+import org.junit.internal.runners.model.EachTestNotifier;
+
+import parser.milestone.MilestoneLookupData;
+
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.model.BatteryInformation;
+import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Packaging;
+import com.a4tech.product.model.Size;
+import com.a4tech.product.model.Value;
+import com.a4tech.product.model.Values;
 import com.a4tech.util.CommonUtility;
 
 public class PSLProductAttributeParser {
@@ -183,7 +192,100 @@ public class PSLProductAttributeParser {
 				
 		return finalImprintValues;	
 	}
+	
+	public Size getSizeValue(String productSize) {
+	      Size sizeObj=new Size();
+	   
+	      List<Values> listOfValues= new ArrayList<>();
+	      Values ValuesObj=new Values();
+	      List<Value> listOfValue= new ArrayList<>();
+	      Value ValueObj=new Value();
 
+
+	      Dimension dimensionObj=new Dimension();
+
+          String productSizeArr[]=productSize.split("x");
+          
+          for (int i=0;i<productSizeArr.length;i++) {
+        	  
+            sizeObj=new Size();      		
+      		ValueObj.setValue(productSizeArr[0]);
+      		ValueObj.setUnit("in");
+      		
+      		if(i==1){
+    		ValueObj.setAttribute("Length");
+      		}else if(i==2)
+      		{
+      		ValueObj.setAttribute("Width");	
+      		}else if(i==3)
+      		{
+          	ValueObj.setAttribute("Height");	
+      		}
+
+      		listOfValue.add(ValueObj);
+    		ValuesObj.setValue(listOfValue);
+    		dimensionObj.setValues(listOfValues);		
+ 	     	}
+         	
+        	sizeObj.setDimension(dimensionObj);
+
+		return sizeObj;
+	}
+
+	
+	
+	
+	public List<Color> getColorCriteria(String colorValue) {
+		
+		List<Color> colorlist = new ArrayList<Color>();
+		Color colorObj = new Color() ;
+		Combo combovalue = new Combo();
+		if (colorValue.contains("/")) {
+			String colorArr1[] = colorValue
+					.split("/");
+		//	for (String value : colorArr1) {
+			colorObj = new Color();
+			List<Combo> combolist = new ArrayList<Combo>();
+			if(colorArr1.length==2){
+			    combovalue = new Combo();
+				combovalue.setName(MilestoneLookupData.COLOR_MAP.get(colorArr1[1].trim()));
+				combovalue.setType("trim");
+				combolist.add(combovalue);
+			}
+			
+			else{
+				for (int i=1;i<3;i++) {
+				 combovalue = new Combo();
+				 if(i==1){
+				 combovalue.setName(MilestoneLookupData.COLOR_MAP.get(colorArr1[1].trim()));
+				 combovalue.setType("secondary");
+				 }else if(i==2)
+				 {
+				 combovalue.setName(MilestoneLookupData.COLOR_MAP.get(colorArr1[2].trim()));
+				 combovalue.setType("trim");
+			   	 
+				 }
+				 combolist.add(combovalue);
+				}	
+			}
+			colorObj.setCombos(combolist);
+			colorObj.setName(MilestoneLookupData.COLOR_MAP.get(colorArr1[0].trim()));
+			colorObj.setAlias(colorValue);
+			//colorlist.add(colorObj);
+			colorlist.add(colorObj);
+		
+		}else {
+			colorObj = new Color();
+			colorObj.setName(MilestoneLookupData.COLOR_MAP.get(colorValue.trim()));
+			colorObj.setAlias(colorValue);
+			colorlist.add(colorObj);
+		}
+		
+		return colorlist;
+
+	}
+		
+	
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;
 	}
@@ -199,6 +301,10 @@ public class PSLProductAttributeParser {
 	public void setLookupRestServiceObj(LookupRestService lookupRestServiceObj) {
 		this.lookupRestServiceObj = lookupRestServiceObj;
 	}
+
+
+
+
 	
 	
 	
