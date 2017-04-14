@@ -646,12 +646,20 @@
      <property name="postServiceImpl" ref="postService"/>
      <property name="productDaoObj" ref="productDao"/>
      <property name="tomaxUsaAttributeParser" ref="tomaxUsaAttributeParserId" /> 
-     <property name="tomaxUsaPricegridParser" ref="tomaxUsaPricegridParserId" /> 
+     <property name="tomaxProductTabParser" ref="tomaxProductTabParserId" /> 
      </bean>
      <bean id="tomaxUsaAttributeParserId" name="tomaxUsaAttributeParserObj"
 		class="parser.tomaxusa.TomaxUsaAttributeParser" autowire="byName">
 	</bean>
-	<bean id="tomaxUsaPricegridParserId" class="parser.tomaxusa.TomaxUsaPricegridParser" autowire="byName"/>
+	<bean id="tomaxUsaPricegridParserId" name="tomaxUsaPricegridParserObj" class="parser.tomaxusa.TomaxPriceGridParser" autowire="byName"/>
+	<bean id="tomaxSizeParserId" name="tomaxSizeParserObj" class="parser.tomaxusa.TomaxSizeParser" autowire="byName"/>
+	<bean id="tomaxProductTabParserId" class="parser.tomaxusa.TomaxProductTabParser" autowire="byName">
+	 <property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="tomaxUsaAttributeParser" ref="tomaxUsaAttributeParserId"/>
+     <property name="tomaxPriceGridParser" ref="tomaxUsaPricegridParserId"/>
+	 <property name="tomaxUsaSizeParser" ref="tomaxSizeParserId"/>
+	</bean>
      <!--supplier 91435 Tomax USA configuration start  -->  
 </beans>
 

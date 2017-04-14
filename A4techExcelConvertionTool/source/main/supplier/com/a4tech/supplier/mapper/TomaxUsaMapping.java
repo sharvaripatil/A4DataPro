@@ -17,8 +17,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import parser.tomaxusa.TomaxProductTabParser;
 import parser.tomaxusa.TomaxUsaAttributeParser;
-import parser.tomaxusa.TomaxUsaPricegridParser;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
@@ -47,7 +47,7 @@ public class TomaxUsaMapping implements IExcelParser{
 	ObjectMapper mapperObj;
 	
 	TomaxUsaAttributeParser tomaxUsaAttributeParser;
-	TomaxUsaPricegridParser tomaxUsaPricegridParser;
+	TomaxProductTabParser tomaxProductTabParser;
 	
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 	
@@ -59,11 +59,12 @@ public class TomaxUsaMapping implements IExcelParser{
 		ArrayList<String>  xidSet = new ArrayList<String>();
 		List<String> repeatRows = new ArrayList<>();
 		HashSet<String> tempSet=new HashSet<String>();
+		
 		  
 		try{
 			 for(int i=0;i<2;i++){
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-			if(i==0){
+			if(i==9){
 			Sheet sheet = workbook.getSheetAt(0);
 			Iterator<Row> iterator = sheet.iterator();
 			_LOGGER.info("Started Processing Product");
@@ -157,9 +158,9 @@ public class TomaxUsaMapping implements IExcelParser{
 	       //finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
 	       productDaoObj.saveErrorLog(asiNumber,batchId);
 				
-			postServiceImpl.deleteProduct(accessToken, productId, asiNumber, batchId);
+			//postServiceImpl.deleteProduct(accessToken, productId, asiNumber, batchId);
 			}else if(i==1){
-				
+				finalResult=tomaxProductTabParser.readExcel(accessToken, workbook, asiNumber, batchId);
 			}
 				}
 			return finalResult;
@@ -259,18 +260,17 @@ public class TomaxUsaMapping implements IExcelParser{
 			TomaxUsaAttributeParser tomaxUsaAttributeParser) {
 		this.tomaxUsaAttributeParser = tomaxUsaAttributeParser;
 	}
-
-
-
-	public TomaxUsaPricegridParser getTomaxUsaPricegridParser() {
-		return tomaxUsaPricegridParser;
+	
+	public TomaxProductTabParser getTomaxProductTabParser() {
+		return tomaxProductTabParser;
 	}
 
 
 
-	public void setTomaxUsaPricegridParser(
-			TomaxUsaPricegridParser tomaxUsaPricegridParser) {
-		this.tomaxUsaPricegridParser = tomaxUsaPricegridParser;
+	public void setTomaxProductTabParser(TomaxProductTabParser tomaxProductTabParser) {
+		this.tomaxProductTabParser = tomaxProductTabParser;
 	}
+	
+	
 	
 }
