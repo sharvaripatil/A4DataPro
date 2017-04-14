@@ -22,10 +22,11 @@ import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
-import com.a4tech.supplier.mapper.ProGolfMapping;
-import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
+import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
+import com.a4tech.supplier.mapper.ProGolfMapping;
+import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 
 
 public class ExcelFactory {
@@ -46,14 +47,15 @@ public class ExcelFactory {
     private CutterBuckExcelMapping cbExcelMapping;
     private CrystalDExcelMapping cdExcelMapping;
     private GoldstarCanadaExcelMapping goldcanadaExcelMapping;
+    private MilestoneExcelMapping milestoneExcelMapping;
  //   private CutterBuckSheetParser cbSheetParser;
 	private HighCaliberLineExcelMapping hcLineExcelMapping;
 	private WholeSaleExcelMapping wholeSaleExcelMapping;
+	private PrimeLineExcelMapping primeLineExcelMapping;
 	private GoldBondExcelMapping  goldBandExcelMapping;
-	private ProGolfMapping proGolfMapping;
-	private MilestoneExcelMapping milestoneExcelMapping;
 	private PSLMapping pslMapping;
-	
+	private ProGolfMapping proGolfMapping;
+
 
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -94,17 +96,21 @@ public class ExcelFactory {
 
 		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
 			   return hcLineExcelMapping;
+
 		   }else if(name.equalsIgnoreCase("wholeSale") || name.equals("91284")){
 			   return wholeSaleExcelMapping;
-		   }/*else if(name.equalsIgnoreCase("goldBond") || name.equals("57653")){
+			  
+		   }else if(name.equalsIgnoreCase("goldBond") || name.equals("57653")){
 			   return goldBandExcelMapping;
-		   }*/else if(name.equalsIgnoreCase("proGolg") || name.equals("79680")){
-			   return proGolfMapping;
-		   } else if(name.equalsIgnoreCase("psl") || name.equals("75613")){
+		   }else if(name.equalsIgnoreCase("prime") || name.equals("79530")){
+			   return primeLineExcelMapping;
+
+		   }
+	 
+	      else if(name.equalsIgnoreCase("psl") || name.equals("75613")){
 		   return pslMapping;
-	      } else if(name.equalsIgnoreCase("milestone") || name.equals("71173")){
-			   return milestoneExcelMapping;
-		      }
+	      }
+		   
 		   
 		return null;
 	}
@@ -263,6 +269,14 @@ public class ExcelFactory {
 
 	public void setWholeSaleExcelMapping(WholeSaleExcelMapping wholeSaleExcelMapping) {
 		this.wholeSaleExcelMapping = wholeSaleExcelMapping;
+	}
+
+	public PrimeLineExcelMapping getPrimeLineExcelMapping() {
+		return primeLineExcelMapping;
+	}
+
+	public void setPrimeLineExcelMapping(PrimeLineExcelMapping primeLineExcelMapping) {
+		this.primeLineExcelMapping = primeLineExcelMapping;
 	}
 
 

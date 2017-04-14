@@ -1,27 +1,20 @@
 package parser.wholesale;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.lookup.service.LookupServiceData;
-import com.a4tech.product.broberry.parser.BroberryProductAttributeParser;
-import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
-import com.a4tech.product.model.Option;
-import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.Theme;
-import com.a4tech.product.model.TradeName;
 import com.a4tech.util.ApplicationConstants;
 
 public class WholeSaleAttributeParser {
