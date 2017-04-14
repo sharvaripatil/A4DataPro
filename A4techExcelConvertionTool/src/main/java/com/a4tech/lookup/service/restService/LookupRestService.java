@@ -1,5 +1,6 @@
 package com.a4tech.lookup.service.restService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -17,6 +18,7 @@ import com.a4tech.lookup.model.ImprintMethods;
 import com.a4tech.lookup.model.LineName;
 import com.a4tech.lookup.model.Materials;
 import com.a4tech.lookup.model.Origin;
+import com.a4tech.lookup.model.Packages;
 import com.a4tech.lookup.model.Shapes;
 import com.a4tech.lookup.model.Themes;
 import com.a4tech.lookup.model.TradeNames;
@@ -35,8 +37,8 @@ public class LookupRestService {
    private String categoriesLookupUrl;
    private String catalogLookupUrl;
    private String themeLookupUrl;
+   private String packagesLookupUrl;
    
-	
 	public List<String> getImprintMethodData(){
 		 try{
 			 HttpHeaders headers = new HttpHeaders();
@@ -188,7 +190,20 @@ public class LookupRestService {
 		 }
 		return null;
 	}
-
+	public List<String> getPackages(){
+		 try{
+			 HttpHeaders headers = new HttpHeaders();
+			 headers.add("Content-Type", "application/json");
+			 HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+			 ResponseEntity<Packages> response = restTemplate.exchange(packagesLookupUrl, HttpMethod.GET, 
+					                                                requestEntity, Packages.class);
+			 Packages data = response.getBody();
+			 return data.getListOfPackages();
+		 }catch(Exception exce){
+			 _LOGGER.error("unable to get Packages lookup data: "+exce.getCause());
+		 }
+		 return new ArrayList<>();
+	}
 	
 	public String getOriginLookupUrl() {
 		return originLookupUrl;
@@ -269,7 +284,12 @@ public class LookupRestService {
 		public void setThemeLookupUrl(String themeLookupUrl) {
 			this.themeLookupUrl = themeLookupUrl;
 		}
+		public String getPackagesLookupUrl() {
+			return packagesLookupUrl;
+		}
 
+		public void setPackagesLookupUrl(String packagesLookupUrl) {
+			this.packagesLookupUrl = packagesLookupUrl;
+		}
 		
-
 }

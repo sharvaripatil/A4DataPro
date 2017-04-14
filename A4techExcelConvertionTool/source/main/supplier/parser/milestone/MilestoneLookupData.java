@@ -87,5 +87,12 @@ public  class MilestoneLookupData {
 		return Dimension1Type.get(dimTypeid);
 	}
 
+	public static Map<String, String> getCOLOR_MAP() {
+		return COLOR_MAP;
+	}
+
+	
+	
+
 }
 

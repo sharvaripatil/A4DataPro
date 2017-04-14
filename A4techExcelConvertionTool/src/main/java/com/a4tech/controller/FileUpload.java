@@ -82,8 +82,8 @@ public class FileUpload {
 			if(workbook == null){
 				return ApplicationConstants.CONST_STRING_ERROR_PAGE;
 			}
-			lookupData.loadLineNames(asiNumber, accessToken);
-			lookupData.loadFobPoints(asiNumber, accessToken);
+			//lookupData.loadLineNames(asiNumber, accessToken);
+			//lookupData.loadFobPoints(asiNumber, accessToken);
 			int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 			request.getSession().setAttribute("batchId",
 					String.valueOf(batchId));
@@ -133,7 +133,7 @@ public class FileUpload {
 																				noOfProductsSuccess);
 		redirectAttributes.addFlashAttribute(ApplicationConstants.FAILURE_PRODUCTS_COUNT , 
 																				noOfProductsFailure);
-		/*if (!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)) {
+		if (!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)) {
 			
 			boolean isMailSendSuccess = mailService.sendMail(asiNumber, batchId);
 			if(isMailSendSuccess){
@@ -141,7 +141,7 @@ public class FileUpload {
 				                                             ApplicationConstants.MAIL_SEND_SUCCESS_MESSAGE);
 			} 
 			
-		}*/
+		}
 	}
 	public IProductService getProductService() {
 		return productService;
