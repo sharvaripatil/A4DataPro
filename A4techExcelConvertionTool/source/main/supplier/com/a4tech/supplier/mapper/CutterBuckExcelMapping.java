@@ -282,10 +282,8 @@ public class CutterBuckExcelMapping implements IExcelParser{
 				} catch (IOException e) {
 					
 					e.printStackTrace();
-				}
-						
-										
-				listOfLinenames =new ArrayList<String>();
+				}					
+			listOfLinenames =new ArrayList<String>();
 			productExcelObj.setPriceGrids(priceGrids);
 			productExcelObj.setProductConfigurations(productConfigObj);
 			

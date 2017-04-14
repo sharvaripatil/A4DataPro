@@ -136,7 +136,16 @@ public class Product {
     @JsonProperty("PriceType")
     @XmlElement(name="PriceType")
     private String priceType;
-    
+    @JsonProperty("Hazmat")
+    @XmlElement(name="Hazmat")
+    private String hazmat;
+    @JsonProperty("CloseOut")
+    @XmlElement(name="CloseOut")
+    private boolean closeOut ;
+    @JsonProperty("RelatedProducts")
+    @XmlElement(name="RelatedProducts")
+    private List<RelatedProduct> relatedProducts;
+	
 	public Inventory getInventory() {
 		return inventory;
 	}
@@ -504,7 +513,29 @@ public class Product {
 	public void setDeliveryOption(String deliveryOption) {
 		this.deliveryOption = deliveryOption;
 	}
+	public String getHazmat() {
+		return hazmat;
+	}
 
+	public void setHazmat(String hazmat) {
+		this.hazmat = hazmat;
+	}
+
+	public boolean isCloseOut() {
+		return closeOut;
+	}
+
+	public void setCloseOut(boolean closeOut) {
+		this.closeOut = closeOut;
+	}
+
+	public List<RelatedProduct> getRelatedProducts() {
+		return relatedProducts;
+	}
+
+	public void setRelatedProducts(List<RelatedProduct> relatedProducts) {
+		this.relatedProducts = relatedProducts;
+	}
 
 
 }

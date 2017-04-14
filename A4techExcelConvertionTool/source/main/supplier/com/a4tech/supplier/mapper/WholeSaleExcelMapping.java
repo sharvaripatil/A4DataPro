@@ -2,11 +2,9 @@ package com.a4tech.supplier.mapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -25,27 +23,15 @@ import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.FOBPoint;
-import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
-import com.a4tech.product.model.Material;
-import com.a4tech.product.model.NumberOfItems;
-import com.a4tech.product.model.Price;
-import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductNumber;
-import com.a4tech.product.model.ProductSkus;
 import com.a4tech.product.model.ProductionTime;
-import com.a4tech.product.model.ShippingEstimate;
-import com.a4tech.product.model.Volume;
-import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
-import com.a4tech.product.riversend.parser.RiverEndAttributeParser;
-import com.a4tech.product.riversend.parser.RiverEndPriceGridParser;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -62,13 +48,6 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 	private LookupServiceData lookupServiceDataObj;
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 	
-		StringBuilder FinalKeyword = new StringBuilder();
-		StringBuilder AdditionalInfo = new StringBuilder();
-		String AddionnalInfo1=null;
-		List<Material> listOfMaterial =new ArrayList<Material>();
-		List<String> productKeywords = new ArrayList<String>();
-		List<String> listOfCategories = new ArrayList<String>();
-		List<ProductSkus> ProductSkusList = new ArrayList<>();
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		String finalResult = null;
@@ -77,25 +56,14 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 		  Product existingApiProduct = null;
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  List<PriceGrid> priceGrids = null;
-		  Set<String> listOfColors = new HashSet<>();
-		  String colorCustomerOderCode ="";
 		  List<String> repeatRows = new ArrayList<>();
-		  Map<String, String> colorIdMap = new HashMap<>();
-		 
-		  String sizeDsec=null;
-		  String sizeItemNo=null;
-		 
-		  String upc_no;
 		  Set<String> colorSet = new HashSet<String>(); 
 		  List<Color> colorList = new ArrayList<Color>();
-		  HashMap<String, String>  priceGridMap=new HashMap<String, String>();
-		  HashMap<String, String>  priceGridMapTemp=new HashMap<String, String>();
 		  List<ProductNumber> pnumberList = new ArrayList<ProductNumber>();
 		  String productNumber=null;
 		  HashSet<String> sizeValuesSet = new HashSet<>();
 		  String colorValue=null;
 		  String sizeValue=null;
-		  String finalColorValue =null;
 		  String descOne=null;
 		  List<ImprintMethod> imprintMethodList = new ArrayList<ImprintMethod>();
 		  String imprintMethodValue=null;
@@ -110,8 +78,6 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 	    Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
-		String currentValue=null;
-	    String lastValue=null;
 	    String productId = null;
 	    String xid = null;
 	    int columnIndex=0;
@@ -188,7 +154,6 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 								priceGrids = new ArrayList<PriceGrid>();
 								productConfigObj = new ProductConfigurations();
-								listOfColors = new HashSet<>();
 								repeatRows.clear();
 								colorSet=new HashSet<String>(); 
 								colorList = new ArrayList<Color>();
@@ -524,19 +489,11 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 	    productDaoObj.saveErrorLog(asiNumber,batchId);
 		priceGrids = new ArrayList<PriceGrid>();
 		productConfigObj = new ProductConfigurations();
-		listOfColors = new HashSet<>();
 		repeatRows.clear();
 		colorSet=new HashSet<String>(); 
 		colorList = new ArrayList<Color>();
-		AdditionalInfo=new StringBuilder();
-		priceGridMap=new HashMap<String, String>();
-		priceGridMapTemp=new HashMap<String, String>();
 		pnumberList=new ArrayList<ProductNumber>();
-		listOfMaterial=new ArrayList<Material>();
 		sizeValuesSet = new HashSet<>();
-		listOfCategories=new ArrayList<String>();
-		FinalKeyword=new StringBuilder();
-        AdditionalInfo= new StringBuilder();
         descOne=null;
         imprintMethodList = new ArrayList<ImprintMethod>();
         imprintMethodValue=null;

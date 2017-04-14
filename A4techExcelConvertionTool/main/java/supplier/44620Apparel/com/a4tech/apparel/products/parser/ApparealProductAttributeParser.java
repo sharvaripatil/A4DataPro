@@ -2,6 +2,7 @@ package com.a4tech.apparel.products.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -153,9 +154,14 @@ public class ApparealProductAttributeParser {
 		data = data.replaceAll("(&|and|or)", ApplicationConstants.CONST_DELIMITER_COMMA);
 		ImprintMethod	imprintMethodObj = null;	
 		List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
-		
+		if(data.trim().equalsIgnoreCase("Screen Print (1 color, 1 location only)")){
+			data = "Screen Print";
+		}
 		String[] imprintMethodValues = data.split(ApplicationConstants.CONST_DELIMITER_COMMA);
 		for (String imprintMethodName : imprintMethodValues) {
+			if(StringUtils.isEmpty(imprintMethodName)){
+				continue;
+			}
 			imprintMethodObj = new ImprintMethod();
 			String alias = "";
 			if(imprintMethodName.contains("Embroidery")){
@@ -345,6 +351,25 @@ public class ApparealProductAttributeParser {
 		}
 		return existingProduct;
 	}
+	public Product getExistingProductData(Product existingProduct,List<ImprintMethod> existingImprintMethods){
+		List<PriceGrid> newPriceGrids = new ArrayList<>();
+		List<PriceGrid> oldPriceGrid = existingProduct.getPriceGrids();
+		if(!CollectionUtils.isEmpty(oldPriceGrid)){
+			for (PriceGrid priceGrid : oldPriceGrid) {
+				   if(priceGrid.getIsBasePrice()){
+					   newPriceGrids.add(priceGrid);
+				   } else if(isImprintMethodUpcharge(priceGrid.getPriceConfigurations(),existingImprintMethods)){
+					   continue;
+				   } else {
+					   newPriceGrids.add(priceGrid);
+				   }
+			}
+			existingProduct.setPriceGrids(newPriceGrids);
+		} else {
+			return existingProduct;
+		}
+		return existingProduct;
+	}
 	private boolean isnewPriceGrid(List<PriceConfiguration> priceConfig){
 		 for (PriceConfiguration priceConfiguration : priceConfig) {
 			   if(priceConfiguration.getCriteria().equalsIgnoreCase("Material") ||
@@ -356,6 +381,26 @@ public class ApparealProductAttributeParser {
 		}
 		return false;
 		
+	}
+	/* Author      : Venkat
+	 * description : This method is ckecking imprint methods list of value is present in price configuration
+	 *                if value not present in price configuration it return false
+	 * 
+	*/
+	private boolean isImprintMethodUpcharge(List<PriceConfiguration> priceConfig,List<ImprintMethod> imprMethods){
+		 for (PriceConfiguration priceConfiguration : priceConfig) {
+			   if(priceConfiguration.getCriteria().equalsIgnoreCase("Imprint Method")){
+				   for (ImprintMethod imprintMethodValue : imprMethods) {
+					   if(priceConfiguration.getValue().contains(imprintMethodValue.getAlias())){
+						   return  false;
+					   }
+				}
+			   } else{
+				   return false;
+			   }
+		}
+		
+		 return true;
 	}
 	public List<String> getProductCategories(String categoryVal){
 		List<String> listOfCategories = new ArrayList<>();

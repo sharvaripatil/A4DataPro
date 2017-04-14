@@ -9,7 +9,7 @@
   PageRefresh.jsp
    </welcome-file>
    </welcome-file-list> -->
-	<display-name>ExcelConvertionTool</display-name>
+	<display-name>A4DataPro</display-name>
 	<!-- - Servlet that dispatches request to registered handlers (Controller 
 		implementations). -->
 	<servlet>

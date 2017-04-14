@@ -3,9 +3,7 @@ package com.a4tech.lookup.service;
 import java.util.List;
 
 import com.a4tech.lookup.model.Catalog;
-import com.a4tech.lookup.model.Themes;
 import com.a4tech.lookup.service.restService.LookupRestService;
-import com.a4tech.product.model.Theme;
 import com.a4tech.util.ApplicationConstants;
 
 public class LookupServiceData {
@@ -19,9 +17,10 @@ public class LookupServiceData {
 	public List<String>        lineNames 			= null;
 	public List<String>        tradeNames  			= null;
 	public static List<String> categories 			= null;
-	public static List<Catalog>       catalogs      = null;
-	public List<String>        themes  			= null;
-
+	public static List<Catalog> catalogs            = null;
+	public List<String>        themes  			    = null;
+    public static List<String> packages             = null;
+    
 	public  List<String> getImprintMethods(){
 		  if(imprintMethods == null){
 			  imprintMethods = lookupRestService.getImprintMethodData();
@@ -139,7 +138,22 @@ public class LookupServiceData {
     	 }
     	 return themes;
      }
-     
+     public boolean isTradeName(String tradeName){
+ 		if(tradeNames == null){
+ 			tradeNames = getTradeNames(tradeName);
+ 		}
+ 		if(tradeNames != null){
+ 			return tradeNames.contains(tradeName);
+ 		}
+ 		return false;
+ 	}
+     public List<String> getPackageValues(){
+    	 if(packages == null){
+    		 packages = lookupRestService.getPackages();
+    	 }
+    	 return packages;
+     }
+ 	
 	public LookupRestService getLookupRestService() {
 		return lookupRestService;
 	}
