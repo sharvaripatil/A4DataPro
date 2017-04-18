@@ -2,6 +2,7 @@ package com.a4tech.supplier.mapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -18,16 +19,23 @@ import org.springframework.util.StringUtils;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.FOBPoint;
+import com.a4tech.product.model.Image;
+import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 import parser.goldbond.GoldbondAttributeParser;
+import parser.goldbond.GoldbondPriceGridParser;
 
 public class GoldBondExcelMapping implements IExcelParser{
 	
@@ -36,7 +44,8 @@ public class GoldBondExcelMapping implements IExcelParser{
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
 	private GoldbondAttributeParser gbAttributeParser;
-    
+	private GoldbondPriceGridParser gbPriceGridParser;
+   
 	@Override
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
@@ -61,6 +70,10 @@ public class GoldBondExcelMapping implements IExcelParser{
 		// String listPrice = "";
 		// String priceQty  = "";
 		StringJoiner productDescription = new StringJoiner(" ");
+		StringJoiner impritnMethodPrice = new StringJoiner(",");
+		List<PriceGrid> listOfPriceGrids = new ArrayList<>();
+		StringBuilder imprintColors =  new StringBuilder();
+		StringBuilder imageValues =  new StringBuilder();
 		while (iterator.hasNext()) {
 			
 			try{
@@ -92,6 +105,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 							 productExcelObj.setDescription(desc);
 							    List<Color> listOfColor = gbAttributeParser.getProductColors(listOfColors.toString());
 							    productConfiguration.setColors(listOfColor);
+						        productExcelObj.setComplianceCerts(Arrays.asList("PROP 65"));
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -103,10 +117,13 @@ public class GoldBondExcelMapping implements IExcelParser{
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 							 	productDescription = new StringJoiner(" ");
+							 	impritnMethodPrice = new StringJoiner(",");
+							 	listOfPriceGrids = new ArrayList<>();
 							 	listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							    listOfColors    = new StringJoiner(ApplicationConstants.CONST_STRING_COMMA_SEP);
-								
+							    imprintColors =  new StringBuilder();
+							    imageValues =  new StringBuilder();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -151,7 +168,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 				case 11:
 				case 12:
 				case 13:
-				case 14:
+				case 14://Features
 					String description = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(description)){
 						description = description.replaceAll("[^a-zA-Z0-9%/-! ]", "");
@@ -492,380 +509,225 @@ public class GoldBondExcelMapping implements IExcelParser{
 						productConfiguration.setImprintSize(listOfImprintSizes);
 					}
 					  break;
-				case 133:
-					 
+				case 133: // related Imprint method upcharge price
+					String imprintMethodPrice = CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(imprintMethodPrice) && !imprintMethodPrice.equals("0")){
+						 impritnMethodPrice.add(imprintMethodPrice);
+					 }
 				    break;
 				case 134:
-					
-					
+					String imprintMethodDisCode = cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(imprintMethodDisCode)){
+						 impritnMethodPrice.add(imprintMethodDisCode);
+					 }
 				    break;
 					
-				case 135:
-				
-					
+				case 135:// it is related to additional color
+				 String setUpCharge = cell.getStringCellValue();
 					break;
 					
-				case 136: 
-				
-					
+				case 136: //Multi-Color Imprint - Old
 					break;
 					
-				case 137:
-					 
+				case 137://Max Imprint Colors
+					 // ignore as per feedback
 					   
 					break;
 					
 				case 138: 
-				
+				  
 					
 					break;
 					
 				case 139: // proof charge
 					//for pre-production proofs (as per comment)
+					 String proofCharge = cell.getStringCellValue();
+					   if(!StringUtils.isEmpty(proofCharge) && !proofCharge.equals("0")){
+						   // default proof charge: pre-productionProof
+						   List<Artwork> listOfArtwork = gbAttributeParser.getProductArtwork("PRE-PRODUCTION PROOF");
+						   productConfiguration.setArtwork(listOfArtwork);
+								listOfPriceGrids = gbPriceGridParser.getUpchargePriceGrid("1", proofCharge, "Z", "Artwork & Proofs",
+										false, "USD", "PRE-PRODUCTION PROOF", "Artwork Charge", "Other", 1,
+										listOfPriceGrids,"","");
+					   }
 					break;
 				case 140: // reverse side imprint
-					 
-					
+					 String addLocation = cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(addLocation)){
+						 productExcelObj.setPriceGrids(listOfPriceGrids);
+						 productExcelObj = gbAttributeParser.getAdditonalLocaAndUpCharge(addLocation, productExcelObj);
+						 listOfPriceGrids = productExcelObj.getPriceGrids();
+					 }
 					break;
-				case 141:
+				case 141://Assembly
+					String assembly = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(assembly)){
+						 productExcelObj.setPriceGrids(listOfPriceGrids);
+						 productExcelObj = gbAttributeParser.getItemAssembledAndUpcharge(assembly.trim(), productExcelObj);
+						 listOfPriceGrids = productExcelObj.getPriceGrids();
+					}
 					 break;
-				case 142:
-					
+				case 142://produtionTime
+					String prdTime = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(prdTime)){
+						List<ProductionTime> listOfProductionTime = gbAttributeParser.getProductionTime(prdTime);
+						productConfiguration.setProductionTime(listOfProductionTime);
+					}
 					  break;
 				case 143:
-					 
+					 String rushVal = cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(rushVal)){
+						 productExcelObj.setPriceGrids(listOfPriceGrids);
+						 productExcelObj = gbAttributeParser.getRushTime(rushVal, productExcelObj); 
+						 listOfPriceGrids = productExcelObj.getPriceGrids();
+					 }
 				    break;
-				case 144:
-					
-					
+				case 144://packaging
+					String packVal = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(packVal)){
+						 productExcelObj.setPriceGrids(listOfPriceGrids);
+						productExcelObj = gbAttributeParser.getProductPackaging(packVal, productExcelObj);
+						listOfPriceGrids = productExcelObj.getPriceGrids();
+					}
 				    break;
 					
-				case 145:
-				
-					
+				case 145://ShippingWt
+				    // there is no data for this column
 					break;
-					
-				case 146: 
-				
-					
+				case 146: //Prop65Label
+					// we need to set value end of the mapping since there is no data 
+					// but as per feed back we need to "Prop 65 would be checked yes in Certifications and Compliance"
 					break;
-					
-				case 147:
-					 
-					   
+				case 147://Pencil Sharp
+					 String pencilSharp =cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(pencilSharp)){
+						productExcelObj.setPriceGrids(listOfPriceGrids);
+						productExcelObj = gbAttributeParser.getpencilSharpForOption(pencilSharp, productExcelObj);
+						listOfPriceGrids = productExcelObj.getPriceGrids();	
+					 }
 					break;
-					
 				case 148: 
-				
-					
-					break;
-					
-				case 149: 
-					break;
-				case 150: 
-					 
-					
-					break;
-				case 151:
-					 break;
-				case 152:
-					
-					  break;
-				case 153:
-					 
-				    break;
-				case 154:
-					
-					
-				    break;
-				case 155:
-				
-					
-					break;
-				case 156: 
-				
-					
-					break;
-				case 157:
-					 
-					   
-					break;
-				case 158: 
-				
-					
-					break;
-				case 159: 
-					break;
-				case 160: 
-					 
-					
-					break;
-				case 161:
-					 break;
-				case 162:
-					
-					  break;
-				case 163:
-					 
-				    break;
-				case 164:
-					
-					
-				    break;
-					
-				case 165:
-				
-					
-					break;
-					
-				case 166: 
-				
-					
-					break;
-					
-				case 167:
-					 
-					   
-					break;
-					
-				case 168: 
-				
-					
-					break;
-					
-				case 169: 
-					break;
-				case 170: 
-					 
-					
-					break;
-				case 171:
-					 break;
-				case 172:
-					
-					  break;
-				case 173:
-					 
-				    break;
-				case 174:
-					
-					
-				    break;
-					
-				case 175:
-				
-					
-					break;
-					
-				case 176: 
-				
-					
-					break;
-					
-				case 177:
-					 
-					   
-					break;
-					
-				case 178: 
-				
-					
-					break;
-					
-				case 179: 
-					break;
-				case 180: 
-					 
-					
-					break;
-				case 181:
-					 break;
-				case 182:
-					
-					  break;
-				case 183:
-					 
-				    break;
-				case 184:
-					
-					
-				    break;
-					
-				case 185:
-				
-					
-					break;
-					
-				case 186: 
-				
-					
-					break;
-					
-				case 187:
-					 
-					   
-					break;
-					
-				case 188: 
-				
-					
-					break;
-					
-				case 189: 
-					break;
-				case 190: 
-					 
-					
-					break;
-				case 191:
-					 break;
-				case 192:
-					
-					  break;
-				case 193:
-					 
-				    break;
-				case 194:
-					
-					
-				    break;
-					
-				case 195:
-				
-					
-					break;
-					
-				case 196: 
-				
-					
-					break;
-					
-				case 197:
-					 
-					   
-					break;
-					
-				case 198: 
-				
-					
-					break;
-					
-				case 199: 
-					break;
-				case 200: 
-					 
-					
-					break;
-				case 201:
-					 break;
-				case 202:
-					
-					  break;
-				case 203:
-					 
-				    break;
-				case 204:
-					
-					
-				    break;
-					
-				case 205:
-				
-					
-					break;
-					
-				case 206: 
-				
-					
-					break;
-					
-				case 207:
-					 
-					   
-					break;
-					
-				case 208: 
-				
-					
-					break;
-					
-				case 209: 
-					break;
-				case 210: 
-					 
-					
-					break;
-				case 211:
-				   
-					break;
-					
-				case 212:
-					break;
-				case 213:
-				
-					
-					 break;
-				case 214:
-				
-					
-			     break;
-				case 215:
-		
-					break;
-				case 216:
-		
-				
-					break;
-				case 217:
-			
-				
-					break;
-				case 218:
-					break;
-				case 219: 
-					break;
-				case 220:
-					break;
-				case 221:
-					
-					break;
-					
-				case 222: 
-					break;
-				case 223:
-					break;
-				case 224:
-					
-					break;
-				case 225: 
-					
-					
-					
-					break;
-					
-				case 226:
-					 break;
-				case 227:
+				  String imprintMethodVal = cell.getStringCellValue();
+				  if(!StringUtils.isEmpty(imprintMethodVal)){
 					  
+					  impritnMethodPrice.add(imprintMethodVal);// used to upcharge 
+				  }
+					break;
+				case 149: //Fob Point
+					String fobVal = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(fobVal)){
+						List<FOBPoint> listOfFobPoint = gbAttributeParser.getFobPoint(fobVal, accessToken);
+						productExcelObj.setFobPoints(listOfFobPoint);
+					}
+					break;
+				case 150://Plate Charge
+					// There is no data for this column
+					break;
+				case 151: //Second Pole Imprint
+					// waiting for client feed back since it is difficult to processing values in this column
+					 break;
+				case 152://Oxidation
+					// There is no data for this column
 					  break;
+				case 153://origin
+					// there is no data
+				    break;
+				case 154://Materials
+					String material = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(material)){
+						productExcelObj.setProductConfigurations(productConfiguration);
+						productExcelObj = gbAttributeParser.getProductMaterial(material, productExcelObj);
+						productConfiguration = productExcelObj.getProductConfigurations();
+					}
+				    break;
+				case 155://imprint colors
+				case 156: 
+				case 157:	
+				case 158: 
+				case 159: 	
+				case 160: 
+				case 161:
+				case 162:
+				case 163:
+				case 164:
+				case 165:
+				case 166: 
+				case 167:
+				case 168: 
+				case 169: 
+				case 170: 
+				case 171:
+				case 172:
+				case 173:
+				case 174:
+				case 175:
+				case 176: 
+				case 177:
+				case 178: 
+				case 179: 
+				case 180: 
+				case 181:
+				case 182:
+				case 183:
+				case 184:
+				case 185:
+				case 186: 
+				case 187:
+				case 188: 
+				case 189:// end Imprint colors 
+				String imprintColor = cell.getStringCellValue();
+				if(!StringUtils.isEmpty(imprintColor)){
+					imprintColors.append(imprintColor).append(",");
+				}
+				break;
+				/*case 190: 
+				case 191:// Imprint method values 0,1,2 as per client feedback no need to process those values ,
+				case 192: // ignore
+				case 193:
+				case 194:
+				case 195:
+				case 196: 
+				case 197:
+				case 198: 
+				case 199: 
+					break;*/
+				case 200: //Price include
+					break;
+				case 201: // images start
+				case 202:
+				case 203:
+				case 204:	
+				case 205:
+				case 206: 
+				case 207:
+				case 208: 
+				case 209: 
+				case 210: 
+				case 211:
+				case 212:
+				case 213:
+				case 214:
+				case 215:
+				case 216:
+				case 217:
+				case 218:
+				case 219:	
+				case 220:
+				case 221:
+				case 222: 
+				case 223:
+				case 224:
+				case 225: 
+				case 226:
+				case 227: 
 				case 228:
-					 
-				    break;
 				case 229:
-					
-					
-				    break;
-					
-				case 230:
-					
-					
-					break;
-				case 231:
-					
-					break;
-					
-				
-							
+				case 230: // image end
+					String img = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(img)){
+						imageValues.append(img).append(",");
+					}
+					break;	
 			}  // end inner while loop
 					 
 		}
@@ -873,6 +735,15 @@ public class GoldBondExcelMapping implements IExcelParser{
 				String qurFlag = "n"; // by default for testing purpose
 				listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+			    if(!StringUtils.isEmpty(imprintColors)){
+			    	 ImprintColor imprintColorValues = gbAttributeParser.getImprintColors(imprintColors.toString());
+					 productConfiguration.setImprintColors(imprintColorValues);
+			    }
+			    if(!StringUtils.isEmpty(imageValues)){
+			    	List<Image> listOfImages = gbAttributeParser.getImages(imageValues.toString());
+				    productExcelObj.setImages(listOfImages);
+			    }
+			    
 			}catch(Exception e){
 				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"at column number(increament by 1):"+columnIndex);		 
 				ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet: "
@@ -886,6 +757,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 		 productConfiguration.setColors(listOfColor);
 		 String desc = finalDescriptionValue(productExcelObj.getDescription(), productDescription.toString());
 		 productExcelObj.setDescription(desc);
+		 productExcelObj.setComplianceCerts(Arrays.asList("PROP 65"));
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -953,6 +825,14 @@ public class GoldBondExcelMapping implements IExcelParser{
 	public void setGbAttributeParser(GoldbondAttributeParser gbAttributeParser) {
 		this.gbAttributeParser = gbAttributeParser;
 	}
+	 
+		public GoldbondPriceGridParser getGbPriceGridParser() {
+			return gbPriceGridParser;
+		}
+
+		public void setGbPriceGridParser(GoldbondPriceGridParser gbPriceGridParser) {
+			this.gbPriceGridParser = gbPriceGridParser;
+		}
 
 
 	

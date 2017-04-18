@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
@@ -43,7 +44,7 @@ public class GoldbondPriceGridParser {
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(prices, quantity, discountCode);
+			listOfPrice = getPrices(prices, quantity, discountCode,"");
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
@@ -60,7 +61,7 @@ public class GoldbondPriceGridParser {
 
 	}
 
-	public List<Price> getPrices(String[] prices, String[] quantity, String[] disCodes) {
+	public List<Price> getPrices(String[] prices, String[] quantity, String[] disCodes,String priceUnitName) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
 	try{
@@ -77,8 +78,17 @@ public class GoldbondPriceGridParser {
 			}
 			price.setPrice(prices[PriceNumber]);
 			price.setDiscountCode(disCodes[PriceNumber]);
-			priceUnit
-					.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
+			if(priceUnitName.equalsIgnoreCase("dozen")){
+				priceUnit.setName("Dozen");
+				priceUnit.setItemsPerUnit("12");
+			} else if(priceUnitName.equalsIgnoreCase("case")){
+				priceUnit.setName("Case");
+				priceUnit.setItemsPerUnit("16");
+			}
+			else{
+				priceUnit
+				.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
+			}
 			price.setPriceUnit(priceUnit);
 			listOfPrices.add(price);
 		}
@@ -88,7 +98,7 @@ public class GoldbondPriceGridParser {
 		return listOfPrices;
   }
 
-	public List<PriceConfiguration> getConfigurations(String criterias,String value) {
+	public List<PriceConfiguration> getConfigurations(String criterias,String value,String optionName) {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
 		PriceConfiguration configs = null;
 		try{
@@ -99,12 +109,18 @@ public class GoldbondPriceGridParser {
 					configs = new PriceConfiguration();
 					configs.setCriteria(criterias);
 					configs.setValue(Arrays.asList((Object) Value));
+					if(!StringUtils.isEmpty(optionName)){
+						configs.setOptionName(optionName);
+					}
 					priceConfiguration.add(configs);
 				}
 			}else{
 				configs = new PriceConfiguration();
 				configs.setCriteria(criterias);
 				configs.setValue(Arrays.asList((Object) value));
+				if(!StringUtils.isEmpty(optionName)){
+					configs.setOptionName(optionName);
+				}
 				priceConfiguration.add(configs);
 			}
 		}catch(Exception e){
@@ -114,10 +130,10 @@ public class GoldbondPriceGridParser {
 	}
 
 	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
-			String discounts, String upChargeCriterias, String qurFlag,
+			String discounts, String upChargeCriterias, boolean qurFlag,
 			String currency, String upChargeValue, String upChargeType,
 			String upchargeUsageType, Integer upChargeSequence,
-			List<PriceGrid> existingPriceGrid) {
+			List<PriceGrid> existingPriceGrid,String optionName,String priceUnitName) {
 		try{
 		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
@@ -130,9 +146,7 @@ public class GoldbondPriceGridParser {
 
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(upChargeValue);
-		priceGrid
-				.setIsQUR((qurFlag.equalsIgnoreCase("N")) ? ApplicationConstants.CONST_BOOLEAN_FALSE
-						: ApplicationConstants.CONST_BOOLEAN_TRUE);
+		priceGrid.setIsQUR(qurFlag);
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);
 		priceGrid.setUpchargeType("Other");
@@ -140,14 +154,14 @@ public class GoldbondPriceGridParser {
 		priceGrid.setServiceCharge("Required");
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(upChargePrices, upChargeQuantity, upChargeDiscount);
+			listOfPrice = getPrices(upChargePrices, upChargeQuantity, upChargeDiscount,priceUnitName);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
 
 		priceGrid.setPrices(listOfPrice);
 		if (upChargeCriterias != null && !upChargeCriterias.isEmpty()) {
-			configuration = getConfigurations(upChargeCriterias,upChargeValue);
+			configuration = getConfigurations(upChargeCriterias,upChargeValue,optionName);
 		}
 		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
