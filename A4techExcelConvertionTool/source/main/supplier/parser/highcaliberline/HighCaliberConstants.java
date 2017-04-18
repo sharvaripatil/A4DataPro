@@ -1,21 +1,17 @@
 package parser.highcaliberline;
 
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 public class HighCaliberConstants {
 	public static Map<String, String> HCLCOLOR_MAP =new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);//new HashMap<String, String>();
+	@SuppressWarnings("unused")
 	private static Logger _LOGGER = Logger.getLogger(HighCaliberConstants.class);
 
-    static SessionFactory sessionFactory;
+    SessionFactory sessionFactory;
 	//public static Map<String, String> COLOR_MAP =new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);//new HashMap<String, String>();
 /*	public static Map<String, String>  Colormap(){
 		

@@ -1,25 +1,23 @@
-package parser.wholesale;
+package parser.primeline;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
-
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
+import com.a4tech.product.model.Value;
 import com.a4tech.util.ApplicationConstants;
-import com.a4tech.util.LookupData;
-
-public class WholeSalePriceGridParser  {
-	private Logger              _LOGGER       =  Logger.getLogger(WholeSalePriceGridParser.class);
+public class PrimeLinePriceGridParser {
+	
+	private Logger              _LOGGER       =  Logger.getLogger(PrimeLinePriceGridParser.class);
 	public List<PriceGrid> getPriceGrids(String listOfPrices, String listOfQuan, String discountCodes,String currency, String priceInclude,
 			 boolean isBasePrice,String qurFlag, String priceName, 
 			 String criterias,Integer sequence,String upChargeType,String upchargeUsageType,
-			 List<PriceGrid> existingPriceGrid) 
+			 List<PriceGrid> existingPriceGrid)//,Product productExcelObj) 
 			{
 		try{
 			if(CollectionUtils.isEmpty(existingPriceGrid)){
@@ -36,7 +34,13 @@ public class WholeSalePriceGridParser  {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		
 		priceGrid.setCurrency(currency);
-		priceGrid.setDescription(priceName);
+		String tempDesc=priceName;
+		if(tempDesc.contains("@@@@@")){
+			String strTempp[]=tempDesc.split("@@@@@");
+			priceGrid.setDescription(strTempp[1]);
+		}else{
+			priceGrid.setDescription(priceName);
+		}
 		priceGrid.setPriceIncludes(priceInclude);
 		priceGrid
 				.setIsQUR(qurFlag.equalsIgnoreCase(ApplicationConstants.CONST_STRING_FALSE) ? ApplicationConstants.CONST_BOOLEAN_FALSE
@@ -110,42 +114,40 @@ public class WholeSalePriceGridParser  {
 	
 	public List<PriceConfiguration> getConfigurations(String criterias) {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
-		String[] config = null;
-		PriceConfiguration configs = null;
+		//String[] config = null;
+		PriceConfiguration configs = new PriceConfiguration();
 		try{
-		if (criterias
-				.contains(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID)) {
-			String[] configuraions = criterias
-					.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-			for (String criteria : configuraions) {
-				PriceConfiguration configuraion = new PriceConfiguration();
-				config = criteria.split(ApplicationConstants.CONST_DELIMITER_COLON);
-				String criteriaValue = LookupData.getCriteriaValue(config[0]);
-				configuraion.setCriteria(criteriaValue);
-				if (config[1].contains(ApplicationConstants.CONST_STRING_COMMA_SEP)) {
-					String[] values = config[1].split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-					for (String Value : values) {
-						configs = new PriceConfiguration();
-						configs.setCriteria(criteriaValue);
-						configs.setValue(Arrays.asList((Object) Value));
-						priceConfiguration.add(configs);
+				String criteriaSplitter[]=criterias.split(":");
+				String criteriaNameValue =criteriaSplitter[0] ;
+				String criteriaValue=criteriaSplitter[1];
+				
+					if(criteriaNameValue.contains("@@@@@")){
+					String tempName1[]=criteriaNameValue.split("@@@@@");
+					configs.setCriteria(tempName1[0].trim());
+					}else {
+						configs.setCriteria(criteriaNameValue.trim());
 					}
-				} else {
-					configs = new PriceConfiguration();
-					configs.setCriteria(criteriaValue);
-					configs.setValue(Arrays.asList((Object) config[1]));
-					priceConfiguration.add(configs);
-				}
-			}
-
-		} else {
-			configs = new PriceConfiguration();
-			config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
-			//String criteriaValue = LookupData.getCriteriaValue(config[0]);
-			configs.setCriteria(config[0]);
-			configs.setValue(Arrays.asList((Object) config[1]));
-			priceConfiguration.add(configs);
-		}
+						if(criteriaNameValue.toUpperCase().equals("SIZE")){
+							List<Object> valList=new ArrayList<Object>();
+							Value valObj=new Value(); 
+							criteriaValue=criteriaValue.replaceAll("GB", "");
+							valObj.setValue(criteriaValue.trim());
+							valObj.setUnit("GB");
+							valList.add(valObj);
+							configs.setValue(valList);
+							//configs.setValue(Arrays.asList((Object) Value));
+						}else if(criteriaNameValue.toUpperCase().contains("OPTION")){
+							if(criteriaNameValue.contains("@@@@@")){
+							String tempName[]=criteriaNameValue.split("@@@@@");
+							configs.setOptionName(tempName[1]);
+							}else {
+								configs.setOptionName(criteriaNameValue.trim());
+							}
+							configs.setValue(Arrays.asList((Object) criteriaValue));
+						}else{
+							configs.setValue(Arrays.asList((Object) criteriaValue));
+						}
+						priceConfiguration.add(configs);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing PriceGrid PriceConfiguration: "+e.getMessage());
 		}

@@ -10,7 +10,6 @@ import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
-import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.LookupData;
 
@@ -146,7 +145,7 @@ public class HighCaliberPriceGridParser {
 		List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
 		try{
 			Integer sequence = 1;
-			List<PriceConfiguration> configuration = null;
+			//List<PriceConfiguration> configuration = null;
 			PriceGrid priceGrid = new PriceGrid();
 			priceGrid.setIsBasePrice(true);
 			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);

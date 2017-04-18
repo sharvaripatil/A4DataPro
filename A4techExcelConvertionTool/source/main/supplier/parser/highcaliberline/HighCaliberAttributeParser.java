@@ -1,17 +1,9 @@
 package parser.highcaliberline;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
-
-import com.a4tech.product.broberry.mapping.BroberryExcelMapping;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Dimensions;

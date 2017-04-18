@@ -395,6 +395,7 @@
  		<property name="hcLineExcelMapping" ref="highCaliberLineExcelMappingId"/>
 		<property name="wholeSaleExcelMapping" ref="wholeSaleExcelMappingId"/>
 		<property name="goldBandExcelMapping" ref="goldBondExcelMappingId"/>
+		<property name="primeLineExcelMapping" ref="primeLineExcelMappingId"/>
 		<property name="proGolfMapping" ref="proGolfMappingId"></property>
 		<property name="milestoneExcelMapping" ref="milestoneExcelMappingId"/>	
 		<property name="pslMapping" ref="pslMappingId"/>	
@@ -592,6 +593,45 @@
 		class="parser.wholesale.WholeSalePriceGridParser" autowire="byName">
 	</bean>
         <!-- supplier WholeSale configuration end --> 
+        
+        <!-- supplier PrimeLine configuration start -->
+        <bean id="primeLineExcelMappingId" class="com.a4tech.supplier.mapper.PrimeLineExcelMapping" autowire="byName">
+     <property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+      <property name="primeLineColorTabParser" ref="primeLineColorTabParserId"/>
+      <property name="primeLineAttributeParser" ref="primeLineAttributeParserId"/>
+      <property name="primeLinePriceGridParser" ref="primeLinePriceGridParserId"/>
+      <property name="primeLineFeatureTabParser" ref="primeLineFeatureTabParserId"/>
+      <property name="primeLineImprintTabParser" ref="primeLineImprintTabParserId"/>
+     </bean>
+     <bean id="primeLineColorTabParserId" name="primeLineColorTabParserObj"
+		class="parser.primeline.PrimeLineColorTabParser" autowire="byName">
+		<property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+	</bean>
+	  <bean id="primeLineAttributeParserId" name="primeLineAttributeParserObj"
+		class="parser.primeline.PrimeLineAttributeParser" autowire="byName">
+		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+	</bean>
+	<bean id="primeLinePriceGridParserId" name="primeLinePriceGridParserObj"
+		class="parser.primeline.PrimeLinePriceGridParser" autowire="byName">
+		</bean>
+		<bean id="primeLineFeatureTabParserId" name="primeLineFeatureTabParserObj"
+		class="parser.primeline.PrimeLineFeatureTabParser" autowire="byName">
+		 <property name="productDaoObj" ref="productDao"/>
+		 <property name="primeLineAttriObj" ref="primeLineAttributeParserId"/>
+	</bean>
+	
+	
+		<bean id="primeLineImprintTabParserId" name="primeLineImprintTabParserObj"
+		class="parser.primeline.PrimeLineImprintTabParser" autowire="byName">
+		 <property name="productDaoObj" ref="productDao"/>
+		 <property name="primeLineAttriObj" ref="primeLineAttributeParserId"/>
+		 <property name="primeLinePriceGridParser" ref="primeLinePriceGridParserId"/>
+	</bean>
+        <!-- supplier PrimeLine configuration end --> 
 
 
      <!-- supplier Milestone configuration start -->
