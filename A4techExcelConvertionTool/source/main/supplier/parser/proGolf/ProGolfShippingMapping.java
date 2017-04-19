@@ -17,11 +17,15 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Size;
+import com.a4tech.product.model.Value;
+import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
@@ -100,6 +104,9 @@ public class ProGolfShippingMapping {
 									if(distributorOnlyComments.contains("|")){
 										distributorOnlyComments = distributorOnlyComments.replaceAll("\\|", "");
 										int noOfCounts = StringUtils.countOccurrencesOf(distributorOnlyComments, "Minimum");
+										if(noOfCounts >= 2){
+											distributorOnlyComments = distributorOnlyComments.replaceFirst("Minimum", "");
+										}
 										existingProduct.setDistributorOnlyComments(distributorOnlyComments);
 									}
 									if (!StringUtils.isEmpty(existingProduct.getExternalProductId())) {
@@ -188,6 +195,10 @@ public class ProGolfShippingMapping {
 							shippingEstamationValues.toString(), shippingWeight, shippingDimentionUnits,
 							shippingWeightUnit);
 				//ProductConfigurations existingConfig = existingProduct.getProductConfigurations();
+					if(productConfigObj.getSizes() == null){
+						Size productSize = getProductSize(sizes.toString());
+						productConfigObj.setSizes(productSize);
+					}
 					productConfigObj.setShippingEstimates(shippingEstimObj);
 				//existingProduct.setProductConfigurations(existingConfig);
 				
@@ -310,6 +321,33 @@ public class ProGolfShippingMapping {
 	 // priceGrid.setPriceConfigurations(new ArrayList<>());
 	  listOfPriceGrid.add(priceGrid);
 	  return listOfPriceGrid;
+  }
+  private Size getProductSize(String val){
+	  Size sizeObj = new Size();
+	  Dimension dimentionObj = new Dimension();
+	  List<Values> listOfValues = new ArrayList<>();
+	  Values valuesObj = new Values();
+	  List<Value> listOfValue = new ArrayList<>();
+	  Value valueObj = null;
+	  String[] sizeVals = CommonUtility.getValuesOfArray(val, ",");
+	  for (int sizeIndex = 0; sizeIndex < sizeVals.length; sizeIndex++) {
+		  valueObj = new Value();
+		  if(sizeIndex == 0){
+			  valueObj.setAttribute("Length");
+		  } else if(sizeIndex == 1){
+			  valueObj.setAttribute("Width");
+		  } else if(sizeIndex == 2){
+			  valueObj.setAttribute("Height");
+		  }
+		  valueObj.setUnit("in");
+		  valueObj.setValue(sizeVals[sizeIndex]);
+		  listOfValue.add(valueObj);
+	}
+	  valuesObj.setValue(listOfValue);
+	  listOfValues.add(valuesObj);
+	  dimentionObj.setValues(listOfValues);
+	 sizeObj.setDimension(dimentionObj);
+	 return sizeObj;
   }
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;

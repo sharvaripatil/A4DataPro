@@ -362,7 +362,12 @@ public class CommonUtility {
 	 * 
 	 */
 	 public static boolean isComboColor(String colorValue){
-	    	String[] colorVals = CommonUtility.getValuesOfArray(colorValue, ",");
+	    	String[] colorVals = null;
+	    	if(colorValue.contains(",")){
+	    		colorVals = CommonUtility.getValuesOfArray(colorValue, ",");
+	    	} else if(colorValue.contains("/")){
+	    		colorVals = CommonUtility.getValuesOfArray(colorValue, "/");
+	    	}
 	    	String mainColor       = null;
 	    	String secondaryColor  = null;
 	    	String thirdColor      = null;

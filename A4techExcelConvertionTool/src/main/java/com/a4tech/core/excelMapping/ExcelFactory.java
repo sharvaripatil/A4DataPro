@@ -104,13 +104,14 @@ public class ExcelFactory {
 			   return goldBandExcelMapping;
 		   }else if(name.equalsIgnoreCase("prime") || name.equals("79530")){
 			   return primeLineExcelMapping;
-
 		   }
 	      else if(name.equalsIgnoreCase("psl") || name.equals("75613")){
-		   return pslMapping;
+		      return pslMapping;
 	      }else if(name.equalsIgnoreCase("milestone") || name.equals("71173")){
   			   return milestoneExcelMapping;
-	      }
+	      } else if(name.equalsIgnoreCase("proGolf") || name.equals("79680")){
+ 			   return proGolfMapping;
+	      } 
 		   
 		   
 		return null;

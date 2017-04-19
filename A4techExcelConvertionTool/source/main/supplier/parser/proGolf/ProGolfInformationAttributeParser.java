@@ -17,6 +17,7 @@ import com.a4tech.product.model.AvailableVariations;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Configurations;
+import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.ImprintLocation;
@@ -377,10 +378,7 @@ public class ProGolfInformationAttributeParser {
 			}*/
 		}
 		else if(value.contains("Minimum")){
-			distributorComments = distributorComments.replaceAll("\\|", "");
-			if(distributorComments.contains("Minimum")){
-				value = value.replaceAll("Minimum", "");
-			}
+			value = value.substring(value.indexOf("|") + 1);
 			distributorComments = CommonUtility.appendStrings(distributorComments, value, " ");
 		} else if(value.contains("Blank") || value.contains("Imprint Method")){
 			List<ImprintMethod> listOfImprintMethods = null;
@@ -858,6 +856,7 @@ public class ProGolfInformationAttributeParser {
 		    	listOfPriceConfig.add(config1);
 		    	listOfPriceConfig.add(config2);
 		    	priceGrid.setPriceConfigurations(listOfPriceConfig);
+		    	priceGrid.setDescription(option1);
 		    	newPriceGrid.add(priceGrid);
 		    } else if(priceGrid.getIsBasePrice() && priceGrid.getDescription().equalsIgnoreCase("QUR grid")) {
 		    	List<PriceConfiguration> listOfPriceConfig = new ArrayList<>();
@@ -866,6 +865,7 @@ public class ProGolfInformationAttributeParser {
 		    	listOfPriceConfig.add(config1);
 		    	listOfPriceConfig.add(config2);
 		    	priceGrid.setPriceConfigurations(listOfPriceConfig);
+		    	priceGrid.setDescription(option2);
 		    	newPriceGrid.add(priceGrid);
 		    }
 		    else {
@@ -883,6 +883,37 @@ public class ProGolfInformationAttributeParser {
 		  config.setOptionName(optionName);
 	  }
 	  return config;
+  }
+  public Size getProductSizeArc(String val){
+	  Size sizeObj = new Size();
+	  Dimension dimentionObj = new Dimension();
+	  List<Values> listOfValues = new ArrayList<>();
+	  Values valuesObj = new Values();
+	  List<Value> listOfValue = new ArrayList<>();
+	  Value valueObj = new Value();
+	  valueObj.setAttribute("Arc");
+	  valueObj.setUnit("in");
+	  valueObj.setValue(val);
+	  /*String[] sizeVals = CommonUtility.getValuesOfArray(val, ",");
+	  for (int sizeIndex = 0; sizeIndex < sizeVals.length; sizeIndex++) {
+		  valueObj = new Value();
+		  if(sizeIndex == 0){
+			  valueObj.setAttribute("Length");
+		  } else if(sizeIndex == 1){
+			  valueObj.setAttribute("Width");
+		  } else if(sizeIndex == 2){
+			  valueObj.setAttribute("Height");
+		  }
+		  valueObj.setUnit("in");
+		  valueObj.setValue(sizeVals[sizeIndex]);
+		  listOfValue.add(valueObj);
+	}*/
+	  listOfValue.add(valueObj);
+	  valuesObj.setValue(listOfValue);
+	  listOfValues.add(valuesObj);
+	  dimentionObj.setValues(listOfValues);
+	 sizeObj.setDimension(dimentionObj);
+	 return sizeObj;
   }
 	public LookupServiceData getLookupServiceData() {
 		return lookupServiceData;

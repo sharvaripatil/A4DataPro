@@ -221,6 +221,15 @@ public class ProGolfProductInformationMapping {
 								productConfigObj.setSizes(sizes);
 							}
 							break;
+						case "ATTR_Arc":
+							String sizeArc = cell.getStringCellValue();
+							if(!StringUtils.isEmpty(sizeArc)){
+								if(sizeArc.contains("\"")){
+									sizeArc = sizeArc.replaceAll("\"", "");
+								}
+								Size sizes = proInfoAttributeParser.getProductSizeArc(sizeArc.trim());
+								productConfigObj.setSizes(sizes);
+							}
 						case "ATTR_Imprint_Color":
 							String imprintColor = cell.getStringCellValue();
 							if (imprintColor.contains("PMS Match at No Charge")) {
@@ -424,14 +433,19 @@ public class ProGolfProductInformationMapping {
 		value = value.replaceAll("&bull;","");
 		if(value.contains(".<br />")){
 			value = value.replaceAll("<br />"," ");
+		} else if(value.contains(". <br />")){
+			value = value.replaceAll("<br />"," ");
 		} else if(value.contains("<br />.")){
 			value = value.replaceAll("<br />"," ");
+		} else if(value.contains("<br /> .")){
+			value = value.replaceAll("<br />"," ");
 		} else if(value.contains("<br />")){
-			value = value.replaceAll("<br />",". ");
+			value = value.replaceAll("<br />",".");
 		}
 		value = value.replaceAll("\\<.*?\\>", "");
 		value = value.replaceAll("\\|", "");
 		value = value.replaceAll("\n", ". ");
+		value =  value.replaceAll("\\.+", ".");
 		value = CommonUtility.getStringLimitedChars(value, 800);
 		return value;
 	}
