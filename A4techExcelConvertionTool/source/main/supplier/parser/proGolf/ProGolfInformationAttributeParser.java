@@ -234,28 +234,6 @@ public class ProGolfInformationAttributeParser {
 							colorObj.setAlias(colorName);
 						}
 					}
-					/*List<Combo> listOfCombo = null;
-					String[] comboColors = CommonUtility.getValuesOfArray(colorName,
-							ApplicationConstants.CONST_DELIMITER_FSLASH);
-					String colorFirstName = ProGolfColorMapping.getColorGroup(comboColors[0].trim());
-					colorObj.setName(colorFirstName == null?"Other":colorFirstName);
-					int combosSize = comboColors.length;
-					if (combosSize == ApplicationConstants.CONST_INT_VALUE_TWO) {
-						String colorComboFirstName = ProGolfColorMapping.getColorGroup(comboColors[1].trim());
-						colorComboFirstName = colorComboFirstName == null?"Other":colorComboFirstName;
-						listOfCombo = getColorsCombo(colorComboFirstName, ApplicationConstants.CONST_STRING_EMPTY,
-								combosSize);
-					} else{
-						String colorComboFirstName = ProGolfColorMapping.getColorGroup(comboColors[1].trim());
-						colorComboFirstName = colorComboFirstName == null?"Other":colorComboFirstName;
-						
-						String colorComboSecondName = ProGolfColorMapping.getColorGroup(comboColors[2].trim());
-						colorComboSecondName = colorComboSecondName == null?"Other":colorComboSecondName;
-						listOfCombo = getColorsCombo(colorComboFirstName,colorComboSecondName, combosSize);
-					}
-					String alias = colorName.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH, "-");
-					colorObj.setAlias(alias);
-					colorObj.setCombos(listOfCombo);*/
 					
 				} else {
 					colorGroup = ApplicationConstants.CONST_VALUE_TYPE_OTHER;
@@ -371,11 +349,6 @@ public class ProGolfInformationAttributeParser {
 			List<ImprintSize> listOfImprintSize = getImprintSizes(value, productConfig.getImprintSize());
 			productConfig.setImprintSize(listOfImprintSize);
 		} else if(value.contains("Ball Type")){
-			List<String> optionVals = getListOfOptionValues(productConfig.getOptions());
-			/*for (String optionVal : optionVals) {
-				priceGrids = proGolfPriceGridParser.getBasePriceGrid("", "", "", "USD", "", true, true, optionVal,
-						"PROP:"+optionVal, priceGrids, "", "Golf Ball Model");
-			}*/
 		}
 		else if(value.contains("Minimum")){
 			value = value.substring(value.indexOf("|") + 1);
@@ -424,13 +397,6 @@ public class ProGolfInformationAttributeParser {
 		existingProduct.setDistributorOnlyComments(distributorComments);
 		existingProduct.setPriceGrids(priceGrids);
 		return existingProduct;
-	}
-	private String removeTrailData(String data,String specialCharacters){
-		data = data.replaceFirst(specialCharacters, "");//".*:"
-		if(data.contains("|")){
-			 data = data.substring(data.indexOf("|") + 1);
-		}
-		return data;
 	}
 	private List<ProductionTime> getProductionTime(String[] productionTimeValues,List<ProductionTime> existingProductionTime){
 		ProductionTime productionTimeObj = null;
@@ -651,10 +617,6 @@ public class ProGolfInformationAttributeParser {
 		return listOfFobPoint;
 	}
 	public Size getShippingProductSize(String value,String sizeUnit,Size existingSizes){
-		// no need to require this method put on hold
-		//Dimension existingDimension = existingSizes.getDimension();
-		//List<Values> existingValues = existingDimension.getValues();
-		
 		return existingSizes;
 	}
 	public RushTime getProductRushTime(String rushTime,RushTime existingRushTime){
@@ -726,8 +688,7 @@ public class ProGolfInformationAttributeParser {
 		List<Object> listOfChild = null;
 		for (Map.Entry<String, String> colorOptionEntry: colorOptionMap.entrySet()) {
 			String optionVal = colorOptionEntry.getKey();
-			String[] colors = colorOptionEntry.getValue().split(",");;
-			//String[] colors = colorsMap.get(optionVal).split(",");
+			String[] colors = colorOptionEntry.getValue().split(",");
 			 for (String childValue : colors) {
 				 AvailableVariObj = new AvailableVariations();
 				 listOfParent = new ArrayList<>();
@@ -739,21 +700,6 @@ public class ProGolfInformationAttributeParser {
 				 listOfVariAvail.add(AvailableVariObj);
 			 }
 		}
-		//Availability  availabilityObj = new Availability();
-		//AvailableVariations  AvailableVariObj = null;
-		//List<AvailableVariations> listOfVariAvail = new ArrayList<>();
-		/*List<Object> listOfParent = null;
-		List<Object> listOfChild = null;
-			 for (String childValue : colors) {
-				 AvailableVariObj = new AvailableVariations();
-				 listOfParent = new ArrayList<>();
-				 listOfChild = new ArrayList<>();
-				 listOfParent.add(optionValue.trim());
-				 listOfChild.add(childValue.trim());
-				 AvailableVariObj.setParentValue(listOfParent);
-				 AvailableVariObj.setChildValue(listOfChild);
-				 listOfVariAvail.add(AvailableVariObj);
-			 }*/
 		availabilityObj.setAvailableVariations(listOfVariAvail);
 		availabilityObj.setParentCriteria("Product Option");
 		availabilityObj.setChildCriteria("Product Color");
@@ -791,19 +737,6 @@ public class ProGolfInformationAttributeParser {
 		productObj.setAvailability(listOfAvailability);
 		productObj.setProductNumbers(listOfProductNumber);
 		return productObj;
-	}
-	private List<String> getListOfOptionValues(List<Option> options){
-		List<String> listOfOptionVals = null;
-		for (Option option : options) {
-			if(option.getOptionType().equalsIgnoreCase("Product")){
-				List<OptionValue> listOfOptionValues = option.getValues();
-				listOfOptionVals = listOfOptionValues.stream().map(OptionValue::getValue).collect(Collectors.toList());
-				return listOfOptionVals;
-			}else{
-				continue;
-			}
-		}
-		return new ArrayList<>();
 	}
     private ProductNumber getProductNumbers(String prdNo,String value){
     	ProductNumber productNumberObj = new ProductNumber();

@@ -72,25 +72,13 @@ public class ProGolfImprintChargesMapping {
 						headerRow = nextRow;
 						continue;
 					}
-					/*Cell cell1 = nextRow.getCell(1);
-					prdXid = CommonUtility.getCellValueStrinOrInt(cell1);*/
 					prdXid = getSkuValue(nextRow);
-					// this condition used to check xid is present list or not ,
-					// if xid present in Map means already fetch product from
-					// Map
-					/*if (!productIds.contains(prdXid)) {
-						existingProduct = productMaps.get(prdXid);
-						//productConfigObj = existingProduct.getProductConfigurations();
-					}*/
 					if(isFirstProduct){
 						existingProduct = productMaps.get(prdXid);
 						isFirstProduct = false;
 					}
 					productIds.add(prdXid);
 					Iterator<Cell> cellIterator = nextRow.cellIterator();
-					/*if (xid != null) {
-						productXids.add(xid);
-					}*/
 					boolean checkXid = false;
 
 					while (cellIterator.hasNext()) {

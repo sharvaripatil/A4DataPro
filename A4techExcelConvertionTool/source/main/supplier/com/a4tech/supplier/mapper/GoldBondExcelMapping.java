@@ -89,7 +89,6 @@ public class GoldBondExcelMapping implements IExcelParser{
 			
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
-				
 				 columnIndex = cell.getColumnIndex();
 				if(columnIndex + 1 == 1){
 					xid = getProductXid(nextRow);
@@ -122,6 +121,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 							 	listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							    listOfColors    = new StringJoiner(ApplicationConstants.CONST_STRING_COMMA_SEP);
+							    listOfDiscounts = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							    imprintColors =  new StringBuilder();
 							    imageValues =  new StringBuilder();
 						 }
@@ -137,26 +137,26 @@ public class GoldBondExcelMapping implements IExcelParser{
 						     }else{
 						    	 productExcelObj = gbAttributeParser.keepExistingProductData(productExcelObj);
 						    	 productConfiguration = productExcelObj.getProductConfigurations();
-						     }
-							
+						     }		
 					 }
-				}else{
-					
+				}else{	
 				}
 				
 				switch (columnIndex+1) {
 				case 1: //xid
+					 String externalProductId = cell.getStringCellValue();
+					productExcelObj.setExternalProductId(externalProductId);
 					 break;
 				case 2:
-					 
+					 // ignore as per feedback
 					  break;
-				case 3:
-					 String asiPrdNo = cell.getStringCellValue();
+				case 3:// code
+					 String asiPrdNo = CommonUtility.getCellValueStrinOrInt(cell);
 					  productExcelObj.setAsiProdNo(asiPrdNo);
 				    break;
 				case 4:// description
 					String prdName = cell.getStringCellValue();
-					prdName = prdName.replaceAll("[^a-zA-Z0-9%/-! ]", "");
+					prdName = prdName.replaceAll("[^a-zA-Z0-9%/-?! ]", "");
 					productExcelObj.setName(prdName);
 					break;
 				case 5:	
@@ -171,7 +171,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 				case 14://Features
 					String description = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(description)){
-						description = description.replaceAll("[^a-zA-Z0-9%/-! ]", "");
+						description = description.replaceAll("[^a-zA-Z0-9%/-?! ]", "");
 						productDescription.add(description);
 					}
 					 break;
@@ -181,7 +181,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 				case 18:
 				case 19: 
 					String priceQty = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(priceQty)){
+					if(!StringUtils.isEmpty(priceQty) && !priceQty.equals("0")){
 						listOfQuantity.add(priceQty);
 					}
 					break;
@@ -192,77 +192,46 @@ public class GoldBondExcelMapping implements IExcelParser{
 				case 23:
 				case 24:
 					String netPricing = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(netPricing)){
+					if(!StringUtils.isEmpty(netPricing) && !netPricing.equals("0.0") && !netPricing.equals("0.00")){
 						listOfPrices.add(netPricing);
 					}
 					break;
-				case 25: // ignore all coulmns until case 48
+				/*case 25: // ignore all coulmns until case 48
 					break;
-					
 				case 26:
 					 break;
-				case 27:
-					  
+				case 27:  
 					  break;
 				case 28:
-					 
 				    break;
 				case 29:
-					
-					
 				    break;
-					
 				case 30:
-					
-					
 					break;
-					
 				case 31: 
-				
-					
 					break;
-					
 				case 32:
-					 
-					   
 					break;
-					
 				case 33: 
-					
-					
 					break;
-					
 				case 34: 
 					break;
 				case 35: 
-					
-					
 					break;
 				case 36:
-				    
 					break;
 					
 				case 37:
 					break;
 				case 38:
-					
-					
 					 break;
 				case 39:
-					
-					
 			     break;
 				case 40:
-			
-						
 					break;
 				case 41:
-				
-				
 					break;
 				case 42:
-				
-				
 					break;
 				case 43:
 					break;
@@ -279,7 +248,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 				case 48:
 					break;
 				case 49: 
-					break;
+					break;*/
 				case 50: // discount
 				case 51:
 				case 52:
@@ -291,31 +260,21 @@ public class GoldBondExcelMapping implements IExcelParser{
 					}
 				    break;
 					
-				case 55: // ignore until cases 104
-				
-					
+				/*case 55: // ignore until cases 104
 					break;
 					
 				case 56: 
-				
-					
 					break;
 					
-				case 57:
-					 
-					   
+				case 57: 
 					break;
 					
 				case 58: 
-				
-					
 					break;
 					
 				case 59: 
 					break;
 				case 60: 
-					 
-					
 					break;
 				case 61:
 				   
@@ -324,23 +283,14 @@ public class GoldBondExcelMapping implements IExcelParser{
 				case 62:
 					break;
 				case 63:
-				
-					
 					 break;
 				case 64:
-				
-					
 			     break;
 				case 65:
-		
 					break;
 				case 66:
-		
-				
 					break;
 				case 67:
-			
-				
 					break;
 				case 68:
 					break;
@@ -459,10 +409,12 @@ public class GoldBondExcelMapping implements IExcelParser{
 				    break;
 				case 104:
 					
-					break;
-				case 105:
+					break;*/	
+			  case 105:
 					String multiColorCharge = cell.getStringCellValue();
+					productExcelObj.setProductConfigurations(productConfiguration);
 					productExcelObj = gbAttributeParser.getAdditionalColor(productExcelObj, multiColorCharge);
+					productConfiguration = productExcelObj.getProductConfigurations();
 				    
 					break;
 				case 106: //color
@@ -524,24 +476,35 @@ public class GoldBondExcelMapping implements IExcelParser{
 					
 				case 135:// it is related to additional color
 				 String setUpCharge = cell.getStringCellValue();
+				 //It is also similar data column 105(Multi-Color Setup Charge)
+				 //no need process same data again
 					break;
 					
 				case 136: //Multi-Color Imprint - Old
+					// this column values same as column 105(Multi-Color Setup Charge)
+					// no need process same data again
 					break;
 					
 				case 137://Max Imprint Colors
 					 // ignore as per feedback
 					   
 					break;
-					
-				case 138: 
-				  
-					
+					 
+				case 138: // additional color and upcharge
+					 String multiColorRunningCharge = CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(multiColorRunningCharge) && !multiColorRunningCharge.contains("N/A")
+						&& !multiColorRunningCharge.equalsIgnoreCase("Free!") && !multiColorRunningCharge.equalsIgnoreCase("Free")){
+						 productExcelObj.setPriceGrids(listOfPriceGrids);
+						 productExcelObj.setProductConfigurations(productConfiguration);
+						productExcelObj = gbAttributeParser.getMultipleColorUpcharge(multiColorRunningCharge, productExcelObj);
+						 listOfPriceGrids = productExcelObj.getPriceGrids();
+						 productConfiguration = productExcelObj.getProductConfigurations();
+					 }
 					break;
 					
 				case 139: // proof charge
 					//for pre-production proofs (as per comment)
-					 String proofCharge = cell.getStringCellValue();
+					 String proofCharge =CommonUtility.getCellValueStrinOrInt(cell);
 					   if(!StringUtils.isEmpty(proofCharge) && !proofCharge.equals("0")){
 						   // default proof charge: pre-productionProof
 						   List<Artwork> listOfArtwork = gbAttributeParser.getProductArtwork("PRE-PRODUCTION PROOF");
@@ -555,16 +518,20 @@ public class GoldBondExcelMapping implements IExcelParser{
 					 String addLocation = cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(addLocation)){
 						 productExcelObj.setPriceGrids(listOfPriceGrids);
+						 productExcelObj.setProductConfigurations(productConfiguration);
 						 productExcelObj = gbAttributeParser.getAdditonalLocaAndUpCharge(addLocation, productExcelObj);
 						 listOfPriceGrids = productExcelObj.getPriceGrids();
+						 productConfiguration = productExcelObj.getProductConfigurations();
 					 }
 					break;
 				case 141://Assembly
 					String assembly = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(assembly)){
 						 productExcelObj.setPriceGrids(listOfPriceGrids);
+						 productExcelObj.setProductConfigurations(productConfiguration);
 						 productExcelObj = gbAttributeParser.getItemAssembledAndUpcharge(assembly.trim(), productExcelObj);
 						 listOfPriceGrids = productExcelObj.getPriceGrids();
+						 productConfiguration = productExcelObj.getProductConfigurations();
 					}
 					 break;
 				case 142://produtionTime
@@ -578,16 +545,20 @@ public class GoldBondExcelMapping implements IExcelParser{
 					 String rushVal = cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(rushVal)){
 						 productExcelObj.setPriceGrids(listOfPriceGrids);
+						 productExcelObj.setProductConfigurations(productConfiguration);
 						 productExcelObj = gbAttributeParser.getRushTime(rushVal, productExcelObj); 
 						 listOfPriceGrids = productExcelObj.getPriceGrids();
+						 productConfiguration = productExcelObj.getProductConfigurations();
 					 }
 				    break;
 				case 144://packaging
 					String packVal = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(packVal)){
 						 productExcelObj.setPriceGrids(listOfPriceGrids);
+						 productExcelObj.setProductConfigurations(productConfiguration);
 						productExcelObj = gbAttributeParser.getProductPackaging(packVal, productExcelObj);
 						listOfPriceGrids = productExcelObj.getPriceGrids();
+						productConfiguration = productExcelObj.getProductConfigurations();
 					}
 				    break;
 					
@@ -602,8 +573,10 @@ public class GoldBondExcelMapping implements IExcelParser{
 					 String pencilSharp =cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(pencilSharp)){
 						productExcelObj.setPriceGrids(listOfPriceGrids);
+						productExcelObj.setProductConfigurations(productConfiguration);
 						productExcelObj = gbAttributeParser.getpencilSharpForOption(pencilSharp, productExcelObj);
-						listOfPriceGrids = productExcelObj.getPriceGrids();	
+						listOfPriceGrids = productExcelObj.getPriceGrids();
+						productConfiguration = productExcelObj.getProductConfigurations();
 					 }
 					break;
 				case 148: 
@@ -728,13 +701,10 @@ public class GoldBondExcelMapping implements IExcelParser{
 						imageValues.append(img).append(",");
 					}
 					break;	
-			}  // end inner while loop
-					 
+			}  // end inner while loop			 
 		}
 				productExcelObj.setPriceType("N");
 				String qurFlag = "n"; // by default for testing purpose
-				listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-			    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			    if(!StringUtils.isEmpty(imprintColors)){
 			    	 ImprintColor imprintColorValues = gbAttributeParser.getImprintColors(imprintColors.toString());
 					 productConfiguration.setImprintColors(imprintColorValues);
@@ -743,7 +713,10 @@ public class GoldBondExcelMapping implements IExcelParser{
 			    	List<Image> listOfImages = gbAttributeParser.getImages(imageValues.toString());
 				    productExcelObj.setImages(listOfImages);
 			    }
-			    
+					listOfPriceGrids = gbPriceGridParser.getBasePriceGrids(listOfPrices.toString(),
+							listOfQuantity.toString(), listOfDiscounts.toString(), "USD", "", true, false, "", "",
+							listOfPriceGrids);
+					productExcelObj.setPriceGrids(listOfPriceGrids);
 			}catch(Exception e){
 				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"at column number(increament by 1):"+columnIndex);		 
 				ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet: "
@@ -788,7 +761,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 	}
 
 	public String getProductXid(Row row){
-		Cell xidCell =  row.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
+		Cell xidCell =  row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
 		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
 		if(StringUtils.isEmpty(productXid) || "N/A".equalsIgnoreCase(productXid)){
 		     xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_TWO);

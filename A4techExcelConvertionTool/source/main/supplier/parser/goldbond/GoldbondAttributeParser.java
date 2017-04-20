@@ -87,9 +87,12 @@ public class GoldbondAttributeParser {
 		    } else {
 		    	
 		    }
+		    existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", priceVal, discountCode, "Additional Colors", false,
+					"USD", "additional color available", "Add. Color Charge", "Other", 1, existingPriceGrid,"","");
 		    List<AdditionalColor> listOfAdditionalColor = getAdditionalColors("additional color available");
 		    existingConfiguration.setAdditionalColors(listOfAdditionalColor);
 		    existingProduct.setProductConfigurations(existingConfiguration);
+		    existingProduct.setPriceGrids(existingPriceGrid);
 		return existingProduct;
 	}
 	public List<Color> getProductColors(String colors){
@@ -199,7 +202,7 @@ public class GoldbondAttributeParser {
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Additional Location", false,
 					"USD", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
 		} else if(value.contains("$50.00 (G) plus $0.30 (G)")){
-			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1__1", "50.0__0.30", "G", "Additional Location", false,
+			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1__1", "50.0__0.30", "G__G", "Additional Location", false,
 					"USD", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
 		} else if(value.equalsIgnoreCase("$0.30 (G) per cube location, ea.")){
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Additional Location", false,
@@ -213,7 +216,7 @@ public class GoldbondAttributeParser {
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.80", "G", "Additional Location", false,
 					"USD", "Reverse Side Imprint", "Run Charge", "Other", 1, existingPriceGrid,"","");
 		}else if(value.equalsIgnoreCase("$50.00 (G) per location plus add $0.30 (G) ea./location")){
-			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1__1", "50.0__0.30", "G", "Additional Location", false,
+			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1__1", "50.0__0.30", "G__G", "Additional Location", false,
 					"USD", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
 		} else {
 			
@@ -474,17 +477,17 @@ public class GoldbondAttributeParser {
 		Value valObj3 = null;
 		List<Value> listOfValue = new ArrayList<>();
 		if(values.length == ApplicationConstants.CONST_INT_VALUE_ONE){
-			 valObj1 = getValueObj(values[0].trim(), "Length", unit1);
+			 valObj1 = getValueObj(values[0].trim(), unit1, "in");
 			  listOfValue.add(valObj1);
 		} else if(values.length == ApplicationConstants.CONST_INT_VALUE_TWO){
-			 valObj1 = getValueObj(values[0].trim(), "Length", unit1);
-			 valObj2 = getValueObj(values[1].trim(), "Width", unit2);
+			 valObj1 = getValueObj(values[0].trim(), unit1, "in");
+			 valObj2 = getValueObj(values[1].trim(), unit2, "in");
 			 listOfValue.add(valObj1);
 		     listOfValue.add(valObj2);
 		} else if(values.length == ApplicationConstants.CONST_INT_VALUE_THREE){
-			 valObj1 = getValueObj(values[0].trim(), "Length", unit1);
-			 valObj2 = getValueObj(values[1].trim(), "Width", unit2);
-			 valObj3 = getValueObj(values[2].trim(), "Height", unit3);
+			 valObj1 = getValueObj(values[0].trim(), unit1, "in");
+			 valObj2 = getValueObj(values[1].trim(),unit2, "in");
+			 valObj3 = getValueObj(values[2].trim(), unit3, "in");
 			 listOfValue.add(valObj1);
 		     listOfValue.add(valObj2);
 		     listOfValue.add(valObj3);
@@ -788,6 +791,28 @@ public class GoldbondAttributeParser {
 			listOfImprintMethods.add(imprintMethodObj);
 		}
     	return listOfImprintMethods;
+    }
+    public Product getMultipleColorUpcharge(String value,Product existingProduct){
+    	ProductConfigurations productConfig = existingProduct.getProductConfigurations();
+    	List<PriceGrid> priceGrid = existingProduct.getPriceGrids();
+    	if(CollectionUtils.isEmpty(productConfig.getAdditionalColors())){
+    		List<AdditionalColor> listOfAdditionalColor = getAdditionalColors("additional color available");
+    		productConfig.setAdditionalColors(listOfAdditionalColor);
+    	}
+    	String priceVal = "";
+    	if(value.contains("$0.30 (G)")|| value.contains("$.30 (G)")){
+    		priceVal = "0.30";
+    	} else if(value.contains("$0.35 (G)")){
+    		priceVal = "0.35";
+    	} else if(value.contains("$1.00 (G)")){
+    		priceVal = "1.00";
+    	}
+    	if(!StringUtils.isEmpty(priceVal)){
+    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", priceVal, "G", "Additional Colors", false,
+					"USD", "additional color available", "Run Charge", "Per Quantity", 1, priceGrid,"","");
+    	}
+    	existingProduct.setPriceGrids(priceGrid);
+    	return existingProduct;
     }
 	public GoldbondPriceGridParser getGbPriceGridParser() {
 		return gbPriceGridParser;

@@ -42,9 +42,16 @@
         <div class="col-md-4 col-md-offset-4 text">
         
           <div class="form-bottom">
-            <form:form name="ftpLogin" enctype="multipart/form-data" modelAttribute="ftpLoginBean">
+            <form:form name="fileUpload" enctype="multipart/form-data" modelAttribute="ftpLoginBean">
               <div class="form-group">
-                <label class="sr-only" for="form-asinumber">ASI Number</label>
+				<c:choose>
+					<c:when test="${invalidDetails == ''}">
+						<div id="dataId" style="color: red">
+							<h4>Please enter correct details</h4>
+						</div>
+					</c:when>
+				</c:choose>					
+				<label class="sr-only" for="form-asinumber">ASI Number</label>
                 <form:input path="asiNumber" name="asiNumber" id="asiNumber" placeholder="ASI Number..." autocomplete="off"  class="form-asi-number form-control"/>
                 <!-- <input type="text" name="form-first-name" placeholder="ASI Number..." class="form-first-name form-control" id="form-first-name"> -->
               </div>
@@ -59,7 +66,8 @@
                 <!-- <input type="password" name="form-email" placeholder="Password..." class="form-email form-control" id="form-email"> -->
               </div>
               <div class="submitbtn">
-              <a href="fileUpload" class="btn btn-lg btn-primary">Submit</a>
+              <!-- <a href="fileUpload" class="btn btn-lg btn-primary">Submit</a> -->
+              <form:button value="submit" class="btn1 btn-primary btn-lg pull-right">Submit</form:button>
               <a href="uploadFile.htm" class="btn btn-lg btn-default pull-right">Back</a>
               
               </div>

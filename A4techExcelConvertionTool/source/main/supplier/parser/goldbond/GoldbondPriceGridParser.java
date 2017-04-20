@@ -12,15 +12,16 @@ import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
 public class GoldbondPriceGridParser {
 
 	private Logger              _LOGGER              = Logger.getLogger(getClass());
-	public List<PriceGrid> getPriceGrids(String listOfPrices,
+	public List<PriceGrid> getBasePriceGrids(String listOfPrices,
 		    String listOfQuan, String discountCodes,
 			String currency, String priceInclude, boolean isBasePrice,
-			String qurFlag, String priceName, String criterias,
+			boolean isQurFlag, String priceName, String criterias,
 			List<PriceGrid> existingPriceGrid) {
 		_LOGGER.info("Enter Price Grid Parser class");
 		try{
@@ -37,9 +38,10 @@ public class GoldbondPriceGridParser {
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(priceName);
 		priceGrid.setPriceIncludes(priceInclude);
-		priceGrid
-				.setIsQUR(qurFlag.equals("n") ? ApplicationConstants.CONST_BOOLEAN_FALSE
-						: ApplicationConstants.CONST_BOOLEAN_TRUE);
+		priceGrid.setIsQUR(isQurFlag);
+		if (!priceGrid.getIsQUR() && !CommonUtility.isdescending(prices)) {
+			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
+		}
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
@@ -55,17 +57,17 @@ public class GoldbondPriceGridParser {
 		//priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
 		}catch(Exception e){
-			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
+			_LOGGER.error("Error while processing Base PriceGrid: "+e.getMessage());
 		}
 		return existingPriceGrid;
 
 	}
 
-	public List<Price> getPrices(String[] prices, String[] quantity, String[] disCodes,String priceUnitName) {
+	public List<Price> getPrices(String[] netPrices, String[] quantity, String[] disCodes,String priceUnitName) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
 	try{
-		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length && PriceNumber < quantity.length
+		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < netPrices.length && PriceNumber < quantity.length
 				      && PriceNumber < disCodes.length; PriceNumber++, sequenceNum++) {
 
 			Price price = new Price();
@@ -76,7 +78,8 @@ public class GoldbondPriceGridParser {
 			} catch (NumberFormatException nfe) {
 				price.setQty(ApplicationConstants.CONST_NUMBER_ZERO);
 			}
-			price.setPrice(prices[PriceNumber]);
+			price.setNetCost(netPrices[PriceNumber]);
+			//price.setPrice(prices[PriceNumber]);
 			price.setDiscountCode(disCodes[PriceNumber]);
 			if(priceUnitName.equalsIgnoreCase("dozen")){
 				priceUnit.setName("Dozen");
@@ -124,7 +127,7 @@ public class GoldbondPriceGridParser {
 				priceConfiguration.add(configs);
 			}
 		}catch(Exception e){
-			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
+			_LOGGER.error("Error while processing Upcharge PriceGrid: "+e.getMessage());
 		}
 		return priceConfiguration;
 	}
@@ -149,7 +152,7 @@ public class GoldbondPriceGridParser {
 		priceGrid.setIsQUR(qurFlag);
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);
-		priceGrid.setUpchargeType("Other");
+		priceGrid.setUpchargeType(upChargeType);
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		priceGrid.setServiceCharge("Required");
 		List<Price> listOfPrice = null;
