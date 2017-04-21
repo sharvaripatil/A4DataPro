@@ -108,7 +108,6 @@ public class ExcelFactory {
 			   return primeLineExcelMapping;
 
 		   }
-	 
 	      else if(name.equalsIgnoreCase("psl") || name.equals("75613")){
 		   return pslMapping;
 	      }

@@ -7,28 +7,17 @@ import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
-import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Image;
-import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.NumberOfItems;
-import com.a4tech.product.model.Option;
 import com.a4tech.product.model.Packaging;
-import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.ShippingEstimate;
-import com.a4tech.product.model.Size;
-import com.a4tech.product.model.Theme;
-import com.a4tech.product.model.TradeName;
-import com.a4tech.product.model.Value;
-import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -72,9 +61,8 @@ public class TomaxUsaAttributeParser {
 		
 	}
 	
-	public List<ImprintSize> getImprintSize(String imprintMethValue){
-		List<ImprintSize> listOfImprintSize = null;
-		listOfImprintSize = new ArrayList<ImprintSize>();
+	public List<ImprintSize> getImprintSize(String imprintMethValue,List<ImprintSize> listOfImprintSize){
+		
 		ImprintSize imprSizeObj = new ImprintSize();
 		imprSizeObj.setValue(imprintMethValue);
 		listOfImprintSize.add(imprSizeObj);
@@ -351,7 +339,7 @@ public class TomaxUsaAttributeParser {
 	return result;
 	}
 	
-	public Size getSizes(String sizeValue) {
+	/*public Size getSizes(String sizeValue) {
 		Size sizeObj = new Size();
 		String sizeGroup="dimension";
 		String unitValue="in";
@@ -406,7 +394,8 @@ public class TomaxUsaAttributeParser {
 			return null;
 		}
 		return sizeObj;
-	}
+	}*/
+	
 	
 	 
 	

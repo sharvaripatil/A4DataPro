@@ -2,12 +2,11 @@ package com.a4tech.supplier.mapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -20,19 +19,11 @@ import org.springframework.util.StringUtils;
 import parser.tomaxusa.TomaxProductTabParser;
 import parser.tomaxusa.TomaxUsaAttributeParser;
 
-import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Availability;
-import com.a4tech.product.model.Color;
-import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
-import com.a4tech.product.model.Product;
-import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.model.ProductNumber;
-import com.a4tech.product.model.ProductSkus;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -56,19 +47,20 @@ public class TomaxUsaMapping implements IExcelParser{
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		String finalResult = null;
 		Set<String>  productXids = new HashSet<String>();
-		ArrayList<String>  xidSet = new ArrayList<String>();
-		List<String> repeatRows = new ArrayList<>();
-		HashSet<String> tempSet=new HashSet<String>();
+		//ArrayList<String>  xidSet = new ArrayList<String>();
+		TreeSet<String> xidSet=new TreeSet<String>();
+ 		List<String> repeatRows = new ArrayList<>();
+		//HashSet<String> tempSet=new HashSet<String>();
 		
 		  
 		try{
 			 for(int i=0;i<2;i++){
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-			if(i==9){
+			if(i==12){
 			Sheet sheet = workbook.getSheetAt(0);
 			Iterator<Row> iterator = sheet.iterator();
 			_LOGGER.info("Started Processing Product");
-		    String productId = null;
+		    //String productId = null;
 		    String xid = null;
 		    int columnIndex=0;
 			while (iterator.hasNext()) {
@@ -135,26 +127,26 @@ public class TomaxUsaMapping implements IExcelParser{
 			xidSet.add(xid);
 			}
 			}
-			tempSet=new HashSet<String>(xidSet);
+			//tempSet=new HashSet<String>(xidSet);
 			// do deletion thing over here
-			System.out.println(tempSet);
-			System.out.println(tempSet.size() +" - Size");
-			xidSet=new ArrayList<String>();
-			xidSet.add("TestProdSD1");
-			xidSet.add("3558-TES30ASD");
-			xidSet.add("TestProdSD3");
-			xidSet.add("TestProdSD4");
-			
+			_LOGGER.info("Set size:"+xidSet.size());
 			for (String string : xidSet) {
-				int num=	postServiceImpl.deleteProduct(accessToken, string, asiNumber, batchId);
-	 	if(num ==1){
-	 		numOfProductsSuccess.add("1");
-	 	}else if(num == 0){
-	 		numOfProductsFailure.add("0");
-	 	}
+				try{
+				postServiceImpl.getProduct(accessToken, string);
+				}catch(Exception e){
+					_LOGGER.error(e.getMessage());
+				}
+				int num=postServiceImpl.deleteProduct(accessToken, string, asiNumber, batchId);
+				if(num ==1){
+					numOfProductsSuccess.add("1");
+				}else if(num == 0){
+					numOfProductsFailure.add("0");
+				}
 			}
+			//xidSet=new TreeSet<String>();
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
+		 	_LOGGER.info("Total number of products for deletion process >>>>>>"+xidSet.size());
 	       //finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
 	       productDaoObj.saveErrorLog(asiNumber,batchId);
 				
@@ -163,7 +155,7 @@ public class TomaxUsaMapping implements IExcelParser{
 				finalResult=tomaxProductTabParser.readExcel(accessToken, workbook, asiNumber, batchId);
 			}
 				}
-			return finalResult;
+			//return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet " +e.getMessage());
 			return finalResult;
@@ -177,6 +169,7 @@ public class TomaxUsaMapping implements IExcelParser{
 				_LOGGER.info("Complted processing of excel sheet ");
 				_LOGGER.info("Total no of product:"+numOfProductsSuccess.size() );
 		}
+		return finalResult;
 		
 	}
 

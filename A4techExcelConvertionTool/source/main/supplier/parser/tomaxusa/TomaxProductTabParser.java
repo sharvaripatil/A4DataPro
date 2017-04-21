@@ -2,11 +2,9 @@ package parser.tomaxusa;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -20,26 +18,22 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
-import com.a4tech.product.model.Image;
+import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.ImprintSize;
-import com.a4tech.product.model.Material;
-import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.model.ProductNumber;
-import com.a4tech.product.model.ProductSkus;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Size;
+import com.a4tech.product.model.Values;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class TomaxProductTabParser {
 
 
@@ -156,9 +150,9 @@ public class TomaxProductTabParser {
 							 	productExcelObj.setPriceType("L");
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
-							 _LOGGER.info("Product Data : "
-										+ mapperObj.writeValueAsString(productExcelObj));
-							 int num =0;// postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 /*_LOGGER.info("Product Data : "
+										+ mapperObj.writeValueAsString(productExcelObj));*/
+							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -187,10 +181,9 @@ public class TomaxProductTabParser {
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
-						    	 productExcelObj = new Product();
-						    	    //productExcelObj=existingApiProduct;
-									//productConfigObj=productExcelObj.getProductConfigurations();
-								    //priceGrids = productExcelObj.getPriceGrids();
+						    	 productExcelObj = tomaxUsaAttributeParser.getExistingProductData(existingApiProduct, existingApiProduct.getProductConfigurations());
+						    	 productConfigObj=productExcelObj.getProductConfigurations();
+								
 						     }
 					 }
 				}else{
@@ -207,7 +200,11 @@ public class TomaxProductTabParser {
 						productExcelObj.setExternalProductId(xid);
 						break;
 						
-					case 2://Tomax# (productid)
+					case 2://Tomax# (productid) can be disregarded
+						/*String productNo=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(productNo)){
+						productExcelObj.setAsiProdNo(productNo);
+						}*/
 						break;
 						
 					case 3://2016 page
@@ -270,7 +267,13 @@ public class TomaxProductTabParser {
 						 String descripton=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(descripton)){
 							 descripton=CommonUtility.getStringLimitedChars(descripton, 800);
-								productExcelObj.setDescription(descripton);
+							 productExcelObj.setDescription(descripton);
+							
+							 String nameTemp=productExcelObj.getName();
+								 if(StringUtils.isEmpty(nameTemp)){
+									 productName=CommonUtility.getStringLimitedChars(descripton, 60);
+									 productExcelObj.setName(productName);
+								 }
 								}else{
 									productExcelObj.setDescription(productName);
 								}
@@ -283,7 +286,7 @@ public class TomaxProductTabParser {
 						 }
 						break;
 					case 13://wt.
-						String shippingWt=CommonUtility.getCellValueStrinOrInt(cell);
+						String shippingWt=CommonUtility.getCellValueDouble(cell);
 						 if(!StringUtils.isEmpty(shippingWt)){
 							 shippingEstObj=tomaxUsaAttributeParser.getShippingEstimates(shippingWt,shippingEstObj,"WT");
 							 productConfigObj.setShippingEstimates(shippingEstObj);
@@ -315,11 +318,25 @@ public class TomaxProductTabParser {
 					case 17://imprint size
 						String impSize=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(impSize)){
-							 List<ImprintSize> listOfImpSize=tomaxUsaAttributeParser.getImprintSize(impSize);
+							 List<ImprintSize> listOfImpSize=productConfigObj.getImprintSize();
+							 if(CollectionUtils.isEmpty(listOfImpSize)){
+								 listOfImpSize=new ArrayList<ImprintSize>();
+							 }
+							 listOfImpSize=tomaxUsaAttributeParser.getImprintSize(impSize,listOfImpSize);
 							 productConfigObj.setImprintSize(listOfImpSize);
 						 }
 						break;
 					case 18://carton size
+						String cartonSizeValue=CommonUtility.getCellValueStrinOrInt(cell);
+						 if(!StringUtils.isEmpty(cartonSizeValue)){
+							 Size existingSizeObj=productConfigObj.getSizes();
+							 if(existingSizeObj.getDimension()!=null){
+							 existingSizeObj =tomaxUsaSizeParser.getSizes(cartonSizeValue, existingSizeObj, existingSizeObj.getDimension(), existingSizeObj.getDimension().getValues());
+							 }else{
+						      existingSizeObj =tomaxUsaSizeParser.getSizes(cartonSizeValue, new Size(), new Dimension(), new ArrayList<Values>());
+							 }
+							 productConfigObj.setSizes(existingSizeObj);
+							 }
 						break;
 								
 						
@@ -348,9 +365,9 @@ public class TomaxProductTabParser {
 			 	productExcelObj.setPriceType("L");
 			 	productExcelObj.setPriceGrids(priceGrids);
 			 	productExcelObj.setProductConfigurations(productConfigObj);
-		 	_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(productExcelObj));
-		 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	/*_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(productExcelObj));*/
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){

@@ -2,19 +2,19 @@ package parser.tomaxusa;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.ImprintLocation;
+import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
-import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 
 public class TomaxSizeParser {
 
@@ -86,8 +86,48 @@ public class TomaxSizeParser {
 		boolean flag=false;
 		try{
 			//String DimenArr[] = {sizeValue} ;
-			if(flag){
-				// do imprint size and loc here
+			if(sizeValue.toUpperCase().contains("IMPRINT")){
+				try{
+				List<ImprintSize> listOfImprintSize = new ArrayList<>();
+				List<ImprintLocation> listOfImprintLoc=new ArrayList<ImprintLocation>();
+				ImprintSize imprSizeObj = new ImprintSize();
+				ImprintLocation imprintLocationObj = new ImprintLocation();
+				sizeValue=sizeValue.toUpperCase();
+				sizeValue=sizeValue.replaceAll("”","\"");
+				sizeValue=sizeValue.replaceAll(";",",");
+				//sizeValue=sizeValue.replaceAll(":","");
+				
+				String tempArr[]=sizeValue.split(",");
+				for (String imprintValue : tempArr) {
+					if(imprintValue.contains(":")){
+						String tempValue[]=imprintValue.split(":");
+						if(tempValue.length==2){
+						String imprintLocation=tempValue[0];
+						String imrpintSizeValue=tempValue[1];
+						imprintLocation=imprintLocation.toUpperCase();
+						imrpintSizeValue=imrpintSizeValue.toUpperCase();
+						imprintLocation=imprintLocation.replace("IMPRINT", "");
+						if(imprintLocation.contains("(") && imprintLocation.contains(")")){
+						imprintLocation=CommonUtility.extractValueSpecialCharacter("(", ")", imprintLocation);
+						}
+						imprSizeObj=getProductImprintSize(imrpintSizeValue);
+						listOfImprintSize.add(imprSizeObj);
+						imprintLocationObj=getImprintLocationVal(imprintLocation);
+						listOfImprintLoc.add(imprintLocationObj);
+						}else{
+							imprSizeObj=getProductImprintSize(imprintValue);
+							listOfImprintSize.add(imprSizeObj);
+						}
+					}else{
+						imprSizeObj=getProductImprintSize(imprintValue);
+						listOfImprintSize.add(imprSizeObj);
+					}	
+				}
+				existingConfig.setImprintLocation(listOfImprintLoc);
+				existingConfig.setImprintSize(listOfImprintSize);
+				}catch(Exception e){
+					_LOGGER.error("Error while processng imprint values");
+				}
 			}
 			else{
 				Dimension dimensionObj = new Dimension();
@@ -149,7 +189,7 @@ public class TomaxSizeParser {
 	
 	public static String removeSpecialChar(String tempValue,int number){
 		if(number==1){
-		tempValue=tempValue.replaceAll("(CABLE|LENGTH|CLEAR|CASE|ONE|SIDE|EARPHONE|INCLUDE|HOOK)", "");
+		tempValue=tempValue.replaceAll("(CABLE|LENGTH|CLEAR|CASE|ONE|SIDE|EARPHONE|INCLUDE|HOOK|WHITE|BOX|DELUXE|BULK)", "");
 		tempValue=tempValue.replaceAll("\\(","");
 		tempValue=tempValue.replaceAll("\\)","");
 		}
@@ -208,4 +248,92 @@ public class TomaxSizeParser {
 		}
 		return "INC";
 	}
-}
+	
+	public Size getSizes(String sizeValue,Size existingSizeObj,Dimension exisDimensionObj,List<Values> exisValuesList) {
+		//Size sizeObj = new Size();
+		String sizeGroup="dimension";
+		String unitValue="in";
+		String attriValueLen="Length";
+		//1.75 DIA x 4.5
+		try{
+			sizeValue=sizeValue.toUpperCase();
+			/*if(tempValue.contains("FEET IN")){
+				tempValue=tempValue.replace("FEET IN LENGTH", "FEE");
+			}*/
+			sizeValue=removeSpecialChar(sizeValue,1);
+			sizeValue=sizeValue.replaceAll("”","");
+			//sizeValue=sizeValue.replaceAll("”","\"");
+			//sizeValue=sizeValue.replaceAll("\"","INC");
+			sizeValue=sizeValue.replaceAll("\"","");
+			sizeValue=sizeValue.replaceAll(";",",");
+			sizeValue=sizeValue.replaceAll(":","");
+			//sizeValue=sizeValue.replaceAll(".","");
+			String valuesArr[]=sizeValue.split(",");
+			
+			for (String tempValue : valuesArr) {
+			/////////////////
+			String DimenArr[] = {tempValue} ;
+			 if(tempValue.contains("X")){
+				 DimenArr=tempValue.split("X");
+				 sizeGroup="dimension";
+			 }
+			
+			if (sizeGroup.equals("dimension")) {
+			//Dimension dimensionObj = new Dimension();
+			//List<Values> valuesList = new ArrayList<Values>();
+			List<Value> valuelist;
+			Values valuesObj = null;
+			Value valObj;
+			
+				valuesObj = new Values();
+				valuelist = new ArrayList<Value>(); 
+				int count=1;
+				for (String value1 : DimenArr) {
+					valObj = new Value();
+					/*if(value1.contains("DIA")){
+						attriValueLen="DIA";
+						value1=value1.replace("DIA", "").trim();
+					}
+					if(value1.contains("shaker")){
+						value1=value1.replace("(shaker)", "").trim();
+					}*/
+					if(count==1){
+						valObj.setAttribute(attriValueLen);
+					}else if(count==2){
+						valObj.setAttribute("Width");
+					} else if(count==3){
+						valObj.setAttribute("Height");
+					}
+					valObj.setValue(value1.trim());
+					valObj.setUnit(unitValue);
+					valuelist.add(valObj);
+					valuesObj.setValue(valuelist);
+					count++;
+				}
+				
+				exisValuesList.add(valuesObj);
+			}
+			exisDimensionObj.setValues(exisValuesList);
+			existingSizeObj.setDimension(exisDimensionObj);
+		}
+		}
+		catch(Exception e)
+		{
+			_LOGGER.error("Error while processing Size :"+e.getMessage());
+			return null;
+		}
+		return existingSizeObj;
+	}
+	
+	public static ImprintSize getProductImprintSize(String imprintSizeValue){
+		ImprintSize imprSizeObj = new ImprintSize();
+  		imprSizeObj.setValue(imprintSizeValue);
+  		return imprSizeObj;
+	}
+  
+  public static ImprintLocation  getImprintLocationVal(String  impLocValue){
+	   ImprintLocation imprintLocation = new ImprintLocation();
+  	   imprintLocation.setValue(impLocValue);
+  	   return imprintLocation;
+  		}
+	}
