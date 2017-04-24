@@ -6,16 +6,19 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
+
 import parser.milestone.MilestoneColorParser;
 import parser.milestone.MilestoneLookupData;
 import parser.milestone.MilestonePriceGridParser;
 import parser.milestone.ProductAttributeParser;
+
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
@@ -26,6 +29,7 @@ import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.Option;
 import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
@@ -83,10 +87,12 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 		  String productName = null;
 		  String productId = null;
 		  String finalResult = null;
+		  Option ImprintOptObj=new Option();
+		  List<Option> optionList = new ArrayList<Option>();
+
 		  
 			StringBuilder listOfQuantity = new StringBuilder();
 			StringBuilder listOfPrices = new StringBuilder();
-			StringBuilder priceIncludes = new StringBuilder();
 			StringBuilder pricesPerUnit = new StringBuilder();
 			StringBuilder dimensionValue = new StringBuilder();
 			StringBuilder dimensionUnits = new StringBuilder();
@@ -131,6 +137,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 		String SecondImprinttype2=null;
 		String imprintLocation = null;
 		String prodTimeLo = null;
+		String ImprintOption=null;
 		
 		
 	
@@ -139,7 +146,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 			
 			try{
 			Row nextRow = iterator.next();
-			if (nextRow.getRowNum() < 7)
+			if (nextRow.getRowNum() < 1)
 				continue;
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
 			if(productId != null){
@@ -166,7 +173,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 7){
+						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
 							 	
 							 	if(!StringUtils.isEmpty(themeValue) ){
@@ -212,7 +219,6 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 						         ImprintSizevalue = new StringBuilder();
 								 listOfQuantity = new StringBuilder();
 								 listOfPrices = new StringBuilder();
-								 priceIncludes = new StringBuilder();
 								 pricesPerUnit = new StringBuilder();
 								 dimensionValue = new StringBuilder();
 								 dimensionUnits = new StringBuilder();
@@ -228,6 +234,10 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 								  valuesList =new ArrayList<Values>();
 								  FobPointsList = new ArrayList<FOBPoint>();
 								  color = new ArrayList<Color>();
+								  ImprintOptObj=new Option();
+							      optionList = new ArrayList<Option>();
+								  
+								
 								  
 								  finalDimensionObj=new Dimension();
 								  size=new Size();
@@ -349,12 +359,15 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					
 				case 15://size --  value
 					String dimensionValue1=CommonUtility.getCellValueStrinOrInt(cell);
+					dimensionValue1=dimensionValue1.replace("\"", "");
 					   if(dimensionValue1 != null && !dimensionValue1.isEmpty()){
 						   dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					   }
 					break;
 				case 16: //size -- Unit
 					  String dimensionUnits1 = CommonUtility.getCellValueStrinOrInt(cell);
+					  dimensionUnits1=dimensionUnits1.replace("\"", "");
+
 						 if(!dimensionUnits1.contains("0")){
 							 dimensionUnits.append(dimensionUnits1.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 						 }
@@ -362,6 +375,8 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				
 				case 17: //size -- type
 					String dimensionType1 =CommonUtility.getCellValueStrinOrInt(cell);
+					dimensionType1=dimensionType1.replace("\"", "");
+
 					if(!dimensionType1.contains("0")){
 						dimensionType.append(dimensionType1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
@@ -369,6 +384,8 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				
 				 case 18: //size
 					 String dimensionValue2 =CommonUtility.getCellValueStrinOrInt(cell);
+					 dimensionValue2=dimensionValue2.replace("\"", "");
+
 					 if(dimensionValue2 != null && !dimensionValue2.isEmpty()){
 						 dimensionValue.append(dimensionValue2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
@@ -376,6 +393,8 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					
 				case 19:  //size
                     String dimensionUnits2 =CommonUtility.getCellValueStrinOrInt(cell);
+                    dimensionUnits2=dimensionUnits2.replace("\"", "");
+
 					if(!dimensionUnits2.contains("0")){
 						dimensionUnits.append(dimensionUnits2.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
@@ -383,6 +402,8 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					
 				case 20: //size
 					String  dimensionType2 = CommonUtility.getCellValueStrinOrInt(cell);
+					dimensionType2=dimensionType2.replace("\"", "");
+
 					if(!dimensionType2.contains("0")){
 						dimensionType.append(dimensionType2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
@@ -390,6 +411,8 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					
 				case 21: //size
 					String dimensionValue3  =CommonUtility.getCellValueStrinOrInt(cell);
+					dimensionValue3=dimensionValue3.replace("\"", "");
+
 					if(dimensionValue3 != null && !dimensionValue3.isEmpty()){
 						dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else{
@@ -400,6 +423,8 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					
 				case 22: //size
 					String dimensionUnits3 = CommonUtility.getCellValueStrinOrInt(cell);
+					dimensionUnits3=dimensionUnits3.replace("\"", "");
+
 					if(!dimensionUnits3.contains("0")){
 						 dimensionUnits.append(dimensionUnits3.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else
@@ -410,6 +435,8 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					
 				case 23: //size
 					String dimensionType3 = CommonUtility.getCellValueStrinOrInt(cell);
+					dimensionType3=dimensionType3.replace("\"", "");
+
 					if(!dimensionType3.contains("0")){
 						dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else
@@ -457,23 +484,15 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					      break;
 				case 44:  // priceIncludeClr
 					    
-					      priceIncludes.append(cell.getStringCellValue()).append(" ");
 					     break;
 				case 45: // priceIncludeSide
 						
-						priceIncludes.append(cell.getStringCellValue()).append(" ");
 						break;
 				case 46: // priceIncludeLoc
-					priceIncludes.append(cell.getStringCellValue());
-					int PriceIncludeLength=priceIncludes.length();
-					if(PriceIncludeLength>100){
-						
-					priceIncludesValue=	priceIncludes.toString().substring(0,100);
-					}else
-					{
-						priceIncludesValue=priceIncludes.toString();
-					}
-					
+				    ImprintOption=cell.getStringCellValue();
+					ImprintOptObj=attrtiParserObj.getImprintOption2(ImprintOption);
+			        optionList.add(ImprintOptObj);
+			  					
 					break;
 						
 				case 47:    //setup charge   
@@ -832,6 +851,9 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 			// set  product configuration objects
 			
 			 // end inner while loop
+			
+			
+			
 			productExcelObj.setPriceType("L");
 			if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
 				priceGrids = pricegridParserObj.getPriceGrids(listOfPrices.toString(), 
@@ -839,19 +861,25 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 						         priceIncludesValue, true, quoteUponRequest, productName,"",priceGrids);	
 			}
 			
+		  productConfigObj.setOptions(optionList);
+		   
+		  priceGrids = pricegridParserObj.getUpchargePriceGrid("1", "5", DiscountcodeUpcharge, "Imprint Option", 
+					"false", "USD", "Line Charge", "Imprint Option Charge", "Other", new Integer(1), priceGrids);
+		  
+		  
 		  productConfigObj.setImprintMethods(listOfImprintMethods);
 		  if(decorationMethod.contains("or")){
 			String ImprintMthoArr[] =decorationMethod.split("or");
 			 for (String value : ImprintMthoArr) {
 			
 				 priceGrids = pricegridParserObj.getUpchargePriceGrid("1", serviceCharge, DiscountcodeUpcharge, "Imprint Method", 
-							"false", "USD", value, "Imprint Method Charge", "Other", new Integer(1), priceGrids);
+							"false", "USD", value, "Set-up Charge", "Other", new Integer(1), priceGrids);
 			  } 
 						
 		  }else
 		  {
 			  priceGrids = pricegridParserObj.getUpchargePriceGrid("1", serviceCharge, DiscountcodeUpcharge, "Imprint Method", 
-						"false", "USD", decorationMethod, "Imprint Method Charge", "Other", new Integer(1), priceGrids); 
+						"false", "USD", decorationMethod, "Set-up Charge", "Other", new Integer(1), priceGrids); 
 		  }
 						
 			
@@ -915,7 +943,6 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 	         ImprintSizevalue = new StringBuilder();
 			 listOfQuantity = new StringBuilder();
 			 listOfPrices = new StringBuilder();
-			 priceIncludes = new StringBuilder();
 			 pricesPerUnit = new StringBuilder();
 			 dimensionValue = new StringBuilder();
 			 dimensionUnits = new StringBuilder();
@@ -931,6 +958,8 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 			  valuesList =new ArrayList<Values>();
 			  FobPointsList = new ArrayList<FOBPoint>();
 			  color = new ArrayList<Color>();
+			  ImprintOptObj=new Option();
+		      optionList = new ArrayList<Option>();
 			  
 			  finalDimensionObj=new Dimension();
 			  size=new Size();
