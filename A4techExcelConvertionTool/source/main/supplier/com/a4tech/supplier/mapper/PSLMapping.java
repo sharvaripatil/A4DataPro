@@ -30,6 +30,7 @@ import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
@@ -80,9 +81,12 @@ public class PSLMapping implements IExcelParser {
 			  Cell cell2Data = null;
 			  String ProdNo=null;
 			  String priceIncludesValue=null;
-			  String quoteUponRequest=null;		
 			  String listPrice = null;		
 			  StringBuilder listOfPrices = new StringBuilder();
+			  StringBuilder shippingEstimation = new StringBuilder();
+			  ShippingEstimate shippingEstimationObj=new ShippingEstimate();
+			  StringBuilder listQuantity = new StringBuilder();
+
 
 			try{
 				 
@@ -115,6 +119,7 @@ public class PSLMapping implements IExcelParser {
 							xid = String.valueOf((int)cell.getNumericCellValue());
 						}else{
 						    ProdNo=CommonUtility.getCellValueStrinOrInt(cell2Data);
+						    ProdNo=ProdNo.substring(0, 14);
 							xid=ProdNo;
 						}
 						checkXid = true;
@@ -143,6 +148,24 @@ public class PSLMapping implements IExcelParser {
 							      
 									  priceGrids = new ArrayList<PriceGrid>();
 									  productConfigObj = new ProductConfigurations();
+									  
+									 batteryInfoList = new ArrayList<BatteryInformation>();
+								     listOfPackaging = new ArrayList<Packaging>();
+								     imprintMethodsList = new ArrayList<ImprintMethod>();
+								     complianceList = new ArrayList<String>();
+								     listOfMaterial = new ArrayList<>();
+								     listOfImprintLocation = new ArrayList<>();
+								     imprintLoactionObj=new ImprintLocation();
+								     listOfImprintSize= new ArrayList<>();
+								     imprintSizeObj=new ImprintSize();
+								     sizeObj=new Size();
+									  colorList = new ArrayList<Color>();
+									  listOfPrices = new StringBuilder();
+									  shippingEstimation = new StringBuilder();
+									  shippingEstimationObj=new ShippingEstimate();
+									  listQuantity = new StringBuilder();
+
+
 									
 							 }
 							 if(!productXids.contains(xid)){
@@ -203,17 +226,55 @@ public class PSLMapping implements IExcelParser {
 						
 					    break;
 						
-					case 6://10						
+					case 6://10	
+						listPrice = CommonUtility.getCellValueStrinOrDecimal(cell);
+						if(!StringUtils.isEmpty(listPrice)){
+						 listOfPrices= listOfPrices.append(listPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					     listQuantity=listQuantity.append("10").append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						}
+						   break;
 					case 7: //25
+						listPrice = CommonUtility.getCellValueStrinOrDecimal(cell);
+						if(!StringUtils.isEmpty(listPrice)){
+						 listOfPrices= listOfPrices.append(listPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					     listQuantity=listQuantity.append("25").append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						}
+						   break;
 					case 8://50
+						listPrice = CommonUtility.getCellValueStrinOrDecimal(cell);
+						if(!StringUtils.isEmpty(listPrice)){
+						 listOfPrices= listOfPrices.append(listPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					     listQuantity=listQuantity.append("50").append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						}
+						   break;
 					case 9: //100
+						listPrice = CommonUtility.getCellValueStrinOrDecimal(cell);
+						if(!StringUtils.isEmpty(listPrice)){
+						 listOfPrices= listOfPrices.append(listPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					     listQuantity=listQuantity.append("100").append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						}
+						   break;
 					case 10: //250
+						listPrice = CommonUtility.getCellValueStrinOrDecimal(cell);
+						if(!StringUtils.isEmpty(listPrice)){
+						 listOfPrices= listOfPrices.append(listPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					     listQuantity=listQuantity.append("250").append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						}
+						   break;
 					case 11: //501
+						listPrice = CommonUtility.getCellValueStrinOrDecimal(cell);
+						if(!StringUtils.isEmpty(listPrice)){
+						 listOfPrices= listOfPrices.append(listPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					     listQuantity=listQuantity.append("501").append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						}
+						   break;
 					case 12: //1001+
 						
-						 listPrice = CommonUtility.getCellValueStrinOrInt(cell);
-						 listOfPrices.append(listPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-						 
+						listPrice = CommonUtility.getCellValueStrinOrDecimal(cell);
+						if(!StringUtils.isEmpty(listPrice)){
+						 listOfPrices= listOfPrices.append(listPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					     listQuantity=listQuantity.append("1001").append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						}
 						break;	
 						
 					case 13: //Logo Setup Charge ( G )
@@ -239,10 +300,9 @@ public class PSLMapping implements IExcelParser {
 						productExcelObj.setDescription(description);
 						}else{
 							productExcelObj.setDescription(ApplicationConstants.CONST_STRING_EMPTY);
-						}
-						
-						
+						}						
 						break;
+						
 					case 17:  //Category
 						
 						break;
@@ -269,10 +329,10 @@ public class PSLMapping implements IExcelParser {
 						
 						break;
 					case 22: //Product Size (inch)
-						String productSize=cell.getStringCellValue();
-						if(!StringUtils.isEmpty(productSize)){
-						productSize=productSize.replace("inch", "").replace("max.", "").replace("Ø", "");
-						sizeObj=attributObj.getSizeValue(productSize);
+						String ProductSize=cell.getStringCellValue();
+						if(!StringUtils.isEmpty(ProductSize)){
+							ProductSize=ProductSize.replace("inch", "").replace("max.", "").replace("Ø", "");
+						sizeObj=attributObj.getSizeValue(ProductSize);
 						productConfigObj.setSizes(sizeObj);
 						}
 						
@@ -321,9 +381,8 @@ public class PSLMapping implements IExcelParser {
 						
 						
 					case 28: //Quantity per Box
-				      String shippingItem=cell.getStringCellValue();
-				  
-				  
+						String ShippingItems=CommonUtility.getCellValueStrinOrInt(cell);
+						shippingEstimation=shippingEstimation.append(ShippingItems).append("@@");
 				  
 					   break;
 						
@@ -331,21 +390,34 @@ public class PSLMapping implements IExcelParser {
 			
 					   break;
 					   
-					case 30:  // Carton Measurements (inch)
-						String shippingDimension=cell.getStringCellValue();
-						
+					case 30:  // Carton Measurements (inch)			
+						String ShippingDimension=CommonUtility.getCellValueStrinOrInt(cell);
+						ShippingDimension=ShippingDimension.replace("inch", "");
+						shippingEstimation=shippingEstimation.append(ShippingDimension).append("@@");
+
+
 						break;
 					case 31: //Weight per piece (kg)
 						
 						break;
 					case 32: //Weight per piece (lb)
+						String ShippingWeight=CommonUtility.getCellValueStrinOrDecimal(cell);
+						if(!StringUtils.isEmpty(ShippingWeight)){
+						
+						if(ShippingWeight.length() >7){
+						ShippingWeight=ShippingWeight.substring(0, 6);
+						}
+						shippingEstimation=shippingEstimation.append(ShippingWeight);
+						shippingEstimationObj=attributObj.getShippingInfo(shippingEstimation);
+						productConfigObj.setShippingEstimates(shippingEstimationObj);
+
+						}
 						
 						break;
 					case 33://Carton Weight (kg)
 						
 						break;
 					case 34://Carton Weight (lb)
-						String shippingWeight=cell.getStringCellValue();
 
 
 						break;
@@ -373,11 +445,20 @@ public class PSLMapping implements IExcelParser {
 				
 				 // end inner while loop
 				productExcelObj.setPriceType("L");
-					priceGrids = pslPriceGridObj.getPriceGrids(listOfPrices.toString(), 
-							         "10___25___50___100___250___501___1001", "C", "USD",
-							         priceIncludesValue, true, quoteUponRequest, productName,"",priceGrids);	
+			
+				if(!StringUtils.isEmpty(listPrice)){
+				priceGrids = pslPriceGridObj.getPriceGrids(listOfPrices.toString(), 
+						listQuantity.toString(), "C", "USD",
+							         priceIncludesValue, true, "false", productName,"");	
+				}
+				else
+				{
+				priceGrids = pslPriceGridObj.getPriceGrids("", 
+							"", "C", "USD",
+								         priceIncludesValue, true, "true", productName,"");	
+				}
 				}catch(Exception e){
-				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
+				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() +"case" +columnIndex);		 
 			}
 			}
 			workbook.close();
@@ -400,7 +481,23 @@ public class PSLMapping implements IExcelParser {
 		       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
 		       productDaoObj.saveErrorLog(asiNumber,batchId);
 		       
-		       
+		         priceGrids = new ArrayList<PriceGrid>();
+				 productConfigObj = new ProductConfigurations();
+				 batteryInfoList = new ArrayList<BatteryInformation>();
+			     listOfPackaging = new ArrayList<Packaging>();
+			     imprintMethodsList = new ArrayList<ImprintMethod>();
+			     complianceList = new ArrayList<String>();
+			     listOfMaterial = new ArrayList<>();
+			     listOfImprintLocation = new ArrayList<>();
+			     imprintLoactionObj=new ImprintLocation();
+			     listOfImprintSize= new ArrayList<>();
+			     imprintSizeObj=new ImprintSize();
+			     sizeObj=new Size();
+				 colorList = new ArrayList<Color>();
+				  listOfPrices = new StringBuilder();
+				  shippingEstimation = new StringBuilder();
+				  shippingEstimationObj=new ShippingEstimate();
+				  listQuantity = new StringBuilder();
 		       		   
 				  productConfigObj = new ProductConfigurations();
 

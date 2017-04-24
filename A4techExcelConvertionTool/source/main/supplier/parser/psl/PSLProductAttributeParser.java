@@ -21,12 +21,16 @@ import com.a4tech.product.model.BatteryInformation;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
+import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.Packaging;
+import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
+import com.a4tech.product.model.Weight;
 import com.a4tech.util.CommonUtility;
 
 public class PSLProductAttributeParser {
@@ -54,16 +58,16 @@ public class PSLProductAttributeParser {
 		return listOfPackaging;
 	}
 
-	public List<ImprintMethod> getImprintMethodValue(String imprintMethod) {
+	public List<ImprintMethod> getImprintMethodValue(String Imprintmethod) {
 			
 		List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
-		imprintMethod=imprintMethod.replace("engraved", "");
+		Imprintmethod=Imprintmethod.replace("engraved", "").replace("Silk screen", "SILKSCREEN");
 		ImprintMethod imprMethod = new ImprintMethod();
 	
-		List<String> finalImprintValues = getImprintValue(imprintMethod.toUpperCase().trim());	
-		String imprintMethodArr[]=imprintMethod.split(",");
+		List<String> finalImprintValues = getImprintValue(Imprintmethod.toUpperCase());	
+		String imprintMethodArr[]=Imprintmethod.split(",");
 		for (String Value : imprintMethodArr){
-		  if(Value.contains("logo") || Value.contains("print")){
+		  if(Value.contains("logo") /*|| Value.contains("print")*/){
 			  ImprintMethod imprMethod1= new ImprintMethod();
 			  imprMethod1.setAlias(Value);
 			  imprMethod1.setType("OTHER");
@@ -208,26 +212,29 @@ public class PSLProductAttributeParser {
           
           for (int i=0;i<productSizeArr.length;i++) {
         	  
-            sizeObj=new Size();      		
-      		ValueObj.setValue(productSizeArr[0]);
+            //sizeObj=new Size();   
+            ValueObj=new Value();
+      		ValueObj.setValue(productSizeArr[i]);
       		ValueObj.setUnit("in");
       		
-      		if(i==1){
+      		if(i==0){
     		ValueObj.setAttribute("Length");
-      		}else if(i==2)
+      		}else if(i==1)
       		{
       		ValueObj.setAttribute("Width");	
-      		}else if(i==3)
+      		}else if(i==2)
       		{
           	ValueObj.setAttribute("Height");	
       		}
 
       		listOfValue.add(ValueObj);
-    		ValuesObj.setValue(listOfValue);
-    		dimensionObj.setValues(listOfValues);		
+    	
  	     	}
-         	
-        	sizeObj.setDimension(dimensionObj);
+      	ValuesObj.setValue(listOfValue);
+		listOfValues.add(ValuesObj);	
+  		dimensionObj.setValues(listOfValues);
+
+        sizeObj.setDimension(dimensionObj);
 
 		return sizeObj;
 	}
@@ -285,6 +292,52 @@ public class PSLProductAttributeParser {
 
 	}
 		
+	public ShippingEstimate getShippingInfo(StringBuilder shippingEstimation) {
+		
+		  ShippingEstimate shippingEstimationObj=new ShippingEstimate();
+		  
+		  String shippingArr[]=shippingEstimation.toString().split("@@");
+
+		  List<NumberOfItems> listOfNumberOfItems = new ArrayList<>();
+		  NumberOfItems NumberOfItemsObj=new NumberOfItems();
+		  NumberOfItemsObj.setValue(shippingArr[0]);
+		  NumberOfItemsObj.setUnit("Box");
+		  listOfNumberOfItems.add(NumberOfItemsObj);
+		  shippingEstimationObj.setNumberOfItems(listOfNumberOfItems);
+		  
+		  
+		  List<Weight> listOfWeight = new ArrayList<>();
+		  Weight wightObj=new Weight();
+		  wightObj.setValue(shippingArr[2]);
+		  wightObj.setUnit("lbs");
+		  listOfWeight.add(wightObj);
+		  shippingEstimationObj.setWeight(listOfWeight);
+		  
+
+
+	      Dimensions dimensionObj=new Dimensions();
+          String shippingDimensioneArr[]=shippingArr[1].split("x");
+        	  
+        	
+          dimensionObj.setLength(shippingDimensioneArr[0]);
+          dimensionObj.setLengthUnit("in");
+          
+          dimensionObj.setWidth(shippingDimensioneArr[1]);
+          dimensionObj.setWidthUnit("in");
+          
+          dimensionObj.setHeight(shippingDimensioneArr[2]);
+          dimensionObj.setHeightUnit("in");
+		
+          shippingEstimationObj.setDimensions(dimensionObj);
+		
+		
+		
+		
+		
+		return shippingEstimationObj;
+	}
+	
+	
 	
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;
@@ -301,6 +354,8 @@ public class PSLProductAttributeParser {
 	public void setLookupRestServiceObj(LookupRestService lookupRestServiceObj) {
 		this.lookupRestServiceObj = lookupRestServiceObj;
 	}
+
+
 
 
 

@@ -146,7 +146,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 			
 			try{
 			Row nextRow = iterator.next();
-			if (nextRow.getRowNum() < 7)
+			if (nextRow.getRowNum() < 1)
 				continue;
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
 			if(productId != null){
@@ -173,7 +173,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 7){
+						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
 							 	
 							 	if(!StringUtils.isEmpty(themeValue) ){
