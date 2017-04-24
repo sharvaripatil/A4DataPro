@@ -9,6 +9,8 @@ import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.NumberOfItems;
+import com.a4tech.product.model.Option;
+import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.ShippingEstimate;
@@ -193,6 +195,20 @@ public class ProductAttributeParser {
 		}
 
 
+	public Option getImprintOption2(String ImprintOptionValue) {
+		List<OptionValue> valuesList = new ArrayList<OptionValue>();
+		OptionValue optionValueObj=new OptionValue();
+		Option optionObj=new Option();
+		
+		optionObj.setOptionType("Imprint");
+		optionObj.setName("Line Charge Option");
+		optionValueObj.setValue("Line Charge");
+		valuesList.add(optionValueObj);
+		optionObj.setValues(valuesList);
+		
+		return optionObj;
+	}
+	
 	
 	
 	public List<String> getImprintValue(String value){
