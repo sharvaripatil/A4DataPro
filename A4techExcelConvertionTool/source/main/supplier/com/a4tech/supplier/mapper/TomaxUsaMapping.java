@@ -54,9 +54,9 @@ public class TomaxUsaMapping implements IExcelParser{
 		
 		  
 		try{
-			 for(int i=0;i<2;i++){
+			 for(int tabNo=0;tabNo<2;tabNo++){
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-			if(i==12){
+			if(tabNo==0){
 			Sheet sheet = workbook.getSheetAt(0);
 			Iterator<Row> iterator = sheet.iterator();
 			_LOGGER.info("Started Processing Product");
@@ -151,7 +151,7 @@ public class TomaxUsaMapping implements IExcelParser{
 	       productDaoObj.saveErrorLog(asiNumber,batchId);
 				
 			//postServiceImpl.deleteProduct(accessToken, productId, asiNumber, batchId);
-			}else if(i==1){
+			}else if(tabNo==1){
 				finalResult=tomaxProductTabParser.readExcel(accessToken, workbook, asiNumber, batchId);
 			}
 				}
