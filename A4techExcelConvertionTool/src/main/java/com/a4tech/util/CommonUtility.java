@@ -297,6 +297,7 @@ public class CommonUtility {
 		value=value.replaceAll("—", "");
 		value=value.replaceAll("¡", "");
 		value=value.replaceAll("ñ", "");
+		value=value.replaceAll("~", "");
 		return value;
 	}
   

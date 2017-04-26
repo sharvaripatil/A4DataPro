@@ -152,6 +152,8 @@ public class TomaxProductTabParser {
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 /*_LOGGER.info("Product Data : "
 										+ mapperObj.writeValueAsString(productExcelObj));*/
+							 
+						if(!StringUtils.isEmpty(productExcelObj.getExternalProductId())){
 							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -162,13 +164,14 @@ public class TomaxProductTabParser {
 							 	}
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
+						 }
+							 	
 								priceGrids = new ArrayList<PriceGrid>();
-								productConfigObj = new ProductConfigurations();
-								
+								productConfigObj = new ProductConfigurations();	
 								repeatRows.clear();
 								listOfPrices = new StringBuilder();
 							    listOfQuantity = new StringBuilder();
-								
+							    shippingEstObj=new ShippingEstimate();
 
 						 }
 						    if(!productXids.contains(xid)){
@@ -267,6 +270,7 @@ public class TomaxProductTabParser {
 						 String descripton=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(descripton)){
 							 descripton=CommonUtility.getStringLimitedChars(descripton, 800);
+							 descripton=CommonUtility.removeRestrictSymbols(descripton);
 							 productExcelObj.setDescription(descripton);
 							
 							 String nameTemp=productExcelObj.getName();
@@ -318,6 +322,8 @@ public class TomaxProductTabParser {
 					case 17://imprint size
 						String impSize=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(impSize)){
+                             impSize=impSize.replaceAll("                                                 ", "");
+							 impSize=CommonUtility.getStringLimitedChars(impSize, 750);
 							 List<ImprintSize> listOfImpSize=productConfigObj.getImprintSize();
 							 if(CollectionUtils.isEmpty(listOfImpSize)){
 								 listOfImpSize=new ArrayList<ImprintSize>();
@@ -327,8 +333,8 @@ public class TomaxProductTabParser {
 						 }
 						break;
 					case 18://carton size
-						String cartonSizeValue=CommonUtility.getCellValueStrinOrInt(cell);
-						 if(!StringUtils.isEmpty(cartonSizeValue)){
+						//String cartonSizeValue=CommonUtility.getCellValueStrinOrInt(cell);
+						 /*if(!StringUtils.isEmpty(cartonSizeValue)){//
 							 Size existingSizeObj=productConfigObj.getSizes();
 							 if(existingSizeObj.getDimension()!=null){
 							 existingSizeObj =tomaxUsaSizeParser.getSizes(cartonSizeValue, existingSizeObj, existingSizeObj.getDimension(), existingSizeObj.getDimension().getValues());
@@ -336,7 +342,13 @@ public class TomaxProductTabParser {
 						      existingSizeObj =tomaxUsaSizeParser.getSizes(cartonSizeValue, new Size(), new Dimension(), new ArrayList<Values>());
 							 }
 							 productConfigObj.setSizes(existingSizeObj);
-							 }
+							 }*/
+						
+						String shippinDim=CommonUtility.getCellValueStrinOrInt(cell);
+						 if(!StringUtils.isEmpty(shippinDim)){
+							 shippingEstObj=tomaxUsaAttributeParser.getShippingEstimates(shippinDim,shippingEstObj,"SDIM");
+							 productConfigObj.setShippingEstimates(shippingEstObj);
+						 }
 						break;
 								
 						
@@ -365,8 +377,8 @@ public class TomaxProductTabParser {
 			 	productExcelObj.setPriceType("L");
 			 	productExcelObj.setPriceGrids(priceGrids);
 			 	productExcelObj.setProductConfigurations(productConfigObj);
-		 	/*_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(productExcelObj));*/
+		 	_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(productExcelObj));
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -381,6 +393,7 @@ public class TomaxProductTabParser {
 		productConfigObj = new ProductConfigurations();
 		listOfPrices = new StringBuilder();
 	    listOfQuantity = new StringBuilder();
+	    shippingEstObj=new ShippingEstimate();
 		repeatRows.clear();
 		return finalResult;
 		}catch(Exception e){
