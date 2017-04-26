@@ -217,6 +217,7 @@ public class TomaxProductTabParser {
 					case 5:
 						String	listPrice1=null;
 						listPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
+						listPrice1=listPrice1.replaceAll(" ","");
 						if(!StringUtils.isEmpty(listPrice1)){
 							listOfPrices.append(listPrice1.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							listOfQuantity.append(q1.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -226,6 +227,7 @@ public class TomaxProductTabParser {
 					case 6://Price 2
 						String	listPrice2=null;
 						listPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
+						listPrice2=listPrice2.replaceAll(" ","");
 						if(!StringUtils.isEmpty(listPrice2)){
 							listOfPrices.append(listPrice2.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							listOfQuantity.append(q2.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -235,6 +237,7 @@ public class TomaxProductTabParser {
 					case 7://Price 3
 						String	listPrice3=null;
 						listPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
+						listPrice3=listPrice3.replaceAll(" ","");
 						if(!StringUtils.isEmpty(listPrice3)){
 							listOfPrices.append(listPrice3.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							listOfQuantity.append(q3.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -244,6 +247,7 @@ public class TomaxProductTabParser {
 					case 8://Price 4
 						String	listPrice4=null;
 						listPrice4=CommonUtility.getCellValueStrinOrDecimal(cell);
+						listPrice4=listPrice4.replaceAll(" ","");
 						if(!StringUtils.isEmpty(listPrice4)){
 							listOfPrices.append(listPrice4.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							listOfQuantity.append(q4.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -253,6 +257,7 @@ public class TomaxProductTabParser {
 					case 9://Price 5
 						String	listPrice5=null;
 						listPrice5=CommonUtility.getCellValueStrinOrDecimal(cell);
+						listPrice5=listPrice5.replaceAll(" ","");
 						if(!StringUtils.isEmpty(listPrice5)){
 							listOfPrices.append(listPrice5.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							listOfQuantity.append(q5.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
