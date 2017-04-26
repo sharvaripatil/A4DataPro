@@ -26,6 +26,7 @@ import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
+import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 
@@ -55,6 +56,7 @@ public class ExcelFactory {
 	private PrimeLineExcelMapping primeLineExcelMapping;
 	private GoldBondExcelMapping  goldBandExcelMapping;
 	private PSLMapping pslMapping;
+	private TomaxUsaMapping tomaxUsaMapping;
 	private ProGolfMapping proGolfMapping;
 	private DacassoMapping dacassoMapping;
 
@@ -115,6 +117,9 @@ public class ExcelFactory {
 	      } else if(name.equalsIgnoreCase("dacasso") || name.equals("48125")){
 	    	  return dacassoMapping;
 	      }
+	      else if(name.equalsIgnoreCase("tomaxusa") || name.equals("91435")){
+			   return tomaxUsaMapping;
+		  }
 		return null;
 	}
 	
@@ -321,4 +326,11 @@ public class ExcelFactory {
 		this.dacassoMapping = dacassoMapping;
 	}
 
+	public TomaxUsaMapping getTomaxUsaMapping() {
+		return tomaxUsaMapping;
+	}
+
+	public void setTomaxUsaMapping(TomaxUsaMapping tomaxUsaMapping) {
+		this.tomaxUsaMapping = tomaxUsaMapping;
+	}	
 }
