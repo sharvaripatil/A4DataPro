@@ -139,7 +139,7 @@ public class TomaxSizeParser {
 					sizeValue=sizeValue.replaceAll("\"","INC");
 					sizeValue=sizeValue.replaceAll(";",",");
 					sizeValue=sizeValue.replaceAll(":","");
-					//sizeValue=sizeValue.replaceAll(".","");
+					sizeValue = sizeValue.replace(".", "");
 					String valuesArr[]=sizeValue.split(",");
 					
 					for (String tempValue : valuesArr) {
