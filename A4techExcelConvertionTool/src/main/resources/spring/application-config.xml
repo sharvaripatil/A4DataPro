@@ -23,7 +23,7 @@
 	</bean>
 	<import resource="sageMapping.xml" />
 	<import resource="kuku_mapping.xml" />
-	<!-- <import resource="ftpSchedular.xml"/>   -->
+	<!-- <import resource="ftpSchedular.xml"/>  -->
 	<context:property-placeholder location="classpath:application.properties,classpath:sandbox-database.properties
 	                                       ,classpath:sandbox-externalApiEndPoints.properties"/>
 	<bean id="productService" class="com.a4tech.product.service.imple.ProductServiceImpl" />
@@ -227,7 +227,16 @@
     	<property name="serveraddress" value="${ftp.serverIp.address}"/>
     	<property name="username" value="${ftp.userName}"/>
     	<property name="password" value="${ftp.password}"/>
+    	<property name="portNo" value="${ftp.portNo}"/>
     </bean>
+    <bean id="ftpServiceImplId" class="com.a4tech.ftp.service.impl.FtpServiceImpl">
+        <property name="ftpClient" ref="fTPClientId"/>
+    	<property name="serveraddress" value="${ftp.serverIp.address}"/>
+    	<property name="username" value="${ftp.userName}"/>
+    	<property name="password" value="${ftp.password}"/>
+    	<property name="portNo" value="${ftp.portNo}"/>
+    </bean>
+    <bean id="fTPClientId" class="org.apache.commons.net.ftp.FTPClient"/>
 	<bean id="dcPriceGridParserObj" name="dcPriceGridParserObj"
 		class="com.a4tech.product.DCProducts.parser.DCPriceGridParser"
 		autowire="byName"></bean>
@@ -398,7 +407,8 @@
 		<property name="primeLineExcelMapping" ref="primeLineExcelMappingId"/>
 		<property name="proGolfMapping" ref="proGolfMappingId"></property>
 		<property name="milestoneExcelMapping" ref="milestoneExcelMappingId"/>	
-		<property name="pslMapping" ref="pslMappingId"/>	
+		<property name="pslMapping" ref="pslMappingId"/>
+		<property name="dacassoMapping" ref="dacassoMappingId"/>	
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -710,19 +720,23 @@
       <property name="postServiceImpl" ref="postService"/>
       <property name="productDaoObj" ref="productDao"/>
       <property name="attributObj" ref="attributObjId"/>
-      
     </bean>
 
      <bean id="attributObjId" class="parser.psl.PSLProductAttributeParser">
      <property name="lookupServiceDataObj" ref="lookupServiceData"/>
      <property name="lookupRestServiceObj" ref="lookupRestService"/>
      </bean>
-
-
-
-
-
-
   <!-- supplier PSL configuration end -->
+  <!--Dacasso Configuration Start  -->
+  <bean id="dacassoMappingId" class="com.a4tech.supplier.mapper.DacassoMapping">
+  	<property name="postServiceImpl" ref="postService"/>
+  	<property name="productDaoObj" ref="productDao"/>
+  	<property name="dacassoPriceGridParser" ref="dacassoPriceGridParserId"/>
+  	<property name="dacassoAttributeParser" ref="dacassoAttributeParserId"/>
+  </bean>
+  <bean id="dacassoPriceGridParserId" class="parser.dacasso.DacassoPriceGridParser"/>
+  <bean id="dacassoAttributeParserId" class="parser.dacasso.DacassoAttributeParser"/>
+  
+  <!--Dacasso Configuration End  -->
 </beans>
 

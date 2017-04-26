@@ -19,6 +19,7 @@ import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
+import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
@@ -55,7 +56,7 @@ public class ExcelFactory {
 	private GoldBondExcelMapping  goldBandExcelMapping;
 	private PSLMapping pslMapping;
 	private ProGolfMapping proGolfMapping;
-
+	private DacassoMapping dacassoMapping;
 
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -111,9 +112,9 @@ public class ExcelFactory {
   			   return milestoneExcelMapping;
 	      } else if(name.equalsIgnoreCase("proGolf") || name.equals("79680")){
  			   return proGolfMapping;
-	      } 
-		   
-		   
+	      } else if(name.equalsIgnoreCase("dacasso") || name.equals("48125")){
+	    	  return dacassoMapping;
+	      }
 		return null;
 	}
 	
@@ -311,6 +312,13 @@ public class ExcelFactory {
 
 	public void setPslMapping(PSLMapping pslMapping) {
 		this.pslMapping = pslMapping;
+	}
+	public DacassoMapping getDacassoMapping() {
+		return dacassoMapping;
+	}
+
+	public void setDacassoMapping(DacassoMapping dacassoMapping) {
+		this.dacassoMapping = dacassoMapping;
 	}
 
 }

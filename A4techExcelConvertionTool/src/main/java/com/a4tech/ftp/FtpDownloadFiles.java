@@ -14,6 +14,7 @@ public class FtpDownloadFiles {
 	private String serveraddress ;
 	private String username  ;
 	private String password  ;
+	private String portNo;
 	private FilesParsing fileParsing;
 	FTPClient fClient = null;
 	private static Logger _LOGGER = Logger.getLogger(FtpDownloadFiles.class);
@@ -22,7 +23,7 @@ public class FtpDownloadFiles {
 		 fClient  = new FTPClient();
 		OutputStream output = null;
 		try {
-			fClient.connect(serveraddress);
+			fClient.connect(serveraddress,Integer.parseInt(portNo));
 		if(!fClient.login(username, password)){
 			fClient.logout();
 		}else{
@@ -91,7 +92,7 @@ public void ftpServerDisconnect(){
 	
 	}
 }
- private void listDirectory(FTPClient ftpClient, String parentDir,
+/* private void listDirectory(FTPClient ftpClient, String parentDir,
         String currentDir, int level) throws IOException {
 	OutputStream output = null;
     String dirToList = parentDir;
@@ -116,7 +117,7 @@ public void ftpServerDisconnect(){
             }
         }
     }
-}
+}*/
 	public String getServeraddress() {
 		return serveraddress;
 	}
@@ -142,5 +143,13 @@ public void ftpServerDisconnect(){
 	public void setFileParsing(FilesParsing fileParsing) {
 		this.fileParsing = fileParsing;
 	}
+	public String getPortNo() {
+		return portNo;
+	}
+
+	public void setPortNo(String portNo) {
+		this.portNo = portNo;
+	}
+
 }
 	

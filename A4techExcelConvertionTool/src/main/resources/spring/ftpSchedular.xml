@@ -9,12 +9,13 @@
 	<!-- cron triggers -->
 	 <bean id="ftpServerCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 	 	<property name="jobDetail" ref="ftpServerCronJobDetails"></property>
-	 	<property name="cronExpression" value="0/45 * * * * ?"></property>
+	 	<property name="cronExpression" value="0 0/5 * * * ?"></property>
 	 </bean>	
 	 <bean id="ftpFilesDownloadIds" class="com.a4tech.ftp.FtpDownloadFiles">
 	 	<property name="serveraddress" value="${ftp.serverIp.address}"/>
     	<property name="username" value="${ftp.userName}"/>
     	<property name="password" value="${ftp.password}"/>
+    	<property name="portNo" value="${ftp.portNo}"/>
     	<property name="fileParsing" ref="fileParsingId"/>
 	 </bean>
 	<!-- cron Job details -->

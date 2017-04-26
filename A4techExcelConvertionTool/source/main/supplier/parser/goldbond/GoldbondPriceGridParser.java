@@ -22,7 +22,7 @@ public class GoldbondPriceGridParser {
 		    String listOfQuan, String discountCodes,
 			String currency, String priceInclude, boolean isBasePrice,
 			boolean isQurFlag, String priceName, String criterias,
-			List<PriceGrid> existingPriceGrid) {
+			List<PriceGrid> existingPriceGrid,String priceUnitName) {
 		_LOGGER.info("Enter Price Grid Parser class");
 		try{
 		Integer sequence = 1;

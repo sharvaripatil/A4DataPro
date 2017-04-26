@@ -778,7 +778,19 @@ public class GoldbondAttributeParser {
 		if(!CollectionUtils.isEmpty(tempImprintMethodVals)){
 			listOfImprintMethods = getImprintMethods(tempImprintMethodVals);
 		}
-		return null;
+		config.setImprintMethods(listOfImprintMethods);
+		if(!StringUtils.isEmpty(additionalImprintInfo)){
+			if(StringUtils.isEmpty(existingAdditionalImprintInfo)){
+				existingAdditionalImprintInfo = additionalImprintInfo;
+			} else {
+				existingAdditionalImprintInfo = CommonUtility.appendStrings(existingAdditionalImprintInfo,
+						additionalImprintInfo, " ");
+			}
+			
+		}
+		existingProduct.setAdditionalImprintInfo(existingAdditionalImprintInfo);
+		existingProduct.setProductConfigurations(config);
+		return existingProduct;
 	}
     private List<ImprintMethod> getImprintMethods(List<String> imprintMethodVals){
     	List<ImprintMethod> listOfImprintMethods = new ArrayList<>();
