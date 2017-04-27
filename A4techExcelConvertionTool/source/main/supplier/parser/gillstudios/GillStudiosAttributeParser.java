@@ -2,16 +2,16 @@ package parser.gillstudios;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import parser.tomaxusa.TomaxConstants;
+
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintSize;
-import com.a4tech.product.model.Material;
 import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.Packaging;
@@ -19,12 +19,11 @@ import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.RushTimeValue;
-import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Weight;
-import com.a4tech.supplier.mapper.GillStudiosMapping;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -48,25 +47,11 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		if(!CollectionUtils.isEmpty(images)){
 			newProduct.setImages(images);
 		}
-		//keywords
-		List<String> productKeywords=existingProduct.getProductKeywords();
-		if(!CollectionUtils.isEmpty(productKeywords)){
-			newProduct.setProductKeywords(productKeywords);
-		}
-		//product colors
-		List<Color> colors =existingProductConfig.getColors();
-		if(!CollectionUtils.isEmpty(colors)){
-			newProductConfigurations.setColors(colors);
-		}
-		//shape
-		List<Shape> shapes =existingProductConfig.getShapes();
-		if(!CollectionUtils.isEmpty(productKeywords)){
-			newProductConfigurations.setShapes(shapes);
-		}
-		//material
-		List<Material>   materials=existingProductConfig.getMaterials();
-		if(!CollectionUtils.isEmpty(productKeywords)){
-			newProductConfigurations.setMaterials(materials);
+		
+		//themes
+		List<Theme>	themes=existingProductConfig.getThemes();
+		if(!CollectionUtils.isEmpty(themes)){
+			newProductConfigurations.setThemes(themes);
 		}
 		newProduct.setProductConfigurations(newProductConfigurations);
 		}catch(Exception e){
@@ -255,7 +240,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			//colorName = colorName.trim();
 			
 			colorObj = new Color();
-			String colorGroup = TomaxConstants.getColorGroup(colorName.trim());
+			String colorGroup = GillStudiosConstatnt.getColorGroup(colorName.trim());
 			//if (colorGroup == null) {
 				//if (colorGroup!=null && colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
 			if (colorName.contains("/") || colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
@@ -272,19 +257,19 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 						List<Combo> listOfCombo = null;
 						String[] comboColors = CommonUtility.getValuesOfArray(colorGroup,
 								ApplicationConstants.CONST_DELIMITER_FSLASH);
-						String colorFirstName = TomaxConstants.getColorGroup(comboColors[0].trim());
+						String colorFirstName = GillStudiosConstatnt.getColorGroup(comboColors[0].trim());
 						colorObj.setName(colorFirstName == null?"Other":colorFirstName);
 						int combosSize = comboColors.length;
 						if (combosSize == ApplicationConstants.CONST_INT_VALUE_TWO) {
-							String colorComboFirstName = TomaxConstants.getColorGroup(comboColors[1].trim());
+							String colorComboFirstName = GillStudiosConstatnt.getColorGroup(comboColors[1].trim());
 							colorComboFirstName = colorComboFirstName == null?"Other":colorComboFirstName;
 							listOfCombo = getColorsCombo(colorComboFirstName, ApplicationConstants.CONST_STRING_EMPTY,
 									combosSize);
 						} else{
-							String colorComboFirstName = TomaxConstants.getColorGroup(comboColors[1].trim());
+							String colorComboFirstName = GillStudiosConstatnt.getColorGroup(comboColors[1].trim());
 							colorComboFirstName = colorComboFirstName == null?"Other":colorComboFirstName;
 							
-							String colorComboSecondName = TomaxConstants.getColorGroup(comboColors[2].trim());
+							String colorComboSecondName = GillStudiosConstatnt.getColorGroup(comboColors[2].trim());
 							colorComboSecondName = colorComboSecondName == null?"Other":colorComboSecondName;
 							listOfCombo = getColorsCombo(colorComboFirstName,colorComboSecondName, combosSize);
 						}
@@ -294,7 +279,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 					} else {
 						String[] comboColors = CommonUtility.getValuesOfArray(colorGroup,
 								ApplicationConstants.CONST_DELIMITER_FSLASH);
-						String mainColorGroup = TomaxConstants.getColorGroup(comboColors[0].trim());
+						String mainColorGroup = GillStudiosConstatnt.getColorGroup(comboColors[0].trim());
 						if(mainColorGroup != null){
 							colorObj.setName(mainColorGroup);
 							colorObj.setAlias(colorName);
@@ -347,15 +332,15 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
     	String secondaryColor  = null;
     	String thirdColor      = null;
     	if(colorVals.length == ApplicationConstants.CONST_INT_VALUE_TWO){
-    		 mainColor = TomaxConstants.getColorGroup(colorVals[0].trim());
-    		 secondaryColor = TomaxConstants.getColorGroup(colorVals[1].trim());
+    		 mainColor = GillStudiosConstatnt.getColorGroup(colorVals[0].trim());
+    		 secondaryColor = GillStudiosConstatnt.getColorGroup(colorVals[1].trim());
     		 if(mainColor != null && secondaryColor != null){
     			 return true;
     		 }
     	} else if(colorVals.length == ApplicationConstants.CONST_INT_VALUE_THREE){
-    		 mainColor      = TomaxConstants.getColorGroup(colorVals[0].trim());
-    		 secondaryColor = TomaxConstants.getColorGroup(colorVals[1].trim());
-    		 thirdColor     = TomaxConstants.getColorGroup(colorVals[2].trim());
+    		 mainColor      = GillStudiosConstatnt.getColorGroup(colorVals[0].trim());
+    		 secondaryColor = GillStudiosConstatnt.getColorGroup(colorVals[1].trim());
+    		 thirdColor     = GillStudiosConstatnt.getColorGroup(colorVals[2].trim());
     		 if(mainColor != null && secondaryColor != null && thirdColor != null){
     			 return true;
     		 }
