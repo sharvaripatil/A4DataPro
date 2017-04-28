@@ -102,10 +102,8 @@ function validateForm(){
 	var password = document.getElementById("password").value;
 	document.getElementById("dataId").innerHTML = "";
 	if (asiNumber==null || asiNumber==''){
-		alert('asiNum');
 		  document.getElementById("asinumftp").innerHTML = "<i><b>!</b></i> &nbsp;Enter your ASI Number";
 		  document.getElementById("asinumftp").focus();
-		  alert('asiNum end');
 		  return false;  
 	}else{
 		document.getElementById("asinumftp").innerHTML = "";

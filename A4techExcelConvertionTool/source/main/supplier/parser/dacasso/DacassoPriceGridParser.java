@@ -46,8 +46,6 @@ public class DacassoPriceGridParser {
 			if (!priceGrid.getIsQUR() && !CommonUtility.isdescending(pricesForNetCost)) {
 				priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
 			}
-				/*.setIsQUR(qurFlag.equals("n") ? ApplicationConstants.CONST_BOOLEAN_FALSE
-						: ApplicationConstants.CONST_BOOLEAN_TRUE);*/
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
@@ -67,11 +65,8 @@ public class DacassoPriceGridParser {
 			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
 		}
 		return existingPriceGrid;
-
 	}
-
 	public List<Price> getPrices(String[] prices, String[] quantity, String[] disCodes,String priceUnitName) {
-
 		List<Price> listOfPrices = new ArrayList<Price>();
 	try{
 		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length && PriceNumber < quantity.length; 
@@ -98,12 +93,7 @@ public class DacassoPriceGridParser {
 				listPrice = listPrice.replace("$", ApplicationConstants.CONST_STRING_EMPTY).trim();
 			}
 			price.setPrice(listPrice);
-			try {
-				price.setDiscountCode(disCodes[PriceNumber]);
-			}catch(ArrayIndexOutOfBoundsException exce){
-				price.setDiscountCode("R");
-				_LOGGER.error("Invalid Discount code,Set default discount code:R");
-			}
+			price.setDiscountCode(disCodes[PriceNumber]);
 			if(priceUnitName.equalsIgnoreCase("dozen")){
 				priceUnit.setName("Dozen");
 				priceUnit.setItemsPerUnit("12");

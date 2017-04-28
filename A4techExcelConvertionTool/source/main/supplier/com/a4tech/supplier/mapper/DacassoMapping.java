@@ -38,12 +38,10 @@ import parser.dacasso.DacassoPriceGridParser;
 public class DacassoMapping implements IExcelParser{
 	
 	private static final Logger _LOGGER = Logger.getLogger(DacassoMapping.class);
-	
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
 	private DacassoPriceGridParser dacassoPriceGridParser;
 	private DacassoAttributeParser dacassoAttributeParser;
-	
 	
 	@Override
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
@@ -79,8 +77,7 @@ public class DacassoMapping implements IExcelParser{
 			if(xid != null){
 				productXids.add(xid);
 			}
-			 boolean checkXid  = false;
-			
+			boolean checkXid  = false;			
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
 				columnIndex = cell.getColumnIndex();
@@ -142,7 +139,7 @@ public class DacassoMapping implements IExcelParser{
 				case 3: // prdName&Description
 					String productName = cell.getStringCellValue();
 					productName = productName.replaceAll("\n", "").trim();
-					productExcelObj.setName(productName);
+					productExcelObj.setName(CommonUtility.getStringLimitedChars(productName, 60));
 					productDescription.append(productName);
 					  break;
 				case 4: //SKU
@@ -265,7 +262,7 @@ public class DacassoMapping implements IExcelParser{
 					priceGrids = dacassoPriceGridParser.getBasePriceGrid(priceVal,"1","P", "USD",
 							         "", true, false, "","",priceGrids,"","");	
 				}
-				if(!StringUtils.isEmpty(shippingValues)){
+				if(!StringUtils.isEmpty(shippingValues.toString())){
 						ShippingEstimate shippingEstimateValues = dacassoAttributeParser
 								.getProductShippingEstimates(shippingValues.toString());
 						productConfigObj.setShippingEstimates(shippingEstimateValues);

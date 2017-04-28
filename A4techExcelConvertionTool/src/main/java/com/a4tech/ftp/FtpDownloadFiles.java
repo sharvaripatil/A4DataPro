@@ -1,4 +1,4 @@
-package com.a4tech.ftp;
+/*package com.a4tech.ftp;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,7 +16,7 @@ public class FtpDownloadFiles {
 	private String password  ;
 	private String portNo;
 	private FilesParsing fileParsing;
-	FTPClient fClient = null;
+	private FTPClient fClient = null;
 	private static Logger _LOGGER = Logger.getLogger(FtpDownloadFiles.class);
 	public void getFtpDownloadFiles(){
 	   _LOGGER.info("Enter the Ftp server reader method");
@@ -92,7 +92,7 @@ public void ftpServerDisconnect(){
 	
 	}
 }
-/* private void listDirectory(FTPClient ftpClient, String parentDir,
+ private void listDirectory(FTPClient ftpClient, String parentDir,
         String currentDir, int level) throws IOException {
 	OutputStream output = null;
     String dirToList = parentDir;
@@ -117,7 +117,7 @@ public void ftpServerDisconnect(){
             }
         }
     }
-}*/
+}
 	public String getServeraddress() {
 		return serveraddress;
 	}
@@ -153,3 +153,4 @@ public void ftpServerDisconnect(){
 
 }
 	
+*/
