@@ -280,28 +280,9 @@ public class GillStudiosMapping implements IExcelParser{
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
-						  	//   productExcelObj=existingApiProduct;
-							//	productConfigObj=existingApiProduct.getProductConfigurations();
-						        String confthruDate=existingApiProduct.getPriceConfirmedThru();
-						        productExcelObj.setPriceConfirmedThru(confthruDate);
-						        
-						    	 List<Image> Img=existingApiProduct.getImages();
-						    	 productExcelObj.setImages(Img);
-						    	 
-						    	 themeList=productConfigObj.getThemes();
-						    	 productConfigObj.setThemes(themeList);
-						    	 
-						    	 List<Availability> AvailibilityList=null;
-						    	 productExcelObj.setAvailability(AvailibilityList);
-						    	 
-						    	 List<ProductNumber> ProductNumberList=null;
-						    	 productExcelObj.setProductNumbers(ProductNumberList);
-						    	 
-						    	 List<String>categoriesList=existingApiProduct.getCategories();
-						    	 productExcelObj.setCategories(categoriesList);
-						     
+						    	 productExcelObj = gillStudiosAttributeParser.getExistingProductData(existingApiProduct, existingApiProduct.getProductConfigurations());
+						    	 productConfigObj=productExcelObj.getProductConfigurations();
 						     }
-							//productExcelObj = new Product();
 					 }
 				}
 				
@@ -337,8 +318,8 @@ public class GillStudiosMapping implements IExcelParser{
 				    break;
 					
 				case 6://PriceConfirmedThru
-					 priceConfirmedThru = cell.getDateCellValue();
-		
+					// priceConfirmedThru = cell.getDateCellValue();
+					// need to work on this
 					break;
 					
 				case 7: //  product status ,discontinued
