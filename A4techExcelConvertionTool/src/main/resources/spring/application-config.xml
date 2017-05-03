@@ -405,6 +405,8 @@
 		<property name="pslMapping" ref="pslMappingId"/>
 		<property name="dacassoMapping" ref="dacassoMappingId"/>	
 		<property name="tomaxUsaMapping" ref="TomaxUsaMappingId"/>
+		<property name="brandwearExcelMapping" ref="brandwearExcelMappingId"/>
+		
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -756,5 +758,25 @@
 	 <property name="tomaxUsaSizeParser" ref="tomaxSizeParserId"/>
 	</bean>
      <!--supplier 91435 Tomax USA configuration start  -->  
+    
+     <!--Brandwear Configuration Start  -->   
+      <bean id="brandwearExcelMappingId" class="com.a4tech.supplier.mapper.BrandwearExcelMapping">
+          <property name="postServiceImpl" ref="postService"/>
+          <property name="productDaoObj" ref="productDao"/>
+          <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+          <property name="productAttributeObj" ref="productAttributeObjId"/>
+          
+       
+       </bean>
+       
+       <bean id="productAttributeObjId" class="parser.brandwear.BrandwearProductAttribure">
+         <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+         <property name="lookupRestServiceObj" ref="lookupRestService"/>
+       </bean>
+       
+       
+       
+     
+     
 </beans>
 
