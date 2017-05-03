@@ -20,86 +20,59 @@ public class BrandwearProductAttribure {
 
 	public ShippingEstimate getshippingWeight(String shippingWeight) {
 
-		ShippingEstimate shippingObj=new ShippingEstimate();
+		ShippingEstimate shippingObj = new ShippingEstimate();
 
 		List<Weight> WeightList = new ArrayList<Weight>();
-		Weight objWeight=new Weight();
-		shippingWeight=shippingWeight.replaceAll("oz. / Item", "");  
-		
+		Weight objWeight = new Weight();
+		shippingWeight = shippingWeight.replaceAll("oz. / Item", "");
 		objWeight.setValue(shippingWeight);
 		objWeight.setUnit("oz");
 		WeightList.add(objWeight);
 		shippingObj.setWeight(WeightList);
-				
 		return shippingObj;
 	}
-	
+
 	public List<ImprintMethod> getImprintMethod(String imprintMethod) {
 		List<ImprintMethod> ImprintMethodList = new ArrayList<ImprintMethod>();
-		ImprintMethod imprintMethodObj=new ImprintMethod();
-
-		List<String> finalImprintValues = getImprintValue(imprintMethod.toUpperCase());	
+		ImprintMethod imprintMethodObj = new ImprintMethod();
+		List<String> finalImprintValues = getImprintValue(imprintMethod
+				.toUpperCase());
 
 		for (String string : finalImprintValues) {
-			
 			imprintMethodObj.setAlias(string);
 			imprintMethodObj.setType(string);
-			
 			ImprintMethodList.add(imprintMethodObj);
-
 		}
-  	return ImprintMethodList;
+		return ImprintMethodList;
 	}
 
-		
-	public List<String> getImprintValue(String value){
-		List<String> imprintLookUpValue = lookupServiceDataObj.getImprintMethods();
+	public List<String> getImprintValue(String value) {
+		List<String> imprintLookUpValue = lookupServiceDataObj
+				.getImprintMethods();
 		List<String> finalImprintValues = imprintLookUpValue.stream()
-				                                  .filter(impntName -> value.contains(impntName))
-				                                  .collect(Collectors.toList());
-                                                 
-				
-		return finalImprintValues;	
+				.filter(impntName -> value.contains(impntName))
+				.collect(Collectors.toList());
+
+		return finalImprintValues;
 	}
-	
-	
+
 	public List<Material> getMaterial(String materialValues) {
-
-		  List<Material> MaterialList = new ArrayList<Material>();
-		  Material materialObj=new Material();
-		  
-		 String materialValueArr[]=materialValues.split("--");
-		
-		List<String> listOfLookupMaterial = getMaterialType(materialValueArr[1].toUpperCase());	
-
-		 
-		if(StringUtils.isEmpty(materialValueArr[0]))
-		{
-			materialObj.setAlias(materialValueArr[1]);			
-		}else
-		{
-			materialObj.setAlias(materialValueArr[0]);			
+		List<Material> MaterialList = new ArrayList<Material>();
+		Material materialObj = new Material();
+		String materialValueArr[] = materialValues.split("--");
+		List<String> listOfLookupMaterial = getMaterialType(materialValueArr[1]
+				.toUpperCase());
+		if (StringUtils.isEmpty(materialValueArr[0])) {
+			materialObj.setAlias(materialValueArr[1]);
+		} else {
+			materialObj.setAlias(materialValueArr[0]);
 		}
-		
-		if("%".length()==1)
-		{
+		if ("%".length() == 1) {
 			materialObj.setName(listOfLookupMaterial.get(0));
-			
-		}else if("%".length()==2)
-		{
-			
-			
-		}else if("%".length()==3)
-		{
-			
-			
-			
+		} else if ("%".length() == 2) {
+		} else if ("%".length() == 3) {
 		}
-		
-		
-		 
 		MaterialList.add(materialObj);
-		 
 		return MaterialList;
 	}
 
@@ -109,7 +82,6 @@ public class BrandwearProductAttribure {
 		List<String> finalMaterialValues = listOfLookupMaterials.stream()
 				.filter(mtrlName -> value.contains(mtrlName))
 				.collect(Collectors.toList());
-
 		return finalMaterialValues;
 	}
 
@@ -129,13 +101,4 @@ public class BrandwearProductAttribure {
 		this.lookupRestServiceObj = lookupRestServiceObj;
 	}
 
-
-	
-	
-	
 }
-
-
-
-
-
