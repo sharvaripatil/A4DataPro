@@ -210,19 +210,19 @@ public class PSLProductAttributeParser {
 
           String productSizeArr[]=productSize.split("x");
           
-          for (int sizeNo=0;sizeNo<productSizeArr.length;sizeNo++) {
+          for (int i=0;i<productSizeArr.length;i++) {
         	  
             //sizeObj=new Size();   
             ValueObj=new Value();
-      		ValueObj.setValue(productSizeArr[sizeNo]);
+      		ValueObj.setValue(productSizeArr[i]);
       		ValueObj.setUnit("in");
       		
-      		if(sizeNo==0){
+      		if(i==0){
     		ValueObj.setAttribute("Length");
-      		}else if(sizeNo==1)
+      		}else if(i==1)
       		{
       		ValueObj.setAttribute("Width");	
-      		}else if(sizeNo==2)
+      		}else if(i==2)
       		{
           	ValueObj.setAttribute("Height");	
       		}
@@ -261,12 +261,12 @@ public class PSLProductAttributeParser {
 			}
 			
 			else{
-				for (int comboNo=1;comboNo<3;comboNo++) {
+				for (int i=1;i<3;i++) {
 				 combovalue = new Combo();
-				 if(comboNo==1){
+				 if(i==1){
 				 combovalue.setName(MilestoneLookupData.COLOR_MAP.get(colorArr1[1].trim()));
 				 combovalue.setType("secondary");
-				 }else if(comboNo==2)
+				 }else if(i==2)
 				 {
 				 combovalue.setName(MilestoneLookupData.COLOR_MAP.get(colorArr1[2].trim()));
 				 combovalue.setType("trim");

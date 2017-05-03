@@ -62,19 +62,19 @@ public class PSLPriceGridParser {
 			String[] quantity, String[] discount) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
-		for (int priceValue = 0, quantityValue = 1; priceValue < prices.length 
-				&& priceValue < quantity.length; priceValue++, quantityValue++) {
+		for (int i = 0, j = 1; i < prices.length 
+				&& i < quantity.length; i++, j++) {
 
 			Price price = new Price();
 			PriceUnit priceUnit = new PriceUnit();
-			price.setSequence(quantityValue);
+			price.setSequence(j);
 			try {
-				price.setQty(Integer.valueOf(quantity[priceValue]));
+				price.setQty(Integer.valueOf(quantity[i]));
 			} catch (NumberFormatException nfe) {
 				_LOGGER.error("Error while processing quantity in PSLParser" + nfe.getMessage());
 				price.setQty(0);
 			}
-			price.setPrice(prices[priceValue]);
+			price.setPrice(prices[i]);
        		price.setDiscountCode(discount[0]);
 			priceUnit
 					.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
