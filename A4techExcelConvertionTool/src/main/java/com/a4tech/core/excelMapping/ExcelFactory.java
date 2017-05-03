@@ -17,6 +17,7 @@ import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
 import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
+import com.a4tech.supplier.mapper.BrandwearExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
@@ -59,7 +60,8 @@ public class ExcelFactory {
 	private TomaxUsaMapping tomaxUsaMapping;
 	private ProGolfMapping proGolfMapping;
 	private DacassoMapping dacassoMapping;
-
+	private BrandwearExcelMapping brandwearExcelMapping;
+	
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -119,6 +121,9 @@ public class ExcelFactory {
 	      }
 	      else if(name.equalsIgnoreCase("tomaxusa") || name.equals("91435")){
 			   return tomaxUsaMapping;
+		  }
+	      else if(name.equalsIgnoreCase("brandwear") || name.equals("41545")){
+			   return brandwearExcelMapping;
 		  }
 		return null;
 	}
@@ -332,5 +337,23 @@ public class ExcelFactory {
 
 	public void setTomaxUsaMapping(TomaxUsaMapping tomaxUsaMapping) {
 		this.tomaxUsaMapping = tomaxUsaMapping;
-	}	
+	}
+
+	public BrandwearExcelMapping getBrandwearExcelMapping() {
+		return brandwearExcelMapping;
+	}
+
+	public void setBrandwearExcelMapping(BrandwearExcelMapping brandwearExcelMapping) {
+		this.brandwearExcelMapping = brandwearExcelMapping;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
