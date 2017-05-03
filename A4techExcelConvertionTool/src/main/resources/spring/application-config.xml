@@ -23,7 +23,7 @@
 	</bean>
 	<import resource="sageMapping.xml" />
 	<import resource="kuku_mapping.xml" />
-	<!-- <import resource="ftpSchedular.xml"/>   -->
+	<!-- <import resource="ftpSchedular.xml"/>  -->
 	<context:property-placeholder location="classpath:application.properties,classpath:sandbox-database.properties
 	                                       ,classpath:sandbox-externalApiEndPoints.properties"/>
 	<bean id="productService" class="com.a4tech.product.service.imple.ProductServiceImpl" />
@@ -223,11 +223,15 @@
 		</property>
 	</bean>
     <!-- FTP Server details -->
-    <bean id="ftpFilesDownloadId" class="com.a4tech.ftp.FtpDownloadFiles">
+    <bean id="ftpServiceImplId" class="com.a4tech.ftp.service.impl.FtpServiceImpl">
+        <property name="ftpClient" ref="fTPClientId"/>
     	<property name="serveraddress" value="${ftp.serverIp.address}"/>
     	<property name="username" value="${ftp.userName}"/>
     	<property name="password" value="${ftp.password}"/>
+    	<property name="portNo" value="${ftp.portNo}"/>
+    	<property name="filesParsing" ref="fileParsingId"/>
     </bean>
+    <bean id="fTPClientId" class="org.apache.commons.net.ftp.FTPClient"/>
 	<bean id="dcPriceGridParserObj" name="dcPriceGridParserObj"
 		class="com.a4tech.product.DCProducts.parser.DCPriceGridParser"
 		autowire="byName"></bean>
@@ -398,7 +402,9 @@
 		<property name="primeLineExcelMapping" ref="primeLineExcelMappingId"/>
 		<property name="proGolfMapping" ref="proGolfMappingId"></property>
 		<property name="milestoneExcelMapping" ref="milestoneExcelMappingId"/>	
-		<property name="pslMapping" ref="pslMappingId"/>	
+		<property name="pslMapping" ref="pslMappingId"/>
+		<property name="dacassoMapping" ref="dacassoMappingId"/>	
+		<property name="tomaxUsaMapping" ref="TomaxUsaMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -660,9 +666,11 @@
     	 <property name="postServiceImpl" ref="postService"/>
          <property name="productDaoObj" ref="productDao"/>
          <property name="gbAttributeParser" ref="goldbondAttributeParserId"/>
+         <property name="gbPriceGridParser" ref="goldbondPriceGridParser"/>
     </bean>
     <bean id="goldbondAttributeParserId" class="parser.goldbond.GoldbondAttributeParser">
     	<property name="gbPriceGridParser" ref="goldbondPriceGridParser"/>
+    	<property name="lookupServiceData" ref="lookupServiceData"/>
     </bean>
      <bean id="goldbondPriceGridParser" class="parser.goldbond.GoldbondPriceGridParser"/>
      <bean id="proGolfMappingId" class="com.a4tech.supplier.mapper.ProGolfMapping">
@@ -709,20 +717,44 @@
       <property name="productDaoObj" ref="productDao"/>
       <property name="attributObj" ref="attributObjId"/>
       <property name="pslPriceGridObj" ref="pslPriceGridObjId"/>
-      
     </bean>
 
      <bean id="attributObjId" class="parser.psl.PSLProductAttributeParser">
      <property name="lookupServiceDataObj" ref="lookupServiceData"/>
      <property name="lookupRestServiceObj" ref="lookupRestService"/>
      </bean>
-
      <bean id="pslPriceGridObjId" class="parser.psl.PSLPriceGridParser"/>
-
-
-
-
-
   <!-- supplier PSL configuration end -->
+  <!--Dacasso Configuration Start  -->
+  <bean id="dacassoMappingId" class="com.a4tech.supplier.mapper.DacassoMapping">
+  	<property name="postServiceImpl" ref="postService"/>
+  	<property name="productDaoObj" ref="productDao"/>
+  	<property name="dacassoPriceGridParser" ref="dacassoPriceGridParserId"/>
+  	<property name="dacassoAttributeParser" ref="dacassoAttributeParserId"/>
+  </bean>
+  <bean id="dacassoPriceGridParserId" class="parser.dacasso.DacassoPriceGridParser"/>
+  <bean id="dacassoAttributeParserId" class="parser.dacasso.DacassoAttributeParser"/>
+  
+  <!--Dacasso Configuration End  -->
+  <!-- supplier 91435 Tomax USA configuration start -->
+     <bean id="TomaxUsaMappingId" class="com.a4tech.supplier.mapper.TomaxUsaMapping" autowire="byName">
+     <property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="tomaxUsaAttributeParser" ref="tomaxUsaAttributeParserId" /> 
+     <property name="tomaxProductTabParser" ref="tomaxProductTabParserId" /> 
+     </bean>
+     <bean id="tomaxUsaAttributeParserId" name="tomaxUsaAttributeParserObj"
+		class="parser.tomaxusa.TomaxUsaAttributeParser" autowire="byName">
+	</bean>
+	<bean id="tomaxUsaPricegridParserId" name="tomaxUsaPricegridParserObj" class="parser.tomaxusa.TomaxPriceGridParser" autowire="byName"/>
+	<bean id="tomaxSizeParserId" name="tomaxSizeParserObj" class="parser.tomaxusa.TomaxSizeParser" autowire="byName"/>
+	<bean id="tomaxProductTabParserId" class="parser.tomaxusa.TomaxProductTabParser" autowire="byName">
+	 <property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="tomaxUsaAttributeParser" ref="tomaxUsaAttributeParserId"/>
+     <property name="tomaxPriceGridParser" ref="tomaxUsaPricegridParserId"/>
+	 <property name="tomaxUsaSizeParser" ref="tomaxSizeParserId"/>
+	</bean>
+     <!--supplier 91435 Tomax USA configuration start  -->  
 </beans>
 

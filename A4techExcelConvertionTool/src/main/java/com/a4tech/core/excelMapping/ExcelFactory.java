@@ -19,12 +19,14 @@ import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
+import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
+import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 
@@ -54,8 +56,9 @@ public class ExcelFactory {
 	private PrimeLineExcelMapping primeLineExcelMapping;
 	private GoldBondExcelMapping  goldBandExcelMapping;
 	private PSLMapping pslMapping;
+	private TomaxUsaMapping tomaxUsaMapping;
 	private ProGolfMapping proGolfMapping;
-
+	private DacassoMapping dacassoMapping;
 
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -104,15 +107,19 @@ public class ExcelFactory {
 			   return goldBandExcelMapping;
 		   }else if(name.equalsIgnoreCase("prime") || name.equals("79530")){
 			   return primeLineExcelMapping;
-
 		   }
 	      else if(name.equalsIgnoreCase("psl") || name.equals("75613")){
-		   return pslMapping;
+		      return pslMapping;
 	      }else if(name.equalsIgnoreCase("milestone") || name.equals("71173")){
   			   return milestoneExcelMapping;
+	      } else if(name.equalsIgnoreCase("proGolf") || name.equals("79680")){
+ 			   return proGolfMapping;
+	      } else if(name.equalsIgnoreCase("dacasso") || name.equals("48125")){
+	    	  return dacassoMapping;
 	      }
-		   
-		   
+	      else if(name.equalsIgnoreCase("tomaxusa") || name.equals("91435")){
+			   return tomaxUsaMapping;
+		  }
 		return null;
 	}
 	
@@ -311,5 +318,19 @@ public class ExcelFactory {
 	public void setPslMapping(PSLMapping pslMapping) {
 		this.pslMapping = pslMapping;
 	}
+	public DacassoMapping getDacassoMapping() {
+		return dacassoMapping;
+	}
 
+	public void setDacassoMapping(DacassoMapping dacassoMapping) {
+		this.dacassoMapping = dacassoMapping;
+	}
+
+	public TomaxUsaMapping getTomaxUsaMapping() {
+		return tomaxUsaMapping;
+	}
+
+	public void setTomaxUsaMapping(TomaxUsaMapping tomaxUsaMapping) {
+		this.tomaxUsaMapping = tomaxUsaMapping;
+	}	
 }

@@ -35,7 +35,7 @@ public class MailServiceImpl implements IMailService{
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		      helper.setFrom(senderMailName);
 		      //helper.setTo("venkateswarlu.nidamanuri@a4technology.com");
-		      String[] toAddress = {"amey.more@a4technology.com"};
+		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com"};
 		      helper.setTo(toAddress);
 		     // helper.setCc(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
 		      helper.setSubject(supplierId +" "+ "Supplier Error Report");
@@ -61,7 +61,8 @@ public class MailServiceImpl implements IMailService{
 		      MimeMessage mimeMessage = mailSender.createMimeMessage();
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		      helper.setFrom(senderMailName);
-		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com","azam.rizvi@a4technology.com"};
+		     // String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com","azam.rizvi@a4technology.com"};
+		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com"};
 		      helper.setTo(toAddress);
 		      helper.setSubject(subject);
 		      helper.setText(body);
@@ -81,8 +82,9 @@ public class MailServiceImpl implements IMailService{
 		      MimeMessage mimeMessage = mailSender.createMimeMessage();
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		      helper.setFrom(senderMailName);
-		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
-		    		  "azam.rizvi@a4technology.com","amey.more@a4technology.com"};
+		     /* String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
+		    		  "azam.rizvi@a4technology.com","amey.more@a4technology.com"};*/
+		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com"};
 		      helper.setTo(toAddress);
 		      helper.setSubject(subject);
 		      helper.setText(body);
@@ -104,8 +106,9 @@ public class MailServiceImpl implements IMailService{
 		      MimeMessage mimeMessage = mailSender.createMimeMessage();
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		      helper.setFrom(senderMailName);
-		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
-		    		  "azam.rizvi@a4technology.com","amey.more@a4technology.com"};
+		      /*String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
+		    		  "azam.rizvi@a4technology.com","amey.more@a4technology.com"};*/
+		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com"};
 		      helper.setTo(toAddress);
 		      helper.setSubject(subject);
 		      helper.setText(body);
@@ -118,7 +121,6 @@ public class MailServiceImpl implements IMailService{
 			 }catch (Exception e) {
 			   _LOGGER.error("Process Status Mail Not Sent Successfully,Error Msg:"+e.toString());
 			}
-		
 	}
 	public String getSenderMailName() {
 		return senderMailName;

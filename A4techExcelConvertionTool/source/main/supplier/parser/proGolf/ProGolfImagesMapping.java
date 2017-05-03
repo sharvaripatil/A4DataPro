@@ -131,12 +131,7 @@ public class ProGolfImagesMapping{
 						
 						if(!XidList.contains(prdXid))
 		                {
-//		                   productExcelObj=SheetMap.get(prdXid);
-//		    			   productConfigObj=productExcelObj.getProductConfigurations();
-			             	
-							
 							if(SheetMap.containsKey(xid)){//this step is to get product obj of sheet1 if exists in map
-						    	
 								  productExcelObj=SheetMap.get(xid);// all data including its producconfiguration
 								  productConfigObj=productExcelObj.getProductConfigurations();
 							    	
@@ -144,11 +139,6 @@ public class ProGolfImagesMapping{
 							 else{
 								 Product existingApiProduct =null;
 								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
-								  /* if(existingApiProduct == null){
-								    	 productExcelObj = new Product();
-								    	 productExcelObj.setExternalProductId(xid);	
-										 SheetMap.put(xid, productExcelObj);
-								     }else{*/
 								     productExcelObj=existingApiProduct;
 									 productConfigObj=productExcelObj.getProductConfigurations();
 									 productExcelObj.setExternalProductId(xid);	
@@ -157,36 +147,23 @@ public class ProGolfImagesMapping{
 								  //  }
 							 }
 							XidList.add(prdXid);
-							
-							
-
 		                }  
-					
 				     	}
 							switch (columnIndex + 1 ) {
-
 							case 1:// XID
-								
 						       productId = CommonUtility.getCellValueStrinOrInt(cell);
 						       if(productId.contains(""))
 						       {
 						    	   productId=prdXid;
 						       }
 							   productExcelObj.setExternalProductId(productId);	
-							  
 								break;
 
 							case 2:// MaterialNumber
 								break;
 
 							case 3:// ColorName
-								
-								
-								
 								break;
-								
-						 
-
 							} // end inner while loop
 
 						}
