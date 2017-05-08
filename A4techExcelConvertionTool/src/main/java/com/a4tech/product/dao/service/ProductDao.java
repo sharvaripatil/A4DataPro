@@ -244,6 +244,8 @@ public class ProductDao {
 	            criteria.add(Restrictions.eq("fileName", fileName));
 	            criteria.setProjection(Projections.property("fileStatus"));
 	            String data =  (String) criteria.uniqueResult();
+	          //  criteria.
+	           criteria.list();
 	            return data;
 		  }catch(Exception exce){
 			  _LOGGER.error("unable to fetch ftpFile status::"+exce.getMessage());
@@ -270,7 +272,7 @@ public class ProductDao {
 			    fileEntity.setFileStatus(fileStatus);
 			    fileEntity.setSupplierAsiNumber(asiNumber);
 			    fileEntity.setFileProcessDate(Calendar.getInstance().getTime());
-			    session.save(fileEntity);
+			    session.saveOrUpdate(fileEntity);
 			    transaction.commit();
 		   }catch(Exception exe){
 			     _LOGGER.error("unable to upadte ftp file status: "+exe.getMessage());

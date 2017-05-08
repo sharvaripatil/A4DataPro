@@ -17,8 +17,10 @@ import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
 import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
+import com.a4tech.supplier.mapper.BrandwearExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
+import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.GillStudiosMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
@@ -59,7 +61,9 @@ public class ExcelFactory {
 	private TomaxUsaMapping tomaxUsaMapping;
 	private ProGolfMapping proGolfMapping;
 	private GillStudiosMapping gillStudiosMapping;
-
+	private DacassoMapping dacassoMapping;
+	private BrandwearExcelMapping brandwearExcelMapping;
+	
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -115,9 +119,17 @@ public class ExcelFactory {
 	      else if(name.equalsIgnoreCase("milestone") || name.equals("71173")){
 			   return milestoneExcelMapping;
 		      }
+		      else if(name.equalsIgnoreCase("proGolf") || name.equals("79680")){
+ 			   return proGolfMapping;
+	      } else if(name.equalsIgnoreCase("dacasso") || name.equals("48125")){
+	    	  return dacassoMapping;
+	      }
 	      else if(name.equalsIgnoreCase("tomaxusa") || name.equals("91435")){
 			   return tomaxUsaMapping;
 		      }
+		      else if(name.equalsIgnoreCase("brandwear") || name.equals("41545")){
+			   return brandwearExcelMapping;
+		  }
 		  else if(name.equalsIgnoreCase("gillStudios") || name.equals("56950")){
 			   return gillStudiosMapping;
 			  }
@@ -327,11 +339,26 @@ public class ExcelFactory {
 	public void setTomaxUsaMapping(TomaxUsaMapping tomaxUsaMapping) {
 		this.tomaxUsaMapping = tomaxUsaMapping;
 	}
+	public DacassoMapping getDacassoMapping() {
+		return dacassoMapping;
+	}
+
+	public void setDacassoMapping(DacassoMapping dacassoMapping) {
+		this.dacassoMapping = dacassoMapping;
+	}
 
 	public GillStudiosMapping getGillStudiosMapping() {
 		return gillStudiosMapping;
 	}
+	
+	public BrandwearExcelMapping getBrandwearExcelMapping() {
+		return brandwearExcelMapping;
+	}
 
+	public void setBrandwearExcelMapping(BrandwearExcelMapping brandwearExcelMapping) {
+		this.brandwearExcelMapping = brandwearExcelMapping;
+	}
+	
 	public void setGillStudiosMapping(GillStudiosMapping gillStudiosMapping) {
 		this.gillStudiosMapping = gillStudiosMapping;
 	}	

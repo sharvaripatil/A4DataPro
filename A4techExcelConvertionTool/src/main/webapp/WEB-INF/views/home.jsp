@@ -37,7 +37,7 @@
         </div>
       </div> -->
       <div class="row">
-        <div class="col-sm-6 book"> <img src="resources/img/ebook.png" alt="" height="384px"><br/><a href="loginFtp" style="margin-top:1%" class="btn btn-success btn-lg">Login Ftp Page</a></div>
+        <div class="col-sm-6 book"> <img src="resources/img/ebook.png" alt="" height="384px"><br/><a href="<c:url value="/ftpLogin" />" style="margin-top:1%" class="btn btn-success btn-lg">Login Ftp Page</a></div>
         <div class="col-sm-5">
           <div class="form-bottom">
             <form:form name="uploadBean" enctype="multipart/form-data" modelAttribute="filebean">

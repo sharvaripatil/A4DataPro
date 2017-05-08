@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
@@ -18,6 +19,7 @@ import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -44,6 +46,40 @@ public class TomaxUsaAttributeParser {
 			weightObj.setValue(shippingValue);
 			listOfWeight.add(weightObj);
 			shippingEstObj.setWeight(listOfWeight);
+		}
+		
+		if (str.equals("SDIM")) {
+			String unit="in";
+			shippingValue=shippingValue.toUpperCase();
+			shippingValue=shippingValue.replaceAll("”","\"");
+			shippingValue=shippingValue.replaceAll("\"","");
+			shippingValue=shippingValue.replaceAll(";",",");
+			shippingValue=shippingValue.replaceAll(":","");
+			//sizeValue=sizeValue.replaceAll(".","");
+			String valuesArr[]=shippingValue.split(",");
+			if(valuesArr.length>1){
+				//shippingValue=valuesArr[0];
+			}else{
+			shippingValue=removeSpecialChar(shippingValue,1);
+			String shipDimenArr[] = shippingValue.split("X");
+			List<Dimensions> dimenlist = new ArrayList<Dimensions>();
+			Dimensions dimensionObj = new Dimensions();
+			for (int i = 0; i <= shipDimenArr.length - 1; i++) {
+			//	String[] shipDimenArr1 = shipDimenArr[i].split(ApplicationConstants.CONST_DELIMITER_COLON);
+				if (i == 0) {
+					dimensionObj.setLength(shipDimenArr[0]);
+					dimensionObj.setLengthUnit(unit);
+				} else if (i == 1) {
+					dimensionObj.setWidth(shipDimenArr[1]);
+					dimensionObj.setWidthUnit(unit);
+				} else if (i == 2) {
+					dimensionObj.setHeight(shipDimenArr[2]);
+					dimensionObj.setHeightUnit(unit);
+				}
+				dimenlist.add(dimensionObj);
+			}
+			shippingEstObj.setDimensions(dimensionObj);
+			}
 		}
 		return shippingEstObj;
 	}
@@ -337,6 +373,29 @@ public class TomaxUsaAttributeParser {
 		result = true;
 	}
 	return result;
+	}
+	
+	public static String removeSpecialChar(String tempValue,int number){
+		if(number==1){
+		tempValue=tempValue.replaceAll("(CABLE|LENGTH|CLEAR|CASE|ONE|SIDE|EARPHONE|INCLUDE|HOOK|WHITE|BOX|DELUXE|BULK)", "");
+		tempValue=tempValue.replaceAll("\\(","");
+		tempValue=tempValue.replaceAll("\\)","");
+		}
+		
+		if(number==2){
+			tempValue=tempValue.replaceAll("(DIA|LONG|LENGTH|Arc|Area|Circumference|L|D|H|T|W)", "");
+			tempValue=tempValue.replaceAll("\\(","");
+			tempValue=tempValue.replaceAll("\\)","");
+			}
+		
+		if(number==3){
+			tempValue=tempValue.replaceAll("(CM|FEET|FEE|INC|MTR|ML|MM|ST|SI|YD)", "");
+			tempValue=tempValue.replaceAll("\\(","");
+			tempValue=tempValue.replaceAll("\\)","");
+			}
+
+	return tempValue;
+
 	}
 	
 	/*public Size getSizes(String sizeValue) {

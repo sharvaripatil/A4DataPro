@@ -56,7 +56,7 @@ public class TomaxUsaMapping implements IExcelParser{
 		try{
 			 for(int tabNo=0;tabNo<2;tabNo++){
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-			if(tabNo==0){
+			if(tabNo==10){
 			Sheet sheet = workbook.getSheetAt(0);
 			Iterator<Row> iterator = sheet.iterator();
 			_LOGGER.info("Started Processing Product");

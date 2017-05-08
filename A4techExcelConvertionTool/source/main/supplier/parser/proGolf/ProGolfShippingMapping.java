@@ -17,11 +17,14 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.FOBPoint;
-import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Size;
+import com.a4tech.product.model.Value;
+import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
@@ -47,9 +50,6 @@ public class ProGolfShippingMapping {
 	//	Product productExcelObj = new Product();
 		String finalResult = null;
 		String productId = null;
-		List<String> XidList = new ArrayList<String>();
-		String xid = null;
-		String prdXid = null;
 		String headerName = "";
 		try {
 			Row headerRow = null;
@@ -60,7 +60,6 @@ public class ProGolfShippingMapping {
 			String shippingDimentionUnits = "";
 			String shippingWeightUnit = "";
 			String productWeightVal = "";
-			String sizeUnit = "";
 			String shippingWeight = "";
 			boolean isFirstproduct = true;
 			while (iterator.hasNext()) {
@@ -100,6 +99,9 @@ public class ProGolfShippingMapping {
 									if(distributorOnlyComments.contains("|")){
 										distributorOnlyComments = distributorOnlyComments.replaceAll("\\|", "");
 										int noOfCounts = StringUtils.countOccurrencesOf(distributorOnlyComments, "Minimum");
+										if(noOfCounts >= 2){
+											distributorOnlyComments = distributorOnlyComments.replaceFirst("Minimum", "");
+										}
 										existingProduct.setDistributorOnlyComments(distributorOnlyComments);
 									}
 									if (!StringUtils.isEmpty(existingProduct.getExternalProductId())) {
@@ -128,13 +130,7 @@ public class ProGolfShippingMapping {
 								shippingWeightUnit = "";
 								productWeightVal = "";
 							}
-						}/* else {
-							if (productXids.contains(xid) && repeatRows.size() != 1) {
-								if (isRepeateColumn(columnIndex + 1)) {
-									continue;
-								}
-							}
-						}*/
+						}
 						headerName = getHeaderName(columnIndex, headerRow);
 						switch (headerName) {
 
@@ -172,7 +168,6 @@ public class ProGolfShippingMapping {
 							shippingWeightUnit = cell.getStringCellValue();
 							break;
 						case "Product_Size_Unit":
-							sizeUnit = cell.getStringCellValue();
 							break;
 						case "Product_Weight_Unit": // item weight
 							String productWeightUnit = cell.getStringCellValue();
@@ -188,6 +183,10 @@ public class ProGolfShippingMapping {
 							shippingEstamationValues.toString(), shippingWeight, shippingDimentionUnits,
 							shippingWeightUnit);
 				//ProductConfigurations existingConfig = existingProduct.getProductConfigurations();
+					if(productConfigObj.getSizes() == null){
+						Size productSize = getProductSize(sizes.toString());
+						productConfigObj.setSizes(productSize);
+					}
 					productConfigObj.setShippingEstimates(shippingEstimObj);
 				//existingProduct.setProductConfigurations(existingConfig);
 				
@@ -294,22 +293,32 @@ public class ProGolfShippingMapping {
 		String skuVal = CommonUtility.getCellValueStrinOrInt(xidCell);
 		return skuVal;
 	}
-  private List<PriceGrid> setDefaultPriceGrid(List<PriceGrid> listOfPriceGrid){
-	  if(!CollectionUtils.isEmpty(listOfPriceGrid)){
-		  return listOfPriceGrid;
-	  } else {
-		  listOfPriceGrid = new ArrayList<>();
-	  }
-	  PriceGrid priceGrid = new PriceGrid();
-	  priceGrid.setCurrency("USD");
-	  priceGrid.setDescription("");
-	  priceGrid.setIsBasePrice(true);
-	  priceGrid.setIsQUR(true);
-	  priceGrid.setSequence(1);
-	  priceGrid.setPrices(new ArrayList<>());
-	 // priceGrid.setPriceConfigurations(new ArrayList<>());
-	  listOfPriceGrid.add(priceGrid);
-	  return listOfPriceGrid;
+  private Size getProductSize(String val){
+	  Size sizeObj = new Size();
+	  Dimension dimentionObj = new Dimension();
+	  List<Values> listOfValues = new ArrayList<>();
+	  Values valuesObj = new Values();
+	  List<Value> listOfValue = new ArrayList<>();
+	  Value valueObj = null;
+	  String[] sizeVals = CommonUtility.getValuesOfArray(val, ",");
+	  for (int sizeIndex = 0; sizeIndex < sizeVals.length; sizeIndex++) {
+		  valueObj = new Value();
+		  if(sizeIndex == 0){
+			  valueObj.setAttribute("Length");
+		  } else if(sizeIndex == 1){
+			  valueObj.setAttribute("Width");
+		  } else if(sizeIndex == 2){
+			  valueObj.setAttribute("Height");
+		  }
+		  valueObj.setUnit("in");
+		  valueObj.setValue(sizeVals[sizeIndex]);
+		  listOfValue.add(valueObj);
+	}
+	  valuesObj.setValue(listOfValue);
+	  listOfValues.add(valuesObj);
+	  dimentionObj.setValues(listOfValues);
+	 sizeObj.setDimension(dimentionObj);
+	 return sizeObj;
   }
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;

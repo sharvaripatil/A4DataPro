@@ -45,6 +45,12 @@ public class FilesParsing {
 				invalidSupplierDetails(asiNumber);
 				continue;
 			}
+			//This is used to pause mins before processing first file
+			try {
+				Thread.sleep(1200);
+			} catch (InterruptedException exce) {
+				_LOGGER.error("Interrupted Sleep method: "+exce.getMessage());
+			}
 			 IExcelParser excelParserImpl = excelFactory.getExcelParserObject(asiNumber);
 			// workBook = convertCsvToExcel.getWorkBook(file);
 			 FileInputStream inputStream;
@@ -61,13 +67,12 @@ public class FilesParsing {
 			 if(workBook != null){
 				 processFileStatusMail(asiNumber, "ProcessStart", batchId);
 				 excelParserImpl.readExcel(accessToken, workBook, Integer.parseInt(asiNumber), batchId);
-			 }
-			productDao.updateFtpFileStatus(fileName, asiNumber,
-					ApplicationConstants.CONST_STRING_YES);
-			processFileStatusMail(asiNumber, "ProcessEnd", batchId);
+				 productDao.updateFtpFileStatus(fileName, asiNumber,
+							ApplicationConstants.CONST_STRING_YES);
+				 processFileStatusMail(asiNumber, "ProcessEnd", batchId);
+			 }	
 			_LOGGER.info(fileName +":"+ "file parsing completed");
 		}
-
 	}
 
 	public boolean isFileProcess(String fileName, String asiNumber) {
@@ -111,9 +116,9 @@ public class FilesParsing {
   			      +"\n\n You will get separate mail once Process completed";
     		mailService.fileProcessStart(body, subject);
     	}else if(type.equals("ProcessEnd")){
-    		subject = supplierNo +" "+ "File Processing completed";
+    		subject = supplierNo +" "+ "File Process completed";
     		body = "Dear Team,"
-  			      +"\n \n"+supplierNo+" "+ "File processing completed"
+  			      +"\n \n"+supplierNo+" "+ "File process completed"
   			      +"\n\nKindly find the attached " +batchNo +".txt Product Error File"
   			+ "\n\n\n\n"
             +"Thanks and Regards,"

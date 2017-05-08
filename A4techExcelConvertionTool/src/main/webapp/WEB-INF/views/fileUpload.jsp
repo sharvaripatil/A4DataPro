@@ -26,7 +26,12 @@
             <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->
 </head>
-
+<style>
+h4 {
+ font-size:20px;
+ font-style: italic;
+}
+</style>
 <body>
 <!-- Top content -->
 <div class="top-content">
@@ -42,14 +47,26 @@
         <div class="col-md-4 col-md-offset-4 text">
         
           <div class="form-bottom">
-              <form:form name="ftpFileUploadBean" enctype="multipart/form-data" modelAttribute="ftpFileUploadBean">
+              <form:form action="uploadFile" name="ftpFileUploadBean" enctype="multipart/form-data" modelAttribute="ftpFileUploadBean">
              <div class="form-group">
-    <input type="file" name="img[]" class="file">
+             <c:choose>
+             	<c:when test="${ftpMessage == 'success'}">
+             	<h4 style="color: green;">File has been save successfully</h4> 
+             	</c:when>
+             	<c:when test="${ftpMessage == 'failure'}">
+             	  <h4 style="color: red;">File is not saved ,Please check once!</h4>
+             	</c:when>
+             	<c:when test="${invalidFile == ''}">
+             		<h4 style="color: red;">Please Upload File</h4>
+             	</c:when>
+             </c:choose>
+    <input type="file" name="file" id="file" class="file">
     <div class="input-group col-xs-12">
       <input type="text" class="form-control input-lg" disabled placeholder="Upload File">
       <span class="input-group-btn">
         <button class="browse btn btn-primary input-lg" type="button"><i class="glyphicon glyphicon-search"></i> Browse</button>
       </span>
+       <form:hidden path="asiNumber"/>
      <%--  <input type="file" name="file" id="file-1" class="inputfile inputfile-1" data-multiple-caption="{count} files selected" multiple ismap="ismap"/>
       <span class="input-group-btn">
       <form:button value="submit" class="browse btn btn-primary input-lg">Submit</form:button> --%>
@@ -58,15 +75,11 @@
       </span>
     </div>
   </div>
-             
-             
               <div class="submitbtn">
-              <button type="submit" class="btn"><a href="">Submit</a></button>
+              <form:button val="submit" class="btn1 btn-primary btn-lg pull-right" onclick="return validateForm()">Submit</form:button>
+               <a href="ftpLogin" class="btn btn-lg btn-default pull-left">Back</a>
               </div>
               <br>
-              <div class="sucessmessage">
-              Successful
-              </div>
              </form:form>
           </div>
         </div>
@@ -88,6 +101,17 @@
             <script src="assets/js/placeholder.js"></script>
         <![endif]-->
 <script>
+function validateForm(){
+	alert(hi);
+	var file = document.getElementById("file").value;
+	if (file==null || file==""){
+		  document.getElementById("file").innerHTML = "<i><b>!</b></i> &nbsp;Please choose file";
+		  document.uploadBean.file.focus();
+		  return false;  
+	}else{
+		document.getElementById("file").innerHTML = "";
+	}
+}
 $(document).on('click', '.browse', function(){
   var file = $(this).parent().parent().parent().find('.file');
   file.trigger('click');
@@ -95,6 +119,7 @@ $(document).on('click', '.browse', function(){
 $(document).on('change', '.file', function(){
   $(this).parent().find('.form-control').val($(this).val().replace(/C:\\fakepath\\/i, ''));
 });
+
 </script>
 </body>
 </html>
