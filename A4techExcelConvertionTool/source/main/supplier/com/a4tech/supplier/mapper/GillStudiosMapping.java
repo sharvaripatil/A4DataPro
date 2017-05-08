@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import parser.gillstudios.GillStudiosAttributeParser;
@@ -59,6 +60,7 @@ import com.a4tech.product.model.Values;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 public class GillStudiosMapping implements IExcelParser{
@@ -73,7 +75,9 @@ public class GillStudiosMapping implements IExcelParser{
 	private GillStudiosAttributeParser gillStudiosAttributeParser;
 	private GillStudiosPriceGridParser gillStudiosPriceGridParser;
 	private GillStudiosImprintMethodParser gillStudiosImprintMethodParser;
-
+	@Autowired
+	ObjectMapper mapperObj;
+	
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
@@ -225,7 +229,7 @@ public class GillStudiosMapping implements IExcelParser{
 								if(imprintSizeList!=null){
 								productConfigObj.setImprintSize(imprintSizeList);}
 							//	productExcelObj.setImages(listOfImages);
-								productConfigObj.setColors(colorList);
+								//productConfigObj.setColors(colorList);
 								if(!StringUtils.isEmpty(FobPointsList)){
 								productExcelObj.setFobPoints(FobPointsList);
 								}
@@ -234,8 +238,9 @@ public class GillStudiosMapping implements IExcelParser{
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 //	if(Prod_Status = false){
-
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 	_LOGGER.info("Product Data : "
+										+ mapperObj.writeValueAsString(productExcelObj));
+							 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -1110,7 +1115,7 @@ public class GillStudiosMapping implements IExcelParser{
 		productConfigObj.setImprintSize(imprintSizeList);
 		}
 		//productExcelObj.setImages(listOfImages);
-		productConfigObj.setColors(colorList);
+		//productConfigObj.setColors(colorList);
 		if(!StringUtils.isEmpty(FobPointsList)){
 		productExcelObj.setFobPoints(FobPointsList);
 		}
@@ -1118,9 +1123,10 @@ public class GillStudiosMapping implements IExcelParser{
 
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 	
-		 	
+		 	_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(productExcelObj));
 		 	//if(Prod_Status = false){
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
@@ -1226,6 +1232,15 @@ public class GillStudiosMapping implements IExcelParser{
 	public void setGillStudiosPriceGridParser(
 			GillStudiosPriceGridParser gillStudiosPriceGridParser) {
 		this.gillStudiosPriceGridParser = gillStudiosPriceGridParser;
+	}
+
+	public GillStudiosImprintMethodParser getGillStudiosImprintMethodParser() {
+		return gillStudiosImprintMethodParser;
+	}
+
+	public void setGillStudiosImprintMethodParser(
+			GillStudiosImprintMethodParser gillStudiosImprintMethodParser) {
+		this.gillStudiosImprintMethodParser = gillStudiosImprintMethodParser;
 	}
 
 

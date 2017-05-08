@@ -19,6 +19,7 @@ import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
+import com.a4tech.supplier.mapper.GillStudiosMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
@@ -57,7 +58,7 @@ public class ExcelFactory {
 	private PSLMapping pslMapping;
 	private TomaxUsaMapping tomaxUsaMapping;
 	private ProGolfMapping proGolfMapping;
-
+	private GillStudiosMapping gillStudiosMapping;
 
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -117,6 +118,9 @@ public class ExcelFactory {
 	      else if(name.equalsIgnoreCase("tomaxusa") || name.equals("91435")){
 			   return tomaxUsaMapping;
 		      }
+		  else if(name.equalsIgnoreCase("gillStudios") || name.equals("56950")){
+			   return gillStudiosMapping;
+			  }
 		return null;
 	}
 	
@@ -322,5 +326,14 @@ public class ExcelFactory {
 
 	public void setTomaxUsaMapping(TomaxUsaMapping tomaxUsaMapping) {
 		this.tomaxUsaMapping = tomaxUsaMapping;
+	}
+
+	public GillStudiosMapping getGillStudiosMapping() {
+		return gillStudiosMapping;
+	}
+
+	public void setGillStudiosMapping(GillStudiosMapping gillStudiosMapping) {
+		this.gillStudiosMapping = gillStudiosMapping;
 	}	
+	
 }
