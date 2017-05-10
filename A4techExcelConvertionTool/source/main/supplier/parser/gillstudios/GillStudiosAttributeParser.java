@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Dimensions;
@@ -53,6 +54,12 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		if(!CollectionUtils.isEmpty(themes)){
 			newProductConfigurations.setThemes(themes);
 		}
+		//catalogs
+		List<Catalog>	catlogsList=existingProduct.getCatalogs();
+		if(!CollectionUtils.isEmpty(catlogsList)){
+			newProduct.setCatalogs(catlogsList);
+		}
+		
 		newProduct.setProductConfigurations(newProductConfigurations);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Existing Product Data " +e.getMessage());

@@ -776,6 +776,8 @@
      <bean id="gillStudiosMappingId" class="com.a4tech.supplier.mapper.GillStudiosMapping" autowire="byName">
        <property name="postServiceImpl" ref="postService"/>
        <property name="productDaoObj" ref="productDao"/>
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+         <property name="lookupRestServiceObj" ref="lookupRestService"/>
        <property name="gillStudiosAttributeParser" ref="gillStudiosAttributeParserId" /> 
        <property name="gillStudiosPriceGridParser" ref="gillStudiosPriceGridParserId" /> 
        <property name="gillStudiosImprintMethodParser" ref="gillStudiosImprintMethodParserId" /> 
@@ -784,7 +786,10 @@
   		class="parser.gillstudios.GillStudiosAttributeParser" autowire="byName">
   	</bean>
   	<bean id="gillStudiosPriceGridParserId" name="gillStudiosPriceGridParserObj" class="parser.gillstudios.GillStudiosPriceGridParser" autowire="byName"/>
-  	<bean id="gillStudiosImprintMethodParserId" name="gillStudiosImprintMethodParserObj" class="parser.gillstudios.GillStudiosImprintMethodParser" autowire="byName"/>
+  	<bean id="gillStudiosImprintMethodParserId" name="gillStudiosImprintMethodParserObj" class="parser.gillstudios.GillStudiosImprintMethodParser" autowire="byName">
+  	<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+    <property name="lookupRestServiceObj" ref="lookupRestService"/>
+  	</bean>
 	
      <!-- supplier 56950 Gill Studios Inc configuration end -->  
 </beans>

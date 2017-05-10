@@ -18,17 +18,8 @@ import org.springframework.util.StringUtils;
 
 import parser.gillstudios.GillStudiosAttributeParser;
 import parser.gillstudios.GillStudiosImprintMethodParser;
+import parser.gillstudios.GillStudiosLookupData;
 import parser.gillstudios.GillStudiosPriceGridParser;
-import parser.goldstarcanada.GoldstarCanadaColorParser;
-import parser.goldstarcanada.GoldstarCanadaDimensionParser;
-import parser.goldstarcanada.GoldstarCanadaImprintMethodParser;
-import parser.goldstarcanada.GoldstarCanadaImprintsizeParser;
-import parser.goldstarcanada.GoldstarCanadaLookupData;
-import parser.goldstarcanada.GoldstarCanadaOriginParser;
-import parser.goldstarcanada.GoldstarCanadaPackagingParser;
-import parser.goldstarcanada.GoldstarCanadaPriceGridParser;
-import parser.goldstarcanada.GoldstarCanadaRushTimeParser;
-import parser.goldstarcanada.GoldstarCanadaShippingEstimateParser;
 
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
@@ -105,15 +96,15 @@ public class GillStudiosMapping implements IExcelParser{
 			List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
 			List<String> productKeywords = new ArrayList<String>();
 			List<Theme> themeList = new ArrayList<Theme>();
-			List<Catalog> catalogList = new ArrayList<Catalog>();
+			//List<Catalog> catalogList = new ArrayList<Catalog>();
 			List<String> complianceList = new ArrayList<String>();
 			List<Image> listOfImages= new ArrayList<Image>();
 		    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
-		    List<com.a4tech.lookup.model.Catalog> catalogsList=new ArrayList<>();
+		    //List<com.a4tech.lookup.model.Catalog> catalogsList=new ArrayList<>();
 		    List<Values> valuesList =new ArrayList<Values>();
 			RushTime rushTime  = new RushTime();
 			Size size=new Size();
-		    Catalog catlogObj=new Catalog();
+		    //Catalog catlogObj=new Catalog();
 			List<FOBPoint> FobPointsList = new ArrayList<FOBPoint>();
 			FOBPoint fobPintObj=new FOBPoint();
 			List<Option> ProdoptionList = new ArrayList<Option>();
@@ -166,7 +157,7 @@ public class GillStudiosMapping implements IExcelParser{
 		String ProductStatus=null;
 		boolean Prod_Status;
 		Product existingApiProduct = null;
-		
+		int columnIndex = 0;
 		while (iterator.hasNext()) {
 			
 			try{
@@ -183,7 +174,7 @@ public class GillStudiosMapping implements IExcelParser{
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
 				String xid = null;
-				int columnIndex = cell.getColumnIndex();
+				 columnIndex = cell.getColumnIndex();
 				  cell2Data =  nextRow.getCell(2);
 				if(columnIndex + 1 == 1){
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
@@ -240,7 +231,7 @@ public class GillStudiosMapping implements IExcelParser{
 							 //	if(Prod_Status = false){
 							 	_LOGGER.info("Product Data : "
 										+ mapperObj.writeValueAsString(productExcelObj));
-							 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -258,7 +249,7 @@ public class GillStudiosMapping implements IExcelParser{
 								themeList = new ArrayList<Theme>();
 								finalDimensionObj = new Dimension();
 								 valuesList = new ArrayList<>();
-								catalogList = new ArrayList<Catalog>();
+								//catalogList = new ArrayList<Catalog>();
 								productKeywords = new ArrayList<String>();
 								listOfProductionTime = new ArrayList<ProductionTime>();
 								rushTime = new RushTime();
@@ -341,17 +332,20 @@ public class GillStudiosMapping implements IExcelParser{
 
 					break;
 					
-				case 10: //Catalogs page number, Page1
-					String PageNO=CommonUtility.getCellValueStrinOrInt(cell);
+				case 10: //Catalogs page number, Page1 needs to ignored
+					/*String PageNO=CommonUtility.getCellValueStrinOrInt(cell);
 					String value=null;
-					catalogsList = lookupServiceDataObj.getCatalog(value);
+					//catalogsList = lookupServiceDataObj.getCatalog(accessToken);
+					if(StringUtils.isEmpty("")){
+						PageNO="";
+					}
 					if(CatYear.contains("2017")){
-						catlogObj.setCatalogName("2017 Goldstar Canada");
+						catlogObj.setCatalogName("2017 Gill Line Catalog");
 						catlogObj.setCatalogPage(PageNO);
 						catalogList.add(catlogObj);
 						productExcelObj.setCatalogs(catalogList);
 					}
-					
+					*/
 
 					break;
 					
@@ -689,7 +683,7 @@ public class GillStudiosMapping implements IExcelParser{
 					FirstImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 					 if(!StringUtils.isEmpty(FirstImprintunit1) || FirstImprintunit1 !=  null ){
-					FirstImprintunit1=GoldstarCanadaLookupData.Dimension1Units.get(FirstImprintunit1);
+					FirstImprintunit1=GillStudiosLookupData.Dimension1Units.get(FirstImprintunit1);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit1).append(" ");
 					 }	 
 					   	break;
@@ -698,7 +692,7 @@ public class GillStudiosMapping implements IExcelParser{
 					FirstImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 				   if(!StringUtils.isEmpty(FirstImprinttype1) || FirstImprinttype1 !=  null ){
-					FirstImprinttype1=GoldstarCanadaLookupData.Dimension1Type.get(FirstImprinttype1);
+					FirstImprinttype1=GillStudiosLookupData.Dimension1Type.get(FirstImprinttype1);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype1).append(" ").append("x");
 				   }
 						break;
@@ -718,7 +712,7 @@ public class GillStudiosMapping implements IExcelParser{
 					
 					
 				    if(!StringUtils.isEmpty(FirstImprintunit2) || FirstImprintunit2 !=  null ){
-					FirstImprintunit2=GoldstarCanadaLookupData.Dimension1Units.get(FirstImprintunit2);
+					FirstImprintunit2=GillStudiosLookupData.Dimension1Units.get(FirstImprintunit2);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit2).append(" ");
 				    }
 
@@ -730,7 +724,7 @@ public class GillStudiosMapping implements IExcelParser{
 					
 				    if(!StringUtils.isEmpty(FirstImprinttype2) || FirstImprinttype2 !=  null ){
 
-					FirstImprinttype2=GoldstarCanadaLookupData.Dimension1Type.get(FirstImprinttype2);
+					FirstImprinttype2=GillStudiosLookupData.Dimension1Type.get(FirstImprinttype2);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype2).append(" ");
 				    }
 
@@ -763,7 +757,7 @@ public class GillStudiosMapping implements IExcelParser{
 					SecondImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 				    if(!StringUtils.isEmpty(SecondImprintunit1) || SecondImprintunit1 != null ){
-					SecondImprintunit1=GoldstarCanadaLookupData.Dimension1Units.get(SecondImprintunit1);
+					SecondImprintunit1=GillStudiosLookupData.Dimension1Units.get(SecondImprintunit1);
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprintunit1).append(" ");
 
 					}
@@ -774,7 +768,7 @@ public class GillStudiosMapping implements IExcelParser{
 					SecondImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 				    if(!StringUtils.isEmpty(SecondImprinttype1) || SecondImprinttype1 !=  null ){
-					SecondImprinttype1=GoldstarCanadaLookupData.Dimension1Type.get(SecondImprinttype1);
+					SecondImprinttype1=GillStudiosLookupData.Dimension1Type.get(SecondImprinttype1);
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprinttype1).append(" ").append("x");
 
 					}
@@ -795,7 +789,7 @@ public class GillStudiosMapping implements IExcelParser{
 				case 87: //Second Imprintsize2 Unit
 					SecondImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintunit2) || SecondImprintunit2 !=  null ){
-					SecondImprintunit2=GoldstarCanadaLookupData.Dimension1Units.get(SecondImprintunit2);
+					SecondImprintunit2=GillStudiosLookupData.Dimension1Units.get(SecondImprintunit2);
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprintunit2).append(" ");
 
 					}
@@ -805,7 +799,7 @@ public class GillStudiosMapping implements IExcelParser{
 				case 88: // Second Imprintsize2 type	
 					SecondImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprinttype2) || SecondImprinttype2 != null ){
-					SecondImprinttype2=GoldstarCanadaLookupData.Dimension1Type.get(SecondImprinttype2);
+					SecondImprinttype2=GillStudiosLookupData.Dimension1Type.get(SecondImprinttype2);
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprinttype2).append(" ");
 
 					}
@@ -829,8 +823,10 @@ public class GillStudiosMapping implements IExcelParser{
 					break;
 				case 90: // DecorationMethod
 					 decorationMethod = cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(decorationMethod)){
 					listOfImprintMethods = gillStudiosImprintMethodParser.getImprintMethodValues(decorationMethod,listOfImprintMethods);
-					 break; 
+					 } 
+					break; 
 					 
 				case 91: //NoDecoration
 					String noDecoration = cell.getStringCellValue();
@@ -1083,7 +1079,7 @@ public class GillStudiosMapping implements IExcelParser{
 			
 			    
 			}catch(Exception e){
-			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
+			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() +"at column+1="+columnIndex);		 
 		}
 		}
 		workbook.close();
@@ -1126,7 +1122,7 @@ public class GillStudiosMapping implements IExcelParser{
 		 	_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));
 		 	//if(Prod_Status = false){
-		 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
@@ -1147,7 +1143,7 @@ public class GillStudiosMapping implements IExcelParser{
 			themeList = new ArrayList<Theme>();
 			finalDimensionObj = new Dimension();
 			 valuesList = new ArrayList<>();
-			catalogList = new ArrayList<Catalog>();
+			//catalogList = new ArrayList<Catalog>();
 			productKeywords = new ArrayList<String>();
 			listOfProductionTime = new ArrayList<ProductionTime>();
 			rushTime = new RushTime();
