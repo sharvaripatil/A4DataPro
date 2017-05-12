@@ -17,6 +17,7 @@ import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
 import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
+import com.a4tech.supplier.mapper.BrandwearExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
@@ -61,6 +62,7 @@ public class ExcelFactory {
 	private ProGolfMapping proGolfMapping;
 	private DacassoMapping dacassoMapping;
 	private SageRMKWorldWideMapping sage80289Mapping;
+	private BrandwearExcelMapping brandwearExcelMapping;
 
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -122,6 +124,9 @@ public class ExcelFactory {
 			   return tomaxUsaMapping;
 		  } else if(name.equalsIgnoreCase("sage80289") || name.equals("80289")){
 			  return sage80289Mapping;
+		  }
+	      else if(name.equalsIgnoreCase("brandwear") || name.equals("41545")){
+			   return brandwearExcelMapping;
 		  }
 		return null;
 	}
@@ -341,5 +346,12 @@ public class ExcelFactory {
 	}
 	public void setSage80289Mapping(SageRMKWorldWideMapping sage80289Mapping) {
 		this.sage80289Mapping = sage80289Mapping;
+	}
+	public BrandwearExcelMapping getBrandwearExcelMapping() {
+		return brandwearExcelMapping;
+	}
+
+	public void setBrandwearExcelMapping(BrandwearExcelMapping brandwearExcelMapping) {
+		this.brandwearExcelMapping = brandwearExcelMapping;
 	}
 }
