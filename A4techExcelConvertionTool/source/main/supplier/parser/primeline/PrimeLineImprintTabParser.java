@@ -220,6 +220,7 @@ public class PrimeLineImprintTabParser {
 							//detailValue=CommonUtility.getCellValueStrinOrInt(cell);
 							imprintMethodVal=CommonUtility.getCellValueStrinOrInt(cell);
 							if(!StringUtils.isEmpty(imprintMethodVal)){
+							imprintMethodVal=imprintMethodVal.toUpperCase();
 							imprintMhtdSet.add(imprintMethodVal);
 							
 							}
@@ -227,6 +228,7 @@ public class PrimeLineImprintTabParser {
 						case 6://IMPRINTSIZE
 							imprintSizeVal=CommonUtility.getCellValueStrinOrInt(cell);
 							if(!StringUtils.isEmpty(imprintSizeVal)){
+							imprintSizeVal=imprintSizeVal.toUpperCase();
 							imprintSizeSet.add(imprintSizeVal);
 							if(availMapIMTD.containsKey(imprintMethodVal)){
 							HashSet<String> tempSet=availMapIMTD.get(imprintMethodVal);
@@ -244,6 +246,7 @@ public class PrimeLineImprintTabParser {
 							//detailValue=CommonUtility.getCellValueStrinOrInt(cell);
 							imprintLocVal=CommonUtility.getCellValueStrinOrInt(cell);
 							if(!StringUtils.isEmpty(imprintLocVal)){
+							imprintLocVal=imprintLocVal.toUpperCase();
 							imprintLocSet.add(imprintLocVal);
 								
 								if(availMapIMLOC.containsKey(imprintLocVal)){
@@ -287,7 +290,7 @@ public class PrimeLineImprintTabParser {
 			}		
 			}catch(Exception e){
 				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"at column number(increament by 1):"+columnIndex);		 
-				ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet: "
+				ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet 4: "
 				+e.getMessage()+" at column number(increament by 1)"+columnIndex);
 				productDaoObj.save(apiResponse.getErrors(),
 						productExcelObj.getExternalProductId()+"-Failed", asiNumber, batchId);
