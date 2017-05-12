@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
@@ -72,6 +73,10 @@ public class DacassoAttributeParser {
 
 	private List<Values> getSizeOfListValues(String siezVal) {
 		siezVal = siezVal.replaceAll("\"", "");
+		if(siezVal.contains("W")){
+			siezVal = siezVal.replaceAll("W", "");
+			siezVal = siezVal.replaceAll("H", "");
+		}
 		String[] sizeVals = CommonUtility.getValuesOfArray(siezVal, "x");
 		Value valObj1 = null;
 		Value valObj2 = null;
@@ -129,21 +134,23 @@ public class DacassoAttributeParser {
 		return listOfProductColors;
 	}
 
-	public ShippingEstimate getProductShippingEstimates(String shippingValue) {
-		String[] shippingVals = CommonUtility.getValuesOfArray(shippingValue,
-				ApplicationConstants.CONST_STRING_COMMA_SEP);
+	public ShippingEstimate getProductShippingEstimates(String shippingNoOfItems,String dimensions,String weight) {
 		ShippingEstimate shippingEstimateObj = new ShippingEstimate();
 		List<NumberOfItems> numberOfItems = null;
 		Dimensions dimensionsObj = null;
 		List<Weight> shippingWeight = null;
-		for (int shippingIndex = 0; shippingIndex < shippingVals.length; shippingIndex++) {
-			if (shippingIndex == ApplicationConstants.CONST_NUMBER_ZERO) {// NumberOfItems
-				numberOfItems = getShippingNumberOfItems(shippingVals[shippingIndex].trim());
-			} else if (shippingIndex == ApplicationConstants.CONST_INT_VALUE_ONE) {// Dimensions
-				dimensionsObj = getShippingDimensions(shippingVals[shippingIndex]);
-			} else if (shippingIndex == ApplicationConstants.CONST_INT_VALUE_TWO) {
-				shippingWeight = getShippingWeight(shippingVals[shippingIndex].trim());
+		if(!StringUtils.isEmpty(shippingNoOfItems)){
+			numberOfItems = getShippingNumberOfItems(shippingNoOfItems);
+		}
+		if(!StringUtils.isEmpty(dimensions)){
+			if(dimensions.contains("Envelope")){
+				dimensions = dimensions.replaceAll("Envelope", "");
+				dimensions = dimensions.replaceAll("\"", "");
 			}
+			dimensionsObj = getShippingDimensions(dimensions);
+		}
+		if(!StringUtils.isEmpty(weight)){
+			shippingWeight = getShippingWeight(weight);
 		}
 		shippingEstimateObj.setNumberOfItems(numberOfItems);
 		shippingEstimateObj.setWeight(shippingWeight);
@@ -171,13 +178,24 @@ public class DacassoAttributeParser {
 
 	private Dimensions getShippingDimensions(String val) {
 		String[] vals = val.split("x");
+		int dimensionLength = vals.length;
 		Dimensions dimensionsObj = new Dimensions();
-		dimensionsObj.setLength(vals[0].trim());
-		dimensionsObj.setWidth(vals[1].trim());
-		dimensionsObj.setHeight(vals[2].trim());
-		dimensionsObj.setLengthUnit(ApplicationConstants.CONST_STRING_INCHES);
-		dimensionsObj.setWidthUnit(ApplicationConstants.CONST_STRING_INCHES);
-		dimensionsObj.setHeightUnit(ApplicationConstants.CONST_STRING_INCHES);
+		if(dimensionLength == ApplicationConstants.CONST_INT_VALUE_THREE){
+			dimensionsObj.setLength(vals[0].trim());
+			dimensionsObj.setWidth(vals[1].trim());
+			dimensionsObj.setHeight(vals[2].trim());
+			dimensionsObj.setLengthUnit(ApplicationConstants.CONST_STRING_INCHES);
+			dimensionsObj.setWidthUnit(ApplicationConstants.CONST_STRING_INCHES);
+			dimensionsObj.setHeightUnit(ApplicationConstants.CONST_STRING_INCHES);	
+		} else if(dimensionLength == ApplicationConstants.CONST_INT_VALUE_TWO){
+			dimensionsObj.setLength(vals[0].trim());
+			dimensionsObj.setWidth(vals[1].trim());
+			dimensionsObj.setLengthUnit(ApplicationConstants.CONST_STRING_INCHES);
+			dimensionsObj.setWidthUnit(ApplicationConstants.CONST_STRING_INCHES);
+		} else {
+			dimensionsObj.setLength(vals[0].trim());
+			dimensionsObj.setLengthUnit(ApplicationConstants.CONST_STRING_INCHES);
+		}
 		return dimensionsObj;
 	}
 

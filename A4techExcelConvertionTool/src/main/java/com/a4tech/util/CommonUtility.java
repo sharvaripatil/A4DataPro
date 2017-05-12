@@ -298,6 +298,7 @@ public class CommonUtility {
 		value=value.replaceAll("¡", "");
 		value=value.replaceAll("ñ", "");
 		value=value.replaceAll("~", "");
+		value=value.replaceAll("†", "");
 		return value;
 	}
   
@@ -390,4 +391,17 @@ public class CommonUtility {
 	    	}
 	    	return false;
 	    }
+	 /*
+	  * @author Venkat
+	  * @description This method is valid to two business days range is it valid range or not 
+	  *                    means low value to high value
+	  * @ param String startDay, String  endDay
+	  * @return True/False,if value low value to high value(10-15) returns true otherwise returns False
+	  */
+	 public static boolean isValidBusinessDays(int startDay,int endDay){
+		 if(startDay >= endDay){
+			 return false;
+		 }
+		 return true;
+	 }
 }

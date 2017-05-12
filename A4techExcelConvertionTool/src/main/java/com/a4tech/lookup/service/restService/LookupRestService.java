@@ -176,7 +176,7 @@ public class LookupRestService {
 		return null;
 	}
 	
-	public List<String> getTheme(String authToken) {
+	public List<String> getTheme() {
 		try{
 			 HttpHeaders headers = new HttpHeaders();
 			 headers.add("Content-Type", "application/json");
