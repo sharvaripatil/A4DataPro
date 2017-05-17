@@ -405,6 +405,7 @@
 		<property name="pslMapping" ref="pslMappingId"/>
 		<property name="dacassoMapping" ref="dacassoMappingId"/>	
 		<property name="tomaxUsaMapping" ref="TomaxUsaMappingId"/>
+		<property name="pslcadMapping" ref="pslcadMappingId"/>
 		<property name="brandwearExcelMapping" ref="brandwearExcelMappingId"/>
 		
      </bean>
@@ -774,8 +775,28 @@
          <property name="lookupRestServiceObj" ref="lookupRestService"/>
        </bean>
        
+        <!--Brandwear Configuration end  -->   
        
        
+      <!-- supplier PSLCAD configuration start -->
+       
+       <bean id="pslcadMappingId" class="com.a4tech.supplier.mapper.PSLcadMapping">
+      <property name="postServiceImpl" ref="postService"/>
+      <property name="productDaoObj" ref="productDao"/>
+      <property name="pslcadattributObj" ref="pslcadattributObjId"/>
+      <property name="pslcadPriceGridObj" ref="pslcadPriceGridObjId"/>
+      </bean>
+    
+    
+     <bean id="pslcadattributObjId" class="parser.pslcad.PSLcadProductAttributeParser">
+     <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     <property name="lookupRestServiceObj" ref="lookupRestService"/>
+     </bean>
+     <bean id="pslcadPriceGridObjId" class="parser.pslcad.PSLcadPriceGridParser"/>
+    
+    
+          <!-- supplier PSLCAD configuration end -->
+    
      
      
 </beans>

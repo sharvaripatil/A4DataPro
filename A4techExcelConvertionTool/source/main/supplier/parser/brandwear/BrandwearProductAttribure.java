@@ -3,10 +3,7 @@ package parser.brandwear;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.junit.internal.runners.model.EachTestNotifier;
 import org.springframework.util.StringUtils;
-
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.model.ImprintMethod;

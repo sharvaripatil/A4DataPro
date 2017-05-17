@@ -13,8 +13,10 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import parser.psl.PSLPriceGridParser;
-import parser.psl.PSLProductAttributeParser;
+
+
+import parser.pslcad.PSLcadPriceGridParser;
+import parser.pslcad.PSLcadProductAttributeParser;
 
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
@@ -37,15 +39,15 @@ import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
-public class PSLMapping implements IExcelParser {
+public class PSLcadMapping implements IExcelParser {
 
 	private static final Logger _LOGGER = Logger.getLogger(PSLMapping.class);
 		
 		private PostServiceImpl postServiceImpl;
 		private ProductDao productDaoObj;
 		private LookupServiceData lookupServiceDataObj;
-		private PSLProductAttributeParser attributObj;
-		private PSLPriceGridParser pslPriceGridObj;
+		private PSLcadProductAttributeParser pslcadattributObj;
+		private PSLcadPriceGridParser pslcadPriceGridObj;
 
 		
 		public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
@@ -106,8 +108,7 @@ public class PSLMapping implements IExcelParser {
 					productXids.add(productId);
 				}
 				 boolean checkXid  = false;
-			
-				
+		
 				while (cellIterator.hasNext()) {
 					Cell cell = cellIterator.next();
 					/*int*/ columnIndex = cell.getColumnIndex();
@@ -199,7 +200,7 @@ public class PSLMapping implements IExcelParser {
 					
 
 					switch (columnIndex + 1) {
-					case 1://xid
+                    case 1://xid
 				    	
 						productExcelObj.setExternalProductId(xid);
 						
@@ -319,7 +320,7 @@ public class PSLMapping implements IExcelParser {
 						String ColorValue=cell.getStringCellValue();
 						if(!StringUtils.isEmpty(ColorValue))
 						{
-						colorList=attributObj.getColorCriteria(ColorValue);
+						colorList=pslcadattributObj.getColorCriteria(ColorValue);
 						productConfigObj.setColors(colorList);
 						}
 					
@@ -332,7 +333,7 @@ public class PSLMapping implements IExcelParser {
 						String ProductSize=cell.getStringCellValue();
 						if(!StringUtils.isEmpty(ProductSize)){
 							ProductSize=ProductSize.replace("inch", "").replace("max.", "").replace("Ø", "");
-						sizeObj=attributObj.getSizeValue(ProductSize);
+						sizeObj=pslcadattributObj.getSizeValue(ProductSize);
 						productConfigObj.setSizes(sizeObj);
 						}
 						
@@ -353,7 +354,7 @@ public class PSLMapping implements IExcelParser {
 						
 					case 25:  //Print Tech
 						String ImprintMethod=cell.getStringCellValue();
-						imprintMethodsList=attributObj.getImprintMethodValue(ImprintMethod);
+						imprintMethodsList=pslcadattributObj.getImprintMethodValue(ImprintMethod);
 						productConfigObj.setImprintMethods(imprintMethodsList);
 	           
 						break;
@@ -361,7 +362,7 @@ public class PSLMapping implements IExcelParser {
 					case 26: //Battery
 						
 						String BatteryInfo=cell.getStringCellValue();
-						batteryInfoList=attributObj.getBatteyInfo(BatteryInfo);
+						batteryInfoList=pslcadattributObj.getBatteyInfo(BatteryInfo);
 						if(!StringUtils.isEmpty(BatteryInfo))
 						{
 						productConfigObj.setBatteryInformation(batteryInfoList);
@@ -370,7 +371,7 @@ public class PSLMapping implements IExcelParser {
 						
 					case 27: //Packaging
 						String PackageInfo=cell.getStringCellValue();
-						listOfPackaging=attributObj.getPackageInfo(PackageInfo);
+						listOfPackaging=pslcadattributObj.getPackageInfo(PackageInfo);
 						if(!StringUtils.isEmpty(PackageInfo))
 						{
 							
@@ -408,7 +409,7 @@ public class PSLMapping implements IExcelParser {
 						ShippingWeight=ShippingWeight.substring(0, 6);
 						}
 						shippingEstimation=shippingEstimation.append(ShippingWeight);
-						shippingEstimationObj=attributObj.getShippingInfo(shippingEstimation);
+						shippingEstimationObj=pslcadattributObj.getShippingInfo(shippingEstimation);
 						productConfigObj.setShippingEstimates(shippingEstimationObj);
 
 						}
@@ -424,7 +425,7 @@ public class PSLMapping implements IExcelParser {
 					case 35://Materials
 						String MaterialValue=cell.getStringCellValue();
 						if(!StringUtils.isEmpty(MaterialValue)){
-						listOfMaterial = attributObj.getMaterialList(MaterialValue);
+						listOfMaterial = pslcadattributObj.getMaterialList(MaterialValue);
 						productConfigObj.setMaterials(listOfMaterial);
 					}
 						break;
@@ -433,9 +434,10 @@ public class PSLMapping implements IExcelParser {
 						break;
 					case 37://Certificates
 						String  CertificateValue=cell.getStringCellValue();
-						complianceList=attributObj.getCompliance(CertificateValue);
+						if(!CertificateValue.equalsIgnoreCase("NA")){
+						complianceList=pslcadattributObj.getCompliance(CertificateValue);
 						productExcelObj.setComplianceCerts(complianceList);
-						
+						}
 						break;
 				
 				}  // end inner while loop
@@ -453,7 +455,7 @@ public class PSLMapping implements IExcelParser {
 				}
 			
 				{*/
-			 priceGrids = pslPriceGridObj.getPriceGrids("", 
+			 priceGrids = pslcadPriceGridObj.getPriceGrids("", 
 							"", "", "CAD",
 								         priceIncludesValue, true, "true", productName,"");	
 			//	}
@@ -543,21 +545,25 @@ public class PSLMapping implements IExcelParser {
 			this.lookupServiceDataObj = lookupServiceDataObj;
 		}
 
-		public PSLProductAttributeParser getAttributObj() {
-			return attributObj;
+		public PSLcadProductAttributeParser getPslcadattributObj() {
+			return pslcadattributObj;
 		}
 
-		public void setAttributObj(PSLProductAttributeParser attributObj) {
-			this.attributObj = attributObj;
+		public void setPslcadattributObj(PSLcadProductAttributeParser pslcadattributObj) {
+			this.pslcadattributObj = pslcadattributObj;
 		}
 
-		public PSLPriceGridParser getPslPriceGridObj() {
-			return pslPriceGridObj;
+		public PSLcadPriceGridParser getPslcadPriceGridObj() {
+			return pslcadPriceGridObj;
 		}
 
-		public void setPslPriceGridObj(PSLPriceGridParser pslPriceGridObj) {
-			this.pslPriceGridObj = pslPriceGridObj;
+		public void setPslcadPriceGridObj(PSLcadPriceGridParser pslcadPriceGridObj) {
+			this.pslcadPriceGridObj = pslcadPriceGridObj;
 		}
+
+	
+
+	
 		
 		
 	}
