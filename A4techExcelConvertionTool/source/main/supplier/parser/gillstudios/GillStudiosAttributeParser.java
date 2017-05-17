@@ -2,20 +2,26 @@ package parser.gillstudios;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.lookup.service.LookupServiceData;
+import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.Image;
+import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.Packaging;
+import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.RushTime;
@@ -30,7 +36,8 @@ import com.a4tech.util.CommonUtility;
 
 public class GillStudiosAttributeParser {
 	private static final Logger _LOGGER = Logger.getLogger(GillStudiosAttributeParser.class);
-	
+	private GillStudiosPriceGridParser gillStudiosPriceGridParser;
+	private LookupServiceData lookupServiceDataObj;
 public Product getExistingProductData(Product existingProduct , ProductConfigurations existingProductConfig){
 		
 		ProductConfigurations newProductConfigurations=new ProductConfigurations();
@@ -363,4 +370,91 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		   }
 		   return null;
 	   }
+	public List<PriceGrid> getImprintMethodUpcharges(Map<String, String> upchargeValues,List<ImprintMethod> imprintMethodList,List<PriceGrid> existingPriceGrid){
+		String imprintMethods = imprintMethodList.stream().map(ImprintMethod::getAlias)
+															.collect(Collectors.joining(","));
+		for (Map.Entry<String, String>  values: upchargeValues.entrySet()) {
+			 String upchargeType =  values.getKey();
+			 String[] upchareVal = values.getValue().split("_");
+			 String priceVal = upchareVal[0];
+			 String disCount = upchareVal[1];
+			 String upChargeTypeVal = "";
+			 if(upchargeType.equalsIgnoreCase("setupCharge")){
+				 upChargeTypeVal = "Set-up Charge";
+			 } else if(upchargeType.equalsIgnoreCase("screenCharge")){
+				 upChargeTypeVal = "Screen Charge";
+			 } else if(upchargeType.equalsIgnoreCase("plateCharge")){
+				 upChargeTypeVal = "Plate Charge";
+			 } else if(upchargeType.equalsIgnoreCase("diaCharge")){
+				 upChargeTypeVal = "Dia Charge";
+			 } else if(upchargeType.equalsIgnoreCase("toolingCharge")){
+				 upChargeTypeVal = "Tooling Charge";
+			 } else if(upchargeType.equalsIgnoreCase("repeateCharge")){
+				 
+			 }
+			existingPriceGrid = gillStudiosPriceGridParser.getUpchargePriceGrid("1", priceVal, disCount, "Imprint method", "n",
+					"USD", imprintMethods, upChargeTypeVal, "Other",1, "1___1___1___1___1___1___1___1___1___1", existingPriceGrid);
+		}
+		return existingPriceGrid;
+	}
+	public List<PriceGrid> getAdditionalColorUpcharge(String discountCode,String prices,List<PriceGrid> existingPriceGrid,String upchargeType){
+	   String disCountCode = getAdditionalColorDiscountCode(discountCode);
+	   existingPriceGrid = gillStudiosPriceGridParser.getUpchargePriceGrid("1", prices, disCountCode, "Additional Colors", "n",
+				"USD", "Additional Color",upchargeType, "Other", 1, "1___1___1___1___1___1___1___1___1___1",  existingPriceGrid);
+		return existingPriceGrid;
+	}
+	private String getAdditionalColorDiscountCode(String value){
+		 int discountCodeLength = value.length();
+		 if(discountCodeLength > ApplicationConstants.CONST_INT_VALUE_ONE){
+			  value = value.substring(ApplicationConstants.CONST_NUMBER_ZERO , ApplicationConstants.CONST_INT_VALUE_ONE);
+		 } else {
+			 return value;
+		 }
+		return value;
+	}
+	
+	public List<AdditionalColor> getAdditionalColor(String colorValue){
+		List<AdditionalColor> additionalColorList = new ArrayList<>();
+		AdditionalColor additionalColorObj = new AdditionalColor();
+		additionalColorObj.setName(colorValue);
+		additionalColorList.add(additionalColorObj);
+		return additionalColorList;
+	}
+
+	public List<Theme> getProductTheme(String themeVal){
+		List<Theme> listOfTheme = new ArrayList<>();
+		Theme themeObj = null;
+		String[] themes = CommonUtility.getValuesOfArray(themeVal, ApplicationConstants.CONST_DELIMITER_COMMA);
+		for (String themeName : themes) {
+			if(lookupServiceDataObj.isTheme(themeName.toUpperCase())){
+				themeObj = new Theme();
+				themeObj.setName(themeName);
+				listOfTheme.add(themeObj);
+			}
+		}
+		return listOfTheme;
+	}
+	
+	public GillStudiosPriceGridParser getGillStudiosPriceGridParser() {
+		return gillStudiosPriceGridParser;
+	}
+
+
+	public void setGillStudiosPriceGridParser(
+			GillStudiosPriceGridParser gillStudiosPriceGridParser) {
+		this.gillStudiosPriceGridParser = gillStudiosPriceGridParser;
+	}
+
+
+	public LookupServiceData getLookupServiceDataObj() {
+		return lookupServiceDataObj;
+	}
+
+
+	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
+		this.lookupServiceDataObj = lookupServiceDataObj;
+	}
+	
+	
+	
 }

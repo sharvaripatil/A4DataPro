@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -14,6 +16,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import parser.gillstudios.GillStudiosAttributeParser;
@@ -25,23 +28,18 @@ import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Availability;
-import com.a4tech.product.model.Catalog;
+import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
-import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
-import com.a4tech.product.model.Option;
-import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
@@ -104,14 +102,10 @@ public class GillStudiosMapping implements IExcelParser{
 		    List<Values> valuesList =new ArrayList<Values>();
 			RushTime rushTime  = new RushTime();
 			Size size=new Size();
-		    //Catalog catlogObj=new Catalog();
-			List<FOBPoint> FobPointsList = new ArrayList<FOBPoint>();
-			FOBPoint fobPintObj=new FOBPoint();
-			List<Option> ProdoptionList = new ArrayList<Option>();
-			List<OptionValue> ProdvaluesList = new ArrayList<OptionValue>();
-			OptionValue ProdoptionValueObj=new OptionValue();
-			Option ProdoptionObj=new Option();
-		  
+			StringBuilder additionalClrRunChrgPrice = new StringBuilder();
+			String        additionalClrRunChrgCode = "";
+			String        additionalColorPriceVal = "";
+			String        additionalColorCode     = "";
 		    
 		try{
 			 
@@ -158,6 +152,7 @@ public class GillStudiosMapping implements IExcelParser{
 		boolean Prod_Status;
 		Product existingApiProduct = null;
 		int columnIndex = 0;
+		Map<String, String>  imprintMethodUpchargeMap = new LinkedHashMap<>();
 		while (iterator.hasNext()) {
 			
 			try{
@@ -194,38 +189,59 @@ public class GillStudiosMapping implements IExcelParser{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
-							 
-							
-								ShippingEstimate shipping = gillStudiosAttributeParser.getShippingEstimateValues(cartonL, cartonW,
-										                               cartonH, weightPerCarton, unitsPerCarton);
-								productConfigObj.setImprintLocation(listImprintLocation);
-								productConfigObj.setImprintMethods(listOfImprintMethods);
-								if(!StringUtils.isEmpty(themeValue) ){
-								productConfigObj.setThemes(themeList);
-								}
-								productConfigObj.setRushTime(rushTime);
-								productConfigObj.setShippingEstimates(shipping);
-								productConfigObj.setProductionTime(listOfProductionTime);
-								String DimensionRefernce=null;
-								DimensionRefernce=dimensionValue.toString();
-								if(!StringUtils.isEmpty(DimensionRefernce)){
-								valuesList =gillStudiosAttributeParser.getValues(dimensionValue.toString(),
-                                        dimensionUnits.toString(), dimensionType.toString());
-								
-						        finalDimensionObj.setValues(valuesList);	
-								size.setDimension(finalDimensionObj);
-								productConfigObj.setSizes(size);
-								}
-								imprintSizeList=gillStudiosAttributeParser.getimprintsize(ImprintSizevalue);
-								if(imprintSizeList!=null){
-								productConfigObj.setImprintSize(imprintSizeList);}
-							//	productExcelObj.setImages(listOfImages);
-								//productConfigObj.setColors(colorList);
-								if(!StringUtils.isEmpty(FobPointsList)){
-								productExcelObj.setFobPoints(FobPointsList);
-								}
+							 //shipping estimate
+							 ShippingEstimate shipping = gillStudiosAttributeParser.getShippingEstimateValues(cartonL, cartonW,
+		                               cartonH, weightPerCarton, unitsPerCarton);
 
-								
+							 productConfigObj.setShippingEstimates(shipping);
+							 //imprint location
+							 productConfigObj.setImprintLocation(listImprintLocation);
+							 //imprint methods
+							 productConfigObj.setImprintMethods(listOfImprintMethods);
+							 //theme
+							 if(!StringUtils.isEmpty(themeValue) ){
+								 productConfigObj.setThemes(themeList);
+							 }
+							 //RushTime
+							 productConfigObj.setRushTime(rushTime);
+							 //production time
+							 productConfigObj.setProductionTime(listOfProductionTime);
+							 //sizes
+							 String DimensionRefernce=null;
+							 DimensionRefernce=dimensionValue.toString();
+							 if(!StringUtils.isEmpty(DimensionRefernce)){
+								 valuesList =gillStudiosAttributeParser.getValues(dimensionValue.toString(),
+										 dimensionUnits.toString(), dimensionType.toString());
+
+								 finalDimensionObj.setValues(valuesList);	
+								 size.setDimension(finalDimensionObj);
+								 productConfigObj.setSizes(size);
+							 }//imprint size 
+							 imprintSizeList=gillStudiosAttributeParser.getimprintsize(ImprintSizevalue);
+							 if(imprintSizeList!=null){
+								 productConfigObj.setImprintSize(imprintSizeList);
+							 }
+							 //ImprintMethodUpcharges
+							 if(!imprintMethodUpchargeMap.isEmpty()){
+							    	priceGrids = gillStudiosAttributeParser.getImprintMethodUpcharges(imprintMethodUpchargeMap,
+				                            listOfImprintMethods, priceGrids);
+							    }
+							 //additionalColor and upcharges
+								List<AdditionalColor> additionalColorList = null;
+								if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
+									 additionalColorList = gillStudiosAttributeParser.getAdditionalColor("Additional Color");
+										priceGrids = gillStudiosAttributeParser.getAdditionalColorUpcharge(additionalClrRunChrgCode,
+												   additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge");
+										productConfigObj.setAdditionalColors(additionalColorList);
+								}
+								if(!StringUtils.isEmpty(additionalColorPriceVal) && !additionalColorPriceVal.equals("0")){
+									if(additionalColorList == null){
+										additionalColorList = gillStudiosAttributeParser.getAdditionalColor("Additional Color");
+										productConfigObj.setAdditionalColors(additionalColorList);
+									}
+									priceGrids = gillStudiosAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
+											   additionalColorPriceVal, priceGrids,"Add. Color Charge");
+								}
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 //	if(Prod_Status = false){
@@ -249,7 +265,6 @@ public class GillStudiosMapping implements IExcelParser{
 								themeList = new ArrayList<Theme>();
 								finalDimensionObj = new Dimension();
 								 valuesList = new ArrayList<>();
-								//catalogList = new ArrayList<Catalog>();
 								productKeywords = new ArrayList<String>();
 								listOfProductionTime = new ArrayList<ProductionTime>();
 								rushTime = new RushTime();
@@ -260,13 +275,19 @@ public class GillStudiosMapping implements IExcelParser{
 								ImprintSizevalue = new StringBuilder();
 								size=new Size();
 								colorList = new ArrayList<Color>();
-								FobPointsList = new ArrayList<FOBPoint>();
-								ProdoptionList = new ArrayList<Option>();
 								 dimensionValue = new StringBuilder();
 								 dimensionUnits = new StringBuilder();
 								 dimensionType = new StringBuilder();
 								 priceIncludes = new StringBuilder();
+								 imprintMethodUpchargeMap = new LinkedHashMap<>();
 								 priceIncludesValue=null;
+								 priceIncludes = new StringBuilder();
+								 imprintMethodUpchargeMap = new LinkedHashMap<>();
+								 additionalClrRunChrgPrice = new StringBuilder();
+							     additionalClrRunChrgCode = "";
+							     additionalColorPriceVal = "";
+						         additionalColorCode     = "";
+						         pricesPerUnit=new StringBuilder();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid.trim());
@@ -293,19 +314,14 @@ public class GillStudiosMapping implements IExcelParser{
 				case 2://ProductID
 					
 					 break;
-				case 3://AsiProdNo
+				case 3://ItemNum
 					 String asiProdNo=CommonUtility.getCellValueStrinOrInt(cell);
 					     productExcelObj.setAsiProdNo(asiProdNo);		
 					  break;
 				case 4://Name
 					 productName = cell.getStringCellValue();
-						int len=productName.length();
-						 if(len>60){
-							String strTemp=productName.substring(0, 60);
-							int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
-							productName=(String) strTemp.subSequence(0, lenTemp);
-						}
-						productExcelObj.setName(productName);
+					 productName = CommonUtility.getStringLimitedChars(productName, 60);
+					 productExcelObj.setName(productName);
 						break;
 				case 5://CatYear(Not used)
 					 CatYear=CommonUtility.getCellValueStrinOrInt(cell);
@@ -313,7 +329,7 @@ public class GillStudiosMapping implements IExcelParser{
 					
 				    break;
 					
-				case 6://PriceConfirmedThru
+				case 6://ExpirationDate / PriceConfirmedThru
 					// priceConfirmedThru = cell.getDateCellValue();
 					// need to work on this
 					break;
@@ -324,11 +340,11 @@ public class GillStudiosMapping implements IExcelParser{
 					// Prod_Status=cell.getBooleanCellValue();
 					 break;
 					
-				case 8://Category
+				case 8://Cat1Name // not used
 					
 					break;
 					
-				case 9: // Category
+				case 9: // Cat2Name // not used
 
 					break;
 					
@@ -359,13 +375,8 @@ public class GillStudiosMapping implements IExcelParser{
 					description=description.replaceAll("™", "");
 					description=description.replaceAll("®", "");
 					description=description.replaceAll("soft touch", "");
-					
-					int length=description.length();
-					if(length>800){
-						String strTemp=description.substring(0, 800);
-						int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
-						description=(String) strTemp.subSequence(0, lenTemp);
-					}
+					description = CommonUtility.removeRestrictSymbols(description);
+					description = CommonUtility.getStringLimitedChars(description, 800);
 					productExcelObj.setDescription(description);
 									
 					break;
@@ -392,21 +403,12 @@ public class GillStudiosMapping implements IExcelParser{
 				case 15: // Themes
 					 themeValue=cell.getStringCellValue();
 					 themeList = new ArrayList<Theme>();
-					//if(!StringUtils.isEmpty(themeValue)){
-						Theme themeObj=null;
-						String Value=null;
-						List<String>themeLookupList = lookupServiceDataObj.getTheme(Value);
-						String themeValueArr[] = themeValue.toUpperCase().split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-						for (String themvalue : themeValueArr) {
-							themeObj=new Theme();
-							if(themeLookupList.contains(themvalue.trim())){
-							themeObj.setName(themvalue.trim());
-							themeList.add(themeObj);
-							}
-							}
+					 if(!StringUtils.isEmpty(themeValue)){
+						 themeList = gillStudiosAttributeParser.getProductTheme(themeValue);
+					 }
 					break;
 					
-				case 16://size --  value
+				case 16://Dimension1//size --  value
 						String dimensionValue1=CommonUtility.getCellValueStrinOrInt(cell);
 					   if(dimensionValue1 != null && !dimensionValue1.isEmpty()){
 						   dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
@@ -414,14 +416,14 @@ public class GillStudiosMapping implements IExcelParser{
 					   }
 					
 					break;
-				case 17: //size -- Unit
+				case 17: //  Dimension1Units// size -- Unit
 					  String dimensionUnits1 = CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!dimensionUnits1.contains("0")){
 						 dimensionUnits.append(dimensionUnits1.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
 					  break;
 				
-				case 18: //size -- type
+				case 18: //Dimension1Type//size -- type
 					String dimensionType1 =CommonUtility.getCellValueStrinOrInt(cell);
 					if(!dimensionType1.contains("0")){
 						dimensionType.append(dimensionType1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
@@ -430,7 +432,7 @@ public class GillStudiosMapping implements IExcelParser{
 					 
 					break;
 				
-				 case 19: //size
+				 case 19: //Dimension2 // size
 					 String dimensionValue2 =CommonUtility.getCellValueStrinOrInt(cell);
 					 if(dimensionValue2 != null && !dimensionValue2.isEmpty()){
 						 dimensionValue.append(dimensionValue2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
@@ -438,7 +440,7 @@ public class GillStudiosMapping implements IExcelParser{
 				
 					break;
 					
-				case 20:  //size
+				case 20:  //Dimension2Units //size
 					String dimensionUnits2 =CommonUtility.getCellValueStrinOrInt(cell);
 					
 					if(!dimensionUnits2.contains("0")){
@@ -446,7 +448,7 @@ public class GillStudiosMapping implements IExcelParser{
 					}
 					break;
 					
-				case 21: //size
+				case 21: //Dimension2Type //size
 					String  dimensionType2 = CommonUtility.getCellValueStrinOrInt(cell);
 
 					if(!dimensionType2.contains("0")){
@@ -455,7 +457,7 @@ public class GillStudiosMapping implements IExcelParser{
 					
 					break;
 					
-				case 22: //size
+				case 22: //Dimension3 // size
 					String dimensionValue3  =CommonUtility.getCellValueStrinOrInt(cell);
 					if(dimensionValue3 != null && !dimensionValue3.isEmpty()){
 						dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
@@ -465,7 +467,7 @@ public class GillStudiosMapping implements IExcelParser{
 					break;
 					
 					
-				case 23: //size
+				case 23: //Dimension3Units // size
 					String dimensionUnits3 = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!dimensionUnits3.contains("0")){
 						 dimensionUnits.append(dimensionUnits3.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
@@ -475,7 +477,7 @@ public class GillStudiosMapping implements IExcelParser{
 					}
 				   break;
 					
-				case 24: //size
+				case 24: //Dimension3Type // size
 					String dimensionType3 = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!dimensionType3.contains("0")){
 						dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
@@ -536,35 +538,28 @@ public class GillStudiosMapping implements IExcelParser{
 				}
 					
 					    break; 
-				case 37: // price code -- discount
+				case 37: //PrCode// price code -- discount
 					    
 				priceCode = cell.getStringCellValue();	
 					     break;
-				case 38:       // pricesPerUnit
+				case 38:       // PiecesPerUnit1,2,3,4,5,6 pricesPerUnit
 				case 39:
 				case 40:
 				case 41:
 				case 42:
 				case 43:
 					try{
-						
+						String priceUnit = null;
+						priceUnit=CommonUtility.getCellValueStrinOrDecimal(cell);
+						if(!StringUtils.isEmpty(priceUnit)&& !priceUnit.equals("0")){
+							priceUnit=priceUnit.replace(".0", "");
+							pricesPerUnit.append(priceUnit).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
 					}catch (Exception e) {
 						_LOGGER.info("Error in pricePerUnit field "+e.getMessage());
-					}
-					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						quantity = cell.getStringCellValue();
-				         if(!StringUtils.isEmpty(quantity) && !quantity.equals("0")){
-				        	 pricesPerUnit.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-				         }
-					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						double quantity1 = (double)cell.getNumericCellValue();
-				         if(!StringUtils.isEmpty(quantity1)){
-				        	 pricesPerUnit.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-				         }
-					}else{
-					}  
+					} 
 					      break;
-				case 44:
+				case 44://QuoteUponRequest
 					     quoteUponRequest = cell.getStringCellValue();
 					      break;
 				case 45:  // priceIncludeClr
@@ -589,65 +584,116 @@ public class GillStudiosMapping implements IExcelParser{
 						
 						break;
 						
-				case 48:    //setup charge   
-					/* try{
-						  ListPrice = CommonUtility.getCellValueDouble(cell);
-					     if(!StringUtils.isEmpty(ListPrice) && !ListPrice.equals("0")){
-				        	 listOfPrices.append(ListPrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					         }
-					}catch (Exception e) {
-						 _LOGGER.info("Error in base price prices field "+e.getMessage());							
-					}*/
+				case 48:   //Set-up Charge 
+					String setupChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!setupChargePrice.equals("0")){
+						imprintMethodUpchargeMap.put("setupCharge", setupChargePrice);
+					}
 				  break;
-				case 49://setup discount code
-					
-					/*try{
-						  Discountcode = CommonUtility.getCellValueStrinOrInt(cell);
-					     if(!StringUtils.isEmpty(Discountcode) && !Discountcode.equals("0")){
-				        	 listOfDiscount.append(Discountcode).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-					         }
-					}catch (Exception e) {
-			        	 _LOGGER.info("Error in pricePerUnit field "+e.getMessage());
-					}*/
+				case 49://setup charge code					
+					String setUpchargeCode = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(setUpchargeCode) && !setUpchargeCode.equals("0")){
+						String priceVal = imprintMethodUpchargeMap.get("setupCharge");
+						priceVal = priceVal+"_"+setUpchargeCode;
+						imprintMethodUpchargeMap.put("setupCharge", priceVal);
+					}
 				  break;
-				case 50:
+				case 50://screen charge
+					String screenChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!screenChargePrice.equals("0")){
+						imprintMethodUpchargeMap.put("screenCharge", screenChargePrice);
+					}
 							break;
-				case 51:
+				case 51://screen charge code
+					String screenchargeCode = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(screenchargeCode) && !screenchargeCode.equals("0")){
+						String priceVal = imprintMethodUpchargeMap.get("screenCharge");
+						priceVal = priceVal+"_"+screenchargeCode;
+						imprintMethodUpchargeMap.put("screenCharge", priceVal);
+					}
 							break;
-				case 52:
+				case 52:// plate charge
+					String plateChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!plateChargePrice.equals("0")){
+						imprintMethodUpchargeMap.put("plateCharge", plateChargePrice);
+					}
+
 							break;
-				case 53:
+				case 53://plateCharge code
+					String plateChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(plateChargeCode) && !plateChargeCode.equals("0")){
+						String priceVal = imprintMethodUpchargeMap.get("plateCharge");
+						priceVal = priceVal+"_"+plateChargeCode;
+						imprintMethodUpchargeMap.put("plateCharge", priceVal);
+					}
 							break;
-				case 54:
+				case 54:// diaCharge
+					String diaChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!diaChargePrice.equals("0")){
+						imprintMethodUpchargeMap.put("diaCharge", diaChargePrice);
+					}
 							break;
-				case 55:
+				case 55:// dia Charge code
+					String diaChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(diaChargeCode) && !diaChargeCode.equals("0")){
+						String priceVal = imprintMethodUpchargeMap.get("diaCharge");
+						priceVal = priceVal+"_"+diaChargeCode;
+						imprintMethodUpchargeMap.put("diaCharge", priceVal);
+					}
 							break;
-				case 56:
+				case 56://tooling charge
+					String toolingChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!toolingChargePrice.equals("0")){
+						imprintMethodUpchargeMap.put("toolingCharge", toolingChargePrice);
+					}
 							break;
-				case 57:
+				case 57:// tooling charge code
+					String toolingChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(toolingChargeCode) &&!toolingChargeCode.equals("0")){
+						String priceVal = imprintMethodUpchargeMap.get("toolingCharge");
+						priceVal = priceVal+"_"+toolingChargeCode;
+						imprintMethodUpchargeMap.put("toolingCharge", priceVal);
+					}
 							break;
-				case 58:	
+				case 58://repeate charge
+					/*String repeateChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!repeateChargePrice.equals("0")){
+						imprintMethodUpchargeMap.put("repeateCharge", repeateChargePrice);
+					}*/
+					// no need to process this column since there is no vaild data
 							break; 
-				case 59:
-							break;
-				case 60:
-							break;
-				case 61:
-							break;
-				case 62:
-							break;
-				case 63:
-							break;
-				case 64:
-							break;
-				case 65:
-							break;
-				case 66:
-							break;
-				case 67:
-							break;
-				case 68:
-			          		break; 
+				case 59://repeate charge code
+							/*String repeateChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
+							if(!repeateChargeCode.equals("0")){
+								String priceVal = imprintMethodUpchargeMap.get("repeateCharge");
+								priceVal = priceVal+"_"+repeateChargeCode;
+								imprintMethodUpchargeMap.put("repeateCharge", priceVal);
+							}*/
+					// no need to process this column since there is no vaild data
+						break;
+				case 60: // additioNal color
+				    additionalColorPriceVal = CommonUtility.getCellValueStrinOrInt(cell);
+					 break;
+			case 61: // additional color code
+				additionalColorCode = cell.getStringCellValue();
+					break;
+			case 62: 	
+			case 63:							
+			case 64:	
+			case 65:	
+			case 66:	
+			case 67:
+			  String colorCharge = CommonUtility.getCellValueDouble(cell);
+			  if(!colorCharge.equalsIgnoreCase("0.00") || !colorCharge.equalsIgnoreCase("0.0") ||
+					  !colorCharge.equalsIgnoreCase("0"))
+			  additionalClrRunChrgPrice.append(colorCharge).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				break;
+			case 68:// additional run charge code
+			  String additionalClrRunCode = cell.getStringCellValue();
+			      if(!StringUtils.isEmpty(additionalClrRunCode)){
+				       additionalClrRunChrgCode = additionalClrRunCode;
+			      }    	
+			break;  
 				case 69:
 					       break;
 				case 70:
@@ -862,7 +908,7 @@ public class GillStudiosMapping implements IExcelParser{
 					/*String ImageValue2=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(ImageValue2))
 					{
-						  image = new Image();
+						Image	  image = new Image();
 					      image.setImageURL(ImageValue2);
 					      image.setIsPrimary(false);
 					      image.setRank(2);
@@ -994,8 +1040,8 @@ public class GillStudiosMapping implements IExcelParser{
 					
 					break;
 					
-				case 118: //Comment
-					 FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
+				case 118: //Comment // not mention by client
+					 /*FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
 					//String FOBLooup=null;
 					//List<String>fobLookupList = lookupServiceDataObj.getFobPoints(FOBLooup);
 				
@@ -1023,14 +1069,14 @@ public class GillStudiosMapping implements IExcelParser{
 						
 						
 						
-						
+						*/
 					break;
 					
 				case 119: //Verified
 					String verified=cell.getStringCellValue();
 					if(verified.equalsIgnoreCase("True")){
-					String priceConfimedThruString="2017-12-31T00:00:00";
-					productExcelObj.setPriceConfirmedThru(priceConfimedThruString);
+					//String priceConfimedThruString="2017-12-31T00:00:00";
+					//productExcelObj.setPriceConfirmedThru(priceConfimedThruString);
 					}
 					break;
 			
@@ -1050,50 +1096,43 @@ public class GillStudiosMapping implements IExcelParser{
 			
 			}  // end inner while loop
 					 
-		}
-			// set  product configuration objects
-			
-			
-			 // end inner while loop
+		}// set  product configuration objects
+		 // end inner while loop
 			productExcelObj.setPriceType("L");
 			if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
+				String tempPriceUnit=pricesPerUnit.toString();
+				if(StringUtils.isEmpty(tempPriceUnit)){
+					tempPriceUnit="1___1___1___1___1___1___1___1___1___1";
+				}
+				
 				priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 						         listOfQuantity.toString(), priceCode, "USD",
-						         priceIncludesValue, true, quoteUponRequest, productName,"",priceGrids);	
+						         priceIncludesValue, true, quoteUponRequest, productName,"",pricesPerUnit.toString(),priceGrids);	
 			}
-			
-		
-		  if(FOBValue.contains("02"))
-			{
-			priceGrids = gillStudiosPriceGridParser.getUpchargePriceGrid("1", "2", "C", "Product Option", 
-							"false", "USD", "Pencil Sharpening Available", "Product Option Charge", "Other", new Integer(1), priceGrids);
-		 	productExcelObj.setPriceGrids(priceGrids);
-
-			}
-		  else{
-			  
 			 	productExcelObj.setPriceGrids(priceGrids);
-		  }
-				
-				
-			
-			    
 			}catch(Exception e){
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() +"at column+1="+columnIndex);		 
 		}
 		}
 		workbook.close();
-	
+		//ShippingEstimate
 		ShippingEstimate shipping = gillStudiosAttributeParser.getShippingEstimateValues(cartonL, cartonW,
 				                               cartonH, weightPerCarton, unitsPerCarton);
-		productConfigObj.setImprintLocation(listImprintLocation);
-		productConfigObj.setImprintMethods(listOfImprintMethods);
-	//	if(!StringUtils.isEmpty(themeValue) ){
-		productConfigObj.setThemes(themeList);
-	//	}
-		productConfigObj.setRushTime(rushTime);
+
 		productConfigObj.setShippingEstimates(shipping);
+		//ImprintLocation
+		productConfigObj.setImprintLocation(listImprintLocation);
+		//ImprintMethods
+		productConfigObj.setImprintMethods(listOfImprintMethods);
+		//theme
+		if(!CollectionUtils.isEmpty(themeList)){
+			productConfigObj.setThemes(themeList);
+		}
+		//RushTime
+		productConfigObj.setRushTime(rushTime);
+		//ProductionTime
 		productConfigObj.setProductionTime(listOfProductionTime);	
+		//sizes
 		String DimensionRef=null;
 		DimensionRef=dimensionValue.toString();
 		if(!StringUtils.isEmpty(DimensionRef)){
@@ -1104,20 +1143,35 @@ public class GillStudiosMapping implements IExcelParser{
 		size.setDimension(finalDimensionObj);
 		productConfigObj.setSizes(size);
 		}
-		
+		//ImprintSize
 		imprintSizeList=gillStudiosAttributeParser.getimprintsize(ImprintSizevalue);
 		 imprintSizeList.removeAll(Collections.singleton(null));
 		if(!StringUtils.isEmpty(imprintSizeList)){
 		productConfigObj.setImprintSize(imprintSizeList);
 		}
-		//productExcelObj.setImages(listOfImages);
-		//productConfigObj.setColors(colorList);
-		if(!StringUtils.isEmpty(FobPointsList)){
-		productExcelObj.setFobPoints(FobPointsList);
+		//impmtd upchrg
+		if(!imprintMethodUpchargeMap.isEmpty()){
+	    	priceGrids = gillStudiosAttributeParser.getImprintMethodUpcharges(imprintMethodUpchargeMap,
+                    listOfImprintMethods, priceGrids);
+	    }
+		// additional colors & upcgrg
+		List<AdditionalColor> additionalColorList = null;
+		if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
+			 additionalColorList = gillStudiosAttributeParser.getAdditionalColor("Additional Color");
+				priceGrids = gillStudiosAttributeParser.getAdditionalColorUpcharge(additionalClrRunChrgCode,
+						   additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge");
+				productConfigObj.setAdditionalColors(additionalColorList);
 		}
-	   
-
-		 	productExcelObj.setProductConfigurations(productConfigObj);
+		if(!StringUtils.isEmpty(additionalColorPriceVal) && !additionalColorPriceVal.equals("0")){
+			if(additionalColorList == null){
+				additionalColorList = gillStudiosAttributeParser.getAdditionalColor("Additional Color");
+				productConfigObj.setAdditionalColors(additionalColorList);
+			}
+			priceGrids = gillStudiosAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
+					   additionalColorPriceVal, priceGrids,"Add. Color Charge");
+		}	
+		productExcelObj.setPriceGrids(priceGrids);
+		productExcelObj.setProductConfigurations(productConfigObj);
 	
 		 	_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));
@@ -1143,7 +1197,6 @@ public class GillStudiosMapping implements IExcelParser{
 			themeList = new ArrayList<Theme>();
 			finalDimensionObj = new Dimension();
 			 valuesList = new ArrayList<>();
-			//catalogList = new ArrayList<Catalog>();
 			productKeywords = new ArrayList<String>();
 			listOfProductionTime = new ArrayList<ProductionTime>();
 			rushTime = new RushTime();
@@ -1153,16 +1206,19 @@ public class GillStudiosMapping implements IExcelParser{
 			imprintSizeList =new ArrayList<ImprintSize>();
 			size=new Size();
 			colorList = new ArrayList<Color>();
-			FobPointsList = new ArrayList<FOBPoint>();
 			ImprintSizevalue = new StringBuilder();
-			ProdoptionList = new ArrayList<Option>();
 			DimensionRef=null;
 			 dimensionValue = new StringBuilder();
 			 dimensionUnits = new StringBuilder();
 			 dimensionType = new StringBuilder();
 			 priceIncludesValue=null;
 			 priceIncludes = new StringBuilder();
-			 
+			 imprintMethodUpchargeMap = new LinkedHashMap<>();
+			 additionalClrRunChrgPrice = new StringBuilder();
+			 pricesPerUnit=new StringBuilder();
+		     additionalClrRunChrgCode = "";
+		     additionalColorPriceVal = "";
+	         additionalColorCode     = "";
 	       return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet "+e.getMessage());

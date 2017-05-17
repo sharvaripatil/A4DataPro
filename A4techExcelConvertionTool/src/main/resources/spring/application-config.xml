@@ -784,6 +784,8 @@
        </bean>
        <bean id="gillStudiosAttributeParserId" name="gillStudiosAttributeParserObj"
   		class="parser.gillstudios.GillStudiosAttributeParser" autowire="byName">
+  		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+  		<property name="gillStudiosPriceGridParser" ref="gillStudiosPriceGridParserObj"/>
   	</bean>
   	<bean id="gillStudiosPriceGridParserId" name="gillStudiosPriceGridParserObj" class="parser.gillstudios.GillStudiosPriceGridParser" autowire="byName"/>
   	<bean id="gillStudiosImprintMethodParserId" name="gillStudiosImprintMethodParserObj" class="parser.gillstudios.GillStudiosImprintMethodParser" autowire="byName">

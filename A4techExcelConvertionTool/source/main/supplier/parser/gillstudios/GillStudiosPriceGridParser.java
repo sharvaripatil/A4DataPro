@@ -17,7 +17,7 @@ public class GillStudiosPriceGridParser {
 	public List<PriceGrid> getPriceGrids(String listOfPrices,
 		    String listOfQuan, String discountCodes,
 			String currency, String priceInclude, boolean isBasePrice,
-			String qurFlag, String priceName, String criterias,
+			String qurFlag, String priceName, String criterias,String priceUnitArr,
 			List<PriceGrid> existingPriceGrid) {
 		_LOGGER.info("Enter Price Grid Parser class");
 		try{
@@ -28,7 +28,8 @@ public class GillStudiosPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] quantity = listOfQuan
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		
+		String[] priceUnit= priceUnitArr
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(priceName);
 		priceGrid.setPriceIncludes(priceInclude);
@@ -39,7 +40,7 @@ public class GillStudiosPriceGridParser {
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(prices, quantity, discountCodes);
+			listOfPrice = getPrices(prices, quantity, discountCodes,priceUnit);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
@@ -56,7 +57,7 @@ public class GillStudiosPriceGridParser {
 
 	}
 
-	public List<Price> getPrices(String[] prices, String[] quantity, String discount) {
+	public List<Price> getPrices(String[] prices, String[] quantity, String discount,String[] priceUnitArr) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
 		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length && PriceNumber < quantity.length
@@ -72,8 +73,13 @@ public class GillStudiosPriceGridParser {
 			}
 			price.setPrice(prices[PriceNumber]);
 			price.setDiscountCode(Character.toString(discount.charAt(PriceNumber)));
-			priceUnit
-					.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
+			/*priceUnit
+					.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);*/
+			if(priceUnitArr[PriceNumber].equals("1000")){
+				priceUnit.setName("1000");
+			}
+			
+			priceUnit.setItemsPerUnit(priceUnitArr[PriceNumber]);
 			price.setPriceUnit(priceUnit);
 			listOfPrices.add(price);
 		}
@@ -131,7 +137,7 @@ public class GillStudiosPriceGridParser {
 	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
 			String discounts, String upChargeCriterias, String qurFlag,
 			String currency, String upChargeName, String upChargeType,
-			String upchargeUsageType, Integer upChargeSequence,
+			String upchargeUsageType, Integer upChargeSequence,String priceUnitArr,
 			List<PriceGrid> existingPriceGrid) {
 		try{
 		List<PriceConfiguration> configuration = null;
@@ -139,6 +145,8 @@ public class GillStudiosPriceGridParser {
 		String[] upChargePrices = prices
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] upChargeQuantity = quantity
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		String[] upPriceunit = priceUnitArr
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String upChargeDiscount = discounts;
 
@@ -155,7 +163,7 @@ public class GillStudiosPriceGridParser {
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
 			 listOfPrice =
-			 getPrices(upChargePrices,upChargeQuantity,upChargeDiscount);
+			 getPrices(upChargePrices,upChargeQuantity,upChargeDiscount,upPriceunit);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}

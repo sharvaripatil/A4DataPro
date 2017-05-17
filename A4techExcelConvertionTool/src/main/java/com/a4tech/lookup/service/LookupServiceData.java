@@ -18,7 +18,7 @@ public class LookupServiceData {
 	public List<String>        tradeNames  			= null;
 	public static List<String> categories 			= null;
 	public static List<Catalog> catalogs            = null;
-	public List<String>        themes  			    = null;
+	public static List<String>   themes  		    = null;
     public static List<String> packages             = null;
     
 	public  List<String> getImprintMethods(){
@@ -134,7 +134,7 @@ public class LookupServiceData {
      
      public List<String> getTheme(String authToken){
     	 if(themes == null){
-    		 themes = lookupRestService.getTheme(authToken);
+    		 themes = lookupRestService.getTheme();
     	 }
     	 return themes;
      }
@@ -147,6 +147,15 @@ public class LookupServiceData {
  		}
  		return false;
  	}
+    public boolean isTheme(String themeVal){
+    	if(themes == null){
+    		themes = getTheme(themeVal);
+ 		}
+ 		if(themes != null){
+ 			return themes.contains(themeVal);
+ 		}
+    	return false;
+    }
      public List<String> getPackageValues(){
     	 if(packages == null){
     		 packages = lookupRestService.getPackages();
