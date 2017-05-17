@@ -9,7 +9,7 @@
 	<!-- cron triggers -->
 	 <bean id="ftpServerCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 	 	<property name="jobDetail" ref="ftpServerCronJobDetails"></property>
-	 	<property name="cronExpression" value="0 0/5 * * * ?"></property>
+	 	<property name="cronExpression" value="0 25 17 * * ?"></property>
 	 </bean>	
 	<!-- cron Job details -->
       <bean id="ftpServerCronJobDetails" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">

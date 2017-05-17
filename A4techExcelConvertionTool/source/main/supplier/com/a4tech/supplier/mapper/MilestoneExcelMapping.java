@@ -684,7 +684,6 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				    if(!StringUtils.isEmpty(SecondImprinttype2) || SecondImprinttype2 != "" ){
 					SecondImprinttype2=MilestoneLookupData.Dimension1Type.get(SecondImprinttype2);
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprinttype2).append(" ");
-
 					}
 					  break;
 					  
@@ -698,11 +697,11 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					break;
 				case 89: // DecorationMethod
 				   decorationMethod = cell.getStringCellValue();
-				   if(StringUtils.isEmpty(decorationMethod))
+				   if(!StringUtils.isEmpty(decorationMethod))
 				   {
-					   decorationMethod="PRINTED"; 
+					   listOfImprintMethods = attrtiParserObj.getImprintMethodValues(decorationMethod);
 				   }
-					listOfImprintMethods = attrtiParserObj.getImprintMethodValues(decorationMethod);
+					
 					
 					break; 
 					 

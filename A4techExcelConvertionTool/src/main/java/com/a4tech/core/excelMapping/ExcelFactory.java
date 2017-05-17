@@ -30,6 +30,7 @@ import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
+import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 
 
@@ -62,6 +63,7 @@ public class ExcelFactory {
 	private ProGolfMapping proGolfMapping;
 	private GillStudiosMapping gillStudiosMapping;
 	private DacassoMapping dacassoMapping;
+	private SageRMKWorldWideMapping sage80289Mapping;
 	private BrandwearExcelMapping brandwearExcelMapping;
 	
 	public  IExcelParser getExcelParserObject(String name){
@@ -111,26 +113,22 @@ public class ExcelFactory {
 			   return goldBandExcelMapping;
 		   }else if(name.equalsIgnoreCase("prime") || name.equals("79530")){
 			   return primeLineExcelMapping;
-
 		   }
 	      else if(name.equalsIgnoreCase("psl") || name.equals("75613")){
-		   return pslMapping;
-	      }
-	      else if(name.equalsIgnoreCase("milestone") || name.equals("71173")){
-			   return milestoneExcelMapping;
-		      }
-		      else if(name.equalsIgnoreCase("proGolf") || name.equals("79680")){
+		      return pslMapping;
+	      }else if(name.equalsIgnoreCase("milestone") || name.equals("71173")){
+  			   return milestoneExcelMapping;
+	      } else if(name.equalsIgnoreCase("proGolf") || name.equals("79680")){
  			   return proGolfMapping;
 	      } else if(name.equalsIgnoreCase("dacasso") || name.equals("48125")){
 	    	  return dacassoMapping;
-	      }
-	      else if(name.equalsIgnoreCase("tomaxusa") || name.equals("91435")){
+	      } else if(name.equalsIgnoreCase("tomaxusa") || name.equals("91435")){
 			   return tomaxUsaMapping;
-		      }
-		      else if(name.equalsIgnoreCase("brandwear") || name.equals("41545")){
+		   }else if(name.equalsIgnoreCase("brandwear") || name.equals("41545")){
 			   return brandwearExcelMapping;
-		  }
-		  else if(name.equalsIgnoreCase("gillStudios") || name.equals("56950")){
+		  }else if(name.equalsIgnoreCase("sage80289") || name.equals("80289")){
+			  return sage80289Mapping;
+		  }else if(name.equalsIgnoreCase("gillStudios") || name.equals("56950")){
 			   return gillStudiosMapping;
 			  }
 		return null;
@@ -346,10 +344,6 @@ public class ExcelFactory {
 	public void setDacassoMapping(DacassoMapping dacassoMapping) {
 		this.dacassoMapping = dacassoMapping;
 	}
-
-	public GillStudiosMapping getGillStudiosMapping() {
-		return gillStudiosMapping;
-	}
 	
 	public BrandwearExcelMapping getBrandwearExcelMapping() {
 		return brandwearExcelMapping;
@@ -362,5 +356,13 @@ public class ExcelFactory {
 	public void setGillStudiosMapping(GillStudiosMapping gillStudiosMapping) {
 		this.gillStudiosMapping = gillStudiosMapping;
 	}	
-	
+	public GillStudiosMapping getGillStudiosMapping() {
+		return gillStudiosMapping;
+	}
+	public SageRMKWorldWideMapping getSage80289Mapping() {
+		return sage80289Mapping;
+	}
+	public void setSage80289Mapping(SageRMKWorldWideMapping sage80289Mapping) {
+		this.sage80289Mapping = sage80289Mapping;
+	}
 }

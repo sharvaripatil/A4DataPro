@@ -41,7 +41,7 @@ import com.a4tech.util.CommonUtility;
 
 public class GoldbondAttributeParser {
 	
-	String pattern_remove_specialSymbols = "[^0-9.x/ ]";
+	String pattern_remove_specialSymbols = "[^0-9.x/\\- ]";
 	private GoldbondPriceGridParser gbPriceGridParser;
 	private LookupServiceData lookupServiceData;
 	private static List<String> lookupFobPoints = null;
@@ -88,7 +88,7 @@ public class GoldbondAttributeParser {
 		    	
 		    }
 		    existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", priceVal, discountCode, "Additional Colors", false,
-					"USD", "additional color available", "Add. Color Charge", "Other", 1, existingPriceGrid,"","");
+					"USD","", "additional color available", "Set-up Charge", "Per Order", 1, existingPriceGrid,"","");
 		    List<AdditionalColor> listOfAdditionalColor = getAdditionalColors("additional color available");
 		    existingConfiguration.setAdditionalColors(listOfAdditionalColor);
 		    existingProduct.setProductConfigurations(existingConfiguration);
@@ -135,33 +135,42 @@ public class GoldbondAttributeParser {
 			} else if(sizeVal.equalsIgnoreCase("29.5 Inches")){
 				valuesObj = getOverAllSizeValObj("29.5", "Length", "", "");
 			} else if(sizeVal.equalsIgnoreCase("7- 3/4 or larger size heads")){
-				valuesObj = getOverAllSizeValObj("7-3/4", "Length", "", "");
+				valuesObj = getOverAllSizeValObj("7 3/4", "Length", "", "");
 			} else if (sizeVal.contains("H") && sizeVal.contains("L") && sizeVal.contains("D")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Length", "Depth");
 			} else if (sizeVal.contains("H") && sizeVal.contains("W") && sizeVal.contains("D")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "Depth");
 			} else if (sizeVal.contains("L") && sizeVal.contains("W") && sizeVal.contains("D")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "Depth");
 			} else if (sizeVal.contains("H") && sizeVal.contains("W")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "");
 			} else if (sizeVal.contains("arc")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Arc", "", "");
 			} else if (sizeVal.contains("Dia") || sizeVal.contains("dia")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Dia", "", "");
 			} else if (sizeVal.contains("H")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "", "");
 			} else if (sizeVal.contains("L")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "", "");
 			} else {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "Height");
 			}
 			listOfValues.add(valuesObj);
@@ -200,24 +209,24 @@ public class GoldbondAttributeParser {
 		List<PriceGrid> existingPriceGrid = existingProduct.getPriceGrids();
 		if(value.equalsIgnoreCase("$0.30 (G) ea.")){
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Additional Location", false,
-					"USD", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
+					"USD","", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
 		} else if(value.contains("$50.00 (G) plus $0.30 (G)")){
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1__1", "50.0__0.30", "G__G", "Additional Location", false,
-					"USD", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
+					"USD","", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
 		} else if(value.equalsIgnoreCase("$0.30 (G) per cube location, ea.")){
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Additional Location", false,
-					"USD", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
+					"USD", "","Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
 		} else if(value.equalsIgnoreCase("$50.00 (G), applies to repeat orders")){
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "50.0", "G", "Additional Location", false,
-					"USD", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
+					"USD","", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
 		} else if(value.equalsIgnoreCase("$50.00 (G) per logo, plus $0.80 (G) run charge ea. on two back (black) panels")){
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "50.0", "G", "Additional Location", false,
-					"USD", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
+					"USD","", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.80", "G", "Additional Location", false,
-					"USD", "Reverse Side Imprint", "Run Charge", "Other", 1, existingPriceGrid,"","");
+					"USD","", "Reverse Side Imprint", "Run Charge", "Other", 1, existingPriceGrid,"","");
 		}else if(value.equalsIgnoreCase("$50.00 (G) per location plus add $0.30 (G) ea./location")){
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1__1", "50.0__0.30", "G__G", "Additional Location", false,
-					"USD", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
+					"USD","", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
 		} else {
 			
 		}
@@ -248,7 +257,7 @@ public class GoldbondAttributeParser {
 			existingProduct.setAssembledFlag(false);
 		} else if(val.equalsIgnoreCase("$0.30 (G) ea.")){
 			listOfOptions = getOptions("Item Assembly", "Optional Item Assembly Available","Product",listOfOptions);
-			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Product Option", false, "USD",
+			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Product Option", false, "USD","",
 					"Optional Item Assembly Available", "Product Option Charge", "Other", 1, existingPriceGrid,
 					"Item Assembly","");
 			config.setOptions(listOfOptions);
@@ -351,7 +360,7 @@ public class GoldbondAttributeParser {
 		}
 		if(!StringUtils.isEmpty(rushTimeVal)){
 			rushTimeVal = rushTimeVal +" "+ "business days";
-			priceGrids = gbPriceGridParser.getUpchargePriceGrid("1", "8.75", "G", "Rush Service", false, "USD",
+			priceGrids = gbPriceGridParser.getUpchargePriceGrid("1", "8.75", "G", "Rush Service", false, "USD","",
 					rushTimeVal, "Rush Service Charge", "Other", 1, priceGrids,
 					"",priceUnitName);
 		}
@@ -375,15 +384,15 @@ public class GoldbondAttributeParser {
 			packObj.setName(value);
 		} else if(value.equalsIgnoreCase("Each packed in CC-23 Gift Folder unless otherwise specified. Mailer: $0.55 (G) ea. For special packaging options call customer service for quote")){
 			packObj.setName("Mailer");
-			listOfPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.55", "G", "Packaging", false, "USD",
-					"Mailer", "Packaging Charge", "Other", 1, listOfPriceGrid,
+			listOfPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.55", "G", "Packaging", false, "USD","",
+					"Mailer", "Packaging Charge", "Per Quantity", 1, listOfPriceGrid,
 					"","");
 		} else if(value.equalsIgnoreCase("Bulk. Polybag add $0.15 (G) ea.")){
 			packObj.setName("Bulk");
 			packObj1.setName("Poly Bag");
 			listOfPackaging.add(packObj1);
-			listOfPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.15", "G", "Packaging", false, "USD",
-					"Poly Bag", "Packaging Charge", "Other", 1, listOfPriceGrid,
+			listOfPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.15", "G", "Packaging", false, "USD","",
+					"Poly Bag", "Packaging Charge", "Per Quantity", 1, listOfPriceGrid,
 					"","");
 		} else if(value.equalsIgnoreCase("Bulk")){
 			packObj.setName(value);
@@ -393,8 +402,8 @@ public class GoldbondAttributeParser {
 			packObj.setName("Bulk");
 			packObj1.setName("Poly Bag");
 			listOfPackaging.add(packObj1);
-			listOfPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.44", "G", "Packaging", false, "USD",
-					"Poly Bag", "Packaging Charge", "Other", 1, listOfPriceGrid,
+			listOfPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.44", "G", "Packaging", false, "USD","",
+					"Poly Bag", "Packaging Charge", "Per Quantity", 1, listOfPriceGrid,
 					"","");
 		} else if(value.contains("Individually")){
 			 if(value.contains("Bulk")){
@@ -433,7 +442,7 @@ public class GoldbondAttributeParser {
 		}
 		listOfOptions = getOptions("Pencil Sharpening", "Optional Pencil Sharpening Available", "Product",
 				listOfOptions);
-		priceGrids = gbPriceGridParser.getUpchargePriceGrid("1__1", "0.02__20.00", "G__G", "Product Option", false, "USD",
+		priceGrids = gbPriceGridParser.getUpchargePriceGrid("1__1", "0.02__20.00", "G__G", "Product Option", false, "USD","",
 				"Optional Pencil Sharpening Available", "Product Option Charge", "Other", 1, priceGrids,
 				"Pencil Sharpening","");
 		productConfig.setOptions(listOfOptions);
@@ -821,7 +830,7 @@ public class GoldbondAttributeParser {
     	}
     	if(!StringUtils.isEmpty(priceVal)){
     		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", priceVal, "G", "Additional Colors", false,
-					"USD", "additional color available", "Run Charge", "Per Quantity", 1, priceGrid,"","");
+					"USD","", "additional color available", "Run Charge", "Per Quantity", 1, priceGrid,"","");
     	}
     	existingProduct.setPriceGrids(priceGrid);
     	return existingProduct;
