@@ -29,6 +29,7 @@ import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
+import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 
 
@@ -60,8 +61,9 @@ public class ExcelFactory {
 	private TomaxUsaMapping tomaxUsaMapping;
 	private ProGolfMapping proGolfMapping;
 	private DacassoMapping dacassoMapping;
+	private SageRMKWorldWideMapping sage80289Mapping;
 	private BrandwearExcelMapping brandwearExcelMapping;
-	
+
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -118,9 +120,10 @@ public class ExcelFactory {
  			   return proGolfMapping;
 	      } else if(name.equalsIgnoreCase("dacasso") || name.equals("48125")){
 	    	  return dacassoMapping;
-	      }
-	      else if(name.equalsIgnoreCase("tomaxusa") || name.equals("91435")){
+	      } else if(name.equalsIgnoreCase("tomaxusa") || name.equals("91435")){
 			   return tomaxUsaMapping;
+		  } else if(name.equalsIgnoreCase("sage80289") || name.equals("80289")){
+			  return sage80289Mapping;
 		  }
 	      else if(name.equalsIgnoreCase("brandwear") || name.equals("41545")){
 			   return brandwearExcelMapping;
@@ -337,8 +340,13 @@ public class ExcelFactory {
 
 	public void setTomaxUsaMapping(TomaxUsaMapping tomaxUsaMapping) {
 		this.tomaxUsaMapping = tomaxUsaMapping;
+	}	
+	public SageRMKWorldWideMapping getSage80289Mapping() {
+		return sage80289Mapping;
 	}
-
+	public void setSage80289Mapping(SageRMKWorldWideMapping sage80289Mapping) {
+		this.sage80289Mapping = sage80289Mapping;
+	}
 	public BrandwearExcelMapping getBrandwearExcelMapping() {
 		return brandwearExcelMapping;
 	}
@@ -346,14 +354,4 @@ public class ExcelFactory {
 	public void setBrandwearExcelMapping(BrandwearExcelMapping brandwearExcelMapping) {
 		this.brandwearExcelMapping = brandwearExcelMapping;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

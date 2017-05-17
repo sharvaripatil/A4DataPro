@@ -71,12 +71,13 @@ public class GoldBondExcelMapping implements IExcelParser{
 		int columnIndex=0;
 		// String listPrice = "";
 		// String priceQty  = "";
-		StringJoiner productDescription = new StringJoiner(" ");
+		StringBuilder productDescription = new StringBuilder();
 		StringJoiner impritnMethodPrice = new StringJoiner(",");
 		List<PriceGrid> listOfPriceGrids = new ArrayList<>();
 		StringBuilder imprintColors =  new StringBuilder();
 		StringBuilder imageValues =  new StringBuilder();
 		String secondPoleImprint = "";
+		String imprintMethodPriceInclude = "";
 		while (iterator.hasNext()) {
 			
 			try{
@@ -118,7 +119,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 							 	}
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
-							 	productDescription = new StringJoiner(" ");
+							 	productDescription = new StringBuilder();
 							 	impritnMethodPrice = new StringJoiner(",");
 							 	listOfPriceGrids = new ArrayList<>();
 							 	listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -128,6 +129,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 							    imprintColors =  new StringBuilder();
 							    imageValues =  new StringBuilder();
 							    secondPoleImprint = "";
+							    imprintMethodPriceInclude = "";
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -159,7 +161,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 				    break;
 				case 4:// description
 					String prdName = cell.getStringCellValue();
-					prdName = prdName.replaceAll("[^a-zA-Z0-9%/-?! ]", "");
+					prdName = prdName.replaceAll("[^a-zA-Z0-9%/?!\"\\- ]", "");
 					productExcelObj.setName(prdName);
 					break;
 				case 5:	
@@ -174,8 +176,8 @@ public class GoldBondExcelMapping implements IExcelParser{
 				case 14://Features
 					String description = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(description)){
-						description = description.replaceAll("[^a-zA-Z0-9%/-?! ]", "");
-						productDescription.add(description);
+						description = description.replaceAll("[^a-zA-Z0-9%/?!\"\\- ]", "");
+						productDescription.append(description).append(ApplicationConstants.CONST_DELIMITER_DOT).append(" ");
 					}
 					 break;
 				case 15:// qty
@@ -513,7 +515,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 						   List<Artwork> listOfArtwork = gbAttributeParser.getProductArtwork("PRE-PRODUCTION PROOF");
 						   productConfiguration.setArtwork(listOfArtwork);
 								listOfPriceGrids = gbPriceGridParser.getUpchargePriceGrid("1", proofCharge, "Z", "Artwork & Proofs",
-										false, "USD", "PRE-PRODUCTION PROOF", "Artwork Charge", "Other", 1,
+										false, "USD","","PRE-PRODUCTION PROOF", "Artwork Charge", "Other", 1,
 										listOfPriceGrids,"","");
 					   }
 					break;
@@ -669,7 +671,8 @@ public class GoldBondExcelMapping implements IExcelParser{
 				case 198: 
 				case 199: 
 					break;*/
-				case 200: //Price include
+				case 200: //Price include related to Imprint method
+					imprintMethodPriceInclude = cell.getStringCellValue();
 					break;
 				case 201: // images start
 				case 202:
@@ -734,8 +737,8 @@ public class GoldBondExcelMapping implements IExcelParser{
 						if(!priceVal.equals("0")){
 							String imprintMethodVals = getImprintMethodAlias(productConfiguration.getImprintMethods());
 							listOfPriceGrids = gbPriceGridParser.getUpchargePriceGrid("1", priceVal,
-									imprintMethodPriceVals[1], "Imprint Method", false, "USD", imprintMethodVals,
-									"Imprint Method Charge", "Other", 1, listOfPriceGrids, "", "");
+							imprintMethodPriceVals[1], "Imprint Method", false, "USD",imprintMethodPriceInclude, imprintMethodVals,
+							"Set-up Charge", "Per Order", 1, listOfPriceGrids, "", "");
 						}
 					}
 					productExcelObj.setPriceGrids(listOfPriceGrids);
