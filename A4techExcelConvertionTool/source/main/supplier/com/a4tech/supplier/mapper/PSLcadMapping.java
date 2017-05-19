@@ -5,20 +5,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
-
-
-
-
 import parser.pslcad.PSLcadPriceGridParser;
 import parser.pslcad.PSLcadProductAttributeParser;
-
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
@@ -86,14 +80,11 @@ public class PSLcadMapping implements IExcelParser {
 			  ShippingEstimate shippingEstimationObj=new ShippingEstimate();
 			  StringBuilder listQuantity = new StringBuilder();
 			  Volume itemWeightObj=new Volume();
-
-			try{
-				 
+			try{			 
 			_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 		    Sheet sheet = workbook.getSheetAt(0);
 			Iterator<Row> iterator = sheet.iterator();
-			_LOGGER.info("Started Processing Product");
-		
+			_LOGGER.info("Started Processing Product");		
 			while (iterator.hasNext()) {
 				
 				try{
@@ -367,8 +358,7 @@ public class PSLcadMapping implements IExcelParser {
 							productConfigObj.setPackaging(listOfPackaging);
 						}
 						
-						break;
-						
+						break;					
 						
 					case 28: //Quantity per Box
 						String ShippingItems=CommonUtility.getCellValueStrinOrInt(cell);
@@ -388,8 +378,6 @@ public class PSLcadMapping implements IExcelParser {
 						}
 						ShippingDimension="null";
 						shippingEstimation=shippingEstimation.append(ShippingDimension).append("@@");
-
-
 						break;
 					case 31: //Weight per piece (kg)
 						
@@ -415,9 +403,7 @@ public class PSLcadMapping implements IExcelParser {
 						shippingEstimation=shippingEstimation.append(ShippingWeight);
 						shippingEstimationObj=pslcadattributObj.getShippingInfo(shippingEstimation);
 						productConfigObj.setShippingEstimates(shippingEstimationObj);
-
-						}
-						
+						}					
 						break;
 					case 34://Carton Weight (lb)
 
@@ -440,8 +426,7 @@ public class PSLcadMapping implements IExcelParser {
 						}
 						break;
 				
-				}  // end inner while loop
-						 
+				}  // end inner while loop					 
 			}
 				// set  product configuration objects
 				
@@ -515,8 +500,7 @@ public class PSLcadMapping implements IExcelParser {
 					_LOGGER.info("Complted processing of excel sheet ");
 					_LOGGER.info("Total no of product:"+numOfProductsSuccess.size() );
 			}
-		}
-		
+		}		
 		public PostServiceImpl getPostServiceImpl() {
 			return postServiceImpl;
 		}

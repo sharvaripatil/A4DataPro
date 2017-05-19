@@ -28,14 +28,11 @@ public class PSLcadProductAttributeParser {
 	private LookupServiceData lookupServiceDataObj;
 	private LookupRestService lookupRestServiceObj;
 	
-	public List<BatteryInformation> getBatteyInfo(String BatteryInfo) {
-		
+	public List<BatteryInformation> getBatteyInfo(String BatteryInfo) {		
 		List<BatteryInformation> batteryInfoList = new ArrayList<BatteryInformation>();
-		BatteryInformation batinfoObj=new BatteryInformation();
-		
+		BatteryInformation batinfoObj=new BatteryInformation();	
 		batinfoObj.setName(BatteryInfo);
-		batteryInfoList.add(batinfoObj);
-		
+		batteryInfoList.add(batinfoObj);		
 		return batteryInfoList;
 	}
 
@@ -43,17 +40,14 @@ public class PSLcadProductAttributeParser {
 		List<Packaging> listOfPackaging = new ArrayList<Packaging>();
 		Packaging packageObj= new Packaging();
 		packageObj.setName(packageInfo);
-		listOfPackaging.add(packageObj);
-		
+		listOfPackaging.add(packageObj);	
 		return listOfPackaging;
 	}
 
-	public List<ImprintMethod> getImprintMethodValue(String Imprintmethod) {
-			
+	public List<ImprintMethod> getImprintMethodValue(String Imprintmethod) {			
 		List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
 		Imprintmethod=Imprintmethod.replace("engraved", "").replace("Silk screen", "SILKSCREEN");
 		ImprintMethod imprMethod = new ImprintMethod();
-	
 		List<String> finalImprintValues = getImprintValue(Imprintmethod.toUpperCase());	
 		String imprintMethodArr[]=Imprintmethod.split(",");
 		for (String Value : imprintMethodArr){
@@ -76,17 +70,14 @@ public class PSLcadProductAttributeParser {
 				 imprMethod.setAlias(innerValue);
 				 imprMethod.setType(innerValue);
 				 imprintMethodsList.add(imprMethod);  
-		       }
-	    	
+		       }    	
 		return imprintMethodsList;
 	}
 	
 
 	public List<String> getCompliance(String certificateValue) {
-		List<String> complianceList = new ArrayList<String>();
-		
+		List<String> complianceList = new ArrayList<String>();	
 		String complainceArr[]=certificateValue.split(",");
-		
 		for (String Value : complainceArr) {
 			complianceList.add(Value);
 		}
@@ -182,56 +173,43 @@ public class PSLcadProductAttributeParser {
 		List<String> finalImprintValues = imprintLookUpValue.stream()
 				                                  .filter(impntName -> value.contains(impntName))
 				                                  .collect(Collectors.toList());
-                                                 
-				
 		return finalImprintValues;	
 	}
 	
 	public Size getSizeValue(String productSize) {
 	      Size sizeObj=new Size();
-	   
 	      List<Values> listOfValues= new ArrayList<>();
 	      Values ValuesObj=new Values();
 	      List<Value> listOfValue= new ArrayList<>();
 	      Value ValueObj=new Value();
-
-
 	      Dimension dimensionObj=new Dimension();
-
           String productSizeArr[]=productSize.split("x");
-          
-          for (int i=0;i<productSizeArr.length;i++) {
-        	  
+          for (int sizeValue=0;sizeValue<productSizeArr.length;sizeValue++) {
             //sizeObj=new Size();   
             ValueObj=new Value();
-      		ValueObj.setValue(productSizeArr[i]);
+      		ValueObj.setValue(productSizeArr[sizeValue]);
       		ValueObj.setUnit("in");
       		
-      		if(i==0){
+      		if(sizeValue==0){
     		ValueObj.setAttribute("Length");
-      		}else if(i==1)
+      		}else if(sizeValue==1)
       		{
       		ValueObj.setAttribute("Width");	
-      		}else if(i==2)
+      		}else if(sizeValue==2)
       		{
           	ValueObj.setAttribute("Height");	
       		}
-
-      		listOfValue.add(ValueObj);
-    	
+      		listOfValue.add(ValueObj);   	
  	     	}
       	ValuesObj.setValue(listOfValue);
 		listOfValues.add(ValuesObj);	
   		dimensionObj.setValues(listOfValues);
-
         sizeObj.setDimension(dimensionObj);
-
 		return sizeObj;
 	}
 
 	
-	public List<Color> getColorCriteria(String colorValue) {
-		
+	public List<Color> getColorCriteria(String colorValue) {		
 		List<Color> colorlist = new ArrayList<Color>();
 		Color colorObj = new Color() ;
 		Combo combovalue = new Combo();
@@ -246,9 +224,7 @@ public class PSLcadProductAttributeParser {
 				combovalue.setName(MilestoneLookupData.COLOR_MAP.get(colorArr1[1].trim()));
 				combovalue.setType("trim");
 				combolist.add(combovalue);
-			}
-			
-			else{
+			}	else{
 				for (int i=1;i<3;i++) {
 				 combovalue = new Combo();
 				 if(i==1){
@@ -258,7 +234,6 @@ public class PSLcadProductAttributeParser {
 				 {
 				 combovalue.setName(MilestoneLookupData.COLOR_MAP.get(colorArr1[2].trim()));
 				 combovalue.setType("trim");
-			   	 
 				 }
 				 combolist.add(combovalue);
 				}	
@@ -268,24 +243,18 @@ public class PSLcadProductAttributeParser {
 			colorObj.setAlias(colorValue);
 			//colorlist.add(colorObj);
 			colorlist.add(colorObj);
-		
 		}else {
 			colorObj = new Color();
 			colorObj.setName(MilestoneLookupData.COLOR_MAP.get(colorValue.trim()));
 			colorObj.setAlias(colorValue);
 			colorlist.add(colorObj);
 		}
-		
 		return colorlist;
-
 	}
 		
 	public ShippingEstimate getShippingInfo(StringBuilder shippingEstimation) {
-		
 		  ShippingEstimate shippingEstimationObj=new ShippingEstimate();
-		  
 		  String shippingArr[]=shippingEstimation.toString().split("@@");
-
 		  List<NumberOfItems> listOfNumberOfItems = new ArrayList<>();
 		  NumberOfItems NumberOfItemsObj=new NumberOfItems();
 		  NumberOfItemsObj.setValue(shippingArr[0]);
@@ -305,8 +274,7 @@ public class PSLcadProductAttributeParser {
         if(!shippingArr[1].contains("null")){
 	      Dimensions dimensionObj=new Dimensions();
           String shippingDimensioneArr[]=shippingArr[1].split("x");
-        	  
-        	
+     	  
           dimensionObj.setLength(shippingDimensioneArr[0]);
           dimensionObj.setLengthUnit("in");
           
@@ -323,22 +291,17 @@ public class PSLcadProductAttributeParser {
 	}
 	
 	public Volume getItemweight(String productWeight) {
-
 		  Volume itemWeightObj=new Volume();
 		  List<Values> listOfValues = new ArrayList<>();
 		  Values valuesObj=new Values();
-
 		  List<Value> listOfValue = new ArrayList<>();
 		  Value valueObj=new Value();
-		
 		  valueObj.setValue(productWeight);
 		  valueObj.setUnit("lbs");
-		  
 		  listOfValue.add(valueObj);
 		  valuesObj.setValue(listOfValue);
 		  listOfValues.add(valuesObj);
 		  itemWeightObj.setValues(listOfValues);
-		
 		return itemWeightObj;
 	}
 	
