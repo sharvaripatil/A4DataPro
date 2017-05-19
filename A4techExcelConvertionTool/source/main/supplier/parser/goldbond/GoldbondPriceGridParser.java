@@ -134,7 +134,7 @@ public class GoldbondPriceGridParser {
 
 	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
 			String discounts, String upChargeCriterias, boolean qurFlag,
-			String currency, String upChargeValue, String upChargeType,
+			String currency,String priceInclude, String upChargeValue, String upChargeType,
 			String upchargeUsageType, Integer upChargeSequence,
 			List<PriceGrid> existingPriceGrid,String optionName,String priceUnitName) {
 		try{
@@ -155,6 +155,7 @@ public class GoldbondPriceGridParser {
 		priceGrid.setUpchargeType(upChargeType);
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		priceGrid.setServiceCharge("Required");
+		priceGrid.setPriceIncludes(priceInclude);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
 			listOfPrice = getPrices(upChargePrices, upChargeQuantity, upChargeDiscount,priceUnitName);

@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 
 
+
 import parser.pslcad.PSLcadPriceGridParser;
 import parser.pslcad.PSLcadProductAttributeParser;
 
@@ -35,6 +36,7 @@ import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
+import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -54,7 +56,6 @@ public class PSLcadMapping implements IExcelParser {
 			
 			  List<String> numOfProductsSuccess = new ArrayList<String>();
 			  List<String> numOfProductsFailure = new ArrayList<String>();
-			
 			  Set<String>  productXids = new HashSet<String>();
 			  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 			  List<BatteryInformation> batteryInfoList = new ArrayList<BatteryInformation>();
@@ -68,10 +69,6 @@ public class PSLcadMapping implements IExcelParser {
 		      ImprintSize imprintSizeObj=new ImprintSize();
 		      Size sizeObj=new Size();
 			  List<Color> colorList = new ArrayList<Color>();
-
-
-
-
 			  Product productExcelObj = new Product();   
 			  ProductConfigurations productConfigObj=new ProductConfigurations();
 			  String productName = null;
@@ -88,7 +85,7 @@ public class PSLcadMapping implements IExcelParser {
 			  StringBuilder shippingEstimation = new StringBuilder();
 			  ShippingEstimate shippingEstimationObj=new ShippingEstimate();
 			  StringBuilder listQuantity = new StringBuilder();
-
+			  Volume itemWeightObj=new Volume();
 
 			try{
 				 
@@ -165,8 +162,6 @@ public class PSLcadMapping implements IExcelParser {
 									  shippingEstimation = new StringBuilder();
 									  shippingEstimationObj=new ShippingEstimate();
 									  listQuantity = new StringBuilder();
-
-
 									
 							 }
 							 if(!productXids.contains(xid)){
@@ -196,9 +191,6 @@ public class PSLcadMapping implements IExcelParser {
 								//productExcelObj = new Product();
 						 }
 					}
-					
-					
-
 					switch (columnIndex + 1) {
                     case 1://xid
 				    	
@@ -336,12 +328,10 @@ public class PSLcadMapping implements IExcelParser {
 						sizeObj=pslcadattributObj.getSizeValue(ProductSize);
 						productConfigObj.setSizes(sizeObj);
 						}
-						
 						  break;
 					
 					case 23: //Print Size (cm)
 				
-						 
 						break;
 					
 					 case 24: //Print Size (inch)
@@ -374,7 +364,6 @@ public class PSLcadMapping implements IExcelParser {
 						listOfPackaging=pslcadattributObj.getPackageInfo(PackageInfo);
 						if(!StringUtils.isEmpty(PackageInfo))
 						{
-							
 							productConfigObj.setPackaging(listOfPackaging);
 						}
 						
@@ -383,8 +372,9 @@ public class PSLcadMapping implements IExcelParser {
 						
 					case 28: //Quantity per Box
 						String ShippingItems=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(ShippingItems)){
 						shippingEstimation=shippingEstimation.append(ShippingItems).append("@@");
-				  
+						}
 					   break;
 						
 					case 29: //Carton Measurements
@@ -393,7 +383,10 @@ public class PSLcadMapping implements IExcelParser {
 					   
 					case 30:  // Carton Measurements (inch)			
 						String ShippingDimension=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(ShippingDimension)){
 						ShippingDimension=ShippingDimension.replace("inch", "");
+						}
+						ShippingDimension="null";
 						shippingEstimation=shippingEstimation.append(ShippingDimension).append("@@");
 
 
@@ -402,6 +395,17 @@ public class PSLcadMapping implements IExcelParser {
 						
 						break;
 					case 32: //Weight per piece (lb)
+						String ProductWeight=CommonUtility.getCellValueStrinOrDecimal(cell);
+						if(!StringUtils.isEmpty(ProductWeight)){
+						   if(ProductWeight.length() >7){
+						    ProductWeight=ProductWeight.substring(0, 6);
+						    }
+						itemWeightObj=pslcadattributObj.getItemweight(ProductWeight);
+						productConfigObj.setItemWeight(itemWeightObj);	
+					    }
+						
+						break;
+					case 33://Carton Weight (kg)
 						String ShippingWeight=CommonUtility.getCellValueStrinOrDecimal(cell);
 						if(!StringUtils.isEmpty(ShippingWeight)){
 						
@@ -415,11 +419,7 @@ public class PSLcadMapping implements IExcelParser {
 						}
 						
 						break;
-					case 33://Carton Weight (kg)
-						
-						break;
 					case 34://Carton Weight (lb)
-
 
 						break;
 					case 35://Materials
@@ -447,26 +447,25 @@ public class PSLcadMapping implements IExcelParser {
 				
 				 // end inner while loop
 				productExcelObj.setPriceType("L");
+			 String RefForQUr=listPrice.toString();
 			
-			/*if(!StringUtils.isEmpty(listPrice)){
-				priceGrids = pslPriceGridObj.getPriceGrids(listOfPrices.toString(), 
-						listQuantity.toString(), "C", "USD",
-					                       		         priceIncludesValue, true, "true", productName,"");	
+			if(!StringUtils.isEmpty(RefForQUr) || !RefForQUr.contains("")){
+				priceGrids = pslcadPriceGridObj.getPriceGrids(listOfPrices.toString(), 
+						listQuantity.toString(), "C", "CAD",
+					                       		         priceIncludesValue, true, "false", productName,"");	
 				}
-			
-				{*/
+			else
+				{
 			 priceGrids = pslcadPriceGridObj.getPriceGrids("", 
-							"", "", "CAD",
+							"", "", "USD",
 								         priceIncludesValue, true, "true", productName,"");	
-			//	}
+				}
 				}catch(Exception e){
 				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() +"case" +columnIndex);		 
 			}
 			}
 			workbook.close();
-			
-			 	
-			 	
+					 	
 				productExcelObj.setPriceGrids(priceGrids);
 			 	productExcelObj.setProductConfigurations(productConfigObj);
 			 	
@@ -500,9 +499,7 @@ public class PSLcadMapping implements IExcelParser {
 				  shippingEstimation = new StringBuilder();
 				  shippingEstimationObj=new ShippingEstimate();
 				  listQuantity = new StringBuilder();
-		       		   
 				  productConfigObj = new ProductConfigurations();
-
 		       
 		       return finalResult;
 			}catch(Exception e){
@@ -518,7 +515,6 @@ public class PSLcadMapping implements IExcelParser {
 					_LOGGER.info("Complted processing of excel sheet ");
 					_LOGGER.info("Total no of product:"+numOfProductsSuccess.size() );
 			}
-			
 		}
 		
 		public PostServiceImpl getPostServiceImpl() {
@@ -560,10 +556,5 @@ public class PSLcadMapping implements IExcelParser {
 		public void setPslcadPriceGridObj(PSLcadPriceGridParser pslcadPriceGridObj) {
 			this.pslcadPriceGridObj = pslcadPriceGridObj;
 		}
-
-	
-
-	
-		
 		
 	}

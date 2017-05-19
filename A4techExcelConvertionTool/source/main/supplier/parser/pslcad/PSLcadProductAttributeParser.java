@@ -2,19 +2,8 @@ package parser.pslcad;
 
 import java.util.ArrayList;
 import java.util.List;
-
-
-
-
-
-
-
 import java.util.stream.Collectors;
-
-import org.junit.internal.runners.model.EachTestNotifier;
-
 import parser.milestone.MilestoneLookupData;
-
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.model.BatteryInformation;
@@ -30,6 +19,7 @@ import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
+import com.a4tech.product.model.Volume;
 import com.a4tech.product.model.Weight;
 import com.a4tech.util.CommonUtility;
 
@@ -240,8 +230,6 @@ public class PSLcadProductAttributeParser {
 	}
 
 	
-	
-	
 	public List<Color> getColorCriteria(String colorValue) {
 		
 		List<Color> colorlist = new ArrayList<Color>();
@@ -314,7 +302,7 @@ public class PSLcadProductAttributeParser {
 		  shippingEstimationObj.setWeight(listOfWeight);
 		  
 
-
+        if(!shippingArr[1].contains("null")){
 	      Dimensions dimensionObj=new Dimensions();
           String shippingDimensioneArr[]=shippingArr[1].split("x");
         	  
@@ -328,13 +316,30 @@ public class PSLcadProductAttributeParser {
           dimensionObj.setHeight(shippingDimensioneArr[2]);
           dimensionObj.setHeightUnit("in");
 		
-          shippingEstimationObj.setDimensions(dimensionObj);
-		
-		
-		
-		
+          shippingEstimationObj.setDimensions(dimensionObj);	
+        }
 		
 		return shippingEstimationObj;
+	}
+	
+	public Volume getItemweight(String productWeight) {
+
+		  Volume itemWeightObj=new Volume();
+		  List<Values> listOfValues = new ArrayList<>();
+		  Values valuesObj=new Values();
+
+		  List<Value> listOfValue = new ArrayList<>();
+		  Value valueObj=new Value();
+		
+		  valueObj.setValue(productWeight);
+		  valueObj.setUnit("lbs");
+		  
+		  listOfValue.add(valueObj);
+		  valuesObj.setValue(listOfValue);
+		  listOfValues.add(valuesObj);
+		  itemWeightObj.setValues(listOfValues);
+		
+		return itemWeightObj;
 	}
 	
 	
@@ -354,6 +359,8 @@ public class PSLcadProductAttributeParser {
 	public void setLookupRestServiceObj(LookupRestService lookupRestServiceObj) {
 		this.lookupRestServiceObj = lookupRestServiceObj;
 	}
+
+
 
 
 

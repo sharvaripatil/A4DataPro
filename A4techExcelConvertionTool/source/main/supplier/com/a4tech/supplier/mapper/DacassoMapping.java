@@ -64,8 +64,11 @@ public class DacassoMapping implements IExcelParser{
 		int columnIndex = 0;
 		StringBuilder productDescription = new StringBuilder();
 		String priceVal ="";
-		StringBuilder shippingValues = new StringBuilder();
+		//StringBuilder shippingValues = new StringBuilder();
 		StringBuilder shippingAdditionalInfo = new StringBuilder();
+		String shippingNoOfItems = "";
+		String shippingDimension = "";
+		String shippingWeight    = "";
 		while (iterator.hasNext()) {
 			
 			try{
@@ -82,7 +85,7 @@ public class DacassoMapping implements IExcelParser{
 				Cell cell = cellIterator.next();
 				columnIndex = cell.getColumnIndex();
 				if(columnIndex + 1 == 1){
-					xid = CommonUtility.getCellValueStrinOrInt(cell);
+					xid = getProductXid(nextRow);
 					checkXid = true;
 				}else{
 					checkXid = false;
@@ -107,8 +110,10 @@ public class DacassoMapping implements IExcelParser{
 								priceGrids = new ArrayList<PriceGrid>();
 								productConfigObj = new ProductConfigurations();
 								productDescription = new StringBuilder();
-								shippingValues = new StringBuilder();
-								shippingAdditionalInfo = new StringBuilder();								
+								shippingAdditionalInfo = new StringBuilder();
+								shippingNoOfItems = "";
+								shippingDimension = "";
+								shippingWeight    = "";
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -129,8 +134,8 @@ public class DacassoMapping implements IExcelParser{
 				}
 				switch (columnIndex+1) {
 				case 1://xid
-					String productXid = CommonUtility.getCellValueStrinOrInt(cell);
-					productExcelObj.setExternalProductId(productXid);
+					//String productXid = CommonUtility.getCellValueStrinOrInt(cell);
+					productExcelObj.setExternalProductId(xid);
 					 break;
 				case 2: //PrdNo
 					String productNo = CommonUtility.getCellValueStrinOrDecimal(cell);
@@ -157,20 +162,14 @@ public class DacassoMapping implements IExcelParser{
 				case 8://Case Pack Qty(NumberOfItems)
 					String numberOfItems = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(numberOfItems)){
-						shippingValues.append(numberOfItems);
+						shippingNoOfItems = numberOfItems;
 					}
 					break;
 				case 9://Case Pack Size(Dimensions)
-					String dimensions = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(dimensions)){
-						shippingValues.append(",").append(dimensions);
-					}
+					//ignore columns as per client feedback
 					break;
 				case 10://Case Pack Weight (Weight)
-					String Weight =CommonUtility.getCellValueDouble(cell);
-					if(!StringUtils.isEmpty(Weight)){
-						shippingValues.append(",").append(Weight);
-					}
+					//ignore columns as per client feedback
 					break;
 				case 11://color
 					String colorVal = cell.getStringCellValue();
@@ -199,8 +198,15 @@ public class DacassoMapping implements IExcelParser{
 					break;
 					
 				case 16://Factory Package Weight
-							shippingAdditionalInfo.append(",").append("Factory Package Weight:")
-									.append(CommonUtility.getCellValueDouble(cell));
+					String factoryPackageWeight = CommonUtility.getCellValueDouble(cell);
+					if(!StringUtils.isEmpty(shippingAdditionalInfo.toString())){
+						shippingAdditionalInfo.append(",").append("Factory Package Weight:")
+						.append(factoryPackageWeight);
+					} else {
+						shippingAdditionalInfo.append("Factory Package Weight:")
+						.append(factoryPackageWeight);
+					}
+							
 					break;
 				case 17://Interior Lining
 					productDescription.append(",").append("Interior Lining:").append(cell.getStringCellValue());
@@ -236,15 +242,17 @@ public class DacassoMapping implements IExcelParser{
 					// Ignore as per feedback
 					break;
 				case 23://Shipping Package Size
-					String shippingPackSize = CommonUtility.getCellValueStrinOrInt(cell);
-					shippingAdditionalInfo.append(",").append("Shipping Package Size:")
-					.append(shippingPackSize);
+					String dimensions = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(dimensions)){
+						shippingDimension = dimensions;
+					}
 				   break;
 					
 				case 24: //Shipping Package Weight
-					String shippingPackWeight = CommonUtility.getCellValueDouble(cell);
-					shippingAdditionalInfo.append(",").append("Shipping Package Weight:")
-					.append(shippingPackWeight);
+					String weight =CommonUtility.getCellValueDouble(cell);
+					if(!StringUtils.isEmpty(weight)){
+						shippingWeight = weight;
+					}
 				   break;
 				   
 				case 25:  //Stitching
@@ -262,11 +270,10 @@ public class DacassoMapping implements IExcelParser{
 					priceGrids = dacassoPriceGridParser.getBasePriceGrid(priceVal,"1","P", "USD",
 							         "", true, false, "","",priceGrids,"","");	
 				}
-				if(!StringUtils.isEmpty(shippingValues.toString())){
-						ShippingEstimate shippingEstimateValues = dacassoAttributeParser
-								.getProductShippingEstimates(shippingValues.toString());
-						productConfigObj.setShippingEstimates(shippingEstimateValues);
-				}
+					ShippingEstimate shippingEstimateValues = dacassoAttributeParser
+								.getProductShippingEstimates(shippingNoOfItems, shippingDimension, shippingWeight);
+					 productConfigObj.setShippingEstimates(shippingEstimateValues);
+				
 			}catch(Exception e){
 
 				_LOGGER.error(
@@ -312,7 +319,15 @@ public class DacassoMapping implements IExcelParser{
 		ProductConfigurations configuration = existingProduct.getProductConfigurations();
 		return configuration.getMaterials();
 	}
-
+	private String getProductXid(Row row){
+		Cell xidCell = row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
+		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		if (StringUtils.isEmpty(productXid)) {
+			xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
+			productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		}
+		return productXid;
+	}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}
