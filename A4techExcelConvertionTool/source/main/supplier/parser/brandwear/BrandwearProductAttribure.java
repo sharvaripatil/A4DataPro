@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
+import com.a4tech.product.model.Color;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.ShippingEstimate;
@@ -32,6 +33,36 @@ public class BrandwearProductAttribure {
 		return shippingObj;
 	}
 
+	
+	public List<Color> getColorValue(String colorValue) {
+		
+		List<Color> colorList = new ArrayList<Color>();
+		Color colorObj=new Color();
+		
+	    String colorArr[]=colorValue.split(",");
+	    
+	    for (String colorsValue : colorArr) {
+			
+		}
+		
+		
+		
+		return colorList;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public List<ImprintMethod> getImprintMethod(String imprintMethod) {
 		List<ImprintMethod> ImprintMethodList = new ArrayList<ImprintMethod>();
 		ImprintMethod imprintMethodObj = new ImprintMethod();
@@ -100,5 +131,7 @@ public class BrandwearProductAttribure {
 	public void setLookupRestServiceObj(LookupRestService lookupRestServiceObj) {
 		this.lookupRestServiceObj = lookupRestServiceObj;
 	}
+
+	
 
 }

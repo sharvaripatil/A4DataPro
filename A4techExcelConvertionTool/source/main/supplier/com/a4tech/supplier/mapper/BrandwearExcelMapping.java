@@ -13,10 +13,13 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
+
 import parser.brandwear.BrandwearProductAttribure;
+
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.Color;
 import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
@@ -30,7 +33,6 @@ import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
-import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 public class BrandwearExcelMapping implements IExcelParser {
@@ -76,6 +78,9 @@ public class BrandwearExcelMapping implements IExcelParser {
 		Personalization personalizeObj = new Personalization();
 
 		List<ImprintMethod> ImprintMethodList = new ArrayList<ImprintMethod>();
+		
+		List<Color> colorList = new ArrayList<Color>();
+		
 
 		String productName = null;
 		String productId = null;
@@ -220,8 +225,10 @@ public class BrandwearExcelMapping implements IExcelParser {
 							String colorValue = CommonUtility
 									.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(colorValue)) {
-
+								colorList = productAttributeObj
+										.getColorValue(colorValue);
 							}
+							productConfigObj.setColors(colorList);
 							break;
 
 						case 7:// '1-49
