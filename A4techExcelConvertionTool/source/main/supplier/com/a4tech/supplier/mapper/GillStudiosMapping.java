@@ -87,6 +87,7 @@ public class GillStudiosMapping implements IExcelParser{
 		  StringBuilder priceIncludes = new StringBuilder();
 		  StringBuilder pricesPerUnit = new StringBuilder();
 		  StringBuilder ImprintSizevalue = new StringBuilder();
+		  StringBuilder ImprintSizevalue2 = new StringBuilder();
 	
 			List<Color> colorList = new ArrayList<Color>();
 			List<ImprintLocation> listImprintLocation = new ArrayList<ImprintLocation>();
@@ -190,7 +191,7 @@ public class GillStudiosMapping implements IExcelParser{
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
 							 //shipping estimate
-							 ShippingEstimate shipping = gillStudiosAttributeParser.getShippingEstimateValues(cartonL, cartonW,
+							 /*ShippingEstimate shipping = gillStudiosAttributeParser.getShippingEstimateValues(cartonL, cartonW,
 		                               cartonH, weightPerCarton, unitsPerCarton);
 
 							 productConfigObj.setShippingEstimates(shipping);
@@ -242,7 +243,8 @@ public class GillStudiosMapping implements IExcelParser{
 									priceGrids = gillStudiosAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
 											   additionalColorPriceVal, priceGrids,"Add. Color Charge");
 								}
-							 	productExcelObj.setPriceGrids(priceGrids);
+							  */							 	
+							    productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 //	if(Prod_Status = false){
 							 	_LOGGER.info("Product Data : "
@@ -255,7 +257,7 @@ public class GillStudiosMapping implements IExcelParser{
 							 	}else{
 							 		
 							 	}
-							 //	}
+							 	//}
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 								priceGrids = new ArrayList<PriceGrid>();
@@ -273,6 +275,7 @@ public class GillStudiosMapping implements IExcelParser{
 								listOfImages= new ArrayList<Image>();
 								imprintSizeList =new ArrayList<ImprintSize>();
 								ImprintSizevalue = new StringBuilder();
+								ImprintSizevalue2 = new StringBuilder();
 								size=new Size();
 								colorList = new ArrayList<Color>();
 								 dimensionValue = new StringBuilder();
@@ -627,18 +630,18 @@ public class GillStudiosMapping implements IExcelParser{
 						imprintMethodUpchargeMap.put("plateCharge", priceVal);
 					}
 							break;
-				case 54:// diaCharge
-					String diaChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!diaChargePrice.equals("0")){
-						imprintMethodUpchargeMap.put("diaCharge", diaChargePrice);
+				case 54:// dieCharge
+					String dieChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!dieChargePrice.equals("0")){
+						imprintMethodUpchargeMap.put("dieCharge", dieChargePrice);
 					}
 							break;
 				case 55:// dia Charge code
 					String diaChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(diaChargeCode) && !diaChargeCode.equals("0")){
-						String priceVal = imprintMethodUpchargeMap.get("diaCharge");
+						String priceVal = imprintMethodUpchargeMap.get("dieCharge");
 						priceVal = priceVal+"_"+diaChargeCode;
-						imprintMethodUpchargeMap.put("diaCharge", priceVal);
+						imprintMethodUpchargeMap.put("dieCharge", priceVal);
 					}
 							break;
 				case 56://tooling charge
@@ -719,7 +722,7 @@ public class GillStudiosMapping implements IExcelParser{
 					break;
 				case 76: // Imprint size1
 					 FirstImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(FirstImprintsize1) || FirstImprintsize1 !=  null ){
+					 if(!StringUtils.isEmpty(FirstImprintsize1.trim())){
 					 ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize1).append(" ");
 					
 					 }
@@ -727,8 +730,7 @@ public class GillStudiosMapping implements IExcelParser{
 					    
 				case 77: //// Imprint size1 unit
 					FirstImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
-					
-					 if(!StringUtils.isEmpty(FirstImprintunit1) || FirstImprintunit1 !=  null ){
+					 if(!StringUtils.isEmpty(FirstImprintunit1.trim())){
 					FirstImprintunit1=GillStudiosLookupData.Dimension1Units.get(FirstImprintunit1);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit1).append(" ");
 					 }	 
@@ -736,8 +738,7 @@ public class GillStudiosMapping implements IExcelParser{
 					   	
 				case 78:   // Imprint size1 Type
 					FirstImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
-					
-				   if(!StringUtils.isEmpty(FirstImprinttype1) || FirstImprinttype1 !=  null ){
+				   if(!StringUtils.isEmpty(FirstImprinttype1.trim())){
 					FirstImprinttype1=GillStudiosLookupData.Dimension1Type.get(FirstImprinttype1);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype1).append(" ").append("x");
 				   }
@@ -746,8 +747,7 @@ public class GillStudiosMapping implements IExcelParser{
 				  
 				case 79: // // Imprint size2
 					FirstImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
-					
-					 if(!StringUtils.isEmpty(FirstImprintsize2) || FirstImprinttype1 != null ){
+					 if(!StringUtils.isEmpty(FirstImprintsize2.trim())){
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize2).append(" ");
 					 }
 
@@ -755,27 +755,18 @@ public class GillStudiosMapping implements IExcelParser{
 					  	
 				case 80:	// Imprint size2 Unit
 					FirstImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
-					
-					
-				    if(!StringUtils.isEmpty(FirstImprintunit2) || FirstImprintunit2 !=  null ){
+				    if(!StringUtils.isEmpty(FirstImprintunit2.trim())){
 					FirstImprintunit2=GillStudiosLookupData.Dimension1Units.get(FirstImprintunit2);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit2).append(" ");
 				    }
-
-					
 					    break;
 					    
 				case 81: // Imprint size2 Type
 					FirstImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
-					
-				    if(!StringUtils.isEmpty(FirstImprinttype2) || FirstImprinttype2 !=  null ){
-
+				    if(!StringUtils.isEmpty(FirstImprinttype2.trim())){
 					FirstImprinttype2=GillStudiosLookupData.Dimension1Type.get(FirstImprinttype2);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype2).append(" ");
 				    }
-
-				   
-					
 					break;
 					  	
 				case 82:  // Imprint location
@@ -792,19 +783,16 @@ public class GillStudiosMapping implements IExcelParser{
 				case 83:  // Second Imprintsize1
 					
 					SecondImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
-					
-				    if(!StringUtils.isEmpty(SecondImprintsize1) || SecondImprintsize1 !=  null ){
-
-					ImprintSizevalue=ImprintSizevalue.append(SecondImprintsize1).append(" ");
+				    if(!StringUtils.isEmpty(SecondImprintsize1.trim())){
+					ImprintSizevalue2=ImprintSizevalue2.append(SecondImprintsize1).append(" ");
 				    }
 					   	break;
 					   	
 				case 84:  // Second Imprintsize1 unit
 					SecondImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
-					
-				    if(!StringUtils.isEmpty(SecondImprintunit1) || SecondImprintunit1 != null ){
+				    if(!StringUtils.isEmpty(SecondImprintunit1.trim())){
 					SecondImprintunit1=GillStudiosLookupData.Dimension1Units.get(SecondImprintunit1);
-					ImprintSizevalue=ImprintSizevalue.append(SecondImprintunit1).append(" ");
+					ImprintSizevalue2=ImprintSizevalue2.append(SecondImprintunit1).append(" ");
 
 					}
 					
@@ -812,10 +800,9 @@ public class GillStudiosMapping implements IExcelParser{
 						
 				case 85:  // Second Imprintsize1 type
 					SecondImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
-					
-				    if(!StringUtils.isEmpty(SecondImprinttype1) || SecondImprinttype1 !=  null ){
+				    if(!StringUtils.isEmpty(SecondImprinttype1.trim())){
 					SecondImprinttype1=GillStudiosLookupData.Dimension1Type.get(SecondImprinttype1);
-					ImprintSizevalue=ImprintSizevalue.append(SecondImprinttype1).append(" ").append("x");
+					ImprintSizevalue2=ImprintSizevalue2.append(SecondImprinttype1).append(" ").append("x");
 
 					}
 				
@@ -823,9 +810,8 @@ public class GillStudiosMapping implements IExcelParser{
 					  
 				case 86: // Second Imprintsize2
 					SecondImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
-					
-				    if(!StringUtils.isEmpty(SecondImprintsize2) || SecondImprintsize2 !=  null ){
-				    ImprintSizevalue=ImprintSizevalue.append(SecondImprintsize2).append(" ");
+				    if(!StringUtils.isEmpty(SecondImprintsize2.trim())){
+				    ImprintSizevalue2=ImprintSizevalue2.append(SecondImprintsize2).append(" ");
 				    
 				    }
 
@@ -834,9 +820,9 @@ public class GillStudiosMapping implements IExcelParser{
 					
 				case 87: //Second Imprintsize2 Unit
 					SecondImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprintunit2) || SecondImprintunit2 !=  null ){
+				    if(!StringUtils.isEmpty(SecondImprintunit2.trim())){
 					SecondImprintunit2=GillStudiosLookupData.Dimension1Units.get(SecondImprintunit2);
-					ImprintSizevalue=ImprintSizevalue.append(SecondImprintunit2).append(" ");
+					ImprintSizevalue2=ImprintSizevalue2.append(SecondImprintunit2).append(" ");
 
 					}
 
@@ -844,9 +830,9 @@ public class GillStudiosMapping implements IExcelParser{
 					
 				case 88: // Second Imprintsize2 type	
 					SecondImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprinttype2) || SecondImprinttype2 != null ){
+				    if(!StringUtils.isEmpty(SecondImprinttype2.trim())){
 					SecondImprinttype2=GillStudiosLookupData.Dimension1Type.get(SecondImprinttype2);
-					ImprintSizevalue=ImprintSizevalue.append(SecondImprinttype2).append(" ");
+					ImprintSizevalue2=ImprintSizevalue2.append(SecondImprinttype2).append(" ");
 
 					}
 					
@@ -1098,6 +1084,71 @@ public class GillStudiosMapping implements IExcelParser{
 					 
 		}// set  product configuration objects
 		 // end inner while loop
+			
+			//ShippingEstimate
+			ShippingEstimate shipping = gillStudiosAttributeParser.getShippingEstimateValues(cartonL, cartonW,
+					                               cartonH, weightPerCarton, unitsPerCarton);
+
+			productConfigObj.setShippingEstimates(shipping);
+			//ImprintLocation
+			if(!CollectionUtils.isEmpty(listImprintLocation)){
+			productConfigObj.setImprintLocation(listImprintLocation);
+			}
+			//ImprintMethods
+			if(!CollectionUtils.isEmpty(listOfImprintMethods)){
+			productConfigObj.setImprintMethods(listOfImprintMethods);
+			}
+			//theme
+			if(!CollectionUtils.isEmpty(themeList)){
+				productConfigObj.setThemes(themeList);
+			}
+			//RushTime
+			productConfigObj.setRushTime(rushTime);
+			//ProductionTime
+			productConfigObj.setProductionTime(listOfProductionTime);	
+			//sizes
+			String DimensionRef=null;
+			DimensionRef=dimensionValue.toString();
+			if(!StringUtils.isEmpty(DimensionRef)){
+			valuesList =gillStudiosAttributeParser.getValues(dimensionValue.toString(),
+	                dimensionUnits.toString(), dimensionType.toString());
+			
+	        finalDimensionObj.setValues(valuesList);	
+			size.setDimension(finalDimensionObj);
+			productConfigObj.setSizes(size);
+			}
+			//ImprintSize	
+			if(!StringUtils.isEmpty(ImprintSizevalue2.toString())){
+				ImprintSizevalue=ImprintSizevalue.append("___").append(ImprintSizevalue2);
+			}
+			imprintSizeList=gillStudiosAttributeParser.getimprintsize(ImprintSizevalue);
+			// imprintSizeList.removeAll(Collections.singleton(null));
+			if(!CollectionUtils.isEmpty(imprintSizeList)){
+			productConfigObj.setImprintSize(imprintSizeList);
+			}
+			//impmtd upchrg
+			if(!imprintMethodUpchargeMap.isEmpty()){
+		    	priceGrids = gillStudiosAttributeParser.getImprintMethodUpcharges(imprintMethodUpchargeMap,
+	                    listOfImprintMethods, priceGrids);
+		    }
+			// additional colors & upcgrg
+			List<AdditionalColor> additionalColorList = null;
+			if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
+				 additionalColorList = gillStudiosAttributeParser.getAdditionalColor("Additional Color");
+					priceGrids = gillStudiosAttributeParser.getAdditionalColorUpcharge(additionalClrRunChrgCode,
+							   additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge");
+					if(!CollectionUtils.isEmpty(additionalColorList)){
+					productConfigObj.setAdditionalColors(additionalColorList);
+					}
+			}
+			if(!StringUtils.isEmpty(additionalColorPriceVal) && !additionalColorPriceVal.equals("0")){
+				if(additionalColorList == null){
+					additionalColorList = gillStudiosAttributeParser.getAdditionalColor("Additional Color");
+					productConfigObj.setAdditionalColors(additionalColorList);
+				}
+				priceGrids = gillStudiosAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
+						   additionalColorPriceVal, priceGrids,"Add. Color Charge");
+			}
 			productExcelObj.setPriceType("L");
 			if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
 				String tempPriceUnit=pricesPerUnit.toString();
@@ -1114,62 +1165,7 @@ public class GillStudiosMapping implements IExcelParser{
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() +"at column+1="+columnIndex);		 
 		}
 		}
-		workbook.close();
-		//ShippingEstimate
-		ShippingEstimate shipping = gillStudiosAttributeParser.getShippingEstimateValues(cartonL, cartonW,
-				                               cartonH, weightPerCarton, unitsPerCarton);
-
-		productConfigObj.setShippingEstimates(shipping);
-		//ImprintLocation
-		productConfigObj.setImprintLocation(listImprintLocation);
-		//ImprintMethods
-		productConfigObj.setImprintMethods(listOfImprintMethods);
-		//theme
-		if(!CollectionUtils.isEmpty(themeList)){
-			productConfigObj.setThemes(themeList);
-		}
-		//RushTime
-		productConfigObj.setRushTime(rushTime);
-		//ProductionTime
-		productConfigObj.setProductionTime(listOfProductionTime);	
-		//sizes
-		String DimensionRef=null;
-		DimensionRef=dimensionValue.toString();
-		if(!StringUtils.isEmpty(DimensionRef)){
-		valuesList =gillStudiosAttributeParser.getValues(dimensionValue.toString(),
-                dimensionUnits.toString(), dimensionType.toString());
-		
-        finalDimensionObj.setValues(valuesList);	
-		size.setDimension(finalDimensionObj);
-		productConfigObj.setSizes(size);
-		}
-		//ImprintSize
-		imprintSizeList=gillStudiosAttributeParser.getimprintsize(ImprintSizevalue);
-		 imprintSizeList.removeAll(Collections.singleton(null));
-		if(!StringUtils.isEmpty(imprintSizeList)){
-		productConfigObj.setImprintSize(imprintSizeList);
-		}
-		//impmtd upchrg
-		if(!imprintMethodUpchargeMap.isEmpty()){
-	    	priceGrids = gillStudiosAttributeParser.getImprintMethodUpcharges(imprintMethodUpchargeMap,
-                    listOfImprintMethods, priceGrids);
-	    }
-		// additional colors & upcgrg
-		List<AdditionalColor> additionalColorList = null;
-		if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
-			 additionalColorList = gillStudiosAttributeParser.getAdditionalColor("Additional Color");
-				priceGrids = gillStudiosAttributeParser.getAdditionalColorUpcharge(additionalClrRunChrgCode,
-						   additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge");
-				productConfigObj.setAdditionalColors(additionalColorList);
-		}
-		if(!StringUtils.isEmpty(additionalColorPriceVal) && !additionalColorPriceVal.equals("0")){
-			if(additionalColorList == null){
-				additionalColorList = gillStudiosAttributeParser.getAdditionalColor("Additional Color");
-				productConfigObj.setAdditionalColors(additionalColorList);
-			}
-			priceGrids = gillStudiosAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
-					   additionalColorPriceVal, priceGrids,"Add. Color Charge");
-		}	
+		workbook.close();	
 		productExcelObj.setPriceGrids(priceGrids);
 		productExcelObj.setProductConfigurations(productConfigObj);
 	
@@ -1207,7 +1203,7 @@ public class GillStudiosMapping implements IExcelParser{
 			size=new Size();
 			colorList = new ArrayList<Color>();
 			ImprintSizevalue = new StringBuilder();
-			DimensionRef=null;
+			//DimensionRef=null;
 			 dimensionValue = new StringBuilder();
 			 dimensionUnits = new StringBuilder();
 			 dimensionType = new StringBuilder();

@@ -1,6 +1,7 @@
 package parser.gillstudios;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -217,29 +218,29 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 	
 	
 	public List<ImprintSize> getimprintsize(StringBuilder firstImprintSize) {
-			
-			String ImprintSizeValue=firstImprintSize.toString().replace("null x null","");
+			String tempStr[]=firstImprintSize.toString().split("___");
+			 List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
+		for (String impValue : tempStr) {
+			String ImprintSizeValue=impValue.replace("null xnull","");
 			ImprintSizeValue=ImprintSizeValue.replace("null", "");
-		    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
+			ImprintSizeValue=ImprintSizeValue.trim();
 		    ImprintSize impsizeobj;
-		    
+		    if(!StringUtils.isEmpty(ImprintSizeValue)){
 			String ImprintsizeArr[]=ImprintSizeValue.split(",");
-			
-			
 		   for (String Value : ImprintsizeArr) {
 			   impsizeobj=new ImprintSize();
 			   impsizeobj.setValue(Value);
 			   imprintSizeList.add(impsizeobj);
-		      }		
-			
-			
-			
+		      }
+		    }
+		}
 			return imprintSizeList;
 	}
 	// color parsing
 	@SuppressWarnings("unused")
 	public List<Color> getProductColors(String color){
 		List<Color> listOfColors = new ArrayList<>();
+		String colorGroup=null;
 		try{
 		Color colorObj = null;
 		color=color.replaceAll("\\|",",");
@@ -254,11 +255,20 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			//colorName = colorName.trim();
 			
 			colorObj = new Color();
-			String colorGroup = GillStudiosConstatnt.getColorGroup(colorName.trim());
-			//if (colorGroup == null) {
+			 colorGroup = GillStudiosConstatnt.getColorGroup(colorName.trim());
+			/////////////////////////
+			if(colorGroup!=null){
+			if(colorGroup.toUpperCase().contains("COMBO")){
+				colorGroup=colorGroup.replaceAll(":","");
+				colorGroup=colorGroup.replace("Combo","/");
+				colorName=colorGroup;
+			}
+			}
+			/////////////////////////
+			//if (colorGroup != null) {
 				//if (colorGroup!=null && colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
-			if (colorName.contains("/") || colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
-				
+			//if (colorName.contains("/") || colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) { //imp step
+			if (colorName.contains("/")) {
 				if(colorGroup==null){
 					colorGroup=colorName;
 				}
@@ -319,7 +329,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			listOfColors.add(colorObj);
 		}
 		}catch(Exception e){
-			_LOGGER.error("Error while processing color: "+e.getMessage());
+			_LOGGER.error("Error while processing color: "+colorGroup+" "+e.getMessage());
 		}
 		return listOfColors;
 	}
@@ -385,21 +395,38 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 				 upChargeTypeVal = "Screen Charge";
 			 } else if(upchargeType.equalsIgnoreCase("plateCharge")){
 				 upChargeTypeVal = "Plate Charge";
-			 } else if(upchargeType.equalsIgnoreCase("diaCharge")){
-				 upChargeTypeVal = "Dia Charge";
+			 } else if(upchargeType.equalsIgnoreCase("dieCharge")){
+				 upChargeTypeVal = "Die Charge";
 			 } else if(upchargeType.equalsIgnoreCase("toolingCharge")){
 				 upChargeTypeVal = "Tooling Charge";
 			 } else if(upchargeType.equalsIgnoreCase("repeateCharge")){
-				 
+				 upChargeTypeVal = "Re-order Charge";
 			 }
+			/* String qaunitity="1___";
+				int qantyLen=prices.split("___").length;
+				if(qantyLen>1){
+					qaunitity=String.join("", Collections.nCopies(qantyLen, qaunitity));
+				}*/
 			existingPriceGrid = gillStudiosPriceGridParser.getUpchargePriceGrid("1", priceVal, disCount, "Imprint method", "n",
 					"USD", imprintMethods, upChargeTypeVal, "Other",1, "1___1___1___1___1___1___1___1___1___1", existingPriceGrid);
 		}
 		return existingPriceGrid;
 	}
 	public List<PriceGrid> getAdditionalColorUpcharge(String discountCode,String prices,List<PriceGrid> existingPriceGrid,String upchargeType){
-	   String disCountCode = getAdditionalColorDiscountCode(discountCode);
-	   existingPriceGrid = gillStudiosPriceGridParser.getUpchargePriceGrid("1", prices, disCountCode, "Additional Colors", "n",
+	  // String disCountCode = getAdditionalColorDiscountCode(discountCode);
+		/*String qaunitity="1___";
+		int qantyLen=prices.split("___").length;
+		if(qantyLen>1){
+			qaunitity=String.join("", Collections.nCopies(qantyLen, qaunitity));
+		}*/
+		int qantyLen=prices.split("___").length;
+		String quantity = "1";
+		if(qantyLen>1){
+		for (int i = 2; i <=qantyLen; i++) {
+			quantity=quantity.concat("___")+Integer.toString(i);
+		}
+		}
+	   existingPriceGrid = gillStudiosPriceGridParser.getUpchargePriceGrid(quantity, prices, discountCode, "Additional Colors", "n",
 				"USD", "Additional Color",upchargeType, "Other", 1, "1___1___1___1___1___1___1___1___1___1",  existingPriceGrid);
 		return existingPriceGrid;
 	}
