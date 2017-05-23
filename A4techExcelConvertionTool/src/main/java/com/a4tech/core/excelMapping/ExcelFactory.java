@@ -25,6 +25,7 @@ import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
+import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
@@ -65,6 +66,7 @@ public class ExcelFactory {
 	private SageRMKWorldWideMapping sage80289Mapping;
 	private BrandwearExcelMapping brandwearExcelMapping;
 	private BallProMapping       ballProMapping;
+	private PSLcadMapping pslcadMapping;
 
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -100,7 +102,7 @@ public class ExcelFactory {
 		   else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
 			   return bamExcelMapping;
 		   }
-		   else if(name.equalsIgnoreCase("goldCanada") || name.equals("57711")){
+		   else if(name.equalsIgnoreCase("goldCanada") || name.equals(/*"57711"*/"92357")){
 			   return goldcanadaExcelMapping;
 
 		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
@@ -131,6 +133,9 @@ public class ExcelFactory {
 		  } else if(name.equals("ballPro") || name.equals("38120")){
 			  return ballProMapping;
 		  }
+	      else if(name.equalsIgnoreCase("pslcad") || name.equals("90345")){
+		      return pslcadMapping;
+	      }
 		return null;
 	}
 	
@@ -364,5 +369,13 @@ public class ExcelFactory {
 	public void setBallProMapping(BallProMapping ballProMapping) {
 		this.ballProMapping = ballProMapping;
 	}
+	public PSLcadMapping getPslcadMapping() {
+		return pslcadMapping;
+	}
+
+	public void setPslcadMapping(PSLcadMapping pslcadMapping) {
+		this.pslcadMapping = pslcadMapping;
+	}
+	
 
 }

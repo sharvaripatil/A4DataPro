@@ -1,4 +1,4 @@
-package parser.psl;
+package parser.pslcad;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import com.a4tech.product.model.PriceUnit;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.LookupData;
 
-public class PSLPriceGridParser {
+public class PSLcadPriceGridParser {
 
 	private Logger              _LOGGER              = Logger.getLogger(getClass());
 	public List<PriceGrid> getPriceGrids(String listOfPrices,
@@ -21,7 +21,6 @@ public class PSLPriceGridParser {
 			String currency, String priceInclude, boolean isBasePrice,
 			String isQur, String priceName, String criterias/*,
 			List<PriceGrid> existingPriceGrid*/) {
-
 		Integer sequence = 1;
 		List<PriceGrid> priceGridsList = new ArrayList<PriceGrid>();
 
@@ -31,14 +30,12 @@ public class PSLPriceGridParser {
 		String[] quantity = listOfQuan
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] discount = listOfDisc
-				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		
-		
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);	
 
-/*	priceGrid.setIsQUR(isQur.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_Y) ? ApplicationConstants.CONST_BOOLEAN_TRUE
-					: ApplicationConstants.CONST_BOOLEAN_FALSE);*/
+	priceGrid.setIsQUR(isQur.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_Y) ? ApplicationConstants.CONST_BOOLEAN_TRUE
+					: ApplicationConstants.CONST_BOOLEAN_FALSE);
 		
-		priceGrid.setIsQUR(true);
+		//priceGrid.setIsQUR(true);
 
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription("");
@@ -46,10 +43,11 @@ public class PSLPriceGridParser {
 		priceGrid.setSequence(sequence);
 		priceGrid.setPriceIncludes(priceInclude);
 		List<Price> listOfPrice = null;
-     	if (!priceGrid.getIsQUR()) {
+     	if (isQur=="false") {
 			listOfPrice = getPrices(prices, quantity, discount);
 		} else {
 			listOfPrice = new ArrayList<Price>();
+			priceGrid.setIsQUR(true);
 		}
 		if(listOfPrice != null && !listOfPrice.isEmpty()){
 			priceGrid.setPrices(listOfPrice);
@@ -62,19 +60,19 @@ public class PSLPriceGridParser {
 			String[] quantity, String[] discount) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
-		for (int i = 0, j = 1; i < prices.length 
-				&& i < quantity.length; i++, j++) {
+		for (int priceValue = 0, priceSequence = 1; priceValue < prices.length 
+				&& priceValue < quantity.length; priceValue++, priceSequence++) {
 
 			Price price = new Price();
 			PriceUnit priceUnit = new PriceUnit();
-			price.setSequence(j);
+			price.setSequence(priceSequence);
 			try {
-				price.setQty(Integer.valueOf(quantity[i]));
+				price.setQty(Integer.valueOf(quantity[priceValue]));
 			} catch (NumberFormatException nfe) {
 				_LOGGER.error("Error while processing quantity in PSLParser" + nfe.getMessage());
 				price.setQty(0);
 			}
-			price.setPrice(prices[i]);
+			price.setPrice(prices[priceValue]);
        		price.setDiscountCode(discount[0]);
 			priceUnit
 					.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
@@ -147,7 +145,6 @@ public class PSLPriceGridParser {
 			configs.setCriteria(criterias);
 			configs.setValue(Arrays.asList((Object) UpchargeName));
 			priceConfiguration.add(configs);
-			
 			
 		}
 		}catch(Exception e){
