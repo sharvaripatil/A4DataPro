@@ -2,6 +2,7 @@ package parser.goldbond;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,24 +48,27 @@ public class GoldbondAttributeParser {
 	private static List<String> lookupFobPoints = null;
 	public Product keepExistingProductData(Product existingProduct){
 		//Please keep the Categories and Themes for existing products.
+		Product newProduct = new Product();
 		ProductConfigurations newConfiguration = new ProductConfigurations();
 		ProductConfigurations existingConfiguration = existingProduct.getProductConfigurations();
 		List<Theme> existingThemes = existingConfiguration.getThemes();
 		if(!CollectionUtils.isEmpty(existingThemes)){
 			newConfiguration.setThemes(existingThemes);
 		}
-		existingProduct.setProductConfigurations(newConfiguration);
-		existingProduct.setAvailability(new ArrayList<>());
-		existingProduct.setPriceGrids(new ArrayList<>());
-		existingProduct.setImages(new ArrayList<>());
-		existingProduct.setProductRelationSkus(new ArrayList<>());
-		return existingProduct;
+		if(!CollectionUtils.isEmpty(existingProduct.getCategories())){
+		  newProduct.setCategories(existingProduct.getCategories());
+		}
+		newProduct.setProductConfigurations(newConfiguration);
+		return newProduct;
 	}
 	
 	public Product getAdditionalColor(Product existingProduct,String value){
 		   String priceVal = "";
 		   String discountCode = "";
 		   List<PriceGrid> existingPriceGrid = existingProduct.getPriceGrids();
+		   if(CollectionUtils.isEmpty(existingPriceGrid)){
+			   existingPriceGrid = new ArrayList<>();
+		   }
 		   ProductConfigurations existingConfiguration = existingProduct.getProductConfigurations();
 		    if(value.equalsIgnoreCase("$50.00 (G) per color, applies to repeat orders")){
 		    	priceVal = "50";
@@ -97,6 +101,8 @@ public class GoldbondAttributeParser {
 	}
 	public List<Color> getProductColors(String colors){
 		  String[] allColors = colors.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+		  allColors = CommonUtility.removeDuplicateValues(allColors);
+		 // List<String> clrs = new ArrayList<>(new HashSet<>(c))
 		  List<Color> listOfColors = new ArrayList<>();
 		  Color colorObj = null;
 		  for (String colorName : allColors) {
@@ -108,7 +114,7 @@ public class GoldbondAttributeParser {
 			    	 colorGroup = "Other";
 			     }
 			  if(colorGroup.contains("Combo")){
-				  colorObj = getColorCombo(colorName, alias, ":");
+				  colorObj = getColorCombo(colorGroup, alias, ":");
 			  } else{
 				  colorObj.setName(colorGroup);
 				  colorObj.setAlias(alias);
@@ -129,10 +135,7 @@ public class GoldbondAttributeParser {
 		String[] sizess = CommonUtility.getValuesOfArray(sizeValues, ApplicationConstants.CONST_STRING_COMMA_SEP);
 		for (String sizeVal : sizess) {
 			valuesObj = new Values();
-			if(sizeVal.equalsIgnoreCase("Official size") || sizeVal.equalsIgnoreCase("Varies") ||
-					sizeVal.equalsIgnoreCase("One size fits most") || sizeVal.equalsIgnoreCase("NFL Official Size")){
-				continue;
-			} else if(sizeVal.equalsIgnoreCase("29.5 Inches")){
+			if(sizeVal.equalsIgnoreCase("29.5 Inches")){
 				valuesObj = getOverAllSizeValObj("29.5", "Length", "", "");
 			} else if(sizeVal.equalsIgnoreCase("7- 3/4 or larger size heads")){
 				valuesObj = getOverAllSizeValObj("7 3/4", "Length", "", "");
@@ -148,15 +151,40 @@ public class GoldbondAttributeParser {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "Depth");
+			} else if(sizeVal.contains("L") && sizeVal.contains("W") && sizeVal.contains("H")){
+				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
+				if(sizeVal.split("x")[0].contains("L")){//4-3/4" L x 4" W x 2-1/8" H
+					valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "Height");
+				} else {//36" H x 12" W x 12" L
+					valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "Length");
+				}
 			} else if (sizeVal.contains("H") && sizeVal.contains("W")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "");
-			} else if (sizeVal.contains("arc")) {
+			} else if(sizeVal.contains("L") && sizeVal.contains("W")){
+				if(sizeVal.contains("Approximately")){
+					sizeVal = sizeVal.replaceAll("Approximately", "").trim();
+				}
+				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
+				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
+			} else if (sizeVal.contains("H") && sizeVal.contains("dia")) {
+				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
+				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Dia", "");
+			}  else if (sizeVal.contains("arc")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Arc", "", "");
 			} else if (sizeVal.contains("Dia") || sizeVal.contains("dia")) {
+				if(sizeVal.contains("Approximately")){
+					sizeVal = sizeVal.replaceAll("Approximately", "").trim();
+				}
+				if(sizeVal.contains("ia.")){
+					sizeVal = sizeVal.replaceAll("ia.", "").trim();
+				}
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Dia", "", "");
@@ -283,8 +311,8 @@ public class GoldbondAttributeParser {
 		} else if(value.equalsIgnoreCase("3 Day Standard<br>Same Day Optional")){
 			productionTimeObj.setBusinessDays("3");
 			 productionTimeObj.setDetails("standard");
-		} else if(value.equalsIgnoreCase("Blank orders ship the next day if received by 2:00 PM Eastern.  Embroidered shirts ship 7-10 days after art approval")){
-			productionTimeObj.setBusinessDays("3");
+		} else if(value.contains("Embroidered shirts ship 7-10 days after art ")){
+			productionTimeObj.setBusinessDays("7-10");
 			 productionTimeObj.setDetails(value);
 		} else if(value.equalsIgnoreCase("3 Day Standard<br>Next Day Optional<br>Orders in by 12:00 pm EST<br>Gold Rush rules apply")){
 			productionTimeObj.setBusinessDays("3");

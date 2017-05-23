@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.core.errors.ErrorMessageList;
@@ -72,12 +73,13 @@ public class GoldBondExcelMapping implements IExcelParser{
 		// String listPrice = "";
 		// String priceQty  = "";
 		StringBuilder productDescription = new StringBuilder();
-		StringJoiner impritnMethodPrice = new StringJoiner(",");
+		StringBuilder impritnMethodPrice = new StringBuilder();
 		List<PriceGrid> listOfPriceGrids = new ArrayList<>();
 		StringBuilder imprintColors =  new StringBuilder();
 		StringBuilder imageValues =  new StringBuilder();
 		String secondPoleImprint = "";
-		String imprintMethodPriceInclude = "";
+		String basePriceInclude = "";
+		String asiPrdNo        = "";
 		while (iterator.hasNext()) {
 			
 			try{
@@ -104,7 +106,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
-							 String desc = finalDescriptionValue(productDescription.toString());
+							 String desc = finalDescriptionValue(productDescription.toString(),asiPrdNo);
 							 productExcelObj.setDescription(desc);
 							    List<Color> listOfColor = gbAttributeParser.getProductColors(listOfColors.toString());
 							    productConfiguration.setColors(listOfColor);
@@ -120,7 +122,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 							 	productDescription = new StringBuilder();
-							 	impritnMethodPrice = new StringJoiner(",");
+							 	impritnMethodPrice = new StringBuilder();
 							 	listOfPriceGrids = new ArrayList<>();
 							 	listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -129,7 +131,8 @@ public class GoldBondExcelMapping implements IExcelParser{
 							    imprintColors =  new StringBuilder();
 							    imageValues =  new StringBuilder();
 							    secondPoleImprint = "";
-							    imprintMethodPriceInclude = "";
+							    basePriceInclude = "";
+							    asiPrdNo        = "";
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -156,12 +159,16 @@ public class GoldBondExcelMapping implements IExcelParser{
 					 // ignore as per feedback
 					  break;
 				case 3:// code
-					 String asiPrdNo = CommonUtility.getCellValueStrinOrInt(cell);
+					  asiPrdNo = CommonUtility.getCellValueStrinOrInt(cell);
 					  productExcelObj.setAsiProdNo(asiPrdNo);
 				    break;
 				case 4:// description
 					String prdName = cell.getStringCellValue();
 					prdName = prdName.replaceAll("[^a-zA-Z0-9%/?!\"\\- ]", "");
+					if(prdName.toUpperCase().contains(asiPrdNo)){
+						prdName = CommonUtility.removeSpecificWord(prdName, asiPrdNo);
+						prdName = prdName.replaceAll(asiPrdNo, "");
+					}
 					productExcelObj.setName(prdName);
 					break;
 				case 5:	
@@ -417,10 +424,11 @@ public class GoldBondExcelMapping implements IExcelParser{
 					break;*/	
 			  case 105:
 					String multiColorCharge = cell.getStringCellValue();
-					productExcelObj.setProductConfigurations(productConfiguration);
-					productExcelObj = gbAttributeParser.getAdditionalColor(productExcelObj, multiColorCharge);
-					productConfiguration = productExcelObj.getProductConfigurations();
-				    
+					if(!StringUtils.isEmpty(multiColorCharge) && !multiColorCharge.contains("N/A")){
+						productExcelObj.setProductConfigurations(productConfiguration);
+						productExcelObj = gbAttributeParser.getAdditionalColor(productExcelObj, multiColorCharge);
+						productConfiguration = productExcelObj.getProductConfigurations();	
+					}
 					break;
 				case 106: //color
 				case 107:
@@ -455,8 +463,10 @@ public class GoldBondExcelMapping implements IExcelParser{
 				case 131:
 					String size = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(size)){
-						Size sizeVals = gbAttributeParser.getProductSize(size);
-						productConfiguration.setSizes(sizeVals);
+						if(isSizeValue(size)){
+							Size sizeVals = gbAttributeParser.getProductSize(size);
+							productConfiguration.setSizes(sizeVals);
+						}
 					}
 					break;
 				case 132: // imprint size
@@ -468,14 +478,14 @@ public class GoldBondExcelMapping implements IExcelParser{
 					  break;
 				case 133: // related Imprint method upcharge price
 					String imprintMethodPrice = CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(imprintMethodPrice)){
-						 impritnMethodPrice.add(imprintMethodPrice);
+					 if(!StringUtils.isEmpty(imprintMethodPrice) && !imprintMethodPrice.equals("0")){
+						 impritnMethodPrice.append(imprintMethodPrice).append(",");
 					 }
 				    break;
 				case 134:
 					String imprintMethodDisCode = cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(imprintMethodDisCode)){
-						 impritnMethodPrice.add(imprintMethodDisCode);
+						 impritnMethodPrice.append(imprintMethodDisCode).append(",");
 					 }
 				    break;
 					
@@ -589,8 +599,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 				  if(!StringUtils.isEmpty(imprintMethodVal)){
 					  productExcelObj.setProductConfigurations(productConfiguration);
 					  productExcelObj = gbAttributeParser.getImprintMethods(imprintMethodVal, productExcelObj);
-					  productConfiguration = productExcelObj.getProductConfigurations();
-					  impritnMethodPrice.add(imprintMethodVal);// used to upcharge 
+					  productConfiguration = productExcelObj.getProductConfigurations(); 
 				  }
 					break;
 				case 149: //Fob Point
@@ -672,7 +681,9 @@ public class GoldBondExcelMapping implements IExcelParser{
 				case 199: 
 					break;*/
 				case 200: //Price include related to Imprint method
-					imprintMethodPriceInclude = cell.getStringCellValue();
+					basePriceInclude = cell.getStringCellValue();
+					basePriceInclude = basePriceInclude.replaceAll("®", "").trim();
+					basePriceInclude = CommonUtility.getStringLimitedChars(basePriceInclude, 100);
 					break;
 				case 201: // images start
 				case 202:
@@ -713,11 +724,11 @@ public class GoldBondExcelMapping implements IExcelParser{
 		}
 				productExcelObj.setPriceType("N");
 				String qurFlag = "n"; // by default for testing purpose
-			    if(!StringUtils.isEmpty(imprintColors)){
+			    if(!StringUtils.isEmpty(imprintColors.toString())){
 			    	 ImprintColor imprintColorValues = gbAttributeParser.getImprintColors(imprintColors.toString());
 					 productConfiguration.setImprintColors(imprintColorValues);
 			    }
-			    if(!StringUtils.isEmpty(imageValues)){
+			    if(!StringUtils.isEmpty(imageValues.toString())){
 			    	List<Image> listOfImages = gbAttributeParser.getImages(imageValues.toString());
 				    productExcelObj.setImages(listOfImages);
 			    }
@@ -728,16 +739,23 @@ public class GoldBondExcelMapping implements IExcelParser{
 			    			 priceVals[0], priceVals[1], "USD", "", true, false, "", "",
 								listOfPriceGrids,"dozen");
 			     }
+			        if(!StringUtils.isEmpty(basePriceInclude)){
+			           basePriceInclude = CommonUtility.removeSpecificWord(basePriceInclude, "Price Includes");
+			        }
 					listOfPriceGrids = gbPriceGridParser.getBasePriceGrids(listOfPrices.toString(),
-							listOfQuantity.toString(), listOfDiscounts.toString(), "USD", "", true, false, "", "",
+							listOfQuantity.toString(), listOfDiscounts.toString(), "USD", basePriceInclude, true, false, "", "",
 							listOfPriceGrids,"");
-					if(!StringUtils.isEmpty(impritnMethodPrice)){
+					if(!StringUtils.isEmpty(impritnMethodPrice.toString())){
 						String[] imprintMethodPriceVals = impritnMethodPrice.toString().split(",");
 						String priceVal = imprintMethodPriceVals[0];
 						if(!priceVal.equals("0")){
 							String imprintMethodVals = getImprintMethodAlias(productConfiguration.getImprintMethods());
+							if(StringUtils.isEmpty(imprintMethodVals)){
+					         productConfiguration.setImprintMethods(productImprintMethods("Printed"));
+					         imprintMethodVals = "Printed";
+							}
 							listOfPriceGrids = gbPriceGridParser.getUpchargePriceGrid("1", priceVal,
-							imprintMethodPriceVals[1], "Imprint Method", false, "USD",imprintMethodPriceInclude, imprintMethodVals,
+							imprintMethodPriceVals[1], "Imprint Method", false, "USD","", imprintMethodVals,
 							"Set-up Charge", "Per Order", 1, listOfPriceGrids, "", "");
 						}
 					}
@@ -753,7 +771,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 		workbook.close();
 		 List<Color> listOfColor = gbAttributeParser.getProductColors(listOfColors.toString());
 		 productConfiguration.setColors(listOfColor);
-		 String desc = finalDescriptionValue(productDescription.toString());
+		 String desc = finalDescriptionValue(productDescription.toString(),asiPrdNo);
 		 productExcelObj.setDescription(desc);
 		 productExcelObj.setComplianceCerts(Arrays.asList("PROP 65"));
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
@@ -794,8 +812,12 @@ public class GoldBondExcelMapping implements IExcelParser{
 		}
 		return productXid;
 	}
-	private String finalDescriptionValue(String newDesc){
+	private String finalDescriptionValue(String newDesc,String productNum){
 		if(!StringUtils.isEmpty(newDesc)){
+			if(newDesc.toUpperCase().contains(productNum)){
+				newDesc = CommonUtility.removeSpecificWord(newDesc, productNum);
+				newDesc = newDesc.replaceAll(productNum, "");
+			}
 			newDesc = CommonUtility.getStringLimitedChars(newDesc, 800);
 			return newDesc;
 		} 
@@ -833,6 +855,22 @@ public class GoldBondExcelMapping implements IExcelParser{
 		String imprintMethodAlias = listOfImprintMethod.stream().map(ImprintMethod::getAlias)
 				.collect(Collectors.joining(","));
 		return imprintMethodAlias;
+	}
+	
+	private boolean isSizeValue(String sizeVal){
+		if(sizeVal.equalsIgnoreCase("Official size") || sizeVal.equalsIgnoreCase("Varies") ||
+				sizeVal.equalsIgnoreCase("One size fits most") || sizeVal.equalsIgnoreCase("NFL Official Size")){
+			return false;
+		}
+		return true;
+	}
+	private List<ImprintMethod> productImprintMethods(String value){
+		List<ImprintMethod> imprintMethodList = new ArrayList<>();
+		ImprintMethod imprintMethod = new ImprintMethod();
+		imprintMethod.setType(value);
+		imprintMethod.setAlias(value);
+		imprintMethodList.add(imprintMethod);
+		return imprintMethodList;
 	}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;

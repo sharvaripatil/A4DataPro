@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -403,5 +404,25 @@ public class CommonUtility {
 			 return false;
 		 }
 		 return true;
+	 }
+	 /*
+	  * @author      :Venkat
+	  * @description : this method used to remove specific word in given source data
+	  *                e.g if asiProductNo is present in Product Name,description and summary,we must remove same word in 
+	  *                 Name/Description /summary other wise system does not allow   
+	  */
+	 public static String removeSpecificWord(String source,String specificWord){
+		 source = source.replaceAll("(?i)"+specificWord, "").trim();
+		 return source;
+	 }
+	 /*
+	  * @author      :Venkat ,19/05/2017
+	  * @description : This method used to remove duplicate values in array of string(String[])
+	  *  @param      : string[]
+	  *  @return     : string[]
+	  */
+	 public static String[] removeDuplicateValues(String[] values){
+		 values = new HashSet<String>(Arrays.asList(values)).toArray(new String[0]);
+		 return values;
 	 }
 }
