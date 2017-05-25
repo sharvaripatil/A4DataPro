@@ -83,6 +83,7 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 			String        additionalClrRunChrgCode = "";
 			String        additionalColorPriceVal = "";
 			String        additionalColorCode     = "";
+			List<String>  ProductProcessedList   = new ArrayList<>();
 		try{ 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 	    Sheet sheet = workbook.getSheetAt(0);
@@ -131,13 +132,19 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 				String xid = null;
 				int columnIndex = cell.getColumnIndex();
 				if(columnIndex + 1 == 1){
-					xid = getProductXid(nextRow);
+					xid = getProductXid(nextRow,false);
+					if(ProductProcessedList.contains(xid)){
+						xid = getProductXid(nextRow,true);
+					}
 					checkXid = true;
 					isFirstColum = false;
 				}else{
 					checkXid = false;
 					if(isFirstColum){
-						xid = getProductXid(nextRow);
+						xid = getProductXid(nextRow,false);
+						if(ProductProcessedList.contains(xid)){
+							xid = getProductXid(nextRow,true);
+						}
 						checkXid = true;
 						isFirstColum = false;
 					}
@@ -153,6 +160,7 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 								productExcelObj.setProductConfigurations(productConfigObj);
 								productExcelObj.setPriceGrids(priceGrids);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 	ProductProcessedList.add(productExcelObj.getExternalProductId());
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -870,13 +878,21 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 		}	
 	}
 	
-	private String getProductXid(Row row){
-		Cell xidCell = row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
-		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
-		if (StringUtils.isEmpty(productXid)) {
+	private String getProductXid(Row row,boolean isRepeatProduct){
+		Cell xidCell = null;
+		String productXid = "";
+		if(isRepeatProduct){
 			xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_TWO);
 			productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		} else {
+			xidCell = row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
+			productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+			if (StringUtils.isEmpty(productXid)) {
+				xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_TWO);
+				productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+			}
 		}
+		
 		return productXid.trim();
 	}
 	public PostServiceImpl getPostServiceImpl() {

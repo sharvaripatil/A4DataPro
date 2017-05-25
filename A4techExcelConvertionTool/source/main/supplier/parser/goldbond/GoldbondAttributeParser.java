@@ -47,7 +47,7 @@ public class GoldbondAttributeParser {
 	private LookupServiceData lookupServiceData;
 	private static List<String> lookupFobPoints = null;
 	public Product keepExistingProductData(Product existingProduct){
-		//Please keep the Categories and Themes for existing products.
+		//Please keep the Categories,Images and Themes for existing products.
 		Product newProduct = new Product();
 		ProductConfigurations newConfiguration = new ProductConfigurations();
 		ProductConfigurations existingConfiguration = existingProduct.getProductConfigurations();
@@ -57,6 +57,9 @@ public class GoldbondAttributeParser {
 		}
 		if(!CollectionUtils.isEmpty(existingProduct.getCategories())){
 		  newProduct.setCategories(existingProduct.getCategories());
+		}
+		if(!CollectionUtils.isEmpty(existingProduct.getImages())){
+			newProduct.setImages(existingProduct.getImages());
 		}
 		newProduct.setProductConfigurations(newConfiguration);
 		return newProduct;
@@ -160,6 +163,11 @@ public class GoldbondAttributeParser {
 					valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "Length");
 				}
 			} else if (sizeVal.contains("H") && sizeVal.contains("W")) {
+				if(sizeVal.equalsIgnoreCase("PVPWS: 4\" H x 1-5/8\" W PVPCS: 7\" H x 2-1/2\" W")){
+					valuesObj = getOverAllSizeValObj("4x1 5/8", "Height", "Width", "");
+					listOfValues.add(valuesObj);
+					sizeVal = "7x 2 1/2";
+				}
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "");
@@ -170,7 +178,7 @@ public class GoldbondAttributeParser {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
-			} else if (sizeVal.contains("H") && sizeVal.contains("dia")) {
+			} else if (sizeVal.contains("H") && (sizeVal.contains("dia") || sizeVal.contains("Dia"))) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Dia", "");
@@ -193,6 +201,9 @@ public class GoldbondAttributeParser {
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "", "");
 			} else if (sizeVal.contains("L")) {
+				if(sizeVal.equalsIgnoreCase("5-3/4\" L (excluding gauge)")){
+					sizeVal = "5-3/4";
+				}
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "", "");
@@ -239,7 +250,7 @@ public class GoldbondAttributeParser {
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Additional Location", false,
 					"USD","", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
 		} else if(value.contains("$50.00 (G) plus $0.30 (G)")){
-			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1__1", "50.0__0.30", "G__G", "Additional Location", false,
+			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1___1", "50.0___0.30", "G___G", "Additional Location", false,
 					"USD","", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
 		} else if(value.equalsIgnoreCase("$0.30 (G) per cube location, ea.")){
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Additional Location", false,
@@ -253,7 +264,7 @@ public class GoldbondAttributeParser {
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.80", "G", "Additional Location", false,
 					"USD","", "Reverse Side Imprint", "Run Charge", "Other", 1, existingPriceGrid,"","");
 		}else if(value.equalsIgnoreCase("$50.00 (G) per location plus add $0.30 (G) ea./location")){
-			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1__1", "50.0__0.30", "G__G", "Additional Location", false,
+			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1___1", "50.0___0.30", "G___G", "Additional Location", false,
 					"USD","", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
 		} else {
 			
@@ -470,7 +481,7 @@ public class GoldbondAttributeParser {
 		}
 		listOfOptions = getOptions("Pencil Sharpening", "Optional Pencil Sharpening Available", "Product",
 				listOfOptions);
-		priceGrids = gbPriceGridParser.getUpchargePriceGrid("1__1", "0.02__20.00", "G__G", "Product Option", false, "USD","",
+		priceGrids = gbPriceGridParser.getUpchargePriceGrid("1___1", "0.02___20.00", "G___G", "Product Option", false, "USD","",
 				"Optional Pencil Sharpening Available", "Product Option Charge", "Other", 1, priceGrids,
 				"Pencil Sharpening","");
 		productConfig.setOptions(listOfOptions);
@@ -601,7 +612,8 @@ public class GoldbondAttributeParser {
 				 value.equalsIgnoreCase("Rubber with adhesive backing")){
 			materialObj.setName("Rubber");
 			materialObj.setAlias(value);
-		} else if(value.equalsIgnoreCase("100% Microfiber Velour Front and 100% Cotton Terry Loops on back. Total fiber content: 70% cotton/30% microfiber polyester")){
+		} else if(value.equalsIgnoreCase("100% Microfiber Velour Front and 100% Cotton Terry Loops on back. Total fiber content: 70% cotton/30% microfiber polyester") ||
+				  value.equalsIgnoreCase("100% Microfiber Velour Front and 100% Cotton Terry Loops on back. Total fiber content 70% cotton/30% microfiber polyester")){
 			//Other Fabric:Combo:Cotton=Microfiber Velour & Cotton Loops
 			comboObj = new Combo();
 			comboObj.setName("Cotton");

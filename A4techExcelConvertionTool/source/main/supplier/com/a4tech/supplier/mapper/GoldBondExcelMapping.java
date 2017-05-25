@@ -160,7 +160,11 @@ public class GoldBondExcelMapping implements IExcelParser{
 					  break;
 				case 3:// code
 					  asiPrdNo = CommonUtility.getCellValueStrinOrInt(cell);
-					  productExcelObj.setAsiProdNo(asiPrdNo);
+					  if(asiPrdNo.length() > 14){
+						  productExcelObj.setProductLevelSku(asiPrdNo);
+					  } else {
+						  productExcelObj.setAsiProdNo(asiPrdNo);  
+					  }
 				    break;
 				case 4:// description
 					String prdName = cell.getStringCellValue();
@@ -484,7 +488,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 				    break;
 				case 134:
 					String imprintMethodDisCode = cell.getStringCellValue();
-					 if(!StringUtils.isEmpty(imprintMethodDisCode)){
+					 if(!StringUtils.isEmpty(imprintMethodDisCode) && !StringUtils.isEmpty(impritnMethodPrice.toString())){
 						 impritnMethodPrice.append(imprintMethodDisCode).append(",");
 					 }
 				    break;
@@ -685,7 +689,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 					basePriceInclude = basePriceInclude.replaceAll("®", "").trim();
 					basePriceInclude = CommonUtility.getStringLimitedChars(basePriceInclude, 100);
 					break;
-				case 201: // images start
+				/*case 201: // images start
 				case 202:
 				case 203:
 				case 204:	
@@ -719,7 +723,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 					if(!StringUtils.isEmpty(img)){
 						imageValues.append(img).append(",");
 					}
-					break;	
+					break;*/	
 			}  // end inner while loop			 
 		}
 				productExcelObj.setPriceType("N");
@@ -728,10 +732,10 @@ public class GoldBondExcelMapping implements IExcelParser{
 			    	 ImprintColor imprintColorValues = gbAttributeParser.getImprintColors(imprintColors.toString());
 					 productConfiguration.setImprintColors(imprintColorValues);
 			    }
-			    if(!StringUtils.isEmpty(imageValues.toString())){
+			    /*if(!StringUtils.isEmpty(imageValues.toString())){
 			    	List<Image> listOfImages = gbAttributeParser.getImages(imageValues.toString());
 				    productExcelObj.setImages(listOfImages);
-			    }
+			    }*/
 			     if(!StringUtils.isEmpty(secondPoleImprint)){////qty,discountCode,Price
 			    	 String priceval = getSecondPoleImprintPriceValues(secondPoleImprint);
 			    	 String[] priceVals = CommonUtility.getValuesOfArray(priceval, ",");
