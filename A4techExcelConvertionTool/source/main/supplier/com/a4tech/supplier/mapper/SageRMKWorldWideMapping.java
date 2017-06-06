@@ -544,48 +544,52 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 				case 76: // Imprint size1
 					 FirstImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FirstImprintsize1) && !FirstImprintsize1.equals("0")){
-					 ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize1).append(" ");
+						 ImprintSizevalue.append(FirstImprintsize1).append(" ");
 					
 					 }
 					    break;
 					    
 				case 77: //// Imprint size1 unit
 					FirstImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(FirstImprintunit1)&& !FirstImprintunit1.equals("0")){
+							if (!StringUtils.isEmpty(FirstImprintsize1) && !StringUtils.isEmpty(FirstImprintunit1)
+									&& !FirstImprintunit1.equals("0")) {
 					FirstImprintunit1=GoldstarCanadaLookupData.Dimension1Units.get(FirstImprintunit1);
-					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit1).append(" ");
+					     ImprintSizevalue.append(FirstImprintunit1).append(" ");
 					 }	 
 					   	break;
 					   	
 				case 78:   // Imprint size1 Type
 					FirstImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 					
-				   if(!StringUtils.isEmpty(FirstImprinttype1)&& !FirstImprinttype1.equals("0")){
+							if (!StringUtils.isEmpty(FirstImprintsize1) && !StringUtils.isEmpty(FirstImprinttype1)
+									&& !FirstImprinttype1.equals("0")) {
 					FirstImprinttype1=GoldstarCanadaLookupData.Dimension1Type.get(FirstImprinttype1);
-					ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype1).append(" ").append("x");
+					  ImprintSizevalue.append(FirstImprinttype1).append(" ");
 				   }
 					break;
 				case 79: // // Imprint size2
 					FirstImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FirstImprintsize2)&& !FirstImprintsize2.equals("0")){
-					ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize2).append(" ");
+						 ImprintSizevalue.append("x").append(FirstImprintsize2).append(" ");
 					 }
 
 					  	break;
 					  	
 				case 80:	// Imprint size2 Unit
 					FirstImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(FirstImprintunit2)&& !FirstImprintunit2.equals("0")){
+							if (!StringUtils.isEmpty(FirstImprintsize2) && !StringUtils.isEmpty(FirstImprintunit2)
+									&& !FirstImprintunit2.equals("0")) {
 					FirstImprintunit2=GoldstarCanadaLookupData.Dimension1Units.get(FirstImprintunit2);
-					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit2).append(" ");
+					    ImprintSizevalue.append(FirstImprintunit2).append(" ");
 				    }
 					    break;
 					    
 				case 81: // Imprint size2 Type
 					FirstImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(FirstImprinttype2)&& !FirstImprinttype2.equals("0")){
+							if (!StringUtils.isEmpty(FirstImprintsize2) && !StringUtils.isEmpty(FirstImprinttype2)
+									&& !FirstImprinttype2.equals("0")) {
 					FirstImprinttype2=GoldstarCanadaLookupData.Dimension1Type.get(FirstImprinttype2);
-					ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype2).append(" ");
+					    ImprintSizevalue.append(FirstImprinttype2).append(" ");
 				    }
 					break;
 					  	
@@ -601,46 +605,49 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 				case 83:  // Second Imprintsize1
 					SecondImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintsize1)&& !SecondImprintsize1.equals("0")){
-					ImprintSizevalue=ImprintSizevalue.append(SecondImprintsize1).append(" ");
+					  ImprintSizevalue.append(SecondImprintsize1).append(" ");
 				    }
 					   	break;
 					   	
 				case 84:  // Second Imprintsize1 unit
 					SecondImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprintunit1)&& !SecondImprintunit1.equals("0")){
+							if (!StringUtils.isEmpty(SecondImprintsize1) && !StringUtils.isEmpty(SecondImprintunit1)
+									&& !SecondImprintunit1.equals("0")) {
 					SecondImprintunit1=GoldstarCanadaLookupData.Dimension1Units.get(SecondImprintunit1);
-					ImprintSizevalue=ImprintSizevalue.append(SecondImprintunit1).append(" ");
+					   ImprintSizevalue.append(SecondImprintunit1).append(" ");
 					}
 						break;
 				case 85:  // Second Imprintsize1 type
 					SecondImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprinttype1)&& !SecondImprinttype1.equals("0")){
+							if (!StringUtils.isEmpty(SecondImprintsize1) && !StringUtils.isEmpty(SecondImprinttype1)
+									&& !SecondImprinttype1.equals("0")) {
 					SecondImprinttype1=GoldstarCanadaLookupData.Dimension1Type.get(SecondImprinttype1);
-					ImprintSizevalue=ImprintSizevalue.append(SecondImprinttype1).append(" ").append("x");
+					   ImprintSizevalue.append(SecondImprinttype1).append(" ");
 					}
 					  break;
 					  
 				case 86: // Second Imprintsize2
 					SecondImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintsize2)&& !SecondImprintsize2.equals("0")){
-				    ImprintSizevalue=ImprintSizevalue.append(SecondImprintsize2).append(" ");
+				       ImprintSizevalue.append("x").append(SecondImprintsize2).append(" ");
 				    }
 					break;
 					
 				case 87: //Second Imprintsize2 Unit
 					SecondImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprintunit2)&& !SecondImprintunit2.equals("0")){
+				    if(!StringUtils.isEmpty(SecondImprintsize2) && !StringUtils.isEmpty(SecondImprintunit2)&& !SecondImprintunit2.equals("0")){
 					SecondImprintunit2=GoldstarCanadaLookupData.Dimension1Units.get(SecondImprintunit2);
-					ImprintSizevalue=ImprintSizevalue.append(SecondImprintunit2).append(" ");
+					    ImprintSizevalue.append(SecondImprintunit2).append(" ");
 					}
 
 					break;
 					
 				case 88: // Second Imprintsize2 type	
 					SecondImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprinttype2)&& !SecondImprinttype2.equals("0")){
+							if (!StringUtils.isEmpty(SecondImprintsize2) && !StringUtils.isEmpty(SecondImprinttype2)
+									&& !SecondImprinttype2.equals("0")) {
 					SecondImprinttype2=GoldstarCanadaLookupData.Dimension1Type.get(SecondImprinttype2);
-					ImprintSizevalue=ImprintSizevalue.append(SecondImprinttype2).append(" ");
+					   ImprintSizevalue.append(SecondImprinttype2).append(" ");
 					}					
 					  break;
 					  

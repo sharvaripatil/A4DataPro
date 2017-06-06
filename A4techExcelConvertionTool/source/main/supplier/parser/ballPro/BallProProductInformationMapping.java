@@ -146,6 +146,8 @@ public class BallProProductInformationMapping {
 						case "Product_Name":
 							String prdName = cell.getStringCellValue();
 							prdName = prdName.replaceAll("®", "");
+							prdName = prdName.replaceAll("™", "");
+							prdName = CommonUtility.getStringLimitedChars(prdName, 60);
 							productExcelObj.setName(prdName);
 							break;
 						case "Description":
@@ -153,6 +155,9 @@ public class BallProProductInformationMapping {
 							desc = removeSpecialWords(desc);
 							if(desc.contains(productExcelObj.getAsiProdNo())){
 								desc = desc.replaceAll(productExcelObj.getAsiProdNo(), "");
+							}
+							if(desc.contains("3M")){
+								desc = desc.replaceAll("3M", "");
 							}
 							productExcelObj.setDescription(desc);
 							break;
@@ -165,7 +170,7 @@ public class BallProProductInformationMapping {
 								}
 								productExcelObj.setLineNames(listOfLineNames);
 							} else {// trade Name
-								List<TradeName> listOfTradeName = ballProAttributeParser.getTradeNames(lineName);
+								List<TradeName> listOfTradeName = ballProAttributeParser.getTradeNames(lineName.trim());
 								productConfigObj.setTradeNames(listOfTradeName);
 							}
 							break;
@@ -174,7 +179,7 @@ public class BallProProductInformationMapping {
 						case "Search_Keyword":
 							String keyWords = cell.getStringCellValue();
 							if(!StringUtils.isEmpty(keyWords)){
-								List<String> listOfKeywords = Arrays.asList(keyWords.split("\\|"));
+								List<String> listOfKeywords = ballProAttributeParser.productKeyWords(keyWords);
 								productExcelObj.setProductKeywords(listOfKeywords);
 							}
 							break;

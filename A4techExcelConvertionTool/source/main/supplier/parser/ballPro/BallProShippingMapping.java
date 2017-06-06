@@ -171,7 +171,7 @@ public class BallProShippingMapping {
 							break;
 						case "Product_Weight_Unit": // item weight
 							String productWeightUnit = cell.getStringCellValue();
-							if (!StringUtils.isEmpty(productWeightVal)) {
+							if (!StringUtils.isEmpty(productWeightVal) && (Double.parseDouble(productWeightVal) > 0.01)) {
 								Volume itemWeight = ballProAttributeParser.getProductItemWeight(productWeightVal,
 										productWeightUnit);
 								productConfigObj.setItemWeight(itemWeight);

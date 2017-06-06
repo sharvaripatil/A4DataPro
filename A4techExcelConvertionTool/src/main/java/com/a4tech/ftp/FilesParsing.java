@@ -87,9 +87,13 @@ public class FilesParsing {
 	
 	public String getAccessToken(String asiNumber){
 		   SupplierLoginDetails loginDetails = productDao.getSupplierLoginDetails(asiNumber);
-		String accessToken = loginService.doLogin(loginDetails.getAsiNumber(),
-				loginDetails.getUserName(), loginDetails.getPassword());
-		return accessToken;
+		   if(loginDetails != null){
+			   String accessToken = loginService.doLogin(loginDetails.getAsiNumber(),
+						loginDetails.getUserName(), loginDetails.getPassword());
+			   return accessToken;
+		   } else {
+			   return null;
+		   }
 	}
     private String getAsiNumberFile(String fileName){
     	String[] names = fileName.split(ApplicationConstants.CONST_DELIMITER_UNDER_SCORE);
@@ -97,9 +101,9 @@ public class FilesParsing {
     }
     private void invalidSupplierDetails(String supplierNo){
  
-    	String subject = supplierNo + " "+ "Supplier Details Are Invalid";
+    	String subject = supplierNo + " "+ "Supplier Details Are Invalid/Not Available";
     	String body = "Dear Team,"
-    			      +"\n \n"+supplierNo+" "+ "supplier login details are Invalid/Expired"
+    			      +"\n \n"+supplierNo+" "+ "supplier login details are Invalid/Expired/Not Available"
     			      +"\n\nPlease contact ASI team for update login details"
     			      + "\n\n\n\n\n"
     		            +"Thanks and Regards,"

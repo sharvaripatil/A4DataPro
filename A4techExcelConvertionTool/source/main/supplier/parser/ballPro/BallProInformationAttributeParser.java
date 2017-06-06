@@ -49,8 +49,10 @@ public class BallProInformationAttributeParser {
 		List<TradeName> listOfTradeNames = new ArrayList<>();
 		TradeName tradeNameObj  = new TradeName();
 		if(!"Travel Chair".equalsIgnoreCase(value)){
-			tradeNameObj.setName(value);
-			listOfTradeNames.add(tradeNameObj);
+			if(lookupServiceData.isTradeName(value)){
+				tradeNameObj.setName(value);
+				listOfTradeNames.add(tradeNameObj);
+			}
 		}
 		return listOfTradeNames;
 	}
@@ -221,6 +223,10 @@ public class BallProInformationAttributeParser {
 		ProductConfigurations productConfig = existingProduct.getProductConfigurations();
 		String distributorComments = existingProduct.getDistributorOnlyComments();
 		List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
+		List<ImprintMethod> imprintMethodList = productConfig.getImprintMethods();
+		if(CollectionUtils.isEmpty(imprintMethodList)){
+			imprintMethodList = new ArrayList<>();
+		}
 		try{
 		    if(value.contains("Imprint Area") || value.contains("Other")){
 			value = value.substring(value.indexOf("|") + 1);
@@ -241,16 +247,24 @@ public class BallProInformationAttributeParser {
 			// no values append in additional color charges
 		} else if(value.contains("Repeat Setup")){
 			String[] vals = value.split("\\|");
-			String imprintMethodName = vals[0];
+			String imprintMethodName = "";
+			if(vals[0].equalsIgnoreCase("Setup")){
+				imprintMethodName = "Printed";
+			} else{
+				imprintMethodName = vals[0];
+			}
+			
 			if(imprintMethodName.equalsIgnoreCase("Repeat setup charge")){
 				imprintMethodName = "Printed";
-			} 
+			}
+			imprintMethodList = getProductImprintMethods(CommonUtility.getValuesOfArray(imprintMethodName, ","), imprintMethodList);
 			String[] priceVals = value.split(ApplicationConstants.CONST_DELIMITER_HYPHEN);
 			String disCountCode = CommonUtility.extractValueSpecialCharacter("(", ")", priceVals[1]);
 			String priceVal = priceVals[1].replaceAll("[^0-9]", "").trim();
-			priceGrids = ballProPriceGridParser.getUpchargePriceGrid("1", priceVal, disCountCode, "Imprint Method", false, "USD", imprintMethodName,
+			priceGrids = ballProPriceGridParser.getUpchargePriceGrid("1", priceVal, disCountCode, "IMMD", false, "USD", imprintMethodName,
 					"Re-order Charge", "Other", 1, priceGrids, "", "");
 		    }
+		    productConfig.setImprintMethods(imprintMethodList);
 		 } catch(Exception exce){
 			  _LOGGER.error("Error in featues Column Parser: "+exce.getMessage());
 		  }
@@ -508,6 +522,9 @@ public class BallProInformationAttributeParser {
     		existingImprintSizes = new ArrayList<>();
     	}
     	ImprintSize imprSizeObj = new ImprintSize();
+    	if(value.contains("”")){
+    		value = value.replaceAll("”", "");
+    	}
     	imprSizeObj.setValue(value);
     	existingImprintSizes.add(imprSizeObj);
     	return existingImprintSizes;
@@ -609,7 +626,7 @@ public class BallProInformationAttributeParser {
 	  for (String imprintVals : values) {
 		  imprintSize = new ImprintSize();
 		  imprintLoc = new ImprintLocation();
-		  imprintVals = imprintVals.replaceAll("″", "\"");
+		  imprintVals = imprintVals.replaceAll("″", "");
 		  if(imprintVals.contains(":")){
 			  String[] vals = CommonUtility.getValuesOfArray(imprintVals,ApplicationConstants.CONST_DELIMITER_COLON);
 			  imprintLoc.setValue(vals[0]);
@@ -631,6 +648,21 @@ public class BallProInformationAttributeParser {
 	  productConfig.setImprintLocation(imprintLocList);
 	  productConfig.setImprintSize(imprintSizeList);
 	  return productConfig;
+  }
+  public List<String> productKeyWords(String keyword){
+	  String[] keyWords = CommonUtility.getValuesOfArray(keyword, "\\|");
+	  List<String> listOfKeywords = new ArrayList<>();
+	  for (String keyWordName : keyWords) {
+		  keyWordName = keyWordName.trim();
+		   if(keyWordName.contains("")){
+			   keyWordName = keyWordName.replaceAll("®", "").trim();
+		   }
+		   if(listOfKeywords.contains(keyWordName)){
+			   continue;
+		   }
+		   listOfKeywords.add(keyWordName);
+	}
+	  return listOfKeywords;
   }
 	public LookupServiceData getLookupServiceData() {
 		return lookupServiceData;

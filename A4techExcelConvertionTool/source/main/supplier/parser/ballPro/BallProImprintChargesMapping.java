@@ -59,10 +59,11 @@ public class BallProImprintChargesMapping {
 		List<ImprintMethod> listOfImprintMethods = null;
 		boolean isFirstProduct = true;
 		StringBuilder additionalImprintInfo = new StringBuilder();
+		Product existingProduct = null;
 		try {
 			Row  headerRow = null;
 			Iterator<Row> iterator = sheet.iterator();
-			Product existingProduct = null;
+			
 			while (iterator.hasNext()) {
 
 				try {
@@ -95,7 +96,7 @@ public class BallProImprintChargesMapping {
 						if (checkXid) {
 							if (!productXids.contains(prdXid)) {
 								if (nextRow.getRowNum() != 1) {
-									productExcelObj.setProductConfigurations(productConfigObj);
+									existingProduct.setProductConfigurations(productConfigObj);
 									existingProduct.setPriceGrids(existingPriceGrid);
 									//existingProduct = removeDecorativeASPriceDescription(existingProduct);
 									//existingProduct = createImprintOptionAndImprintMethod(existingProduct);
@@ -106,8 +107,14 @@ public class BallProImprintChargesMapping {
 									}
 									existingProduct.setAdditionalImprintInfo(additionalImprintInfo.toString());
 									productMaps.put(existingProduct.getProductLevelSku(), existingProduct);
+									_LOGGER.info("Processed xid/Sku: "+existingProduct.getProductLevelSku());
 									repeatRows.clear();
 									existingProduct = productMaps.get(prdXid);
+									if(existingProduct == null){
+										_LOGGER.error("Product xid is not available: "+prdXid);
+									   break;
+									}
+									
 								}
 								 listOfQuantityImprintLoc = new StringBuilder();
 								 listOfPricesImprintLoc   	 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -262,7 +269,7 @@ public class BallProImprintChargesMapping {
 							if(!StringUtils.isEmpty(lessThanValue)){
 								String lessThanDiscountCode = getDiscountCode(lessThanValue);
 								lessThanValue = lessThanValue.replaceAll("\\(.*\\)", "").trim();
-								productExcelObj.setCanOrderLessThanMinimum(ApplicationConstants.CONST_BOOLEAN_TRUE);
+								existingProduct.setCanOrderLessThanMinimum(ApplicationConstants.CONST_BOOLEAN_TRUE);
 								existingPriceGrid = ballProfPriceGridParser.getUpchargePriceGrid("1", lessThanValue,
 										lessThanDiscountCode, "LMIN", false, "USD", "Can order less than minimum",
 										"Less Than Minimum Charge", "Other", 1, existingPriceGrid,"","");
@@ -318,6 +325,9 @@ public class BallProImprintChargesMapping {
 									if("Additional Location Charge".equalsIgnoreCase(imprintLocUpchargeType)){
 										imprintLocUpchargeType = "Imprint Location Charge";
 									}
+									if(imprintLocUpchargeType.equalsIgnoreCase("Additional Color Charge")){
+										imprintLocUpchargeType = "Add. Color Charge";
+									}
 									existingPriceGrid = ballProfPriceGridParser.getUpchargePriceGrid(quantity,
 											listOfPricesImprintLoc.toString(), listOfDiscountImprintLoc.toString(), "IMLO", false,
 											"USD", imprintLoc, imprintLocUpchargeType, "Other", 1, existingPriceGrid,"","");
@@ -327,12 +337,12 @@ public class BallProImprintChargesMapping {
 					}
 				} catch (Exception e) {
 					_LOGGER.error(
-							"Error while Processing ProductId and cause :" + productExcelObj.getExternalProductId()
+							"Error while Processing ProductId and cause :" + existingProduct.getExternalProductId()
 									+ " " + e.getMessage() + "at column number(increament by 1):" + columnIndex);
 				}
 			}
 			repeatRows.clear();
-			productExcelObj.setProductConfigurations(productConfigObj);
+			existingProduct.setProductConfigurations(productConfigObj);
 			existingProduct.setPriceGrids(existingPriceGrid);
 			//existingProduct = removeDecorativeASPriceDescription(existingProduct);
 			//existingProduct = createImprintOptionAndImprintMethod(existingProduct);
@@ -345,8 +355,8 @@ public class BallProImprintChargesMapping {
 			productMaps.put(prdXid, existingProduct);
 			return productMaps;
 		} catch (Exception e) {
-			_LOGGER.error(
-					"Error while Processing " + sheet.getSheetName() + "+ sheet ,Error message: " + e.getMessage());
+			_LOGGER.error("Error while Processing Xid: " + existingProduct.getExternalProductId() + ",SheetName: "
+					+ sheet.getSheetName() + "+,Error message: " + e.getMessage());
 			return productMaps;
 		} finally {
 		}

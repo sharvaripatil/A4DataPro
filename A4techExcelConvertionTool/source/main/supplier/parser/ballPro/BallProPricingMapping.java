@@ -115,8 +115,13 @@ public class BallProPricingMapping{
 									existingProduct.setPriceGrids(priceGrids);
 									existingProduct.setProductConfigurations(productConfig);
 									productMaps.put(existingProduct.getProductLevelSku(), existingProduct);
+									_LOGGER.info("Processed xid/Sku: "+existingProduct.getProductLevelSku());
 									repeatRows.clear();
 									existingProduct = productMaps.get(productId);
+									if(existingProduct == null){
+										_LOGGER.warn("Product is not available: "+productId);
+										break;
+									}
 									productConfig = existingProduct.getProductConfigurations();
 									priceGrids = existingProduct.getPriceGrids();
 									//priceGrids = new ArrayList<>();
