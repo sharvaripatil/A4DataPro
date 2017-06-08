@@ -408,6 +408,8 @@
 		<property name="pslcadMapping" ref="pslcadMappingId"/>
 		<property name="brandwearExcelMapping" ref="brandwearExcelMappingId"/>
 		<property name="sage80289Mapping" ref="sageRMKWorldWideMapping"/>
+		<property name="twintechMapping" ref="twintechMappingId"/>
+		
 
      </bean>
      
@@ -810,7 +812,25 @@
     
           <!-- supplier PSLCAD configuration end -->
     
+           <!-- supplier Twintech configuration start -->
      
+            <bean id="twintechMappingId" class="com.a4tech.supplier.mapper.TwintechMapping">
+            <property name="postServiceImpl" ref="postService"/>
+            <property name="productDaoObj" ref="productDao"/> 
+            <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+            <property name="twintechColorObj" ref="twintechColorObjId"/>
+            <property name="twintechPriceGridObj" ref="twintechPriceGridObjId"/>
+            <property name="twintechProductAttributeObj" ref="twintechProductAttributeObjId"/>
+                  
+            </bean>
+     
+            <bean id="twintechColorObjId" class="parser.twintech.TwintechColorParser"/>
+            <bean id="twintechPriceGridObjId" class="parser.twintech.TwintechPriceGridParser"/>
+            <bean id="twintechProductAttributeObjId" class="parser.twintech.TwintechProductAttributeParser">
+               <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+               </bean>  
+     
+            <!-- supplier Twintech configuration end -->
      
 </beans>
 

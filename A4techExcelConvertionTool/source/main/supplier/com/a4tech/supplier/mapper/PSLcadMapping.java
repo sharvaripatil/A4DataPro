@@ -5,14 +5,17 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
+
 import parser.pslcad.PSLcadPriceGridParser;
 import parser.pslcad.PSLcadProductAttributeParser;
+
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
@@ -74,12 +77,16 @@ public class PSLcadMapping implements IExcelParser {
 			  Cell cell2Data = null;
 			  String ProdNo=null;
 			  String priceIncludesValue="";
-			  String listPrice = null;		
+			  String listPrice = null;	
+			  String UpchargeValue=null;
 			  StringBuilder listOfPrices = new StringBuilder();
 			  StringBuilder shippingEstimation = new StringBuilder();
 			  ShippingEstimate shippingEstimationObj=new ShippingEstimate();
 			  StringBuilder listQuantity = new StringBuilder();
 			  Volume itemWeightObj=new Volume();
+			  String ImprintSizeCM=null;
+			  String ProductSizeCM=null;
+			  
 			try{			 
 			_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 		    Sheet sheet = workbook.getSheetAt(0);
@@ -197,7 +204,7 @@ public class PSLcadMapping implements IExcelParser {
 					case 4://Product code
 					
 						 productExcelObj.setAsiProdNo(ProdNo);	
-	     					
+						 break;	
 					case 5://Product Name
 						 productName = cell.getStringCellValue();
 							int len=productName.length();
@@ -262,8 +269,8 @@ public class PSLcadMapping implements IExcelParser {
 						break;	
 						
 					case 13: //Logo Setup Charge ( G )
+						 UpchargeValue=CommonUtility.getCellValueStrinOrDecimal(cell);
 						break;
-						
 						
 					case 14://Imprint Details
 						String ImprintDetails=cell.getStringCellValue();						
@@ -280,6 +287,7 @@ public class PSLcadMapping implements IExcelParser {
 						
 					case 16:  //Description
 						String description = cell.getStringCellValue();
+						description=description.replaceAll("[^0-9a-zA-Z%/ ]", "");
 						if(!StringUtils.isEmpty(description)){
 						productExcelObj.setDescription(description);
 						}else{
@@ -309,24 +317,31 @@ public class PSLcadMapping implements IExcelParser {
 					
 						break;						
 					case 21://Product Size (cm)
-						
+						ProductSizeCM=CommonUtility.getCellValueStrinOrDecimal(cell);
 						
 						break;
 					case 22: //Product Size (inch)
-						String ProductSize=cell.getStringCellValue();
-						if(!StringUtils.isEmpty(ProductSize)){
-							ProductSize=ProductSize.replace("inch", "").replace("max.", "").replace("Ø", "");
+						String ProductSize=CommonUtility.getCellValueStrinOrDecimal(cell);
+						if(StringUtils.isEmpty(ProductSize) ||  !StringUtils.isEmpty(ProductSizeCM)){
+							ProductSize=ProductSizeCM;
+						}	
+						ProductSize=ProductSize./*replace("inch", "").*/replace("max.", "").replace("Ø", "dia");
 						sizeObj=pslcadattributObj.getSizeValue(ProductSize);
 						productConfigObj.setSizes(sizeObj);
-						}
+						
 						  break;
 					
 					case 23: //Print Size (cm)
+						 ImprintSizeCM=cell.getStringCellValue();
 				
 						break;
 					
 					 case 24: //Print Size (inch)
 						 String imprintSize=cell.getStringCellValue();
+						 if(StringUtils.isEmpty(imprintSize) ||  !StringUtils.isEmpty(ImprintSizeCM))
+						 {
+							 imprintSize=ImprintSizeCM;
+						 }
 						 imprintSizeObj.setValue(imprintSize);
 						 listOfImprintSize.add(imprintSizeObj);
 						 productConfigObj.setImprintSize(listOfImprintSize);
@@ -437,14 +452,30 @@ public class PSLcadMapping implements IExcelParser {
 			if(!StringUtils.isEmpty(RefForQUr) || !RefForQUr.contains("")){
 				priceGrids = pslcadPriceGridObj.getPriceGrids(listOfPrices.toString(), 
 						listQuantity.toString(), "C", "CAD",
-					                       		         priceIncludesValue, true, "false", productName,"");	
+					                       		         priceIncludesValue, true, "false", productName,"",priceGrids);	
 				}
-			else
+			else{
+			    priceGrids = pslcadPriceGridObj.getPriceGrids("", 
+							"", "", "CAD",
+								         priceIncludesValue, true, "true", productName,"",priceGrids);	
+				}
+			
+			if(!StringUtils.isEmpty(UpchargeValue))
+			{
+				for(int i=0;i<imprintMethodsList.size();i++)
 				{
-			 priceGrids = pslcadPriceGridObj.getPriceGrids("", 
-							"", "", "USD",
-								         priceIncludesValue, true, "true", productName,"");	
+			    String ImprintMethodValue=	imprintMethodsList.get(i).getAlias();
+			
+				UpchargeValue=UpchargeValue.replaceAll("$", "");
+					priceGrids = pslcadPriceGridObj.getUpchargePriceGrid("1",UpchargeValue,"Z","Imprint Method",  
+							"false", "CAD", ImprintMethodValue,  "Set-up Charge", "Other", new Integer(1),priceGrids);
+				
 				}
+				
+				
+			}
+			
+			
 				}catch(Exception e){
 				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() +"case" +columnIndex);		 
 			}
