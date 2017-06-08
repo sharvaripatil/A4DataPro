@@ -80,7 +80,6 @@ public class BrandwearExcelMapping implements IExcelParser {
 		List<ImprintMethod> ImprintMethodList = new ArrayList<ImprintMethod>();
 		
 		List<Color> colorList = new ArrayList<Color>();
-		
 
 		String productName = null;
 		String productId = null;
