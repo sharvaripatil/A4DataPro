@@ -268,6 +268,7 @@ public class SageRMKWorldwideAttributeParser {
 		} else {
 			colors = CommonUtility.getValuesOfArray(color, ApplicationConstants.CONST_DELIMITER_COMMA);
 		}
+	   colors = CommonUtility.removeDuplicateValues(colors);
 		for (String colorName : colors) {
 			colorObj = new Color();
 			if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
@@ -307,6 +308,7 @@ public class SageRMKWorldwideAttributeParser {
 		List<Theme> listOfTheme = new ArrayList<>();
 		Theme themeObj = null;
 		String[] themes = CommonUtility.getValuesOfArray(themeVal, ApplicationConstants.CONST_DELIMITER_COMMA);
+		themes = CommonUtility.removeDuplicateValues(themes);
 		for (String themeName : themes) {
 			if(lookupServiceDataObj.isTheme(themeName.toUpperCase())){
 				themeObj = new Theme();
@@ -319,7 +321,8 @@ public class SageRMKWorldwideAttributeParser {
 	public List<ProductionTime> getProductionTime(String startBusinessDay,String endBusinessDay){
 		List<ProductionTime> productionTimeList = new ArrayList<>();
 		ProductionTime productionTime = new ProductionTime();
-		if(CommonUtility.isValidBusinessDays(Integer.parseInt(startBusinessDay), Integer.parseInt(endBusinessDay))){
+		if (!startBusinessDay.equals("0") && CommonUtility.isValidBusinessDays(Integer.parseInt(startBusinessDay),
+				Integer.parseInt(endBusinessDay))) {
 			String prodTimeTotal="";
 			prodTimeTotal=prodTimeTotal.concat(startBusinessDay).concat("-").concat(endBusinessDay);
 			productionTime.setBusinessDays(prodTimeTotal);
@@ -365,7 +368,7 @@ public class SageRMKWorldwideAttributeParser {
 			 } else if(upchargeType.equalsIgnoreCase("plateCharge")){
 				 upChargeTypeVal = "Plate Charge";
 			 } else if(upchargeType.equalsIgnoreCase("diaCharge")){
-				 upChargeTypeVal = "Dia Charge";
+				 upChargeTypeVal = "Die Charge";
 			 } else if(upchargeType.equalsIgnoreCase("toolingCharge")){
 				 upChargeTypeVal = "Tooling Charge";
 			 } else if(upchargeType.equalsIgnoreCase("repeateCharge")){
@@ -397,6 +400,18 @@ public class SageRMKWorldwideAttributeParser {
 		additionalColorObj.setName(colorValue);
 		additionalColorList.add(additionalColorObj);
 		return additionalColorList;
+	}
+	public List<String> getProductKeywords(String keyword){
+		String[] keywords = CommonUtility.getValuesOfArray(keyword, ApplicationConstants.CONST_STRING_COMMA_SEP);
+		keywords = CommonUtility.removeDuplicateValues(keywords);
+		List<String> productKeyWords = new ArrayList<>();
+		for (String keywordName : keywords) {
+			if(keywordName.contains("®")){
+				keywordName = keywordName.replaceAll("®", "").trim();
+			}
+		   productKeyWords.add(keywordName);	
+		}
+		return productKeyWords;
 	}
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;

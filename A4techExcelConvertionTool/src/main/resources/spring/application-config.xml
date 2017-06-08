@@ -410,7 +410,7 @@
 		<property name="sage80289Mapping" ref="sageRMKWorldWideMapping"/>
 		<property name="twintechMapping" ref="twintechMappingId"/>
 		
-
+		<property name="ballProMapping" ref="ballProMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -791,9 +791,44 @@
        </bean>
        
         <!--Brandwear Configuration end  -->   
-       
-       
-      <!-- supplier PSLCAD configuration start -->
+        <!-- Ball Pro Configuration Start -->
+         <bean id="ballProMappingId" class="com.a4tech.supplier.mapper.BallProMapping">
+         <property name="ballProProductInfoMapping" ref="ballProProductInfoMappingId"/>
+         <property name="ballProImprintChargesMapping" ref="ballProImprintChargesMappingId"/>
+         <property name="ballProProductPricingMapping" ref="ballProProductPricingMappingId"/>
+         <property name="ballProProductImagesMapping" ref="ballProProductImagesMappingId"/>
+         <property name="ballProProductShippingMapping" ref="ballProProductShippingMappingId"/>
+              
+     </bean>
+     <bean id="ballProProductInfoMappingId" class="parser.ballPro.BallProProductInformationMapping">
+     	 <property name="postServiceImpl" ref="postService"/>
+         <property name="productDaoObj" ref="productDao"/>
+         <property name="ballProAttributeParser" ref="ballProAttributeParserId"/>
+         <property name="ballProPriceGridParser" ref="ballProPriceGridParserId"/>
+     </bean>
+     <bean id="ballProImprintChargesMappingId" class="parser.ballPro.BallProImprintChargesMapping">
+     	<property name="ballProfPriceGridParser" ref="ballProPriceGridParserId"/>
+     	<property name="ballProInfoAttriParser" ref="ballProAttributeParserId"/>
+     </bean>
+     <bean id="ballProProductPricingMappingId" class="parser.ballPro.BallProPricingMapping">
+     	<property name="ballProPriceGridParser" ref="ballProPriceGridParserId"/>
+     	<property name="ballProAttributeParser" ref="ballProAttributeParserId"/>
+     </bean>
+     <bean id="ballProProductImagesMappingId" class="parser.ballPro.BallProImagesMapping"></bean>
+     <bean id="ballProProductShippingMappingId" class="parser.ballPro.BallProShippingMapping">
+     	<property name="ballProAttributeParser" ref="ballProAttributeParserId"/>
+     	 <property name="postServiceImpl" ref="postService"/>
+         <property name="productDaoObj" ref="productDao"/>
+     </bean>
+     <bean id="ballProAttributeParserId" class="parser.ballPro.BallProInformationAttributeParser">
+     	<property name="lookupServiceData" ref="lookupServiceData"/>
+     	 <property name="ballProPriceGridParser" ref="ballProPriceGridParserId"/>
+     </bean>
+     <bean id="ballProPriceGridParserId" class="parser.ballPro.BallProPriceGridParser"></bean>
+         
+       <!-- Ball Pro Configuration End -->
+  
+ <!-- supplier PSLCAD configuration start -->
        
        <bean id="pslcadMappingId" class="com.a4tech.supplier.mapper.PSLcadMapping">
       <property name="postServiceImpl" ref="postService"/>
@@ -811,8 +846,7 @@
     
     
           <!-- supplier PSLCAD configuration end -->
-    
-           <!-- supplier Twintech configuration start -->
+            <!-- supplier Twintech configuration start -->
      
             <bean id="twintechMappingId" class="com.a4tech.supplier.mapper.TwintechMapping">
             <property name="postServiceImpl" ref="postService"/>
@@ -831,6 +865,8 @@
                </bean>  
      
             <!-- supplier Twintech configuration end -->
+          
+ 
      
 </beans>
 

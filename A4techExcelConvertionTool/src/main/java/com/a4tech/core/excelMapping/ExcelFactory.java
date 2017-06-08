@@ -17,6 +17,7 @@ import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
 import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
+import com.a4tech.supplier.mapper.BallProMapping;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
@@ -65,10 +66,9 @@ public class ExcelFactory {
 	private DacassoMapping dacassoMapping;
 	private SageRMKWorldWideMapping sage80289Mapping;
 	private BrandwearExcelMapping brandwearExcelMapping;
-
+	private BallProMapping       ballProMapping;
 	private PSLcadMapping pslcadMapping;
 	private TwintechMapping twintechMapping;
-
 
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -104,7 +104,7 @@ public class ExcelFactory {
 		   else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
 			   return bamExcelMapping;
 		   }
-		   else if(name.equalsIgnoreCase("goldCanada") || name.equals("57711")){
+		   else if(name.equalsIgnoreCase("goldCanada") || name.equals(/*"57711"*/"92357")){
 			   return goldcanadaExcelMapping;
 
 		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
@@ -130,9 +130,10 @@ public class ExcelFactory {
 			   return tomaxUsaMapping;
 		  } else if(name.equalsIgnoreCase("sage80289") || name.equals("80289")){
 			  return sage80289Mapping;
-		  }
-	      else if(name.equalsIgnoreCase("brandwear") || name.equals("41545")){
+		  } else if(name.equalsIgnoreCase("brandwear") || name.equals("41545")){
 			   return brandwearExcelMapping;
+		  } else if(name.equals("ballPro") || name.equals("38120")){
+			  return ballProMapping;
 		  }
 	      else if(name.equalsIgnoreCase("pslcad") || name.equals("90345")){
 		      return pslcadMapping;
@@ -366,8 +367,13 @@ public class ExcelFactory {
 	public void setBrandwearExcelMapping(BrandwearExcelMapping brandwearExcelMapping) {
 		this.brandwearExcelMapping = brandwearExcelMapping;
 	}
+	public BallProMapping getBallProMapping() {
+		return ballProMapping;
+	}
 
-
+	public void setBallProMapping(BallProMapping ballProMapping) {
+		this.ballProMapping = ballProMapping;
+	}
 	public PSLcadMapping getPslcadMapping() {
 		return pslcadMapping;
 	}
@@ -383,5 +389,6 @@ public class ExcelFactory {
 	public void setTwintechMapping(TwintechMapping twintechMapping) {
 		this.twintechMapping = twintechMapping;
 	}
+	
 
 }
