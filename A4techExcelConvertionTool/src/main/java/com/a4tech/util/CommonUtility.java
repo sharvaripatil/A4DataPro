@@ -236,8 +236,12 @@ public class CommonUtility {
 	  int len=value.length();
       if(len>noOfCharacters){
       String strTemp=value.substring(ApplicationConstants.CONST_NUMBER_ZERO, noOfCharacters);
-      int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
-      value= (String) strTemp.subSequence(ApplicationConstants.CONST_NUMBER_ZERO, lenTemp);
+      if(strTemp.contains(" ")){
+    	  int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
+          value= (String) strTemp.subSequence(ApplicationConstants.CONST_NUMBER_ZERO, lenTemp);  
+      } else {
+    	  value = strTemp;
+      }
     }
       return value;
   }
@@ -291,7 +295,8 @@ public class CommonUtility {
 		value=value.replaceAll("½", "1/2");
 		value=value.replaceAll("¾", "3/4");
 		value=value.replaceAll("¼", "1/4");
-		
+		value = value.replaceAll("\\[", "");
+		value = value.replaceAll("\\]", "");
 		value=value.replaceAll("<", "");
 		value=value.replaceAll(">", "");
 		value=value.replaceAll("", "");
@@ -422,7 +427,26 @@ public class CommonUtility {
 	  *  @return     : string[]
 	  */
 	 public static String[] removeDuplicateValues(String[] values){
-		 values = new HashSet<String>(Arrays.asList(values)).toArray(new String[0]);
+		 // remove spaces before words(" mumbai","pune")
+		 values = org.apache.commons.lang3.StringUtils.stripAll(values);
+		 List<String> uniqueColorList=new IgnoreCaseStringList();
+		for (String value : values) {
+			  if(!uniqueColorList.contains(value)){
+				  uniqueColorList.add(value);
+			  }
+		}
+		 values = new HashSet<String>(uniqueColorList).toArray(new String[0]);
 		 return values;
 	 }
+	/* public class IgnoreCaseStringList extends ArrayList<String>{
+		@Override
+		public boolean contains(Object o) {
+			String paramStr = (String)o;
+	        for (String name : this) {
+	            if (paramStr.equalsIgnoreCase(name)) 
+	            	return true;
+	        }
+	        return false;		
+		}
+	 }*/
 }
