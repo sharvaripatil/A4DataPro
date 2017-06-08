@@ -31,6 +31,7 @@ import com.a4tech.supplier.mapper.PSLMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
+import com.a4tech.supplier.mapper.TwintechMapping;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 
 
@@ -66,7 +67,7 @@ public class ExcelFactory {
 	private BrandwearExcelMapping brandwearExcelMapping;
 
 	private PSLcadMapping pslcadMapping;
-
+	private TwintechMapping twintechMapping;
 
 
 	public  IExcelParser getExcelParserObject(String name){
@@ -103,7 +104,7 @@ public class ExcelFactory {
 		   else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
 			   return bamExcelMapping;
 		   }
-		   else if(name.equalsIgnoreCase("goldCanada") || name.equals(/*"57711"*/"92357")){
+		   else if(name.equalsIgnoreCase("goldCanada") || name.equals("57711")){
 			   return goldcanadaExcelMapping;
 
 		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
@@ -135,6 +136,9 @@ public class ExcelFactory {
 		  }
 	      else if(name.equalsIgnoreCase("pslcad") || name.equals("90345")){
 		      return pslcadMapping;
+	      }
+	      else if(name.equalsIgnoreCase("twintech") || name.equals("92357")){
+		      return twintechMapping;
 	      }
 		return null;
 	}
@@ -370,6 +374,14 @@ public class ExcelFactory {
 
 	public void setPslcadMapping(PSLcadMapping pslcadMapping) {
 		this.pslcadMapping = pslcadMapping;
+	}
+
+	public TwintechMapping getTwintechMapping() {
+		return twintechMapping;
+	}
+
+	public void setTwintechMapping(TwintechMapping twintechMapping) {
+		this.twintechMapping = twintechMapping;
 	}
 
 }
