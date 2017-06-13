@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -235,8 +236,12 @@ public class CommonUtility {
 	  int len=value.length();
       if(len>noOfCharacters){
       String strTemp=value.substring(ApplicationConstants.CONST_NUMBER_ZERO, noOfCharacters);
-      int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
-      value= (String) strTemp.subSequence(ApplicationConstants.CONST_NUMBER_ZERO, lenTemp);
+      if(strTemp.contains(" ")){
+    	  int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
+          value= (String) strTemp.subSequence(ApplicationConstants.CONST_NUMBER_ZERO, lenTemp);  
+      } else {
+    	  value = strTemp;
+      }
     }
       return value;
   }
@@ -290,7 +295,8 @@ public class CommonUtility {
 		value=value.replaceAll("½", "1/2");
 		value=value.replaceAll("¾", "3/4");
 		value=value.replaceAll("¼", "1/4");
-		
+		value = value.replaceAll("\\[", "");
+		value = value.replaceAll("\\]", "");
 		value=value.replaceAll("<", "");
 		value=value.replaceAll(">", "");
 		value=value.replaceAll("", "");
@@ -404,4 +410,43 @@ public class CommonUtility {
 		 }
 		 return true;
 	 }
+	 /*
+	  * @author      :Venkat
+	  * @description : this method used to remove specific word in given source data
+	  *                e.g if asiProductNo is present in Product Name,description and summary,we must remove same word in 
+	  *                 Name/Description /summary other wise system does not allow   
+	  */
+	 public static String removeSpecificWord(String source,String specificWord){
+		 source = source.replaceAll("(?i)"+specificWord, "").trim();
+		 return source;
+	 }
+	 /*
+	  * @author      :Venkat ,19/05/2017
+	  * @description : This method used to remove duplicate values in array of string(String[])
+	  *  @param      : string[]
+	  *  @return     : string[]
+	  */
+	 public static String[] removeDuplicateValues(String[] values){
+		 // remove spaces before words(" mumbai","pune")
+		 values = org.apache.commons.lang3.StringUtils.stripAll(values);
+		 List<String> uniqueColorList=new IgnoreCaseStringList();
+		for (String value : values) {
+			  if(!uniqueColorList.contains(value)){
+				  uniqueColorList.add(value);
+			  }
+		}
+		 values = new HashSet<String>(uniqueColorList).toArray(new String[0]);
+		 return values;
+	 }
+	/* public class IgnoreCaseStringList extends ArrayList<String>{
+		@Override
+		public boolean contains(Object o) {
+			String paramStr = (String)o;
+	        for (String name : this) {
+	            if (paramStr.equalsIgnoreCase(name)) 
+	            	return true;
+	        }
+	        return false;		
+		}
+	 }*/
 }
