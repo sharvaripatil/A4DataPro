@@ -24,6 +24,7 @@ import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
+import com.a4tech.supplier.mapper.HighCaliberLineMappingRevised;
 import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
@@ -54,7 +55,8 @@ public class ExcelFactory {
     private GoldstarCanadaExcelMapping goldcanadaExcelMapping;
     private MilestoneExcelMapping milestoneExcelMapping;
  //   private CutterBuckSheetParser cbSheetParser;
-	private HighCaliberLineExcelMapping hcLineExcelMapping;
+	//private HighCaliberLineExcelMapping hcLineExcelMapping;
+    private HighCaliberLineMappingRevised hcLineExcelMapping;
 	private WholeSaleExcelMapping wholeSaleExcelMapping;
 	private PrimeLineExcelMapping primeLineExcelMapping;
 	private GoldBondExcelMapping  goldBandExcelMapping;
@@ -277,11 +279,11 @@ public class ExcelFactory {
 			GoldstarCanadaExcelMapping goldcanadaExcelMapping) {
 		this.goldcanadaExcelMapping = goldcanadaExcelMapping;
 	}
-	public HighCaliberLineExcelMapping getHcLineExcelMapping() {
+	public HighCaliberLineMappingRevised getHcLineExcelMapping() {
 		return hcLineExcelMapping;
 	}
 
-	public void setHcLineExcelMapping(HighCaliberLineExcelMapping hcLineExcelMapping) {
+	public void setHcLineExcelMapping(HighCaliberLineMappingRevised hcLineExcelMapping) {
 		this.hcLineExcelMapping = hcLineExcelMapping;
 
 	}

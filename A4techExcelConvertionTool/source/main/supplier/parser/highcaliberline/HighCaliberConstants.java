@@ -170,4 +170,8 @@ public class HighCaliberConstants {
 	HCLCOLOR_MAP.put("White / Orange","Medium White");
 	HCLCOLOR_MAP.put("White / Pink","Medium White");
 	}
+  public static String getColorGroup(String colorName){
+		return HCLCOLOR_MAP.get(colorName.toUpperCase());
+	}
+
 }
