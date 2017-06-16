@@ -412,24 +412,39 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		}
 		return existingPriceGrid;
 	}
-	public List<PriceGrid> getAdditionalColorUpcharge(String discountCode,String prices,List<PriceGrid> existingPriceGrid,String upchargeType){
-	  // String disCountCode = getAdditionalColorDiscountCode(discountCode);
-		/*String qaunitity="1___";
-		int qantyLen=prices.split("___").length;
-		if(qantyLen>1){
-			qaunitity=String.join("", Collections.nCopies(qantyLen, qaunitity));
-		}*/
-		int qantyLen=prices.split("___").length;
-		String quantity = "1";
-		if(qantyLen>1){
-		for (int i = 2; i <=qantyLen; i++) {
-			quantity=quantity.concat("___")+Integer.toString(i);
-		}
-		}
-	   existingPriceGrid = gillStudiosPriceGridParser.getUpchargePriceGrid(quantity, prices, discountCode, "Additional Colors", "n",
+	public List<PriceGrid> getAdditionalColorRunUpcharge(String discountCode,String quantity,String prices,List<PriceGrid> existingPriceGrid,String upchargeType){
+	  
+		
+		existingPriceGrid = gillStudiosPriceGridParser.getUpchargePriceGrid(quantity, prices, discountCode, "Additional Colors", "n",
 				"USD", "Additional Color",upchargeType, "Other", 1, "1___1___1___1___1___1___1___1___1___1",  existingPriceGrid);
+	   
 		return existingPriceGrid;
 	}
+	
+	
+	public List<PriceGrid> getAdditionalColorUpcharge(String discountCode,String prices,List<PriceGrid> existingPriceGrid,String upchargeType){
+		  // String disCountCode = getAdditionalColorDiscountCode(discountCode);
+			/*String qaunitity="1___";
+			int qantyLen=prices.split("___").length;
+			if(qantyLen>1){
+				qaunitity=String.join("", Collections.nCopies(qantyLen, qaunitity));
+			}*/
+			
+			//chnaged on 13 june after review
+			int qantyLen=prices.split("___").length;
+			String quantityTemp = "1";
+			if(qantyLen>1){
+			for (int i = 2; i <=qantyLen; i++) {
+				quantityTemp=quantityTemp.concat("___")+Integer.toString(i);
+			}
+			}
+		   
+			existingPriceGrid = gillStudiosPriceGridParser.getUpchargePriceGrid(quantityTemp, prices, discountCode, "Additional Colors", "n",
+					"USD", "Additional Color",upchargeType, "Other", 1, "1___1___1___1___1___1___1___1___1___1",  existingPriceGrid);
+			
+			return existingPriceGrid;
+		}
+	
 	private String getAdditionalColorDiscountCode(String value){
 		 int discountCodeLength = value.length();
 		 if(discountCodeLength > ApplicationConstants.CONST_INT_VALUE_ONE){
@@ -453,7 +468,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		Theme themeObj = null;
 		String[] themes = CommonUtility.getValuesOfArray(themeVal, ApplicationConstants.CONST_DELIMITER_COMMA);
 		for (String themeName : themes) {
-			if(lookupServiceDataObj.isTheme(themeName.toUpperCase())){
+			if(lookupServiceDataObj.isTheme(themeName.toUpperCase().trim())){
 				themeObj = new Theme();
 				themeObj.setName(themeName);
 				listOfTheme.add(themeObj);

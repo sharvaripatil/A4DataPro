@@ -80,7 +80,12 @@ public class CommonUtility {
 				//value = String.valueOf(cell.getErrorCellValue());
 				value = Byte.toString(cell.getErrorCellValue()).trim();
 				value="";
+			}else if(cell.getCellType() == Cell.CELL_TYPE_BOOLEAN){
+				//value = String.valueOf(cell.getErrorCellValue());
+				boolean val = cell.getBooleanCellValue();
+				value=String.valueOf(val);
 			}
+			
 		} catch (Exception e) {
 			_LOGGER.error("Cell value convert into String/Int format: "
 					+ e.getMessage());
