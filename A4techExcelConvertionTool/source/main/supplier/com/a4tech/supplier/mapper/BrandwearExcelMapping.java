@@ -31,6 +31,7 @@ import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.CommonUtility;
@@ -45,6 +46,7 @@ public class BrandwearExcelMapping implements IExcelParser {
 	private LookupServiceData lookupServiceDataObj;
 	private BrandwearProductAttribure productAttributeObj;
 
+	@SuppressWarnings("unused")
 	@Override
 	public String readExcel(String accessToken, Workbook workbook,
 			Integer asiNumber, int batchId) {
@@ -80,6 +82,8 @@ public class BrandwearExcelMapping implements IExcelParser {
 		List<ImprintMethod> ImprintMethodList = new ArrayList<ImprintMethod>();
 		
 		List<Color> colorList = new ArrayList<Color>();
+		
+		Size sizeObj=new Size();
 
 		String productName = null;
 		String productId = null;
@@ -90,6 +94,7 @@ public class BrandwearExcelMapping implements IExcelParser {
 		Cell cell2Data = null;
 		String ProdNo = null;
 		String MaterialAliceName = "";
+		String sizeValue = null;
 
 		try {
 
@@ -213,11 +218,9 @@ public class BrandwearExcelMapping implements IExcelParser {
 							break;
 						case 5:// Sizes
 
-							String sizeValue = CommonUtility
+							 sizeValue = CommonUtility
 									.getCellValueStrinOrInt(cell);
-							if (!StringUtils.isEmpty(sizeValue)) {
-
-							}
+							
 							break;
 
 						case 6:// Color
@@ -283,9 +286,12 @@ public class BrandwearExcelMapping implements IExcelParser {
 
 							break;
 						case 22:// 1-49 (A)
-
+							String colorValue2 = CommonUtility
+							.getCellValueStrinOrDecimal(cell);
 							break;
 						case 23: // '50-99 (B)
+							String colorValue3 = CommonUtility
+							.getCellValueStrinOrDecimal(cell);
 
 							break;
 
@@ -371,6 +377,14 @@ public class BrandwearExcelMapping implements IExcelParser {
 							break;
 
 						case 42:// Gender
+							String genderName=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(genderName)) {
+							
+								sizeObj= productAttributeObj
+										.getImprintMethod(sizeValue,genderName);
+								productConfigObj.setSizes(sizeObj);
+							}
+						
 
 							break;
 

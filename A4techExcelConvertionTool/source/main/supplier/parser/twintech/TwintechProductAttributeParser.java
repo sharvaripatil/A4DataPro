@@ -2,7 +2,6 @@ package parser.twintech;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.AvailableVariations;
@@ -154,32 +153,43 @@ public class TwintechProductAttributeParser {
 	
 	
 	
-	public List<ImprintMethod> getImprintMethodValues(String imprintMethodValue){
+	public List<ImprintMethod> getImprintMethodValues(String imprintMethod){
+
 		ImprintMethod imprMethod = new ImprintMethod();
 		List<ImprintMethod> imprintMethodList = new ArrayList<ImprintMethod>();
-		List<String> listOfLookupMaterial = getImprintValue(imprintMethodValue.toUpperCase());
-    	if(listOfLookupMaterial.contains("PRINTED"))
-		{
-	     listOfLookupMaterial.remove(1);
-		}
-		for (String imprintMthodValue : listOfLookupMaterial) {
+		String imprintMethodValueArr[]=imprintMethod.split(",");
+		
+		for (String imprintMethodValue : imprintMethodValueArr) {
+			
 			imprMethod = new ImprintMethod();
-		if(!imprintMethodValue.equalsIgnoreCase("Engraved") && imprintMthodValue.equalsIgnoreCase("Engraved") ){
-			imprMethod = new ImprintMethod();
-		}else{
-			if(imprintMthodValue.contains("Etched"))
-			{
-			imprMethod.setAlias(" Laser Etched");
-			}else
-			{
-			imprMethod.setAlias(imprintMthodValue);
-			}
-			imprMethod.setType(imprintMthodValue);
-			imprintMethodList.add(imprMethod);
+	  if(imprintMethodValue.contains("Embroidery"))
+	  {
+		  imprMethod.setType("Embroidered");
+	  }else if(imprintMethodValue.contains("Silk Screening"))
+	  {
+		  imprMethod.setType("Silkscreen");
+	  }else if(imprintMethodValue.contains("Heat Press"))
+	  {
+		  imprMethod.setType("Heat Transfer");
+
+	  }else if(imprintMethodValue.contains("Sublimation"))
+	  {
+		  imprMethod.setType("Sublimation");
+	  }else if(imprintMethodValue.contains("Laser"))
+	  {
+		  imprMethod.setType("Laser engraved");
+	  }else
+	  {
+		  imprMethod.setType("Other");
+	  }
+	  imprMethod.setAlias(imprintMethodValue);	
+	  imprintMethodList.add(imprMethod);
+
 		}
-		}		
+	
+		
 		return imprintMethodList;
-		}
+	}
 
 	  public List<ImprintSize> getimprintsize(String firstImprintSize) {
 		List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
@@ -275,18 +285,6 @@ public class TwintechProductAttributeParser {
 		rushtimeObj.setRushTimeValues(rushTimeList);		
 		return rushtimeObj;
 	}
-	
-	
-	public List<String> getImprintValue(String value){
-		List<String> imprintLookUpValue = lookupServiceDataObj.getImprintMethods();
-		List<String> finalMaterialValues = imprintLookUpValue.stream()
-				                                  .filter(impntName -> value.contains(impntName))
-				                                  .collect(Collectors.toList());
-                                                 
-				
-		return finalMaterialValues;	
-	}
-	
 	
 	
 	public LookupServiceData getLookupServiceDataObj() {
