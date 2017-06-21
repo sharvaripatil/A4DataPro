@@ -21,6 +21,7 @@ import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.Origin;
+import com.a4tech.product.model.OtherSize;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
@@ -28,12 +29,14 @@ import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.RushTimeValue;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
+
 
 public class GillStudiosAttributeParser {
 	private static final Logger _LOGGER = Logger.getLogger(GillStudiosAttributeParser.class);
@@ -477,6 +480,34 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		return listOfTheme;
 	}
 	
+	
+	public Size getSizes(String sizeValue,Size sizeObj,List<Value> otherList) {
+		//Size sizeObj = new Size();
+		try{
+			OtherSize otherObj = new OtherSize();
+			if(CollectionUtils.isEmpty(otherList)){
+				otherList = new ArrayList<Value>();
+			}
+			//String otherArr[] = sizeValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+			//List<Value> otherList = new ArrayList<Value>();
+			//for (String value : sizeValueList) {
+				
+				Value valObj = new Value();
+				valObj.setValue(sizeValue);
+				otherList.add(valObj);
+			//}
+			otherObj.setValues(otherList);
+			sizeObj.setOther(otherObj);
+		}
+		
+		catch(Exception e)
+		{
+			
+			_LOGGER.error("Error while processing Size :"+e.getMessage());
+			return null;
+		}
+		return sizeObj;
+	}
 	public GillStudiosPriceGridParser getGillStudiosPriceGridParser() {
 		return gillStudiosPriceGridParser;
 	}

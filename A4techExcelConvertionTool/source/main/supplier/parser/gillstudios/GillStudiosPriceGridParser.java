@@ -2,7 +2,10 @@ package parser.gillstudios;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.apache.log4j.Logger;
+import org.springframework.util.CollectionUtils;
+
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
@@ -22,7 +25,11 @@ public class GillStudiosPriceGridParser {
 		_LOGGER.info("Enter Price Grid Parser class");
 		try{
 		Integer sequence = 1;
-	//	List<PriceConfiguration> configuration = null;
+		if(!CollectionUtils.isEmpty(existingPriceGrid)){
+			sequence=existingPriceGrid.size()+1;
+		}
+		
+		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
 		String[] prices = listOfPrices
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -45,13 +52,14 @@ public class GillStudiosPriceGridParser {
 			listOfPrice = new ArrayList<Price>();
 		}
 		priceGrid.setPrices(listOfPrice);
-//		if (criterias != null && !criterias.isEmpty()) {
-//			configuration = getConfigurations(criterias);
-//		}
-//		priceGrid.setPriceConfigurations(configuration);
+		if (criterias != null && !criterias.isEmpty()) {
+			configuration = getConfigurations(criterias,priceName);
+			priceGrid.setPriceConfigurations(configuration);
+		}
+		
 		existingPriceGrid.add(priceGrid);
 		}catch(Exception e){
-			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
+			_LOGGER.error("Error while processing PriceGrid: "+e.getLocalizedMessage());
 		}
 		return existingPriceGrid;
 
@@ -60,6 +68,7 @@ public class GillStudiosPriceGridParser {
 	public List<Price> getPrices(String[] prices, String[] quantity, String discount,String[] priceUnitArr) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
+		try{
 		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length && PriceNumber < quantity.length
 				      && PriceNumber < discount.length(); PriceNumber++, sequenceNum++) {
 
@@ -82,6 +91,9 @@ public class GillStudiosPriceGridParser {
 			priceUnit.setItemsPerUnit(priceUnitArr[PriceNumber]);
 			price.setPriceUnit(priceUnit);
 			listOfPrices.add(price);
+		}
+		}catch(Exception ex){
+			_LOGGER.error("error while processing pricess "+ex.getMessage());
 		}
 		return listOfPrices;
 	}
