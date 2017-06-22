@@ -4,22 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.Material;
 import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.Packaging;
+import com.a4tech.product.model.Personalization;
 import com.a4tech.product.model.PriceGrid;
+import com.a4tech.product.model.Product;
+import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.RushTimeValue;
+import com.a4tech.product.model.SameDayRush;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -30,7 +38,48 @@ public class HighCaliberAttributeParser {
 	
 
 	
-
+public Product getExistingProductData(Product existingProduct , ProductConfigurations existingProductConfig){
+		
+		ProductConfigurations newProductConfigurations=new ProductConfigurations();
+		Product newProduct=new Product();
+		List<String> listCategories=new ArrayList<String>();
+		try{
+			if(existingProductConfig==null){
+				return new Product();
+			}
+			
+			//Image
+			List<Image> imagesList=existingProduct.getImages();
+			if(!CollectionUtils.isEmpty(imagesList)){
+				List<Image> newImagesList=new ArrayList<Image>();
+				for (Image image : imagesList) {
+					image.setConfigurations( new ArrayList<Configurations>());
+					newImagesList.add(image);
+				}
+				newProduct.setImages(imagesList);
+			}
+			
+			//Categories
+			listCategories=existingProduct.getCategories();
+			if(!CollectionUtils.isEmpty(listCategories)){
+				newProduct.setCategories(listCategories);
+			}
+		 
+			List<String> productKeywords=existingProduct.getProductKeywords();
+			if(!CollectionUtils.isEmpty(productKeywords)){
+				newProduct.setProductKeywords(productKeywords);
+			}
+			
+			
+		newProduct.setProductConfigurations(newProductConfigurations);
+		}catch(Exception e){
+			_LOGGER.error("Error while processing Existing Product Data " +e.getMessage());
+			newProduct.setProductConfigurations(newProductConfigurations);
+			return newProduct;
+		}
+		 _LOGGER.info("Completed processing Existing Data");
+		return newProduct;
+	}
 
 	public LookupServiceData getObjLookUpService() {
 		return objLookUpService;

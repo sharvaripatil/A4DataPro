@@ -262,8 +262,8 @@ public class HighCaliberLineExcelMapping implements IExcelParser{
 								    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 								    	 productExcelObj = new Product();
 								    	 existingFlag=false;
-								     }else{//need to confirm what existing data client wnts
-								    	    productExcelObj=existingApiProduct;
+								     }else{
+								    	    productExcelObj=highCaliberAttributeParser.getExistingProductData(existingApiProduct,existingApiProduct.getProductConfigurations());
 											productConfigObj=productExcelObj.getProductConfigurations();
 											existingFlag=true;
 										   // priceGrids = productExcelObj.getPriceGrids();
