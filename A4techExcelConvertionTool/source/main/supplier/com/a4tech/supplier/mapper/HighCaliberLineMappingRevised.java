@@ -24,6 +24,7 @@ import parser.highcaliberline.HighCaliberPriceGridParser;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.ImprintLocation;
@@ -113,6 +114,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 		 ShippingEstimate ShipingObj=new ShippingEstimate();
 		 String setUpchrgesVal="";
 		 String repeatUpchrgesVal="";
+		 String priceInlcudeFinal="";
 		 String xid = null;
 		while (iterator.hasNext()) {
 			try{
@@ -468,6 +470,10 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 							}
 						break;
 					case 10://Price Includes
+						priceInlcudeFinal=CommonUtility.getCellValueStrinOrInt(cell);
+						if(StringUtils.isEmpty(priceInlcudeFinal)){
+							priceInlcudeFinal="";
+						}
 						break;
 					case 11://Setup Charge
 							setUpchrgesVal=CommonUtility.getCellValueStrinOrInt(cell);
@@ -476,7 +482,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 					case 12://Repeat Setup Charge
 						repeatUpchrgesVal=CommonUtility.getCellValueStrinOrInt(cell);
 						break;
-					case 13://Run Charge
+					case 13://Run Charge-ignore
 						break;
 					
 					case 14://Item Size -ignore
@@ -497,14 +503,24 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 					case 16://Imprint Area
 						String	imprintLocation=CommonUtility.getCellValueStrinOrInt(cell);
 						if(!StringUtils.isEmpty(imprintLocation)){
-							String tempImpLocArr[]=imprintLocation.split(",");
-							List<ImprintLocation> listOfImprintLoc= highCaliberAttributeParser.getImprintLocationVal(Arrays.asList(tempImpLocArr));
-						 	productConfigObj.setImprintLocation(listOfImprintLoc);
+							//String tempImpLocArr[]=imprintLocation.split(",");
+							//List<ImprintLocation> listOfImprintLoc= highCaliberAttributeParser.getImprintLocationVal(Arrays.asList(tempImpLocArr));
+							productConfigObj= highCaliberAttributeParser.getImprintLocationVal(imprintLocation,productConfigObj);
+							
+							//productConfigObj.setImprintLocation(listOfImprintLoc);
 					     	}
 						
 						break;
 						
 					case 17://Optional Imprint Location-- waiting for client verification
+						String optinalLoca=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(optinalLoca)){
+							String tempArr[]=optinalLoca.split(",");
+							List<AdditionalLocation> additionalLocations=highCaliberAttributeParser.getOptionalLocationVal(Arrays.asList(tempArr));
+							productConfigObj.setAdditionalLocations(additionalLocations);
+						
+						}
+						
 						break;
 						
 					case 18://Additional Process--ignore
@@ -938,17 +954,17 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 		 if(prod1flag){
 			 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd1.toString(),listOfQuantityProd1.toString(), 
 						"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-						"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+						priceInlcudeFinal,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 						finalProdTimeVal +" business days",null,1,"","",priceGrids);
 		 }else if(rushflag){
 			 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesRush.toString(),listOfQuantityRush.toString(), 
 						"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-						"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+						priceInlcudeFinal,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 						finalRushTimeVal +" business days",null,2,"","",priceGrids);
 		 }else if(prod2flag){
 			 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd2.toString(),listOfQuantityProd2.toString(), 
 						"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-						"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+						priceInlcudeFinal,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 						finalProdTimeVal2 +" business days",null,3,"","",priceGrids);
 		 }
 		 productExcelObj.setPriceGrids(priceGrids);
@@ -956,19 +972,19 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 		 if(!StringUtils.isEmpty(finalProdTimeVal)&& !StringUtils.isEmpty(listOfPricesProd1.toString())){
 			 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd1.toString(),listOfQuantityProd1.toString(), 
 						"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-						"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+						priceInlcudeFinal,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 						finalProdTimeVal +" business days","Production Time",1,"","",priceGrids);
 			}
 		 if(!StringUtils.isEmpty(finalRushTimeVal)&& !StringUtils.isEmpty(listOfPricesRush.toString())){
 			 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesRush.toString(),listOfQuantityRush.toString(), 
 						"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-						"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+						priceInlcudeFinal,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 						finalRushTimeVal +" business days","Rush Service",2,"","",priceGrids);
 			}
 		 if(!StringUtils.isEmpty(finalProdTimeVal2)&& !StringUtils.isEmpty(listOfPricesProd2.toString())){
 				priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd2.toString(),listOfQuantityProd2.toString(), 
 						"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-						"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+						priceInlcudeFinal,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 						finalProdTimeVal2 +" business days","Production Time",3,"","",priceGrids);
 			}
 		 productExcelObj.setPriceGrids(priceGrids);

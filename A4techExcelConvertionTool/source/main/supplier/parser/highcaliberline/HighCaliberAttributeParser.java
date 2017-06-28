@@ -8,6 +8,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.lookup.service.LookupServiceData;
+import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Configurations;
@@ -15,6 +16,7 @@ import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.Packaging;
@@ -382,7 +384,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		
 	}
 	
-	public List<ImprintLocation>  getImprintLocationVal(List<String> listOfImprintValues){
+	/*public List<ImprintLocation>  getImprintLocationVal(List<String> listOfImprintValues){
 		List<ImprintLocation> listOfImprintLoc=new ArrayList<ImprintLocation>();
 		for (String value : listOfImprintValues) {
 			ImprintLocation imprintLocation = new ImprintLocation();
@@ -390,10 +392,67 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			  listOfImprintLoc.add(imprintLocation);
 		}
 		  return listOfImprintLoc;
+	  }*/
+
+	public List<AdditionalLocation>  getOptionalLocationVal(List<String> listOflocValues){
+		List<AdditionalLocation> listOfOpLoc=new ArrayList<AdditionalLocation>();
+		for (String value : listOflocValues) {
+			AdditionalLocation opLocation = new AdditionalLocation();
+			opLocation.setName(value);
+			listOfOpLoc.add(opLocation);
+		}
+		  return listOfOpLoc;
 	  }
-
 	
-
+	public ProductConfigurations  getImprintLocationVal(String imprintValue,ProductConfigurations productConfigObj){
+		List<ImprintLocation> listOfImprintLoc=new ArrayList<ImprintLocation>();
+		List<ImprintSize> listOfImprintSize=new ArrayList<ImprintSize>();
+		ImprintLocation impLocObj=null;
+		ImprintSize impSizeObj=null;
+		try{
+		imprintValue=imprintValue.replaceAll("<br />", ",");
+		imprintValue=imprintValue.replaceAll("<br/>", ",");
+		imprintValue=removeSpecialChar(imprintValue);
+		imprintValue=imprintValue.replaceAll("(", ",");
+		imprintValue=imprintValue.replaceAll(")", ",");
+		String strTempArr []=imprintValue.split(",");
+		for (String strTemp : strTempArr) {
+			if(strTemp.contains(":")){		
+				String strValueArr[]=strTemp.split(":");
+				if(strValueArr.length>1){
+					String loc=strValueArr[0];
+					String size=strValueArr[1];
+					impLocObj=new ImprintLocation();
+				    impSizeObj=new ImprintSize();
+				    impLocObj.setValue(loc);
+				    listOfImprintLoc.add(impLocObj);
+				    impSizeObj.setValue(size);
+				    listOfImprintSize.add(impSizeObj);
+				}else{
+					impLocObj=new ImprintLocation();
+					impLocObj.setValue(strTemp);
+					listOfImprintLoc.add(impLocObj);
+				}
+			}else if(strTemp.contains("x")){
+				impSizeObj=new ImprintSize();
+				impSizeObj.setValue(strTemp);
+				listOfImprintSize.add(impSizeObj);
+			}else{
+				impLocObj=new ImprintLocation();
+				impLocObj.setValue(strTemp);
+				listOfImprintLoc.add(impLocObj);
+			}
+		}
+		productConfigObj.setImprintLocation(listOfImprintLoc);
+		productConfigObj.setImprintSize(listOfImprintSize);
+		}catch(Exception e){
+			_LOGGER.error("Error while processing imprint area value"+e.getMessage());
+			productConfigObj.setImprintLocation(listOfImprintLoc);
+			productConfigObj.setImprintSize(listOfImprintSize);
+		}
+		return productConfigObj;
+	  }
+	
 	/*public List<Color> getColorCriteria(String colorValue) {
 	
 	Color colorObj = null;
@@ -484,6 +543,12 @@ private boolean isComboColors(String value) {
 }*/
 
 	
-	
+	public static String removeSpecialChar(String tempValue){
+		tempValue=tempValue.replaceAll("(</p>|<p>|&rdquo;|&nbsp;|<span style=color: #ff0000;>|</span style=color: #ff0000;>|<em>|</em>|</strong>|<strong>|</span>|<span>|<p class=p1>)", "");
+		tempValue=tempValue.replaceAll("\\(","");
+		tempValue=tempValue.replaceAll("\\)","");
+	return tempValue;
+
+	}
 	
 }
