@@ -37,6 +37,7 @@ import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Origin;
+import com.a4tech.product.model.OtherSize;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
@@ -318,15 +319,23 @@ while (iterator.hasNext()) {
 				case 4://Name
 					 productName =  CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(productName)){
+						 Size sizeTempObj=null;
 					 //productName = CommonUtility.getStringLimitedChars(productName, 60);
-					 
+					 try{
 					 if(productName.contains("(") && productName.contains(")")){
 						 basePriceName=CommonUtility.extractValueSpecialCharacter("(",")",productName);
-						 
-						 Size sizeTempObj=productConfigObj.getSizes();
+						 basePriceName=basePriceName.trim();
+						// Size sizeTempObj=productConfigObj.getSizes();
+						  sizeTempObj=productConfigObj.getSizes();
 						 List<Value> otherListTemp=new ArrayList<Value>();
 						 if(sizeTempObj!=null){
+							 OtherSize ohtObj=sizeTempObj.getOther();
+							 if(ohtObj!=null){
 						  otherListTemp=sizeTempObj.getOther().getValues();
+							 }else{
+								 sizeTempObj=new Size();
+								 otherListTemp=new ArrayList<Value>();
+							 }
 						 }
 						 else if(sizeTempObj==null){
 							 sizeTempObj=new Size();
@@ -335,11 +344,17 @@ while (iterator.hasNext()) {
 						 Size sizeObjNew=gillStudiosAttributeParser.getSizes(basePriceName.trim(), sizeTempObj,otherListTemp);
 						 criteriaFlag=true;
 						 productConfigObj.setSizes(sizeObjNew);
-					 }else{
+						 if(productName.length()>60){
 						 productName = CommonUtility.getStringLimitedChars(productName, 60);
+						 }
+					 }else{
+						 if(productName.length()>60){
+							 productName = CommonUtility.getStringLimitedChars(productName, 60);
+							 }
 						 basePriceName = productName;
+						 basePriceName=basePriceName.trim();
 					 }
-					 productName = CommonUtility.getStringLimitedChars(productName, 60);
+					 
 					 productExcelObj.setName(productName);
 					 /*String temp=productExcelObj.getDescription();
 					 if(StringUtils.isEmpty(temp)){
@@ -348,6 +363,11 @@ while (iterator.hasNext()) {
 					/* if(!StringUtils.isEmpty(colorValue)&&!StringUtils.isEmpty(productNumber)){
 							productNumberMap.put(productNumber, colorValue);
 						}*/
+					 }
+					 catch(Exception e){
+						 _LOGGER.error("Error while processing name"+e.getLocalizedMessage() +"productName:"+productName+"basePriceName:"+basePriceName+"size obj:"+sizeTempObj);
+					 }
+					 
 					 }
 						break;
 				case 5://CatYear(Not used)
@@ -444,7 +464,8 @@ while (iterator.hasNext()) {
 					
 				case 16://Dimension1//size --  value
 						String dimensionValue1=CommonUtility.getCellValueStrinOrInt(cell);
-						if(!StringUtils.isEmpty(dimensionValue1)){
+						if(!StringUtils.isEmpty(dimensionValue1) && !dimensionValue1.contains("0")){
+							criteriaFlag=false;
 						   dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 						 
 					   }
@@ -452,14 +473,14 @@ while (iterator.hasNext()) {
 					break;
 				case 17: //  Dimension1Units// size -- Unit
 					  String dimensionUnits1 = CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!dimensionUnits1.contains("0")){
+					 if(!StringUtils.isEmpty(dimensionUnits1) && !dimensionUnits1.contains("0")){
 						 dimensionUnits.append(dimensionUnits1.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
 					  break;
 				
 				case 18: //Dimension1Type//size -- type
 					String dimensionType1 =CommonUtility.getCellValueStrinOrInt(cell);
-					if(!dimensionType1.contains("0")){
+					 if(!StringUtils.isEmpty(dimensionType1) && !dimensionType1.contains("0")){
 						dimensionType.append(dimensionType1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					  
@@ -468,7 +489,8 @@ while (iterator.hasNext()) {
 				
 				 case 19: //Dimension2 // size
 					 String dimensionValue2 =CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(dimensionValue2)){
+					 if(!StringUtils.isEmpty(dimensionValue2) && !dimensionValue2.contains("0")){
+						 criteriaFlag=false;
 						 dimensionValue.append(dimensionValue2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
 				
@@ -477,7 +499,7 @@ while (iterator.hasNext()) {
 				case 20:  //Dimension2Units //size
 					String dimensionUnits2 =CommonUtility.getCellValueStrinOrInt(cell);
 					
-					if(!dimensionUnits2.contains("0")){
+					if(!StringUtils.isEmpty(dimensionUnits2) && !dimensionUnits2.contains("0")){
 						dimensionUnits.append(dimensionUnits2.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					break;
@@ -485,7 +507,7 @@ while (iterator.hasNext()) {
 				case 21: //Dimension2Type //size
 					String  dimensionType2 = CommonUtility.getCellValueStrinOrInt(cell);
 
-					if(!dimensionType2.contains("0")){
+					if(!StringUtils.isEmpty(dimensionType2) && !dimensionType2.contains("0")){
 						dimensionType.append(dimensionType2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					
@@ -493,7 +515,8 @@ while (iterator.hasNext()) {
 					
 				case 22: //Dimension3 // size
 					String dimensionValue3  =CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(dimensionValue3)){
+					if(!StringUtils.isEmpty(dimensionValue3) && !dimensionValue3.contains("0")){
+						criteriaFlag=false;
 						dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else{
 						dimensionValue=dimensionValue.append("");
@@ -503,7 +526,7 @@ while (iterator.hasNext()) {
 					
 				case 23: //Dimension3Units // size
 					String dimensionUnits3 = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!dimensionUnits3.contains("0")){
+					if(!StringUtils.isEmpty(dimensionUnits3) && !dimensionUnits3.contains("0")){
 						 dimensionUnits.append(dimensionUnits3.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else
 					{
@@ -513,7 +536,7 @@ while (iterator.hasNext()) {
 					
 				case 24: //Dimension3Type // size
 					String dimensionType3 = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!dimensionType3.contains("0")){
+					if(!StringUtils.isEmpty(dimensionType3) && !dimensionType3.contains("0")){
 						dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else
 					{
@@ -1124,6 +1147,7 @@ while (iterator.hasNext()) {
 			String DimensionRef=null;
 			DimensionRef=dimensionValue.toString();
 			if(!StringUtils.isEmpty(DimensionRef)){
+			criteriaFlag=false;
 			valuesList =gillStudiosAttributeParser.getValues(dimensionValue.toString(),
 	                dimensionUnits.toString(), dimensionType.toString());
 			
@@ -1174,10 +1198,12 @@ while (iterator.hasNext()) {
 				String tempCriteria="";
 				if(criteriaFlag){
 					tempCriteria="Size";
+				}else{
+					basePriceName="";
 				}
 				priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 						         listOfQuantity.toString(), priceCode, "USD",
-						         priceIncludesValue, true, quoteUponRequest, basePriceName.trim(),tempCriteria,pricesPerUnit.toString(),priceGrids);	
+						         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);	
 			}
 			 	productExcelObj.setPriceGrids(priceGrids);
 			 	criteriaFlag=false;
