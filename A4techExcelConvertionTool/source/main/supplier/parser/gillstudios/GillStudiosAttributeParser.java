@@ -2,6 +2,8 @@ package parser.gillstudios;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +17,7 @@ import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
@@ -26,6 +29,7 @@ import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.RushTimeValue;
 import com.a4tech.product.model.ShippingEstimate;
@@ -241,10 +245,15 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 	}
 	// color parsing
 	@SuppressWarnings("unused")
-	public List<Color> getProductColors(String color){
-		List<Color> listOfColors = new ArrayList<>();
+	public List<Color> getProductColors(String color,List<Color> listOfColors){
+		//List<Color> listOfColors = new ArrayList<>();
 		String colorGroup=null;
 		try{
+			 if(CollectionUtils.isEmpty(listOfColors)){
+				 listOfColors=new ArrayList<Color>();
+			 }
+			
+			
 		Color colorObj = null;
 		color=color.replaceAll("\\|",",");
 		String[] colors =getValuesOfArray(color, ",");
@@ -508,6 +517,37 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		}
 		return sizeObj;
 	}
+	
+	public  List<ProductNumber> getProductNumer(HashMap<String, String> productNumberMap){//productNumberMap
+		List<ProductNumber> pnumberList=new ArrayList<ProductNumber>();
+		ProductNumber pnumberObj=new ProductNumber();
+		try{
+		List<Configurations> configList=new ArrayList<Configurations>();
+		List<Object> valueObj;
+		Configurations configObj;
+		 Iterator mapItr = productNumberMap.entrySet().iterator();
+		    while (mapItr.hasNext()) {
+		    	pnumberObj=new ProductNumber();
+		    	configList=new ArrayList<Configurations>();
+		        Map.Entry values = (Map.Entry)mapItr.next();
+		        pnumberObj.setProductNumber(values.getKey().toString());
+		    	configObj=new Configurations();
+				valueObj= new ArrayList<Object>();
+				configObj.setCriteria("Product Color");
+				valueObj.add(values.getValue());
+				configObj.setValue(valueObj);
+				configList.add(configObj);
+				pnumberObj.setConfigurations(configList);
+				pnumberList.add(pnumberObj);
+		    }
+		}catch(Exception e){
+			_LOGGER.error("Error while processing Product Number :"+e.getMessage());             
+		   	return new ArrayList<ProductNumber>();
+		   }
+		_LOGGER.info("ProductNumbers Processed");
+		return pnumberList;		
+	}
+	
 	public GillStudiosPriceGridParser getGillStudiosPriceGridParser() {
 		return gillStudiosPriceGridParser;
 	}

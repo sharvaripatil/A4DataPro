@@ -31,6 +31,7 @@ import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
@@ -42,6 +43,7 @@ import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
@@ -77,6 +79,7 @@ public class GillStudiosMapping implements IExcelParser{
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		String finalResult = null;
 		Set<String>  productXids = new HashSet<String>();
+		String asiProdNo="";
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  String productId = null;
@@ -111,10 +114,10 @@ public class GillStudiosMapping implements IExcelParser{
 			String        additionalClrRunChrgCode = "";
 			String        additionalColorPriceVal = "";
 			String        additionalColorCode     = "";
-			HashMap<String, String>  productSizePriceMap=new HashMap<String, String>();
+			HashMap<String, String>  productPricePriceMap=new HashMap<String, String>();
 			 String xid = null;
 		try{
-			 
+			List<ProductNumber> pnumberList = new ArrayList<ProductNumber>(); 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 	    Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
@@ -155,6 +158,8 @@ public class GillStudiosMapping implements IExcelParser{
 		Product existingApiProduct = null;
 		int columnIndex = 0;
 		Map<String, String>  imprintMethodUpchargeMap = new LinkedHashMap<>();
+		HashMap<String, String>  pnumMap = new HashMap<>();
+		HashSet<String>  colorSet = new HashSet<>();
 		/*while (iterator.hasNext()) {
 			
 			try{
@@ -228,13 +233,64 @@ while (iterator.hasNext()) {
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
-													 	
+								
+							 
+							 if(!CollectionUtils.isEmpty(pnumMap) && pnumMap.size()>1){
+									pnumberList=gillStudiosAttributeParser.getProductNumer(pnumMap);
+									productExcelObj.setProductNumbers(pnumberList);
+								}
+							 
+							 if(!CollectionUtils.isEmpty(colorSet) ){
+								 for (String colorValue : colorSet) {
+										colorList=gillStudiosAttributeParser.getProductColors(colorValue,colorList);
+								}
+								 productConfigObj.setColors(colorList);
+							 }
+							 
+								/*productPricePriceMap.put(basePriceName, listOfPrices.toString()+"@@@@@"+listOfQuantity.toString()+"@@@@@"+priceCode
+										+"@@@@@"+priceIncludesValue+"@@@@@"+quoteUponRequest+"@@@@@"+tempCriteria+""+pricesPerUnit.toString());
+								*/
+							 if(!CollectionUtils.isEmpty(productPricePriceMap) ){
+							 Iterator mapItr = productPricePriceMap.entrySet().iterator();
+							    while (mapItr.hasNext()) {
+							    	
+							        Map.Entry values = (Map.Entry)mapItr.next();
+							        String basePRIC= values.getKey().toString();
+							        String mapValue	=values.getValue().toString();
+							    	String mapValueArr[]=mapValue.split("@@@@@");
+							    	
+							    	String listOfPric=mapValueArr[0];//listOfPrices
+							    	String listOfQuan=mapValueArr[1];//listOfQuantity
+							    	String priceCD=mapValueArr[2];//priceCode
+							    	String priceINC=mapValueArr[3];//priceIncludesValue
+							    	String quR=mapValueArr[4];//quoteUponRequest
+							    	String tempCRI=mapValueArr[5];//tempCriteria
+							    	String priceUNI=mapValueArr[6];//pricesPerUnit
+							    	
+							    	//basePriceName="AAAAA";
+							    	if(basePRIC.equals("AAAAA")){
+							    		basePRIC="";
+							    	}
+									//tempCriteria="BBBBB";
+							    	if(tempCRI.equals("BBBBB")){
+							    		tempCRI="";
+							    	}
+							    	priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPric, 
+							    			listOfQuan, priceCD, "USD",
+							    			priceINC, true, quR, basePRIC,tempCRI,priceUNI,priceGrids);
+							    	
+							    }
+							 }
+								/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
+										         listOfQuantity.toString(), priceCode, "USD",
+										         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/	
+							 
 							    productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 //	if(Prod_Status = false){
-							 	/*_LOGGER.info("Product Data : "
-										+ mapperObj.writeValueAsString(productExcelObj));*/
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 	_LOGGER.info("Product Data : "
+										+ mapperObj.writeValueAsString(productExcelObj));
+							 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -277,7 +333,10 @@ while (iterator.hasNext()) {
 							     additionalColorPriceVal = "";
 						         additionalColorCode     = "";
 						         pricesPerUnit=new StringBuilder();
-						         productSizePriceMap=new HashMap<String, String>();
+						         //productSizePriceMap=new HashMap<String, String>();
+						         pnumMap=new HashMap<String, String>();
+						         colorSet=new HashSet<String>();
+						         productPricePriceMap=new HashMap<String, String>();
 						         System.out.println("");
 						 }
 						 if(!productXids.contains(xid)){
@@ -313,7 +372,8 @@ while (iterator.hasNext()) {
 					
 					 break;
 				case 3://ItemNum
-					 String asiProdNo=CommonUtility.getCellValueStrinOrInt(cell);
+					 //String asiProdNo=CommonUtility.getCellValueStrinOrInt(cell);
+					     asiProdNo=CommonUtility.getCellValueStrinOrInt(cell);
 					     productExcelObj.setAsiProdNo(asiProdNo);		
 					  break;
 				case 4://Name
@@ -449,8 +509,10 @@ while (iterator.hasNext()) {
 				case 14: //Colors
 				String colorValue= CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(colorValue)){
-						colorList=gillStudiosAttributeParser.getProductColors(colorValue);
-						productConfigObj.setColors(colorList);
+						pnumMap.put(asiProdNo, colorValue);
+						colorSet.add(colorValue);
+						//colorList=gillStudiosAttributeParser.getProductColors(colorValue);
+						//productConfigObj.setColors(colorList);
 					}	
 					break;
 					
@@ -1199,11 +1261,17 @@ while (iterator.hasNext()) {
 				if(criteriaFlag){
 					tempCriteria="Size";
 				}else{
-					basePriceName="";
+					basePriceName="AAAAA";
+					tempCriteria="BBBBB";
 				}
-				priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
+				
+				productPricePriceMap.put(basePriceName, listOfPrices.toString()+"@@@@@"+listOfQuantity.toString()+"@@@@@"+priceCode
+						+"@@@@@"+priceIncludesValue+"@@@@@"+quoteUponRequest+"@@@@@"+tempCriteria+""+pricesPerUnit.toString());
+				
+				
+				/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 						         listOfQuantity.toString(), priceCode, "USD",
-						         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);	
+						         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/	
 			}
 			 	productExcelObj.setPriceGrids(priceGrids);
 			 	criteriaFlag=false;
@@ -1226,13 +1294,57 @@ while (iterator.hasNext()) {
 		}
 		workbook.close();	
 		//productExcelObj.setPriceGrids(priceGrids);
+		
+		 if(!CollectionUtils.isEmpty(productPricePriceMap) ){
+			 Iterator mapItr = productPricePriceMap.entrySet().iterator();
+			    while (mapItr.hasNext()) {
+			    	
+			        Map.Entry values = (Map.Entry)mapItr.next();
+			        String basePRIC= values.getKey().toString();
+			        String mapValue	=values.getValue().toString();
+			    	String mapValueArr[]=mapValue.split("@@@@@");
+			    	
+			    	String listOfPric=mapValueArr[0];//listOfPrices
+			    	String listOfQuan=mapValueArr[1];//listOfQuantity
+			    	String priceCD=mapValueArr[2];//priceCode
+			    	String priceINC=mapValueArr[3];//priceIncludesValue
+			    	String quR=mapValueArr[4];//quoteUponRequest
+			    	String tempCRI=mapValueArr[5];//tempCriteria
+			    	String priceUNI=mapValueArr[6];//pricesPerUnit
+			    	
+			    	//basePriceName="AAAAA";
+			    	if(basePRIC.equals("AAAAA")){
+			    		basePRIC="";
+			    	}
+					//tempCriteria="BBBBB";
+			    	if(tempCRI.equals("BBBBB")){
+			    		tempCRI="";
+			    	}
+			    	priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPric, 
+			    			listOfQuan, priceCD, "USD",
+			    			priceINC, true, quR, basePRIC,tempCRI,priceUNI,priceGrids);
+			    	
+			    }
+			 }
+		 if(!CollectionUtils.isEmpty(pnumMap) && pnumMap.size()>1){
+				pnumberList=gillStudiosAttributeParser.getProductNumer(pnumMap);
+				productExcelObj.setProductNumbers(pnumberList);
+			}
+		 
+		 if(!CollectionUtils.isEmpty(colorSet) ){
+			 for (String colorValue : colorSet) {
+					colorList=gillStudiosAttributeParser.getProductColors(colorValue,colorList);
+			}
+			 productConfigObj.setColors(colorList);
+		 }
+		productExcelObj.setPriceGrids(priceGrids);
 		productExcelObj.setProductConfigurations(productConfigObj);
 	
-		 	/*_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(productExcelObj));*/
+		 	_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(productExcelObj));
 		 	//if(Prod_Status = false){
 		 	productExcelObj.setPriceType("L");
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
@@ -1275,6 +1387,8 @@ while (iterator.hasNext()) {
 		     additionalClrRunChrgCode = "";
 		     additionalColorPriceVal = "";
 	         additionalColorCode     = "";
+	         pnumMap=new HashMap<String, String>();
+	         colorSet=new HashSet<String>();
 	         repeatRows.clear();
 	       return finalResult;
 		}catch(Exception e){
@@ -1354,9 +1468,10 @@ while (iterator.hasNext()) {
 
 	public boolean isRepeateColumn(int columnIndex){
 		
-		if(columnIndex != 4 && columnIndex != 25 &&columnIndex != 26 && columnIndex !=27 && columnIndex != 28 && columnIndex != 29 && columnIndex != 30  
+		if(columnIndex != 1 && columnIndex != 3 && columnIndex != 4 && columnIndex != 14 && columnIndex != 25 &&columnIndex != 26 && columnIndex !=27 && columnIndex != 28 && columnIndex != 29 && columnIndex != 30  
 				&& columnIndex != 31&&columnIndex != 32 && columnIndex !=33 && columnIndex != 34 && columnIndex != 35 && columnIndex != 36 && columnIndex != 37
 				&& columnIndex != 38&&columnIndex != 39 && columnIndex !=40 && columnIndex != 41 && columnIndex != 42 && columnIndex != 43
+				
 				){
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
 		}
