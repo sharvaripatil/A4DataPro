@@ -269,23 +269,26 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		List<Weight> listOfWeight = new ArrayList<Weight>();
 		NumberOfItems itemObj = new NumberOfItems();
 	
-			List<Dimensions> dimenlist = new ArrayList<Dimensions>();
+			//List<Dimensions> dimenlist = new ArrayList<Dimensions>();
 			Dimensions dimensionObj = new Dimensions();
 			
 				if(!StringUtils.isEmpty(shippinglen)){
-				dimensionObj.setLength(shippinglen);
+				dimensionObj.setLength(shippinglen.trim());
 				dimensionObj.setLengthUnit("in");
+				ShipingObj.setDimensions(dimensionObj);
 				}
 				if(!StringUtils.isEmpty(shippingWid)){
-				dimensionObj.setWidth(shippingWid);
+				dimensionObj.setWidth(shippingWid.trim());
 				dimensionObj.setWidthUnit("in");
+				ShipingObj.setDimensions(dimensionObj);
 				}
 				if(!StringUtils.isEmpty(shippingH)){
-				dimensionObj.setHeight(shippingH);
+				dimensionObj.setHeight(shippingH.trim());
 				dimensionObj.setHeightUnit("in");
-				}
-				dimenlist.add(dimensionObj);
 				ShipingObj.setDimensions(dimensionObj);
+				}
+				//dimenlist.add(dimensionObj);
+				//ShipingObj.setDimensions(dimensionObj);
 				
 				//shippingWeightValue
 				if(!StringUtils.isEmpty(shippingWeightValue)){
@@ -410,11 +413,18 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		ImprintLocation impLocObj=null;
 		ImprintSize impSizeObj=null;
 		try{
+			if(imprintValue.contains("Helvetica") && imprintValue.contains("0px;>") && imprintValue.contains("</span>")){
+				int pos=imprintValue.lastIndexOf("0px;>");
+				int pos1=imprintValue.lastIndexOf("</span>");
+				imprintValue=imprintValue.substring(pos+1,pos1);
+			}
+			
+			
 		imprintValue=imprintValue.replaceAll("<br />", ",");
 		imprintValue=imprintValue.replaceAll("<br/>", ",");
 		imprintValue=removeSpecialChar(imprintValue);
-		imprintValue=imprintValue.replaceAll("(", ",");
-		imprintValue=imprintValue.replaceAll(")", ",");
+		imprintValue=imprintValue.replace("(", ",");
+		imprintValue=imprintValue.replace(")", ",");
 		String strTempArr []=imprintValue.split(",");
 		for (String strTemp : strTempArr) {
 			if(strTemp.contains(":")){		
@@ -443,12 +453,20 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 				listOfImprintLoc.add(impLocObj);
 			}
 		}
-		productConfigObj.setImprintLocation(listOfImprintLoc);
-		productConfigObj.setImprintSize(listOfImprintSize);
+		if(CollectionUtils.isEmpty(listOfImprintLoc)){
+			productConfigObj.setImprintLocation(listOfImprintLoc);
+			}
+			if(CollectionUtils.isEmpty(listOfImprintSize)){
+			productConfigObj.setImprintSize(listOfImprintSize);
+			}
 		}catch(Exception e){
 			_LOGGER.error("Error while processing imprint area value"+e.getMessage());
+			if(CollectionUtils.isEmpty(listOfImprintLoc)){
 			productConfigObj.setImprintLocation(listOfImprintLoc);
+			}
+			if(CollectionUtils.isEmpty(listOfImprintSize)){
 			productConfigObj.setImprintSize(listOfImprintSize);
+			}
 		}
 		return productConfigObj;
 	  }
@@ -544,7 +562,7 @@ private boolean isComboColors(String value) {
 
 	
 	public static String removeSpecialChar(String tempValue){
-		tempValue=tempValue.replaceAll("(</p>|<p>|&rdquo;|&nbsp;|<span style=color: #ff0000;>|</span style=color: #ff0000;>|<em>|</em>|</strong>|<strong>|</span>|<span>|<p class=p1>)", "");
+		tempValue=tempValue.replaceAll("(</p>|<p>|&rdquo;|&nbsp;|&ldquo;|<span style=color: #ff0000; font-size: small;>|<span style=color: #ff0000;>|</span style=color: #ff0000;>|<em>|</em>|</strong>|<strong>|</span>|<span>|<p class=p1>)", "");
 		tempValue=tempValue.replaceAll("\\(","");
 		tempValue=tempValue.replaceAll("\\)","");
 	return tempValue;
