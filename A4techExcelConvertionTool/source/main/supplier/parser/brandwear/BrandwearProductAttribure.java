@@ -1,9 +1,14 @@
 package parser.brandwear;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.springframework.util.StringUtils;
+
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.model.Apparel;
@@ -36,18 +41,25 @@ public class BrandwearProductAttribure {
 
 	
 	public List<Color> getColorValue(String colorValue) {
-		if(colorValue.contains("&"))
-		{
-			colorValue=colorValue.replace("&", "/");	
-		}
+		//if(colorValue.contains("&"))
+		//{
+ 			colorValue=colorValue.replace("&", ",").replace("/", ",");	
+		//}
 		
 		List<Color> colorList = new ArrayList<Color>();
 		Color colorObj=new Color();
 	    String colorArr[]=colorValue.split(",");
 		Combo combovalue = new Combo();
 
-	    
-	    for (String colorsValue : colorArr) {
+		ArrayList<String> tempColorList = new ArrayList<String>();//Arrays.asList(colorArr)
+		for (String string : colorArr) {
+			tempColorList.add(string.trim());
+		}
+				
+		 Set<String> setcolor = new HashSet<String>(tempColorList);
+		
+		 String arraycolor[] = setcolor.toArray(new String[setcolor.size()]);
+	    for (String colorsValue : arraycolor) {
 	    	colorObj=new Color();	
 	    	
 	    	if(colorsValue.contains("/"))
@@ -55,7 +67,7 @@ public class BrandwearProductAttribure {
 	    	combovalue = new Combo();
 	    	List<Combo> combolist = new ArrayList<Combo>();
 	    	String ComboColorArr[]=	colorsValue.split("/");
-	    	colorObj.setAlias(colorsValue);
+	    	colorObj.setAlias(colorsValue.trim());
 	    	colorObj.setName(BrandwearLookupdata.COLOR_MAP.get(ComboColorArr[0].trim()));
 	    	combovalue.setName(BrandwearLookupdata.COLOR_MAP.get(ComboColorArr[1].trim()));
 	    	combolist.add(combovalue);
@@ -66,6 +78,7 @@ public class BrandwearProductAttribure {
 	    		colorObj.setAlias(colorsValue);
 	    		colorObj.setName(BrandwearLookupdata.COLOR_MAP.get(colorsValue.trim()));
 	    		colorList.add(colorObj);
+	    		
 	    	}
 		}
 		return colorList;
@@ -74,32 +87,29 @@ public class BrandwearProductAttribure {
 	
 	
 	public List<ImprintMethod> getImprintMethod(String imprintMethod) {
-		ImprintMethod imprMethod = new ImprintMethod();
+ 		ImprintMethod imprMethod = new ImprintMethod();
 		List<ImprintMethod> imprintMethodList = new ArrayList<ImprintMethod>();
 		String imprintMethodValueArr[]=imprintMethod.split(",");
 		
 		for (String imprintMethodValue : imprintMethodValueArr) {
 			
 			imprMethod = new ImprintMethod();
-	  if(imprintMethodValue.contains("printed"))
+	  if(imprintMethodValue.contains("print"))
 	  {
 		  imprMethod.setType("Pad Print");
-	  }else if(imprintMethodValue.contains("Laser Etched"))
+	  }else if(imprintMethodValue.contains("Embroidery"))
 	  {
-		  imprMethod.setType("Etched");
-	  }else if(imprintMethodValue.contains("Debossed"))
+		  imprMethod.setType("Embroidered");
+	  }else if(imprintMethodValue.contains("Silk Screening"))
 	  {
-		  imprMethod.setType("Debossed");
+		  imprMethod.setType("Silkscreen");
 
-	  }else if(imprintMethodValue.contains("Embossed"))
+	  }else if(imprintMethodValue.contains("Sublimation"))
 	  {
-		  imprMethod.setType("Embossed");
-	  }else if(imprintMethodValue.contains("Laser engraved"))
+		  imprMethod.setType("Sublimation");
+	  }else if(imprintMethodValue.contains("Heat Press"))
 	  {
-		  imprMethod.setType("Laser engraved");
-	  }else if(imprintMethodValue.contains("Full Color"))
-	  {
-		  imprMethod.setType("Full Color");
+		  imprMethod.setType("Heat Transfer");
 	  }else
 	  {
 		  imprMethod.setType("Other");
@@ -144,7 +154,7 @@ public class BrandwearProductAttribure {
 	}
 
 	
-	public Size getImprintMethod(String sizeValue, String genderName) {
+	public Size getSizeValue(String sizeValue, String genderName) {
 		sizeValue=sizeValue.replace("XXL", "2XL").replace("&", "-");
       Size sizeObj=new Size();
     Apparel appObj=new Apparel();
@@ -153,9 +163,16 @@ public class BrandwearProductAttribure {
     
     if(genderName.equalsIgnoreCase("Unisex"))
     {
- 		String sizeArr[]=sizeValue.split("-");
+    	String sizearr[]={"S","M","L","XL","2XL"};
+		if(sizeValue.contains("XS"))
+		{
+			ArrayList<String> tempList = new ArrayList<String>(Arrays.asList(sizearr));
+		    tempList.add("XS");
+		    sizearr=tempList.toArray(new String[tempList.size()]);
+			
+		}
  		
- 		for (String value : sizeArr) {
+ 		for (String value : sizearr) {
  		 ValueObj = new Value();
  	     sizeObj.setApparel(appObj);
  		 appObj.setType("Standard & Numbered");
@@ -176,8 +193,15 @@ public class BrandwearProductAttribure {
     }   	
     	if(sizeValue.contains("-"))
     	{
-    		String sizearr[]=sizeValue.split("-");
-    		for (String sizeName : sizearr) {
+    		String sizearr[]={"S","M","L","XL","2XL"};
+    		if(sizeValue.contains("XS"))
+    		{
+    			ArrayList<String> tempList = new ArrayList<String>(Arrays.asList(sizearr));
+    		    tempList.add("XS");
+    		    sizearr=tempList.toArray(new String[tempList.size()]);
+    		}
+    		
+			for (String sizeName : sizearr) {
     			ValueObj=new Value();
     			ValueObj.setValue(sizeName);
     			listOfValue.add(ValueObj);
@@ -220,6 +244,8 @@ public class BrandwearProductAttribure {
 		this.lookupRestServiceObj = lookupRestServiceObj;
 	}
 
+
+	
 
 
 	

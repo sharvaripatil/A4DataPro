@@ -256,9 +256,13 @@ public class BestDealAttributeParser {
 				    	ShippingEstimate shippingEstObj = getProductShippingWeight(attributeValue);
 				    	existingConfig.setShippingEstimates(shippingEstObj);
 				    } else if(value.contains("FOB POINT")){
-				    	/*attributeValue = getFieldName(value, "FOB POINT");
-				    	List<FOBPoint> listOfFobPoint = getFobPoints(attributeValue);
-				    	existingProduct.setFobPoints(listOfFobPoint);*/
+				        //attributeValue = getFieldName(value, "FOB POINT");
+				    	//List<FOBPoint> listOfFobPoint = getFobPoints(attributeValue);
+				    	List<FOBPoint> listOfFobPoint = new ArrayList<>();
+						FOBPoint fobPointObj = new FOBPoint();
+						fobPointObj.setName("City Of Industry, CA 91744 USA");
+						listOfFobPoint.add(fobPointObj);
+				    	existingProduct.setFobPoints(listOfFobPoint);
 				    } else if(value.contains("PACKAGING")){
 				    	attributeValue = getFieldName(value, "PACKAGING");
 				    	List<Packaging> listOfPackaging = getProductPackaging(attributeValue);
