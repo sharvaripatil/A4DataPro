@@ -10,13 +10,14 @@ import com.a4tech.bambam.product.mapping.BambamProductExcelMapping;
 import com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping;
 import com.a4tech.dc.product.mapping.DCProductsExcelMapping;
 import com.a4tech.excel.service.IExcelParser;
-import com.a4tech.kl.product.mapping.KlProductsExcelMapping;
+import com.a4tech.kl.product.mapping.KlProductsExcelMapping; 
 import com.a4tech.product.bbi.mapping.BBIProductsExcelMapping;
 import com.a4tech.product.broberry.mapping.BroberryExcelMapping;
 import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
 import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
+import com.a4tech.supplier.mapper.AlfaMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
@@ -37,40 +38,40 @@ import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 
 
 public class ExcelFactory {
-	private AdspecProductsExcelMapping adspecMapping;
-	private KlProductsExcelMapping klMapping;
-	private SageProductsExcelMapping sageExcelMapping;
-	private DCProductsExcelMapping dcProductExcelMapping;
-	private KukuProductsExcelMapping kukuProductsExcelMapping;
-	private RFGLineProductExcelMapping rfgLineProductExcelMapping;
-	private BBIProductsExcelMapping bbiProductsExcelMapping;
-	private NewProductsExcelMapping newProductsExcelMapping;
-	private ApparelProductsExcelMapping apparealExcelMapping;
-	private ESPTemplateMapping espTemplateMapping;
-	private BroberryExcelMapping broberryExcelMapping;
-	private BestDealProductsExcelMapping bdProdcutsMapping;
-	private RiversEndExcelMapping riversEndExcelMapping;
-	private BambamProductExcelMapping bamExcelMapping;
-    private CutterBuckExcelMapping cbExcelMapping;
-    private CrystalDExcelMapping cdExcelMapping;
-    private GoldstarCanadaExcelMapping goldcanadaExcelMapping;
-    private MilestoneExcelMapping milestoneExcelMapping;
- //   private CutterBuckSheetParser cbSheetParser;
-	private HighCaliberLineExcelMapping hcLineExcelMapping;
-	private WholeSaleExcelMapping wholeSaleExcelMapping;
-	private PrimeLineExcelMapping primeLineExcelMapping;
-	private GoldBondExcelMapping  goldBandExcelMapping;
-	private PSLMapping pslMapping;
-	private TomaxUsaMapping tomaxUsaMapping;
-	private ProGolfMapping proGolfMapping;
-	private DacassoMapping dacassoMapping;
-	private SageRMKWorldWideMapping sage80289Mapping;
-	private BrandwearExcelMapping brandwearExcelMapping;
-	private BallProMapping       ballProMapping;
-	private PSLcadMapping pslcadMapping;
-	private TwintechMapping twintechMapping;
+	private AdspecProductsExcelMapping 		adspecMapping;
+	private KlProductsExcelMapping 			klMapping;
+	private SageProductsExcelMapping 		sageExcelMapping;
+	private DCProductsExcelMapping 			dcProductExcelMapping;
+	private KukuProductsExcelMapping 		kukuProductsExcelMapping;
+	private RFGLineProductExcelMapping 		rfgLineProductExcelMapping;
+	private BBIProductsExcelMapping 		bbiProductsExcelMapping;
+	private NewProductsExcelMapping 		newProductsExcelMapping;
+	private ApparelProductsExcelMapping 	apparealExcelMapping;
+	private ESPTemplateMapping 				espTemplateMapping;
+	private BroberryExcelMapping 			broberryExcelMapping;
+	private BestDealProductsExcelMapping 	bdProdcutsMapping;
+	private RiversEndExcelMapping 			riversEndExcelMapping;
+	private BambamProductExcelMapping 		bamExcelMapping;
+    private CutterBuckExcelMapping 			cbExcelMapping;
+    private CrystalDExcelMapping 			cdExcelMapping;
+    private GoldstarCanadaExcelMapping 		goldcanadaExcelMapping;
+    private MilestoneExcelMapping 			milestoneExcelMapping;
+	private HighCaliberLineExcelMapping 	hcLineExcelMapping;
+	private WholeSaleExcelMapping 			wholeSaleExcelMapping;
+	private PrimeLineExcelMapping 			primeLineExcelMapping;
+	private GoldBondExcelMapping  			goldBandExcelMapping;
+	private PSLMapping 						pslMapping;
+	private TomaxUsaMapping 				tomaxUsaMapping;
+	private ProGolfMapping 					proGolfMapping;
+	private DacassoMapping 					dacassoMapping;
+	private SageRMKWorldWideMapping 		sage80289Mapping;
+	private BrandwearExcelMapping 			brandwearExcelMapping;
+	private BallProMapping       			ballProMapping;
+	private PSLcadMapping 					pslcadMapping;
+	private TwintechMapping 				twintechMapping;
+	private AlfaMapping       				alfaMapping;
 
-	public  IExcelParser getExcelParserObject(String name){
+		public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
 		   }else if(name.equalsIgnoreCase("kl") || name.equals("64905")){
@@ -140,6 +141,8 @@ public class ExcelFactory {
 	      }
 	      else if(name.equalsIgnoreCase("twintech") || name.equals("92357")){
 		      return twintechMapping;
+	      } else if(name.equalsIgnoreCase("alfa") || name.equals("34042")){
+	    	  return alfaMapping;
 	      }
 		return null;
 	}
@@ -389,6 +392,14 @@ public class ExcelFactory {
 	public void setTwintechMapping(TwintechMapping twintechMapping) {
 		this.twintechMapping = twintechMapping;
 	}
-	
+	public AlfaMapping getAlfaMapping() {
+		return alfaMapping;
+	}
+
+	public void setAlfaMapping(AlfaMapping alfaMapping) {
+		this.alfaMapping = alfaMapping;
+	}
+
+
 
 }

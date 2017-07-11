@@ -409,8 +409,8 @@
 		<property name="brandwearExcelMapping" ref="brandwearExcelMappingId"/>
 		<property name="sage80289Mapping" ref="sageRMKWorldWideMapping"/>
 		<property name="twintechMapping" ref="twintechMappingId"/>
-		
 		<property name="ballProMapping" ref="ballProMappingId"/>
+		<property name="alfaMapping" ref="alfaMappingId"></property>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -863,10 +863,12 @@
             <bean id="twintechProductAttributeObjId" class="parser.twintech.TwintechProductAttributeParser">
                <property name="lookupServiceDataObj" ref="lookupServiceData"/>
                </bean>  
-     
+  
             <!-- supplier Twintech configuration end -->
-          
+  <!-- Alfa Configut=ration strat -->        
+   <bean id="alfaMappingId" class="com.a4tech.supplier.mapper.AlfaMapping"></bean>
  
+  <!-- Alfa configuration end -->
      
 </beans>
 

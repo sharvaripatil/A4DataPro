@@ -830,6 +830,10 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 				priceGrids = priceGridParser.getBasePriceGrids(listOfPrices.toString(), 
 						         listOfQuantity.toString(), priceCode, "USD",
 						         priceIncludesValue, true, quoteUponRequest, productName,"",priceGrids);
+			} else {
+				priceGrids = priceGridParser.getBasePriceGrids(listOfPrices.toString(), 
+				         listOfQuantity.toString(), priceCode, "USD",
+				         priceIncludesValue, true, "true", productName,"",priceGrids);
 			}
 			    if(!imprintMethodUpchargeMap.isEmpty()){
 			    	priceGrids = sageAttributeParser.getImprintMethodUpcharges(imprintMethodUpchargeMap,

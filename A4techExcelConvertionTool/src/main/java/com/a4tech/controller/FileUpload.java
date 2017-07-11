@@ -31,9 +31,9 @@ import com.a4tech.util.LookupData;
 public class FileUpload {
 
 	@Autowired
-	IProductService               productService;
+	private IProductService               productService;
 	@Autowired
-	IMailService                  mailService;
+	private IMailService                  mailService;
 	private String                accessToken = null;
 	@Autowired
 	private ILoginService         loginService;
