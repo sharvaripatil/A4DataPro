@@ -7,8 +7,7 @@ public class BrandwearLookupdata {
 
 	public static Map<String, String> COLOR_MAP =new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
 
-	static{
-		
+	static{	
 		COLOR_MAP.put("White","Medium White");
 		COLOR_MAP.put("Magenta","Medium Pink");
 		COLOR_MAP.put("Black","Medium Black");

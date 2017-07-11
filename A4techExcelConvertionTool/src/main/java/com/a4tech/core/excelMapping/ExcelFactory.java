@@ -18,6 +18,7 @@ import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
+import com.a4tech.supplier.mapper.BellaCanvas;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
@@ -69,6 +70,7 @@ public class ExcelFactory {
 	private BallProMapping       ballProMapping;
 	private PSLcadMapping pslcadMapping;
 	private TwintechMapping twintechMapping;
+	private BellaCanvas bellaCanvasMapping;
 
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -104,7 +106,7 @@ public class ExcelFactory {
 		   else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
 			   return bamExcelMapping;
 		   }
-		   else if(name.equalsIgnoreCase("goldCanada") || name.equals(/*"57711"*/"92357")){
+		   else if(name.equalsIgnoreCase("goldCanada") || name.equals("57711")){
 			   return goldcanadaExcelMapping;
 
 		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
@@ -140,6 +142,9 @@ public class ExcelFactory {
 	      }
 	      else if(name.equalsIgnoreCase("twintech") || name.equals("92357")){
 		      return twintechMapping;
+	      }
+	      else if(name.equalsIgnoreCase("bellaCanvas") || name.equals("39590")){
+		      return bellaCanvasMapping;
 	      }
 		return null;
 	}
@@ -389,6 +394,16 @@ public class ExcelFactory {
 	public void setTwintechMapping(TwintechMapping twintechMapping) {
 		this.twintechMapping = twintechMapping;
 	}
+
+	public BellaCanvas getBellaCanvasMapping() {
+		return bellaCanvasMapping;
+	}
+
+	public void setBellaCanvasMapping(BellaCanvas bellaCanvasMapping) {
+		this.bellaCanvasMapping = bellaCanvasMapping;
+	}
+
+	
 	
 
 }
