@@ -318,7 +318,8 @@ public class CommonUtility {
 	 */
 	public static boolean isPriceConfirmThroughDate(String date){
 		Date current = new Date();
-		String myFormatString = "yy-MM-dd";
+		String myFormatString = "dd-MM-yyyy";//new format for goldbond
+		//String myFormatString = "yy-MM-dd";
 		SimpleDateFormat dateFormat = new SimpleDateFormat(myFormatString);
 		Date supplierGivenDate;
 		try {

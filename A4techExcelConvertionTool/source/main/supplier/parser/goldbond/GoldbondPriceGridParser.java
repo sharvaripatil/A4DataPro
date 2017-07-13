@@ -78,8 +78,8 @@ public class GoldbondPriceGridParser {
 			} catch (NumberFormatException nfe) {
 				price.setQty(ApplicationConstants.CONST_NUMBER_ZERO);
 			}
-			price.setNetCost(netPrices[PriceNumber]);
-			//price.setPrice(prices[PriceNumber]);
+			//price.setNetCost(netPrices[PriceNumber]);
+			price.setPrice(netPrices[PriceNumber]);
 			price.setDiscountCode(disCodes[PriceNumber]);
 			if(priceUnitName.equalsIgnoreCase("dozen")){
 				priceUnit.setName("Dozen");
@@ -157,6 +157,9 @@ public class GoldbondPriceGridParser {
 		priceGrid.setServiceCharge("Required");
 		priceGrid.setPriceIncludes(priceInclude);
 		List<Price> listOfPrice = null;
+		if (!priceGrid.getIsQUR() && !CommonUtility.isdescending(upChargePrices)) {
+			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
+		}
 		if (!priceGrid.getIsQUR()) {
 			listOfPrice = getPrices(upChargePrices, upChargeQuantity, upChargeDiscount,priceUnitName);
 		} else {

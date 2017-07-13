@@ -7,22 +7,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.junit.internal.runners.model.EachTestNotifier;
 import org.springframework.util.StringUtils;
-
 import parser.cutter.CutterBuckMaterialParser;
 import parser.cutter.CutterBuckPriceGridParser;
 import parser.cutter.CutterBuckSheetParser;
 import parser.cutter.CutterBuckSizeParser;
-
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
@@ -65,7 +59,6 @@ public class CutterBuckExcelMapping implements IExcelParser{
 		List<Material> listOfMaterial = new ArrayList<>();
 		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
-		ArrayList<Product> test = new ArrayList<>();
 
 
 		Product existingApiProduct = null;
@@ -83,9 +76,7 @@ public class CutterBuckExcelMapping implements IExcelParser{
 /*
 			_LOGGER.info("Total sheets in excel::"
 					+ workbook.getNumberOfSheets();*/
-			
-			int NumberOfSheet =workbook.getNumberOfSheets();
-			
+						
 			
 			for(int i=0;i<2;i++)
 			{

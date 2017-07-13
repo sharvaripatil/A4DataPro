@@ -1,18 +1,24 @@
 package parser.brandwear;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.internal.runners.model.EachTestNotifier;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
+import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Size;
+import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Weight;
 
 public class BrandwearProductAttribure {
@@ -35,57 +41,88 @@ public class BrandwearProductAttribure {
 
 	
 	public List<Color> getColorValue(String colorValue) {
+		//if(colorValue.contains("&"))
+		//{
+ 			colorValue=colorValue.replace("&", ",").replace("/", ",");	
+		//}
 		
 		List<Color> colorList = new ArrayList<Color>();
 		Color colorObj=new Color();
-		
 	    String colorArr[]=colorValue.split(",");
-	    
-	    for (String colorsValue : colorArr) {
-			
+		Combo combovalue = new Combo();
+
+		ArrayList<String> tempColorList = new ArrayList<String>();//Arrays.asList(colorArr)
+		for (String string : colorArr) {
+			tempColorList.add(string.trim());
 		}
+				
+		 Set<String> setcolor = new HashSet<String>(tempColorList);
 		
-		
-		
+		 String arraycolor[] = setcolor.toArray(new String[setcolor.size()]);
+	    for (String colorsValue : arraycolor) {
+	    	colorObj=new Color();	
+	    	
+	    	if(colorsValue.contains("/"))
+	    	{
+	    	combovalue = new Combo();
+	    	List<Combo> combolist = new ArrayList<Combo>();
+	    	String ComboColorArr[]=	colorsValue.split("/");
+	    	colorObj.setAlias(colorsValue.trim());
+	    	colorObj.setName(BrandwearLookupdata.COLOR_MAP.get(ComboColorArr[0].trim()));
+	    	combovalue.setName(BrandwearLookupdata.COLOR_MAP.get(ComboColorArr[1].trim()));
+	    	combolist.add(combovalue);
+	    	colorObj.setCombos(combolist);
+	    	colorList.add(colorObj);
+	    	}else
+	    	{
+	    		colorObj.setAlias(colorsValue);
+	    		colorObj.setName(BrandwearLookupdata.COLOR_MAP.get(colorsValue.trim()));
+	    		colorList.add(colorObj);
+	    		
+	    	}
+		}
 		return colorList;
 	}
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	public List<ImprintMethod> getImprintMethod(String imprintMethod) {
-		List<ImprintMethod> ImprintMethodList = new ArrayList<ImprintMethod>();
-		ImprintMethod imprintMethodObj = new ImprintMethod();
-		List<String> finalImprintValues = getImprintValue(imprintMethod
-				.toUpperCase());
+ 		ImprintMethod imprMethod = new ImprintMethod();
+		List<ImprintMethod> imprintMethodList = new ArrayList<ImprintMethod>();
+		String imprintMethodValueArr[]=imprintMethod.split(",");
+		
+		for (String imprintMethodValue : imprintMethodValueArr) {
+			
+			imprMethod = new ImprintMethod();
+	  if(imprintMethodValue.contains("print"))
+	  {
+		  imprMethod.setType("Pad Print");
+	  }else if(imprintMethodValue.contains("Embroidery"))
+	  {
+		  imprMethod.setType("Embroidered");
+	  }else if(imprintMethodValue.contains("Silk Screening"))
+	  {
+		  imprMethod.setType("Silkscreen");
 
-		for (String string : finalImprintValues) {
-			imprintMethodObj.setAlias(string);
-			imprintMethodObj.setType(string);
-			ImprintMethodList.add(imprintMethodObj);
+	  }else if(imprintMethodValue.contains("Sublimation"))
+	  {
+		  imprMethod.setType("Sublimation");
+	  }else if(imprintMethodValue.contains("Heat Press"))
+	  {
+		  imprMethod.setType("Heat Transfer");
+	  }else
+	  {
+		  imprMethod.setType("Other");
+	  }
+	  imprMethod.setAlias(imprintMethodValue);	
+	  imprintMethodList.add(imprMethod);
+
 		}
-		return ImprintMethodList;
+	
+		
+		return imprintMethodList;
 	}
 
-	public List<String> getImprintValue(String value) {
-		List<String> imprintLookUpValue = lookupServiceDataObj
-				.getImprintMethods();
-		List<String> finalImprintValues = imprintLookUpValue.stream()
-				.filter(impntName -> value.contains(impntName))
-				.collect(Collectors.toList());
-
-		return finalImprintValues;
-	}
 
 	public List<Material> getMaterial(String materialValues) {
 		List<Material> MaterialList = new ArrayList<Material>();
@@ -116,6 +153,81 @@ public class BrandwearProductAttribure {
 		return finalMaterialValues;
 	}
 
+	
+	public Size getSizeValue(String sizeValue, String genderName) {
+		sizeValue=sizeValue.replace("XXL", "2XL").replace("&", "-");
+      Size sizeObj=new Size();
+    Apparel appObj=new Apparel();
+    List<Value> listOfValue= new ArrayList<>();
+    Value ValueObj=new Value();
+    
+    if(genderName.equalsIgnoreCase("Unisex"))
+    {
+    	String sizearr[]={"S","M","L","XL","2XL"};
+		if(sizeValue.contains("XS"))
+		{
+			ArrayList<String> tempList = new ArrayList<String>(Arrays.asList(sizearr));
+		    tempList.add("XS");
+		    sizearr=tempList.toArray(new String[tempList.size()]);
+			
+		}
+ 		
+ 		for (String value : sizearr) {
+ 		 ValueObj = new Value();
+ 	     sizeObj.setApparel(appObj);
+ 		 appObj.setType("Standard & Numbered");
+ 		ValueObj.setValue(value);
+ 		listOfValue.add(ValueObj);
+ 		}
+ 		 appObj.setValues(listOfValue);
+ 	     sizeObj.setApparel(appObj);
+    	
+    }else{
+    if(genderName.equalsIgnoreCase("Women's"))
+    {
+    	appObj.setType("Apparel-Womens");
+    }
+    else if(genderName.equalsIgnoreCase("Men's"))
+    {
+    	appObj.setType("Apparel-Mens");
+    }   	
+    	if(sizeValue.contains("-"))
+    	{
+    		String sizearr[]={"S","M","L","XL","2XL"};
+    		if(sizeValue.contains("XS"))
+    		{
+    			ArrayList<String> tempList = new ArrayList<String>(Arrays.asList(sizearr));
+    		    tempList.add("XS");
+    		    sizearr=tempList.toArray(new String[tempList.size()]);
+    		}
+    		
+			for (String sizeName : sizearr) {
+    			ValueObj=new Value();
+    			ValueObj.setValue(sizeName);
+    			listOfValue.add(ValueObj);
+			}
+    	}else
+    	{
+			ValueObj.setValue(sizeValue);
+			listOfValue.add(ValueObj);
+    	}	
+    	
+    	appObj.setValues(listOfValue);
+    	sizeObj.setApparel(appObj);
+    }	
+		return sizeObj;
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;
 	}
@@ -131,6 +243,10 @@ public class BrandwearProductAttribure {
 	public void setLookupRestServiceObj(LookupRestService lookupRestServiceObj) {
 		this.lookupRestServiceObj = lookupRestServiceObj;
 	}
+
+
+	
+
 
 	
 

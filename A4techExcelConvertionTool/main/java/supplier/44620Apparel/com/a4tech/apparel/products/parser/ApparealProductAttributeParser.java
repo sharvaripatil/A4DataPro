@@ -399,7 +399,6 @@ public class ApparealProductAttributeParser {
 				   return false;
 			   }
 		}
-		
 		 return true;
 	}
 	public List<String> getProductCategories(String categoryVal){
@@ -415,8 +414,5 @@ public class ApparealProductAttributeParser {
 
 	public void setLookupServiceData(LookupServiceData lookupServiceData) {
 		this.lookupServiceData = lookupServiceData;
-	}
-	
-	
-	 
+	} 
 }

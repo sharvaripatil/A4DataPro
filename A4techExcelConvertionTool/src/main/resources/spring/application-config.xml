@@ -409,8 +409,9 @@
 		<property name="brandwearExcelMapping" ref="brandwearExcelMappingId"/>
 		<property name="sage80289Mapping" ref="sageRMKWorldWideMapping"/>
 		<property name="twintechMapping" ref="twintechMappingId"/>
-		
 		<property name="ballProMapping" ref="ballProMappingId"/>
+		<property name="alfaMapping" ref="alfaMappingId"></property>
+		<property name="bellaCanvasMapping" ref="bellaCanvasMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -783,6 +784,8 @@
           <property name="productDaoObj" ref="productDao"/>
           <property name="lookupServiceDataObj" ref="lookupServiceData"/>
           <property name="productAttributeObj" ref="productAttributeObjId"/>
+          <property name="brandwearpriceObj" ref="brandwearpriceObjId"/>
+          
        </bean>
        
        <bean id="productAttributeObjId" class="parser.brandwear.BrandwearProductAttribure">
@@ -790,6 +793,8 @@
          <property name="lookupRestServiceObj" ref="lookupRestService"/>
        </bean>
        
+        <bean id="brandwearpriceObjId" class="parser.brandwear.BrandwearPriceGridParser"/>  
+         
         <!--Brandwear Configuration end  -->   
         <!-- Ball Pro Configuration Start -->
          <bean id="ballProMappingId" class="com.a4tech.supplier.mapper.BallProMapping">
@@ -863,10 +868,21 @@
             <bean id="twintechProductAttributeObjId" class="parser.twintech.TwintechProductAttributeParser">
                <property name="lookupServiceDataObj" ref="lookupServiceData"/>
                </bean>  
-     
+  
             <!-- supplier Twintech configuration end -->
-          
+  <!-- Alfa Configut=ration strat -->        
+   <bean id="alfaMappingId" class="com.a4tech.supplier.mapper.AlfaMapping"></bean>
  
+  <!-- Alfa configuration end -->
+   <!-- supplier bella&Canvas configuration start -->
+          <bean id="bellaCanvasMappingId" class="com.a4tech.supplier.mapper.BellaCanvas">
+           <property name="postServiceImpl" ref="postService"/>
+           <property name="productDaoObj" ref="productDao"/> 
+         
+         </bean>
+         
+         
+        <!-- supplier bella&Canvas  configuration end -->
      
 </beans>
 

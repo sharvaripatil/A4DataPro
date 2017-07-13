@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -27,6 +29,7 @@ import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Option;
 import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Packaging;
+import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -42,7 +45,8 @@ import com.a4tech.util.CommonUtility;
 
 public class GoldbondAttributeParser {
 	
-	String pattern_remove_specialSymbols = "[^0-9.x/\\- ]";
+	private static Logger _LOGGER = Logger.getLogger(GoldbondAttributeParser.class);
+	String pattern_remove_specialSymbols = "[^0-9.xX/\\- ]";
 	private GoldbondPriceGridParser gbPriceGridParser;
 	private LookupServiceData lookupServiceData;
 	private static List<String> lookupFobPoints = null;
@@ -61,11 +65,43 @@ public class GoldbondAttributeParser {
 		if(!CollectionUtils.isEmpty(existingProduct.getImages())){
 			newProduct.setImages(existingProduct.getImages());
 		}
-		newProduct.setProductConfigurations(newConfiguration);
+		//keepExistingUpchargesAndCriteria
+		//
+		List<PriceGrid> newPriceGrid = new ArrayList<>();
+		List<PriceGrid> oldPriceGrids = existingProduct.getPriceGrids();
+		for (PriceGrid priceGrid : oldPriceGrids) {
+			if(priceGrid.getIsBasePrice() ){
+				continue;
+			}
+            if(priceGrid.getUpchargeType().contains("Sample Charge") || priceGrid.getUpchargeType().contains("Proof Charge") ||
+            		priceGrid.getUpchargeType().contains("Less than Minimum Charge") || priceGrid.getUpchargeType().contains("Shipping")){
+            	newPriceGrid.add(priceGrid);
+            }
+		}
+		if(existingConfiguration.getSamples() != null){
+        	newConfiguration.setSamples(existingConfiguration.getSamples());
+        }
+        if(existingConfiguration.getArtwork() != null){
+        	newConfiguration.setArtwork(existingConfiguration.getArtwork());
+        }
+        if(existingProduct.isCanOrderLessThanMinimum()){
+        	newProduct.setCanOrderLessThanMinimum(existingProduct.isCanOrderLessThanMinimum());
+        }
+        if(existingConfiguration.getShippingEstimates() != null){
+        	newConfiguration.setShippingEstimates(existingConfiguration.getShippingEstimates());
+        }
+        if(!CollectionUtils.isEmpty(existingConfiguration.getOptions())){
+        	List<Option> existingOptions = existingConfiguration.getOptions();
+			List<Option> newOptions = existingOptions.stream()
+					.filter(option -> "Shipping".equalsIgnoreCase(option.getOptionType()))
+					.collect(Collectors.toList());
+			newConfiguration.setOptions(newOptions);
+        }
+        newProduct.setPriceGrids(newPriceGrid);
+		 newProduct.setProductConfigurations(newConfiguration);
 		return newProduct;
 	}
-	
-	public Product getAdditionalColor(Product existingProduct,String value){
+	public Product getMultiColorCharge(Product existingProduct,String value,String upchargeName){
 		   String priceVal = "";
 		   String discountCode = "";
 		   List<PriceGrid> existingPriceGrid = existingProduct.getPriceGrids();
@@ -73,6 +109,7 @@ public class GoldbondAttributeParser {
 			   existingPriceGrid = new ArrayList<>();
 		   }
 		   ProductConfigurations existingConfiguration = existingProduct.getProductConfigurations();
+		   String priceInclude = "";
 		    if(value.equalsIgnoreCase("$50.00 (G) per color, applies to repeat orders")){
 		    	priceVal = "50";
 		    	discountCode = "G";
@@ -88,15 +125,21 @@ public class GoldbondAttributeParser {
 		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (multi-color imprint not available for two side imprint)")){
 		    	priceVal = "50";
 		    	discountCode = "G";
+		    	priceInclude = "multi-color imprint not available for two side imprint";
 		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (up to 2 colors), applies to repeat orders")){
 		    	priceVal = "50";
 		    	discountCode = "G";
-		    } else {
-		    	
+		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (close registration not available)")) {
+		    	priceVal = "50";
+		    	discountCode = "G";
+		    	priceInclude = "close registration not available";
+		    } else if(value.contains("$50.00 (G)")){
+		    	priceVal = "50";
+		    	discountCode = "G";
 		    }
 		    existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", priceVal, discountCode, "Additional Colors", false,
-					"USD","", "additional color available", "Set-up Charge", "Per Order", 1, existingPriceGrid,"","");
-		    List<AdditionalColor> listOfAdditionalColor = getAdditionalColors("additional color available");
+					"USD",priceInclude, upchargeName, "Set-up Charge", "Per Order", 1, existingPriceGrid,"","");
+		    List<AdditionalColor> listOfAdditionalColor = getAdditionalColors(upchargeName);
 		    existingConfiguration.setAdditionalColors(listOfAdditionalColor);
 		    existingProduct.setProductConfigurations(existingConfiguration);
 		    existingProduct.setPriceGrids(existingPriceGrid);
@@ -111,8 +154,11 @@ public class GoldbondAttributeParser {
 		  for (String colorName : allColors) {
 			  colorObj = new Color();
 			     String alias = colorName;
-			     colorName = colorName.replaceAll("\\(.*?\\)", "").trim();
 			     String colorGroup = GoldbondColorMapping.getColorGroup(colorName);
+			     if(colorGroup == null){
+			    	 colorName = colorName.replaceAll("\\(.*?\\)", "").trim();
+			    	 colorGroup = GoldbondColorMapping.getColorGroup(colorName);
+			     }
 			     if(colorGroup == null){
 			    	 colorGroup = "Other";
 			     }
@@ -135,13 +181,32 @@ public class GoldbondAttributeParser {
 			sizeValues = sizeValues.replaceAll(ApplicationConstants.CONST_DELIMITER_SEMICOLON, 
 					                                     ApplicationConstants.CONST_STRING_COMMA_SEP);
 		}
-		String[] sizess = CommonUtility.getValuesOfArray(sizeValues, ApplicationConstants.CONST_STRING_COMMA_SEP);
+		String[] sizess = null;
+		if(sizeValues.contains("(") && (sizeValues.contains("Diameter") || sizeValues.contains("diameter"))){
+			sizess = new String[]{sizeValues};	
+		} else {
+			sizess = CommonUtility.getValuesOfArray(sizeValues, ApplicationConstants.CONST_STRING_COMMA_SEP);
+		}
 		for (String sizeVal : sizess) {
 			valuesObj = new Values();
 			if(sizeVal.equalsIgnoreCase("29.5 Inches")){
 				valuesObj = getOverAllSizeValObj("29.5", "Length", "", "");
+			} else if(sizeValues.contains("(") && (sizeValues.contains("Diameter") || sizeValues.contains("diameter"))){
+				String[] ss = sizeVal.split("\\(");
+				String firstVal = ss[0].replaceAll(pattern_remove_specialSymbols, "").trim();
+				String secondVal = ss[1].split(",")[0].replaceAll(pattern_remove_specialSymbols, "").trim();
+				String finalSizeVal = "";
+				if(firstVal.contains("x")){
+					finalSizeVal = firstVal;
+					finalSizeVal= finalSizeVal.replaceAll("-", " ");
+				} else {
+					 finalSizeVal = firstVal + "x" + secondVal;
+					finalSizeVal= finalSizeVal.replaceAll("-", " ");
+					finalSizeVal= finalSizeVal.replaceAll("  ", " ");
+				}
+				valuesObj = getOverAllSizeValObj(finalSizeVal, "Height", "Dia", "");
 			} else if(sizeVal.equalsIgnoreCase("7- 3/4 or larger size heads")){
-				valuesObj = getOverAllSizeValObj("7 3/4", "Length", "", "");
+				valuesObj = getOverAllSizeValObj("7 3/4", "Length", "Dia", "");
 			} else if (sizeVal.contains("H") && sizeVal.contains("L") && sizeVal.contains("D")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
@@ -178,7 +243,14 @@ public class GoldbondAttributeParser {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
+			} else if(sizeVal.contains("L") && sizeVal.contains("H")){
+				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
+				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Height", "");
 			} else if (sizeVal.contains("H") && (sizeVal.contains("dia") || sizeVal.contains("Dia"))) {
+				if(sizeVal.contains("ia.")){
+					sizeVal = sizeVal.replaceAll("ia.", "").trim();
+				}
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Dia", "");
@@ -200,9 +272,12 @@ public class GoldbondAttributeParser {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "", "");
-			} else if (sizeVal.contains("L")) {
+			} else if (sizeVal.contains("L") || sizeVal.contains("to")) {
 				if(sizeVal.equalsIgnoreCase("5-3/4\" L (excluding gauge)")){
 					sizeVal = "5-3/4";
+				}
+				if(sizeVal.contains("to")){
+					sizeVal = sizeVal.split("to")[1];
 				}
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
@@ -426,7 +501,7 @@ public class GoldbondAttributeParser {
 			listOfPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.55", "G", "Packaging", false, "USD","",
 					"Mailer", "Packaging Charge", "Per Quantity", 1, listOfPriceGrid,
 					"","");
-		} else if(value.equalsIgnoreCase("Bulk. Polybag add $0.15 (G) ea.")){
+		} else if(value.equalsIgnoreCase("Bulk. Polybag add $0.15 (G) ea.")){//
 			packObj.setName("Bulk");
 			packObj1.setName("Poly Bag");
 			listOfPackaging.add(packObj1);
@@ -519,7 +594,13 @@ public class GoldbondAttributeParser {
 	}
 	private Values getOverAllSizeValObj(String val,String unit1,String unit2,String unit3){
 		//Overall Size: 23.5" x 23.5"
-		String[] values = val.split("x");
+		String[] values = null;
+		if(val.contains("x")){
+			values = val.split("x");
+		} else {
+			values = val.split("X");
+		}
+		
 		Value valObj1 = null;
 		Value valObj2 = null;
 		Value valObj3 = null;
@@ -544,12 +625,22 @@ public class GoldbondAttributeParser {
 		 valuesObj.setValue(listOfValue);
 		 return valuesObj;
 	}
-	public List<Artwork> getProductArtwork(String value){
-		List<Artwork> listOfArtwork = new ArrayList<>();
-		Artwork artworkObj = new Artwork();
-		artworkObj.setValue(value);
-		artworkObj.setComments("");
-		listOfArtwork.add(artworkObj);
+	public List<Artwork> getProductArtwork(String value,List<Artwork> listOfArtwork){
+		
+		if(CollectionUtils.isEmpty(listOfArtwork)){
+			listOfArtwork = new ArrayList<>();
+			Artwork artworkObj = new Artwork();
+			artworkObj.setValue(value);
+			artworkObj.setComments("");
+			listOfArtwork.add(artworkObj);
+		} else{
+			if(!listOfArtwork.stream().anyMatch(artwork -> "PRE-PRODUCTION PROOF".equalsIgnoreCase(artwork.getValue()))){
+				Artwork artworkObj = new Artwork();
+				artworkObj.setValue(value);
+				artworkObj.setComments("");
+				listOfArtwork.add(artworkObj);
+			}
+		}
 		return listOfArtwork;
 	}
 	private List<AdditionalColor> getAdditionalColors(String value){
@@ -589,6 +680,7 @@ public class GoldbondAttributeParser {
 		return listOfOptions;
 	}
 	public Product getProductMaterial(String value,Product existingProduct){
+		try{
 		ProductConfigurations config = existingProduct.getProductConfigurations();
 		String additionalInfo = existingProduct.getAdditionalProductInfo();
 		if(StringUtils.isEmpty(additionalInfo)){
@@ -669,6 +761,9 @@ public class GoldbondAttributeParser {
 		config.setMaterials(listOfMaterial);
 		existingProduct.setProductConfigurations(config);
 		existingProduct.setAdditionalProductInfo(additionalInfo);
+	 } catch(Exception exce){
+	    _LOGGER.error("unable to parser to material: "+exce.getMessage());
+	  }
 		return existingProduct;
 	}
 	private List<BlendMaterial> getBlendMaterials(String belndVal){
@@ -757,6 +852,10 @@ public class GoldbondAttributeParser {
 			tempImprintMethodVals = Arrays.asList("Other:Screen/Pad printed");
 		} else if(imprMethodVal.equalsIgnoreCase("Pad printed on handle standard - laser engraved available on blade")){
 			tempImprintMethodVals = Arrays.asList("Pad Print:Pad printed","Laser Engraved:Laser Engraved");
+		} else if(imprMethodVal.equalsIgnoreCase("4-color process print label or 1-color direct imprint")){
+			tempImprintMethodVals = Arrays.asList("Full Color:4-color process","Other:direct imprint");
+		} else if(imprMethodVal.equalsIgnoreCase("Full color imprint with protective dome")){
+			tempImprintMethodVals = Arrays.asList("Full Color:Full color");
 		}
 		else {
 			if(imprMethodVal.equalsIgnoreCase("Pad printed on handle standard; laser engraved available on blade")){
@@ -787,6 +886,10 @@ public class GoldbondAttributeParser {
 				} else if(imprMethodName.contains("4-color")){
 					imprintMethodType = "Full Color";
 					imprintMethodAlias = "4-color Process";
+					boolean isImprintMethodPresent = listOfImprintMethods.stream().anyMatch(imprMetho  -> imprMetho.getAlias().contains("4-color Process"));
+		    		if(isImprintMethodPresent){
+		    			continue;
+		    		}
 				} else if(imprMethodName.contains("Screen Printed") ||
 						      imprMethodName.contains("screen printed")) {
 					imprintMethodType = "Silkscreen";
@@ -856,10 +959,18 @@ public class GoldbondAttributeParser {
     public Product getMultipleColorUpcharge(String value,Product existingProduct){
     	ProductConfigurations productConfig = existingProduct.getProductConfigurations();
     	List<PriceGrid> priceGrid = existingProduct.getPriceGrids();
-    	if(CollectionUtils.isEmpty(productConfig.getAdditionalColors())){
-    		List<AdditionalColor> listOfAdditionalColor = getAdditionalColors("additional color available");
-    		productConfig.setAdditionalColors(listOfAdditionalColor);
+    	List<AdditionalColor> additinalColorList = productConfig.getAdditionalColors();
+    	if(CollectionUtils.isEmpty(additinalColorList)){
+    		 additinalColorList = getAdditionalColors("additional color available");
+    		
+    	} else {
+    		if(!additinalColorList.stream().anyMatch(color -> "additional color available".equalsIgnoreCase(color.getName()))){
+    			AdditionalColor additinalColorObj = new AdditionalColor();
+    			additinalColorObj.setName("additional color available");
+    			additinalColorList.add(additinalColorObj);
+    		}
     	}
+    	productConfig.setAdditionalColors(additinalColorList);
     	String priceVal = "";
     	if(value.contains("$0.30 (G)")|| value.contains("$.30 (G)")){
     		priceVal = "0.30";
@@ -875,6 +986,44 @@ public class GoldbondAttributeParser {
     	existingProduct.setPriceGrids(priceGrid);
     	return existingProduct;
     }
+    public Product getSetupChargeForImprintMethod(String priceValue,Product existingProduct){
+    	ProductConfigurations productConfig = existingProduct.getProductConfigurations();
+    	List<PriceGrid> priceGrid = existingProduct.getPriceGrids();
+    	List<AdditionalColor> listOfAdditionalColor = null;
+    	/*if(CollectionUtils.isEmpty(productConfig.getAdditionalColors())){
+    		 listOfAdditionalColor = getAdditionalColors("additional color available");
+    		productConfig.setAdditionalColors(listOfAdditionalColor);
+    	} else {
+    		 listOfAdditionalColor = productConfig.getAdditionalColors();
+    		boolean isAddColorAvail = listOfAdditionalColor.stream().anyMatch(addColor  -> addColor.getName().contains("additional color available"));
+    		if(!isAddColorAvail){
+    			listOfAdditionalColor = getAdditionalColors("additional color available");
+        		productConfig.setAdditionalColors(listOfAdditionalColor);
+    		}
+    	}*/
+    	String priceVal = "50";
+    	String desc = "";
+    	if(priceValue.contains("G")){
+    		desc = "G";
+    	} else if(priceValue.contains("A")){
+    		desc = "A";
+    	} else if(priceValue.contains("C")){
+    		desc = "C";
+    	}
+    	priceValue = priceValue.replaceAll("[^0-9.]", "").trim();
+    	String imprintMethodVals = getImprintMethodAlias(productConfig.getImprintMethods());
+    	if(!StringUtils.isEmpty(priceVal)){
+    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", priceValue, desc, "Imprint Method", false,
+					"USD","", imprintMethodVals, "Set-up Charge", "Per Quantity", 1, priceGrid,"","");
+    	}
+    	existingProduct.setPriceGrids(priceGrid);
+    	return existingProduct;
+    }
+    private String getImprintMethodAlias(List<ImprintMethod> listOfImprintMethod){
+		String imprintMethodAlias = listOfImprintMethod.stream().map(ImprintMethod::getAlias)
+				.collect(Collectors.joining(","));
+		return imprintMethodAlias;
+	}
 	public GoldbondPriceGridParser getGbPriceGridParser() {
 		return gbPriceGridParser;
 	}

@@ -458,7 +458,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 	}
 
 	public String getProductXid(Row row){
-		Cell xidCell =  row.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
+		Cell xidCell =  row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
 		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
 		if(StringUtils.isEmpty(productXid) || "N/A".equalsIgnoreCase(productXid)){
 		     xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_TWO);
