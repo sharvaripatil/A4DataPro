@@ -27,6 +27,7 @@ import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
+import com.a4tech.supplier.mapper.HighCaliberLineMappingRevised;
 import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
@@ -57,7 +58,7 @@ public class ExcelFactory {
     private CrystalDExcelMapping 			cdExcelMapping;
     private GoldstarCanadaExcelMapping 		goldcanadaExcelMapping;
     private MilestoneExcelMapping 			milestoneExcelMapping;
-	private HighCaliberLineExcelMapping 	hcLineExcelMapping;
+	//private HighCaliberLineExcelMapping 	hcLineExcelMapping;
 	private WholeSaleExcelMapping 			wholeSaleExcelMapping;
 	private PrimeLineExcelMapping 			primeLineExcelMapping;
 	private GoldBondExcelMapping  			goldBandExcelMapping;
@@ -72,6 +73,7 @@ public class ExcelFactory {
 	private TwintechMapping 				twintechMapping;
 	private AlfaMapping       				alfaMapping;
 	private BellaCanvas                     bellaCanvasMapping;
+	private HighCaliberLineMappingRevised hcLineExcelMapping;
 
 		public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -289,11 +291,11 @@ public class ExcelFactory {
 			GoldstarCanadaExcelMapping goldcanadaExcelMapping) {
 		this.goldcanadaExcelMapping = goldcanadaExcelMapping;
 	}
-	public HighCaliberLineExcelMapping getHcLineExcelMapping() {
+	public HighCaliberLineMappingRevised getHcLineExcelMapping() {
 		return hcLineExcelMapping;
 	}
 
-	public void setHcLineExcelMapping(HighCaliberLineExcelMapping hcLineExcelMapping) {
+	public void setHcLineExcelMapping(HighCaliberLineMappingRevised hcLineExcelMapping) {
 		this.hcLineExcelMapping = hcLineExcelMapping;
 
 	}

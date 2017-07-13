@@ -141,7 +141,7 @@ public class ProductDao {
 				errorEntity = new ErrorEntity();
 				//String tempError=errorMessage.getReason();
 				String tempMessage=errorMessage.getMessage();
-				if(tempMessage.contains("Your product could not be saved")){
+				if(tempMessage.contains("Your product could not be saved")|| tempMessage.toLowerCase().contains("internal server error")){
 					flag=true;
 				}
 				errorEntity.setError(errorMessage.getReason());

@@ -508,7 +508,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 						case 43://DISCOUNTCODE
 							String	discountCode=null;
 							discountCode=CommonUtility.getCellValueStrinOrDecimal(cell);
-							if(!StringUtils.isEmpty(discountCode)){
+							if(!StringUtils.isEmpty(discountCode) && !discountCode.toUpperCase().equals("NULL")){
 								listOfDiscCodes=PrimeLineConstants.DISCOUNTCODE_MAP.get(discountCode.trim());
 								if(StringUtils.isEmpty(listOfDiscCodes)){
 									listOfDiscCodes.append("Z___Z___Z___Z___Z"); 
@@ -537,7 +537,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 			 listOfDiscCodes=new StringBuilder();
 			}catch(Exception e){
 				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"at column number(increament by 1):"+columnIndex);		 
-				ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet: "
+				ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet 1: "
 				+e.getMessage()+" at column number(increament by 1)"+columnIndex);
 				productDaoObj.save(apiResponse.getErrors(),
 						productExcelObj.getExternalProductId()+"-Failed", asiNumber, batchId);
@@ -719,6 +719,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 		{
 			try{
 			Product productExcelObj=productEntry.getValue();
+			productExcelObj.setPriceType("L");
 			int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
