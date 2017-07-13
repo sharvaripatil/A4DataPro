@@ -220,11 +220,13 @@ public class GoldbondAttributeParser {
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "Depth");
 			} else if(sizeVal.contains("L") && sizeVal.contains("W") && sizeVal.contains("H")){
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
 				if(sizeVal.split("x")[0].contains("L")){//4-3/4" L x 4" W x 2-1/8" H
+					sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+					sizeVal= sizeVal.replaceAll("-", " ");
 					valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "Height");
 				} else {//36" H x 12" W x 12" L
+					sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+					sizeVal= sizeVal.replaceAll("-", " ");
 					valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "Length");
 				}
 			} else if (sizeVal.contains("H") && sizeVal.contains("W")) {
@@ -268,6 +270,10 @@ public class GoldbondAttributeParser {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Dia", "", "");
+			} else if(sizeVal.contains("Wide")){
+				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
+				valuesObj = getOverAllSizeValObj(sizeVal, "Depth", "Width", "");
 			} else if (sizeVal.contains("H")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
@@ -300,8 +306,16 @@ public class GoldbondAttributeParser {
 		ImprintSize imprintSizeObj = null;
 		if(imprSizeVal.contains(";")){
 			imprSizeVal = imprSizeVal.replaceAll(";", ",");
+			if(imprSizeVal.contains("<br>")){
+				imprSizeVal = imprSizeVal.replaceAll("<br>", ",");
+			}
+			if(imprSizeVal.contains("<BR>")){
+				imprSizeVal = imprSizeVal.replaceAll("<BR>", ",");
+			}
 		} else if(imprSizeVal.contains("<br>")){
 			imprSizeVal = imprSizeVal.replaceAll("<br>", ",");
+		} else if(imprSizeVal.contains("<BR>")){
+			imprSizeVal = imprSizeVal.replaceAll("<BR>", ",");
 		}
 		
 		String[] values = imprSizeVal.split(",");
@@ -514,16 +528,16 @@ public class GoldbondAttributeParser {
 			packObj.setName("Gift Boxes");
 		} else if(value.equalsIgnoreCase("Bulk (standard); Polybagged (optional $0.44 (G) ea.)")){
 			packObj.setName("Bulk");
-			packObj1.setName("Poly Bag");
+			packObj1.setName("Individual Poly Bag");
 			listOfPackaging.add(packObj1);
 			listOfPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.44", "G", "Packaging", false, "USD","",
-					"Poly Bag", "Packaging Charge", "Per Quantity", 1, listOfPriceGrid,
+					"Individual Poly Bag", "Packaging Charge", "Per Quantity", 1, listOfPriceGrid,
 					"","");
 		} else if(value.contains("Individually")){
 			 if(value.contains("Bulk")){
 				 packObj.setName("Bulk");
 			 }
-			 if(value.contains("polybagged") || value.contains("poly-bagged")){
+			 if(value.contains("polybagged") || value.contains("poly-bagged") || value.contains("packaged")){
 				 packObj1.setName("Individual Poly Bag");
 				 listOfPackaging.add(packObj1);
 			 } else if(value.contains("gift box")){
@@ -532,7 +546,10 @@ public class GoldbondAttributeParser {
 			 } else if(value.contains("shrink-wrapped")){
 				 packObj1.setName("Shrink Wrap");
 				 listOfPackaging.add(packObj1);
-			 }
+			 } /*else{
+				 packObj1.setName("Individual Poly Bag");
+				 listOfPackaging.add(packObj1);
+			 }*/
 		} else {
 			if(value.contains("Bulk")){
 				packObj.setName("Bulk");
@@ -1012,7 +1029,7 @@ public class GoldbondAttributeParser {
     	}
     	priceValue = priceValue.replaceAll("[^0-9.]", "").trim();
     	String imprintMethodVals = getImprintMethodAlias(productConfig.getImprintMethods());
-    	if(!StringUtils.isEmpty(priceVal)){
+    	if(!StringUtils.isEmpty(priceVal) && !StringUtils.isEmpty(imprintMethodVals)){
     		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", priceValue, desc, "Imprint Method", false,
 					"USD","", imprintMethodVals, "Set-up Charge", "Per Quantity", 1, priceGrid,"","");
     	}
