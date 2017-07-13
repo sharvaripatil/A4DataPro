@@ -15,10 +15,9 @@ import com.a4tech.util.LookupData;
 
 public class HighCaliberPriceGridParser {
 	private Logger              _LOGGER       =  Logger.getLogger(HighCaliberPriceGridParser.class);
-	public List<PriceGrid> getPriceGrids(String listOfPrices,
-		    String listOfQuan, String discountCodes,
+	public List<PriceGrid> getPriceGrids(String listOfPrices, String listOfQuan, String discountCodes,
 			String currency, String priceInclude, boolean isBasePrice,
-			String qurFlag, String priceName, String criterias,Integer sequence,
+			String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,
 			List<PriceGrid> existingPriceGrid) 
 			{
 		try{
@@ -36,6 +35,12 @@ public class HighCaliberPriceGridParser {
 		priceGrid
 				.setIsQUR(qurFlag.equalsIgnoreCase(ApplicationConstants.CONST_STRING_FALSE) ? ApplicationConstants.CONST_BOOLEAN_FALSE
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);
+		if(!isBasePrice){
+			priceGrid.setServiceCharge(ApplicationConstants.CONST_STRING_SERVICECHARGE);
+			priceGrid.setUpchargeType(upChargeType);
+			priceGrid.setUpchargeUsageType(upchargeUsageType);
+			//UpchargeUsageType
+		}
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;

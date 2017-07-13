@@ -551,7 +551,7 @@ public class PrimeLineAttributeParser {
 		List<ImprintMethod> listOfImprintMethodsNew = new ArrayList<ImprintMethod>();
 		for (String value : listOfImprintMethods) {
 			ImprintMethod imprintMethodObj =new ImprintMethod();
-			if(lookupServiceDataObj.isImprintMethod(value)){
+			if(lookupServiceDataObj.isImprintMethod(value.toUpperCase())){
 				imprintMethodObj.setAlias(value);
 				imprintMethodObj.setType(value);
 			}else{
