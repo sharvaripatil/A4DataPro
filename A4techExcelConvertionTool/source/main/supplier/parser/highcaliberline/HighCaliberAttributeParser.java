@@ -37,8 +37,8 @@ import com.a4tech.util.CommonUtility;
 public class HighCaliberAttributeParser {
 	private static final Logger _LOGGER = Logger.getLogger(HighCaliberAttributeParser.class);
 	private LookupServiceData objLookUpService;
+	HighCaliberPriceGridParser highCalPriceGridParser;
 	
-
 	
 public Product getExistingProductData(Product existingProduct , ProductConfigurations existingProductConfig){
 		
@@ -83,6 +83,132 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		return newProduct;
 	}
 
+
+	public List<PriceGrid> getUpchargeData(String setUpchrgesVal,String repeatUpchrgesVal,Product productExcelObj,ProductConfigurations productConfigObj,List<PriceGrid> priceGrids){
+		 // here I need to work on upcharges pricegrids
+		 //Set-Up charges upcharges
+		try{
+		 if(!StringUtils.isEmpty(setUpchrgesVal)){
+			 priceGrids=productExcelObj.getPriceGrids();//ithe gadbad hotey
+			 /////////
+			 if(CollectionUtils.isEmpty(priceGrids)){
+				 priceGrids=new ArrayList<PriceGrid>();
+			 }
+			 ///////
+			 int i=priceGrids.size();
+			 String tempSetupCharge=setUpchrgesVal;
+			 /////////
+			 String tempPriceIncludeSetUp="";
+			 if(setUpchrgesVal.toLowerCase().contains("per")){
+			  tempPriceIncludeSetUp=setUpchrgesVal.substring(setUpchrgesVal.indexOf("per"));
+			 }
+			 /////////
+			 tempSetupCharge=setUpchrgesVal.substring(setUpchrgesVal.indexOf("$")+1, setUpchrgesVal.indexOf("("));
+			 if(setUpchrgesVal.toUpperCase().contains("COLOR") || setUpchrgesVal.toUpperCase().contains("LOCATION")){
+				 //setUpchrgesVal=setUpchrgesVal.substring(setUpchrgesVal.indexOf("$")+1, setUpchrgesVal.indexOf("("));
+				 // here i will send the colorlist of product config to get alias name 
+				 List<Color> colorList=productConfigObj.getColors();
+				 List<String> tempClrListAlias=new ArrayList<String>();
+				 for (Color objColor : colorList) {
+					 tempClrListAlias.add(objColor.getAlias());
+				}
+				 if(!CollectionUtils.isEmpty(colorList)){
+					 /*(String listOfPrices, String listOfQuan, String discountCodes,
+								String currency, String priceInclude, boolean isBasePrice,
+								String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,
+								List<PriceGrid> existingPriceGrid) */
+						for (String finalAlias : tempClrListAlias) {
+							priceGrids=highCalPriceGridParser.getPriceGrids(tempSetupCharge,"1","V",
+									"USD",tempPriceIncludeSetUp,false,"False", finalAlias,"Product Color", i+1,"Set-up Charge", "Other",priceGrids);
+							i++;
+						}
+					}
+			 }else{//this is for imprint methods
+				 //here i have to check the imprint method name for the value
+				 List<ImprintMethod> listOfImprintMethod=productConfigObj.getImprintMethods();
+				 
+				 if(!CollectionUtils.isEmpty(listOfImprintMethod)){
+					 /*(String listOfPrices, String listOfQuan, String discountCodes,
+								String currency, String priceInclude, boolean isBasePrice,
+								String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,
+								List<PriceGrid> existingPriceGrid) */
+					 List<String> tempImpListAlias=new ArrayList<String>();
+					 tempImpListAlias=getImprintAliasList(listOfImprintMethod);
+					 if(!CollectionUtils.isEmpty(tempImpListAlias)){ 
+						for (String finalAlias : tempImpListAlias) {
+							priceGrids=highCalPriceGridParser.getPriceGrids(tempSetupCharge,"1","V",
+									"USD",tempPriceIncludeSetUp,false,"False", finalAlias,"Imprint Method", i+1,"Set-up Charge", "Other",priceGrids);
+							i++;
+						}
+					 }
+					}
+			 }
+		 }
+		 
+		//Repeat-Up charges upcharges
+		 if(!StringUtils.isEmpty(repeatUpchrgesVal)){
+			 priceGrids=productExcelObj.getPriceGrids();
+			 /////////
+			 if(CollectionUtils.isEmpty(priceGrids)){
+				 priceGrids=new ArrayList<PriceGrid>();
+			 }
+			 ///////
+			 
+			 int i=priceGrids.size();
+			 String tempReSetupCharge=repeatUpchrgesVal;
+			 /////////
+			 String tempPriceIncludeRepeat="";
+			 if(setUpchrgesVal.toLowerCase().contains("per")){
+				 tempPriceIncludeRepeat=repeatUpchrgesVal.substring(repeatUpchrgesVal.indexOf("per"));
+			 }
+			 /////////
+			 tempReSetupCharge=repeatUpchrgesVal.substring(repeatUpchrgesVal.indexOf("$")+1, repeatUpchrgesVal.indexOf("("));
+			 if(repeatUpchrgesVal.toUpperCase().contains("COLOR") || repeatUpchrgesVal.toUpperCase().contains("LOCATION")){
+				 //setUpchrgesVal=setUpchrgesVal.substring(setUpchrgesVal.indexOf("$")+1, setUpchrgesVal.indexOf("("));
+				 // here i will send the colorlist of product config to get alias name 
+				 List<Color> colorList=productConfigObj.getColors();
+				 List<String> tempClrListAlias=new ArrayList<String>();
+				 for (Color objColor : colorList) {
+					 tempClrListAlias.add(objColor.getAlias());
+				}
+				 if(!CollectionUtils.isEmpty(colorList)){
+					 /*(String listOfPrices, String listOfQuan, String discountCodes,
+								String currency, String priceInclude, boolean isBasePrice,
+								String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,
+								List<PriceGrid> existingPriceGrid) */
+						for (String finalAlias : tempClrListAlias) {
+							priceGrids=highCalPriceGridParser.getPriceGrids(tempReSetupCharge,"1","V",
+									"USD",tempPriceIncludeRepeat,false,"False", finalAlias,"Product Color", i+1,"Re-order Charge", "Other",priceGrids);
+							i++;
+						}
+					}
+			 }else{//this is for imprint methods
+				 //here i have to check the imprint method name for the value
+				 List<ImprintMethod> listOfImprintMethod=productConfigObj.getImprintMethods();
+				 
+				 if(!CollectionUtils.isEmpty(listOfImprintMethod)){
+					 /*(String listOfPrices, String listOfQuan, String discountCodes,
+								String currency, String priceInclude, boolean isBasePrice,
+								String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,
+								List<PriceGrid> existingPriceGrid) */
+					 List<String> tempImpListAlias=new ArrayList<String>();
+					 tempImpListAlias=getImprintAliasList(listOfImprintMethod);
+					 if(!CollectionUtils.isEmpty(tempImpListAlias)){ 
+						for (String finalAlias : tempImpListAlias) {
+							priceGrids=highCalPriceGridParser.getPriceGrids(tempReSetupCharge,"1","V",
+									"USD",tempPriceIncludeRepeat,false,"False", finalAlias,"Imprint Method", i+1,"Re-order Charge", "Other",priceGrids);
+							i++;
+						}
+					 }
+					}
+			 }
+		 }
+		}catch(Exception e){
+			_LOGGER.error("Error while processing upcharge data "+e.getMessage());
+		}
+		 return priceGrids;
+	}
+	
 	public LookupServiceData getObjLookUpService() {
 		return objLookUpService;
 	}
@@ -471,96 +597,6 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		return productConfigObj;
 	  }
 	
-	/*public List<Color> getColorCriteria(String colorValue) {
-	
-	Color colorObj = null;
-	List<Color> colorList = new ArrayList<Color>();
-	//HighCaliberConstants
-	try {
-	//Map<String, String> HCLCOLOR_MAP=new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
-	// Map<String, String> HCLCOLOR_MAP =HighCaliberConstants.getHCLCOLOR_MAP();
-		List<Combo> comboList = null;
-		String value = colorValue;
-		String tempcolorArray[]=value.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-		for (String colorVal : tempcolorArray) {
-		String strColor=colorVal;
-		strColor=strColor.replaceAll("&","/");
-		//strColor=strColor.replaceAll(" w/","/");
-		//strColor=strColor.replaceAll(" W/","/");
-		boolean isCombo = false;
-			colorObj = new Color();
-			comboList = new ArrayList<Combo>();
-			isCombo = isComboColors(strColor);
-			if(isCombo){
-				if(HighCaliberConstants.HCLCOLOR_MAP.get(strColor.trim())!=null){
-				//if(HCLCOLOR_MAP.get(strColor.trim())!=null){
-					isCombo=false;
-				}
-			}
-			
-			if (!isCombo) {
-				String colorName=HighCaliberConstants.HCLCOLOR_MAP.get(strColor.trim());
-				//String colorName=HCLCOLOR_MAP.get(strColor.trim());
-				if(StringUtils.isEmpty(colorName)){
-					colorName=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
-				}
-				colorObj.setName(colorName);
-				colorObj.setAlias(colorVal.trim());
-				colorList.add(colorObj);
-			} else {
-				//245-Mid Brown/Navy
-				String colorArray[] = strColor.split(ApplicationConstants.CONST_DELIMITER_FSLASH);
-				//if(colorArray.length==2){
-				String combo_color_1=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[0].trim());
-				//String combo_color_1=HCLCOLOR_MAP.get(colorArray[0].trim());
-				if(StringUtils.isEmpty(combo_color_1)){
-					combo_color_1=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
-				}
-				colorObj.setName(combo_color_1);
-				colorObj.setAlias(strColor);
-				
-				Combo comboObj = new Combo();
-				String combo_color_2=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[1].trim());
-				//String combo_color_2=HCLCOLOR_MAP.get(colorArray[1].trim());
-				if(StringUtils.isEmpty(combo_color_2)){
-					combo_color_2=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
-				}
-				comboObj.setName(combo_color_2.trim());
-				comboObj.setType(ApplicationConstants.CONST_STRING_SECONDARY);
-				if(colorArray.length==3){
-					String combo_color_3=HighCaliberConstants.HCLCOLOR_MAP.get(colorArray[2].trim());
-					//String combo_color_3=HCLCOLOR_MAP.get(colorArray[2].trim());
-					if(StringUtils.isEmpty(combo_color_3)){
-						combo_color_3=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
-					}
-					Combo comboObj2 = new Combo();
-					comboObj2.setName(combo_color_3.trim());
-					comboObj2.setType(ApplicationConstants.CONST_STRING_TRIM);
-					comboList.add(comboObj2);
-				}
-				comboList.add(comboObj);
-				colorObj.setCombos(comboList);
-				colorList.add(colorObj);
-			 	}
-	}
-	//}
-	} catch (Exception e) {
-		_LOGGER.error("Error while processing Color :" + e.getMessage());
-		return new ArrayList<Color>();
-	}
-	_LOGGER.info("Colors Processed");
-	return colorList;
-	}
-
-private boolean isComboColors(String value) {
-	boolean result = false;
-	if (value.contains("/")) {
-		result = true;
-	}
-	return result;
-}*/
-
-	
 	public static String removeSpecialChar(String tempValue){
 		tempValue=tempValue.replaceAll("(</p>|<p>|&rdquo;|&nbsp;|&ldquo;|<span style=color: #ff0000; font-size: small;>|<span style=color: #ff0000;>|</span style=color: #ff0000;>|<em>|</em>|</strong>|<strong>|</span>|<span>|<p class=p1>)", "");
 		tempValue=tempValue.replaceAll("\\(","");
@@ -568,5 +604,27 @@ private boolean isComboColors(String value) {
 	return tempValue;
 
 	}
-	
+
+
+	public HighCaliberPriceGridParser getHighCalPriceGridParser() {
+		return highCalPriceGridParser;
+	}
+
+
+	public void setHighCalPriceGridParser(
+			HighCaliberPriceGridParser highCalPriceGridParser) {
+		this.highCalPriceGridParser = highCalPriceGridParser;
+	}
+	public static List<String> getImprintAliasList(List<ImprintMethod> listOfImprintMethod){
+		ArrayList<String> tempList=new ArrayList<String>();
+		
+		for (ImprintMethod tempMthd : listOfImprintMethod) {
+			String strTemp=tempMthd.getAlias();
+			if(strTemp.contains("LASER")|| strTemp.contains("DIRECT")|| strTemp.contains("VINYL")||strTemp.contains("DYE")||strTemp.contains("HEAT")||strTemp.contains("EPOXY")){
+				tempList.add(strTemp);
+			}
+		}
+		return tempList;
+		
+	}
 }
