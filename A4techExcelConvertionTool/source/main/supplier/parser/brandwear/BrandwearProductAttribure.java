@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.model.Apparel;
+import com.a4tech.product.model.BlendMaterial;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.ImprintMethod;
@@ -126,7 +127,7 @@ public class BrandwearProductAttribure {
 
 	public List<Material> getMaterial(String materialValues) {
 		List<Material> MaterialList = new ArrayList<Material>();
-		Material materialObj = new Material();
+ 		Material materialObj = new Material();
 		String materialValueArr[] = materialValues.split("--");
 		List<String> listOfLookupMaterial = getMaterialType(materialValueArr[1]
 				.toUpperCase());
@@ -135,10 +136,24 @@ public class BrandwearProductAttribure {
 		} else {
 			materialObj.setAlias(materialValueArr[0]);
 		}
-		if ("%".length() == 1) {
+		if (listOfLookupMaterial.size()==1){
 			materialObj.setName(listOfLookupMaterial.get(0));
-		} else if ("%".length() == 2) {
-		} else if ("%".length() == 3) {
+		} else if (listOfLookupMaterial.size()==2) {
+			BlendMaterial blendObj=new BlendMaterial();
+			BlendMaterial blendObj1=new BlendMaterial();
+
+			materialObj.setName("Blend");
+		    List<BlendMaterial> listOfBlend= new ArrayList<>();
+		    blendObj.setPercentage("87");
+		    blendObj.setName(listOfLookupMaterial.get(0));
+		    blendObj1.setPercentage("13");
+		    blendObj1.setName(listOfLookupMaterial.get(1));
+		    listOfBlend.add(blendObj);
+		    listOfBlend.add(blendObj1);
+			materialObj.setBlendMaterials(listOfBlend);
+
+			
+		} else if (listOfLookupMaterial.size()==3) {
 		}
 		MaterialList.add(materialObj);
 		return MaterialList;

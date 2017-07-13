@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellValue;
@@ -15,10 +14,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
-
 import parser.brandwear.BrandwearPriceGridParser;
 import parser.brandwear.BrandwearProductAttribure;
-
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
@@ -40,6 +37,7 @@ import com.a4tech.product.model.Theme;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
+
 
 public class BrandwearExcelMapping implements IExcelParser {
 
@@ -279,92 +277,76 @@ public class BrandwearExcelMapping implements IExcelParser {
 							productConfigObj.setColors(colorList);
 							break;
 
-						case 7:// '1-49
-							 ListPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
-
+						case 7:// '1-49							 
 							break;
 						case 8: // '50-99
-							ListPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
-
 							break;
 						case 9:// '100 +
-							ListPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
-							listOfPrices=listOfPrices.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
+							break;
+						case 10: // 1 - 2XL
+							break;
+						case 11: // 50 - 2XL
+							break;
+						case 12: // 100 - 2XL
+ 							break;
+						case 13: // 1 - 3XL
+							break;
+						case 14: // 50 - 3XL
+							break;
+						case 15:// 100 - 3XL
+							break;
+						case 16: // 1 - 4XL
+							break;
+						case 17: // 50 - 4XL
+							break;
+						case 18: // 100 - 4XL
+							break;
+						case 19: // 1 - 5XL
+							break;
+						case 20: // 50 - 5XL
+							break;
+						case 21: // 100 - 5XL
+							break;
+							
+						case 22:// 1-49 (A)
+							 c=formulaEval.evaluate(cell);
+							 ListPrice1=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 
+							break;
+						case 23: // '50-99 (B)
+							 c=formulaEval.evaluate(cell);
+							 ListPrice2=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							
+							 break;
+
+						case 24: // 100 + (C)
+							 c=formulaEval.evaluate(cell);
+							 ListPrice3=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+
+							 listOfPrices=listOfPrices.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
 									 append(ListPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice3);
 							
 							break;
-						case 10: // 1 - 2XL
-						      c=formulaEval.evaluate(cell);
- 							 ListPrice2X1=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
-	
 
+						case 25: // 1 - 2XL
+							 c=formulaEval.evaluate(cell);
+	 						 ListPrice2X1=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
 
 							break;
-						case 11: // 50 - 2XL
-							  c=formulaEval.evaluate(cell);
+
+						case 26: // 50 - 2XL
+							 c=formulaEval.evaluate(cell);
 							 ListPrice2X2=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
- 							break;
-						case 12: // 100 - 2XL
+ 						
+
+							break;
+
+						case 27: // 100 - 2XL
 							 c=formulaEval.evaluate(cell);
 							 ListPrice2X3=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
  							listOfPrices2X=listOfPrices2X.append(ListPrice2X1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
 									 append(ListPrice2X2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice2X3);
 					
- 							break;
-						case 13: // 1 - 3XL
-
-							break;
-
-						case 14: // 50 - 3XL
-							break;
-
-						case 15:// 100 - 3XL
-
-							break;
-
-						case 16: // 1 - 4XL
-
-							break;
-
-						case 17: // 50 - 4XL
-
-							break;
-
-						case 18: // 100 - 4XL
-
-							break;
-
-						case 19: // 1 - 5XL
-
-							break;
-
-						case 20: // 50 - 5XL
-
-							break;
-
-						case 21: // 100 - 5XL
-
-							break;
-						case 22:// 1-49 (A)
-					
-						case 23: // '50-99 (B)
-							
-
-							break;
-
-						case 24: // 100 + (C)
-
-							break;
-
-						case 25: // 1 - 2XL
-
-							break;
-
-						case 26: // 50 - 2XL
-
-							break;
-
-						case 27: // 100 - 2XL
 
 							break;
 
@@ -401,24 +383,29 @@ public class BrandwearExcelMapping implements IExcelParser {
 						case 37: // Catalog Item Description
 							String Description = cell.getStringCellValue();
 							if (!StringUtils.isEmpty(Description)) {
+								Description=Description.replace("®", "R").replace("’", "'");
 								productExcelObj.setDescription(Description);
 							}
 							break;
 						case 38:// Item Keywords-Tags- Hidden Keywords
 							String Keywords = cell.getStringCellValue();
-							//if (!StringUtils.isEmpty(Keywords)) {
+							Keywords=Keywords.replace("®", "R").replace(" ’", " '");
 								String KeywordArr[] = Keywords.toLowerCase().split(",");
                              if(!keywordList.contains(Keywords.toLowerCase())){
 								for (String string : KeywordArr) {
+								if(!(string.length()>30)){
 									keywordList.add(string);
-								}
+								}if(keywordList.size()==30){
+										break;
+								}}
 								productExcelObj.setProductKeywords(keywordList);
-							}
+							    }
 
 							break;
 
 						case 39:// Logoing Techniques
 							String imprintMethod = cell.getStringCellValue();
+							imprintMethod=imprintMethod.replace("®", "R").replace(" ’", " '");
 							if (!StringUtils.isEmpty(imprintMethod)) {
 								ImprintMethodList = productAttributeObj
 										.getImprintMethod(imprintMethod);
@@ -441,7 +428,6 @@ public class BrandwearExcelMapping implements IExcelParser {
 										.getSizeValue(sizeValue,genderName);
 								productConfigObj.setSizes(sizeObj);
 							}
-						
 
 							break;
 
@@ -450,6 +436,8 @@ public class BrandwearExcelMapping implements IExcelParser {
 							break;
 						case 44:// Fabric
 							String MaterialAlias = cell.getStringCellValue();
+							MaterialAlias=MaterialAlias.replace("®", "R").replace(" ’", " '");
+
 							if (!StringUtils.isEmpty(MaterialAlias)) {
 								MaterialAliceName = MaterialAliceName.concat(
 										MaterialAlias).concat("--");
@@ -503,6 +491,7 @@ public class BrandwearExcelMapping implements IExcelParser {
 							if (!StringUtils.isEmpty(Personalization)) {
 								personalizeObj.setAlias("PERSONALIZATION");
 								personalizeObj.setType("PERSONALIZATION");
+								PersonalizationList.add(personalizeObj);
 								productConfigObj
 										.setPersonalization(PersonalizationList);
 							}

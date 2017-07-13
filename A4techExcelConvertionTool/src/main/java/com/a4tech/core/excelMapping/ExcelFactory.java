@@ -26,6 +26,7 @@ import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
+import com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
@@ -72,7 +73,8 @@ public class ExcelFactory {
 	private TwintechMapping 				twintechMapping;
 	private AlfaMapping       				alfaMapping;
 	private BellaCanvas                     bellaCanvasMapping;
-
+	private HarvestIndustrialExcelMapping   harvestMapping;
+	
 		public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -147,6 +149,8 @@ public class ExcelFactory {
 	    	  return alfaMapping;
 	      } else if(name.equalsIgnoreCase("bellaCanvas") || name.equals("39590")){
 		      return bellaCanvasMapping;
+	      }  else if(name.equalsIgnoreCase("harvest") || name.equals("61670")){
+		      return harvestMapping;
 	      }
 		return null;
 	}
@@ -409,6 +413,14 @@ public class ExcelFactory {
 	}
 	public void setAlfaMapping(AlfaMapping alfaMapping) {
 		this.alfaMapping = alfaMapping;
+	}
+
+	public HarvestIndustrialExcelMapping getHarvestMapping() {
+		return harvestMapping;
+	}
+
+	public void setHarvestMapping(HarvestIndustrialExcelMapping harvestMapping) {
+		this.harvestMapping = harvestMapping;
 	}
 
 }
