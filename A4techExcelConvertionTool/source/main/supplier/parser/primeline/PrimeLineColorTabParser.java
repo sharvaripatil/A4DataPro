@@ -48,9 +48,10 @@ public class PrimeLineColorTabParser {
 		Product existingApiProduct = null;
 		Set<String>  productXids = new HashSet<String>();
 		List<String> repeatRows = new ArrayList<>();
-		List<Color> colorList = new ArrayList<Color>();
+		//List<Color> colorList = new ArrayList<Color>();
 		Color colorObj = null;
 		List<Combo> comboList = null;
+		HashSet<String>  colorSet = new HashSet<String>();
 		try{
 		Product	productExcelObj=new Product();
 		ProductConfigurations productConfigObj=new ProductConfigurations();
@@ -89,14 +90,26 @@ public class PrimeLineColorTabParser {
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							 //int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
-							 productConfigObj.setColors(colorList);
+							 if(!CollectionUtils.isEmpty(colorSet)){
+								 List<Color> colorList = new ArrayList<Color>();
+								 for (String tempString : colorSet) {
+									 String colrNcustVal[]=tempString.split("@@@@@");
+									 String colorVal=colrNcustVal[0];
+									 String custCodeVal=colrNcustVal[1];
+									 colorList= getProductColor(colorVal, custCodeVal, colorList);
+									
+								}
+								 productConfigObj.setColors(colorList);	 
+							 }
+							 
 							 productExcelObj.setProductConfigurations(productConfigObj);
 							 _LOGGER.info("Product Data from sheet 2 color tab: "+ mapperObj.writeValueAsString(productExcelObj));
 							 sheetMapReturn.put(productId, productExcelObj);
 								//productConfigObj = new ProductConfigurations();
 								repeatRows.clear();
-								colorList = new ArrayList<Color>();
+								//colorList = new ArrayList<Color>();
 								colorValue=null;
+								colorSet=new HashSet<String>();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -133,6 +146,7 @@ public class PrimeLineColorTabParser {
 						break;
 						case 3://COLOR
 							colorValue =  CommonUtility.getCellValueStrinOrInt(cell);
+							
 							break;
 
 						case 4://CONFIG
@@ -145,74 +159,31 @@ public class PrimeLineColorTabParser {
 							}
 							
 							if(!StringUtils.isEmpty(colorValue)){
-							String tempcolorArray[]=colorValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-							for (String colorVal : tempcolorArray) {
-							String strColor=colorVal;
-							strColor=strColor.replaceAll("&","/");
-							strColor=strColor.replaceAll(" w/","/");
-							strColor=strColor.replaceAll(" W/","/");
-							boolean isCombo = false;
-								colorObj = new Color();
-								comboList = new ArrayList<Combo>();
-				    			isCombo = isComboColors(strColor);
-								if (!isCombo) {
-									String colorName=PrimeLineConstants.PRIMECOLOR_MAP.get(strColor.trim());
-									if(StringUtils.isEmpty(colorName)){
-										colorName=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
-									}
-									colorObj.setName(colorName);
-									colorObj.setAlias(colorVal.trim());
-									colorObj.setCustomerOrderCode(custColorCode);
-									colorList.add(colorObj);
-								} else {
-									//245-Mid Brown/Navy
-									String colorArray[] = strColor.split(ApplicationConstants.CONST_DELIMITER_FSLASH);
-									//if(colorArray.length==2){
-									String combo_color_1=PrimeLineConstants.PRIMECOLOR_MAP.get(colorArray[0].trim());
-									if(StringUtils.isEmpty(combo_color_1)){
-										combo_color_1=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
-									}
-									colorObj.setName(combo_color_1);
-									colorObj.setAlias(strColor);
-									
-									Combo comboObj = new Combo();
-									String combo_color_2=PrimeLineConstants.PRIMECOLOR_MAP.get(colorArray[1].trim());
-									if(StringUtils.isEmpty(combo_color_2)){
-										combo_color_2=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
-									}
-									comboObj.setName(combo_color_2.trim());
-									comboObj.setType(ApplicationConstants.CONST_STRING_SECONDARY);
-									if(colorArray.length==3){
-										String combo_color_3=PrimeLineConstants.PRIMECOLOR_MAP.get(colorArray[2].trim());
-										if(StringUtils.isEmpty(combo_color_3)){
-											combo_color_3=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
-										}
-										Combo comboObj2 = new Combo();
-										comboObj2.setName(combo_color_3.trim());
-										comboObj2.setType(ApplicationConstants.CONST_STRING_TRIM);
-										comboList.add(comboObj2);
-									}
-									comboList.add(comboObj);
-									colorObj.setCombos(comboList);
-									colorObj.setCustomerOrderCode(custColorCode);
-									colorList.add(colorObj);
-								 	}
-								}
+								colorSet.add(colorValue+"@@@@@"+custColorCode);
 							}
 							break;
 				}  // end inner while loop					 
 			}		
 			}catch(Exception e){
 				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"at column number(increament by 1):"+columnIndex);		 
-				ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet: "
+				ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet 2: "
 				+e.getMessage()+" at column number(increament by 1)"+columnIndex);
 				productDaoObj.save(apiResponse.getErrors(),
 						productExcelObj.getExternalProductId()+"-Failed", asiNumber, batchId);
 				}
 		}
 		workbook.close();
-		
-		 productConfigObj.setColors(colorList);
+		 if(!CollectionUtils.isEmpty(colorSet)){
+			 List<Color> colorList = new ArrayList<Color>();
+			 for (String tempString : colorSet) {
+				 String colrNcustVal[]=tempString.split("@@@@@");
+				 String colorVal=colrNcustVal[0];
+				 String custCodeVal=colrNcustVal[1];
+				 colorList= getProductColor(colorVal, custCodeVal, colorList);
+				
+			}
+			 productConfigObj.setColors(colorList);	 
+		 }
 		 productExcelObj.setProductConfigurations(productConfigObj);
 		 _LOGGER.info("Product Data from sheet 2 color tab: "
 					+ mapperObj.writeValueAsString(productExcelObj));
@@ -220,6 +191,7 @@ public class PrimeLineColorTabParser {
 	    productDaoObj.saveErrorLog(asiNumber,batchId);
 		repeatRows.clear();
 		colorValue=null;
+		colorSet=new HashSet<String>();
 		//colorList = new ArrayList<Color>();
 		return sheetMapReturn;
 		}catch(Exception e){
@@ -234,6 +206,65 @@ public class PrimeLineColorTabParser {
 				_LOGGER.info("Complted processing of excel sheet ");
 				
 		}
+	}
+	
+	public List<Color> getProductColor(String colorValue,String custColorCode,List<Color> colorList ){
+
+		String tempcolorArray[]=colorValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+		for (String colorVal : tempcolorArray) {
+		String strColor=colorVal;
+		strColor=strColor.replaceAll("&","/");
+		strColor=strColor.replaceAll(" w/","/");
+		strColor=strColor.replaceAll(" W/","/");
+		boolean isCombo = false;
+		Color	colorObj = new Color();
+		ArrayList<Combo> comboList = new ArrayList<Combo>();
+			isCombo = isComboColors(strColor);
+			if (!isCombo) {
+				String colorName=PrimeLineConstants.PRIMECOLOR_MAP.get(strColor.trim());
+				if(StringUtils.isEmpty(colorName)){
+					colorName=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
+				}
+				colorObj.setName(colorName);
+				colorObj.setAlias(colorVal.trim());
+				colorObj.setCustomerOrderCode(custColorCode);
+				colorList.add(colorObj);
+			} else {
+				//245-Mid Brown/Navy
+				String colorArray[] = strColor.split(ApplicationConstants.CONST_DELIMITER_FSLASH);
+				//if(colorArray.length==2){
+				String combo_color_1=PrimeLineConstants.PRIMECOLOR_MAP.get(colorArray[0].trim());
+				if(StringUtils.isEmpty(combo_color_1)){
+					combo_color_1=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
+				}
+				colorObj.setName(combo_color_1);
+				colorObj.setAlias(strColor);
+				
+				Combo comboObj = new Combo();
+				String combo_color_2=PrimeLineConstants.PRIMECOLOR_MAP.get(colorArray[1].trim());
+				if(StringUtils.isEmpty(combo_color_2)){
+					combo_color_2=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
+				}
+				comboObj.setName(combo_color_2.trim());
+				comboObj.setType(ApplicationConstants.CONST_STRING_SECONDARY);
+				if(colorArray.length==3){
+					String combo_color_3=PrimeLineConstants.PRIMECOLOR_MAP.get(colorArray[2].trim());
+					if(StringUtils.isEmpty(combo_color_3)){
+						combo_color_3=ApplicationConstants.CONST_STRING_UNCLASSIFIED_OTHER;
+					}
+					Combo comboObj2 = new Combo();
+					comboObj2.setName(combo_color_3.trim());
+					comboObj2.setType(ApplicationConstants.CONST_STRING_TRIM);
+					comboList.add(comboObj2);
+				}
+				comboList.add(comboObj);
+				colorObj.setCombos(comboList);
+				colorObj.setCustomerOrderCode(custColorCode);
+				colorList.add(colorObj);
+			 	}
+			}
+		return colorList;
+		
 	}
 	
 	public String getProductXid(Row row){
