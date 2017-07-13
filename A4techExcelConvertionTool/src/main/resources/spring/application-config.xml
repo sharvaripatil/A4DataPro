@@ -567,7 +567,8 @@
 
     <!-- supplier 43442 configuration start --> 
 
-     <bean id="highCaliberLineExcelMappingId" class="com.a4tech.supplier.mapper.HighCaliberLineExcelMapping" autowire="byName">
+     <!-- <bean id="highCaliberLineExcelMappingId" class="com.a4tech.supplier.mapper.HighCaliberLineExcelMapping" autowire="byName"> -->
+      <bean id="highCaliberLineExcelMappingId" class="com.a4tech.supplier.mapper.HighCaliberLineMappingRevised" autowire="byName">
      <property name="postServiceImpl" ref="postService"/>
      <property name="productDaoObj" ref="productDao"/>
      <property name="highCaliberAttributeParser" ref="highCaliberAttributeParserId" /> 
@@ -575,6 +576,8 @@
      </bean>
      <bean id="highCaliberAttributeParserId" name="highCaliberAttributeParser"
 		class="parser.highcaliberline.HighCaliberAttributeParser" autowire="byName">
+		<property name="objLookUpService" ref="lookupServiceData"></property>
+		<property name="highCalPriceGridParser" ref="highCalPriceGridParserId" />
 	</bean>
 	<bean id="highCalPriceGridParserId" class="parser.highcaliberline.HighCaliberPriceGridParser" autowire="byName"/>
 	
