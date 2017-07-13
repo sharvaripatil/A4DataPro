@@ -1,6 +1,8 @@
 package com.a4tech.product.service.postImpl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.a4tech.core.errors.ErrorMessage;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.core.model.ExternalAPIResponse;
 import com.a4tech.product.dao.service.ProductDao;
@@ -65,12 +68,30 @@ public class PostServiceImpl implements PostService {
 			return 0;
 
 		} catch (HttpServerErrorException serverEx) {
-			String serverResponse = serverEx.getResponseBodyAsString();
-
-			ErrorMessageList apiResponse;
+			String serverResponse = "";
+			boolean flag=false;
+			ErrorMessageList apiResponse = new ErrorMessageList();
+			List<ErrorMessage> errorsList=new ArrayList<ErrorMessage>();
+			ErrorMessage errorMessageObj=new ErrorMessage();
+			if(!serverEx.getResponseBodyAsString().isEmpty()){
+				serverResponse = serverEx.getResponseBodyAsString();
+			}else{
+				serverResponse=serverEx.getMessage();
+				
+				
+				errorMessageObj.setMessage(serverResponse);
+				errorMessageObj.setReason(serverResponse);
+				errorsList.add(errorMessageObj);
+				apiResponse.setErrors(errorsList);
+				flag=true;
+			}
+			
 			try {
+				if(!flag){
 				apiResponse = mapperObj.readValue(serverResponse,
 						ErrorMessageList.class);
+				}
+				
 				productDao.save(apiResponse.getErrors(),
 						product.getExternalProductId(), asiNumber, batchId);
 				_LOGGER.info("Error JSON:" + apiResponse);

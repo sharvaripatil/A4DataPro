@@ -272,17 +272,17 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			//List<Dimensions> dimenlist = new ArrayList<Dimensions>();
 			Dimensions dimensionObj = new Dimensions();
 			
-				if(!StringUtils.isEmpty(shippinglen)){
+				if(!StringUtils.isEmpty(shippinglen.trim())){
 				dimensionObj.setLength(shippinglen.trim());
 				dimensionObj.setLengthUnit("in");
 				ShipingObj.setDimensions(dimensionObj);
 				}
-				if(!StringUtils.isEmpty(shippingWid)){
+				if(!StringUtils.isEmpty(shippingWid.trim())){
 				dimensionObj.setWidth(shippingWid.trim());
 				dimensionObj.setWidthUnit("in");
 				ShipingObj.setDimensions(dimensionObj);
 				}
-				if(!StringUtils.isEmpty(shippingH)){
+				if(!StringUtils.isEmpty(shippingH.trim())){
 				dimensionObj.setHeight(shippingH.trim());
 				dimensionObj.setHeightUnit("in");
 				ShipingObj.setDimensions(dimensionObj);
@@ -291,7 +291,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 				//ShipingObj.setDimensions(dimensionObj);
 				
 				//shippingWeightValue
-				if(!StringUtils.isEmpty(shippingWeightValue)){
+				if(!StringUtils.isEmpty(shippingWeightValue.trim())){
 					if(shippingWeightValue.equalsIgnoreCase("0") || shippingWeightValue.equalsIgnoreCase("NO")){
 					
 					}else{
@@ -305,8 +305,8 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 				}
 				
 				//shippingNoofItem
-				if(!StringUtils.isEmpty(noOfitem)){
-					if(noOfitem.equalsIgnoreCase("0") || shippingWeightValue.equalsIgnoreCase("NO")){
+				if(!StringUtils.isEmpty(noOfitem.trim())){
+					if(noOfitem.equalsIgnoreCase("0") || noOfitem.equalsIgnoreCase("NO")){
 						
 					}else{
 					itemObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_NUMBER_UNIT_CARTON);

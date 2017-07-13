@@ -52,22 +52,6 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 	ObjectMapper mapperObj;
 	HighCaliberPriceGridParser highCalPriceGridParser;
 	
-	public static List<String> xidList = new ArrayList<String>();
-	static {
-		xidList.add("746-200198431");
-		xidList.add("746-200192596");
-		xidList.add("746-200192578");
-		xidList.add("746-200198441");
-		xidList.add("746-200218409");
-		xidList.add("746-4996045");
-		xidList.add("746-4963527");
-		xidList.add("746-550041893");
-		xidList.add("746-200262278");
-		xidList.add("746-200324832");
-		xidList.add("746-200324883");
-		xidList.add("746-200257276");
-	}
-	
 	@SuppressWarnings("finally")
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId){
 		int columnIndex = 0;
@@ -75,7 +59,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		String finalResult = null;
 		
-		  Set<String>  listOfProductXids = new HashSet<String>();
+		  //Set<String>  listOfProductXids = new HashSet<String>();
 		  Product productExcelObj = new Product();  
 		  Product existingApiProduct = null;
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
@@ -109,13 +93,13 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 		StringBuilder listOfQuantityProd2 = new StringBuilder();
 		StringBuilder listOfPricesProd2 = new StringBuilder();
 		
-		 List<String> repeatRows = new ArrayList<>();
+		// List<String> repeatRows = new ArrayList<>();
 		 List<ProductionTime> prodTimeList=new ArrayList<ProductionTime>();
 		 ShippingEstimate ShipingObj=new ShippingEstimate();
 		 String setUpchrgesVal="";
 		 String repeatUpchrgesVal="";
 		 String priceInlcudeFinal="";
-		 String xid = null;
+		 //String xid = null;
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
@@ -123,9 +107,9 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 				continue;
 			
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
-			if(xid != null){
-				productXids.add(xid);
-				repeatRows.add(xid);
+			if(productId != null){
+				productXids.add(productId);
+				//repeatRows.add(xid);
 			}
 			
 			 boolean checkXid  = false;
@@ -133,14 +117,20 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 			 while (cellIterator.hasNext()) {
 					Cell cell = cellIterator.next();
 					  columnIndex = cell.getColumnIndex();
+					  if (columnIndex == 1) {
+					       productId = getProductXid(nextRow);
+					       checkXid = true;
+					      } else {
+					       checkXid = false;
+					      }
 					if(columnIndex + 1 == 1){
-						xid = getProductXid(nextRow);//CommonUtility.getCellValueStrinOrInt(cell);//
+						productId = getProductXid(nextRow);//CommonUtility.getCellValueStrinOrInt(cell);//
 						checkXid = true;
-					}else{
+					}/*else{
 						checkXid = false;
-					}
+					}*/
 					if(checkXid){
-						 if(!productXids.contains(xid)){
+						 if(!productXids.contains(productId)){
 							 if(nextRow.getRowNum() != 1){
 								 
 								 boolean prod1flag=false;
@@ -181,17 +171,17 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 									 if(prod1flag){
 										 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd1.toString(),listOfQuantityProd1.toString(), 
 													"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-													"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+													priceInlcudeFinal,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 													finalProdTimeVal +" business days",null,1,"","",priceGrids);
 									 }else if(rushflag){
 										 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesRush.toString(),listOfQuantityRush.toString(), 
 													"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-													"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+													priceInlcudeFinal,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 													finalRushTimeVal +" business days",null,2,"","",priceGrids);
 									 }else if(prod2flag){
 										 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd2.toString(),listOfQuantityProd2.toString(), 
 													"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-													"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+													priceInlcudeFinal,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 													finalProdTimeVal2 +" business days",null,3,"","",priceGrids);
 									 }
 									 productExcelObj.setPriceGrids(priceGrids);
@@ -199,19 +189,19 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 									 if(!StringUtils.isEmpty(finalProdTimeVal)&& !StringUtils.isEmpty(listOfPricesProd1.toString())){
 										 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd1.toString(),listOfQuantityProd1.toString(), 
 													"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-													"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+													priceInlcudeFinal,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 													finalProdTimeVal +" business days","Production Time",1,"","",priceGrids);
 										}
 									 if(!StringUtils.isEmpty(finalRushTimeVal)&& !StringUtils.isEmpty(listOfPricesRush.toString())){
 										 priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesRush.toString(),listOfQuantityRush.toString(), 
 													"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-													"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+													priceInlcudeFinal,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 													finalRushTimeVal +" business days","Rush Service",2,"","",priceGrids);
 										}
 									 if(!StringUtils.isEmpty(finalProdTimeVal2)&& !StringUtils.isEmpty(listOfPricesProd2.toString())){
 											priceGrids = highCalPriceGridParser.getPriceGrids(listOfPricesProd2.toString(),listOfQuantityProd2.toString(), 
 													"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
-													"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+													priceInlcudeFinal,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 													finalProdTimeVal2 +" business days","Production Time",3,"","",priceGrids);
 										}
 									 productExcelObj.setPriceGrids(priceGrids);
@@ -229,6 +219,12 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 									 ///////
 									 int i=priceGrids.size();
 									 String tempSetupCharge=setUpchrgesVal;
+									 /////////
+									 String tempPriceIncludeSetUp="";
+									 if(setUpchrgesVal.toLowerCase().contains("per")){
+									  tempPriceIncludeSetUp=setUpchrgesVal.substring(setUpchrgesVal.indexOf("per"));
+									 }
+									 /////////
 									 tempSetupCharge=setUpchrgesVal.substring(setUpchrgesVal.indexOf("$")+1, setUpchrgesVal.indexOf("("));
 									 if(setUpchrgesVal.toUpperCase().contains("COLOR") || setUpchrgesVal.toUpperCase().contains("LOCATION")){
 										 //setUpchrgesVal=setUpchrgesVal.substring(setUpchrgesVal.indexOf("$")+1, setUpchrgesVal.indexOf("("));
@@ -245,7 +241,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 														List<PriceGrid> existingPriceGrid) */
 												for (String finalAlias : tempClrListAlias) {
 													priceGrids=highCalPriceGridParser.getPriceGrids(tempSetupCharge,"1","V",
-															"USD","",false,"False", finalAlias,"Product Color", i+1,"Set-up Charge", "Other",priceGrids);
+															"USD",tempPriceIncludeSetUp,false,"False", finalAlias,"Product Color", i+1,"Set-up Charge", "Other",priceGrids);
 													i++;
 												}
 											}
@@ -263,7 +259,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 											 if(!CollectionUtils.isEmpty(tempImpListAlias)){ 
 												for (String finalAlias : tempImpListAlias) {
 													priceGrids=highCalPriceGridParser.getPriceGrids(tempSetupCharge,"1","V",
-															"USD","",false,"False", finalAlias,"Imprint Method", i+1,"Set-up Charge", "Other",priceGrids);
+															"USD",tempPriceIncludeSetUp,false,"False", finalAlias,"Imprint Method", i+1,"Set-up Charge", "Other",priceGrids);
 													i++;
 												}
 											 }
@@ -279,8 +275,15 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 										 priceGrids=new ArrayList<PriceGrid>();
 									 }
 									 ///////
+									 
 									 int i=priceGrids.size();
 									 String tempReSetupCharge=repeatUpchrgesVal;
+									 /////////
+									 String tempPriceIncludeRepeat="";
+									 if(setUpchrgesVal.toLowerCase().contains("per")){
+										 tempPriceIncludeRepeat=repeatUpchrgesVal.substring(repeatUpchrgesVal.indexOf("per"));
+									 }
+									 /////////
 									 tempReSetupCharge=repeatUpchrgesVal.substring(repeatUpchrgesVal.indexOf("$")+1, repeatUpchrgesVal.indexOf("("));
 									 if(repeatUpchrgesVal.toUpperCase().contains("COLOR") || repeatUpchrgesVal.toUpperCase().contains("LOCATION")){
 										 //setUpchrgesVal=setUpchrgesVal.substring(setUpchrgesVal.indexOf("$")+1, setUpchrgesVal.indexOf("("));
@@ -297,7 +300,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 														List<PriceGrid> existingPriceGrid) */
 												for (String finalAlias : tempClrListAlias) {
 													priceGrids=highCalPriceGridParser.getPriceGrids(tempReSetupCharge,"1","V",
-															"USD","",false,"False", finalAlias,"Product Color", i+1,"Re-order Charge", "Other",priceGrids);
+															"USD",tempPriceIncludeRepeat,false,"False", finalAlias,"Product Color", i+1,"Re-order Charge", "Other",priceGrids);
 													i++;
 												}
 											}
@@ -315,7 +318,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 											 if(!CollectionUtils.isEmpty(tempImpListAlias)){ 
 												for (String finalAlias : tempImpListAlias) {
 													priceGrids=highCalPriceGridParser.getPriceGrids(tempReSetupCharge,"1","V",
-															"USD","",false,"False", finalAlias,"Imprint Method", i+1,"Re-order Charge", "Other",priceGrids);
+															"USD",tempPriceIncludeRepeat,false,"False", finalAlias,"Imprint Method", i+1,"Re-order Charge", "Other",priceGrids);
 													i++;
 												}
 											 }
@@ -335,9 +338,9 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 								 	productExcelObj.setPriceType("L");
 								 	productExcelObj.setPriceGrids(priceGrids);
 								 	productExcelObj.setProductConfigurations(productConfigObj);
-								 	 _LOGGER.info("Product Data : "
+								 	/* _LOGGER.info("Product Data : "
 												+ mapperObj.writeValueAsString(productExcelObj));
-								 	
+								 	*/
 								 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 								 		productExcelObj.setAvailability(new ArrayList<Availability>());
 								 	}*/
@@ -369,19 +372,29 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 									 prodTimeList=new ArrayList<ProductionTime>();
 									 ShipingObj=new ShippingEstimate();
 									 setUpchrgesVal="";
+									 repeatUpchrgesVal="";
+									 shippinglen="";
+									 shippingWid="";
+									 shippingH="";
+									 shippingWeightValue="";
+									 noOfitem="";
+									 prodTime="";
+											 
 							 }
-							    if(!listOfProductXids.contains(xid)){
-							    	listOfProductXids.add(xid);
+							    if(!productXids.contains(productId)){
+							    	productXids.add(productId);
 							    }
 								 productExcelObj = new Product();
-								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
+								 existingApiProduct = postServiceImpl.getProduct(accessToken, productId); 
 								     if(existingApiProduct == null){
 								    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 								    	 productExcelObj = new Product();
+								    	 productExcelObj.setExternalProductId(productId);
 								    	 existingFlag=false;
 								     }else{//need to confirm what existing data client wnts
 								    	    productExcelObj=highCaliberAttributeParser.getExistingProductData(existingApiProduct, existingApiProduct.getProductConfigurations());
-											productConfigObj=productExcelObj.getProductConfigurations();
+								    	    productExcelObj.setExternalProductId(productId);
+								    	    productConfigObj=productExcelObj.getProductConfigurations();
 											existingFlag=true;
 										   // priceGrids = productExcelObj.getPriceGrids();
 								     }
@@ -405,7 +418,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 							productExcelObj=new Product();
 						}*/
 						////*/
-						productExcelObj.setExternalProductId(xid);
+						productExcelObj.setExternalProductId(productId);
 						break;
 					
 					case 2://HCL Item#
@@ -536,7 +549,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 						
 					case 20://Carton Dimension (LxWxH)
 						shippinglen=CommonUtility.getCellValueStrinOrInt(cell);
-						if(!StringUtils.isEmpty(shippinglen)){
+						if(!StringUtils.isEmpty(shippinglen.trim())){
 						shippinglen=shippinglen.toUpperCase();
 						shippinglen=shippinglen.replace("L","");
 						shippinglen=shippinglen.replace("W","");
@@ -553,16 +566,17 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 						
 					case 21://Carton Weight
 						 shippingWeightValue=CommonUtility.getCellValueStrinOrInt(cell);
-						 if(!StringUtils.isEmpty(shippingWeightValue)){
+						 if(!StringUtils.isEmpty(shippingWeightValue.trim())){
 						 shippingWeightValue=shippingWeightValue.toUpperCase();
 						 ShipingObj =highCaliberAttributeParser.getShippingEstimates("", "", "", shippingWeightValue, "",ShipingObj);
 						 productConfigObj.setShippingEstimates(ShipingObj);
 						 }
 						break;
 					case 22://Carton Qty
-						if(!StringUtils.isEmpty(prodTime)){
-						 noOfitem=noOfitem.toUpperCase();
+						
+						 //noOfitem=noOfitem.toUpperCase();
 						 noOfitem=CommonUtility.getCellValueStrinOrInt(cell);
+						 if(!StringUtils.isEmpty(noOfitem.trim())){
 						 ShipingObj =highCaliberAttributeParser.getShippingEstimates("", "", "", "", noOfitem,ShipingObj);
 						 productConfigObj.setShippingEstimates(ShipingObj);
 						}
@@ -573,7 +587,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 						prodTime =CommonUtility.getCellValueStrinOrInt(cell);
 						//boolean hourFlag=false;
 						//boolean weekFlag=false;
-						if(!StringUtils.isEmpty(prodTime)){
+						if(!StringUtils.isEmpty(prodTime.trim())){
 						String tempVal=prodTime;
 							if(prodTime.contains("Week") || prodTime.contains("Weeks")){
 								prodTime=removeSpecialChar(prodTime);
@@ -1002,6 +1016,12 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 		 ///////
 		 int i=priceGrids.size();
 		 String tempSetupCharge=setUpchrgesVal;
+		 /////////
+		 String tempPriceIncludeSetUp="";
+		 if(setUpchrgesVal.toLowerCase().contains("per")){
+		  tempPriceIncludeSetUp=setUpchrgesVal.substring(setUpchrgesVal.indexOf("per"));
+		 }
+		 /////////
 		 tempSetupCharge=setUpchrgesVal.substring(setUpchrgesVal.indexOf("$")+1, setUpchrgesVal.indexOf("("));
 		 if(setUpchrgesVal.toUpperCase().contains("COLOR") || setUpchrgesVal.toUpperCase().contains("LOCATION")){
 			 //setUpchrgesVal=setUpchrgesVal.substring(setUpchrgesVal.indexOf("$")+1, setUpchrgesVal.indexOf("("));
@@ -1018,7 +1038,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 							List<PriceGrid> existingPriceGrid) */
 					for (String finalAlias : tempClrListAlias) {
 						priceGrids=highCalPriceGridParser.getPriceGrids(tempSetupCharge,"1","V",
-								"USD","",false,"False", finalAlias,"Product Color", i+1,"Set-up Charge", "Other",priceGrids);
+								"USD",tempPriceIncludeSetUp,false,"False", finalAlias,"Product Color", i+1,"Set-up Charge", "Other",priceGrids);
 						i++;
 					}
 				}
@@ -1036,7 +1056,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 				 if(!CollectionUtils.isEmpty(tempImpListAlias)){ 
 					for (String finalAlias : tempImpListAlias) {
 						priceGrids=highCalPriceGridParser.getPriceGrids(tempSetupCharge,"1","V",
-								"USD","",false,"False", finalAlias,"Imprint Method", i+1,"Set-up Charge", "Other",priceGrids);
+								"USD",tempPriceIncludeSetUp,false,"False", finalAlias,"Imprint Method", i+1,"Set-up Charge", "Other",priceGrids);
 						i++;
 					}
 				 }
@@ -1054,6 +1074,12 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 		 ///////
 		 int i=priceGrids.size();
 		 String tempReSetupCharge=repeatUpchrgesVal;
+		 /////////
+		 String tempPriceIncludeRepeat="";
+		 if(setUpchrgesVal.toLowerCase().contains("per")){
+			 tempPriceIncludeRepeat=repeatUpchrgesVal.substring(repeatUpchrgesVal.indexOf("per"));
+		 }
+		 /////////
 		 tempReSetupCharge=repeatUpchrgesVal.substring(repeatUpchrgesVal.indexOf("$")+1, repeatUpchrgesVal.indexOf("("));
 		 if(repeatUpchrgesVal.toUpperCase().contains("COLOR") || repeatUpchrgesVal.toUpperCase().contains("LOCATION")){
 			 //setUpchrgesVal=setUpchrgesVal.substring(setUpchrgesVal.indexOf("$")+1, setUpchrgesVal.indexOf("("));
@@ -1070,7 +1096,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 							List<PriceGrid> existingPriceGrid) */
 					for (String finalAlias : tempClrListAlias) {
 						priceGrids=highCalPriceGridParser.getPriceGrids(tempReSetupCharge,"1","V",
-								"USD","",false,"False", finalAlias,"Product Color", i+1,"Re-order Charge", "Other",priceGrids);
+								"USD",tempPriceIncludeRepeat,false,"False", finalAlias,"Product Color", i+1,"Re-order Charge", "Other",priceGrids);
 						i++;
 					}
 				}
@@ -1088,7 +1114,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 				 if(!CollectionUtils.isEmpty(tempImpListAlias)){ 
 					for (String finalAlias : tempImpListAlias) {
 						priceGrids=highCalPriceGridParser.getPriceGrids(tempReSetupCharge,"1","V",
-								"USD","",false,"False", finalAlias,"Imprint Method", i+1,"Re-order Charge", "Other",priceGrids);
+								"USD",tempPriceIncludeRepeat,false,"False", finalAlias,"Imprint Method", i+1,"Re-order Charge", "Other",priceGrids);
 						i++;
 					}
 				 }
@@ -1107,8 +1133,8 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 	 productExcelObj.setPriceType("L");//need to cofirm
 	 	productExcelObj.setPriceGrids(priceGrids);
 	 	productExcelObj.setProductConfigurations(productConfigObj);
-	 	_LOGGER.info("Product Data : "
-				+ mapperObj.writeValueAsString(productExcelObj));
+	 	/*_LOGGER.info("Product Data : "
+				+ mapperObj.writeValueAsString(productExcelObj));*/
 	 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 	 		productExcelObj.setAvailability(new ArrayList<Availability>());
 	 	}*/
@@ -1144,6 +1170,13 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 		prodTimeList=new ArrayList<ProductionTime>();
 		ShipingObj=new ShippingEstimate();
 		setUpchrgesVal="";
+		 repeatUpchrgesVal="";
+		 shippinglen="";
+		 shippingWid="";
+		 shippingH="";
+		 shippingWeightValue="";
+		 noOfitem="";
+		 prodTime="";
        return finalResult;
 	}catch(Exception e){
 		_LOGGER.error("Error while Processing excel sheet ,Error message: "+e.getMessage()+"for column"+columnIndex+1);
