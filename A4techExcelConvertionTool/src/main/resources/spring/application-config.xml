@@ -574,6 +574,7 @@
      <bean id="highCaliberAttributeParserId" name="highCaliberAttributeParser"
 		class="parser.highcaliberline.HighCaliberAttributeParser" autowire="byName">
 		<property name="objLookUpService" ref="lookupServiceData"></property>
+		<property name="highCalPriceGridParser" ref="highCalPriceGridParserId" />
 	</bean>
 	<bean id="highCalPriceGridParserId" class="parser.highcaliberline.HighCaliberPriceGridParser" autowire="byName"/>
 	
