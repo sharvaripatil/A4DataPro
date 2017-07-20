@@ -29,6 +29,7 @@ public class ApparelMaterialParser {
 		List<Material> listOfMaterial = new ArrayList<>();
 		if(!StringUtils.isEmpty(originalMaterialvalue)){
 			originalMaterialvalue = CommonUtility.removeSpecialSymbols(originalMaterialvalue,specialCharacters);
+			originalMaterialvalue = originalMaterialvalue.replaceAll("é", "e");
 		}
 		List<String> listOfLookupMaterial = getMaterialType(originalMaterialvalue.toUpperCase());
 		if(!listOfLookupMaterial.isEmpty()){

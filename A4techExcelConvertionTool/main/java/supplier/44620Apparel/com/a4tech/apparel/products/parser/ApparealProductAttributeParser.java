@@ -31,6 +31,7 @@ import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 
 public class ApparealProductAttributeParser {
 	private LookupServiceData lookupServiceData;
@@ -51,20 +52,28 @@ public class ApparealProductAttributeParser {
 			 }*/
 			 String colorVal = "";
 			 String finalColorGroup = "";
-			String colorCode = ids.get(colorName);
-			if(colorCode.length() == 2){
-				colorCode = "0"+colorCode;
-			} else if(colorCode.length() == 1){
-				colorCode = "00"+colorCode;
-			}
-			if(colorName.contains("/")){
-				colorName = colorName.replaceAll("/", "-");
-			}
-			colorVal = colorName + " " +colorCode;
-			finalColorGroup = ApparelColorMapping.getColorGroup(colorVal);
-			if(StringUtils.isEmpty(finalColorGroup)){
-				finalColorGroup = "Other";
-			}
+			 finalColorGroup = ApparelColorMapping.getColorGroup(colorName);
+			 if(finalColorGroup == null){
+				 String colorCode = ids.get(colorName);
+					if(colorCode.length() == 2){
+						colorCode = "0"+colorCode;
+					} else if(colorCode.length() == 1){
+						colorCode = "00"+colorCode;
+					}
+					if(colorName.contains("/")){
+						colorName = colorName.replaceAll("/", "-");
+					}
+					colorVal = colorName + " " +colorCode;
+					finalColorGroup = ApparelColorMapping.getColorGroup(colorVal);
+					if(finalColorGroup == null){
+						colorVal = colorCode + " " +colorName;
+						finalColorGroup = ApparelColorMapping.getColorGroup(colorVal);
+					}
+					if(StringUtils.isEmpty(finalColorGroup)){
+						finalColorGroup = "Other";
+					}	 
+			 }
+			
 			ProductDataStore.saveColorNames(colorName);
 			colorObj.setName(finalColorGroup);
 			colorObj.setAlias(colorName);
@@ -245,8 +254,9 @@ public class ApparealProductAttributeParser {
 	    	 additionalLoaction = new ArrayList<>();
 	     String  imprintLocation=imprintValue.replace("Standard location:", ApplicationConstants.CONST_STRING_BIG_SPACE);
 	     String imprintLocationArr[]=imprintLocation.split(ApplicationConstants.CONST_VALUE_TYPE_OTHER) ;
-	     ImprintLocationObj.setValue(imprintLocationArr[0].trim()); 
-	     ImprintLocationList.add(ImprintLocationObj);
+	     ImprintLocationList = getImprintLocations(imprintLocationArr[0].trim());
+	     /*ImprintLocationObj.setValue(imprintLocationArr[0].trim()); 
+	     ImprintLocationList.add(ImprintLocationObj);*/
 	     additionalLoactionObj.setName(ApplicationConstants.CONST_VALUE_TYPE_OTHER+imprintLocationArr[1].trim());
 	     additionalLoaction.add(additionalLoactionObj);
 	     productConfigObj.setAdditionalLocations(additionalLoaction); 
@@ -333,7 +343,30 @@ public class ApparealProductAttributeParser {
 		return skuConfig;
 	}
 	public Product getExistingProductData(Product existingProduct){
-		List<PriceGrid> newPriceGrids = new ArrayList<>();
+		Product newProduct = new Product();
+		ProductConfigurations newConfig = new ProductConfigurations();
+		ProductConfigurations oldConfig = existingProduct.getProductConfigurations();
+		if(!CollectionUtils.isEmpty(existingProduct.getImages())){
+			newProduct.setImages(existingProduct.getImages());
+		}
+		if(!StringUtils.isEmpty(existingProduct.getSummary())){
+			newProduct.setSummary(existingProduct.getSummary());
+		}
+		if(!CollectionUtils.isEmpty(existingProduct.getCategories())){
+			newProduct.setCategories(existingProduct.getCategories());
+		}
+		if(!CollectionUtils.isEmpty(oldConfig.getColors())){
+			newConfig.setColors(oldConfig.getColors());
+		}
+		if(oldConfig.getSizes() != null){
+			newConfig.setSizes(oldConfig.getSizes());
+		}
+		if(!CollectionUtils.isEmpty(oldConfig.getTradeNames())){
+			newConfig.setTradeNames(oldConfig.getTradeNames());
+		}
+		newProduct.setProductConfigurations(newConfig);
+		
+		/*List<PriceGrid> newPriceGrids = new ArrayList<>();
 		List<PriceGrid> oldPriceGrid = existingProduct.getPriceGrids();
 		if(!CollectionUtils.isEmpty(oldPriceGrid)){
 			for (PriceGrid priceGrid : oldPriceGrid) {
@@ -348,8 +381,8 @@ public class ApparealProductAttributeParser {
 			existingProduct.setPriceGrids(newPriceGrids);
 		} else {
 			return existingProduct;
-		}
-		return existingProduct;
+		}*/
+		return newProduct;
 	}
 	public Product getExistingProductData(Product existingProduct,List<ImprintMethod> existingImprintMethods){
 		List<PriceGrid> newPriceGrids = new ArrayList<>();
@@ -407,6 +440,18 @@ public class ApparealProductAttributeParser {
 			listOfCategories.add(categoryVal);
 		}
 		return listOfCategories;
+	}
+	private List<ImprintLocation> getImprintLocations(String value){
+		List<ImprintLocation> listOfImprintLoc = new ArrayList<>();
+		ImprintLocation imprLocObj = null;
+		value = value.replaceAll("\\.", "");
+		String[] locations = CommonUtility.getValuesOfArray(value, ",");
+		for (String location : locations) {
+			imprLocObj = new ImprintLocation();
+			imprLocObj.setValue(location);
+			listOfImprintLoc.add(imprLocObj);
+		}
+		return listOfImprintLoc;
 	}
 	public LookupServiceData getLookupServiceData() {
 		return lookupServiceData;

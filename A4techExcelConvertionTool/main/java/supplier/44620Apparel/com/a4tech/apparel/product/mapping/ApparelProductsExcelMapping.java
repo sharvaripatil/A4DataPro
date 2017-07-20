@@ -193,7 +193,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 						    	 productExcelObj = appaAttributeParser.getExistingProductData(productExcelObj);
 						    	 productConfigObj=productExcelObj.getProductConfigurations();
 						    	 productExcelObj.setAvailability(new ArrayList<>());
-						    	 priceGrids = productExcelObj.getPriceGrids();
+						    	 priceGrids = new ArrayList<PriceGrid>();
 						     }
 							
 					 }
@@ -259,9 +259,15 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 					break;
 					
 				case 8: // size
-					 sizeValue = cell.getStringCellValue();
+					 //sizeValue = cell.getStringCellValue();
+					 sizeValue = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(sizeValue)){
 						sizeValue = sizeValue.trim();
+						if(sizeValue.equalsIgnoreCase("XXL")){
+							sizeValue = "2XL ";
+						} else if(sizeValue.equalsIgnoreCase("XXS")){
+							sizeValue = "2XS";
+						}
 						productSizeValues.add(sizeValue);
 						sizeValues = appaAttributeParser.getSizeValues(sizeValue, sizeValues);
 					}
@@ -374,7 +380,8 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 					break;
 				case 38: //Description3 (Imprint area)
 					String itemWeightValue = CommonUtility.getCellValueDouble(cell);
-					if(!StringUtils.isEmpty(itemWeightValue)){
+							if (!StringUtils.isEmpty(itemWeightValue) && !itemWeightValue.equals("0")
+									&& !itemWeightValue.equals("0.0")) {
 						Volume volume = appaAttributeParser.getItemWeightvolume(itemWeightValue);
 						productConfigObj.setItemWeight(volume);
 					}

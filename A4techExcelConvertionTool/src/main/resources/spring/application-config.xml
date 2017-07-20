@@ -25,7 +25,7 @@
 	<import resource="kuku_mapping.xml" />
 	<!-- <import resource="ftpSchedular.xml"/> -->
 	<context:property-placeholder location="classpath:application.properties,classpath:sandbox-database.properties
-	                                       ,classpath:sandbox-externalApiEndPoints.properties"/>
+	                                       ,classpath:prod-externalApiEndPoints.properties"/>
 	<bean id="productService" class="com.a4tech.product.service.imple.ProductServiceImpl" />
 	<bean id="postServiceImplV2" name="postServiceImplV2"
 		class="com.a4tech.v2.service.postImpl.PostServiceImpl">
