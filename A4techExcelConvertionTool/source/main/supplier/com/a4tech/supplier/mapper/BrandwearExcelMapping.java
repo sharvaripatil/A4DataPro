@@ -386,6 +386,16 @@ public class BrandwearExcelMapping implements IExcelParser {
 								Description=Description.replace("®", "R").replace("’", "'");
 								productExcelObj.setDescription(Description);
 							}
+							String Summary[]=Description.split("\\.");
+							if(Summary[0].length()<130)
+							{
+								productExcelObj.setSummary(Summary[0].concat("."));
+							}else
+							{
+								productExcelObj.setSummary(productName);
+							}
+							
+							
 							break;
 						case 38:// Item Keywords-Tags- Hidden Keywords
 							String Keywords = cell.getStringCellValue();
@@ -435,7 +445,7 @@ public class BrandwearExcelMapping implements IExcelParser {
 
 							break;
 						case 44:// Fabric
-							String MaterialAlias = cell.getStringCellValue();
+						/*	String MaterialAlias = cell.getStringCellValue();
 							MaterialAlias=MaterialAlias.replace("®", "R").replace(" ’", " '");
 
 							if (!StringUtils.isEmpty(MaterialAlias)) {
@@ -443,11 +453,12 @@ public class BrandwearExcelMapping implements IExcelParser {
 										MaterialAlias).concat("--");
 							} else {
 								MaterialAlias = "";
-							}
+							}*/
 
 							break;
 						case 45:// Fabric Content
 							String MaterialValues = cell.getStringCellValue();
+							MaterialAliceName=MaterialValues.replace(",", " ").concat("--");
 							if (!StringUtils.isEmpty(MaterialValues)) {
 								MaterialValues = MaterialAliceName
 										.concat(MaterialValues);
@@ -497,7 +508,7 @@ public class BrandwearExcelMapping implements IExcelParser {
 							}
 							break;
 						case 54:// Shipping Weight
-							String shippingWeight = cell.getStringCellValue();
+							String shippingWeight = CommonUtility.getCellValueStrinOrDecimal(cell);
 							if (!StringUtils.isEmpty(shippingWeight)) {
 								shippingObj = productAttributeObj
 										.getshippingWeight(shippingWeight);
@@ -544,8 +555,12 @@ public class BrandwearExcelMapping implements IExcelParser {
 					// end inner while loop
 					productExcelObj.setPriceType("L");
 					
-				
-					priceGrids = brandwearpriceObj.getRepeatablePriceGrids(listOfPrices.toString(),
+					priceGrids = brandwearpriceObj.getPriceGrids(listOfPrices.toString(),
+					         "1___50___100", "A___B___C", "USD",
+					         "", true, "N",productName /*,"Size",sizeValue,priceGrids*/);
+					
+					
+				/*	priceGrids = brandwearpriceObj.getRepeatablePriceGrids(listOfPrices.toString(),
 					         "1___50___100", "A___B___C", "USD",
 					         "", true, "N",productName ,"Size",sizeValue,priceGrids);
 					
@@ -559,7 +574,7 @@ public class BrandwearExcelMapping implements IExcelParser {
 						
 					}
 				
-				
+				*/
 
 				} catch (Exception e) {
 					_LOGGER.error("Error while Processing ProductId and cause :"

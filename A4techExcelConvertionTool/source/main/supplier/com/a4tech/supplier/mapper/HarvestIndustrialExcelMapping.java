@@ -376,7 +376,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 
 				case 15:// Themes
 
-					/*themeValue = cell.getStringCellValue();
+					themeValue = cell.getStringCellValue();
 					Theme themeObj = null;
 					String Value = "";
 					String[] themes = CommonUtility.getValuesOfArray(
@@ -393,7 +393,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 							themeList.add(themeObj);
 						}
 
-					}*/
+					}
 					break;
 				case 16: // Dimension1
 
@@ -665,7 +665,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 
 					break;
 				case 70:// IsEnvironmentallyFriendly
-					String IsEnvironmentallyFriendly = cell
+					/*String IsEnvironmentallyFriendly = cell
 							.getStringCellValue();
 
 					if (IsEnvironmentallyFriendly
@@ -675,7 +675,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 						themeObj1.setName("Eco Friendly");
 
 						themeList.add(themeObj1);
-					}
+					}*/
 
 					break;
 				case 71:// IsNewProd
@@ -836,18 +836,28 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 
 					break;
 				case 102: // AssembledInCountry
+					
+					String AssembledCountry = cell
+					.getStringCellValue();
+			   if (!AssembledCountry.isEmpty()) {
+				   AssembledCountry = harvestProductAttributeObj
+						.getCountryCodeConvertName(AssembledCountry);
+				productExcelObj.setAdditionalProductInfo("Assembled country is: "
+								+ AssembledCountry);
+		        	}
 
 					break;
 				case 103: // DecoratedInCountry
 					String decoratedInCountry = cell
-							.getStringCellValue();
-					if (!decoratedInCountry.isEmpty()) {
-						decoratedInCountry = harvestProductAttributeObj
-								.getCountryCodeConvertName(decoratedInCountry);
-						productExcelObj
-								.setAdditionalProductInfo("Decorated country is: "
-										+ decoratedInCountry);
-					}
+					.getStringCellValue();
+			if (!decoratedInCountry.isEmpty()) {
+				decoratedInCountry = harvestProductAttributeObj
+						.getCountryCodeConvertName(decoratedInCountry);
+				productExcelObj.setAdditionalImprintInfo("Decorated country is: "
+								+ decoratedInCountry);
+						
+			}
+				
 					break;
 				case 104:// ComplianceList
 
@@ -1126,9 +1136,11 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 		return lookupServiceDataObj;
 	}
 
+
 	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
 		this.lookupServiceDataObj = lookupServiceDataObj;
 	}
+
 
 	public HarvestColorParser getHarvestColorObj() {
 		return harvestColorObj;

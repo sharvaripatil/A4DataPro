@@ -893,6 +893,7 @@
            <bean id="harvestMappingId" class="com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping">
            <property name="postServiceImpl" ref="postService"/>
            <property name="productDaoObj" ref="productDao"/> 
+           <property name="lookupServiceDataObj" ref="lookupServiceData"/>
            <property name="harvestColorObj" ref="harvestColorObjId"/>
            <property name="harvestPriceGridObj" ref="harvestPriceGridObjId"/>
            <property name="harvestProductAttributeObj" ref="harvestProductAttributeObjId"/>        
