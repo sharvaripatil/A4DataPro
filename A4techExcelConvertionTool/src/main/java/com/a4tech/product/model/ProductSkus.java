@@ -10,9 +10,13 @@ public class ProductSkus {
 
     @JsonProperty("SKU")
     private String SKU;
+    @JsonProperty("Hazmat")
+    private String hazmat;
+    @JsonProperty("CloseOut")
+    private boolean closeOut;
     @JsonProperty("Configurations")
     private List<ProductSKUConfiguration> criteria;
-
+    
 	@JsonProperty("SKU")
     public String getSKU() {
         return SKU;
@@ -41,43 +45,21 @@ public class ProductSkus {
     public void setConfigurations(List<ProductSKUConfiguration> criteria) {
         this.criteria = criteria;
     }
-    
-    /*
-	@JsonProperty("InventoryLink")
-	private String productInventoryLink = "";
+    @JsonProperty("Hazmat")
+    public String getHazmat() {
+		return hazmat;
+	}
+    @JsonProperty("Hazmat")
+	public void setHazmat(String hazmat) {
+		this.hazmat = hazmat;
+	}
+    @JsonProperty("CloseOut")
+	public boolean isCloseOut() {
+		return closeOut;
+	}
+    @JsonProperty("CloseOut")
+	public void setCloseOut(boolean closeOut) {
+		this.closeOut = closeOut;
 	
-	@JsonProperty("InventoryStatus")
-	private String inventoryStatus = "";
-	
-	@JsonProperty("InventoryQuantity")
-	private String inventoryQuantity = "";
-
-	public String getProductInventoryLink() {
-		return productInventoryLink;
-	}
-
-	public void setProductInventoryLink(String productInventoryLink) {
-		this.productInventoryLink = productInventoryLink;
-	}
-
-	public String getInventoryStatus() {
-		return inventoryStatus;
-	}
-
-	public void setInventoryStatus(String inventoryStatus) {
-		this.inventoryStatus = inventoryStatus;
-	}
-
-	public String getInventoryQuantity() {
-		return inventoryQuantity;
-	}
-
-	public void setInventoryQuantity(String inventoryQuantity) {
-		this.inventoryQuantity = inventoryQuantity;
-	}
-	*/
-    
-
-	
-	
+    }
 }

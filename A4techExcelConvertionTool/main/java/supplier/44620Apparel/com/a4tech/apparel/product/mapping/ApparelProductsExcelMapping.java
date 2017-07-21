@@ -1,6 +1,7 @@
 package com.a4tech.apparel.product.mapping;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -117,12 +118,18 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				Cell cell = cellIterator.next();
 				
 				 columnIndex = cell.getColumnIndex();
+				 if (columnIndex == 1) {
+						xid = getProductXid(nextRow);
+						checkXid = true;
+					} else {
+						checkXid = false;
+					}
 				if(columnIndex + 1 == 1){
 					xid = getProductXid(nextRow);
 					checkXid = true;
-				}else{
+				}/*else{
 					checkXid = false;
-				}
+				}*/
 				if(checkXid){
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
@@ -186,7 +193,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 						    	 productExcelObj = appaAttributeParser.getExistingProductData(productExcelObj);
 						    	 productConfigObj=productExcelObj.getProductConfigurations();
 						    	 productExcelObj.setAvailability(new ArrayList<>());
-						    	 priceGrids = productExcelObj.getPriceGrids();
+						    	 priceGrids = new ArrayList<PriceGrid>();
 						     }
 							
 					 }
@@ -252,9 +259,15 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 					break;
 					
 				case 8: // size
-					 sizeValue = cell.getStringCellValue();
+					 //sizeValue = cell.getStringCellValue();
+					 sizeValue = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(sizeValue)){
 						sizeValue = sizeValue.trim();
+						if(sizeValue.equalsIgnoreCase("XXL")){
+							sizeValue = "2XL ";
+						} else if(sizeValue.equalsIgnoreCase("XXS")){
+							sizeValue = "2XS";
+						}
 						productSizeValues.add(sizeValue);
 						sizeValues = appaAttributeParser.getSizeValues(sizeValue, sizeValues);
 					}
@@ -263,16 +276,21 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				case 9: // size group i.e Standard & Numbered
 					break;
 				case 10: // UPC code
-					 upcCode = cell.getStringCellValue();
+					double upcVal= cell.getNumericCellValue();
+					BigDecimal bigDecimal = new BigDecimal(upcVal);
+					long number = bigDecimal.longValue();
+					  String value = Long.toString(number);
+					  upcCode = value;
+					 /*upcCode = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(upcCode)){
 						 upcCode = CommonUtility.convertExponentValueIntoNumber(upcCode);
 						productExcelObj.setUpcCode("");
-					}
+					}*/
 					
 					break;
 				case 11:
 				    String  productDescription = cell.getStringCellValue();
-				    productDescription = productDescription.replaceAll("[^a-zA-Z0-9 ]", "");
+				    productDescription = productDescription.replaceAll("[^a-zA-Z0-9.%,'\\- ]", "");
 				   /* if(productDescription.contains(ApplicationConstants.SQUARE_SYMBOL)){
 				    	productDescription = CommonUtility.removeSpecialSymbols(productDescription, 
                                                                     ApplicationConstants.SQUARE_SYMBOL);
@@ -308,8 +326,10 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 					if(!StringUtils.isEmpty(imprintValue)){
 						imprintValue = imprintValue.trim();
 						if(!StringUtils.isEmpty(imprintValue)){
+							productExcelObj.setProductConfigurations(productConfigObj);
 							productExcelObj = appaAttributeParser.setImrintSizeAndLocation(
                                     imprintValue, productExcelObj);
+							productConfigObj = productExcelObj.getProductConfigurations();
 						}
 					} 
 			     break;
@@ -360,7 +380,8 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 					break;
 				case 38: //Description3 (Imprint area)
 					String itemWeightValue = CommonUtility.getCellValueDouble(cell);
-					if(!StringUtils.isEmpty(itemWeightValue)){
+							if (!StringUtils.isEmpty(itemWeightValue) && !itemWeightValue.equals("0")
+									&& !itemWeightValue.equals("0.0")) {
 						Volume volume = appaAttributeParser.getItemWeightvolume(itemWeightValue);
 						productConfigObj.setItemWeight(volume);
 					}
