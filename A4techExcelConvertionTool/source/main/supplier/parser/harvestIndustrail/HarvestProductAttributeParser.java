@@ -2,6 +2,7 @@ package parser.harvestIndustrail;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.AvailableVariations;
@@ -157,25 +158,31 @@ public class HarvestProductAttributeParser {
 
 		ImprintMethod imprMethod = new ImprintMethod();
 		List<ImprintMethod> imprintMethodList = new ArrayList<ImprintMethod>();
-		String imprintMethodValueArr[]=imprintMethod.split(",");
+		String imprintMethodValueArr[]=imprintMethod.split("or");
 		
 		for (String imprintMethodValue : imprintMethodValueArr) {
 			
 			imprMethod = new ImprintMethod();
+			imprMethod.setAlias(imprintMethodValue);
 	  if(imprintMethodValue.contains("Embroidery"))
 	  {
 		  imprMethod.setType("Embroidered");
-	  }else if(imprintMethodValue.contains("Silk Screening"))
+	  }else if(imprintMethodValue.contains("Screen printed") ||imprintMethodValue.contains("Offset printed") 
+			  ||imprintMethodValue.contains("Pad printed"))
 	  {
-		  imprMethod.setType("Silkscreen");
-	  }else if(imprintMethodValue.contains("Heat Press"))
+		  imprMethod.setType("Printed");
+	  }else if(imprintMethodValue.contains("4-color process"))
 	  {
-		  imprMethod.setType("Heat Transfer");
+		  imprMethod.setType("Full Color");
 
 	  }else if(imprintMethodValue.contains("Sublimation"))
 	  {
 		  imprMethod.setType("Sublimation");
-	  }else if(imprintMethodValue.contains("Laser"))
+	  }else if(imprintMethodValue.contains("Silk Screen Printing"))
+	  {
+		  imprMethod.setType("Silkscreen");
+	  }
+	  else if(imprintMethodValue.contains("Laser engraved") || imprintMethodValue.contains("Laser Engraving") )
 	  {
 		  imprMethod.setType("Laser engraved");
 	  }else
@@ -285,6 +292,38 @@ public class HarvestProductAttributeParser {
 		rushtimeObj.setRushTimeValues(rushTimeList);		
 		return rushtimeObj;
 	}
+	
+	
+       public List<ImprintSize> getimprintsize(StringBuilder firstImprintSize) {
+		
+		String ImprintSizeValue=firstImprintSize.toString().replace("null x null","");
+		ImprintSizeValue=ImprintSizeValue.replace("null", "");
+	    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
+	    ImprintSize impsizeobj;
+	    
+		String ImprintsizeArr[]=ImprintSizeValue.split(",");
+				
+	   for (String Value : ImprintsizeArr) {
+		   impsizeobj=new ImprintSize();
+		   impsizeobj.setValue(Value);
+		   imprintSizeList.add(impsizeobj);
+	      }				
+		
+		return imprintSizeList;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	public LookupServiceData getLookupServiceDataObj() {

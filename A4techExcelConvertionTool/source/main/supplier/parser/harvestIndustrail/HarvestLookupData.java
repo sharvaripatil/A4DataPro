@@ -79,6 +79,7 @@ public  class HarvestLookupData {
 		COLOR_MAP.put("Yellow Gold/Yellow Trim","Dark Yellow:Combo:Medium Yellow");
 		COLOR_MAP.put("Blue/Black/Red","Medium Blue:Combo:Medium Black:Secondary:Medium Red");
 		COLOR_MAP.put("Aqua Blue/Black","Medium Blue:Combo:Medium Black");
+		COLOR_MAP.put("Aqua Blue","Medium Blue");
 		COLOR_MAP.put("Silver/Orange/Black","Silver Metal:Combo:Medium Orange:Secondary:Medium Black");
 		COLOR_MAP.put("Silver/Assorted Fill","Silver Metal:Combo:Assorted");
 		COLOR_MAP.put("Gold/Assorted","Gold Metal:Combo:Assorted");
