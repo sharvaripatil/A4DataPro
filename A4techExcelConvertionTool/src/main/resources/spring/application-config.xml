@@ -409,8 +409,8 @@
 		<property name="brandwearExcelMapping" ref="brandwearExcelMappingId"/>
 		<property name="sage80289Mapping" ref="sageRMKWorldWideMapping"/>
 		<property name="twintechMapping" ref="twintechMappingId"/>
-		
 		<property name="ballProMapping" ref="ballProMappingId"/>
+		<property name="bagMakersMapping" ref="bagMakersMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -865,7 +865,19 @@
                </bean>  
      
             <!-- supplier Twintech configuration end -->
-          
+           <!-- supplier 37940 Bag Makers configuration start -->
+     <bean id="bagMakersMappingId" class="com.a4tech.supplier.mapper.BagMakersMapping" autowire="byName">
+     <property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="bagMakerAttributeParser" ref="bagMakerAttributeParserId" /> 
+     <property name="bagMakersPriceGridParser" ref="bagMakersPriceGridParserId" /> 
+     </bean>
+     <bean id="bagMakerAttributeParserId" name="bagMakerAttributeParserObj"
+		class="parser.BagMakers.BagMakerAttributeParser" autowire="byName">
+		<property name="objLookUpService" ref="lookupServiceData"/>
+	</bean>
+	<bean id="bagMakersPriceGridParserId" name="bagMakersPriceGridParserObj" class="parser.BagMakers.BagMakersPriceGridParser" autowire="byName"/>
+     <!--supplier 37940 Bag Makers configuration end  --> 
  
      
 </beans>

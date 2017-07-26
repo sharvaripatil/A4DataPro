@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.formula.functions.ImReal;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -19,25 +18,24 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import parser.BagMakers.BagMakerAttributeParser;
-import parser.highcaliberline.HighCaliberAttributeParser;
-import parser.highcaliberline.HighCaliberPriceGridParser;
+import parser.BagMakers.BagMakersPriceGridParser;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.AdditionalLocation;
-import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
-import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
-import com.a4tech.product.model.Packaging;
+import com.a4tech.product.model.Option;
+import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
-import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Size;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -50,6 +48,7 @@ public class BagMakersMapping implements IExcelParser{
 	PostServiceImpl postServiceImpl;
 	ProductDao productDaoObj;
 	BagMakerAttributeParser bagMakerAttributeParser;
+	BagMakersPriceGridParser bagMakersPriceGridParser;
 	@Autowired
 	ObjectMapper mapperObj;
 	
@@ -78,7 +77,14 @@ public class BagMakersMapping implements IExcelParser{
 		  String finalRushTimeVal="";
 		  String prodTimeVal2="";
 		  String finalProdTimeVal2="";
-		try{
+		  String plateScreenCharge="";
+		  String plateScreenChargeCode="";
+		  String plateReOrderCharge="";
+		  String plateReOrderChargeCode="";
+		  String extraColorRucnChrg="";
+		  String extraLocRunChrg="";
+		  String extraLocColorScreenChrg="";
+		  try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 	    Sheet sheet = workbook.getSheetAt(0);
@@ -129,11 +135,52 @@ public class BagMakersMapping implements IExcelParser{
 							 if(nextRow.getRowNum() != 1){
 								 
 								 // Ineed to set pricegrid over here
-								
-								 if(CollectionUtils.isEmpty(priceGrids)){
-										//priceGrids = highCalPriceGridParser.getPriceGridsQur();	
-									}
+								 if(!StringUtils.isEmpty(plateScreenCharge)){
+									 plateScreenCharge=plateScreenCharge.toUpperCase();
+									 if(plateScreenCharge.contains("NO SET UP") || plateScreenCharge.contains("MULTI")){
+										 productExcelObj.setDistributorOnlyComments(plateScreenCharge);
+									 }else{
+										 List<ImprintMethod> tempList=productConfigObj.getImprintMethods();
+										 if(!CollectionUtils.isEmpty(tempList)){
+											 plateScreenCharge=plateScreenCharge.replaceAll("$", "");
+											 for (ImprintMethod imprintMethod : tempList) {
+												//get alias over here
+												 String tempALias=imprintMethod.getAlias();
+												 priceGrids=bagMakersPriceGridParser.getPriceGrids(
+														 plateScreenCharge, "1", plateScreenChargeCode,
+															ApplicationConstants.CONST_STRING_CURRENCY_USD,"Plate/Screen Charge",false,
+															"false",tempALias,"Imprint Method",new Integer(1),"Screen Charge", "Per Quantity",
+															priceGrids);	
+											}
+										 }
+										 
+									 }
+								 }
+								 if(!StringUtils.isEmpty(plateReOrderCharge)){
+									 plateReOrderCharge=plateReOrderCharge.toUpperCase();
+									 if(plateReOrderCharge.contains("NO SET UP") || plateReOrderCharge.contains("MULTI")){
+										 productExcelObj.setDistributorOnlyComments(plateReOrderCharge);
+									 }else{
+										 List<ImprintMethod> tempList=productConfigObj.getImprintMethods();
+										 if(!CollectionUtils.isEmpty(tempList)){
+											 plateReOrderCharge=plateReOrderCharge.replaceAll("$", "");
+											 for (ImprintMethod imprintMethod : tempList) {
+												//get alias over here
+												 String tempALias=imprintMethod.getAlias();
+												 priceGrids=bagMakersPriceGridParser.getPriceGrids(
+														 plateReOrderCharge, "1", plateReOrderChargeCode,
+															ApplicationConstants.CONST_STRING_CURRENCY_USD,"Reorder Plate/Screen Charge",false,
+															"false",tempALias,"Imprint Method",new Integer(1),"Re-order Charge", "Per Quantity",
+															priceGrids);	
+											}
+										 }
+										 
+									 }
+								 }
 								 
+								 if(CollectionUtils.isEmpty(priceGrids)){
+										priceGrids = bagMakersPriceGridParser.getPriceGridsQur();	
+									}
 								   // Add repeatable sets here
 								 	productExcelObj.setPriceType("L");
 								 	productExcelObj.setPriceGrids(priceGrids);
@@ -172,6 +219,13 @@ public class BagMakersMapping implements IExcelParser{
 									 prodTimeList=new ArrayList<ProductionTime>();
 									 ShipingObj=new ShippingEstimate();
 									 setUpchrgesVal="";
+									 plateScreenCharge="";
+							  		 plateScreenChargeCode="";
+							  		 plateReOrderCharge="";
+							  		 plateReOrderChargeCode="";
+							  		 extraColorRucnChrg="";
+							  	     extraLocRunChrg="";
+							  	     extraLocColorScreenChrg="";	
 							 }
 							    if(!listOfProductXids.contains(xid)){
 							    	listOfProductXids.add(xid);
@@ -195,32 +249,34 @@ public class BagMakersMapping implements IExcelParser{
 					
 					switch (columnIndex + 1) {
 					case 1://XID
-						/*productId=CommonUtility.getCellValueStrinOrInt(cell);
-						/////imp code 
-						existingApiProduct=postServiceImpl.getProduct(accessToken, productId);
-						if(existingApiProduct!=null){
-							_LOGGER.info("Product "+productId+" is an existing product Using existing product also");
-							productExcelObj=existingApiProduct;
-							productConfigObj=productExcelObj.getProductConfigurations();
-						    priceGrids = productExcelObj.getPriceGrids();
-						}else{
-							_LOGGER.info("Product "+productId+"Not an existing product ,Creating new product");
-							productExcelObj=new Product();
-						}*/
-						////*/
 						productExcelObj.setExternalProductId(xid);
 						break;
 					
 					case  2: //Catalogpage
-						String catalogPage=CommonUtility.getCellValueStrinOrDecimal(cell);
+						  String PageNO=CommonUtility.getCellValueStrinOrInt(cell);
+						    
+						  List<com.a4tech.product.model.Catalog>  newlistCatalog=new ArrayList<com.a4tech.product.model.Catalog>(); 
+						     List<com.a4tech.product.model.Catalog>  listCatalog = productExcelObj.getCatalogs();
+						     if(!CollectionUtils.isEmpty(listCatalog)){
+						     for (com.a4tech.product.model.Catalog catalog : listCatalog) {
+								if(catalog.getCatalogName().contains("2017")){
+									catalog.setCatalogPage(PageNO);
+								}
+								newlistCatalog.add(catalog);
+						     }
+						     productExcelObj.setCatalogs(newlistCatalog);
+						     }
 						break;
 					case  3://Item #
 						String asiProdNo=CommonUtility.getCellValueStrinOrDecimal(cell);
+						if(!StringUtils.isEmpty(asiProdNo)){
+							productExcelObj.setAsiProdNo(asiProdNo);
+						}
 						break;
 					case  4://Name (Items in Red are new for 2017)
 						String productName = CommonUtility.getCellValueStrinOrInt(cell);
 						//productName = CommonUtility.removeSpecialSymbols(productName,specialCharacters);
-						if(StringUtils.isEmpty(productName)){
+						if(!StringUtils.isEmpty(productName)){
 						int len=productName.length();
 						 if(len>60){
 							String strTemp=productName.substring(0, 60);
@@ -259,7 +315,15 @@ public class BagMakersMapping implements IExcelParser{
 						productExcelObj.setDescription(description);
 						break;
 					case  9://Dimensions
-						//later
+						String dimension =CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(dimension) && !dimension.toUpperCase().contains("TW")
+								&& !dimension.toUpperCase().contains("BW") && !dimension.toUpperCase().contains("BG") && !dimension.toUpperCase().contains("MW")
+								){
+							Size sizeObj=new Size();
+							bagMakerAttributeParser.getSizes(dimension);
+							productConfigObj.setSizes(sizeObj);
+						}
+						
 						break;
 					case  10://Handle Length (Inches)
 						String additinalInfo =CommonUtility.getCellValueStrinOrInt(cell);
@@ -291,43 +355,139 @@ public class BagMakersMapping implements IExcelParser{
 						 }
 						break;
 					case  14://Box Pack
-
+						 //noOfitem=noOfitem.toUpperCase();
+						 noOfitem=CommonUtility.getCellValueStrinOrInt(cell);
+						 if(!StringUtils.isEmpty(noOfitem.trim())){
+						 ShipingObj =bagMakerAttributeParser.getShippingEstimates("", "", "", "", noOfitem,ShipingObj);
+						 productConfigObj.setShippingEstimates(ShipingObj);
+						}
 						break;
 					case  15://Weight (lbs)
-
+						 shippingWeightValue=CommonUtility.getCellValueStrinOrInt(cell);
+						 if(!StringUtils.isEmpty(shippingWeightValue.trim())){
+						 shippingWeightValue=shippingWeightValue.toUpperCase();
+						 
+						 if(shippingWeightValue.contains("-")){
+							 shippingWeightValue=shippingWeightValue.substring(shippingWeightValue.indexOf("-"));
+							 shippingWeightValue=shippingWeightValue.replace("SHEETS","");
+						 }
+						 ShipingObj =bagMakerAttributeParser.getShippingEstimates("", "", "", shippingWeightValue, "",ShipingObj);
+						 productConfigObj.setShippingEstimates(ShipingObj);
+						 }
 						break;
 					case  16://Box Length
-
+						shippinglen=CommonUtility.getCellValueStrinOrInt(cell);
+ 						if(!StringUtils.isEmpty(shippinglen.trim())){
+ 						shippinglen=shippinglen.toUpperCase();
+ 						ShipingObj =bagMakerAttributeParser.getShippingEstimates(shippinglen.trim(), "", "", "", "",ShipingObj);
+ 						productConfigObj.setShippingEstimates(ShipingObj);
+ 						}
 						break;
 					case  17://Box Width
-
+						shippingWid=CommonUtility.getCellValueStrinOrInt(cell);
+ 						if(!StringUtils.isEmpty(shippingWid.trim())){
+ 						
+ 						ShipingObj =bagMakerAttributeParser.getShippingEstimates("", shippingWid, "", "", "",ShipingObj);
+ 						productConfigObj.setShippingEstimates(ShipingObj);
+ 						}
 						break;
 					case  18://Box Depth
-
+						shippingH=CommonUtility.getCellValueStrinOrInt(cell);
+ 						if(!StringUtils.isEmpty(shippingH.trim())){
+ 						ShipingObj =bagMakerAttributeParser.getShippingEstimates("", "", shippingH, "", "",ShipingObj);
+ 						productConfigObj.setShippingEstimates(ShipingObj);
+ 						}
 						break;
 					case  19://Origin
-
+						String origin = CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(origin)){
+							origin=origin.toUpperCase();
+							origin=origin.trim();
+							String tempDesc=productExcelObj.getDescription();
+							if(origin.equalsIgnoreCase("IMPORTED") || origin.contains("MEXICO")){
+								tempDesc=tempDesc+origin;
+								productExcelObj.setDescription(tempDesc);
+							}else{
+						List<Origin> listOfOrigins = new ArrayList<Origin>();
+						Origin origins = new Origin();
+						origins.setName("U.S.A");
+						listOfOrigins.add(origins);
+						productConfigObj.setOrigins(listOfOrigins);
+							}
+							}
 						break;
 					case  20://Eco Characteristics
-
+						String keywords = CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(keywords)){
+						List<String> productKeywords = CommonUtility.getStringAsList(keywords,
+                                ApplicationConstants.CONST_DELIMITER_COMMA);
+						productExcelObj.setProductKeywords(productKeywords);
+						}
 						break;
 					case  21://Keywords (for Search online)
-
+						String keywords2 = CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(keywords2)){
+						List<String> productKeywords2 = CommonUtility.getStringAsList(keywords2,
+                                ApplicationConstants.CONST_DELIMITER_COMMA);
+						if(!CollectionUtils.isEmpty(productExcelObj.getProductKeywords())){
+							productKeywords2.addAll(productExcelObj.getProductKeywords());
+						}
+						productExcelObj.setProductKeywords(productKeywords2);
+						}
 						break;
 					case  22://Special Notes
-
+						String propOption = CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(propOption)){
+							if(propOption.contains("thousand") || propOption.contains("not available") || propOption.contains("2nd")){
+								String tempAddInfo=productExcelObj.getAdditionalProductInfo();
+								if(!StringUtils.isEmpty(tempAddInfo)){
+									propOption=tempAddInfo+" "+propOption;
+								}
+								productExcelObj.setAdditionalProductInfo(propOption);
+							}else if(propOption.contains("bottom")){//bottom
+								//create option over here
+								List<Option> optionList=bagMakerAttributeParser.getOptions("Optional Bottom Board","Add bottom board");
+								productConfigObj.setOptions(optionList);
+								//create pricegrid over here
+								if(propOption.contains("$0.30(C)")){
+									priceGrids = bagMakersPriceGridParser.getPriceGrids(
+											"0.30","1","C",
+											ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+											"false","Add bottom board","Product Option",new Integer(1),"Product Option Charge", "Per Quantity",
+											new ArrayList<PriceGrid>());
+									/*String listOfPrices, String listOfQuan, String discountCodes,
+									String currency, String priceInclude, boolean isBasePrice,
+									String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,
+									List<PriceGrid> existingPriceGrid)*/					
+									
+								}
+							}
+						}
 						break;
 					case  23://Plate/Screen Charge
-
+						plateScreenCharge=CommonUtility.getCellValueStrinOrInt(cell);
+						if(StringUtils.isEmpty(plateScreenCharge)|| plateScreenCharge.trim().contains("N/A")){
+							plateScreenCharge="";
+						}
+						
 						break;
 					case  24://Plate/Screen Charge Code
-
+						 plateScreenChargeCode=CommonUtility.getCellValueStrinOrInt(cell);
+						 if(StringUtils.isEmpty(plateScreenChargeCode)|| plateScreenChargeCode.trim().contains("N/A") || plateScreenChargeCode.trim().contains("Free")){
+							 plateScreenChargeCode="Z";
+							}
 						break;
 					case  25://REORDER Plate/Screen Charge
-
+						 plateReOrderCharge=CommonUtility.getCellValueStrinOrInt(cell);
+						 if(StringUtils.isEmpty(plateReOrderCharge)|| plateReOrderCharge.trim().contains("N/A")){
+							 plateReOrderCharge="";
+							}
 						break;
 					case  26://REORDER Plate/Screen Charge Code
-
+						 plateReOrderChargeCode=CommonUtility.getCellValueStrinOrInt(cell);
+						 if(StringUtils.isEmpty(plateReOrderChargeCode)|| plateReOrderChargeCode.trim().contains("N/A") || plateReOrderChargeCode.trim().contains("Free")){
+							 plateReOrderChargeCode="Z";
+							}
 						break;
 					case  27://Quantity_1
 
@@ -375,29 +535,90 @@ public class BagMakersMapping implements IExcelParser{
 
 						break;
 					case  42://Extra Color Run Charge
-
+						 extraColorRucnChrg = CommonUtility.getCellValueStrinOrInt(cell);
+						 if(extraColorRucnChrg.trim().contains("N/A")){
+							 extraColorRucnChrg="";
+						 }
+						
 						break;
 					case  43://Extra Color Run Code
-
+						String extraColorRucnChrgCode=CommonUtility.getCellValueStrinOrInt(cell);
+						if(extraColorRucnChrgCode.trim().contains("N/A")){
+							extraColorRucnChrgCode="Z";
+						 }
+						if(!StringUtils.isEmpty(extraColorRucnChrg)){
+							List<AdditionalColor> listOfAdditioColor = bagMakerAttributeParser.getAdditionalColor("Additional Color");
+							productConfigObj.setAdditionalColors(listOfAdditioColor);
+							extraColorRucnChrg = extraColorRucnChrg.replace("$", "").trim();
+							
+							priceGrids=bagMakersPriceGridParser.getPriceGrids(
+									extraColorRucnChrg, "1", extraColorRucnChrgCode,
+										ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+										"false","Additional Color","Additional Colors",new Integer(1),"Run Charge", "Per Quantity",
+										priceGrids);	
+							
+						}
 						break;
 					case  44://Extra Location Run Charge
-
+						extraLocRunChrg = CommonUtility.getCellValueStrinOrInt(cell);
+						 if(extraLocRunChrg.trim().contains("N/A")){
+							 extraLocRunChrg="";
+						 }
 						break;
 					case  45://Extra Location Run Code
-
+						String extraLocRucnChrgCode=CommonUtility.getCellValueStrinOrInt(cell);
+						if(extraLocRucnChrgCode.trim().contains("N/A")){
+							extraLocRucnChrgCode="Z";
+						 }
+						if(!StringUtils.isEmpty(extraLocRunChrg)){
+							List<AdditionalLocation> listOfAdditioLoc = bagMakerAttributeParser.getAdditionalLocation("Additional Location");
+							productConfigObj.setAdditionalLocations(listOfAdditioLoc);
+							extraLocRunChrg = extraLocRunChrg.replace("$", "").trim();
+							
+							priceGrids=bagMakersPriceGridParser.getPriceGrids(
+									extraLocRunChrg, "1", extraLocRucnChrgCode,
+										ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+										"false","Additional Location","Additional Location",new Integer(1),"Run Charge", "Per Quantity",
+										priceGrids);	
+							
+						}
 						break;
 					case  46://Extra Color/Location Screen/Plate Charge
-
+						extraLocColorScreenChrg = CommonUtility.getCellValueStrinOrInt(cell);
+						 if(extraLocColorScreenChrg.trim().contains("N/A")){
+							 extraLocColorScreenChrg="";
+						 }
 						break;
 					case  47://Extra Color/Location Screen/Plate Code
-
+						
+						String extraLocColorScreenChrgCode=CommonUtility.getCellValueStrinOrInt(cell);
+						if(extraLocColorScreenChrgCode.trim().contains("N/A")){
+							extraLocColorScreenChrgCode="Z";
+						 }
+						if(!StringUtils.isEmpty(extraLocColorScreenChrg)){
+							if(CollectionUtils.isEmpty(productConfigObj.getAdditionalLocations())){
+							List<AdditionalLocation> listOfAdditioLoc = bagMakerAttributeParser.getAdditionalLocation("Additional Location");
+							productConfigObj.setAdditionalLocations(listOfAdditioLoc);
+							}
+							if(CollectionUtils.isEmpty(productConfigObj.getAdditionalColors())){
+							List<AdditionalColor> listOfAdditioColor = bagMakerAttributeParser.getAdditionalColor("Additional Color");
+							productConfigObj.setAdditionalColors(listOfAdditioColor);
+							}
+							extraLocRunChrg = extraLocRunChrg.replace("$", "").trim();
+							priceGrids=bagMakersPriceGridParser.getPriceGrids(
+									extraLocColorScreenChrg, "1", extraLocColorScreenChrgCode,
+										ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+										"false","Additional Color, Addiotnal Location","ADCL:Additional Color___ADLN:Additional Location",new Integer(1),"Screen Charge", "Per Quantity",
+										priceGrids);	
+							
+						}
 						break;
 					case  48://Production Time
-
+						
 						break;
 					case  49://QCA/CPSIA Product Safety Compliant
 
-					
+						break;
 					
 					}
 				} // end inner while loop
@@ -410,38 +631,6 @@ public class BagMakersMapping implements IExcelParser{
 				}
 	}
 	workbook.close();
-	
-	
-	boolean prod1flag=false;
-	 boolean prod2flag=false;
-	 boolean rushflag=false;
-	 boolean priceFlag=false;
-	 String flag="";
-	 
-	 if(!StringUtils.isEmpty(finalProdTimeVal)&& !StringUtils.isEmpty(listOfPricesProd1.toString())){
-		 prod1flag=true;
-		 priceFlag=true;
-		}else{
-			prod1flag=false;
-			flag="false;";
-		}
-	 
-	 if(!StringUtils.isEmpty(finalRushTimeVal)&& !StringUtils.isEmpty(listOfPricesRush.toString())){
-		 rushflag=true;
-		 priceFlag=true;
-		}else{
-			flag=flag+"false;";
-			rushflag=false;
-		}
-	 
-	 if(!StringUtils.isEmpty(finalProdTimeVal2)&& !StringUtils.isEmpty(listOfPricesProd2.toString())){
-			////imp code
-		 	prod2flag=true;
-		 	priceFlag=true;
-		}else{
-			flag=flag+"false;";
-			prod2flag=false;
-		}
 	 	
 	 // setting pricing over here
 	 // need to create a map over here 
@@ -449,22 +638,67 @@ public class BagMakersMapping implements IExcelParser{
 	 //same goes here as well
 	 //color & location
 	 // same goes here as well
-	 if(CollectionUtils.isEmpty(priceGrids)){
-			//priceGrids = highCalPriceGridParser.getPriceGridsQur();	
-		}
+	 // Ineed to set pricegrid over here
+	 if(!StringUtils.isEmpty(plateScreenCharge)){
+		 plateScreenCharge=plateScreenCharge.toUpperCase();
+		 if(plateScreenCharge.contains("NO SET UP") || plateScreenCharge.contains("MULTI")){
+			 productExcelObj.setDistributorOnlyComments(plateScreenCharge);
+		 }else{
+			 List<ImprintMethod> tempList=productConfigObj.getImprintMethods();
+			 if(!CollectionUtils.isEmpty(tempList)){
+				 plateScreenCharge=plateScreenCharge.replaceAll("$", "");
+				 for (ImprintMethod imprintMethod : tempList) {
+					//get alias over here
+					 String tempALias=imprintMethod.getAlias();
+					 priceGrids=bagMakersPriceGridParser.getPriceGrids(
+							 plateScreenCharge, "1", plateScreenChargeCode,
+								ApplicationConstants.CONST_STRING_CURRENCY_USD,"Plate/Screen Charge",false,
+								"false",tempALias,"Imprint Method",new Integer(1),"Screen Charge", "Per Quantity",
+								priceGrids);	
+				}
+			 }
+			 
+		 }
+	 }
+	 if(!StringUtils.isEmpty(plateReOrderCharge)){
+		 plateReOrderCharge=plateReOrderCharge.toUpperCase();
+		 if(plateReOrderCharge.contains("NO SET UP") || plateReOrderCharge.contains("MULTI")){
+			 productExcelObj.setDistributorOnlyComments(plateReOrderCharge);
+		 }else{
+			 List<ImprintMethod> tempList=productConfigObj.getImprintMethods();
+			 if(!CollectionUtils.isEmpty(tempList)){
+				 plateReOrderCharge=plateReOrderCharge.replaceAll("$", "");
+				 for (ImprintMethod imprintMethod : tempList) {
+					//get alias over here
+					 String tempALias=imprintMethod.getAlias();
+					 priceGrids=bagMakersPriceGridParser.getPriceGrids(
+							 plateReOrderCharge, "1", plateReOrderChargeCode,
+								ApplicationConstants.CONST_STRING_CURRENCY_USD,"Reorder Plate/Screen Charge",false,
+								"false",tempALias,"Imprint Method",new Integer(1),"Re-order Charge", "Per Quantity",
+								priceGrids);	
+				}
+			 }
+			 
+		 }
+	 }
 	 
-	 productExcelObj.setPriceType("L");//need to cofirm
+	 if(CollectionUtils.isEmpty(priceGrids)){
+			priceGrids = bagMakersPriceGridParser.getPriceGridsQur();	
+		}
+	   // Add repeatable sets here
+	 	productExcelObj.setPriceType("L");
 	 	productExcelObj.setPriceGrids(priceGrids);
 	 	productExcelObj.setProductConfigurations(productConfigObj);
-	 	_LOGGER.info("Product Data : "
-				+ mapperObj.writeValueAsString(productExcelObj));
+	 	 _LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(productExcelObj));
+	 	
 	 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 	 		productExcelObj.setAvailability(new ArrayList<Availability>());
 	 	}*/
 	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 	 	if(num ==1){
 	 		numOfProductsSuccess.add("1");
-	 	}else if(num == 0){
+	 	}else if(num == 0) {
 	 		numOfProductsFailure.add("0");
 	 	}else{
 	 		
@@ -493,6 +727,13 @@ public class BagMakersMapping implements IExcelParser{
 		prodTimeList=new ArrayList<ProductionTime>();
 		ShipingObj=new ShippingEstimate();
 		setUpchrgesVal="";
+		plateScreenCharge="";
+ 		 plateScreenChargeCode="";
+ 		 plateReOrderCharge="";
+ 		 plateReOrderChargeCode="";
+ 		 extraColorRucnChrg="";
+ 	     extraLocRunChrg="";
+ 	     extraLocColorScreenChrg="";
        return finalResult;
 	}catch(Exception e){
 		_LOGGER.error("Error while Processing excel sheet ,Error message: "+e.getMessage()+"for column"+columnIndex+1);
@@ -569,7 +810,18 @@ public class BagMakersMapping implements IExcelParser{
 			BagMakerAttributeParser bagMakerAttributeParser) {
 		this.bagMakerAttributeParser = bagMakerAttributeParser;
 	}
-	
+
+
+	public BagMakersPriceGridParser getBagMakersPriceGridParser() {
+		return bagMakersPriceGridParser;
+	}
+
+
+	public void setBagMakersPriceGridParser(
+			BagMakersPriceGridParser bagMakersPriceGridParser) {
+		this.bagMakersPriceGridParser = bagMakersPriceGridParser;
+	}
+
 }
 
 

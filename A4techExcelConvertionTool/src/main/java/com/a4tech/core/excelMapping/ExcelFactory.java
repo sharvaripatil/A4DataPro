@@ -17,6 +17,7 @@ import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
 import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
+import com.a4tech.supplier.mapper.BagMakersMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
@@ -69,7 +70,8 @@ public class ExcelFactory {
 	private BallProMapping       ballProMapping;
 	private PSLcadMapping pslcadMapping;
 	private TwintechMapping twintechMapping;
-
+	private BagMakersMapping bagMakersMapping; 
+	
 	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -140,6 +142,9 @@ public class ExcelFactory {
 	      }
 	      else if(name.equalsIgnoreCase("twintech") || name.equals("92357")){
 		      return twintechMapping;
+	      }//
+	      else if(name.equalsIgnoreCase("bagMakersMapping") || name.equals("37940")){
+		      return bagMakersMapping;
 	      }
 		return null;
 	}
@@ -389,6 +394,12 @@ public class ExcelFactory {
 	public void setTwintechMapping(TwintechMapping twintechMapping) {
 		this.twintechMapping = twintechMapping;
 	}
-	
 
+	public BagMakersMapping getBagMakersMapping() {
+		return bagMakersMapping;
+	}
+
+	public void setBagMakersMapping(BagMakersMapping bagMakersMapping) {
+		this.bagMakersMapping = bagMakersMapping;
+	}
 }

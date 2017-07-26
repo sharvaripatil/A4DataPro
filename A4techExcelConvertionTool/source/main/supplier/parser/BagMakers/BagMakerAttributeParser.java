@@ -6,17 +6,29 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
 import com.a4tech.lookup.service.LookupServiceData;
+import com.a4tech.product.model.AdditionalColor;
+import com.a4tech.product.model.AdditionalLocation;
+import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
-import com.a4tech.product.model.Configurations;
+import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.NumberOfItems;
+import com.a4tech.product.model.Option;
+import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Size;
+import com.a4tech.product.model.Value;
+import com.a4tech.product.model.Values;
+import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
-import com.a4tech.v2.core.model.Image;
 
 public class BagMakerAttributeParser {
 
@@ -26,6 +38,7 @@ public class BagMakerAttributeParser {
 	public List<ImprintMethod> getImprintMethods(List<String> listOfImprintMethods){
 		List<ImprintMethod> listOfImprintMethodsNew = new ArrayList<ImprintMethod>();
 		for (String value : listOfImprintMethods) {
+			value=value.trim();
 			ImprintMethod imprintMethodObj =new ImprintMethod();
 			if(objLookUpService.isImprintMethod(value.toUpperCase())){
 				imprintMethodObj.setAlias(value);
@@ -57,6 +70,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		ProductConfigurations newProductConfigurations=new ProductConfigurations();
 		Product newProduct=new Product();
 		List<String> listCategories=new ArrayList<String>();
+		List<Catalog> listCatalog=new ArrayList<Catalog>();
 		try{
 			if(existingProductConfig==null){
 				return new Product();
@@ -83,8 +97,10 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			if(!CollectionUtils.isEmpty(productKeywords)){
 				newProduct.setProductKeywords(productKeywords);
 			}
-			
-			
+			listCatalog=existingProduct.getCatalogs();
+			if(!CollectionUtils.isEmpty(listCatalog)){
+				newProduct.setCatalogs(listCatalog);
+			}
 		newProduct.setProductConfigurations(newProductConfigurations);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Existing Product Data " +e.getMessage());
@@ -104,6 +120,7 @@ public List<Color> getProductColors(String color){
 	color=color.replaceAll("\\|",",");
 	String[] colors =getValuesOfArray(color, ",");
 	for (String colorName : colors) {
+		colorName=colorName.trim();
 		if(StringUtils.isEmpty(colorName)){
 			continue;
 		}
@@ -223,11 +240,202 @@ public static boolean isComboColor(String colorValue){
 	return false;
 	}
 
+
+public Size getSizes(String sizeValue) {
+	Size sizeObj = new Size();
+	try{
+		sizeValue=sizeValue.toUpperCase();
+		sizeValue=sizeValue.replace("W", "");
+		sizeValue=sizeValue.replace("H", "");
+		sizeValue=sizeValue.replace("L", "");
+		sizeValue=sizeValue.replace("\"", "");
+		
+		//if (sizeGroup.equals("dimension")) {
+		Dimension dimensionObj = new Dimension();
+		//String DimenArr[] = sizeValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+		String DimenArr[] = sizeValue.split("X");
+		List<Values> valuesList = new ArrayList<Values>();
+		List<Value> valuelist = new ArrayList<Value>();
+		Values valuesObj = new Values();
+		Value valObj;
+			int count=1;
+			for (String value1 : DimenArr) {
+				valObj = new Value();
+				//String[] DimenArr2 = value1.split(ApplicationConstants.CONST_DELIMITER_COLON);
+				//valObj.setAttribute(DimenArr2[0]);
+				
+				if(DimenArr.length==3 || DimenArr.length==4){
+					if(count==1){
+						valObj.setValue(DimenArr[0].trim());
+						if(sizeValue.toUpperCase().contains("YDS")){
+							valObj.setUnit("yds");
+							valObj.setAttribute("Length");
+						}else{
+							valObj.setUnit("in");
+							valObj.setAttribute("Width");
+						}
+						
+					}else if(count==2){
+						valObj.setValue(DimenArr[1].trim());
+						if(sizeValue.toUpperCase().contains("YDS")){
+							valObj.setUnit("in");
+							valObj.setAttribute("Width");
+						}else{
+						valObj.setUnit("in");
+						valObj.setAttribute("Length");//Length
+						}
+					} else if(count==3){
+						valObj.setValue(DimenArr[2].trim());
+						valObj.setUnit("in");
+						valObj.setAttribute("Height");
+					}
+				}else if(DimenArr.length==2){
+					if(count==1){
+						valObj.setValue(DimenArr[0].trim());
+						valObj.setUnit("in");
+						valObj.setAttribute("Width");
+					}else if(count==2){
+						valObj.setValue(DimenArr[1].trim());
+						valObj.setUnit("in");
+						valObj.setAttribute("Height");
+					} 
+				}
+				
+				//valObj.setValue(DimenArr[0].trim());
+				//valObj.setUnit(DimenArr[1].trim());
+				valuelist.add(valObj);
+				valuesObj.setValue(valuelist);
+				count++;
+			}
+		valuesList.add(valuesObj);
+		dimensionObj.setValues(valuesList);
+		sizeObj.setDimension(dimensionObj);
+				//}
+			}
+		catch(Exception e)
+		{
+			_LOGGER.error("Error while processing Size :"+e.getMessage());
+			return sizeObj;
+		}
+		return sizeObj;
+	}
+
+public ShippingEstimate getShippingEstimates(String shippinglen,String shippingWid,String shippingH, String shippingWeightValue,
+		String noOfitem,ShippingEstimate ShipingObj) {
+	//ShippingEstimate ItemObject = new ShippingEstimate();
+	try{
+	List<NumberOfItems> listOfNumberOfItems = new ArrayList<NumberOfItems>();
+	List<Weight> listOfWeight = new ArrayList<Weight>();
+	NumberOfItems itemObj = new NumberOfItems();
+
+		//List<Dimensions> dimenlist = new ArrayList<Dimensions>();
+		Dimensions dimensionObj = new Dimensions();
+		
+			if(!StringUtils.isEmpty(shippinglen.trim())){
+			dimensionObj.setLength(shippinglen.trim());
+			dimensionObj.setLengthUnit("in");
+			ShipingObj.setDimensions(dimensionObj);
+			}
+			if(!StringUtils.isEmpty(shippingWid.trim())){
+			dimensionObj.setWidth(shippingWid.trim());
+			dimensionObj.setWidthUnit("in");
+			ShipingObj.setDimensions(dimensionObj);
+			}
+			if(!StringUtils.isEmpty(shippingH.trim())){
+			dimensionObj.setHeight(shippingH.trim());
+			dimensionObj.setHeightUnit("in");
+			ShipingObj.setDimensions(dimensionObj);
+			}
+			//dimenlist.add(dimensionObj);
+			//ShipingObj.setDimensions(dimensionObj);
+			
+			//shippingWeightValue
+			if(!StringUtils.isEmpty(shippingWeightValue.trim())){
+				if(shippingWeightValue.equalsIgnoreCase("0") || shippingWeightValue.equalsIgnoreCase("NO")){
+				
+				}else{
+					Weight weightObj = new Weight();
+					weightObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_WEIGHT);
+					weightObj.setValue(shippingWeightValue);
+					listOfWeight.add(weightObj);
+					ShipingObj.setWeight(listOfWeight);
+				}
+			
+			}
+			
+			//shippingNoofItem
+			if(!StringUtils.isEmpty(noOfitem.trim())){
+				if(noOfitem.equalsIgnoreCase("0") || noOfitem.equalsIgnoreCase("NO")){
+					
+				}else{
+				itemObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_NUMBER_UNIT_CARTON);
+				itemObj.setValue(noOfitem);
+				listOfNumberOfItems.add(itemObj);
+				ShipingObj.setNumberOfItems(listOfNumberOfItems);
+				}
+		
+			}
+	}catch(Exception e){
+		_LOGGER.error("Error while processing Shipping Estimate :"+e.getMessage());
+		return new ShippingEstimate();
+	}
+	return ShipingObj;
+
+}
+public  List<Option> getOptions(String optionName,String  optionDataValue) {
+	List<Option> optionList=new ArrayList<>();
+	try{
+	Option optionObj=new Option();
+	      List<OptionValue> valuesList=new ArrayList<OptionValue>();
+			 OptionValue optionValueObj=new OptionValue();
+				  optionValueObj.setValue(optionDataValue.trim());
+				  valuesList.add(optionValueObj);
+				  optionObj.setOptionType("Product");
+				  optionObj.setName(optionName);
+				  optionObj.setValues(valuesList); 
+				  optionObj.setAdditionalInformation("");
+				  optionObj.setCanOnlyOrderOne(false);
+				  optionObj.setRequiredForOrder(true);
+				  optionList.add(optionObj);
+			  
+	   }catch(Exception e){
+		   _LOGGER.error("Error while processing Options :"+e.getMessage());          
+	      return new ArrayList<Option>();
+	      
+	     }
+	  return optionList;
+	  
+	 }
+
+	public List<AdditionalLocation> getAdditionalLocation(String loctionVal){
+			List<AdditionalLocation> listOfAdditionalLoc = new ArrayList<>();
+			AdditionalLocation additionalLocObj = new AdditionalLocation();
+			additionalLocObj.setName(loctionVal);
+			listOfAdditionalLoc.add(additionalLocObj);
+			return listOfAdditionalLoc;
+	}
+	
+	public List<AdditionalColor> getAdditionalColor(String colorVal){
+		List<AdditionalColor> listOfAdditionalColor = new ArrayList<>();
+		AdditionalColor additionalColorObj = new AdditionalColor();
+		additionalColorObj.setName(colorVal);
+		listOfAdditionalColor.add(additionalColorObj);
+		return listOfAdditionalColor;
+	}
+	
 	public static String[] getValuesOfArray(String data,String delimiter){
 	   if(!StringUtils.isEmpty(data)){
 		   return data.split(delimiter);
 	   }
 	   return null;
    }
+
+	public LookupServiceData getObjLookUpService() {
+		return objLookUpService;
+	}
+
+	public void setObjLookUpService(LookupServiceData objLookUpService) {
+		this.objLookUpService = objLookUpService;
+	}
 
 }
