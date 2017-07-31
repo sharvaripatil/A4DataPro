@@ -52,7 +52,6 @@ public class BagMakersMapping implements IExcelParser{
 	@Autowired
 	ObjectMapper mapperObj;
 	
-	@SuppressWarnings("finally")
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId){
 		int columnIndex = 0;
 		List<String> numOfProductsSuccess = new ArrayList<String>();
@@ -64,19 +63,13 @@ public class BagMakersMapping implements IExcelParser{
 		  Product existingApiProduct = null;
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
-		  String productId = null;
+		  
 		  String shippinglen="";
 		  String shippingWid="";
 		  String shippingH="";
 		   String shippingWeightValue="";
 		  String noOfitem="";
 		  boolean existingFlag=false;
-		  String prodTime="";
-		  String finalProdTimeVal="";
-		  String rushTime="";
-		  String finalRushTimeVal="";
-		  String prodTimeVal2="";
-		  String finalProdTimeVal2="";
 		  String plateScreenCharge="";
 		  String plateScreenChargeCode="";
 		  String plateReOrderCharge="";
@@ -84,6 +77,11 @@ public class BagMakersMapping implements IExcelParser{
 		  String extraColorRucnChrg="";
 		  String extraLocRunChrg="";
 		  String extraLocColorScreenChrg="";
+		  StringBuilder listOfQuantity = new StringBuilder();
+		  StringBuilder listOfPrices = new StringBuilder();
+		  StringBuilder listOfDiscount = new StringBuilder();
+		  String basePricePriceInlcude="";
+		  String tempQuant1="";
 		  try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -92,16 +90,7 @@ public class BagMakersMapping implements IExcelParser{
 		_LOGGER.info("Started Processing Product");
 	
 		Set<String>  productXids = new HashSet<String>();
-		StringBuilder listOfQuantityProd1 = new StringBuilder();
-		StringBuilder listOfPricesProd1 = new StringBuilder();
-		
-		StringBuilder listOfQuantityRush = new StringBuilder();
-		StringBuilder listOfPricesRush = new StringBuilder();
-		StringBuilder listOfQuantityProd2 = new StringBuilder();
-		StringBuilder listOfPricesProd2 = new StringBuilder();
-		
 		 List<String> repeatRows = new ArrayList<>();
-		 List<ProductionTime> prodTimeList=new ArrayList<ProductionTime>();
 		 ShippingEstimate ShipingObj=new ShippingEstimate();
 		 String setUpchrgesVal="";
 		 String repeatUpchrgesVal="";
@@ -135,59 +124,17 @@ public class BagMakersMapping implements IExcelParser{
 							 if(nextRow.getRowNum() != 1){
 								 
 								 // Ineed to set pricegrid over here
-								 if(!StringUtils.isEmpty(plateScreenCharge)){
-									 plateScreenCharge=plateScreenCharge.toUpperCase();
-									 if(plateScreenCharge.contains("NO SET UP") || plateScreenCharge.contains("MULTI")){
-										 productExcelObj.setDistributorOnlyComments(plateScreenCharge);
-									 }else{
-										 List<ImprintMethod> tempList=productConfigObj.getImprintMethods();
-										 if(!CollectionUtils.isEmpty(tempList)){
-											 plateScreenCharge=plateScreenCharge.replaceAll("$", "");
-											 for (ImprintMethod imprintMethod : tempList) {
-												//get alias over here
-												 String tempALias=imprintMethod.getAlias();
-												 priceGrids=bagMakersPriceGridParser.getPriceGrids(
-														 plateScreenCharge, "1", plateScreenChargeCode,
-															ApplicationConstants.CONST_STRING_CURRENCY_USD,"Plate/Screen Charge",false,
-															"false",tempALias,"Imprint Method",new Integer(1),"Screen Charge", "Per Quantity",
-															priceGrids);	
-											}
-										 }
-										 
-									 }
-								 }
-								 if(!StringUtils.isEmpty(plateReOrderCharge)){
-									 plateReOrderCharge=plateReOrderCharge.toUpperCase();
-									 if(plateReOrderCharge.contains("NO SET UP") || plateReOrderCharge.contains("MULTI")){
-										 productExcelObj.setDistributorOnlyComments(plateReOrderCharge);
-									 }else{
-										 List<ImprintMethod> tempList=productConfigObj.getImprintMethods();
-										 if(!CollectionUtils.isEmpty(tempList)){
-											 plateReOrderCharge=plateReOrderCharge.replaceAll("$", "");
-											 for (ImprintMethod imprintMethod : tempList) {
-												//get alias over here
-												 String tempALias=imprintMethod.getAlias();
-												 priceGrids=bagMakersPriceGridParser.getPriceGrids(
-														 plateReOrderCharge, "1", plateReOrderChargeCode,
-															ApplicationConstants.CONST_STRING_CURRENCY_USD,"Reorder Plate/Screen Charge",false,
-															"false",tempALias,"Imprint Method",new Integer(1),"Re-order Charge", "Per Quantity",
-															priceGrids);	
-											}
-										 }
-										 
-									 }
-								 }
-								 
-								 if(CollectionUtils.isEmpty(priceGrids)){
-										priceGrids = bagMakersPriceGridParser.getPriceGridsQur();	
-									}
 								   // Add repeatable sets here
+								 productExcelObj=bagMakersPriceGridParser.getPricingData(listOfPrices.toString(), listOfQuantity.toString(), listOfDiscount.toString(), basePricePriceInlcude, 
+											plateScreenCharge, plateScreenChargeCode,
+										    plateReOrderCharge, plateReOrderChargeCode, priceGrids, 
+										    productExcelObj, productConfigObj);
 								 	productExcelObj.setPriceType("L");
 								 	productExcelObj.setPriceGrids(priceGrids);
 								 	productExcelObj.setProductConfigurations(productConfigObj);
-								 	 _LOGGER.info("Product Data : "
+								 	/* _LOGGER.info("Product Data : "
 												+ mapperObj.writeValueAsString(productExcelObj));
-								 	
+								 	*/
 								 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 								 		productExcelObj.setAvailability(new ArrayList<Availability>());
 								 	}*/
@@ -204,19 +151,6 @@ public class BagMakersMapping implements IExcelParser{
 									//reset all list and objects over here
 									priceGrids = new ArrayList<PriceGrid>();
 									productConfigObj = new ProductConfigurations();
-									listOfQuantityProd1 = new StringBuilder();
-									 listOfPricesProd1 = new StringBuilder();
-									 listOfQuantityRush = new StringBuilder();
-									 listOfPricesRush = new StringBuilder();
-									 listOfQuantityProd2 = new StringBuilder();
-									 listOfPricesProd2 = new StringBuilder();
-									 prodTime="";
-									 finalProdTimeVal="";
-									 rushTime="";
-									 finalRushTimeVal="";
-									 prodTimeVal2="";
-									 finalProdTimeVal2="";
-									 prodTimeList=new ArrayList<ProductionTime>();
 									 ShipingObj=new ShippingEstimate();
 									 setUpchrgesVal="";
 									 plateScreenCharge="";
@@ -225,7 +159,13 @@ public class BagMakersMapping implements IExcelParser{
 							  		 plateReOrderChargeCode="";
 							  		 extraColorRucnChrg="";
 							  	     extraLocRunChrg="";
-							  	     extraLocColorScreenChrg="";	
+							  	     extraLocColorScreenChrg="";
+							  	    listOfQuantity = new StringBuilder();
+							  	    listOfPrices = new StringBuilder();
+							  	    listOfDiscount = new StringBuilder();
+							  	    basePricePriceInlcude="";
+							  	    tempQuant1="";
+
 							 }
 							    if(!listOfProductXids.contains(xid)){
 							    	listOfProductXids.add(xid);
@@ -358,7 +298,11 @@ public class BagMakersMapping implements IExcelParser{
 						 //noOfitem=noOfitem.toUpperCase();
 						 noOfitem=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(noOfitem.trim())){
-						 ShipingObj =bagMakerAttributeParser.getShippingEstimates("", "", "", "", noOfitem,ShipingObj);
+							 noOfitem=noOfitem.toLowerCase();
+							 if(noOfitem.contains("pk")){
+								 noOfitem=noOfitem.substring(0,noOfitem.indexOf("pk"));
+							 }
+						 ShipingObj =bagMakerAttributeParser.getShippingEstimates("", "", "", "", noOfitem.trim(),ShipingObj);
 						 productConfigObj.setShippingEstimates(ShipingObj);
 						}
 						break;
@@ -410,7 +354,7 @@ public class BagMakersMapping implements IExcelParser{
 							}else{
 						List<Origin> listOfOrigins = new ArrayList<Origin>();
 						Origin origins = new Origin();
-						origins.setName("U.S.A");
+						origins.setName("U.S.A.");
 						listOfOrigins.add(origins);
 						productConfigObj.setOrigins(listOfOrigins);
 							}
@@ -465,8 +409,8 @@ public class BagMakersMapping implements IExcelParser{
 						}
 						break;
 					case  23://Plate/Screen Charge
-						plateScreenCharge=CommonUtility.getCellValueStrinOrInt(cell);
-						if(StringUtils.isEmpty(plateScreenCharge)|| plateScreenCharge.trim().contains("N/A")){
+						plateScreenCharge=CommonUtility.getCellValueDouble(cell);
+						if(StringUtils.isEmpty(plateScreenCharge)|| plateScreenCharge.trim().contains("N/A") || plateScreenChargeCode.trim().contains("Free")){
 							plateScreenCharge="";
 						}
 						
@@ -478,8 +422,8 @@ public class BagMakersMapping implements IExcelParser{
 							}
 						break;
 					case  25://REORDER Plate/Screen Charge
-						 plateReOrderCharge=CommonUtility.getCellValueStrinOrInt(cell);
-						 if(StringUtils.isEmpty(plateReOrderCharge)|| plateReOrderCharge.trim().contains("N/A")){
+						 plateReOrderCharge=CommonUtility.getCellValueDouble(cell);
+						 if(StringUtils.isEmpty(plateReOrderCharge)|| plateReOrderCharge.trim().contains("N/A") || plateScreenChargeCode.trim().contains("Free")){
 							 plateReOrderCharge="";
 							}
 						break;
@@ -489,53 +433,150 @@ public class BagMakersMapping implements IExcelParser{
 							 plateReOrderChargeCode="Z";
 							}
 						break;
-					case  27://Quantity_1
-
+					case 27:
+						String	quantity1=null;
+						quantity1=CommonUtility.getCellValueStrinOrInt(cell);
+						tempQuant1=quantity1;
+					         if(!StringUtils.isEmpty(quantity1) && !quantity1.contains("N/A")){
+					        	 if(quantity1.contains("(") && quantity1.contains(")")){
+				        			 basePricePriceInlcude=CommonUtility.extractValueSpecialCharacter("(", ")", quantity1);
+				        		 }else{
+				        			 basePricePriceInlcude="";
+				        		 }
+					        	 
+					        	 quantity1= removeSpecialChar(quantity1);
+					        		 if(quantity1.contains("-")){
+					        			 quantity1=getQuantValue(quantity1);
+					        		 
+					        	 }
+					        		 
+					        		 
+					        	 listOfQuantity.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
 						break;
-					case  28://Price_1
-
+					case 28:
+						String	listPrice1=null;
+						listPrice1=CommonUtility.getCellValueDouble(cell);
+						if(!StringUtils.isEmpty(listPrice1) && !listPrice1.contains("N/A")){
+				        	 listOfPrices.append(listPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
 						break;
-					case  29://Code_1
-
+					case 29:
+						   
+						String discCode1 = cell.getStringCellValue();
+				         if(!StringUtils.isEmpty(discCode1) && !discCode1.contains("N/A")){
+				        	 listOfDiscount.append(discCode1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
+				          
 						break;
-					case  30://Quantity_2
-
+					case 30:
+						String	quantity2=null;
+						quantity2=CommonUtility.getCellValueStrinOrInt(cell);
+						
+						if(tempQuant1.contains("4000")){
+							listOfQuantity.append("4001").append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							tempQuant1="";
+						}else if(!StringUtils.isEmpty(quantity2) && !quantity2.contains("N/A")){
+					        	 quantity2= removeSpecialChar(quantity2);
+				        		 if(quantity2.contains("-")){
+				        			 quantity2=getQuantValue(quantity2);
+				        		 
+				        	 }
+					        	 listOfQuantity.append(quantity2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
 						break;
-					case  31://Price_2
-
+					case 31:
+						String	listPrice2=null;
+						listPrice2=CommonUtility.getCellValueDouble(cell);
+						if(!StringUtils.isEmpty(listPrice2) && !listPrice2.contains("N/A")){
+				        	 listOfPrices.append(listPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
 						break;
-					case  32://Code_2
-
+					case 32:
+						String discCode2 = cell.getStringCellValue();
+				         if(!StringUtils.isEmpty(discCode2) && !discCode2.contains("N/A")){
+				        	 listOfDiscount.append(discCode2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
 						break;
-					case  33://Quantity_3
-
+					case 33:
+						String	quantity3=null;
+						quantity3=CommonUtility.getCellValueStrinOrInt(cell);
+					         if(!StringUtils.isEmpty(quantity3) && !quantity3.contains("N/A")){
+					        	 quantity3= removeSpecialChar(quantity3);
+				        		 if(quantity3.contains("-")){
+				        			 quantity3=getQuantValue(quantity3);
+				        		 
+				        	 }
+					        	 listOfQuantity.append(quantity3).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
 						break;
-					case  34://Price_3
-
+					case 34:
+						String	listPrice3=null;
+						listPrice3=CommonUtility.getCellValueDouble(cell);
+						if(!StringUtils.isEmpty(listPrice3) && !listPrice3.contains("N/A")){
+				        	 listOfPrices.append(listPrice3).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
 						break;
-					case  35://Code_3
-
+					case 35:
+						String discCode3 = cell.getStringCellValue();
+				         if(!StringUtils.isEmpty(discCode3) && !discCode3.contains("N/A")){
+				        	 listOfDiscount.append(discCode3).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
 						break;
-					case  36://Quantity_4
-
+					case 36:
+						String	quantity4=null;
+						quantity4=CommonUtility.getCellValueStrinOrInt(cell);
+					         if(!StringUtils.isEmpty(quantity4) && !quantity4.contains("N/A")){
+					        	 quantity4= removeSpecialChar(quantity4);
+				        		 if(quantity4.contains("-")){
+				        			 quantity4=getQuantValue(quantity4);
+				        		 
+				        	 }
+					        	 listOfQuantity.append(quantity4).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
 						break;
-					case  37://Price_4
-
+					case 37:
+						String	listPrice4=null;
+						listPrice4=CommonUtility.getCellValueDouble(cell);
+						if(!StringUtils.isEmpty(listPrice4) && !listPrice4.contains("N/A")){
+				        	 listOfPrices.append(listPrice4).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
 						break;
-					case  38://Code_4
-
+					case 38:
+						String discCode4  = cell.getStringCellValue();
+				         if(!StringUtils.isEmpty(discCode4) && !discCode4.contains("N/A")){
+				        	 listOfDiscount.append(discCode4).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
 						break;
-					case  39://Quantity_5
-
+					case 39:
+						String	quantity5=null;
+						quantity5=CommonUtility.getCellValueStrinOrInt(cell);
+					         if(!StringUtils.isEmpty(quantity5) && !quantity5.contains("N/A")){
+					        	 quantity5= removeSpecialChar(quantity5);
+				        		 if(quantity5.contains("-")){
+				        			 quantity5=getQuantValue(quantity5);
+				        		 
+				        	 }
+					        	 listOfQuantity.append(quantity5).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
 						break;
-					case  40://Price_5
-
+					case 40:
+						String	listPrice5=null;
+						listPrice5=CommonUtility.getCellValueDouble(cell);
+						if(!StringUtils.isEmpty(listPrice5) && !listPrice5.contains("N/A")){
+				        	 listOfPrices.append(listPrice5).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
 						break;
-					case  41://Code_5
-
+					case 41:
+						String discCode5  = cell.getStringCellValue();
+				         if(!StringUtils.isEmpty(discCode5) && !discCode5.contains("N/A")){
+				        	 listOfDiscount.append(discCode5).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
 						break;
+				
+					
 					case  42://Extra Color Run Charge
-						 extraColorRucnChrg = CommonUtility.getCellValueStrinOrInt(cell);
+						 extraColorRucnChrg = CommonUtility.getCellValueDouble(cell);
 						 if(extraColorRucnChrg.trim().contains("N/A")){
 							 extraColorRucnChrg="";
 						 }
@@ -560,7 +601,7 @@ public class BagMakersMapping implements IExcelParser{
 						}
 						break;
 					case  44://Extra Location Run Charge
-						extraLocRunChrg = CommonUtility.getCellValueStrinOrInt(cell);
+						extraLocRunChrg = CommonUtility.getCellValueDouble(cell);
 						 if(extraLocRunChrg.trim().contains("N/A")){
 							 extraLocRunChrg="";
 						 }
@@ -584,7 +625,7 @@ public class BagMakersMapping implements IExcelParser{
 						}
 						break;
 					case  46://Extra Color/Location Screen/Plate Charge
-						extraLocColorScreenChrg = CommonUtility.getCellValueStrinOrInt(cell);
+						extraLocColorScreenChrg = CommonUtility.getCellValueDouble(cell);
 						 if(extraLocColorScreenChrg.trim().contains("N/A")){
 							 extraLocColorScreenChrg="";
 						 }
@@ -614,10 +655,30 @@ public class BagMakersMapping implements IExcelParser{
 						}
 						break;
 					case  48://Production Time
-						
+						String prodTimeLo = null;
+						ProductionTime productionTime = new ProductionTime();
+						prodTimeLo=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(prodTimeLo)){
+					    prodTimeLo=prodTimeLo.replace("day","");
+					    prodTimeLo=prodTimeLo.replace("s","");
+						productionTime.setBusinessDays(prodTimeLo);
+						productionTime.setDetails(ApplicationConstants.CONST_STRING_DAYS);
+						List<ProductionTime> productionTimeList=new ArrayList<ProductionTime>();
+						productionTimeList.add(productionTime);
+						productConfigObj.setProductionTime(productionTimeList);
+						}
 						break;
 					case  49://QCA/CPSIA Product Safety Compliant
-
+						String complnceValuet=CommonUtility.getCellValueStrinOrInt(cell);
+						 if(!StringUtils.isEmpty(complnceValuet))
+						 {
+							  if(complnceValuet.equalsIgnoreCase("yes")){
+							  List<String> complianceList = new ArrayList<String>();
+					    	  complianceList.add("CPSIA");
+					    	  complianceList.add("QCA");
+					    	  productExcelObj.setComplianceCerts(complianceList);
+							} 
+						 }
 						break;
 					
 					}
@@ -639,59 +700,18 @@ public class BagMakersMapping implements IExcelParser{
 	 //color & location
 	 // same goes here as well
 	 // Ineed to set pricegrid over here
-	 if(!StringUtils.isEmpty(plateScreenCharge)){
-		 plateScreenCharge=plateScreenCharge.toUpperCase();
-		 if(plateScreenCharge.contains("NO SET UP") || plateScreenCharge.contains("MULTI")){
-			 productExcelObj.setDistributorOnlyComments(plateScreenCharge);
-		 }else{
-			 List<ImprintMethod> tempList=productConfigObj.getImprintMethods();
-			 if(!CollectionUtils.isEmpty(tempList)){
-				 plateScreenCharge=plateScreenCharge.replaceAll("$", "");
-				 for (ImprintMethod imprintMethod : tempList) {
-					//get alias over here
-					 String tempALias=imprintMethod.getAlias();
-					 priceGrids=bagMakersPriceGridParser.getPriceGrids(
-							 plateScreenCharge, "1", plateScreenChargeCode,
-								ApplicationConstants.CONST_STRING_CURRENCY_USD,"Plate/Screen Charge",false,
-								"false",tempALias,"Imprint Method",new Integer(1),"Screen Charge", "Per Quantity",
-								priceGrids);	
-				}
-			 }
-			 
-		 }
-	 }
-	 if(!StringUtils.isEmpty(plateReOrderCharge)){
-		 plateReOrderCharge=plateReOrderCharge.toUpperCase();
-		 if(plateReOrderCharge.contains("NO SET UP") || plateReOrderCharge.contains("MULTI")){
-			 productExcelObj.setDistributorOnlyComments(plateReOrderCharge);
-		 }else{
-			 List<ImprintMethod> tempList=productConfigObj.getImprintMethods();
-			 if(!CollectionUtils.isEmpty(tempList)){
-				 plateReOrderCharge=plateReOrderCharge.replaceAll("$", "");
-				 for (ImprintMethod imprintMethod : tempList) {
-					//get alias over here
-					 String tempALias=imprintMethod.getAlias();
-					 priceGrids=bagMakersPriceGridParser.getPriceGrids(
-							 plateReOrderCharge, "1", plateReOrderChargeCode,
-								ApplicationConstants.CONST_STRING_CURRENCY_USD,"Reorder Plate/Screen Charge",false,
-								"false",tempALias,"Imprint Method",new Integer(1),"Re-order Charge", "Per Quantity",
-								priceGrids);	
-				}
-			 }
-			 
-		 }
-	 }
-	 
-	 if(CollectionUtils.isEmpty(priceGrids)){
-			priceGrids = bagMakersPriceGridParser.getPriceGridsQur();	
-		}
-	   // Add repeatable sets here
+     // Add repeatable sets here
+		productExcelObj=bagMakersPriceGridParser.getPricingData(listOfPrices.toString(), listOfQuantity.toString(), listOfDiscount.toString(),basePricePriceInlcude,  
+																plateScreenCharge, plateScreenChargeCode,
+															    plateReOrderCharge, plateReOrderChargeCode, priceGrids, 
+															    productExcelObj, productConfigObj);
+		
 	 	productExcelObj.setPriceType("L");
 	 	productExcelObj.setPriceGrids(priceGrids);
 	 	productExcelObj.setProductConfigurations(productConfigObj);
-	 	 _LOGGER.info("Product Data : "
+	 	/* _LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));
-	 	
+	 	*/
 	 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 	 		productExcelObj.setAvailability(new ArrayList<Availability>());
 	 	}*/
@@ -712,19 +732,6 @@ public class BagMakersMapping implements IExcelParser{
    	//reset all list and objects over here
 		priceGrids = new ArrayList<PriceGrid>();
 		productConfigObj = new ProductConfigurations();
-		listOfQuantityProd1 = new StringBuilder();
-		 listOfPricesProd1 = new StringBuilder();
-		 listOfQuantityRush = new StringBuilder();
-		 listOfPricesRush = new StringBuilder();
-		 listOfQuantityProd2 = new StringBuilder();
-		 listOfPricesProd2 = new StringBuilder();
-		 prodTime="";
-		 finalProdTimeVal="";
-		 rushTime="";
-		 finalRushTimeVal="";
-		 prodTimeVal2="";
-		 finalProdTimeVal2="";
-		prodTimeList=new ArrayList<ProductionTime>();
 		ShipingObj=new ShippingEstimate();
 		setUpchrgesVal="";
 		plateScreenCharge="";
@@ -734,6 +741,11 @@ public class BagMakersMapping implements IExcelParser{
  		 extraColorRucnChrg="";
  	     extraLocRunChrg="";
  	     extraLocColorScreenChrg="";
+ 	    listOfQuantity = new StringBuilder();
+  	    listOfPrices = new StringBuilder();
+  	    listOfDiscount = new StringBuilder();
+  	   basePricePriceInlcude="";
+  	   tempQuant1="";
        return finalResult;
 	}catch(Exception e){
 		_LOGGER.error("Error while Processing excel sheet ,Error message: "+e.getMessage()+"for column"+columnIndex+1);
@@ -765,7 +777,8 @@ public class BagMakersMapping implements IExcelParser{
 	
 	
 	public static String removeSpecialChar(String tempValue){
-		tempValue=tempValue.replaceAll("(Day|Service|Days|Hour|Hours|Week|Weeks|Rush|R|u|s|h)", "");
+		tempValue=tempValue.trim();
+		tempValue=tempValue.replaceAll("(Day|Service|Sheets|Packages|Roll|Rolls|Days|Hour|Hours|Week|Weeks|Rush|R|u|s|h)", "");
 		tempValue=tempValue.replaceAll("\\(","");
 		tempValue=tempValue.replaceAll("\\)","");
 	return tempValue;
@@ -820,6 +833,11 @@ public class BagMakersMapping implements IExcelParser{
 	public void setBagMakersPriceGridParser(
 			BagMakersPriceGridParser bagMakersPriceGridParser) {
 		this.bagMakersPriceGridParser = bagMakersPriceGridParser;
+	}
+	public  static String getQuantValue(String value){
+		String temp[]=value.split("-");
+		return temp[0];
+		
 	}
 
 }

@@ -5,17 +5,21 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
+import com.a4tech.product.model.Product;
+import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.LookupData;
 
 public class BagMakersPriceGridParser {
-	private Logger              _LOGGER       =  Logger.getLogger(BagMakersPriceGridParser.class);
-	public List<PriceGrid> getPriceGrids(String listOfPrices, String listOfQuan, String discountCodes,
+	private static Logger              _LOGGER       =  Logger.getLogger(BagMakersPriceGridParser.class);
+	public static List<PriceGrid> getPriceGrids(String listOfPrices, String listOfQuan, String discountCodes,
 			String currency, String priceInclude, boolean isBasePrice,
 			String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,
 			List<PriceGrid> existingPriceGrid) 
@@ -68,7 +72,7 @@ public class BagMakersPriceGridParser {
 
 	}
 
-	public List<Price> getPrices(String[] prices, String[] quantity, String discount) {
+	public static List<Price> getPrices(String[] prices, String[] quantity, String discount) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
 		try{
@@ -106,7 +110,7 @@ public class BagMakersPriceGridParser {
 		return listOfPrices;
 	}
 	
-	public List<PriceConfiguration> getConfigurations(String criterias) {
+	public static List<PriceConfiguration> getConfigurations(String criterias) {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
 		String[] config = null;
 		PriceConfiguration configs = null;
@@ -165,7 +169,7 @@ public class BagMakersPriceGridParser {
 	}
 
 	
-	public List<PriceGrid> getPriceGridsQur( ) 
+	public static List<PriceGrid> getPriceGridsQur( ) 
 	{
 		List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
 		try{
@@ -188,4 +192,79 @@ public class BagMakersPriceGridParser {
 		_LOGGER.info("PriceGrid Processed");
 		return newPriceGrid;
 }
+	
+	//List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
+	
+	public Product getPricingData(String listOfPrices,String listOfQuantity,String listOfDiscount,String basePricePriceInlcude, String plateScreenCharge,String plateScreenChargeCode,
+			String plateReOrderCharge,String plateReOrderChargeCode,List<PriceGrid> priceGrids,Product productExcelObj,ProductConfigurations productConfigObj){
+		try{
+		if(!StringUtils.isEmpty(listOfPrices)){
+			priceGrids =getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(),listOfDiscount.toString(),
+					ApplicationConstants.CONST_STRING_CURRENCY_USD,basePricePriceInlcude,ApplicationConstants.CONST_BOOLEAN_TRUE,
+					ApplicationConstants.CONST_STRING_FALSE,ApplicationConstants.CONST_STRING_EMPTY,"",1,"","",
+					priceGrids);	
+		}
+	 if(!StringUtils.isEmpty(plateScreenCharge)){
+		 plateScreenCharge=plateScreenCharge.toUpperCase();
+		 if(plateScreenCharge.contains("NO SET UP") || plateScreenCharge.contains("MULTI")){
+			 productExcelObj.setDistributorOnlyComments(plateScreenCharge);
+		 }else{
+			 List<ImprintMethod> tempList=productConfigObj.getImprintMethods();
+			 if(!CollectionUtils.isEmpty(tempList)){
+				 plateScreenCharge=plateScreenCharge.replaceAll("$", "");
+				 for (ImprintMethod imprintMethod : tempList) {
+					//get alias over here
+					 String tempALias=imprintMethod.getAlias();
+					 priceGrids=getPriceGrids(
+							 plateScreenCharge, "1", plateScreenChargeCode,
+								ApplicationConstants.CONST_STRING_CURRENCY_USD,"Plate/Screen Charge",false,
+								"false",tempALias,"Imprint Method",new Integer(1),"Screen Charge", "Per Quantity",
+								priceGrids);	
+				}
+			 }
+			 
+		 }
+	 }
+	 if(!StringUtils.isEmpty(plateReOrderCharge)){
+		 plateReOrderCharge=plateReOrderCharge.toUpperCase();
+		 if(plateReOrderCharge.contains("NO SET UP") || plateReOrderCharge.contains("MULTI")){
+			 productExcelObj.setDistributorOnlyComments(plateReOrderCharge);
+		 }else{
+			 List<ImprintMethod> tempList=productConfigObj.getImprintMethods();
+			 if(!CollectionUtils.isEmpty(tempList)){
+				 plateReOrderCharge=plateReOrderCharge.replaceAll("$", "");
+				 for (ImprintMethod imprintMethod : tempList) {
+					//get alias over here
+					 String tempALias=imprintMethod.getAlias();
+					 priceGrids=getPriceGrids(
+							 plateReOrderCharge, "1", plateReOrderChargeCode,
+								ApplicationConstants.CONST_STRING_CURRENCY_USD,"Reorder Plate/Screen Charge",false,
+								"false",tempALias,"Imprint Method",new Integer(1),"Re-order Charge", "Per Quantity",
+								priceGrids);	
+				}
+			 }
+			 
+		 }
+	 }
+	 
+	 if(CollectionUtils.isEmpty(priceGrids)){
+			priceGrids = getPriceGridsQur();	
+		}
+	 productExcelObj.setPriceGrids(priceGrids);
+		}catch(Exception ex){
+			_LOGGER.error("Error while processing pricegrid "+ex.getMessage());
+		}
+	return productExcelObj;
+	
+	}
+
+	public Product getPricingData(StringBuilder listOfPrices,
+			StringBuilder listOfQuantity, StringBuilder listOfDiscount,
+			String plateScreenCharge, String plateScreenChargeCode,
+			String plateReOrderCharge, String plateReOrderChargeCode,
+			List<PriceGrid> priceGrids, Product productExcelObj,
+			ProductConfigurations productConfigObj) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
