@@ -353,6 +353,20 @@ public class CommonUtility {
 		}
 		return productionTime;
 	}
+	/*Author :Venakt
+     * Description : this method can used to convert production time weeks into business days
+     *               e.g. : 4 weeks into 20 business days  
+     * param : productionTimeValue,delimiter
+     */
+	public static String convertProductionTimeWeekIntoDays(String productionTime , String delimiter) {
+		
+			String[] productionTimes = productionTime.split(delimiter);
+			int productionStartTime = Integer.parseInt(productionTimes[0].trim()) * ApplicationConstants.CONST_INT_VALUE_FIVE;
+			int productionEndTime = Integer.parseInt(productionTimes[1].trim()) * ApplicationConstants.CONST_INT_VALUE_FIVE;
+			productionTime = productionStartTime + "-" + productionEndTime;
+		
+		return productionTime;
+	}
 	/*
 	 * Author      : venkat
 	 * Description : this method used to extract values between specialCharacter like (1132),{01245}..

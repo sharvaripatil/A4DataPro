@@ -33,6 +33,7 @@ import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
+import com.a4tech.supplier.mapper.TowelSpecialtiesMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
 import com.a4tech.supplier.mapper.TwintechMapping;
@@ -74,7 +75,8 @@ public class ExcelFactory {
 	private AlfaMapping       				alfaMapping;
 	private BellaCanvas                     bellaCanvasMapping;
 	private HighCaliberLineMappingRevised hcLineExcelMapping;
-
+	private TowelSpecialtiesMapping        towelSpecialties;
+	
 		public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -149,6 +151,8 @@ public class ExcelFactory {
 	    	  return alfaMapping;
 	      } else if(name.equalsIgnoreCase("bellaCanvas") || name.equals("39590")){
 		      return bellaCanvasMapping;
+	      } else if(name.equalsIgnoreCase("towelSpe") || name.equals("91605")){
+	    	  return towelSpecialties;
 	      }
 		return null;
 	}
@@ -412,5 +416,13 @@ public class ExcelFactory {
 	public void setAlfaMapping(AlfaMapping alfaMapping) {
 		this.alfaMapping = alfaMapping;
 	}
+	public TowelSpecialtiesMapping getTowelSpecialties() {
+		return towelSpecialties;
+	}
+
+	public void setTowelSpecialties(TowelSpecialtiesMapping towelSpecialties) {
+		this.towelSpecialties = towelSpecialties;
+	}
+
 
 }
