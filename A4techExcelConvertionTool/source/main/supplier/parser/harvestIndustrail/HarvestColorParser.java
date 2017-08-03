@@ -60,8 +60,9 @@ public class HarvestColorParser {
 			colorObj.setAlias(OriginalcolorName);
 			colorObj.setName(colorLookUpName);
 			}
+			//if(){
 			listOfProductColors.add(colorObj);
-
+			//}
 		}
 		return listOfProductColors;
 	}

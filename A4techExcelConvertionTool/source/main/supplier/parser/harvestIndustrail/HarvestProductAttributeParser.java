@@ -167,7 +167,7 @@ public class HarvestProductAttributeParser {
 	  if(imprintMethodValue.contains("Embroidery"))
 	  {
 		  imprMethod.setType("Embroidered");
-	  }else if(imprintMethodValue.contains("Screen printed") ||imprintMethodValue.contains("Offset printed") 
+	  }else if(imprintMethodValue.contains("Offset printed") 
 			  ||imprintMethodValue.contains("Pad printed"))
 	  {
 		  imprMethod.setType("Printed");
@@ -178,7 +178,7 @@ public class HarvestProductAttributeParser {
 	  }else if(imprintMethodValue.contains("Sublimation"))
 	  {
 		  imprMethod.setType("Sublimation");
-	  }else if(imprintMethodValue.contains("Silk Screen Printing"))
+	  }else if(imprintMethodValue.contains("Silk Screen Printing") || imprintMethodValue.contains("Screen printed"))
 	  {
 		  imprMethod.setType("Silkscreen");
 	  }
@@ -187,7 +187,7 @@ public class HarvestProductAttributeParser {
 		  imprMethod.setType("Laser engraved");
 	  }else
 	  {
-		  imprMethod.setType("Other");
+		  imprMethod.setType("Printed");
 	  }
 	  imprMethod.setAlias(imprintMethodValue);	
 	  imprintMethodList.add(imprMethod);
