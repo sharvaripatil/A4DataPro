@@ -37,7 +37,7 @@ import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
 import com.a4tech.supplier.mapper.TwintechMapping;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
-
+import com.a4tech.supplier.mapper.BagMakersMapping;
 
 public class ExcelFactory {
 	private AdspecProductsExcelMapping 		adspecMapping;
@@ -74,7 +74,8 @@ public class ExcelFactory {
 	private AlfaMapping       				alfaMapping;
 	private BellaCanvas                     bellaCanvasMapping;
 	private HighCaliberLineMappingRevised hcLineExcelMapping;
-
+	private BagMakersMapping bagMakersMapping; 
+	
 		public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -149,6 +150,8 @@ public class ExcelFactory {
 	    	  return alfaMapping;
 	      } else if(name.equalsIgnoreCase("bellaCanvas") || name.equals("39590")){
 		      return bellaCanvasMapping;
+	      }else if(name.equalsIgnoreCase("bagMakersMapping") || name.equals("37940")){
+		      return bagMakersMapping;
 	      }
 		return null;
 	}
@@ -412,5 +415,11 @@ public class ExcelFactory {
 	public void setAlfaMapping(AlfaMapping alfaMapping) {
 		this.alfaMapping = alfaMapping;
 	}
+	public BagMakersMapping getBagMakersMapping() {
+		return bagMakersMapping;
+	}
 
+	public void setBagMakersMapping(BagMakersMapping bagMakersMapping) {
+		this.bagMakersMapping = bagMakersMapping;
+	}
 }
