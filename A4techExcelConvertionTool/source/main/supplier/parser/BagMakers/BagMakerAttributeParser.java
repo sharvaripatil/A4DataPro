@@ -133,8 +133,8 @@ public List<Color> getProductColors(String color){
 		String colorGroup = BagMakerConstants.getColorGroup(colorName.trim());
 		//if (colorGroup == null) {
 			//if (colorGroup!=null && colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
-		if (colorName.contains("/") || colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
-			
+		//if (colorName.contains("/") || colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
+		if (colorName.contains("/")) {
 			if(colorGroup==null){
 				colorGroup=colorName;
 			}
@@ -266,8 +266,10 @@ public Size getSizes(String sizeValue) {
 				
 				if(DimenArr.length==3 || DimenArr.length==4){
 					if(count==1){
+						DimenArr[0]=DimenArr[0].replace("YDS", "");
 						valObj.setValue(DimenArr[0].trim());
 						if(sizeValue.toUpperCase().contains("YDS")){
+							
 							valObj.setUnit("yds");
 							valObj.setAttribute("Length");
 						}else{
@@ -276,6 +278,7 @@ public Size getSizes(String sizeValue) {
 						}
 						
 					}else if(count==2){
+						DimenArr[1]=DimenArr[1].replace("YDS", "");
 						valObj.setValue(DimenArr[1].trim());
 						if(sizeValue.toUpperCase().contains("YDS")){
 							valObj.setUnit("in");
@@ -291,9 +294,16 @@ public Size getSizes(String sizeValue) {
 					}
 				}else if(DimenArr.length==2){
 					if(count==1){
+						DimenArr[0]=DimenArr[0].replace("YDS", "");
 						valObj.setValue(DimenArr[0].trim());
-						valObj.setUnit("in");
-						valObj.setAttribute("Width");
+						if(sizeValue.toUpperCase().contains("YDS")){
+							valObj.setUnit("yds");
+							valObj.setAttribute("Length");
+						}else{
+							valObj.setUnit("in");
+							valObj.setAttribute("Width");
+						}
+						
 					}else if(count==2){
 						valObj.setValue(DimenArr[1].trim());
 						valObj.setUnit("in");
@@ -321,7 +331,7 @@ public Size getSizes(String sizeValue) {
 	}
 
 public ShippingEstimate getShippingEstimates(String shippinglen,String shippingWid,String shippingH, String shippingWeightValue,
-		String noOfitem,ShippingEstimate ShipingObj) {
+		String noOfitem,Dimensions dimensionObj,ShippingEstimate ShipingObj) {
 	//ShippingEstimate ItemObject = new ShippingEstimate();
 	try{
 	List<NumberOfItems> listOfNumberOfItems = new ArrayList<NumberOfItems>();
@@ -329,7 +339,7 @@ public ShippingEstimate getShippingEstimates(String shippinglen,String shippingW
 	NumberOfItems itemObj = new NumberOfItems();
 
 		//List<Dimensions> dimenlist = new ArrayList<Dimensions>();
-		Dimensions dimensionObj = new Dimensions();
+		//Dimensions dimensionObj = new Dimensions();
 		
 			if(!StringUtils.isEmpty(shippinglen.trim())){
 			dimensionObj.setLength(shippinglen.trim());

@@ -26,6 +26,8 @@ import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Option;
@@ -92,6 +94,7 @@ public class BagMakersMapping implements IExcelParser{
 		Set<String>  productXids = new HashSet<String>();
 		 List<String> repeatRows = new ArrayList<>();
 		 ShippingEstimate ShipingObj=new ShippingEstimate();
+		 Dimensions dimensionObj=new Dimensions();
 		 String setUpchrgesVal="";
 		 String repeatUpchrgesVal="";
 		 String priceInlcudeFinal="";
@@ -130,7 +133,7 @@ public class BagMakersMapping implements IExcelParser{
 										    plateReOrderCharge, plateReOrderChargeCode, priceGrids, 
 										    productExcelObj, productConfigObj);
 								 	productExcelObj.setPriceType("L");
-								 	productExcelObj.setPriceGrids(priceGrids);
+								 	//productExcelObj.setPriceGrids(priceGrids);
 								 	productExcelObj.setProductConfigurations(productConfigObj);
 								 	/* _LOGGER.info("Product Data : "
 												+ mapperObj.writeValueAsString(productExcelObj));
@@ -152,6 +155,7 @@ public class BagMakersMapping implements IExcelParser{
 									priceGrids = new ArrayList<PriceGrid>();
 									productConfigObj = new ProductConfigurations();
 									 ShipingObj=new ShippingEstimate();
+									 dimensionObj=new Dimensions();
 									 setUpchrgesVal="";
 									 plateScreenCharge="";
 							  		 plateScreenChargeCode="";
@@ -260,7 +264,7 @@ public class BagMakersMapping implements IExcelParser{
 								&& !dimension.toUpperCase().contains("BW") && !dimension.toUpperCase().contains("BG") && !dimension.toUpperCase().contains("MW")
 								){
 							Size sizeObj=new Size();
-							bagMakerAttributeParser.getSizes(dimension);
+							sizeObj=bagMakerAttributeParser.getSizes(dimension);
 							productConfigObj.setSizes(sizeObj);
 						}
 						
@@ -302,7 +306,7 @@ public class BagMakersMapping implements IExcelParser{
 							 if(noOfitem.contains("pk")){
 								 noOfitem=noOfitem.substring(0,noOfitem.indexOf("pk"));
 							 }
-						 ShipingObj =bagMakerAttributeParser.getShippingEstimates("", "", "", "", noOfitem.trim(),ShipingObj);
+						 ShipingObj =bagMakerAttributeParser.getShippingEstimates("", "", "", "", noOfitem.trim(),dimensionObj,ShipingObj);
 						 productConfigObj.setShippingEstimates(ShipingObj);
 						}
 						break;
@@ -315,7 +319,7 @@ public class BagMakersMapping implements IExcelParser{
 							 shippingWeightValue=shippingWeightValue.substring(shippingWeightValue.indexOf("-"));
 							 shippingWeightValue=shippingWeightValue.replace("SHEETS","");
 						 }
-						 ShipingObj =bagMakerAttributeParser.getShippingEstimates("", "", "", shippingWeightValue, "",ShipingObj);
+						 ShipingObj =bagMakerAttributeParser.getShippingEstimates("", "", "", shippingWeightValue, "",dimensionObj,ShipingObj);
 						 productConfigObj.setShippingEstimates(ShipingObj);
 						 }
 						break;
@@ -323,7 +327,7 @@ public class BagMakersMapping implements IExcelParser{
 						shippinglen=CommonUtility.getCellValueStrinOrInt(cell);
  						if(!StringUtils.isEmpty(shippinglen.trim())){
  						shippinglen=shippinglen.toUpperCase();
- 						ShipingObj =bagMakerAttributeParser.getShippingEstimates(shippinglen.trim(), "", "", "", "",ShipingObj);
+ 						ShipingObj =bagMakerAttributeParser.getShippingEstimates(shippinglen.trim(), "", "", "", "",dimensionObj,ShipingObj);
  						productConfigObj.setShippingEstimates(ShipingObj);
  						}
 						break;
@@ -331,14 +335,14 @@ public class BagMakersMapping implements IExcelParser{
 						shippingWid=CommonUtility.getCellValueStrinOrInt(cell);
  						if(!StringUtils.isEmpty(shippingWid.trim())){
  						
- 						ShipingObj =bagMakerAttributeParser.getShippingEstimates("", shippingWid, "", "", "",ShipingObj);
+ 						ShipingObj =bagMakerAttributeParser.getShippingEstimates("", shippingWid.trim(), "", "", "",dimensionObj,ShipingObj);
  						productConfigObj.setShippingEstimates(ShipingObj);
  						}
 						break;
 					case  18://Box Depth
 						shippingH=CommonUtility.getCellValueStrinOrInt(cell);
  						if(!StringUtils.isEmpty(shippingH.trim())){
- 						ShipingObj =bagMakerAttributeParser.getShippingEstimates("", "", shippingH, "", "",ShipingObj);
+ 						ShipingObj =bagMakerAttributeParser.getShippingEstimates("", "", shippingH.trim(), "", "",dimensionObj,ShipingObj);
  						productConfigObj.setShippingEstimates(ShipingObj);
  						}
 						break;
@@ -451,21 +455,21 @@ public class BagMakersMapping implements IExcelParser{
 					        	 }
 					        		 
 					        		 
-					        	 listOfQuantity.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					        	 listOfQuantity.append(quantity1.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
 						break;
 					case 28:
 						String	listPrice1=null;
 						listPrice1=CommonUtility.getCellValueDouble(cell);
 						if(!StringUtils.isEmpty(listPrice1) && !listPrice1.contains("N/A")){
-				        	 listOfPrices.append(listPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				        	 listOfPrices.append(listPrice1.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
 						break;
 					case 29:
 						   
 						String discCode1 = cell.getStringCellValue();
 				         if(!StringUtils.isEmpty(discCode1) && !discCode1.contains("N/A")){
-				        	 listOfDiscount.append(discCode1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				        	 listOfDiscount.append(discCode1.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
 				          
 						break;
@@ -482,20 +486,20 @@ public class BagMakersMapping implements IExcelParser{
 				        			 quantity2=getQuantValue(quantity2);
 				        		 
 				        	 }
-					        	 listOfQuantity.append(quantity2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					        	 listOfQuantity.append(quantity2.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
 						break;
 					case 31:
 						String	listPrice2=null;
 						listPrice2=CommonUtility.getCellValueDouble(cell);
 						if(!StringUtils.isEmpty(listPrice2) && !listPrice2.contains("N/A")){
-				        	 listOfPrices.append(listPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				        	 listOfPrices.append(listPrice2.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
 						break;
 					case 32:
 						String discCode2 = cell.getStringCellValue();
 				         if(!StringUtils.isEmpty(discCode2) && !discCode2.contains("N/A")){
-				        	 listOfDiscount.append(discCode2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				        	 listOfDiscount.append(discCode2.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
 						break;
 					case 33:
@@ -507,20 +511,20 @@ public class BagMakersMapping implements IExcelParser{
 				        			 quantity3=getQuantValue(quantity3);
 				        		 
 				        	 }
-					        	 listOfQuantity.append(quantity3).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					        	 listOfQuantity.append(quantity3.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
 						break;
 					case 34:
 						String	listPrice3=null;
 						listPrice3=CommonUtility.getCellValueDouble(cell);
 						if(!StringUtils.isEmpty(listPrice3) && !listPrice3.contains("N/A")){
-				        	 listOfPrices.append(listPrice3).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				        	 listOfPrices.append(listPrice3.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
 						break;
 					case 35:
 						String discCode3 = cell.getStringCellValue();
 				         if(!StringUtils.isEmpty(discCode3) && !discCode3.contains("N/A")){
-				        	 listOfDiscount.append(discCode3).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				        	 listOfDiscount.append(discCode3.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
 						break;
 					case 36:
@@ -532,20 +536,20 @@ public class BagMakersMapping implements IExcelParser{
 				        			 quantity4=getQuantValue(quantity4);
 				        		 
 				        	 }
-					        	 listOfQuantity.append(quantity4).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					        	 listOfQuantity.append(quantity4.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
 						break;
 					case 37:
 						String	listPrice4=null;
 						listPrice4=CommonUtility.getCellValueDouble(cell);
 						if(!StringUtils.isEmpty(listPrice4) && !listPrice4.contains("N/A")){
-				        	 listOfPrices.append(listPrice4).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				        	 listOfPrices.append(listPrice4.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
 						break;
 					case 38:
 						String discCode4  = cell.getStringCellValue();
 				         if(!StringUtils.isEmpty(discCode4) && !discCode4.contains("N/A")){
-				        	 listOfDiscount.append(discCode4).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				        	 listOfDiscount.append(discCode4.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
 						break;
 					case 39:
@@ -557,20 +561,20 @@ public class BagMakersMapping implements IExcelParser{
 				        			 quantity5=getQuantValue(quantity5);
 				        		 
 				        	 }
-					        	 listOfQuantity.append(quantity5).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					        	 listOfQuantity.append(quantity5.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					         }
 						break;
 					case 40:
 						String	listPrice5=null;
 						listPrice5=CommonUtility.getCellValueDouble(cell);
 						if(!StringUtils.isEmpty(listPrice5) && !listPrice5.contains("N/A")){
-				        	 listOfPrices.append(listPrice5).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				        	 listOfPrices.append(listPrice5.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
 						break;
 					case 41:
 						String discCode5  = cell.getStringCellValue();
 				         if(!StringUtils.isEmpty(discCode5) && !discCode5.contains("N/A")){
-				        	 listOfDiscount.append(discCode5).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				        	 listOfDiscount.append(discCode5.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
 						break;
 				
@@ -707,7 +711,7 @@ public class BagMakersMapping implements IExcelParser{
 															    productExcelObj, productConfigObj);
 		
 	 	productExcelObj.setPriceType("L");
-	 	productExcelObj.setPriceGrids(priceGrids);
+	 	//productExcelObj.setPriceGrids(priceGrids);
 	 	productExcelObj.setProductConfigurations(productConfigObj);
 	 	/* _LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));
@@ -733,6 +737,7 @@ public class BagMakersMapping implements IExcelParser{
 		priceGrids = new ArrayList<PriceGrid>();
 		productConfigObj = new ProductConfigurations();
 		ShipingObj=new ShippingEstimate();
+		dimensionObj=new Dimensions();
 		setUpchrgesVal="";
 		plateScreenCharge="";
  		 plateScreenChargeCode="";
