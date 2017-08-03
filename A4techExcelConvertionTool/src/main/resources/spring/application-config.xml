@@ -413,6 +413,7 @@
 		<property name="alfaMapping" ref="alfaMappingId"></property>
 		<property name="bellaCanvasMapping" ref="bellaCanvasMappingId"/>
 		<property name="harvestMapping" ref="harvestMappingId"/>
+		<property name="bagMakersMapping" ref="bagMakersMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -889,6 +890,7 @@
          
          
         <!-- supplier bella&Canvas  configuration end -->
+
      
      
            <!-- supplier HarvestIndustrial configuration start -->
@@ -910,5 +912,21 @@
         <!-- supplier HarvestIndustrial configuration end -->
         
         
+
+      <!-- supplier 37940 Bag Makers configuration start -->
+     <bean id="bagMakersMappingId" class="com.a4tech.supplier.mapper.BagMakersMapping" autowire="byName">
+     <property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="bagMakerAttributeParser" ref="bagMakerAttributeParserId" /> 
+     <property name="bagMakersPriceGridParser" ref="bagMakersPriceGridParserId" /> 
+     </bean>
+     <bean id="bagMakerAttributeParserId" name="bagMakerAttributeParserObj"
+		class="parser.BagMakers.BagMakerAttributeParser" autowire="byName">
+		<property name="objLookUpService" ref="lookupServiceData"/>
+	</bean>
+	<bean id="bagMakersPriceGridParserId" name="bagMakersPriceGridParserObj" class="parser.BagMakers.BagMakersPriceGridParser" autowire="byName"/>
+     <!--supplier 37940 Bag Makers configuration end  --> 
+ 
+
 </beans>
 
