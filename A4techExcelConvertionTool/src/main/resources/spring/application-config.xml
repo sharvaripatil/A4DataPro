@@ -413,6 +413,7 @@
 		<property name="alfaMapping" ref="alfaMappingId"></property>
 		<property name="bellaCanvasMapping" ref="bellaCanvasMappingId"/>
 		<property name="harvestMapping" ref="harvestMappingId"/>
+		<property name="towelSpecialties" ref="towelSpecId"/>
 		<property name="bagMakersMapping" ref="bagMakersMappingId"/>
      </bean>
      
@@ -886,10 +887,11 @@
            <property name="bellaProductsParser" ref="bellaProductsParserId"/>
          
          </bean>
+
             <bean id="bellaProductsParserId" class="parser.bellaCanvas.BellaCanvasProductAttributeParser"/>
-         
-         
+       
         <!-- supplier bella&Canvas  configuration end -->
+
 
      
      
@@ -914,6 +916,21 @@
         
 
       <!-- supplier 37940 Bag Makers configuration start -->
+
+   <!-- Towel Specialties Configuration Start -->
+     <bean id="towelSpecId" class="com.a4tech.supplier.mapper.TowelSpecialtiesMapping">
+     	 <property name="postServiceImpl" ref="postService"/>
+         <property name="productDaoObj" ref="productDao"/> 
+         <property name="towelSpecAttributeParser" ref="towelSpecAttributeParserId"/>
+         <property name="towelSpecPriceParser" ref="towelPriceParserId"/>
+     </bean>
+     <bean id="towelSpecAttributeParserId" class="parser.towelSpecialties.TowelSpecAttributeParser">
+     	<property name="towelPriceGridParser" ref="towelPriceParserId"/>
+     </bean>
+     <bean id="towelPriceParserId" class="parser.towelSpecialties.TowelSpecPriceGridParser"/>
+   <!-- Towel Specialties Configuration End -->
+    <!-- supplier 37940 Bag Makers configuration start -->
+
      <bean id="bagMakersMappingId" class="com.a4tech.supplier.mapper.BagMakersMapping" autowire="byName">
      <property name="postServiceImpl" ref="postService"/>
      <property name="productDaoObj" ref="productDao"/>
@@ -926,7 +943,6 @@
 	</bean>
 	<bean id="bagMakersPriceGridParserId" name="bagMakersPriceGridParserObj" class="parser.BagMakers.BagMakersPriceGridParser" autowire="byName"/>
      <!--supplier 37940 Bag Makers configuration end  --> 
- 
 
 </beans>
 

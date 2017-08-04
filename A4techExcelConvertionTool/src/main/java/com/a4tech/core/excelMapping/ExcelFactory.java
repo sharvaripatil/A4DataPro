@@ -34,6 +34,7 @@ import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
+import com.a4tech.supplier.mapper.TowelSpecialtiesMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
 import com.a4tech.supplier.mapper.TwintechMapping;
@@ -76,9 +77,9 @@ public class ExcelFactory {
 	private BellaCanvas                     bellaCanvasMapping;
 	private HarvestIndustrialExcelMapping   harvestMapping;	
 	private HighCaliberLineMappingRevised hcLineExcelMapping;
+	private TowelSpecialtiesMapping        towelSpecialties;
 
 	private BagMakersMapping bagMakersMapping; 
-	
 
 		public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -157,6 +158,9 @@ public class ExcelFactory {
 
 	      }  else if(name.equalsIgnoreCase("harvest") || name.equals("61670")){
 		      return harvestMapping;
+
+	      } else if(name.equalsIgnoreCase("towelSpe") || name.equals("91605")){
+	    	  return towelSpecialties;
 
 	      }else if(name.equalsIgnoreCase("bagMakersMapping") || name.equals("37940")){
 		      return bagMakersMapping;
@@ -423,6 +427,13 @@ public class ExcelFactory {
 	}
 	public void setAlfaMapping(AlfaMapping alfaMapping) {
 		this.alfaMapping = alfaMapping;
+	}
+	public TowelSpecialtiesMapping getTowelSpecialties() {
+		return towelSpecialties;
+	}
+
+	public void setTowelSpecialties(TowelSpecialtiesMapping towelSpecialties) {
+		this.towelSpecialties = towelSpecialties;
 	}
 	public BagMakersMapping getBagMakersMapping() {
 		return bagMakersMapping;
