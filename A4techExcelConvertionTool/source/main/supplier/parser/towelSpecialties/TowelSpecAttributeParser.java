@@ -7,6 +7,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.AdditionalColor;
+import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.ImprintMethod;
@@ -114,6 +115,9 @@ public class TowelSpecAttributeParser {
 					  || imprMethodName.equalsIgnoreCase("Label") || imprMethodName.equalsIgnoreCase("Custom Fiber Reactive")
 					  || imprMethodName.equalsIgnoreCase("tote and towel")){
 				alias = imprMethodName; groupName = "Other";
+			} else if(imprMethodName.equalsIgnoreCase("Embroidery digitization charge up to 8000 stitches") 
+					|| imprMethodName.equalsIgnoreCase("Embroidery digitization charge over 8000 stitches")){
+				alias = imprMethodName; groupName = "Embroidered";
 			}
 			if(!imprintMethodList.stream().map(ImprintMethod::getAlias).anyMatch(alias::equals)){
 				imprintMethodObj.setAlias(alias);
@@ -225,10 +229,15 @@ public class TowelSpecAttributeParser {
 		 String[] imprSizeValues = CommonUtility.getValuesOfArray(value, ",");
 		 for (String imprSizeVal : imprSizeValues) {
 			imprintSizeObj = new ImprintSize();
+			imprSizeVal = imprSizeVal.trim();
 			if(imprSizeVal.contains("http")){//check value contains html tag or not
 				imprSizeVal = imprSizeVal.split("\\.")[0];
 			}
 			// this condition avoid duplicate values in list
+			/*if(!imprintSizeList.stream().map(ImprintSize::getValue).filter(imprSizeVal::equals).findFirst().isPresent()){
+				imprintSizeObj.setValue(imprSizeVal);
+				imprintSizeList.add(imprintSizeObj);
+			}*/
 			if(!imprintSizeList.stream().map(ImprintSize::getValue).anyMatch(imprSizeVal::equals)){
 				imprintSizeObj.setValue(imprSizeVal);
 				imprintSizeList.add(imprintSizeObj);
@@ -236,18 +245,39 @@ public class TowelSpecAttributeParser {
 		}
 		 return imprintSizeList;
 	 }
-	 public void getUpchargesBasedOnImprintMethod(String value,String upchargeName,Product product){
+	 public Product getUpchargesBasedOnImprintMethod(String value,String upchargeName,Product product){
 		 List<PriceGrid> priceGrid = product.getPriceGrids();
 		 ProductConfigurations config = product.getProductConfigurations();
-		 String priceInclude = null;
 		 String priceVal = null;
-		 String disc = null;
 		  if(value.contains("No charge for 144 + gift set;")){
-			  priceInclude = value;
 			  priceVal = value.split(":")[1];
 			  priceVal = priceVal.replaceAll("[^0-9\\.]", "");// remove unnecessary characters from given string except numbers
 			  priceVal =   priceVal.substring(0, priceVal.length() - 1); // remove last character(150.00.)
-			  disc = "V";
+		  } else if(value.contains("same artwork on both")){
+			  List<AdditionalLocation> additionalLocList = getAdditionalLocation("Second Side Imprint");
+			  config.setAdditionalLocations(additionalLocList);
+			  //Screen charge: For first order, $45.00(v) per side for same artwork on both sides. 
+			  //Otherwise, add $45.00(v) for second side. For re-orders, $22.50(v).
+			priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "45.00", "v", "Additional Location", false,
+					"USD", "For different second side imprint", "Second Side Imprint", "Screen charge",
+					"Other", 1, priceGrid, "", "");
+			priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "22.50", "v", "Imprint Method", false,
+					"USD", "", upchargeName, "Re-Order Charge",
+					"Other", 1, priceGrid, "", "");
+			priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "45.00", "v", "Imprint Method", false,
+					"USD", "For first order per side for same artwork on both sides", upchargeName, "Screen charge",
+					"Other", 1, priceGrid, "", "");
+		  } else if(value.contains("8000 stitches")){
+			  priceGrid = towelPriceGridParser.getUpchargePriceGrid("1___1", "75.00___45.00", "v_v", "Imprint Method", false,
+						"USD", "For order of less than 144. Up to 8000 stitches", upchargeName, "Screen charge",
+						"Other", 1, priceGrid, "", "");
+		  } else if(value.contains("Over 8,000 stitches")){
+			  priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "75", "v", "Imprint Method", false,
+						"USD", "Per extra thousand stitches", "Embroidery digitization charge up to 8000 stitches", "Digitizing Charge",
+						"Other", 1, priceGrid, "", "");
+			  priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "10", "v", "Imprint Method", false,
+						"USD", "Per extra thousand stitches", "Embroidery digitization charge over 8000 stitches", "Digitizing Charge",
+						"Other", 1, priceGrid, "", "");
 		  } else if(value.contains("second color")){
 			  List<AdditionalColor> additionalColorList = getAdditionalColors("First Color", "Second Color");
 			 // $65.00(v) for first color on blanket and tote. Maximum second color on blanket only: $65.00(v). 
@@ -285,21 +315,46 @@ public class TowelSpecAttributeParser {
 				|| value.contains("Screen charge") || value.contains("Art set-up charge")) {
 			String[] upchargeValues = null;
 			String price1 = null;
-			if(value.contains("Set Up Charge") || value.contains("Set up charge")){
-				upchargeValues = CommonUtility.getValuesOfArray(value, ";");
-				if(upchargeValues.length > 1){
-				  price1 = upchargeValues[0];
-				  String price2 = upchargeValues[1];
-				  price1 = price1.replaceAll("[^0-9\\.]", "");
-	  			 price2 = price2.replaceAll("[^0-9\\.]", "");
-	  			priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", price2, "v", "Imprint Method", false, "USD",
-						"", upchargeName, "Re-Order Charge", "Other", 1, priceGrid, "", "");
+			if((value.contains("towel") || value.contains("Towel")) && (value.contains("bag") || value.contains("Bag"))){
+				List<Option> optionsList = getProductOptions("Product Imprint", "Towel Imprint,Bag Imprint");
+				config.setOptions(optionsList);
+				if(value.contains("unlimited colors")){
+					//Set Up Charge: $165.00(v) for one color on towel and unlimited colors on the bag; $82.50(v)/color for re-orders.
+					priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "165.00", "v", "Imprint Option", false, "USD",
+							"", "Towel Imprint", "Set-up Charge", "Other", 1, priceGrid, "Product Imprint", "");
+				  priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "82.50", "v", "Imprint Option", false, "USD",
+							"", "Bag Imprint", "Re-Order Charge", "Other", 1, priceGrid, "Product Imprint", "");
+				}else if(value.contains("165.00")){
+					//Screen Charge: $165.00(v) for one color on towel and bag; $82.50(v)/color for re-orders.
+					priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "165.00", "v", "Imprint Option", false, "USD",
+							"", "Towel Imprint", "Screen Charge", "Other", 1, priceGrid, "Product Imprint", "");
+				  priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "82.50", "v", "Imprint Option", false, "USD",
+							"", "Bag Imprint", "Re-Order Charge", "Other", 1, priceGrid, "Product Imprint", "");
 				} else {
-					 price1 = upchargeValues[0];
-					price1 = price1.replaceAll("[^0-9\\.]", "");
+				//Towel - $45.00 (v)/color for first order; $22.50(v)/color for re-orders. Bag: $45.00(v); $22.50(v) for re-orders.
+					priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "45.00", "v", "Imprint Option", false, "USD",
+							"", "Towel Imprint", "Set-up Charge", "Other", 1, priceGrid, "Product Imprint", "");
+				  priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "22.50", "v", "Imprint Option", false, "USD",
+							"", "Bag Imprint", "Re-Order Charge", "Other", 1, priceGrid, "Product Imprint", "");
 				}
-				priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", price1, "v", "Imprint Method", false, "USD",
-						"", upchargeName, "Set-up Charge", "Other", 1, priceGrid, "", "");
+			}
+			if(value.contains("Set Up Charge") || value.contains("Set up charge")){
+					upchargeValues = CommonUtility.getValuesOfArray(value, ";");
+					if(upchargeValues.length > 1){
+					  price1 = upchargeValues[0];
+					  String price2 = upchargeValues[1];
+					  price1 = price1.replaceAll("[^0-9\\.]", "");
+		  			 price2 = price2.replaceAll("[^0-9\\.]", "");
+		  			price2 =   price2.substring(0, price2.length() - 1);
+		  			priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", price2, "v", "Imprint Method", false, "USD",
+							"", upchargeName, "Re-Order Charge", "Other", 1, priceGrid, "", "");
+					} else {
+						 price1 = upchargeValues[0];
+						price1 = price1.replaceAll("[^0-9\\.]", "");
+					}
+					price1 =   price1.substring(0, price1.length() - 1);
+					priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", price1, "v", "Imprint Method", false, "USD",
+							"", upchargeName, "Set-up Charge", "Other", 1, priceGrid, "", "");	
 			} else if(value.contains("Screen Charge") || value.contains("Screen charge")){
 				upchargeValues = CommonUtility.getValuesOfArray(value, ";");
                 if(upchargeValues.length > 1){
@@ -315,18 +370,18 @@ public class TowelSpecAttributeParser {
 				}
                 priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", price1, "v", "Imprint Method", false, "USD",
 						"", upchargeName, "Screen Charge", "Other", 1, priceGrid, "", "");
-			} else {
-			
-			}
-			  
+			} else if(value.contains("Art set-up charge")){
+				priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "65", "v", "Imprint Method", false, "USD",
+						"Includes actual sample proof of gift card", upchargeName, "Set-up Charge", "Other", 1, priceGrid, "", "");
+			}  
 		  } else{//$45.00(v)
 			  value = value.replaceAll("[^0-9\\.]", "");
 			  priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", value, "v", "Imprint Method", false, "USD",
 						"", upchargeName, "Imprint Method Charge", "Other", 1, priceGrid, "", "");
-
 		  }
-		 
 		 product.setProductConfigurations(config);
+		 product.setPriceGrids(priceGrid);
+		 return product;
 	 }
 	 
 	 private List<AdditionalColor> getAdditionalColors(String color1,String color2){
@@ -357,6 +412,13 @@ public class TowelSpecAttributeParser {
 		 optionObj.setValues(optionValuesList);
 		 optionsList.add(optionObj);
 		 return optionsList;
+	 }
+	 private List<AdditionalLocation> getAdditionalLocation(String locVal){
+		 List<AdditionalLocation> additionalLocList = new ArrayList<>();
+		 AdditionalLocation addLocObj = new AdditionalLocation();
+		 addLocObj.setName(locVal);
+		 additionalLocList.add(addLocObj);
+		 return additionalLocList;
 	 }
 	 public TowelSpecPriceGridParser getTowelPriceGridParser() {
 			return towelPriceGridParser;

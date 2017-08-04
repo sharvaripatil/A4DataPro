@@ -57,23 +57,21 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		  List<String> repeatRows = new ArrayList<>();
  		try{
-			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 	    Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
-		
 		StringJoiner listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		StringJoiner listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		StringJoiner listOfDiscounts = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String xid = null;
 		int columnIndex=0;
-		 String productNo = "";
 		 StringBuilder shippingValues = new StringBuilder();
 		 String imprintMethodNameUpcharge = "";
-		 String imprintIncludes = "";
 		 List<ProductionTime> listOfProductionTime = new ArrayList<>();
 		 List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
 		 List<ImprintSize> listOfImprintSize = new ArrayList<>();
+		 String asiPrdNo = "";
 		while (iterator.hasNext()) {
 			
 			try{
@@ -117,6 +115,11 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 							   ShippingEstimate shippingEstmationValues = towelSpecAttributeParser
 										.getShippingEstimation(shippingValues.toString());
 								productConfigObj.setShippingEstimates(shippingEstmationValues);
+								productConfigObj.setImprintMethods(listOfImprintMethod);
+								if(repeatRows.size() == 1){
+									// remove sinagle base price configuration
+									priceGrids = removeBasePriceConfig(priceGrids);
+								}
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
@@ -132,20 +135,20 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 								priceGrids = new ArrayList<PriceGrid>();
 								listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							    listOfDiscounts = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 								productConfigObj = new ProductConfigurations();
 								shippingValues = new StringBuilder();
 								ProductDataStore.clearProductColorSet();
 								repeatRows.clear();
-								productNo = "";
 								imprintMethodNameUpcharge = "";
-								imprintIncludes = "";
 								listOfProductionTime = new ArrayList<>();
 								listOfImprintMethod = new ArrayList<>();
 								listOfImprintSize = new ArrayList<>();
+								asiPrdNo = "";
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
-						    	repeatRows.add(xid);
+						    	//repeatRows.add(xid);
 						    }
 						    productExcelObj = new Product();
      						 productExcelObj = postServiceImpl.getProduct(accessToken, xid);
@@ -159,14 +162,14 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 							
 					 }
 				}else{
-					if(isRepeateColumn(columnIndex+1)){
+					/*if(isRepeateColumn(columnIndex+1)){
 						 continue;
-					 }
-					/*if(productXids.contains(xid) && repeatRows.size() != 1){
+					 }*/
+					if(productXids.contains(xid) && repeatRows.size() != 0){
 						 if(isRepeateColumn(columnIndex+1)){
 							 continue;
 						 }
-					}*/
+					}
 				}
 				
 				switch (columnIndex+1) {
@@ -174,12 +177,16 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 					 productExcelObj.setExternalProductId(xid);
 					 break;
 				case 2:// prdNo
-					 String prdNo = cell.getStringCellValue();
-					 productExcelObj.setAsiProdNo(prdNo);
+					asiPrdNo  = cell.getStringCellValue();
+					 productExcelObj.setAsiProdNo(asiPrdNo);
 					  break;
 				case 3:// desc
 					String desc = cell.getStringCellValue();
 					desc = desc.replaceAll("™", "");
+					if(desc.contains("asiPrdNo")){
+						desc = desc.replaceAll(asiPrdNo, "");
+					}
+					productExcelObj.setName(desc);// if product name is not provided ,it is used as prdName
 					productExcelObj.setDescription(desc);
 				    break;
 				case 4:
@@ -206,6 +213,7 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 					if(!StringUtils.isEmpty(price)){
 						listOfQuantity.add(qty);
 						listOfPrices.add(price);
+						listOfDiscounts.add("C"); // default discount value for this supplier
 					}
 					break;
 				case 21://Production Time
@@ -221,7 +229,6 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 					if(!StringUtils.isEmpty(imprintMethodName)){
 								 listOfImprintMethod = towelSpecAttributeParser
 										.getImprintMethods(imprintMethodName,listOfImprintMethod);
-								productConfigObj.setImprintMethods(listOfImprintMethod);
 								if(imprintMethodName.contains("(")){
 									// no need to replace character
 								} else if(imprintMethodName.contains("/")){
@@ -232,12 +239,6 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 								if (imprintMethodName.contains("Blank")){
 									imprintMethodName = "Unimprinted";
 								}
-								/*if (imprintMethodName.equalsIgnoreCase("Blank (Black/Grey only)")
-										|| imprintMethodName.equalsIgnoreCase("Blank  (USA12CT)")
-										|| imprintMethodName.equalsIgnoreCase("Blank  (USA14CT)")
-										|| imprintMethodName.equalsIgnoreCase("Blank  (USA20CT)")) {
-									imprintMethodName = "Unimprinted";
-								}*/
 						imprintMethodNameUpcharge = imprintMethodName; 
 					}
 					
@@ -245,7 +246,17 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 				case 23:// setup charges
 					String setUpCharge = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(setUpCharge)){
-						
+						productExcelObj.setProductConfigurations(productConfigObj);
+						productExcelObj.setPriceGrids(priceGrids);
+								productExcelObj = towelSpecAttributeParser.getUpchargesBasedOnImprintMethod(setUpCharge,
+										imprintMethodNameUpcharge, productExcelObj);
+						if(setUpCharge.contains("Over 8,000 stitches")){
+									listOfImprintMethod = towelSpecAttributeParser.getImprintMethods(
+											"Embroidery digitization charge up to 8000 stitches,Embroidery digitization charge over 8000 stitches",
+											listOfImprintMethod);
+						}
+						productConfigObj = productExcelObj.getProductConfigurations();
+						priceGrids = productExcelObj.getPriceGrids();
 					}
 					break;
 				case 25://imprint include
@@ -262,6 +273,8 @@ public class TowelSpecialtiesMapping implements IExcelParser{
             	  String additionalInfo = cell.getStringCellValue();
             	  productExcelObj.setAdditionalProductInfo(additionalInfo);
 					break;
+              case 28:
+            	  break;
               case 29://shipping size
             	  String shiDimention = cell.getStringCellValue();
             	  if(!StringUtils.isEmpty(shiDimention)){
@@ -280,12 +293,20 @@ public class TowelSpecialtiesMapping implements IExcelParser{
             		  shippingValues.append(",").append("shippingQty:").append(shiQty);
             	  }
             	  break;
+              case 32:
+            	  break;
               case 33: // itemWeight
             	  String itemWeight = CommonUtility.getCellValueDouble(cell);
             	  if(!StringUtils.isEmpty(itemWeight)){
 					  Volume volume = towelSpecAttributeParser.getItemWeightvolume(itemWeight);
             		  productConfigObj.setItemWeight(volume);
             	  }
+            	  break;
+              case 34://ignore
+              case 35:
+              case 36:
+              case 37:
+              case 38://ignore
             	  break;
               case 39://sku
             	  String sku = cell.getStringCellValue();
@@ -295,8 +316,17 @@ public class TowelSpecialtiesMapping implements IExcelParser{
             	  break;
               case 40://name
             	  String prdName = cell.getStringCellValue();
-            	  prdName = getProductName(prdName);
-            	  productExcelObj.setName(prdName);
+            	  if(!StringUtils.isEmpty(prdName)){
+            		  prdName = getProductName(prdName,asiPrdNo);
+                	  productExcelObj.setName(prdName);  
+            	  }
+            	  break;
+              case 41:// ignore
+              case 42:
+              case 43:
+              case 44:
+              case 45:
+              case 46: //ignore
             	  break;
               case 47: // colors
             	  String colorName = cell.getStringCellValue();
@@ -313,9 +343,14 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 					 
 		}
 				productExcelObj.setPriceType("L");
-				String qurFlag = "n"; // by default for testing purpose
+					priceGrids = towelSpecPriceParser.getBasePriceGrid(listOfPrices.toString(),
+							listOfQuantity.toString(), listOfDiscounts.toString(), "USD", "", true, false,
+							imprintMethodNameUpcharge, "Imprint Method", priceGrids, "", "");
 				//String basePriceName = "Bronze,Silver,Gold";
-					
+				listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+			    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+			    listOfDiscounts = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+			    repeatRows.add(xid);
 			}catch(Exception e){
 				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"at column number(increament by 1):"+columnIndex);		 
 				ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet: "
@@ -325,8 +360,18 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 		}
 		}
 		workbook.close();
-		
-        productExcelObj.setProductConfigurations(productConfigObj);
+		productConfigObj.setImprintSize(listOfImprintSize);
+		   productConfigObj.setProductionTime(listOfProductionTime);
+		   ShippingEstimate shippingEstmationValues = towelSpecAttributeParser
+					.getShippingEstimation(shippingValues.toString());
+			productConfigObj.setShippingEstimates(shippingEstmationValues);
+			productConfigObj.setImprintMethods(listOfImprintMethod);
+			if(repeatRows.size() == 1){
+				// remove sinagle base price configuration
+				priceGrids = removeBasePriceConfig(priceGrids);
+			}
+		 	productExcelObj.setPriceGrids(priceGrids);
+		 	productExcelObj.setProductConfigurations(productConfigObj);
         	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -353,10 +398,8 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 			}
 				_LOGGER.info("Complted processing of excel sheet ");
 				_LOGGER.info("Total no of product:"+numOfProductsSuccess.size() );
-		}
-		
+		}	
 	}
-
 	public String getProductXid(Row row){
 		Cell xidCell =  row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
 		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
@@ -366,7 +409,6 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 		}
 		return productXid;
 	}
-	
 		public boolean isRepeateColumn(int columnIndex){
 		if (!(columnIndex >= 5 && columnIndex <= 20) && columnIndex != 21 && columnIndex != 22 && columnIndex != 23
 				&& columnIndex != 25 && columnIndex != 26) {
@@ -374,7 +416,7 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 			}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
-		private String getProductName(String prdName){
+		private String getProductName(String prdName,String asiPrdNo){
 			prdName = prdName.replaceAll("â„","a,");
       	  prdName = prdName.replaceAll("®","");
       	  if(prdName.contains("¢,")){
@@ -385,10 +427,31 @@ public class TowelSpecialtiesMapping implements IExcelParser{
       	  if((prdName.substring(0, 1).matches("[^A-Za-z0-9]"))){
       		  prdName = prdName.substring(1).trim();
       	  }
+      	if(prdName.contains(asiPrdNo)){
+  		  prdName = prdName.replaceAll(asiPrdNo, "");
+  		  if(prdName.contains("(")){
+  			  prdName = prdName.replaceAll("\\(.?\\)", "").trim();	
+  			}
+  			if(prdName.endsWith(",")){
+  				prdName = prdName.substring(0, prdName.length()-1);
+  			}
+  	  }
       	  return prdName;
 		}
 		public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
+	}
+	private List<PriceGrid> removeBasePriceConfig(List<PriceGrid> oldPriceGrid){
+		List<PriceGrid> newPricegrid = new ArrayList<>();
+		for (PriceGrid priceGrid : oldPriceGrid) {
+			if(priceGrid.getIsBasePrice()){
+				priceGrid.setPriceConfigurations(new ArrayList<>());
+				newPricegrid.add(priceGrid);
+			} else {
+				newPricegrid.add(priceGrid);	
+			}
+		}
+		return newPricegrid;
 	}
    
 	public void setPostServiceImpl(PostServiceImpl postServiceImpl) {
@@ -413,7 +476,4 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 	public void setTowelSpecPriceParser(TowelSpecPriceGridParser towelSpecPriceParser) {
 		this.towelSpecPriceParser = towelSpecPriceParser;
 	}
-
-
-
 }

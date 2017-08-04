@@ -63,9 +63,12 @@ public class TowelSpecPriceGridParser {
 		priceGrid.setPrices(listOfPrice);
 		if (criterias != null && !criterias.isEmpty()) {
 			String[] criteriaVals = criterias.split(":");
-			configuration = getConfigurations(criteriaVals[0],criteriaVals[1],optionName);
+			//configuration = getConfigurations(criteriaVals[0],criteriaVals[1],optionName);
+			configuration = getConfigurations(criterias,priceName,optionName);
 		}
-		priceGrid.setPriceConfigurations(configuration);
+		if(!CollectionUtils.isEmpty(configuration)){
+			priceGrid.setPriceConfigurations(configuration);
+		}
 		existingPriceGrid.add(priceGrid);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
@@ -160,14 +163,14 @@ public class TowelSpecPriceGridParser {
 
 			} else {
 				configs = new PriceConfiguration();
-				config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
-				String criteriaValue = LookupData.getCriteriaValue(config[0]);
+				//config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
+				//String criteriaValue = LookupData.getCriteriaValue(config[0]);
 				try {
 					if (value.contains(",")) {
 						String[] values = value.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 						for (String Value : values) {
 							configs = new PriceConfiguration();
-							configs.setCriteria(criteriaValue);
+							configs.setCriteria(criterias);
 							configs.setValue(Arrays.asList((Object) Value));
 							if (!StringUtils.isEmpty(optionName)) {
 								configs.setOptionName(optionName);
@@ -175,7 +178,7 @@ public class TowelSpecPriceGridParser {
 							priceConfiguration.add(configs);
 						}
 					} else {
-						configs.setCriteria(criteriaValue);
+						configs.setCriteria(criterias);
 						configs.setValue(Arrays.asList((Object) value));
 						if (!StringUtils.isEmpty(optionName)) {
 							configs.setOptionName(optionName);
