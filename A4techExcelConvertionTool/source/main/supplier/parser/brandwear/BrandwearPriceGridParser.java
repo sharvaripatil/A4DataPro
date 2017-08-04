@@ -20,8 +20,8 @@ public class BrandwearPriceGridParser {
 	public List<PriceGrid> getPriceGrids(String listOfPrices,
 		    String listOfQuan, String listOfDisc,
 			String currency, String priceInclude, boolean isBasePrice,
-			String isQur, String priceName, String criterias,
-			List<PriceGrid> existingPriceGrid) {
+			String isQur, String priceName/*, String criterias,*/
+			/*String sizeValue, List<PriceGrid> existingPriceGrid*/) {
 
 		Integer sequence = 1;
 		List<PriceGrid> priceGridsList = new ArrayList<PriceGrid>();
@@ -33,8 +33,6 @@ public class BrandwearPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] discount = listOfDisc
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		
-		
 
 	priceGrid.setIsQUR(isQur.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_Y) ? ApplicationConstants.CONST_BOOLEAN_TRUE
 					: ApplicationConstants.CONST_BOOLEAN_FALSE);
@@ -123,7 +121,12 @@ public class BrandwearPriceGridParser {
 		
 
 		priceGrid.setCurrency(currency);
-		priceGrid.setDescription(sizeValue);
+		
+		if(sizeValue.contains("XXL")){
+			sizeValue=sizeValue.replace("XXL", "XL");
+			
+		}
+			priceGrid.setDescription(sizeValue);
 		
 		
 		priceGrid.setIsBasePrice(isBasePrice);

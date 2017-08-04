@@ -412,6 +412,7 @@
 		<property name="ballProMapping" ref="ballProMappingId"/>
 		<property name="alfaMapping" ref="alfaMappingId"></property>
 		<property name="bellaCanvasMapping" ref="bellaCanvasMappingId"/>
+		<property name="harvestMapping" ref="harvestMappingId"/>
 		<property name="towelSpecialties" ref="towelSpecId"/>
 		<property name="bagMakersMapping" ref="bagMakersMappingId"/>
      </bean>
@@ -883,9 +884,39 @@
           <bean id="bellaCanvasMappingId" class="com.a4tech.supplier.mapper.BellaCanvas">
            <property name="postServiceImpl" ref="postService"/>
            <property name="productDaoObj" ref="productDao"/> 
+           <property name="bellaProductsParser" ref="bellaProductsParserId"/>
          
          </bean>
+
+            <bean id="bellaProductsParserId" class="parser.bellaCanvas.BellaCanvasProductAttributeParser"/>
+       
         <!-- supplier bella&Canvas  configuration end -->
+
+
+     
+     
+           <!-- supplier HarvestIndustrial configuration start -->
+           <bean id="harvestMappingId" class="com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping">
+           <property name="postServiceImpl" ref="postService"/>
+           <property name="productDaoObj" ref="productDao"/> 
+           <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+           <property name="harvestColorObj" ref="harvestColorObjId"/>
+           <property name="harvestPriceGridObj" ref="harvestPriceGridObjId"/>
+           <property name="harvestProductAttributeObj" ref="harvestProductAttributeObjId"/>        
+            </bean>
+     
+            <bean id="harvestColorObjId" class="parser.harvestIndustrail.HarvestColorParser"/>
+            <bean id="harvestPriceGridObjId" class="parser.harvestIndustrail.HarvestPriceGridParser"/>
+            <bean id="harvestProductAttributeObjId" class="parser.harvestIndustrail.HarvestProductAttributeParser">
+             <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+         
+         </bean>       
+        <!-- supplier HarvestIndustrial configuration end -->
+        
+        
+
+      <!-- supplier 37940 Bag Makers configuration start -->
+
    <!-- Towel Specialties Configuration Start -->
      <bean id="towelSpecId" class="com.a4tech.supplier.mapper.TowelSpecialtiesMapping">
      	 <property name="postServiceImpl" ref="postService"/>
@@ -899,6 +930,7 @@
      <bean id="towelPriceParserId" class="parser.towelSpecialties.TowelSpecPriceGridParser"/>
    <!-- Towel Specialties Configuration End -->
     <!-- supplier 37940 Bag Makers configuration start -->
+
      <bean id="bagMakersMappingId" class="com.a4tech.supplier.mapper.BagMakersMapping" autowire="byName">
      <property name="postServiceImpl" ref="postService"/>
      <property name="productDaoObj" ref="productDao"/>
@@ -911,6 +943,6 @@
 	</bean>
 	<bean id="bagMakersPriceGridParserId" name="bagMakersPriceGridParserObj" class="parser.BagMakers.BagMakersPriceGridParser" autowire="byName"/>
      <!--supplier 37940 Bag Makers configuration end  --> 
-   
+
 </beans>
 

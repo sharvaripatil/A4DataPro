@@ -26,6 +26,7 @@ import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
+import com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineMappingRevised;
 import com.a4tech.supplier.mapper.PSLcadMapping;
@@ -74,9 +75,12 @@ public class ExcelFactory {
 	private TwintechMapping 				twintechMapping;
 	private AlfaMapping       				alfaMapping;
 	private BellaCanvas                     bellaCanvasMapping;
+	private HarvestIndustrialExcelMapping   harvestMapping;	
 	private HighCaliberLineMappingRevised hcLineExcelMapping;
 	private TowelSpecialtiesMapping        towelSpecialties;
+
 	private BagMakersMapping bagMakersMapping; 
+
 		public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -151,10 +155,16 @@ public class ExcelFactory {
 	    	  return alfaMapping;
 	      } else if(name.equalsIgnoreCase("bellaCanvas") || name.equals("39590")){
 		      return bellaCanvasMapping;
+
+	      }  else if(name.equalsIgnoreCase("harvest") || name.equals("61670")){
+		      return harvestMapping;
+
 	      } else if(name.equalsIgnoreCase("towelSpe") || name.equals("91605")){
 	    	  return towelSpecialties;
+
 	      }else if(name.equalsIgnoreCase("bagMakersMapping") || name.equals("37940")){
 		      return bagMakersMapping;
+
 	      }
 		return null;
 	}
@@ -430,7 +440,17 @@ public class ExcelFactory {
 	}
 
 
+	public HarvestIndustrialExcelMapping getHarvestMapping() {
+		return harvestMapping;
+	}
+
+	public void setHarvestMapping(HarvestIndustrialExcelMapping harvestMapping) {
+		this.harvestMapping = harvestMapping;
+	}
+
+
 	public void setBagMakersMapping(BagMakersMapping bagMakersMapping) {
 		this.bagMakersMapping = bagMakersMapping;
 	}
+
 }
