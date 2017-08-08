@@ -30,6 +30,7 @@ import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Option;
 import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.PriceGrid;
@@ -169,6 +170,7 @@ public class BagMakersMapping implements IExcelParser{
 							  	    listOfDiscount = new StringBuilder();
 							  	    basePricePriceInlcude="";
 							  	    tempQuant1="";
+							  	   
 
 							 }
 							    if(!listOfProductXids.contains(xid)){
@@ -227,6 +229,7 @@ public class BagMakersMapping implements IExcelParser{
 							int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
 							productName=(String) strTemp.subSequence(0, lenTemp);
 						}
+						productName=CommonUtility.removeRestrictSymbols(productName);
 						productExcelObj.setName(productName);
 						}
 						break;
@@ -256,6 +259,7 @@ public class BagMakersMapping implements IExcelParser{
 							int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
 							description=(String) strTemp.subSequence(0, lenTemp);
 						}
+						description=CommonUtility.removeRestrictSymbols(description);
 						productExcelObj.setDescription(description);
 						break;
 					case  9://Dimensions
@@ -293,10 +297,14 @@ public class BagMakersMapping implements IExcelParser{
 						 }
 						break;
 					case  13://Product Type
-						String summary = cell.getStringCellValue();
-						 if(!StringUtils.isEmpty(summary)){
-						productExcelObj.setSummary(summary);
+						String materialValue=cell.getStringCellValue();
+						 if(!StringUtils.isEmpty(materialValue)){
+							 productExcelObj.setSummary(materialValue);
+							 List<Material> listOfMaterial = new ArrayList<>();
+						listOfMaterial = bagMakerAttributeParser.getMaterialList(materialValue);
+						productConfigObj.setMaterials(listOfMaterial);	
 						 }
+						
 						break;
 					case  14://Box Pack
 						 //noOfitem=noOfitem.toUpperCase();
@@ -370,6 +378,13 @@ public class BagMakersMapping implements IExcelParser{
 						List<String> productKeywords = CommonUtility.getStringAsList(keywords,
                                 ApplicationConstants.CONST_DELIMITER_COMMA);
 						productExcelObj.setProductKeywords(productKeywords);
+						/*List<String> productKeywordsTemp=new ArrayList<String>();
+						for (String keyword : productKeywords) {
+							if(keyword.length()<=30){
+								productKeywordsTemp.add(keyword);
+							}
+						}*/
+						
 						}
 						break;
 					case  21://Keywords (for Search online)
