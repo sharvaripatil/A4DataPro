@@ -14,14 +14,19 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
+import parser.bellaCanvas.BellaCanvasProductAttributeParser;
+
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 public class BellaCanvas implements IExcelParser {
@@ -31,6 +36,7 @@ public class BellaCanvas implements IExcelParser {
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
 	private LookupServiceData lookupServiceDataObj;
+	private BellaCanvasProductAttributeParser bellaProductsParser;
 
 	@SuppressWarnings("unused")
 	public String readExcel(String accessToken, Workbook workbook,
@@ -39,7 +45,9 @@ public class BellaCanvas implements IExcelParser {
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		Set<String> productXids = new HashSet<String>();
-
+		List<String> repeatRows = new ArrayList<>();
+		List<Color> colorlist = new ArrayList<Color>();	
+		
 		Product productExcelObj = new Product();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
 
@@ -51,6 +59,10 @@ public class BellaCanvas implements IExcelParser {
 		String xid = null;
 		Cell cell2Data = null;
 		String ProdNo = null;
+		StringBuilder colorMapping = new StringBuilder();
+		StringBuilder description = new StringBuilder();
+		Size sizeObj = new Size();
+
 
 
 		try {
@@ -65,7 +77,7 @@ public class BellaCanvas implements IExcelParser {
 
 				try {
 					Row nextRow = iterator.next();
-					if (nextRow.getRowNum() < 5)
+					if (nextRow.getRowNum() < 1)
 						continue;
 					Iterator<Cell> cellIterator = nextRow.cellIterator();
 					if (productId != null) {
@@ -118,6 +130,10 @@ public class BellaCanvas implements IExcelParser {
 											+ numOfProductsFailure.size());
 
 									productConfigObj = new ProductConfigurations();
+									 colorMapping = new StringBuilder();
+									 description = new StringBuilder();
+									 colorlist = new ArrayList<Color>();	
+									 sizeObj = new Size();
 
 								}
 								if (!productXids.contains(xid)) {
@@ -149,6 +165,12 @@ public class BellaCanvas implements IExcelParser {
 								}
 								// productExcelObj = new Product();
 							}
+							
+							if(productXids.contains(xid) && repeatRows.size() != 1){
+								 if(isRepeateColumn(columnIndex+1)){
+									 continue;
+								 }
+							}
 						}
 
 						switch (columnIndex + 1) {
@@ -161,20 +183,25 @@ public class BellaCanvas implements IExcelParser {
 
 							break;
 						case 3:// Style
-
+						    ProdNo=cell.getStringCellValue();
 							productExcelObj.setAsiProdNo(ProdNo);
 
 							break;
 						case 4:// Style Description
 							String Description=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(Description)) {
-								productExcelObj.setDescription(Description);	
+								description=description.append(Description +",");
+								Description=description.toString();
+								String descArr[]=Description.split(",");
+								productExcelObj.setName(descArr[0]);
+								productExcelObj.setDescription(descArr[1]);	
 								
 							}
 					
 
 							break;
 						case 5:// Fabric
+							String Material=cell.getStringCellValue();
 
 						
 							
@@ -183,10 +210,21 @@ public class BellaCanvas implements IExcelParser {
 						case 6:// Color
 							String colorValue = CommonUtility
 									.getCellValueStrinOrInt(cell);
-			
+							//colorValue=colorValue.replace("SOLID,", "");
+							if(!colorValue.contains("SOLID")){
+							colorMapping=colorMapping.append(colorValue +",");
+							colorlist = bellaProductsParser
+									.getColorCriteria(colorMapping);
+							productConfigObj.setColors(colorlist);
+							}
 							break;
 
 						case 7:// Size Range
+							String Sizevalue = CommonUtility
+							.getCellValueStrinOrInt(cell);
+							sizeObj=bellaProductsParser
+									.getSize(Sizevalue);
+							productConfigObj.setSizes(sizeObj);
 
 							break;
 						case 8: // SKU
@@ -229,6 +267,10 @@ public class BellaCanvas implements IExcelParser {
 			productDaoObj.saveErrorLog(asiNumber, batchId);
 
 			productConfigObj = new ProductConfigurations();
+			colorMapping = new StringBuilder();
+			description = new StringBuilder();
+			colorlist = new ArrayList<Color>();	
+			sizeObj = new Size();
 
 			return finalResult;
 		} catch (Exception e) {
@@ -248,6 +290,15 @@ public class BellaCanvas implements IExcelParser {
 		}
 
 	}
+	
+	  public boolean isRepeateColumn(int columnIndex){
+			
+			if(columnIndex != 1 &&  columnIndex!= 6 && columnIndex!= 4){
+				return ApplicationConstants.CONST_BOOLEAN_TRUE;
+			}
+			return ApplicationConstants.CONST_BOOLEAN_FALSE;
+		}
+	   
 
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
@@ -271,6 +322,15 @@ public class BellaCanvas implements IExcelParser {
 
 	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
 		this.lookupServiceDataObj = lookupServiceDataObj;
+	}
+
+	public BellaCanvasProductAttributeParser getBellaProductsParser() {
+		return bellaProductsParser;
+	}
+
+	public void setBellaProductsParser(
+			BellaCanvasProductAttributeParser bellaProductsParser) {
+		this.bellaProductsParser = bellaProductsParser;
 	}
 
 
