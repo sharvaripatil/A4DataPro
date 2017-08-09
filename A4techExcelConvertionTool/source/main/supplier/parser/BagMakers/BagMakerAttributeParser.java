@@ -316,8 +316,10 @@ public Size getSizes(String sizeValue) {
 				
 				//valObj.setValue(DimenArr[0].trim());
 				//valObj.setUnit(DimenArr[1].trim());
+				if(count!=4){
 				valuelist.add(valObj);
 				valuesObj.setValue(valuelist);
+				}
 				count++;
 			}
 		valuesList.add(valuesObj);
