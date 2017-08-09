@@ -290,7 +290,7 @@ while (iterator.hasNext()) {
 							 //	if(Prod_Status = false){
 							 	_LOGGER.info("Product Data : "
 										+ mapperObj.writeValueAsString(productExcelObj));
-							 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -1266,7 +1266,7 @@ while (iterator.hasNext()) {
 				}
 				
 				productPricePriceMap.put(basePriceName, listOfPrices.toString()+"@@@@@"+listOfQuantity.toString()+"@@@@@"+priceCode
-						+"@@@@@"+priceIncludesValue+"@@@@@"+quoteUponRequest+"@@@@@"+tempCriteria+""+pricesPerUnit.toString());
+						+"@@@@@"+priceIncludesValue+"@@@@@"+quoteUponRequest+"@@@@@"+tempCriteria+"@@@@@"+pricesPerUnit.toString());
 				
 				
 				/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
@@ -1344,7 +1344,7 @@ while (iterator.hasNext()) {
 					+ mapperObj.writeValueAsString(productExcelObj));
 		 	//if(Prod_Status = false){
 		 	productExcelObj.setPriceType("L");
-		 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
