@@ -487,10 +487,27 @@ while (iterator.hasNext()) {
 					description = CommonUtility.removeRestrictSymbols(description);
 					description = CommonUtility.getStringLimitedChars(description, 800);
 					productExcelObj.setDescription(description.trim());
+					//Str.indexOf( 'o' )
+					if(description.contains(".")){
+						int postn=description.indexOf(".");
+						String tempStr=description.substring(0, postn);
+						if(tempStr.length()<=130){
+							productExcelObj.setSummary(tempStr);
+						}else if(!StringUtils.isEmpty(productExcelObj.getName())){
+							String tempSum=productExcelObj.getName();
+							if(tempSum.length()<=130){
+								productExcelObj.setSummary(tempSum);
+							}
+						}
+						
+					}
 					}else{
 						String temp=productExcelObj.getName();
-						 if(StringUtils.isEmpty(temp)){
+						 if(!StringUtils.isEmpty(temp)){
 								productExcelObj.setDescription(temp);
+								if(temp.length()<=130){
+									productExcelObj.setSummary(temp);
+								}
 						 }
 					}			
 					break;
