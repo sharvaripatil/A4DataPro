@@ -23,7 +23,8 @@ public class GillStudiosImprintMethodParser {
 			}
 		imprintMethod=imprintMethod.toUpperCase();
 		imprintMethod=imprintMethod.replace("4-COLOR PROCESS", "Full Color");
-		imprintMethod=imprintMethod.replace("PAD PRINTED", "Pad Print");
+		imprintMethod=imprintMethod.replace("PAD PRINTED", "Pad Print");//FULL COLOR DYE-SUBLIMATION
+		imprintMethod=imprintMethod.replace("FULL COLOR DYE-SUBLIMATION", "Full Color");//FULL COLOR DYE-SUBLIMATION
 		imprintMethod=imprintMethod.replace("SCREEN PRINTED", "Silkscreen");
 		ImprintMethod imprMethod = new ImprintMethod();
 		

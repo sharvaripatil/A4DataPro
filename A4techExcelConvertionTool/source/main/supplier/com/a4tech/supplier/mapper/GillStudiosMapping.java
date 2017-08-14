@@ -160,6 +160,7 @@ public class GillStudiosMapping implements IExcelParser{
 		Map<String, String>  imprintMethodUpchargeMap = new LinkedHashMap<>();
 		HashMap<String, String>  pnumMap = new HashMap<>();
 		HashSet<String>  colorSet = new HashSet<>();
+		String firstValue="";
 		/*while (iterator.hasNext()) {
 			
 			try{
@@ -337,6 +338,7 @@ while (iterator.hasNext()) {
 						         pnumMap=new HashMap<String, String>();
 						         colorSet=new HashSet<String>();
 						         productPricePriceMap=new HashMap<String, String>();
+						         firstValue="";
 						         System.out.println("");
 						 }
 						 if(!productXids.contains(xid)){
@@ -992,19 +994,22 @@ while (iterator.hasNext()) {
 					listOfImprintMethods = gillStudiosImprintMethodParser.getImprintMethodValues(decorationMethod,listOfImprintMethods);
 					 } 
 					break; 
-					 
+					   
 				case 91: //NoDecoration
 					String noDecoration = CommonUtility.getCellValueStrinOrInt(cell);//cell.getStringCellValue();
 					if(!StringUtils.isEmpty(noDecoration)){
 					if(noDecoration.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
+						firstValue="PRESENT";
 						listOfImprintMethods = gillStudiosImprintMethodParser.getImprintMethodValues(noDecoration,
                                 listOfImprintMethods);
+					}else{
+					firstValue="";	
 					}
 					}
 					 break;
 				case 92: //NoDecorationOffered
 					String noDecorationOffered =  CommonUtility.getCellValueStrinOrInt(cell);//cell.getStringCellValue();
-					if(!StringUtils.isEmpty(noDecorationOffered)){
+					if(!StringUtils.isEmpty(noDecorationOffered) && !firstValue.equals("PRESENT")){
 					if(noDecorationOffered.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
 						listOfImprintMethods = gillStudiosImprintMethodParser.getImprintMethodValues(noDecorationOffered,
                                 listOfImprintMethods);
@@ -1406,6 +1411,7 @@ while (iterator.hasNext()) {
 	         additionalColorCode     = "";
 	         pnumMap=new HashMap<String, String>();
 	         colorSet=new HashSet<String>();
+	         firstValue="";
 	         repeatRows.clear();
 	       return finalResult;
 		}catch(Exception e){

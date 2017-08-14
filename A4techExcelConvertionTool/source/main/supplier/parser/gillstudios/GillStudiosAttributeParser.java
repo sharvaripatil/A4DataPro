@@ -198,6 +198,10 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			if(!weight.equals(ApplicationConstants.CONST_STRING_ZERO)){
 				listOfWeightObj = new ArrayList<Weight>();
 				weightObj = new Weight();
+				
+				if(weight.contains("0.") && weight.length()>=6){
+					weight=weight.substring(0,weight.indexOf(".")+4);
+				}
 				weightObj.setValue(weight);
 				weightObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_WEIGHT);
 				listOfWeightObj.add(weightObj);
