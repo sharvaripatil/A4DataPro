@@ -528,8 +528,18 @@ while (iterator.hasNext()) {
 				case 14: //Colors
 				String colorValue= CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(colorValue)){
-						pnumMap.put(asiProdNo, colorValue);
+						//pnumMap.put(asiProdNo, colorValue); //og value
+						colorValue=colorValue.replaceAll("\\|",",");
+						String[] colors =getValuesOfArray(colorValue, ",");
+						if(colors.length>1){
+							for (String string : colors) {
+								colorSet.add(string.trim());
+								pnumMap.put(asiProdNo, string);
+							}
+						}else{
 						colorSet.add(colorValue);
+						pnumMap.put(asiProdNo, colorValue);
+						}
 						//colorList=gillStudiosAttributeParser.getProductColors(colorValue);
 						//productConfigObj.setColors(colorList);
 					}	
@@ -1500,7 +1510,12 @@ while (iterator.hasNext()) {
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
-	
+	public static String[] getValuesOfArray(String data,String delimiter){
+		   if(!StringUtils.isEmpty(data)){
+			   return data.split(delimiter);
+		   }
+		   return null;
+	   }
 	
 	
 }
