@@ -415,6 +415,7 @@
 		<property name="harvestMapping" ref="harvestMappingId"/>
 		<property name="towelSpecialties" ref="towelSpecId"/>
 		<property name="bagMakersMapping" ref="bagMakersMappingId"/>
+		<property name="gillStudiosMapping" ref="gillStudiosMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -943,6 +944,27 @@
 	</bean>
 	<bean id="bagMakersPriceGridParserId" name="bagMakersPriceGridParserObj" class="parser.BagMakers.BagMakersPriceGridParser" autowire="byName"/>
      <!--supplier 37940 Bag Makers configuration end  --> 
-
+     
+	<!-- supplier 56950 Gill Studios Inc configuration start -->
+     <bean id="gillStudiosMappingId" class="com.a4tech.supplier.mapper.GillStudiosMapping" autowire="byName">
+       <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj" ref="productDao"/>
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+         <property name="lookupRestServiceObj" ref="lookupRestService"/>
+       <property name="gillStudiosAttributeParser" ref="gillStudiosAttributeParserId" /> 
+       <property name="gillStudiosPriceGridParser" ref="gillStudiosPriceGridParserId" /> 
+       <property name="gillStudiosImprintMethodParser" ref="gillStudiosImprintMethodParserId" /> 
+       </bean>
+       <bean id="gillStudiosAttributeParserId" name="gillStudiosAttributeParserObj"
+  		class="parser.gillstudios.GillStudiosAttributeParser" autowire="byName">
+  		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+  		<property name="gillStudiosPriceGridParser" ref="gillStudiosPriceGridParserObj"/>
+  	</bean>
+  	<bean id="gillStudiosPriceGridParserId" name="gillStudiosPriceGridParserObj" class="parser.gillstudios.GillStudiosPriceGridParser" autowire="byName"/>
+  	<bean id="gillStudiosImprintMethodParserId" name="gillStudiosImprintMethodParserObj" class="parser.gillstudios.GillStudiosImprintMethodParser" autowire="byName">
+  	<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+    <property name="lookupRestServiceObj" ref="lookupRestService"/>
+  	</bean>
+     <!-- supplier 56950 Gill Studios Inc configuration end -->  
 </beans>
 

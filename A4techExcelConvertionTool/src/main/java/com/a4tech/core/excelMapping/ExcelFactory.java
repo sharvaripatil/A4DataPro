@@ -24,6 +24,7 @@ import com.a4tech.supplier.mapper.BrandwearExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
+import com.a4tech.supplier.mapper.GillStudiosMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping;
@@ -78,9 +79,9 @@ public class ExcelFactory {
 	private HarvestIndustrialExcelMapping   harvestMapping;	
 	private HighCaliberLineMappingRevised hcLineExcelMapping;
 	private TowelSpecialtiesMapping        towelSpecialties;
-
 	private BagMakersMapping bagMakersMapping; 
-
+	private GillStudiosMapping gillStudiosMapping;
+	
 		public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -165,7 +166,9 @@ public class ExcelFactory {
 	      }else if(name.equalsIgnoreCase("bagMakersMapping") || name.equals("37940")){
 		      return bagMakersMapping;
 
-	      }
+	      }else if(name.equalsIgnoreCase("gillStudios") || name.equals("56950")){
+			   return gillStudiosMapping;
+		  }
 		return null;
 	}
 	
@@ -452,5 +455,11 @@ public class ExcelFactory {
 	public void setBagMakersMapping(BagMakersMapping bagMakersMapping) {
 		this.bagMakersMapping = bagMakersMapping;
 	}
-
+	
+	public void setGillStudiosMapping(GillStudiosMapping gillStudiosMapping) {
+		this.gillStudiosMapping = gillStudiosMapping;
+	}	
+	public GillStudiosMapping getGillStudiosMapping() {
+		return gillStudiosMapping;
+	}
 }
