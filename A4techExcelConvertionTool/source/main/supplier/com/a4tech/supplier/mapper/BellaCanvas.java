@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
+import parser.bellaCanvas.BellaCanvasPriceGridParser;
 import parser.bellaCanvas.BellaCanvasProductAttributeParser;
 
 import com.a4tech.excel.service.IExcelParser;
@@ -21,6 +22,8 @@ import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
+import com.a4tech.product.model.Material;
+import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.Size;
@@ -37,6 +40,16 @@ public class BellaCanvas implements IExcelParser {
 	private ProductDao productDaoObj;
 	private LookupServiceData lookupServiceDataObj;
 	private BellaCanvasProductAttributeParser bellaProductsParser;
+	private BellaCanvasPriceGridParser bellaPricegrid;
+
+
+	public BellaCanvasPriceGridParser getBellaPricegrid() {
+		return bellaPricegrid;
+	}
+
+	public void setBellaPricegrid(BellaCanvasPriceGridParser bellaPricegrid) {
+		this.bellaPricegrid = bellaPricegrid;
+	}
 
 	@SuppressWarnings("unused")
 	public String readExcel(String accessToken, Workbook workbook,
@@ -47,6 +60,8 @@ public class BellaCanvas implements IExcelParser {
 		Set<String> productXids = new HashSet<String>();
 		List<String> repeatRows = new ArrayList<>();
 		List<Color> colorlist = new ArrayList<Color>();	
+		List<Material> materiallist = new ArrayList<Material>();	
+		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		
 		Product productExcelObj = new Product();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
@@ -59,6 +74,7 @@ public class BellaCanvas implements IExcelParser {
 		String xid = null;
 		Cell cell2Data = null;
 		String ProdNo = null;
+		String Description=null;
 		StringBuilder colorMapping = new StringBuilder();
 		StringBuilder description = new StringBuilder();
 		Size sizeObj = new Size();
@@ -111,6 +127,13 @@ public class BellaCanvas implements IExcelParser {
 									System.out
 											.println("Java object converted to JSON String, written to file");
 
+									productExcelObj.setPriceGrids(priceGrids);
+									Description=description.toString();
+									String descArr[]=Description.split(",");
+									productExcelObj.setName(descArr[0]);
+									Description=Description.replace(descArr[0], "").replace(",", "");
+									productExcelObj.setDescription(Description);	
+									productExcelObj.setProductConfigurations(productConfigObj);
 									productExcelObj
 											.setProductConfigurations(productConfigObj);
 
@@ -133,6 +156,7 @@ public class BellaCanvas implements IExcelParser {
 									 colorMapping = new StringBuilder();
 									 description = new StringBuilder();
 									 colorlist = new ArrayList<Color>();	
+									 materiallist = new ArrayList<Material>();	
 									 sizeObj = new Size();
 
 								}
@@ -188,22 +212,19 @@ public class BellaCanvas implements IExcelParser {
 
 							break;
 						case 4:// Style Description
-							String Description=cell.getStringCellValue();
+						  Description=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(Description)) {
-								description=description.append(Description +",");
-								Description=description.toString();
-								String descArr[]=Description.split(",");
-								productExcelObj.setName(descArr[0]);
-								productExcelObj.setDescription(descArr[1]);	
-								
+								description=description.append(Description +". ,");	
 							}
 					
 
 							break;
 						case 5:// Fabric
 							String Material=cell.getStringCellValue();
-
-						
+							if (!StringUtils.isEmpty(Material)) {
+								materiallist=bellaProductsParser.getMaterialValue(Material);							
+								productConfigObj.setMaterials(materiallist);
+							}
 							
 							break;
 
@@ -238,6 +259,13 @@ public class BellaCanvas implements IExcelParser {
 
 					// end inner while loop
 					productExcelObj.setPriceType("L");
+					
+					priceGrids = bellaPricegrid.getPriceGrids(
+							"",
+							"", "", "USD",
+							"", true, "true",
+							productName, "", priceGrids);
+					
 
 				} catch (Exception e) {
 					_LOGGER.error("Error while Processing ProductId and cause :"
@@ -247,7 +275,12 @@ public class BellaCanvas implements IExcelParser {
 				}
 			}
 			workbook.close();
-
+			productExcelObj.setPriceGrids(priceGrids);
+			Description=description.toString();
+			String descArr[]=Description.split(",");
+			productExcelObj.setName(descArr[0]);
+			Description=Description.replace(descArr[0], "").replace(",", "");
+			productExcelObj.setDescription(Description);
 			productExcelObj.setProductConfigurations(productConfigObj);
 
 			int num = postServiceImpl.postProduct(accessToken, productExcelObj,
@@ -270,6 +303,7 @@ public class BellaCanvas implements IExcelParser {
 			colorMapping = new StringBuilder();
 			description = new StringBuilder();
 			colorlist = new ArrayList<Color>();	
+			materiallist = new ArrayList<Material>();	
 			sizeObj = new Size();
 
 			return finalResult;
@@ -293,7 +327,7 @@ public class BellaCanvas implements IExcelParser {
 	
 	  public boolean isRepeateColumn(int columnIndex){
 			
-			if(columnIndex != 1 &&  columnIndex!= 6 && columnIndex!= 4){
+			if(columnIndex != 1 &&  columnIndex!= 6 && columnIndex!= 4/* && columnIndex!= 5*/){
 				return ApplicationConstants.CONST_BOOLEAN_TRUE;
 			}
 			return ApplicationConstants.CONST_BOOLEAN_FALSE;

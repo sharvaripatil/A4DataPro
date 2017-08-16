@@ -885,11 +885,21 @@
            <property name="postServiceImpl" ref="postService"/>
            <property name="productDaoObj" ref="productDao"/> 
            <property name="bellaProductsParser" ref="bellaProductsParserId"/>
+           <property name="bellaPricegrid" ref="bellaPricegridId"/>
+           
          
          </bean>
 
-            <bean id="bellaProductsParserId" class="parser.bellaCanvas.BellaCanvasProductAttributeParser"/>
-       
+          <bean id="bellaProductsParserId" class="parser.bellaCanvas.BellaCanvasProductAttributeParser">
+          <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+          <property name="lookupRestServiceObj" ref="lookupRestService"/>
+          
+           </bean>
+           
+            <bean id="bellaPricegridId" class="parser.bellaCanvas.BellaCanvasPriceGridParser"/>
+      
+         
+        
         <!-- supplier bella&Canvas  configuration end -->
 
 
