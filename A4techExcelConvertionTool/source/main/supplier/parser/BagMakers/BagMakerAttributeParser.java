@@ -2,6 +2,7 @@ package parser.BagMakers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
@@ -10,6 +11,7 @@ import org.springframework.util.StringUtils;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.AdditionalLocation;
+import com.a4tech.product.model.BlendMaterial;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
@@ -17,6 +19,7 @@ import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.Material;
 import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.Option;
 import com.a4tech.product.model.OptionValue;
@@ -313,8 +316,10 @@ public Size getSizes(String sizeValue) {
 				
 				//valObj.setValue(DimenArr[0].trim());
 				//valObj.setUnit(DimenArr[1].trim());
+				if(count!=4){
 				valuelist.add(valObj);
 				valuesObj.setValue(valuelist);
+				}
 				count++;
 			}
 		valuesList.add(valuesObj);
@@ -433,13 +438,132 @@ public  List<Option> getOptions(String optionName,String  optionDataValue) {
 		return listOfAdditionalColor;
 	}
 	
+	public List<Material> getMaterialList(String materialValue1) {
+		Material materialObj = new Material();
+		List<Material> listOfMaterial = new ArrayList<>();
+		materialValue1=materialValue1.replace("Tote", "");
+		materialValue1=materialValue1.replace("tote", "");
+		String finalTempAliasVal=materialValue1;
+		
+		 if(materialValue1.contains("cotton fleece"))
+	        {
+	        	materialValue1=materialValue1.replace("cotton fleece","Cotton");
+	        }
+		
+		List<String> listOfLookupMaterial = getMaterialType(materialValue1.toUpperCase());
+		if(!listOfLookupMaterial.isEmpty()){
+			int numOfMaterials = listOfLookupMaterial.size();
+	
+
+			boolean flag=false;
+	
+					if(numOfMaterials == 1 && !flag){ // this condition used to single material value(E.X 100% Cotton)	  
+				
+				materialObj = getMaterialValue(listOfLookupMaterial.toString(), finalTempAliasVal);//
+				  listOfMaterial.add(materialObj);
+				  
+				  
+			  }else if(numOfMaterials == 2 || numOfMaterials == 3){   // this condition for blend material
+				  
+				String[] values = materialValue1.split(",");
+
+				  if(materialValue1.contains("Cotton/Coton"))
+			        {
+			        	materialValue1=materialValue1.replace("Cotton/Coton","Cotton");
+			        }
+				 
+				
+				
+		    	 BlendMaterial blentMaterialObj = null;
+		    	 List<BlendMaterial> listOfBlendMaterial = new ArrayList<>();
+		    
+		    	  if(values.length == 2 || values.length == 3 ||values.length == 4 ){
+		    		  if(values.length == 4 && values[2].contains("Spandex"))
+		    		  {
+		    			  values[2]=values[2].replaceAll(values[2], "");
+		    		  }
+		    		 
+		    		  int percentage3=0;
+				    	 for (String materialValue : values) {
+				    		 blentMaterialObj = new BlendMaterial();
+				    		 String mtrlType = getMaterialType(materialValue.toUpperCase()).toString();
+				    		
+				    		 if(materialValue.contains("%")){
+						 		  String percentage1 = materialValue.split("%")[0];
+						 		 if(materialValue==values[0])
+								  {
+						           int percentage2 = Integer.parseInt(percentage1);
+								   percentage3=(100-percentage2);
+								  }
+							
+								  materialObj.setName("BLEND");
+								  materialObj.setAlias(finalTempAliasVal); 
+								  
+								  if(!StringUtils.isEmpty(mtrlType)){
+									  mtrlType=CommonUtility.removeCurlyBraces(mtrlType);
+								  }
+								  if(!StringUtils.isEmpty(mtrlType)){
+								  blentMaterialObj.setName(mtrlType);
+								  }else{
+									  blentMaterialObj.setName("Other Fabric"); 
+								  }
+								  blentMaterialObj.setPercentage(percentage1);
+								  if(materialValue==values[1])
+								  {
+									  blentMaterialObj.setPercentage(Integer.toString(percentage3));
+								  }
+								  
+								
+								  listOfBlendMaterial.add(blentMaterialObj);
+							  }
+				    		
+				    	 }
+				    	    materialObj.setBlendMaterials(listOfBlendMaterial);
+				    		listOfMaterial.add(materialObj);
+				     }
+				     
+				     
+				     
+				     
+			  }
+		}else{ // used for Material is not available in lookup, then it goes in Others
+			if(materialValue1.equalsIgnoreCase("Unassigned")){
+				
+			}else{
+			materialObj = getMaterialValue("Other",finalTempAliasVal);
+			listOfMaterial.add(materialObj);
+			}
+		}
+		
+	return listOfMaterial;
+	}
+		
+	public List<String> getMaterialType(String value){
+		List<String> listOfLookupMaterials = objLookUpService.getMaterialValues();
+		List<String> finalMaterialValues = listOfLookupMaterials.stream()
+				                                  .filter(mtrlName -> value.contains(mtrlName))
+				                                  .collect(Collectors.toList());
+                                                 
+				
+		return finalMaterialValues;	
+	}
+		
+	public Material getMaterialValue(String name,String alias){
+		Material materialObj = new Material();
+		name = CommonUtility.removeCurlyBraces(name);
+		materialObj.setName(name);
+		materialObj.setAlias(alias);
+		return materialObj;
+	}
+	
+	
 	public static String[] getValuesOfArray(String data,String delimiter){
 	   if(!StringUtils.isEmpty(data)){
 		   return data.split(delimiter);
 	   }
 	   return null;
    }
-
+	
 	public LookupServiceData getObjLookUpService() {
 		return objLookUpService;
 	}
