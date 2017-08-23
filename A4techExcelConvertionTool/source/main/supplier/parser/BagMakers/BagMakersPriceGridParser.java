@@ -218,7 +218,7 @@ public class BagMakersPriceGridParser {
 					 priceGrids=getPriceGrids(
 							 plateScreenCharge, "1", plateScreenChargeCode,
 								ApplicationConstants.CONST_STRING_CURRENCY_USD,"Plate/Screen Charge",false,
-								"false",tempALias,"Imprint Method",new Integer(1),"Screen Charge", "Other",
+								"false",tempALias,"Imprint Method",new Integer(1),"Screen Charge", "Per Order",
 								priceGrids);	
 				}
 			 }
