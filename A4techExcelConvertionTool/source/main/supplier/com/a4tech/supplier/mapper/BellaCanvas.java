@@ -20,6 +20,7 @@ import parser.bellaCanvas.BellaCanvasProductAttributeParser;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.Material;
@@ -62,6 +63,8 @@ public class BellaCanvas implements IExcelParser {
 		List<Color> colorlist = new ArrayList<Color>();	
 		List<Material> materiallist = new ArrayList<Material>();	
 		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
+		List<Availability> listOfavaibility = new ArrayList<Availability>();
+
 		
 		Product productExcelObj = new Product();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
@@ -75,6 +78,7 @@ public class BellaCanvas implements IExcelParser {
 		Cell cell2Data = null;
 		String ProdNo = null;
 		String Description=null;
+		String Exstngsummary=null;
 		StringBuilder colorMapping = new StringBuilder();
 		StringBuilder description = new StringBuilder();
 		Size sizeObj = new Size();
@@ -127,6 +131,11 @@ public class BellaCanvas implements IExcelParser {
 									System.out
 											.println("Java object converted to JSON String, written to file");
 
+									colorlist = bellaProductsParser
+											.getColorCriteria(colorMapping);
+									productConfigObj.setColors(colorlist);
+							    	listOfavaibility=bellaProductsParser.getAvailability(sizeObj,colorlist);
+									productExcelObj.setAvailability(listOfavaibility);
 									productExcelObj.setPriceGrids(priceGrids);
 									Description=description.toString();
 									String descArr[]=Description.split(",");
@@ -185,6 +194,10 @@ public class BellaCanvas implements IExcelParser {
 											.getCategories();
 									productExcelObj
 											.setCategories(categoriesList);
+									
+									
+									Exstngsummary=existingApiProduct.getSummary();
+									productExcelObj.setSummary(Exstngsummary);
 
 								}
 								// productExcelObj = new Product();
@@ -200,57 +213,63 @@ public class BellaCanvas implements IExcelParser {
 						switch (columnIndex + 1) {
 						case 1://XID
 							productExcelObj.setExternalProductId(xid);
-
 							break;
 
 						case 2:// Group
-
 							break;
+							
 						case 3:// Style
 						    ProdNo=cell.getStringCellValue();
 							productExcelObj.setAsiProdNo(ProdNo);
-
 							break;
+							
 						case 4:// Style Description
 						  Description=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(Description)) {
 								description=description.append(Description +". ,");	
 							}
-					
-
+							if (StringUtils.isEmpty(Exstngsummary) || Exstngsummary.contains("null")) {
+								String Newsummary=null;
+								String summayArr[]=description.toString().split("\\.");
+								if(summayArr[0].length()>130)
+								{
+								 Newsummary=summayArr[0].substring(0, 130);
+								}else {
+									Newsummary=	summayArr[0];
+								}
+								productExcelObj.setSummary(Newsummary);
+							}
+							
 							break;
 						case 5:// Fabric
 							String Material=cell.getStringCellValue();
-							if (!StringUtils.isEmpty(Material)) {
+							if (!StringUtils.isEmpty(Material)&& !Material.equalsIgnoreCase("")) {
 								materiallist=bellaProductsParser.getMaterialValue(Material);							
 								productConfigObj.setMaterials(materiallist);
 							}
-							
 							break;
 
 						case 6:// Color
 							String colorValue = CommonUtility
 									.getCellValueStrinOrInt(cell);
 							//colorValue=colorValue.replace("SOLID,", "");
-							if(!colorValue.contains("SOLID")){
-							colorMapping=colorMapping.append(colorValue +",");
-							colorlist = bellaProductsParser
-									.getColorCriteria(colorMapping);
-							productConfigObj.setColors(colorlist);
+							if(!colorValue.contains("SOLID") && !colorValue.equalsIgnoreCase("")){
+			    	        colorMapping=colorMapping.append(colorValue +",");	
 							}
 							break;
 
 						case 7:// Size Range
 							String Sizevalue = CommonUtility
 							.getCellValueStrinOrInt(cell);
+							if(!Sizevalue.equalsIgnoreCase("")){
 							sizeObj=bellaProductsParser
 									.getSize(Sizevalue);
 							productConfigObj.setSizes(sizeObj);
-
+							}
 							break;
+							
 						case 8: // SKU
-							break;
-					
+							break;				
 
 						} // end inner while loop
 
@@ -265,7 +284,7 @@ public class BellaCanvas implements IExcelParser {
 							"", "", "USD",
 							"", true, "true",
 							productName, "", priceGrids);
-					
+									
 
 				} catch (Exception e) {
 					_LOGGER.error("Error while Processing ProductId and cause :"
@@ -275,6 +294,11 @@ public class BellaCanvas implements IExcelParser {
 				}
 			}
 			workbook.close();
+			colorlist = bellaProductsParser
+					.getColorCriteria(colorMapping);
+			productConfigObj.setColors(colorlist);
+			listOfavaibility=bellaProductsParser.getAvailability(sizeObj,colorlist);
+			productExcelObj.setAvailability(listOfavaibility);
 			productExcelObj.setPriceGrids(priceGrids);
 			Description=description.toString();
 			String descArr[]=Description.split(",");
@@ -282,7 +306,6 @@ public class BellaCanvas implements IExcelParser {
 			Description=Description.replace(descArr[0], "").replace(",", "");
 			productExcelObj.setDescription(Description);
 			productExcelObj.setProductConfigurations(productConfigObj);
-
 			int num = postServiceImpl.postProduct(accessToken, productExcelObj,
 					asiNumber, batchId);
 			if (num == 1) {
@@ -298,7 +321,6 @@ public class BellaCanvas implements IExcelParser {
 			finalResult = numOfProductsSuccess.size() + ","
 					+ numOfProductsFailure.size();
 			productDaoObj.saveErrorLog(asiNumber, batchId);
-
 			productConfigObj = new ProductConfigurations();
 			colorMapping = new StringBuilder();
 			description = new StringBuilder();
@@ -333,7 +355,6 @@ public class BellaCanvas implements IExcelParser {
 			return ApplicationConstants.CONST_BOOLEAN_FALSE;
 		}
 	   
-
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}

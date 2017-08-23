@@ -21,7 +21,7 @@ public class BellaCanvasPriceGridParser {
 			String currency, String priceInclude, boolean isBasePrice,
 			String qurFlag, String priceName, String criterias,
 			List<PriceGrid> existingPriceGrid) {
-		_LOGGER.info("Enter Price Grid Parser class");
+	//	_LOGGER.info("Enter Price Grid Parser class");
 		try{
 		Integer sequence = 1;
 	//	List<PriceConfiguration> configuration = null;
@@ -110,8 +110,7 @@ public class BellaCanvasPriceGridParser {
 					//String criteriaValue = LookupData.getCriteriaValue(config[0]);
 					configs.setCriteria(criteriaValue);
 					configs.setValue(Arrays.asList((Object) config[1]));
-					priceConfiguration.add(configs);
-					
+					priceConfiguration.add(configs);				
 				}
 			}
 
@@ -120,9 +119,7 @@ public class BellaCanvasPriceGridParser {
 			configs = new PriceConfiguration();
 			configs.setCriteria(criterias);
 			configs.setValue(Arrays.asList((Object) UpchargeName));
-			priceConfiguration.add(configs);
-			
-			
+			priceConfiguration.add(configs);						
 		}
 		}catch(Exception e){
 			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());

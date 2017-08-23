@@ -10,7 +10,6 @@ public static Map<String, String> SIZE_MAP =new TreeMap<String, String>(String.C
 
 
 	static{
-
 		COLOR_MAP.put("Asphalt","Medium Black");
 		COLOR_MAP.put("Black","Medium Black");
 		COLOR_MAP.put("White","Medium White");
@@ -77,6 +76,7 @@ public static Map<String, String> SIZE_MAP =new TreeMap<String, String>(String.C
 		COLOR_MAP.put("Heather Brown","Medium Brown");
 		COLOR_MAP.put("Brown","Medium Brown");
 		COLOR_MAP.put("Dark Grey Heather","Dark Gray");
+		COLOR_MAP.put("Dark Grey","Dark Gray");
 		COLOR_MAP.put("Seafoam Blue","Light Blue");
 		COLOR_MAP.put("Turquoise","Medium Blue");
 		COLOR_MAP.put("Plum","Medium Purple");
@@ -181,12 +181,10 @@ public static Map<String, String> SIZE_MAP =new TreeMap<String, String>(String.C
 		SIZE_MAP.put("S-3XL","S,M,L,XL,2XL,3XL");
 		SIZE_MAP.put("XS/S, M/L","XS/S,M/L");
 		SIZE_MAP.put("S-S, M, L/XL","S,M,L/XL");
-				
+		SIZE_MAP.put("S, M, L/XL","S,M,L/XL");
 		
 	}
-	
-	
-	
+			
 	public static Map<String, String> getSIZE_MAP() {
 		return SIZE_MAP;
 	}
