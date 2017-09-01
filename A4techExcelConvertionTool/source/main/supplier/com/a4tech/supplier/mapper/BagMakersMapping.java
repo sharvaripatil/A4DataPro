@@ -664,11 +664,11 @@ public class BagMakersMapping implements IExcelParser{
 							List<AdditionalColor> listOfAdditioColor = bagMakerAttributeParser.getAdditionalColor("Additional Color");
 							productConfigObj.setAdditionalColors(listOfAdditioColor);
 							}
-							extraLocRunChrg = extraLocRunChrg.replace("$", "").trim();
+							extraLocRunChrg = extraLocRunChrg.replace("$", "").trim();//Other
 							priceGrids=bagMakersPriceGridParser.getPriceGrids(
 									extraLocColorScreenChrg, "1", extraLocColorScreenChrgCode,
 										ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
-										"false","Additional Color, Addiotnal Location","ADCL:Additional Color___ADLN:Additional Location",new Integer(1),"Screen Charge", "Per Quantity",
+										"false","Additional Color, Addiotnal Location","ADCL:Additional Color___ADLN:Additional Location",new Integer(1),"Screen Charge", "Other",
 										priceGrids);	
 							
 						}
