@@ -51,6 +51,12 @@ public class TowelSpecAttributeParser {
 		if(!CollectionUtils.isEmpty(existingProduct.getCategories())){
 			newProduct.setCategories(existingProduct.getCategories());
 		}
+		if(!StringUtils.isEmpty(existingProduct.getName())){
+			newProduct.setName(existingProduct.getName());
+		}
+		if(!StringUtils.isEmpty(existingProduct.getDescription())){
+			newProduct.setDescription(existingProduct.getDescription());
+		}
 		newProduct.setProductConfigurations(newConfig);
 		return newProduct;
 	}
@@ -97,17 +103,25 @@ public class TowelSpecAttributeParser {
 			value = value.replaceAll("/", ",");
 		} else {
 			
+		}String[] imprMethodVals = null;
+		if(value.equalsIgnoreCase("Screenprinted (1 color) on chair, tote and towel")){
+			imprMethodVals=	new String[] {value};
+		} else {
+			imprMethodVals = CommonUtility.getValuesOfArray(value, ",");
 		}
-		String[] imprMethodVals = CommonUtility.getValuesOfArray(value, ",");
+		
 		for (String imprMethodName : imprMethodVals) {
 			imprMethodName = imprMethodName.trim();
 			imprintMethodObj = new ImprintMethod();
 			if(imprMethodName.contains("Blank")){
 				alias = "Unimprinted"; groupName = "Unimprinted";
+			} else if(imprMethodName.equalsIgnoreCase("Screenprinted (1 color) on chair, tote and towel")){
+				alias = imprMethodName; groupName = "Silkscreen";
 			} else if(imprMethodName.contains("Screenprint") || imprMethodName.contains("screenprint")){
 				alias = imprMethodName; groupName = "Silkscreen";
 			} else if(imprMethodName.equalsIgnoreCase("Embroidered") || imprMethodName.equalsIgnoreCase("Embroidery") ||
-					imprMethodName.equalsIgnoreCase("Tone on Tone with embroidery") || imprMethodName.equalsIgnoreCase("Tone on Tone and Embroidery")){
+				imprMethodName.equalsIgnoreCase("Tone on Tone with embroidery") ||
+				imprMethodName.equalsIgnoreCase("Tone on Tone and Embroidery") || imprMethodName.contains("Embroidered") || imprMethodName.contains("Embroidery")){
 				alias = imprMethodName; groupName = "Embroidered";
 			}else if(imprMethodName.contains("Printed")){
 				alias = imprMethodName; groupName = "Printed";
@@ -122,6 +136,12 @@ public class TowelSpecAttributeParser {
 					|| imprMethodName.equalsIgnoreCase("Embroidery digitization charge over 8000 stitches")){
 				alias = imprMethodName; groupName = "Embroidered";
 			}
+			/*boolean isImprMethodAvailable = false;
+			for (ImprintMethod methodVal : imprintMethodList) {
+				  if(!methodVal.getAlias().equalsIgnoreCase(alias)){
+					  isImprMethodAvailable
+				  }
+			}*/
 			if(!imprintMethodList.stream().map(ImprintMethod::getAlias).anyMatch(alias::equals)){
 				imprintMethodObj.setAlias(alias);
 				imprintMethodObj.setType(groupName);
@@ -179,7 +199,7 @@ public class TowelSpecAttributeParser {
 			  String[] valss = val.split("X");
 	    	 length = valss[0];
 	    	 if(valss[1].contains("x")){
-	    		 String[] valsss = val.split("x");
+	    		 String[] valsss = valss[1].split("x");
 	    		 width = valsss[0];
 	    		 height = valsss[1];
 	    	 } else{
