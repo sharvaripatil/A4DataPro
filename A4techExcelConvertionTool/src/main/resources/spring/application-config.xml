@@ -416,7 +416,8 @@
 		<property name="towelSpecialties" ref="towelSpecId"/>
 		<property name="bagMakersMapping" ref="bagMakersMappingId"/>
 		<property name="gillStudiosMapping" ref="gillStudiosMappingId"/>
-		<property name="blueGenerationMapping" ref="blueGenerId"></property>
+		<property name="blueGenerationMapping" ref="blueGenerId"/>
+		<property name="fitsAccessoriesMapping" ref="FITSAccessoriId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -988,5 +989,16 @@
      <bean id="bluGenpriceGridParserId" class="parser.BlueGeneration.BlueGenerationPriceGridParser"/>
      <bean id="bluGenattributeParserId" class="parser.BlueGeneration.BlueGenerationAttributeParser"></bean> 
      <!-- Blue Generation Configuration End -->
+     
+     <!-- FITS Accessories Configuration Start -->
+     <bean id="FITSAccessoriId" class="com.a4tech.supplier.mapper.FITSAccessoriesMapping">
+     	<property name="postServiceImpl" 	ref="postService"/>
+        <property name="productDaoObj" 	   ref="productDao"/>
+        <property name="fitsAttributeParser" ref="fitsAttributeParserId"/>
+        <property name="fitsPriceGridParser" ref="fitsPriceGridparserId"/>
+     </bean>
+     <bean id="fitsAttributeParserId" class="parser.FITSAccessories.FITSAttributeParser"/>
+     <bean id="fitsPriceGridparserId" class="parser.FITSAccessories.FITSPriceGridParser"/>
+     <!-- FITS Accessories Configuration End -->
 </beans>
 
