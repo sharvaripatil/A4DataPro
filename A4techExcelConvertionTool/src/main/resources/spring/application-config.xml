@@ -416,6 +416,7 @@
 		<property name="towelSpecialties" ref="towelSpecId"/>
 		<property name="bagMakersMapping" ref="bagMakersMappingId"/>
 		<property name="gillStudiosMapping" ref="gillStudiosMappingId"/>
+		<property name="edwardsGarmentMapping" ref="edwardsGarmentMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -976,5 +977,26 @@
     <property name="lookupRestServiceObj" ref="lookupRestService"/>
   	</bean>
      <!-- supplier 56950 Gill Studios Inc configuration end -->  
+     
+     
+     <!-- supplier 51752 Edwards Garment Co configuration start -->
+     <bean id="edwardsGarmentMappingId" class="com.a4tech.supplier.mapper.EdwardsGarmentMapping" autowire="byName">
+       <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj" ref="productDao"/>
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+         <property name="lookupRestServiceObj" ref="lookupRestService"/>
+       <property name="edwardsGarmentAttributeParser" ref="edwardsGarmentAttributeParserId" /> 
+     
+       </bean>
+       <bean id="edwardsGarmentAttributeParserId" name="edwardsGarmentAttributeParserObj"
+  		class="parser.EdwardsGarment.EdwardsGarmentAttributeParser" autowire="byName">
+  		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+  	</bean>
+  	<!-- <bean id="gillStudiosPriceGridParserId" name="gillStudiosPriceGridParserObj" class="parser.gillstudios.GillStudiosPriceGridParser" autowire="byName"/>
+  	<bean id="gillStudiosImprintMethodParserId" name="gillStudiosImprintMethodParserObj" class="parser.gillstudios.GillStudiosImprintMethodParser" autowire="byName">
+  	<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+    <property name="lookupRestServiceObj" ref="lookupRestService"/>
+  	</bean> -->
+     <!-- supplier 51752 Edwards Garment Co configuration end --> 
 </beans>
 
