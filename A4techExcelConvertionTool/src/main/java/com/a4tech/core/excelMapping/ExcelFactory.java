@@ -31,6 +31,7 @@ import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineMappingRevised;
+import com.a4tech.supplier.mapper.MaxplusMapping;
 import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
@@ -83,6 +84,7 @@ public class ExcelFactory {
 	private BagMakersMapping 				bagMakersMapping; 
 	private GillStudiosMapping 				gillStudiosMapping;
 	private BlueGenerationMapping			blueGenerationMapping;
+	private MaxplusMapping                  maxplusmapping;
 
 		public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -170,6 +172,9 @@ public class ExcelFactory {
 			   return gillStudiosMapping;
 		  } else if(name.equalsIgnoreCase("blueGeneration") || name.equals("40653")){
 			  return blueGenerationMapping;
+		  }
+		  else if(name.equalsIgnoreCase("maxplusmapping") || name.equals("69718")){
+			  return maxplusmapping;
 		  }
 		return null;
 	}
@@ -471,4 +476,13 @@ public class ExcelFactory {
 	public void setBlueGenerationMapping(BlueGenerationMapping blueGenerationMapping) {
 		this.blueGenerationMapping = blueGenerationMapping;
 	}
+
+	public MaxplusMapping getMaxplusmapping() {
+		return maxplusmapping;
+	}
+
+	public void setMaxplusmapping(MaxplusMapping maxplusmapping) {
+		this.maxplusmapping = maxplusmapping;
+	}
+	
 }

@@ -417,6 +417,8 @@
 		<property name="bagMakersMapping" ref="bagMakersMappingId"/>
 		<property name="gillStudiosMapping" ref="gillStudiosMappingId"/>
 		<property name="blueGenerationMapping" ref="blueGenerId"></property>
+	    <property name="maxplusmapping" ref="maxplusmappingId"></property>
+		
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -988,5 +990,11 @@
      <bean id="bluGenpriceGridParserId" class="parser.BlueGeneration.BlueGenerationPriceGridParser"/>
      <bean id="bluGenattributeParserId" class="parser.BlueGeneration.BlueGenerationAttributeParser"></bean> 
      <!-- Blue Generation Configuration End -->
+     
+     
+       <bean id="maxplusmappingId" class="com.a4tech.supplier.mapper.MaxplusMapping">
+           <property name="postServiceImpl" 	ref="postService"/>
+           <property name="productDaoObj" 	ref="productDao"/>
+        </bean>
 </beans>
 
