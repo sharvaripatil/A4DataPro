@@ -25,6 +25,7 @@ import com.a4tech.supplier.mapper.BrandwearExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
+import com.a4tech.supplier.mapper.FITSAccessoriesMapping;
 import com.a4tech.supplier.mapper.GillStudiosMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
@@ -85,6 +86,8 @@ public class ExcelFactory {
 	private GillStudiosMapping 				gillStudiosMapping;
 	private BlueGenerationMapping			blueGenerationMapping;
 	private MaxplusMapping                  maxplusmapping;
+	private FITSAccessoriesMapping          fitsAccessoriesMapping;
+
 
 		public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -175,7 +178,11 @@ public class ExcelFactory {
 		  }
 		  else if(name.equalsIgnoreCase("maxplusmapping") || name.equals("69718")){
 			  return maxplusmapping;
-		  }
+		  
+		  } else if(name.equalsIgnoreCase("FITSAccessories ") || name.equals("71107")){
+			  return fitsAccessoriesMapping;
+		  } 
+
 		return null;
 	}
 	
@@ -485,4 +492,13 @@ public class ExcelFactory {
 		this.maxplusmapping = maxplusmapping;
 	}
 	
+	public FITSAccessoriesMapping getFitsAccessoriesMapping() {
+		return fitsAccessoriesMapping;
+	}
+
+	public void setFitsAccessoriesMapping(FITSAccessoriesMapping fitsAccessoriesMapping) {
+		this.fitsAccessoriesMapping = fitsAccessoriesMapping;
+	}
+
+
 }
