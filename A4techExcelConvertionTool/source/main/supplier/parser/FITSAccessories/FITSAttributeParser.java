@@ -29,7 +29,11 @@ public class FITSAttributeParser {
 		  ProductConfigurations oldConfig = existingProduct.getProductConfigurations();
 		  ProductConfigurations newConfig = new ProductConfigurations();
 		  if(!StringUtils.isEmpty(existingProduct.getSummary())){
-			  newProduct.setSummary(existingProduct.getSummary());
+			  String summary = existingProduct.getSummary();
+			  if(summary.contains("velcro")){
+				  summary = summary.replaceAll("velcro", "");
+			  }
+			  newProduct.setSummary(summary);
 		  }
 		  if(!CollectionUtils.isEmpty(existingProduct.getProductKeywords())){
 			  newProduct.setProductKeywords(existingProduct.getProductKeywords());
@@ -114,6 +118,13 @@ public class FITSAttributeParser {
 		  colorObj = new Color();
 		  if(colorName.contains("/")){
 			  String group = FITSColorMapping.getColorGroup(colorName);
+			  /*if("Other".equals(group)){
+				  group = FITSColorMapping.getColorGroup(colorName.replaceAll("/", "-"));
+				  if(group.equals("Multi Color") || group.equals("Silver Metal") || group.equals("Medium Purple")
+						  || group.equals("Pewter Metal") || group.equals("Medium Black") || group.equals("Medium Gray")){
+					  colorName = colorName.replaceAll("/", "-");
+				  }
+			  }*/
 			  if(!"Other".equals(group)){
 				  colorObj.setAlias(colorName);
 				  colorObj.setName(group);  
@@ -142,7 +153,7 @@ public class FITSAttributeParser {
 		  comboColorList.add(combo2);
 	  }
 	  combo1 = new Combo();
-	  if(comboVals[0].equalsIgnoreCase("Pink #342")){
+	  if(comboVals[0].trim().equalsIgnoreCase("Pink #342")){
 		  colorObj.setName("Pink");
 	  } else {
 		  colorObj.setName(FITSColorMapping.getColorGroup(comboVals[0]));

@@ -57,6 +57,7 @@ public class FITSAccessoriesMapping implements IExcelParser{
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		  List<String> repeatRows = new ArrayList<>();
+		  int rowNumber ;
  		try{
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 	    Sheet sheet = workbook.getSheetAt(0);
@@ -70,9 +71,11 @@ public class FITSAccessoriesMapping implements IExcelParser{
 		 String shippingDimensions = "";
 		 String shippingWt ="";
 		 Set<String> colorsList = new HashSet<>();
+		 String imprintMethod = "";
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
+			rowNumber = nextRow.getRowNum();
 			if(nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO){
 				continue;
 			}
@@ -83,6 +86,9 @@ public class FITSAccessoriesMapping implements IExcelParser{
 		 } else if(colorCode == 43){// yellow color
 			// process yellow color rows(US Pricing)
 		 } else if(colorCode == 64 || colorCode == null){// white color
+			 if(StringUtils.isEmpty(imprintMethod)){
+				 imprintMethod = getImprintMethod(nextRow);
+			 }
 			 continue;// ignore white color rows as per client feedback
 			 //CA Pricing
 		 }
@@ -136,6 +142,7 @@ public class FITSAccessoriesMapping implements IExcelParser{
 								shippingDimensions = "";
 							    shippingWt ="";
 							    colorsList = new HashSet<>();
+							    imprintMethod = "";
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -208,7 +215,7 @@ public class FITSAccessoriesMapping implements IExcelParser{
 					
 					break;
 				case 10://decoration(Imprint method)
-					String imprintMethod = cell.getStringCellValue();
+					 //imprintMethod = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintMethod)){
 								List<ImprintMethod> imprintMethodList = fitsAttributeParser
 										.getProductImprintMethods(imprintMethod);
@@ -323,6 +330,7 @@ public class FITSAccessoriesMapping implements IExcelParser{
 		desc = desc.replaceAll("</li><li>", " ");
 		desc = desc.replaceAll("\\<.*?\\> ?", "");
 		desc = desc.replaceAll("velcro", " ");
+		desc = desc.replaceAll("\n", " ");
 		desc = desc.trim().replaceAll(" +", " ");
 		return desc;
 	}
@@ -331,6 +339,10 @@ public class FITSAccessoriesMapping implements IExcelParser{
 		String name = val.replaceAll("[0-9]", "").trim();
 		String finalData = productNumber + ","+name;
 		return finalData;
+	}
+	private String getImprintMethod(Row row){
+		Cell cell = row.getCell(9);//imprint method column
+		return cell.getStringCellValue();
 	}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
