@@ -1,8 +1,12 @@
 package parser.EdwardsGarment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -19,8 +23,11 @@ import com.a4tech.product.model.Material;
 import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductSKUConfiguration;
+import com.a4tech.product.model.ProductSkus;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Theme;
+import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -83,10 +90,16 @@ public List<Image> getImages(List<String> imagesList){
 }
 
 @SuppressWarnings("unused")
-public List<Color> getProductColors(String color){
+//public List<Color> getProductColors(Set <String> colorSet) {//(List<String> skuList)
+public List<Color> getProductColors(List<String> colorListValue){
 	List<Color> listOfColors = new ArrayList<>();
 	try{
 	Color colorObj = null;
+	List<Color> colorList = new ArrayList<Color>();
+	//Iterator<String> colorIterator=colorSet.iterator();
+	//while (colorIterator.hasNext()) {
+	for(String tempValue :colorListValue){
+	String color = tempValue;//(String) colorIterator.next();
 	color=color.replaceAll("\\|",",");
 	String[] colors =getValuesOfArray(color, ",");
 	for (String colorName : colors) {
@@ -165,6 +178,7 @@ public List<Color> getProductColors(String color){
 		}
 		listOfColors.add(colorObj);
 	}
+		}
 	}catch(Exception e){
 		_LOGGER.error("Error while processing color: "+e.getMessage());
 	}
@@ -310,11 +324,13 @@ public static boolean isComboColor(String colorValue){
 			   if (listOfLookupMaterialBlend2.isEmpty()) { 
 				   listOfLookupMaterialBlend2.add("Other Fabric");
 			   }
-			   
-			  // if(material.contains("%")){
-					  String PercentageValue[]=material.split("%");
+			   String PercentageValue[]=new String [2];
+			   if(material.contains("%")){
+					   PercentageValue=material.split("%");
 					  PercentageValue[0]=PercentageValue[0].replace("[^0-9|.x%/ ]", "");
-					//  }
+				  }else{
+					  PercentageValue[0]="50";
+				  }
 			   
 					  
 					  
@@ -332,7 +348,7 @@ public static boolean isComboColor(String colorValue){
 		       listOfBlend.add(blendObj1);
 		       materialObj.setAlias(tempAliasForblend);
 		    materialObj.setBlendMaterials(listOfBlend);
-		   
+		    materiallist.add(materialObj); 
 		  // }
 		  }else {  
 		    materialObj = getMaterialValue(listOfLookupMaterial.toString(),
@@ -424,6 +440,62 @@ public static boolean isComboColor(String colorValue){
 	    materialValue1=materialValue1.replaceAll( "80 PVC/20 PolyesterWATERPROOF","PVC:Polyester");
 		materialValue1=materialValue1.replaceAll("62 Cotton/38 PVCWATERPROOF","Cotton:PVC");*/
 		return flag;
+	}
+	
+	public List<Value> getApparelValuesObj(List<String> sizesList){
+		 List<Value> listOfValue = new ArrayList<>();
+			try{
+				for (String value : sizesList) {
+					Value valObj = new Value();
+					valObj.setValue(value);
+					listOfValue.add(valObj);
+				}
+			}catch(Exception e){
+				_LOGGER.error("Error while processing size "+e.getMessage());
+			}
+		 return listOfValue;
+		}
+	//public List<ProductSkus> getProductSkus(String colorVal,String sizeVal,String skuVal,
+	//public List<ProductSkus> getProductSkus(Set<String> skuSet) //List<String> sizesList
+	public List<ProductSkus> getProductSkus(List<String> skuList)
+            {
+		//Iterator<String> colorIterator=skuSet.iterator();
+		List<ProductSkus> listProductSkus = new ArrayList<>();
+		try{
+		//while (colorIterator.hasNext()) {
+			for (String value : skuList) {
+			String skuValue = value;//(String) colorIterator.next();
+			String tempArr[]=skuValue.split("_____");
+			String size=tempArr[0];
+			String colorValue=tempArr[1];
+			String skuNo=tempArr[2];
+			colorValue=colorValue.replaceAll("&","/");
+			colorValue=colorValue.replaceAll(" w/","/");
+			colorValue=colorValue.replaceAll(" with","/");
+			colorValue=colorValue.replaceAll(" W/","/");
+		ProductSkus productSku = new ProductSkus();
+		if(!StringUtils.isEmpty(skuNo) && !skuNo.equals("BBBBB")){
+		ProductSKUConfiguration colorSkuConfig = getSkuConfiguration("Product Color", colorValue);
+		ProductSKUConfiguration sizeSkuConfig = getSkuConfiguration("Standard & Numbered", size);
+		List<ProductSKUConfiguration> listSkuConfigs = new ArrayList<>();
+		listSkuConfigs.add(colorSkuConfig);
+		listSkuConfigs.add(sizeSkuConfig);
+		productSku.setSKU(skuNo);
+		productSku.setConfigurations(listSkuConfigs);
+		listProductSkus.add(productSku);
+		}
+		}
+		}catch(Exception e){
+			_LOGGER.error("Error while processing sku "+e.getMessage());
+		}
+		return listProductSkus;
+
+	}
+	private ProductSKUConfiguration getSkuConfiguration(String criteria,String val){
+		ProductSKUConfiguration skuConfig = new ProductSKUConfiguration();
+		skuConfig.setCriteria(criteria);
+		skuConfig.setValue(Arrays.asList(val));
+		return skuConfig;
 	}
 	
 public LookupServiceData getLookupServiceDataObj() {

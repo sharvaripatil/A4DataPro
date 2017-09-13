@@ -3,15 +3,10 @@ package com.a4tech.supplier.mapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -22,36 +17,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import parser.EdwardsGarment.EdwardGarmentPriceGridParser;
 import parser.EdwardsGarment.EdwardsGarmentAttributeParser;
 
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.AdditionalColor;
+import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Image;
-import com.a4tech.product.model.ImprintLocation;
-import com.a4tech.product.model.ImprintMethod;
-import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
-import com.a4tech.product.model.Origin;
-import com.a4tech.product.model.OtherSize;
-import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.model.ProductNumber;
-import com.a4tech.product.model.ProductionTime;
-import com.a4tech.product.model.RushTime;
+import com.a4tech.product.model.ProductSkus;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
-import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Value;
-import com.a4tech.product.model.Values;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -67,7 +53,7 @@ public class EdwardsGarmentMapping implements IExcelParser{
 	private LookupRestService lookupRestServiceObj;
 	
 	private EdwardsGarmentAttributeParser edwardsGarmentAttributeParser;
-	
+	private EdwardGarmentPriceGridParser edwardGarmentPriceGridparser;
 	@Autowired
 	ObjectMapper mapperObj;
 	
@@ -84,84 +70,37 @@ public class EdwardsGarmentMapping implements IExcelParser{
 		  String productId = null;
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		  List<String> repeatRows = new ArrayList<>();
-		  StringBuilder dimensionValue = new StringBuilder();
-		  StringBuilder dimensionUnits = new StringBuilder();
-		  StringBuilder dimensionType = new StringBuilder();
 		  Dimension finalDimensionObj=new Dimension();
 		  StringBuilder listOfQuantity = new StringBuilder();
 		  StringBuilder listOfPrices = new StringBuilder();
 		  StringBuilder priceIncludes = new StringBuilder();
 		  StringBuilder pricesPerUnit = new StringBuilder();
-		  StringBuilder ImprintSizevalue = new StringBuilder();
-		  StringBuilder ImprintSizevalue2 = new StringBuilder();
-		  boolean criteriaFlag=false;
-			List<Color> colorList = new ArrayList<Color>();
-			List<ImprintLocation> listImprintLocation = new ArrayList<ImprintLocation>();
-			List<ImprintMethod> listOfImprintMethods = new ArrayList<ImprintMethod>();
-			List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
-			List<String> productKeywords = new ArrayList<String>();
-			List<Theme> themeList = new ArrayList<Theme>();
-			//List<Catalog> catalogList = new ArrayList<Catalog>();
-			List<String> complianceList = new ArrayList<String>();
+		
 			List<Material> materiallist = new ArrayList<Material>();	
 			Set<String> setImages= new HashSet();
-		    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
-		    //List<com.a4tech.lookup.model.Catalog> catalogsList=new ArrayList<>();
-		    List<Values> valuesList =new ArrayList<Values>();
-			RushTime rushTime  = new RushTime();
-			Size size=new Size();
-			StringBuilder additionalClrRunChrgPrice = new StringBuilder();
-			String        additionalClrRunChrgCode = "";
-			String        additionalColorPriceVal = "";
-			String        additionalColorCode     = "";
-			HashMap<String, String>  productPricePriceMap=new HashMap<String, String>();
+			
 			 String xid = null;
+			 
 		try{
-			List<ProductNumber> pnumberList = new ArrayList<ProductNumber>(); 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 	    Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
-		String priceCode = null;
+		String size1="";
+		String size2="";
 		String productName = null;
-		String basePriceName=null;
-		String quoteUponRequest  = null;
-		String quantity = null;
 		String cartonL = null;
 		String cartonW = null;
 		String cartonH = null;
-		String weightPerCarton = null;
-		String unitsPerCarton = null;
-		String decorationMethod =null;
-		 Date  priceConfirmedThru =null;
-		String FirstImprintsize1=null;
-		String FirstImprintunit1=null;
-		String FirstImprinttype1=null;
-		String FirstImprintsize2=null;
-		String FirstImprintunit2=null;
-		String FirstImprinttype2=null;
-		String SecondImprintsize1=null;
-		String SecondImprintunit1=null;
-		String SecondImprinttype1=null;
-		String SecondImprintsize2=null;
-		String SecondImprintunit2=null;
-		String SecondImprinttype2=null;
-		String CatYear=null;
 		Cell cell2Data = null;
-		String prodTimeLo = null;
-		String FOBValue= null;
-		String themeValue=null;
-		String priceIncludesValue=null;
-		String imprintLocation = null;
-		String ProductStatus=null;
-		boolean Prod_Status;
 		Product existingApiProduct = null;
 		int columnIndex = 0;
-		Map<String, String>  imprintMethodUpchargeMap = new LinkedHashMap<>();
-		HashMap<String, String>  pnumMap = new HashMap<>();
 		HashSet<String>  colorSet = new HashSet<>();
 		String firstValue="";
-		
+		Set<String> setSizes= new HashSet();
+		Set<String> skuSet= new HashSet();
+		Set<String> priceSet= new HashSet();
+		String stockValue="";
 while (iterator.hasNext()) {
 			
 			try{
@@ -206,18 +145,56 @@ while (iterator.hasNext()) {
 									List<Image> listOfImages = edwardsGarmentAttributeParser.getImages(new ArrayList<String>(setImages));
 									productExcelObj.setImages(listOfImages);
 								}
+							//set sku here
+							 if(!CollectionUtils.isEmpty(skuSet)){
+							List<ProductSkus>	 listProductSkus=edwardsGarmentAttributeParser.getProductSkus(new ArrayList<String>(skuSet));
+							 productExcelObj.setProductRelationSkus(listProductSkus);
+							 }
 							//process colors here
+							 
+								if(!CollectionUtils.isEmpty(colorSet)){
+									List<Color> colorList=edwardsGarmentAttributeParser.getProductColors(new ArrayList<String>(colorSet));
+									productConfigObj.setColors(colorList);
+								}
+								
+								 if(!CollectionUtils.isEmpty(setSizes)){
+									 Apparel apparelObj = new Apparel();
+									 Size sizeObj=new Size();
+									 List<Value> listOfValue = edwardsGarmentAttributeParser.getApparelValuesObj(new ArrayList<String>(setSizes));
+										apparelObj.setType("Standard & Numbered");
+										apparelObj.setValues(listOfValue);
+										sizeObj.setApparel(apparelObj);
+									productConfigObj.setSizes(sizeObj);
+										
+									}
+								 
 							// process pring here
 								/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 										         listOfQuantity.toString(), priceCode, "USD",
-										         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/	
-							 
+										         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/
+								 if(!CollectionUtils.isEmpty(priceSet)){
+									 ArrayList<String> pricingList=new ArrayList<String>(priceSet);
+									 priceGrids=new ArrayList<PriceGrid>();
+									 for (String listPriceTemp : pricingList) {
+										 String tempArr[]=listPriceTemp.split("_____");
+										 String sizVal=tempArr[0];
+										 String listPrice=tempArr[1];
+										 priceGrids = edwardGarmentPriceGridparser.getPriceGrids(listPrice,"1", "P",
+												 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
+												 ApplicationConstants.CONST_STRING_FALSE,sizVal,"Size",1,priceGrids);
+									}
+								}
+									 
+									 if(CollectionUtils.isEmpty(priceGrids)){
+											priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur();	
+										}
+								productExcelObj.setPriceType("L");
 							    productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 //	if(Prod_Status = false){
 							 	_LOGGER.info("Product Data : "
 										+ mapperObj.writeValueAsString(productExcelObj));
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -229,42 +206,19 @@ while (iterator.hasNext()) {
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 							 	repeatRows.clear();
+								colorSet=new HashSet<String>(); 
 							 	setImages=new HashSet<String>();
 								priceGrids = new ArrayList<PriceGrid>();
 								listOfPrices = new StringBuilder();
 							    listOfQuantity = new StringBuilder();
 								productConfigObj = new ProductConfigurations();
-								themeList = new ArrayList<Theme>();
 								finalDimensionObj = new Dimension();
-								 valuesList = new ArrayList<>();
-								productKeywords = new ArrayList<String>();
-								listOfProductionTime = new ArrayList<ProductionTime>();
-								rushTime = new RushTime();
-								listImprintLocation = new ArrayList<ImprintLocation>();
-								listOfImprintMethods = new ArrayList<ImprintMethod>();
-								
-								imprintSizeList =new ArrayList<ImprintSize>();
-								ImprintSizevalue = new StringBuilder();
-								ImprintSizevalue2 = new StringBuilder();
-								size=new Size();
-								colorList = new ArrayList<Color>();
-								 dimensionValue = new StringBuilder();
-								 dimensionUnits = new StringBuilder();
-								 dimensionType = new StringBuilder();
 								 priceIncludes = new StringBuilder();
-								 imprintMethodUpchargeMap = new LinkedHashMap<>();
-								 priceIncludesValue=null;
 								 priceIncludes = new StringBuilder();
-								 imprintMethodUpchargeMap = new LinkedHashMap<>();
-								 additionalClrRunChrgPrice = new StringBuilder();
-							     additionalClrRunChrgCode = "";
-							     additionalColorPriceVal = "";
-						         additionalColorCode     = "";
 						         pricesPerUnit=new StringBuilder();
-						         //productSizePriceMap=new HashMap<String, String>();
-						         pnumMap=new HashMap<String, String>();
 						         colorSet=new HashSet<String>();
-						         productPricePriceMap=new HashMap<String, String>();
+						         setSizes= new HashSet();
+						         skuSet=new HashSet<String>();
 						         firstValue="";
 						         System.out.println("");
 						 }
@@ -301,7 +255,7 @@ while (iterator.hasNext()) {
 
 				    	break;
 				    case  3://Stock
-
+				    	stockValue=CommonUtility.getCellValueStrinOrInt(cell);
 				    	break;
 				    case  4://UPC
 
@@ -322,10 +276,67 @@ while (iterator.hasNext()) {
 
 				    	break;
 				    case  9://Size1
-
+				    	size1=CommonUtility.getCellValueStrinOrInt(cell);
+				    	if(StringUtils.isEmpty(size1)){
+				    		size1="";
+				    	}
+				    	String listPrice=getProductCellDataPrice(nextRow,12);
+				    	if(StringUtils.isEmpty(listPrice)){
+				    		listPrice="AAAAA";
+				    	}
+				    	size2 =getProductCellData(nextRow,9);
+				    	String colorValueTemp=getProductCellData(nextRow,20);
+				    	if(StringUtils.isEmpty(colorValueTemp)){
+				    		colorValueTemp="AAAAA";
+				    	}
+				    	if(StringUtils.isEmpty(stockValue)){
+				    		stockValue="BBBBB";
+				    	}
+				    	if(!StringUtils.isEmpty(size1) && (!StringUtils.isEmpty(size2))){
+							String tempStr="";
+							size1=size1.trim();
+							size2=size2.trim();
+							 if(checkSize2(size2)){
+								tempStr=size1+size2;
+								tempStr=tempStr.replaceAll(" ","");
+								setSizes.add(tempStr);
+								skuSet.add(tempStr+"_____"+colorValueTemp+"_____"+stockValue);
+								priceSet.add(tempStr+"_____"+listPrice);
+							}else if(containsOnlyNumbers(size2)){
+								if(size1.equals(size2)){
+									setSizes.add(size1);
+									skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
+									priceSet.add(size1+"_____"+listPrice);
+									
+								}else{
+									tempStr=size1+"-"+size2;
+									tempStr=tempStr.replaceAll(" ","");
+									setSizes.add(tempStr);
+									skuSet.add(tempStr+"_____"+colorValueTemp+"_____"+stockValue);
+									priceSet.add(tempStr+"_____"+listPrice);
+								}
+								
+							}else{
+								setSizes.add(size1);
+								skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
+								priceSet.add(size1+"_____"+listPrice);
+							}
+						}else{
+							if(!StringUtils.isEmpty(size1)){
+							setSizes.add(size1.trim());
+							skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
+							priceSet.add(size1+"_____"+listPrice);
+							}
+						}
+						//size1="";
+						//size2="";
 				    	break;
 				    case  10://Size2
-
+				    	//size2=CommonUtility.getCellValueStrinOrInt(cell);
+				    	/*if(StringUtils.isEmpty(size2)){
+				    	
+				    	}*/
+				    	
 				    	break;
 				    case  11://ProdName
 				    	productName = CommonUtility.getCellValueStrinOrInt(cell);
@@ -368,7 +379,6 @@ while (iterator.hasNext()) {
 				    	break;
 				    case  18://KeyWords
 				    	String keywords = CommonUtility.getCellValueStrinOrInt(cell);
-						
 						 if(!StringUtils.isEmpty(keywords)){
 							 keywords=keywords.replace(" ", ",");
 							 List<String> listOfKeywords = new ArrayList<String>();
@@ -396,11 +406,11 @@ while (iterator.hasNext()) {
 						 }
 				    	break;
 				    case  21://ColorDescription
-				    	String colorValue=CommonUtility.getCellValueStrinOrInt(cell);
-						 if(!StringUtils.isEmpty(colorValue)){
-							 List<Color> colors =edwardsGarmentAttributeParser.getProductColors(colorValue);
-							 productConfigObj.setColors(colors);
-						 }
+						 String colorValue=CommonUtility.getCellValueStrinOrInt(cell);
+							if(!StringUtils.isEmpty(colorValue)){
+								colorSet.add(colorValue);
+							}
+						 
 				    	break;
 				    case  22://ComponentContent
 				    	String Material=cell.getStringCellValue();
@@ -478,49 +488,110 @@ while (iterator.hasNext()) {
 
 				    	break;
 				}  // end inner while loop
-					 
+				
+				
+				/*if(!StringUtils.isEmpty(size1) && (!StringUtils.isEmpty(size2))){
+					String tempStr="";
+					size1=size1.trim();
+					size2=size2.trim();
+					 if(checkSize2(size2)){
+						tempStr=size1+size2;
+						tempStr=tempStr.replaceAll(" ","");
+						setSizes.add(tempStr);
+					}else if(containsOnlyNumbers(size2)){
+						if(size1.equals(size2)){
+							setSizes.add(size1);
+						}else{
+							tempStr=size1+"-"+size2;
+							tempStr=tempStr.replaceAll(" ","");
+							setSizes.add(tempStr);
+						}
+						
+					}else{
+						setSizes.add(size1);
+					}
+				}else{
+					setSizes.add(size1.trim());
+				}
+				size1="";
+				size2="";*/
 			}// set  product configuration objects
 		 // end inner while loop
 			
 			//ShippingEstimate // i have to work on this thing as well for empty ship obj
 		 // if any configurations come they will be here
-			productExcelObj.setPriceType("L");
+			/*productExcelObj.setPriceType("L");
 			// i have to process  pricingover here
 			 	productExcelObj.setPriceGrids(priceGrids);
+			 	materiallist = new ArrayList<Material>();	
 			 	criteriaFlag=false;
 			 	listOfPrices=new StringBuilder();
 			 	listOfQuantity=new StringBuilder();
 			 	pricesPerUnit=new StringBuilder();
-			 	 imprintMethodUpchargeMap = new LinkedHashMap<>();
-				 additionalClrRunChrgPrice = new StringBuilder();
-				 themeList = new ArrayList<Theme>();
-				 listOfProductionTime = new ArrayList<ProductionTime>();
-				 listImprintLocation = new ArrayList<ImprintLocation>();
-				 listOfImprintMethods = new ArrayList<ImprintMethod>();
-				 pricesPerUnit=new StringBuilder();
-			     additionalClrRunChrgCode = "";
-			     additionalColorPriceVal = "";
-		         additionalColorCode     = "";
+			 	 pricesPerUnit=new StringBuilder();*/
+			     
 			}catch(Exception e){
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() +"at column+1="+columnIndex);		 
 		}
 		}
 		workbook.close();	
+		//productExcelObj.setPriceGrids(priceGrids);
+			
 		 if(!CollectionUtils.isEmpty(setImages)){
 				List<Image> listOfImages = edwardsGarmentAttributeParser.getImages(new ArrayList<String>(setImages));
 				productExcelObj.setImages(listOfImages);
 			}
-		//productExcelObj.setPriceGrids(priceGrids);
-		
-	 // i have to process pricing
-		productExcelObj.setPriceGrids(priceGrids);
-		productExcelObj.setProductConfigurations(productConfigObj);
-	
+		//set sku here
+		 if(!CollectionUtils.isEmpty(skuSet)){
+		List<ProductSkus>	 listProductSkus=edwardsGarmentAttributeParser.getProductSkus(new ArrayList<String>(skuSet));
+		 productExcelObj.setProductRelationSkus(listProductSkus);
+		 }
+		//process colors here
+		 
+			if(!CollectionUtils.isEmpty(colorSet)){
+				List<Color> colorList=edwardsGarmentAttributeParser.getProductColors(new ArrayList<String>(colorSet));
+				productConfigObj.setColors(colorList);
+			}
+			
+			 if(!CollectionUtils.isEmpty(setSizes)){
+				 Apparel apparelObj = new Apparel();
+				 Size sizeObj=new Size();
+				 List<Value> listOfValue = edwardsGarmentAttributeParser.getApparelValuesObj(new ArrayList<String>(setSizes));
+					apparelObj.setType("Standard & Numbered");
+					apparelObj.setValues(listOfValue);
+					sizeObj.setApparel(apparelObj);
+				productConfigObj.setSizes(sizeObj);
+					
+				}
+			 
+		// process pring here
+			/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
+					         listOfQuantity.toString(), priceCode, "USD",
+					         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/
+			 if(!CollectionUtils.isEmpty(priceSet)){
+				 ArrayList<String> pricingList=new ArrayList<String>(priceSet);
+				 priceGrids=new ArrayList<PriceGrid>();
+				 for (String listPriceTemp : pricingList) {
+					 String tempArr[]=listPriceTemp.split("_____");
+					 String sizVal=tempArr[0];
+					 String listPrice=tempArr[1];
+					 priceGrids = edwardGarmentPriceGridparser.getPriceGrids(listPrice,"1", "P",
+							 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
+							 ApplicationConstants.CONST_STRING_FALSE,sizVal,"Size",1,priceGrids);
+				}
+			}
+				 
+				 if(CollectionUtils.isEmpty(priceGrids)){
+						priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur();	
+					}
+		    productExcelObj.setPriceGrids(priceGrids);
+		 	productExcelObj.setProductConfigurations(productConfigObj);
+		 	productExcelObj.setPriceType("L");
 		 	_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));
 		 	//if(Prod_Status = false){
-		 	productExcelObj.setPriceType("L");
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	
+		 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
@@ -538,32 +609,11 @@ while (iterator.hasNext()) {
 			listOfPrices = new StringBuilder();
 		    listOfQuantity = new StringBuilder();
 			productConfigObj = new ProductConfigurations();
-			themeList = new ArrayList<Theme>();
 			finalDimensionObj = new Dimension();
-			 valuesList = new ArrayList<>();
-			productKeywords = new ArrayList<String>();
-			listOfProductionTime = new ArrayList<ProductionTime>();
-			rushTime = new RushTime();
-			listImprintLocation = new ArrayList<ImprintLocation>();
-			listOfImprintMethods = new ArrayList<ImprintMethod>();
-			imprintSizeList =new ArrayList<ImprintSize>();
-			size=new Size();
-			colorList = new ArrayList<Color>();
-			ImprintSizevalue = new StringBuilder();
-			//DimensionRef=null;
-			 dimensionValue = new StringBuilder();
-			 dimensionUnits = new StringBuilder();
-			 dimensionType = new StringBuilder();
-			 priceIncludesValue=null;
 			 priceIncludes = new StringBuilder();
-			 imprintMethodUpchargeMap = new LinkedHashMap<>();
-			 additionalClrRunChrgPrice = new StringBuilder();
 			 pricesPerUnit=new StringBuilder();
-		     additionalClrRunChrgCode = "";
-		     additionalColorPriceVal = "";
-	         additionalColorCode     = "";
-	         pnumMap=new HashMap<String, String>();
 	         colorSet=new HashSet<String>();
+	         setSizes= new HashSet();
 	         firstValue="";
 	         repeatRows.clear();
 	       return finalResult;
@@ -585,10 +635,10 @@ while (iterator.hasNext()) {
 
 	public boolean isRepeateColumn(int columnIndex){
 		
-		if(columnIndex != 1 && columnIndex != 3 && columnIndex != 4 && columnIndex != 14 && columnIndex != 25 &&columnIndex != 26 && columnIndex !=27 && columnIndex != 28 && columnIndex != 29 && columnIndex != 30  
-				&& columnIndex != 31&&columnIndex != 32 && columnIndex !=33 && columnIndex != 34 && columnIndex != 35 && columnIndex != 36 && columnIndex != 37
-				&& columnIndex != 38&&columnIndex != 39 && columnIndex !=40 && columnIndex != 41 && columnIndex != 42 && columnIndex != 43
-				
+		if(columnIndex != 1 && columnIndex != 3 && columnIndex != 4 && 
+				columnIndex != 9 && columnIndex != 10 
+				&&columnIndex != 13 && columnIndex !=15 && 
+				columnIndex != 21
 				){
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
 		}
@@ -611,6 +661,27 @@ while (iterator.hasNext()) {
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}
+	
+	 public static boolean containsOnlyNumbers(String str) {
+	        
+	        //It can't contain only numbers if it's null or empty...
+	        if (str == null || str.length() == 0)
+	            return false;
+	        
+	        for (int i = 0; i < str.length(); i++) {
+	 
+	            //If we find a non-digit character we return false.
+	            if (!Character.isDigit(str.charAt(i)))
+	                return false;
+	        }
+	        
+	        return true;
+	    }
+	 public static boolean checkSize2(String str)
+	 {
+	     String[] words = {"T", "R", "UL","UR"};  
+	     return (Arrays.asList(words).contains(str));
+	 }
 
 	public void setPostServiceImpl(PostServiceImpl postServiceImpl) {
 		this.postServiceImpl = postServiceImpl;
@@ -648,6 +719,67 @@ while (iterator.hasNext()) {
 			EdwardsGarmentAttributeParser edwardsGarmentAttributeParser) {
 		this.edwardsGarmentAttributeParser = edwardsGarmentAttributeParser;
 	}
-	
-	
+	public EdwardGarmentPriceGridParser getEdwardGarmentPriceGridparser() {
+		return edwardGarmentPriceGridparser;
+	}
+
+	public void setEdwardGarmentPriceGridparser(
+			EdwardGarmentPriceGridParser edwardGarmentPriceGridparser) {
+		this.edwardGarmentPriceGridparser = edwardGarmentPriceGridparser;
+	}
+
+	public static String getProductCellData(Row row,int cellNo){
+		Cell xidCell =  row.getCell(cellNo);
+		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		if(StringUtils.isEmpty(productXid) || productXid.trim().equalsIgnoreCase("#N/A")){
+		    // xidCell = row.getCell(1);
+		     //productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+			productXid="";
+		}
+		return productXid;
+	}
+	public static String getProductCellDataPrice(Row row,int cellNo){
+		Cell xidCell =  row.getCell(cellNo);
+		String productXid = CommonUtility.getCellValueStrinOrDecimal(xidCell);
+		if(StringUtils.isEmpty(productXid) || productXid.trim().equalsIgnoreCase("#N/A")){
+		    // xidCell = row.getCell(1);
+		     //productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+			productXid="";
+		}
+		return productXid;
+	}
+	public static List<PriceGrid> getPriceGrids(String basePriceName,Product productExcelObj) 
+	{
+		
+		List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
+		List<PriceGrid> existPriceGrid=new ArrayList<PriceGrid>();
+		
+		try{
+			if(productExcelObj.getPriceGrids()!=null){
+				existPriceGrid=productExcelObj.getPriceGrids();
+			}
+			
+			for (PriceGrid expriceGrid : existPriceGrid) {
+				newPriceGrid.add(expriceGrid);
+			}
+			
+			Integer sequence = 1;
+			List<PriceConfiguration> configuration = null;
+			PriceGrid priceGrid = new PriceGrid();
+			priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
+			priceGrid.setDescription(basePriceName);
+			priceGrid.setPriceIncludes(ApplicationConstants.CONST_STRING_EMPTY);
+			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
+			priceGrid.setIsBasePrice(true);
+			priceGrid.setSequence(sequence);
+			List<Price>	listOfPrice = new ArrayList<Price>();
+			priceGrid.setPrices(listOfPrice);
+			priceGrid.setPriceConfigurations(configuration);
+			newPriceGrid.add(priceGrid);
+	}catch(Exception e){
+		_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
+	}
+		_LOGGER.info("PriceGrid Processed");
+		return newPriceGrid;
+}
 }
