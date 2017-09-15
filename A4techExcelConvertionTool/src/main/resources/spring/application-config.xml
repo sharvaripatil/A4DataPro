@@ -993,9 +993,12 @@
      
      
        <bean id="maxplusmappingId" class="com.a4tech.supplier.mapper.MaxplusMapping">
-           <property name="postServiceImpl" 	ref="postService"/>
+           <property name="postServiceImpl" ref="postService"/>
            <property name="productDaoObj" 	ref="productDao"/>
+           <property name="maxplusAttribute" 	ref="maxplusAttributeId"/>
+           
         </bean>
+      <bean id="maxplusAttributeId" class="parser.maxplus.MaxpluProductAttributeParser"/>
 
      <!-- FITS Accessories Configuration Start -->
      <bean id="FITSAccessoriId" class="com.a4tech.supplier.mapper.FITSAccessoriesMapping">

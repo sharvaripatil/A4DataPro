@@ -6,20 +6,28 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
+
+import parser.maxplus.MaxpluProductAttributeParser;
+
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Availability;
+import com.a4tech.product.model.Color;
+import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.RushTime;
+import com.a4tech.product.model.Size;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -30,6 +38,7 @@ public class MaxplusMapping implements IExcelParser {
 	
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
+	private MaxpluProductAttributeParser maxplusAttribute;
 	
 	@Override
 	public String readExcel(String accessToken, Workbook workbook,
@@ -38,8 +47,13 @@ public class MaxplusMapping implements IExcelParser {
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		Set<String> productXids = new HashSet<String>();
 		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
-		List<Availability> listOfavaibility = new ArrayList<Availability>();
 		List<ProductionTime> listProductionTime = new ArrayList<ProductionTime>();
+		List<Color> listColor = new ArrayList<Color>();
+		List<ImprintMethod> listimprintMethods = new ArrayList<ImprintMethod>();
+		List<ImprintSize> listimprintSize = new ArrayList<ImprintSize>();
+
+		
+		
 
 
 		
@@ -47,7 +61,11 @@ public class MaxplusMapping implements IExcelParser {
 		ProductConfigurations productConfigObj = new ProductConfigurations();
 		ProductionTime prodtimeObj=new ProductionTime();
 		RushTime rushserviceObj=new RushTime();
+        StringBuilder ImprintMethod=new StringBuilder();
+        StringBuilder ImprintSize=new StringBuilder();
+        Size sizeObj=new Size();
 
+		
 		String productName = null;
 		String productId = null;
 		String finalResult = null;
@@ -105,7 +123,6 @@ public class MaxplusMapping implements IExcelParser {
 									System.out
 											.println("Java object converted to JSON String, written to file");
 
-										productExcelObj.setAvailability(listOfavaibility);
 									productExcelObj.setPriceGrids(priceGrids);
 			
 									productExcelObj.setProductConfigurations(productConfigObj);
@@ -163,7 +180,14 @@ public class MaxplusMapping implements IExcelParser {
 							break;
 							
 						case 11: // Product URL
-
+							String Inventory=cell.getStringCellValue();
+							
+							if (!StringUtils.isEmpty(Inventory)) {
+                            Inventory invtObj=new Inventory();
+                            invtObj.setInventoryLink(Inventory);
+							productExcelObj.setInventory(invtObj);
+							}
+							
 							break;	
 							
 						case 12: // Name
@@ -201,24 +225,8 @@ public class MaxplusMapping implements IExcelParser {
 						case 19: // Large Image URL0
 
 							break;	
-							
-						case 20: // Image
-
-							break;	
-							
-						case 21: // Small Image URL1
-
-							break;	
-							
+					
 						case 22: // Large Image URL1
-
-							break;	
-							
-						case 23: // Image
-
-							break;	
-							
-						case 24: // Small Image URL2
 
 							break;	
 							
@@ -226,23 +234,7 @@ public class MaxplusMapping implements IExcelParser {
 
 							break;	
 							
-						case 26: // Image
-
-							break;	
-							
-						case 27: // Small Image URL3
-
-							break;	
-							
 						case 28: // Large Image URL3
-
-							break;	
-							
-						case 29: // Image
-
-							break;	
-							
-						case 30: // Small Image URL4
 
 							break;	
 							
@@ -250,23 +242,7 @@ public class MaxplusMapping implements IExcelParser {
 
 							break;	
 							
-						case 32: // Image
-
-							break;	
-							
-						case 33: // Small Image URL5
-
-							break;	
-							
 						case 34: // Large Image URL5
-
-							break;	
-							
-						case 35: // Image
-
-							break;	
-							
-						case 36: // Small Image URL6
 
 							break;	
 							
@@ -274,38 +250,14 @@ public class MaxplusMapping implements IExcelParser {
 
 							break;	
 							
-						case 38: // Image
-
-							break;	
-							
-						case 39: // Small Image URL7
-
-							break;	
-							
 						case 40: // Large Image URL7
-
-							break;	
-							
-						case 41: // Image
-
-							break;	
-							
-						case 42: // Small Image URL8
 
 							break;	
 							
 						case 43: // Large Image URL8
 
 							break;	
-							
-						case 44: // Image
-
-							break;	
-							
-						case 45: // Small Image URL9
-
-							break;	
-							
+	
 						case 46: // Large Image URL9
 
 							break;	
@@ -431,39 +383,70 @@ public class MaxplusMapping implements IExcelParser {
 							break;	
 							
 						case 112: // Imprint Area 3
-
-							break;	
+                        String ImprintSize1=cell.getStringCellValue();
+						if (!StringUtils.isEmpty(ImprintSize1)) {							
+                        ImprintSize=ImprintSize.append(ImprintSize1).append(",");	
+						}
 							
+							break;	
 							
 						case 113: // Imprint Area 2
+	                    String ImprintSize2=cell.getStringCellValue();
+						if (!StringUtils.isEmpty(ImprintSize2)) {							
+                        ImprintSize=ImprintSize.append(ImprintSize2).append(",");	
+						}				
 
 							break;	
 							
-							
 						case 114: // Imprint Area
+	                    String ImprintSize3=cell.getStringCellValue();
+						if (!StringUtils.isEmpty(ImprintSize3)) {							
+                        ImprintSize=ImprintSize.append(ImprintSize3).append(",");	
+                        String Imprintsize=ImprintSize.toString();
+                        listimprintSize=maxplusAttribute.getImprintSize(Imprintsize);
+	
+                        productConfigObj.setImprintSize(listimprintSize);
+						}
 
 							break;	
 							
 							
 						case 115: // Imprint Method 3
-
+							String ImprintMethod1=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(ImprintMethod1)) {							
+								ImprintMethod=ImprintMethod.append(ImprintMethod1).append(",");
+							}
 							break;	
 							
 							
 						case 116: // Imprint Method 2
+							String ImprintMethod2=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(ImprintMethod2)) {							
+								ImprintMethod=ImprintMethod.append(ImprintMethod2).append(",");
 
+
+							}
 							break;	
 							
 							
 						case 117: // Imprint Method
-
+							String ImprintMethod3=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(ImprintMethod3)) {							
+								ImprintMethod=ImprintMethod.append(ImprintMethod3).append(",");
+								String ImprintMthod=ImprintMethod.toString();
+								listimprintMethods=maxplusAttribute.getImprintMethod(ImprintMthod);
+                                productConfigObj.setImprintMethods(listimprintMethods);
+							}
 							break;	
 							
 							
 						case 118: // Size
-
+							String Size=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(Size)) {							
+							sizeObj=maxplusAttribute.getSize(Size);	
+							productConfigObj.setSizes(sizeObj);	
+							}	
 							break;	
-							
 							
 						case 119: // Rush Service
 							String RushService=cell.getStringCellValue();
@@ -476,7 +459,15 @@ public class MaxplusMapping implements IExcelParser {
 							
 							
 						case 120: // Product Color
-
+                           String ProductColor=cell.getStringCellValue();
+                           ProductColor=ProductColor.replace("As Shown", "");
+                           if (!StringUtils.isEmpty(ProductColor)) {		
+                        	   
+                        	 listColor=maxplusAttribute.getColorCriteria(ProductColor); 
+                        	 productConfigObj.setColors(listColor);  
+                           }
+							
+							
 							break;	
 							
 							
@@ -506,11 +497,6 @@ public class MaxplusMapping implements IExcelParser {
 							
 							
 						case 125: // Running Charge
-
-							break;	
-							
-							
-						case 126: // Imprint Includes
 
 							break;	
 							
@@ -580,7 +566,8 @@ public class MaxplusMapping implements IExcelParser {
 				}
 			}
 			workbook.close();
-			productExcelObj.setAvailability(listOfavaibility);
+
+			
 			productExcelObj.setPriceGrids(priceGrids);
 			productExcelObj.setProductConfigurations(productConfigObj);
 			int num = postServiceImpl.postProduct(accessToken, productExcelObj,
@@ -619,6 +606,14 @@ public class MaxplusMapping implements IExcelParser {
 
 	}
 	
+	public MaxpluProductAttributeParser getMaxplusAttribute() {
+		return maxplusAttribute;
+	}
+
+	public void setMaxplusAttribute(MaxpluProductAttributeParser maxplusAttribute) {
+		this.maxplusAttribute = maxplusAttribute;
+	}
+
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}
