@@ -219,6 +219,7 @@ while (iterator.hasNext()) {
 						         colorSet=new HashSet<String>();
 						         setSizes= new HashSet();
 						         skuSet=new HashSet<String>();
+						         priceSet=new HashSet<String>();
 						         firstValue="";
 						         System.out.println("");
 						 }
@@ -308,12 +309,26 @@ while (iterator.hasNext()) {
 									skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
 									priceSet.add(size1+"_____"+listPrice);
 									
-								}else{
-									tempStr=size1+"-"+size2;
+								}else{// i have to change this condition to 
+									/////////
+									stockValue=stockValue.replace(size1, "");
+									stockValue=stockValue.replace(size2, "");
+									setSizes.add(size1);
+									skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue+size1);
+									priceSet.add(size1+"_____"+listPrice);
+									
+									setSizes.add(size2);
+									skuSet.add(size2+"_____"+colorValueTemp+"_____"+stockValue+size2);
+									priceSet.add(size2+"_____"+listPrice);
+									
+									////////////
+									///////// remove this if only one size
+									/*tempStr=size1+"-"+size2;
 									tempStr=tempStr.replaceAll(" ","");
 									setSizes.add(tempStr);
 									skuSet.add(tempStr+"_____"+colorValueTemp+"_____"+stockValue);
-									priceSet.add(tempStr+"_____"+listPrice);
+									priceSet.add(tempStr+"_____"+listPrice);*/
+									//////////
 								}
 								
 							}else{
@@ -614,6 +629,8 @@ while (iterator.hasNext()) {
 			 pricesPerUnit=new StringBuilder();
 	         colorSet=new HashSet<String>();
 	         setSizes= new HashSet();
+	         skuSet=new HashSet<String>();
+	         priceSet=new HashSet<String>();
 	         firstValue="";
 	         repeatRows.clear();
 	       return finalResult;
