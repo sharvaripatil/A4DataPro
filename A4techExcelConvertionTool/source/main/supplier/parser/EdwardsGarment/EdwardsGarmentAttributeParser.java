@@ -457,7 +457,7 @@ public static boolean isComboColor(String colorValue){
 		}
 	//public List<ProductSkus> getProductSkus(String colorVal,String sizeVal,String skuVal,
 	//public List<ProductSkus> getProductSkus(Set<String> skuSet) //List<String> sizesList
-	public List<ProductSkus> getProductSkus(List<String> skuList)
+	public List<ProductSkus> getProductSkus(List<String> skuList,String criteriaOne,String criteriaTwo)
             {
 		//Iterator<String> colorIterator=skuSet.iterator();
 		List<ProductSkus> listProductSkus = new ArrayList<>();
@@ -475,8 +475,8 @@ public static boolean isComboColor(String colorValue){
 			colorValue=colorValue.replaceAll(" W/","/");
 		ProductSkus productSku = new ProductSkus();
 		if(!StringUtils.isEmpty(skuNo) && !skuNo.equals("BBBBB")){
-		ProductSKUConfiguration colorSkuConfig = getSkuConfiguration("Product Color", colorValue);
-		ProductSKUConfiguration sizeSkuConfig = getSkuConfiguration("Standard & Numbered", size);
+		ProductSKUConfiguration colorSkuConfig = getSkuConfiguration(criteriaOne, colorValue);//"Product Color"
+		ProductSKUConfiguration sizeSkuConfig = getSkuConfiguration(criteriaTwo, size);//"Standard & Numbered"
 		List<ProductSKUConfiguration> listSkuConfigs = new ArrayList<>();
 		listSkuConfigs.add(colorSkuConfig);
 		listSkuConfigs.add(sizeSkuConfig);

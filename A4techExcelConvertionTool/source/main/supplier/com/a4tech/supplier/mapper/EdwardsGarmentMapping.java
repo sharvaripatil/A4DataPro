@@ -101,6 +101,7 @@ public class EdwardsGarmentMapping implements IExcelParser{
 		Set<String> skuSet= new HashSet();
 		Set<String> priceSet= new HashSet();
 		String stockValue="";
+		int sizeCount=1;
 while (iterator.hasNext()) {
 			
 			try{
@@ -147,7 +148,12 @@ while (iterator.hasNext()) {
 								}
 							//set sku here
 							 if(!CollectionUtils.isEmpty(skuSet)){
-							List<ProductSkus>	 listProductSkus=edwardsGarmentAttributeParser.getProductSkus(new ArrayList<String>(skuSet));
+								 String criteriaTwo="Standard & Numbered";
+								 if(sizeCount==1){
+									 criteriaTwo="Apparel-Waist/Inseam";
+									 }
+								 
+							List<ProductSkus>	 listProductSkus=edwardsGarmentAttributeParser.getProductSkus(new ArrayList<String>(skuSet),"Product Color",criteriaTwo);
 							 productExcelObj.setProductRelationSkus(listProductSkus);
 							 }
 							//process colors here
@@ -161,7 +167,11 @@ while (iterator.hasNext()) {
 									 Apparel apparelObj = new Apparel();
 									 Size sizeObj=new Size();
 									 List<Value> listOfValue = edwardsGarmentAttributeParser.getApparelValuesObj(new ArrayList<String>(setSizes));
-										apparelObj.setType("Standard & Numbered");
+									 if(sizeCount==1){
+										apparelObj.setType("Apparel-Waist/Inseam");
+									 }else{
+										 apparelObj.setType("Standard & Numbered");
+									 }
 										apparelObj.setValues(listOfValue);
 										sizeObj.setApparel(apparelObj);
 									productConfigObj.setSizes(sizeObj);
@@ -192,9 +202,9 @@ while (iterator.hasNext()) {
 							    productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 //	if(Prod_Status = false){
-							 	_LOGGER.info("Product Data : "
-										+ mapperObj.writeValueAsString(productExcelObj));
-							 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 /*	_LOGGER.info("Product Data : "
+										+ mapperObj.writeValueAsString(productExcelObj));*/
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -221,7 +231,7 @@ while (iterator.hasNext()) {
 						         skuSet=new HashSet<String>();
 						         priceSet=new HashSet<String>();
 						         firstValue="";
-						         System.out.println("");
+						         sizeCount=1;
 						 }
 						 if(!productXids.contains(xid)){
 						    	productXids.add(xid.trim());
@@ -298,20 +308,22 @@ while (iterator.hasNext()) {
 							size1=size1.trim();
 							size2=size2.trim();
 							 if(checkSize2(size2)){
+								 sizeCount++;
 								tempStr=size1+size2;
 								tempStr=tempStr.replaceAll(" ","");
 								setSizes.add(tempStr);
 								skuSet.add(tempStr+"_____"+colorValueTemp+"_____"+stockValue);
 								priceSet.add(tempStr+"_____"+listPrice);
 							}else if(containsOnlyNumbers(size2)){
-								if(size1.equals(size2)){
+								//if(size1.equals(size2)){
+									size1=size1+"x"+size2;
 									setSizes.add(size1);
 									skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
 									priceSet.add(size1+"_____"+listPrice);
 									
-								}else{// i have to change this condition to 
+								//}else{// i have to change this condition to 
 									/////////
-									stockValue=stockValue.replace(size1, "");
+									/*stockValue=stockValue.replace(size1, "");
 									stockValue=stockValue.replace(size2, "");
 									setSizes.add(size1);
 									skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue+size1);
@@ -319,7 +331,7 @@ while (iterator.hasNext()) {
 									
 									setSizes.add(size2);
 									skuSet.add(size2+"_____"+colorValueTemp+"_____"+stockValue+size2);
-									priceSet.add(size2+"_____"+listPrice);
+									priceSet.add(size2+"_____"+listPrice);*/
 									
 									////////////
 									///////// remove this if only one size
@@ -329,15 +341,18 @@ while (iterator.hasNext()) {
 									skuSet.add(tempStr+"_____"+colorValueTemp+"_____"+stockValue);
 									priceSet.add(tempStr+"_____"+listPrice);*/
 									//////////
-								}
+								
+								//}
 								
 							}else{
+								sizeCount++;
 								setSizes.add(size1);
 								skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
 								priceSet.add(size1+"_____"+listPrice);
 							}
 						}else{
 							if(!StringUtils.isEmpty(size1)){
+								sizeCount++;
 							setSizes.add(size1.trim());
 							skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
 							priceSet.add(size1+"_____"+listPrice);
@@ -558,7 +573,11 @@ while (iterator.hasNext()) {
 			}
 		//set sku here
 		 if(!CollectionUtils.isEmpty(skuSet)){
-		List<ProductSkus>	 listProductSkus=edwardsGarmentAttributeParser.getProductSkus(new ArrayList<String>(skuSet));
+			 String criteriaTwo="Standard & Numbered";
+			 if(sizeCount==1){
+				 criteriaTwo="Apparel-Waist/Inseam";
+				 }
+		List<ProductSkus>	 listProductSkus=edwardsGarmentAttributeParser.getProductSkus(new ArrayList<String>(skuSet),"Product Color",criteriaTwo);
 		 productExcelObj.setProductRelationSkus(listProductSkus);
 		 }
 		//process colors here
@@ -572,7 +591,11 @@ while (iterator.hasNext()) {
 				 Apparel apparelObj = new Apparel();
 				 Size sizeObj=new Size();
 				 List<Value> listOfValue = edwardsGarmentAttributeParser.getApparelValuesObj(new ArrayList<String>(setSizes));
-					apparelObj.setType("Standard & Numbered");
+				 if(sizeCount==1){
+						apparelObj.setType("Apparel-Waist/Inseam");
+					 }else{
+						 apparelObj.setType("Standard & Numbered");
+					 }
 					apparelObj.setValues(listOfValue);
 					sizeObj.setApparel(apparelObj);
 				productConfigObj.setSizes(sizeObj);
@@ -602,11 +625,11 @@ while (iterator.hasNext()) {
 		    productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	productExcelObj.setPriceType("L");
-		 	_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(productExcelObj));
+		 	/*_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(productExcelObj));*/
 		 	//if(Prod_Status = false){
 		 	
-		 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
@@ -632,6 +655,7 @@ while (iterator.hasNext()) {
 	         skuSet=new HashSet<String>();
 	         priceSet=new HashSet<String>();
 	         firstValue="";
+	         sizeCount=1;
 	         repeatRows.clear();
 	       return finalResult;
 		}catch(Exception e){
@@ -668,9 +692,16 @@ while (iterator.hasNext()) {
 		   return null;
 	   }
 	public static String removeSpecialChar(String tempValue){
-		tempValue=tempValue.replaceAll("(</p>|<p>|&rdquo;|&nbsp;|&ldquo;|<span style=color: #ff0000; font-size: small;>|<span style=color: #ff0000;>|</span style=color: #ff0000;>|<em>|</em>|</strong>|<strong>|</span>|<span>|<p class=p1>)", "");
+		tempValue=tempValue.replaceAll("(</p>|<p>| <ul>|&rdquo;|&nbsp;|&ldquo;|<span style=color: #ff0000; font-size: small;>| <ul> |<li>|"
+				+ "<span style=color: #ff0000;>|</span style=color: #ff0000;>|<em>|</em>|</strong>|<strong>|</span>|<span>|</li>|</ul>|"
+				+ "<p class=p1>|<hr>|<STRONG>|</STRONG>|<font color=\"b5b8b9\">|</font>|</strong>|<strong>|<i>|</i>|</a>|</a>|"
+				+ "<font color=\"b31b34\">|<BR>|</BR>|<br>|</br>| ¡|ñ|!|<font color=\"ffffff\">|<FONT>|</FONT>|<hr>)", "");
 		tempValue=tempValue.replaceAll("\\(","");
 		tempValue=tempValue.replaceAll("\\)","");
+		tempValue=tempValue.replaceAll(">","");
+		//tempValue=tempValue.replaceAll("\\","");//{$base_url}
+		//tempValue=tempValue.replaceAll("//","");//{$base_url}
+		//tempValue=tempValue.replaceAll("{$base_url}","");//{$base_url}
 	return tempValue;
 
 	}
@@ -744,6 +775,8 @@ while (iterator.hasNext()) {
 			EdwardGarmentPriceGridParser edwardGarmentPriceGridparser) {
 		this.edwardGarmentPriceGridparser = edwardGarmentPriceGridparser;
 	}
+	
+	
 
 	public static String getProductCellData(Row row,int cellNo){
 		Cell xidCell =  row.getCell(cellNo);
