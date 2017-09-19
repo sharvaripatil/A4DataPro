@@ -20,11 +20,13 @@ import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.AlfaMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
 import com.a4tech.supplier.mapper.BellaCanvas;
+import com.a4tech.supplier.mapper.BlueGenerationMapping;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.EdwardsGarmentMapping;
+import com.a4tech.supplier.mapper.FITSAccessoriesMapping;
 import com.a4tech.supplier.mapper.GillStudiosMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
@@ -82,6 +84,8 @@ public class ExcelFactory {
 	private TowelSpecialtiesMapping        towelSpecialties;
 	private BagMakersMapping bagMakersMapping; 
 	private GillStudiosMapping gillStudiosMapping;
+	private BlueGenerationMapping			blueGenerationMapping;
+	private FITSAccessoriesMapping          fitsAccessoriesMapping;
 	private EdwardsGarmentMapping edwardsGarmentMapping;
 	
 		public  IExcelParser getExcelParserObject(String name){
@@ -170,7 +174,11 @@ public class ExcelFactory {
 
 	      }else if(name.equalsIgnoreCase("gillStudios") || name.equals("56950")){
 			   return gillStudiosMapping;
-		  }else if(name.equalsIgnoreCase("edwardsGarment") || name.equals("51752")){
+		  }else if(name.equalsIgnoreCase("blueGeneration") || name.equals("40653")){
+			  return blueGenerationMapping;
+		  } else if(name.equalsIgnoreCase("FITSAccessories ") || name.equals("71107")){
+			  return fitsAccessoriesMapping;
+		  } else if(name.equalsIgnoreCase("edwardsGarment") || name.equals("51752")){
 			   return edwardsGarmentMapping;
 		  }
 		return null;
@@ -466,7 +474,20 @@ public class ExcelFactory {
 	public GillStudiosMapping getGillStudiosMapping() {
 		return gillStudiosMapping;
 	}
+	public BlueGenerationMapping getBlueGenerationMapping() {
+		return blueGenerationMapping;
+	}
 
+	public void setBlueGenerationMapping(BlueGenerationMapping blueGenerationMapping) {
+		this.blueGenerationMapping = blueGenerationMapping;
+	}
+	public FITSAccessoriesMapping getFitsAccessoriesMapping() {
+		return fitsAccessoriesMapping;
+	}
+
+	public void setFitsAccessoriesMapping(FITSAccessoriesMapping fitsAccessoriesMapping) {
+		this.fitsAccessoriesMapping = fitsAccessoriesMapping;
+	}
 	public EdwardsGarmentMapping getEdwardsGarmentMapping() {
 		return edwardsGarmentMapping;
 	}

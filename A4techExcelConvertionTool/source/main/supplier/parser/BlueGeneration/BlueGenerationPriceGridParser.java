@@ -1,4 +1,4 @@
-package parser.towelSpecialties;
+package parser.BlueGeneration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +16,7 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
-public class TowelSpecPriceGridParser {
+public class BlueGenerationPriceGridParser {
 	enum options{
 		Shipping,Product,Impirnt
 	}
@@ -26,7 +26,7 @@ public class TowelSpecPriceGridParser {
 		    String listOfQuan, String discountCode,
 			String currency, String priceInclude, boolean isBasePrice,
 			boolean qurFlag, String priceName, String criterias,
-			List<PriceGrid> existingPriceGrid,String priceUnitName,String optionName) {
+			List<PriceGrid> existingPriceGrid,String priceUnitName,String optionName,String productNumber) {
 		_LOGGER.info("Enter Price Grid Parser class");
 		try{
 			if(CollectionUtils.isEmpty(existingPriceGrid)){
@@ -43,7 +43,7 @@ public class TowelSpecPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		
 		priceGrid.setCurrency(currency);
-		priceGrid.setDescription(priceName);
+		priceGrid.setDescription(CommonUtility.getStringLimitedChars(priceName.replaceAll("\\*", "X"), 100));
 		priceInclude = CommonUtility.getStringLimitedChars(priceInclude, 100);
 		priceGrid.setPriceIncludes(priceInclude);
 		priceGrid.setIsQUR(qurFlag);
@@ -54,6 +54,7 @@ public class TowelSpecPriceGridParser {
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);*/
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
+		priceGrid.setProductNumber(productNumber);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
 			listOfPrice = getPrices(pricesForNetCost, listOfQuans, discountCodes,priceUnitName);
@@ -71,7 +72,7 @@ public class TowelSpecPriceGridParser {
 		}
 		existingPriceGrid.add(priceGrid);
 		}catch(Exception e){
-			_LOGGER.error("Error while processing base PriceGrid: "+e.getMessage());
+			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
 		}
 		return existingPriceGrid;
 
@@ -163,23 +164,26 @@ public class TowelSpecPriceGridParser {
 
 			} else {
 				configs = new PriceConfiguration();
-				//config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
-				//String criteriaValue = LookupData.getCriteriaValue(config[0]);
+				config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
+				String criteriaValue = LookupData.getCriteriaValue(config[0]);
 				try {
-					if (!value.equalsIgnoreCase("Screenprinted (1 color) on chair, tote and towel") && value.contains(",")) {
-						String[] values = value.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-						for (String Value : values) {
+					if (config[1].contains(",")) {
+						String[] values = config[1].split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+						for (String value1 : values) {
 							configs = new PriceConfiguration();
-							configs.setCriteria(criterias);
-							configs.setValue(Arrays.asList((Object) Value));
+							configs.setCriteria(criteriaValue);
+							if(value1.contains("*")){
+								value1 = value1.replaceAll("\\*", " X ");
+							}
+							configs.setValue(Arrays.asList((Object) value1));
 							if (!StringUtils.isEmpty(optionName)) {
 								configs.setOptionName(optionName);
 							}
 							priceConfiguration.add(configs);
 						}
 					} else {
-						configs.setCriteria(criterias);
-						configs.setValue(Arrays.asList((Object) value));
+						configs.setCriteria(criteriaValue);
+						configs.setValue(Arrays.asList((Object) config[1]));
 						if (!StringUtils.isEmpty(optionName)) {
 							configs.setOptionName(optionName);
 						}

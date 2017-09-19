@@ -8,6 +8,16 @@ public class ErrorMessageList {
 	
 	@JsonProperty("Errors")
 	private List<ErrorMessage> errors;
+	@JsonProperty("SuccessMessage")
+    private List<String> successMsg;
+    
+	public List<String> getSuccessMsg() {
+		return successMsg;
+	}
+
+	public void setSuccessMsg(List<String> successMsg) {
+		this.successMsg = successMsg;
+	}
 
 	public List<ErrorMessage> getErrors() {
 		return errors;
