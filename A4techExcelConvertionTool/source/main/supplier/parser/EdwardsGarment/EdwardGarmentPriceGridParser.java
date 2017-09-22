@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import parser.tomaxusa.TomaxPriceGridParser;
 
@@ -25,6 +26,19 @@ public class EdwardGarmentPriceGridParser {
 				{
 			try{
 			//Integer sequence = 1;
+				String tempName=priceName;
+				if(!StringUtils.isEmpty(tempName)){
+					if(tempName.length()>100){
+						tempName=tempName.substring(0,99);
+						/*if(len>60){
+							String strTemp=productDescription.substring(0, 60);
+							int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
+							productName=(String) strTemp.subSequence(0, lenTemp);
+						}*/
+					}
+					//String strTemp=productDescription.substring(0, 60);
+				
+				}
 				 if(CollectionUtils.isEmpty(existingPriceGrid)){
 					 existingPriceGrid=new ArrayList<PriceGrid>();
 					 sequence=1;
@@ -39,7 +53,7 @@ public class EdwardGarmentPriceGridParser {
 					.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			
 			priceGrid.setCurrency(currency);
-			priceGrid.setDescription(priceName);
+			priceGrid.setDescription(tempName);
 			priceGrid.setPriceIncludes(priceInclude);
 			priceGrid
 					.setIsQUR(qurFlag.equalsIgnoreCase(ApplicationConstants.CONST_STRING_FALSE) ? ApplicationConstants.CONST_BOOLEAN_FALSE
@@ -137,9 +151,24 @@ public class EdwardGarmentPriceGridParser {
 				configs = new PriceConfiguration();
 				config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
 				//String criteriaValue = LookupData.getCriteriaValue(config[0]);
-				configs.setCriteria(config[0]);
-				configs.setValue(Arrays.asList((Object) config[1]));
-				priceConfiguration.add(configs);
+				if(config[1].contains(",")){
+					String[] tempArr=config[1].split(",");
+					for (String Value : tempArr) {
+						configs = new PriceConfiguration();
+						configs.setCriteria(config[0]);
+						configs.setValue(Arrays.asList((Object) Value));
+						priceConfiguration.add(configs);
+					}
+					
+				}else{
+
+					configs.setCriteria(config[0]);
+					configs.setValue(Arrays.asList((Object) config[1]));
+					priceConfiguration.add(configs);
+				}
+				
+				
+				
 			}
 			}catch(Exception e){
 				_LOGGER.error("Error while processing PriceGrid PriceConfiguration: "+e.getMessage());

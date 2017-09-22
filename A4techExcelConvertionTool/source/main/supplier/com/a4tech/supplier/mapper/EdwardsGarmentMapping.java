@@ -3,9 +3,11 @@ package com.a4tech.supplier.mapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -99,7 +101,10 @@ public class EdwardsGarmentMapping implements IExcelParser{
 		String firstValue="";
 		Set<String> setSizes= new HashSet();
 		Set<String> skuSet= new HashSet();
-		Set<String> priceSet= new HashSet();
+		HashSet<String> priceSet= new HashSet();
+		
+		HashMap<String , HashSet<String>> priceMap=new HashMap<String, HashSet<String>>();
+		
 		String stockValue="";
 		int sizeCount=1;
 while (iterator.hasNext()) {
@@ -182,17 +187,31 @@ while (iterator.hasNext()) {
 								/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 										         listOfQuantity.toString(), priceCode, "USD",
 										         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/
-								 if(!CollectionUtils.isEmpty(priceSet)){
-									 ArrayList<String> pricingList=new ArrayList<String>(priceSet);
+								 if(!CollectionUtils.isEmpty(priceMap)){
+									 
+									 
+									 for (Entry<String, HashSet<String>> values : priceMap.entrySet()) {
+										   String priceVal= values.getKey();
+										   HashSet<String> tempSet=values.getValue();
+										   ArrayList<String> listOfsizes=new ArrayList<String>(tempSet);
+										  //CommonUtility.getValuesOfArray(listOfsizes.toArray().toString(), ",");
+										   String sizeValue = String.join(",", listOfsizes);
+										   priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
+													 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
+													 ApplicationConstants.CONST_STRING_FALSE,sizeValue,"Size",1,priceGrids);
+										}
+									/* ArrayList<String> pricingList=new ArrayList<String>(priceSet);
 									 priceGrids=new ArrayList<PriceGrid>();
 									 for (String listPriceTemp : pricingList) {
 										 String tempArr[]=listPriceTemp.split("_____");
 										 String sizVal=tempArr[0];
 										 String listPrice=tempArr[1];
+										
+										 
 										 priceGrids = edwardGarmentPriceGridparser.getPriceGrids(listPrice,"1", "P",
 												 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
 												 ApplicationConstants.CONST_STRING_FALSE,sizVal,"Size",1,priceGrids);
-									}
+									}*/
 								}
 									 
 									 if(CollectionUtils.isEmpty(priceGrids)){
@@ -230,6 +249,7 @@ while (iterator.hasNext()) {
 						         setSizes= new HashSet();
 						         skuSet=new HashSet<String>();
 						         priceSet=new HashSet<String>();
+						         priceMap=new HashMap<String, HashSet<String>>();
 						         firstValue="";
 						         sizeCount=1;
 						 }
@@ -313,53 +333,32 @@ while (iterator.hasNext()) {
 								tempStr=tempStr.replaceAll(" ","");
 								setSizes.add(tempStr);
 								skuSet.add(tempStr+"_____"+colorValueTemp+"_____"+stockValue);
-								priceSet.add(tempStr+"_____"+listPrice);
+								priceMap=	getPriceMap(priceMap, listPrice, tempStr);
+								
 							}else if(containsOnlyNumbers(size2)){
 								//if(size1.equals(size2)){
 									size1=size1+"x"+size2;
 									setSizes.add(size1);
 									skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
-									priceSet.add(size1+"_____"+listPrice);
-									
-								//}else{// i have to change this condition to 
-									/////////
-									/*stockValue=stockValue.replace(size1, "");
-									stockValue=stockValue.replace(size2, "");
-									setSizes.add(size1);
-									skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue+size1);
-									priceSet.add(size1+"_____"+listPrice);
-									
-									setSizes.add(size2);
-									skuSet.add(size2+"_____"+colorValueTemp+"_____"+stockValue+size2);
-									priceSet.add(size2+"_____"+listPrice);*/
-									
-									////////////
-									///////// remove this if only one size
-									/*tempStr=size1+"-"+size2;
-									tempStr=tempStr.replaceAll(" ","");
-									setSizes.add(tempStr);
-									skuSet.add(tempStr+"_____"+colorValueTemp+"_____"+stockValue);
-									priceSet.add(tempStr+"_____"+listPrice);*/
-									//////////
-								
-								//}
+									//priceSet.add(size1+"_____"+listPrice);
+									priceMap=	getPriceMap(priceMap, listPrice, size1);
 								
 							}else{
 								sizeCount++;
 								setSizes.add(size1);
 								skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
-								priceSet.add(size1+"_____"+listPrice);
+								//priceSet.add(size1+"_____"+listPrice);
+								priceMap=	getPriceMap(priceMap, listPrice, size1);
 							}
 						}else{
 							if(!StringUtils.isEmpty(size1)){
 								sizeCount++;
 							setSizes.add(size1.trim());
 							skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
-							priceSet.add(size1+"_____"+listPrice);
+							priceMap=	getPriceMap(priceMap, listPrice, size1);
+							//priceSet.add(size1+"_____"+listPrice);
 							}
 						}
-						//size1="";
-						//size2="";
 				    	break;
 				    case  10://Size2
 				    	//size2=CommonUtility.getCellValueStrinOrInt(cell);
@@ -420,6 +419,8 @@ while (iterator.hasNext()) {
 				    case  19://StyleDescription1 // i need to work more on this field
 				    	String description =CommonUtility.getCellValueStrinOrInt(cell);
 						//description = CommonUtility.removeSpecialSymbols(description,specialCharacters);
+				    	//description=CommonUtility.removeRestrictSymbols(description);
+				    	description = description.replaceAll("\\<.*?\\> ?", "");
 				    	description=removeSpecialChar(description);
 						int length=description.length();
 						 if(length>800){
@@ -606,17 +607,31 @@ while (iterator.hasNext()) {
 			/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 					         listOfQuantity.toString(), priceCode, "USD",
 					         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/
-			 if(!CollectionUtils.isEmpty(priceSet)){
-				 ArrayList<String> pricingList=new ArrayList<String>(priceSet);
+			 if(!CollectionUtils.isEmpty(priceMap)){
+				 
+				 
+				 for (Entry<String, HashSet<String>> values : priceMap.entrySet()) {
+					   String priceVal= values.getKey();
+					   HashSet<String> tempSet=values.getValue();
+					   ArrayList<String> listOfsizes=new ArrayList<String>(tempSet);
+					  //CommonUtility.getValuesOfArray(listOfsizes.toArray().toString(), ",");
+					   String sizeValue = String.join(",", listOfsizes);
+					   priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
+								 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
+								 ApplicationConstants.CONST_STRING_FALSE,sizeValue,"Size",1,priceGrids);
+					}
+				/* ArrayList<String> pricingList=new ArrayList<String>(priceSet);
 				 priceGrids=new ArrayList<PriceGrid>();
 				 for (String listPriceTemp : pricingList) {
 					 String tempArr[]=listPriceTemp.split("_____");
 					 String sizVal=tempArr[0];
 					 String listPrice=tempArr[1];
+					
+					 
 					 priceGrids = edwardGarmentPriceGridparser.getPriceGrids(listPrice,"1", "P",
 							 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
 							 ApplicationConstants.CONST_STRING_FALSE,sizVal,"Size",1,priceGrids);
-				}
+				}*/
 			}
 				 
 				 if(CollectionUtils.isEmpty(priceGrids)){
@@ -654,6 +669,8 @@ while (iterator.hasNext()) {
 	         setSizes= new HashSet();
 	         skuSet=new HashSet<String>();
 	         priceSet=new HashSet<String>();
+	         priceMap=new HashMap<String, HashSet<String>>();
+	         
 	         firstValue="";
 	         sizeCount=1;
 	         repeatRows.clear();
@@ -692,6 +709,7 @@ while (iterator.hasNext()) {
 		   return null;
 	   }
 	public static String removeSpecialChar(String tempValue){
+		try{
 		tempValue=tempValue.replaceAll("(</p>|<p>| <ul>|&rdquo;|&nbsp;|&ldquo;|<span style=color: #ff0000; font-size: small;>| <ul> |<li>|"
 				+ "<span style=color: #ff0000;>|</span style=color: #ff0000;>|<em>|</em>|</strong>|<strong>|</span>|<span>|</li>|</ul>|"
 				+ "<p class=p1>|<hr>|<STRONG>|</STRONG>|<font color=\"b5b8b9\">|</font>|</strong>|<strong>|<i>|</i>|</a>|</a>|"
@@ -699,9 +717,20 @@ while (iterator.hasNext()) {
 		tempValue=tempValue.replaceAll("\\(","");
 		tempValue=tempValue.replaceAll("\\)","");
 		tempValue=tempValue.replaceAll(">","");
+		tempValue=tempValue.replaceAll("<","");
+		tempValue=tempValue.replaceAll("\\{","");
+		tempValue=tempValue.replaceAll("\\}","");
+		tempValue=tempValue.replaceAll("~","");
+		//tempValue=tempValue.replaceAll("//","");
+		tempValue=tempValue.replace("a href=","");
+		//tempValue=tempValue.replaceAll("{$base_url}","");//{$base_url}
+		}catch(Exception e){
+			_LOGGER.error("error for replacing description  chars"+e.getMessage());
+			return tempValue;
+		}
 		//tempValue=tempValue.replaceAll("\\","");//{$base_url}
 		//tempValue=tempValue.replaceAll("//","");//{$base_url}
-		//tempValue=tempValue.replaceAll("{$base_url}","");//{$base_url}
+		
 	return tempValue;
 
 	}
@@ -776,7 +805,26 @@ while (iterator.hasNext()) {
 		this.edwardGarmentPriceGridparser = edwardGarmentPriceGridparser;
 	}
 	
-	
+	public static HashMap<String, HashSet<String>> getPriceMap(HashMap<String , HashSet<String>> priceMap,String listPrice,String size){
+		if(CollectionUtils.isEmpty(priceMap)){
+			HashSet<String>	priceSet=new HashSet<String>();
+			priceSet.add(size);
+			priceMap.put(listPrice, priceSet);
+		}else{
+			if(priceMap.containsKey(listPrice)){
+				HashSet<String> priceSetTemp= priceMap.get(listPrice);
+				priceSetTemp.add(size);
+				priceMap.put(listPrice, priceSetTemp);
+			}else{
+				HashSet<String> priceSetTemp2= new HashSet<String>();
+				//priceSet=new HashSet<String>();
+				priceSetTemp2.add(size);
+				priceMap.put(listPrice, priceSetTemp2);
+				
+			}
+		}
+		return priceMap;
+	}
 
 	public static String getProductCellData(Row row,int cellNo){
 		Cell xidCell =  row.getCell(cellNo);
