@@ -870,9 +870,11 @@
             <property name="twintechColorObj" ref="twintechColorObjId"/>
             <property name="twintechPriceGridObj" ref="twintechPriceGridObjId"/>
             <property name="twintechProductAttributeObj" ref="twintechProductAttributeObjId"/>
+            <property name="roelProduct" ref="roelProductId"/>  <!-- ROEL supplier -->
+            
                   
             </bean>
-     
+            <bean id="roelProductId" class="parser.twintech.RoelProductAttributeParser"/>
             <bean id="twintechColorObjId" class="parser.twintech.TwintechColorParser"/>
             <bean id="twintechPriceGridObjId" class="parser.twintech.TwintechPriceGridParser"/>
             <bean id="twintechProductAttributeObjId" class="parser.twintech.TwintechProductAttributeParser">
