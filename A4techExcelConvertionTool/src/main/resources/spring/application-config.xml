@@ -23,7 +23,7 @@
 	</bean>
 	<import resource="sageMapping.xml" />
 	<import resource="kuku_mapping.xml" />
-	<!-- <import resource="ftpSchedular.xml"/> -->
+	 <import resource="ftpSchedular.xml"/>
 	<context:property-placeholder location="classpath:application.properties,classpath:sandbox-database.properties
 	                                       ,classpath:sandbox-externalApiEndPoints.properties"/>
 	<bean id="productService" class="com.a4tech.product.service.imple.ProductServiceImpl" />
@@ -184,7 +184,8 @@
 		</property>
 		<property name="hibernateProperties">
 			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<!-- <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop> -->
+				<prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>
 				<prop key="hibernate.current_session_context_class">thread</prop>
 				<prop key="show_sql">true</prop>
 				<prop key="hbm2ddl.auto">update</prop>

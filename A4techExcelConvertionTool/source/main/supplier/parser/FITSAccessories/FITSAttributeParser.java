@@ -19,6 +19,7 @@ import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductSKUConfiguration;
 import com.a4tech.product.model.ProductSkus;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Weight;
 import com.a4tech.util.CommonUtility;
 
@@ -42,7 +43,17 @@ public class FITSAttributeParser {
 			  newProduct.setImages(existingProduct.getImages());
 		  }
 		  if(!CollectionUtils.isEmpty(oldConfig.getThemes())){
-			  newConfig.setThemes(oldConfig.getThemes());
+			  List<Theme> themesList = new ArrayList<>();
+			  for (Theme theme : oldConfig.getThemes()) {
+				if(theme.getName().contains("ECO")){
+					Theme themeObj = new Theme();
+					themeObj.setName("Eco & Environmentally Friendly");
+					themesList.add(themeObj);
+				}else {
+					themesList.add(theme);
+				}
+			}
+			  newConfig.setThemes(themesList);
 		  }
 		  if(!CollectionUtils.isEmpty(existingProduct.getCategories())){
 			  newProduct.setCategories(existingProduct.getCategories());
@@ -55,6 +66,7 @@ public class FITSAttributeParser {
 		ImprintMethod imprintMethodObj = null;
 		String[] imprMethodVals = CommonUtility.getValuesOfArray(imprMethodVal, ",");
 		for (String imprMethodName : imprMethodVals) {
+			imprMethodName = imprMethodName.trim();
 			imprintMethodObj = new ImprintMethod();
 			String groupName = "";
 			if(imprMethodName.contains("Embroidery")){
@@ -78,7 +90,7 @@ public class FITSAttributeParser {
 	  if(originName.equals("CN")){
 		  originName = "China";
 	  } else if(originName.equals("VN")){
-		  originName = "Vietnam";
+		  originName = "VIET NAM";
 	  }
 	  originObj.setName(originName);
 	  originsList.add(originObj);
@@ -97,10 +109,12 @@ public class FITSAttributeParser {
 	  Dimensions dimensionsObj = new Dimensions();
 	  dimensionsObj.setLength(vals[0].trim());
 	  dimensionsObj.setWidth(vals[1].trim());
-	  dimensionsObj.setHeight(vals[2].trim());
+	  if(!vals[2].equals("0.00")){
+		  dimensionsObj.setHeight(vals[2].trim()); 
+		  dimensionsObj.setHeightUnit("in");
+	  }
 	  dimensionsObj.setLengthUnit("in");
-	  dimensionsObj.setWidth("in");
-	  dimensionsObj.setHeightUnit("in");
+	  dimensionsObj.setWidthUnit("in");
 	  return dimensionsObj;
   }
   private List<Weight> getShippingWeight(String val){
@@ -126,6 +140,9 @@ public class FITSAttributeParser {
 				  }
 			  }*/
 			  if(!"Other".equals(group)){
+				  if(colorName.contains("/")){
+					  colorName = colorName.replaceAll("/", "-");
+				  }
 				  colorObj.setAlias(colorName);
 				  colorObj.setName(group);  
 			  } else {

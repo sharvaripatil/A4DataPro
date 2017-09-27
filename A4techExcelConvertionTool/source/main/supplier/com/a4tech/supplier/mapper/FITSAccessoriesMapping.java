@@ -72,6 +72,7 @@ public class FITSAccessoriesMapping implements IExcelParser{
 		 String shippingWt ="";
 		 Set<String> colorsList = new HashSet<>();
 		 String imprintMethod = "";
+		 String asiPrdNo = "";
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
@@ -81,13 +82,19 @@ public class FITSAccessoriesMapping implements IExcelParser{
 			}
 		 Short colorCode=getCellBackgroundColor(nextRow.getCell(3));
 		 if(colorCode == 46){//purpole color
-			 // waiting for client feedback
+			 // Ignore as per feedback
 			 continue;
 		 } else if(colorCode == 43){// yellow color
 			// process yellow color rows(US Pricing)
 		 } else if(colorCode == 64 || colorCode == null){// white color
 			 if(StringUtils.isEmpty(imprintMethod)){
 				 imprintMethod = getImprintMethod(nextRow);
+			 }
+			 if(StringUtils.isEmpty(shippingDimensions)){
+				 shippingDimensions = getShippingDimesionValue(nextRow);
+			 }
+			 if(StringUtils.isEmpty(shippingWt)){
+				 shippingWt = getShippingWeightValue(nextRow);
 			 }
 			 continue;// ignore white color rows as per client feedback
 			 //CA Pricing
@@ -117,13 +124,13 @@ public class FITSAccessoriesMapping implements IExcelParser{
 						 if(nextRow.getRowNum() != 2){// change value based on color
 							 System.out.println("Java object converted to JSON String, written to file");
 							 	//productExcelObj.setPriceGrids(priceGrids);
+							 List<Color> colorList = fitsAttributeParser.getProductColor(colorsList);
+							 productConfigObj.setColors(colorList);
 							 if(!shippingDimensions.equalsIgnoreCase("0.00x0.00x0.00")){
 								 ShippingEstimate shippingEst = fitsAttributeParser
 											.getShippingEstimation(shippingDimensions, shippingWt);
 									productConfigObj.setShippingEstimates(shippingEst);
 							 }
-							 List<Color> colorList = fitsAttributeParser.getProductColor(colorsList);
-							 productConfigObj.setColors(colorList);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	productExcelObj.setProductRelationSkus(listProductSkus);
 							 		int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
@@ -142,7 +149,8 @@ public class FITSAccessoriesMapping implements IExcelParser{
 								shippingDimensions = "";
 							    shippingWt ="";
 							    colorsList = new HashSet<>();
-							    imprintMethod = "";
+							    //imprintMethod = "";
+							    asiPrdNo = "";
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -175,7 +183,8 @@ public class FITSAccessoriesMapping implements IExcelParser{
 					name = getProductNumberAndName(name);
 					String[] names = CommonUtility.getValuesOfArray(name, ",");
 					productExcelObj.setName(names[1]);
-					productExcelObj.setAsiProdNo(names[0]);
+					asiPrdNo = names[0];
+					productExcelObj.setAsiProdNo(asiPrdNo);
 					  break;
 				case 3:// sku
 					try{
@@ -189,16 +198,22 @@ public class FITSAccessoriesMapping implements IExcelParser{
 					// ignore this values does not meet ASI Standrd 
 				    break;
 				case 5: //CDN-MSRP
-					String price = CommonUtility.getCellValueDouble(cell);					
-					priceGrids = fitsPriceGridParser.getBasePriceGrid(price, "1", "P", "USD", "", true, false,
-									"", "", priceGrids, "", "", "");
+					String price = CommonUtility.getCellValueDouble(cell);
+					if(price.equals("0") || price.equals("0.0")){
+						priceGrids = fitsPriceGridParser.getBasePriceGrid(price, "1", "P", "USD", "", true, true,
+								"", "", priceGrids, "", "", "");
+					} else{
+						priceGrids = fitsPriceGridParser.getBasePriceGrid(price, "1", "P", "USD", "", true, false,
+								"", "", priceGrids, "", "", "");
+					}
+					
 					productExcelObj.setPriceGrids(priceGrids);
 					break;
 				case 6: //Shipping dimension
-					 shippingDimensions = cell.getStringCellValue();
+					// shippingDimensions = cell.getStringCellValue();
 					break;
 				case 7://shipping wt(carton_weight)
-					shippingWt = CommonUtility.getCellValueDouble(cell);
+					//shippingWt = CommonUtility.getCellValueDouble(cell);
 					break;
 				case 8: // color
 					colorVal = cell.getStringCellValue();
@@ -220,11 +235,12 @@ public class FITSAccessoriesMapping implements IExcelParser{
 								List<ImprintMethod> imprintMethodList = fitsAttributeParser
 										.getProductImprintMethods(imprintMethod);
 								productConfigObj.setImprintMethods(imprintMethodList);
+								imprintMethod = "";
 					}
 					break;
 				case 11://description
 					String desc = cell.getStringCellValue();
-					desc = getDescription(desc);
+					desc = getDescription(desc,asiPrdNo);
 					productExcelObj.setDescription(desc);
 					break;
 				case 12://new
@@ -326,11 +342,23 @@ public class FITSAccessoriesMapping implements IExcelParser{
 	return colorCode;
 	 
 	}
-	private String getDescription(String desc){
+	private String getDescription(String desc,String prdNo){
 		desc = desc.replaceAll("</li><li>", " ");
 		desc = desc.replaceAll("\\<.*?\\> ?", "");
 		desc = desc.replaceAll("velcro", " ");
 		desc = desc.replaceAll("\n", " ");
+		desc = desc.replaceAll("”", "");
+		desc = desc.replaceAll("•", "");
+		desc = desc.replaceAll("“", "");
+		if(desc.contains("\"Fan\"")){
+			desc = desc.replaceAll("\"Fan\"", "Fan");
+		}
+		if(desc.contains(prdNo)){
+			desc = desc.replaceAll(prdNo, "");
+		}
+		if(desc.contains("Velcro")){
+			desc = desc.replaceAll("Velcro", "");
+		}
 		desc = desc.trim().replaceAll(" +", " ");
 		return desc;
 	}
@@ -343,6 +371,14 @@ public class FITSAccessoriesMapping implements IExcelParser{
 	private String getImprintMethod(Row row){
 		Cell cell = row.getCell(9);//imprint method column
 		return cell.getStringCellValue();
+	}
+	private String getShippingDimesionValue(Row row){
+		Cell cell = row.getCell(5);//shipping dimension column
+		return cell.getStringCellValue();
+	}
+	private String getShippingWeightValue(Row row){
+		Cell cell = row.getCell(6);//shipping weight column
+		return CommonUtility.getCellValueDouble(cell);
 	}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
