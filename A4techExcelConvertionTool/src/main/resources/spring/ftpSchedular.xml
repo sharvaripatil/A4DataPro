@@ -10,7 +10,7 @@
 	 <bean id="ftpServerCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 	 	<property name="jobDetail" ref="ftpServerCronJobDetails"></property>
 	 	<!-- <property name="cronExpression" value="0 33 17 * * ?"></property> -->
-	 	<property name="cronExpression" value="0 25 18 ? * THU *"></property>
+	 	<property name="cronExpression" value="0 30 18 ? * THU *"></property>
 	 	
 	 </bean>	
 	<!-- cron Job details -->
