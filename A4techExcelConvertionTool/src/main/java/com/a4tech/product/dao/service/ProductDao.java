@@ -78,11 +78,9 @@ public class ProductDao implements IProductDao{
 				session.close();
 			}catch(Exception ex){
 				_LOGGER.warn("Error while close session object");
-			}
-			
+			}	
 		}
 	}	
-		
 	}
 	@Override
 	public int createBatchId(int asiNumber){
@@ -136,7 +134,9 @@ public class ProductDao implements IProductDao{
 				productEntity.addErrorEntity(errorEntity);	  
 		}
 		if(flag){
-			productNo=productNo+"-Failed:";
+			productNo=productNo+"-Failed: ";
+		}else{
+			productNo=productNo+"-Saved Successfully: ";
 		}
 		productEntity.setSupplierAsiNumber(asiNumber);
 		productEntity.setProductNo(productNo);

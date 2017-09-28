@@ -167,7 +167,13 @@ public class BayStatePriceGridParser {
 				/*config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
 				String criteriaValue = LookupData.getCriteriaValue(config[0]);*/
 				try {
-					if (config[1].contains(",")) {
+					configs.setCriteria(criterias);
+					configs.setValue(Arrays.asList((Object) value));
+					if (!StringUtils.isEmpty(optionName)) {
+						configs.setOptionName(optionName);
+					}
+					priceConfiguration.add(configs);
+					/*if (config[1].contains(",")) {
 						String[] values = config[1].split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 						for (String value1 : values) {
 							configs = new PriceConfiguration();
@@ -188,7 +194,7 @@ public class BayStatePriceGridParser {
 							configs.setOptionName(optionName);
 						}
 						priceConfiguration.add(configs);
-					}
+					}*/
 				} catch (ArrayIndexOutOfBoundsException aie) {
 					_LOGGER.error("Error while processing priceconfiguration" + aie.getMessage());
 				}

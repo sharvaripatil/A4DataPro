@@ -68,6 +68,10 @@ public class FtpController {
 			ftpFileUploadBean.setAsiNumber(asiNumber);
 			return new ModelAndView("fileUpload", "ftpFileUploadBean", ftpFileUploadBean);
 		}
+		if(StringUtils.isEmpty(asiNumber)){
+			model.addAttribute("invalidAsiNum", "");
+			return new ModelAndView("fileUpload", "ftpFileUploadBean", new FtpFileUploadBean());
+		}
 		/*if(StringUtils.isEmpty(asiNumber)){
 			model.addAttribute("invalidAsiNum", "");
 			return new ModelAndView("fileUpload", "ftpFileUploadBean", new FtpFileUploadBean());

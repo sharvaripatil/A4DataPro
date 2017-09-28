@@ -40,8 +40,6 @@ import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
-import parser.FITSAccessories.FITSColorMapping;
-
 public class BayStateParser {
   
 	private LookupServiceData lookupServiceData;
@@ -337,24 +335,24 @@ private Dimensions getShippingDimensions(String val){
 			String lengthVal = "";
 			if(vals[0].contains("Product Length") || vals[0].contains("USB")){
 				 lengthVal = vals[0].split(":")[1];
-				lengthVal = lengthVal.replaceAll("[^0-9]", "").trim();
+				lengthVal = lengthVal.replaceAll("[^0-9/ ]", "").trim();
 			} else {
 				 lengthVal = vals[0].split(":")[1];
-				lengthVal = lengthVal.replaceAll("[^0-9]", "").trim();
+				lengthVal = lengthVal.replaceAll("[^0-9/ ]", "").trim();
 				
 			}
 			valuesObj = getOverAllSizeValObj(lengthVal, "Length", "", "");
 		} else if(sizeVal.contains("H") && sizeVal.contains("W")){
-			sizeVal = sizeVal.replaceAll("[^0-9xX]", "");
+			sizeVal = sizeVal.replaceAll("[^0-9xX/ ]", "");
 			valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "Length");
 		} else if(sizeVal.contains("H")){
-			sizeVal = sizeVal.replaceAll("[^0-9xX]", "");
+			sizeVal = sizeVal.replaceAll("[^0-9xX/ ]", "");
 			valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Length", "");
 		} else if(sizeVal.contains("W")){
-			sizeVal = sizeVal.replaceAll("[^0-9xX]", "");
+			sizeVal = sizeVal.replaceAll("[^0-9xX/ ]", "");
 			valuesObj = getOverAllSizeValObj(sizeVal, "Width", "Length", "");
 		} else {
-			sizeVal = sizeVal.replaceAll("[^0-9xX]", "");
+			sizeVal = sizeVal.replaceAll("[^0-9xX/ ]", "");
 			valuesObj = getOverAllSizeValObj(sizeVal, "Length", "", "");
 		}
 		valuesList.add(valuesObj);

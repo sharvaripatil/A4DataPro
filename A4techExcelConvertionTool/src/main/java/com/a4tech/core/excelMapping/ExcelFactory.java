@@ -19,6 +19,7 @@ import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.AlfaMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
+import com.a4tech.supplier.mapper.BayStateMapping;
 import com.a4tech.supplier.mapper.BellaCanvas;
 import com.a4tech.supplier.mapper.BlueGenerationMapping;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
@@ -85,8 +86,9 @@ public class ExcelFactory {
 	private GillStudiosMapping 				gillStudiosMapping;
 	private BlueGenerationMapping			blueGenerationMapping;
 	private FITSAccessoriesMapping          fitsAccessoriesMapping;
+	private BayStateMapping                 baysStateMapping;
 
-		public  IExcelParser getExcelParserObject(String name){
+	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
 		   }else if(name.equalsIgnoreCase("kl") || name.equals("64905")){
@@ -174,7 +176,9 @@ public class ExcelFactory {
 			  return blueGenerationMapping;
 		  } else if(name.equalsIgnoreCase("FITSAccessories ") || name.equals("71107")){
 			  return fitsAccessoriesMapping;
-		  } 
+		  } else if(name.equals("38980") || name.equalsIgnoreCase("bayState")){
+			  return baysStateMapping;
+		  }
 		return null;
 	}
 	
@@ -478,9 +482,16 @@ public class ExcelFactory {
 	public FITSAccessoriesMapping getFitsAccessoriesMapping() {
 		return fitsAccessoriesMapping;
 	}
-
 	public void setFitsAccessoriesMapping(FITSAccessoriesMapping fitsAccessoriesMapping) {
 		this.fitsAccessoriesMapping = fitsAccessoriesMapping;
 	}
+	public BayStateMapping getBaysStateMapping() {
+		return baysStateMapping;
+	}
+	public void setBaysStateMapping(BayStateMapping baysStateMapping) {
+		this.baysStateMapping = baysStateMapping;
+	}
+
+
 
 }

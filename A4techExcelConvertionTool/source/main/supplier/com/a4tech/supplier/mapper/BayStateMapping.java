@@ -1,7 +1,10 @@
 package com.a4tech.supplier.mapper;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +12,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -123,9 +127,9 @@ public class BayStateMapping implements IExcelParser{
 							 System.out.println("Java object converted to JSON String, written to file");
 							     
 						   productExcelObj.setSummary(productSummary.toString());
-						     if(priceGrids.size() == 1){
+						     /*if(priceGrids.size() == 1){
 						    	 priceGrids = removeBasePriceConfig(priceGrids);
-						     }
+						     }*/
 						     productConfigObj.setImprintMethods(imprintMethodList);
 									ShippingEstimate shippingEst = bayStateParser.getProductShipping(shippingDimension,
 											shippingWeight);
@@ -199,6 +203,7 @@ public class BayStateMapping implements IExcelParser{
 				
 				switch (columnIndex+1) {
 				case 1:
+					productExcelObj.setExternalProductId(xid);
 					 break;
 				case 2:// product Number
 					productNumber = cell.getStringCellValue();
@@ -286,7 +291,7 @@ public class BayStateMapping implements IExcelParser{
 					}
 					break;
 				case 15://maxImprintColors
-				    maxImprColors = cell.getStringCellValue();
+				    maxImprColors =  CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(maxImprColors)){
 						List<AdditionalColor> additionalColorList = bayStateParser.getAdditionalColors(maxImprColors);
 						productConfigObj.setAdditionalColors(additionalColorList);;
@@ -386,7 +391,7 @@ public class BayStateMapping implements IExcelParser{
 					}
 				    break;
 				case 39:// start
-					String startDate = cell.getStringCellValue();
+					//String startDate = cell.getStringCellValue();
 					// all dates are past ,so n need ]
 					/*if(!StringUtils.isEmpty(startDate)){
 						if(CommonUtility.isPriceConfirmThroughDate(startDate)){
@@ -394,12 +399,20 @@ public class BayStateMapping implements IExcelParser{
 					}*/
 					break;
 				case 40:// expire
-					String expireDate = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(expireDate)){
+					String expireDate = "";
+					if(HSSFDateUtil.isCellDateFormatted(cell)){
+						Date date = cell.getDateCellValue();
+						DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+						 expireDate = df.format(date);
 						if(CommonUtility.isPriceConfirmThroughDate(expireDate)){
 							productExcelObj.setPriceConfirmedThru(expireDate);
 						}
+					} else{
+						expireDate = cell.getStringCellValue();
 					}
+					/*if(!StringUtils.isEmpty(expireDate)){
+						
+					}*/
 					break;
 				case 41://specialQty
 					 specialQty = CommonUtility.getCellValueStrinOrInt(cell);
@@ -456,9 +469,19 @@ public class BayStateMapping implements IExcelParser{
 		}
 		workbook.close();
 		
-		 if(priceGrids.size() == 1){
+		productExcelObj.setSummary(productSummary.toString());
+	     /*if(priceGrids.size() == 1){
 	    	 priceGrids = removeBasePriceConfig(priceGrids);
-	     }
+	     }*/
+	     productConfigObj.setImprintMethods(imprintMethodList);
+				ShippingEstimate shippingEst = bayStateParser.getProductShipping(shippingDimension,
+						shippingWeight);
+				productConfigObj.setShippingEstimates(shippingEst);
+				if(!CollectionUtils.isEmpty(productNumbersAndColors)){
+					List<ProductNumber> listOfProductNumbers = bayStateParser.getProductNumbers(productNumbersAndColors);
+					productExcelObj.setProductNumbers(listOfProductNumbers);
+					productExcelObj.setAsiProdNo("");
+				}
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	productExcelObj.setProductRelationSkus(listProductSkus);

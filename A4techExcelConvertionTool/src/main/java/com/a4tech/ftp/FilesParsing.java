@@ -45,11 +45,11 @@ public class FilesParsing {
 			String fileName = file.getName();
 			String asiNumber = getAsiNumberFile(fileName);
 			Workbook workBook = null;
-			boolean fileStatus = isFileProcess(fileName, asiNumber);
+			/*boolean fileStatus = isFileProcess(fileName, asiNumber);
 			if (fileStatus) {
 				_LOGGER.info(fileName +" :"+ "file already processed");
 				continue;
-			}
+			}*/
 			String accessToken = getAccessToken(asiNumber);
 			if( accessToken == null){
 				invalidSupplierDetails(asiNumber);
