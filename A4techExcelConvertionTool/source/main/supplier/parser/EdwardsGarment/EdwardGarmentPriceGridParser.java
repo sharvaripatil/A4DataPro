@@ -18,7 +18,7 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.LookupData;
 
 public class EdwardGarmentPriceGridParser {
-	private Logger              _LOGGER       =  Logger.getLogger(TomaxPriceGridParser.class);
+	private static Logger              _LOGGER       =  Logger.getLogger(TomaxPriceGridParser.class);
     public List<PriceGrid> getPriceGrids(String listOfPrices, String listOfQuan, String discountCodes,
 				String currency, String priceInclude, boolean isBasePrice,
 				String qurFlag, String priceName, String criterias,Integer sequence,
@@ -79,7 +79,7 @@ public class EdwardGarmentPriceGridParser {
 
 		}
 
-		public List<Price> getPrices(String[] prices, String[] quantity, String discount) {
+		public static List<Price> getPrices(String[] prices, String[] quantity, String discount) {
 
 			List<Price> listOfPrices = new ArrayList<Price>();
 			try{
@@ -200,4 +200,40 @@ public class EdwardGarmentPriceGridParser {
 			_LOGGER.info("PriceGrid Processed");
 			return newPriceGrid;
 	}
+		
+		
+		public static List<Price> getSinlgePrices(String prices, String quantity, String discount,List<Price> listOfPrices) {
+
+			//List<Price> listOfPrices = new ArrayList<Price>();
+			try{
+				Integer sequenceNum=1;
+				Price price = new Price();
+				PriceUnit priceUnit = new PriceUnit();
+				//String temp[]=discount.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				if(CollectionUtils.isEmpty(listOfPrices)){
+					listOfPrices= new ArrayList<Price>();
+					sequenceNum=1;
+				 }else{
+					 sequenceNum=listOfPrices.size()+1;
+				 }
+				price.setSequence(sequenceNum);
+				try {
+					price.setQty(Integer.valueOf(quantity.replace(".0","")));
+				} catch (NumberFormatException nfe) {
+					price.setQty(ApplicationConstants.CONST_NUMBER_ZERO);
+				}
+				price.setPrice(prices);
+				price.setDiscountCode(discount);
+				priceUnit
+						.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
+				price.setPriceUnit(priceUnit);
+				listOfPrices.add(price); 
+			//}
+			}
+			catch (Exception e) {
+				_LOGGER.error("Error while processing PriceGrid Prices: "+e.getMessage());
+			}
+			return listOfPrices;
+		}
+		
 	}

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -177,10 +178,11 @@ while (iterator.hasNext()) {
 									 }else{
 										 apparelObj.setType("Standard & Numbered");
 									 }
+									 if(!CollectionUtils.isEmpty(listOfValue)){
 										apparelObj.setValues(listOfValue);
 										sizeObj.setApparel(apparelObj);
 									productConfigObj.setSizes(sizeObj);
-										
+									 }
 									}
 								 
 							// process pring here
@@ -188,30 +190,37 @@ while (iterator.hasNext()) {
 										         listOfQuantity.toString(), priceCode, "USD",
 										         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/
 								 if(!CollectionUtils.isEmpty(priceMap)){
-									 
-									 
+									 List<Price> listOfPricesArr=new ArrayList<Price>();
+									 priceGrids = new ArrayList<PriceGrid>();
+									 PriceGrid priceGrid = new PriceGrid();
 									 for (Entry<String, HashSet<String>> values : priceMap.entrySet()) {
+										 
 										   String priceVal= values.getKey();
 										   HashSet<String> tempSet=values.getValue();
 										   ArrayList<String> listOfsizes=new ArrayList<String>(tempSet);
 										  //CommonUtility.getValuesOfArray(listOfsizes.toArray().toString(), ",");
 										   String sizeValue = String.join(",", listOfsizes);
+										   if(!StringUtils.isEmpty(sizeValue) && !sizeValue.equals("0")){
 										   priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
 													 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
 													 ApplicationConstants.CONST_STRING_FALSE,sizeValue,"Size",1,priceGrids);
+										   }else{
+											  
+											   priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
+												priceGrid.setDescription("");
+												priceGrid.setPriceIncludes("");
+												priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_FALSE);
+												priceGrid.setIsBasePrice(true);
+												priceGrid.setSequence(1);
+												List<Price> listOfPrice = new ArrayList<Price>();
+												//if (!priceGrid.getIsQUR()) {
+												listOfPrice = EdwardGarmentPriceGridParser.getSinlgePrices(priceVal, "1", "P",listOfPrice);
+												priceGrid.setPrices(listOfPrice);
+												priceGrid.setPriceConfigurations(new ArrayList<PriceConfiguration>());
+												priceGrids.add(priceGrid);
+											   
+										   }
 										}
-									/* ArrayList<String> pricingList=new ArrayList<String>(priceSet);
-									 priceGrids=new ArrayList<PriceGrid>();
-									 for (String listPriceTemp : pricingList) {
-										 String tempArr[]=listPriceTemp.split("_____");
-										 String sizVal=tempArr[0];
-										 String listPrice=tempArr[1];
-										
-										 
-										 priceGrids = edwardGarmentPriceGridparser.getPriceGrids(listPrice,"1", "P",
-												 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
-												 ApplicationConstants.CONST_STRING_FALSE,sizVal,"Size",1,priceGrids);
-									}*/
 								}
 									 
 									 if(CollectionUtils.isEmpty(priceGrids)){
@@ -597,9 +606,11 @@ while (iterator.hasNext()) {
 					 }else{
 						 apparelObj.setType("Standard & Numbered");
 					 }
+				 if(!CollectionUtils.isEmpty(listOfValue)){
 					apparelObj.setValues(listOfValue);
 					sizeObj.setApparel(apparelObj);
-				productConfigObj.setSizes(sizeObj);
+					productConfigObj.setSizes(sizeObj);
+				 }
 					
 				}
 			 
@@ -608,31 +619,37 @@ while (iterator.hasNext()) {
 					         listOfQuantity.toString(), priceCode, "USD",
 					         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/
 			 if(!CollectionUtils.isEmpty(priceMap)){
-				 
-				 
+				 List<Price> listOfPricesArr=new ArrayList<Price>();
+				 priceGrids = new ArrayList<PriceGrid>();
+				 PriceGrid priceGrid = new PriceGrid();
 				 for (Entry<String, HashSet<String>> values : priceMap.entrySet()) {
 					   String priceVal= values.getKey();
 					   HashSet<String> tempSet=values.getValue();
 					   ArrayList<String> listOfsizes=new ArrayList<String>(tempSet);
 					  //CommonUtility.getValuesOfArray(listOfsizes.toArray().toString(), ",");
 					   String sizeValue = String.join(",", listOfsizes);
+					   if(!StringUtils.isEmpty(sizeValue) && !sizeValue.equals("0")){
 					   priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
 								 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
 								 ApplicationConstants.CONST_STRING_FALSE,sizeValue,"Size",1,priceGrids);
+					   }else{
+						  
+						   priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
+							priceGrid.setDescription("");
+							priceGrid.setPriceIncludes("");
+							priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_FALSE);
+							priceGrid.setIsBasePrice(true);
+							priceGrid.setSequence(1);
+							List<Price> listOfPrice = null;
+							//if (!priceGrid.getIsQUR()) {
+							listOfPrice = EdwardGarmentPriceGridParser.getSinlgePrices(priceVal, "1", "P",listOfPrice);
+							priceGrid.setPrices(listOfPrice);
+							priceGrid.setPriceConfigurations(new ArrayList<PriceConfiguration>());
+							priceGrids.add(priceGrid);
+						   
+					   }
 					}
-				/* ArrayList<String> pricingList=new ArrayList<String>(priceSet);
-				 priceGrids=new ArrayList<PriceGrid>();
-				 for (String listPriceTemp : pricingList) {
-					 String tempArr[]=listPriceTemp.split("_____");
-					 String sizVal=tempArr[0];
-					 String listPrice=tempArr[1];
-					
-					 
-					 priceGrids = edwardGarmentPriceGridparser.getPriceGrids(listPrice,"1", "P",
-							 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
-							 ApplicationConstants.CONST_STRING_FALSE,sizVal,"Size",1,priceGrids);
-				}*/
-			}
+			 }
 				 
 				 if(CollectionUtils.isEmpty(priceGrids)){
 						priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur();	
@@ -835,6 +852,24 @@ while (iterator.hasNext()) {
 			productXid="";
 		}
 		return productXid;
+	}
+	
+	public static HashMap<String,HashSet<String>> getMap(String sizeValue,String colorValue,HashMap<String,HashSet<String>> tempMap){
+		
+		HashSet<String> listTemp=new HashSet<String>();
+		if(tempMap.containsKey(colorValue)){
+			listTemp=tempMap.get(colorValue);
+			//listTemp.add(dimension+ApplicationConstants.CONST_CHAR_SMALL_X+size);
+			listTemp.add(sizeValue);
+			tempMap.replace(colorValue, listTemp);
+		}else{
+			listTemp=new HashSet<String>();
+			//list.add(dimension+ApplicationConstants.CONST_CHAR_SMALL_X+size);
+			listTemp.add(sizeValue);
+			tempMap.put(colorValue,listTemp);
+		}
+		return null;
+		
 	}
 	public static String getProductCellDataPrice(Row row,int cellNo){
 		Cell xidCell =  row.getCell(cellNo);

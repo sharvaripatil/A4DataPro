@@ -3,9 +3,12 @@ package parser.EdwardsGarment;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -147,8 +150,10 @@ public List<Color> getProductColors(List<String> colorListValue){
 						colorComboSecondName = colorComboSecondName == null?"Other":colorComboSecondName;
 						listOfCombo = getColorsCombo(colorComboFirstName,colorComboSecondName, combosSize);
 					}
-					String alias = colorGroup.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH, "-");
-					colorObj.setAlias(alias);
+					//
+					//String alias = colorGroup.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH, "-");
+					////
+					colorObj.setAlias(colorGroup);
 					colorObj.setCombos(listOfCombo);
 				} else {
 					String[] comboColors = CommonUtility.getValuesOfArray(colorGroup,
@@ -446,9 +451,11 @@ public static boolean isComboColor(String colorValue){
 		 List<Value> listOfValue = new ArrayList<>();
 			try{
 				for (String value : sizesList) {
+					if(!value.equals("0")){
 					Value valObj = new Value();
 					valObj.setValue(value);
 					listOfValue.add(valObj);
+					}
 				}
 			}catch(Exception e){
 				_LOGGER.error("Error while processing size "+e.getMessage());
@@ -475,11 +482,13 @@ public static boolean isComboColor(String colorValue){
 			colorValue=colorValue.replaceAll(" W/","/");
 		ProductSkus productSku = new ProductSkus();
 		if(!StringUtils.isEmpty(skuNo) && !skuNo.equals("BBBBB")){
+			List<ProductSKUConfiguration> listSkuConfigs = new ArrayList<>();
 		ProductSKUConfiguration colorSkuConfig = getSkuConfiguration(criteriaOne, colorValue);//"Product Color"
-		ProductSKUConfiguration sizeSkuConfig = getSkuConfiguration(criteriaTwo, size);//"Standard & Numbered"
-		List<ProductSKUConfiguration> listSkuConfigs = new ArrayList<>();
+		if(!StringUtils.isEmpty(size) && !size.equals("0")){
+			ProductSKUConfiguration sizeSkuConfig = getSkuConfiguration(criteriaTwo, size);//"Standard & Numbered"
+			listSkuConfigs.add(sizeSkuConfig);
+		}
 		listSkuConfigs.add(colorSkuConfig);
-		listSkuConfigs.add(sizeSkuConfig);
 		productSku.setSKU(skuNo);
 		productSku.setConfigurations(listSkuConfigs);
 		listProductSkus.add(productSku);
@@ -496,6 +505,23 @@ public static boolean isComboColor(String colorValue){
 		skuConfig.setCriteria(criteria);
 		skuConfig.setValue(Arrays.asList(val));
 		return skuConfig;
+	}
+	
+	public boolean checkValues(HashSet<String> newSet,HashMap<String,HashSet<String>> tempMap){
+		boolean flag=false;
+		for ( Map.Entry<String, HashSet<String>> entry : tempMap.entrySet() ) {
+		    String k = entry.getKey();
+		    HashSet<String> v = entry.getValue();
+		    if(!org.apache.commons.collections.CollectionUtils.isEqualCollection(newSet, v)){
+				flag=false;
+			}
+		    else{
+		    	flag=true;
+		    }
+		}
+		
+		return false;
+		
 	}
 	
 public LookupServiceData getLookupServiceDataObj() {
