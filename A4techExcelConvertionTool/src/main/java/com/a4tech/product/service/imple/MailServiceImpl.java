@@ -136,5 +136,32 @@ public class MailServiceImpl implements IMailService{
 	public void setSenderMailName(String senderMailName) {
 		this.senderMailName = senderMailName;
 	}
+	@Override
+	public void ftpServerFailure() {
+		try {
+		      MimeMessage mimeMessage = mailSender.createMimeMessage();
+		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		      helper.setFrom(senderMailName);
+		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
+		    		  "amey.more@a4technology.com"};
+			helper.setTo(toAddress); 
+		    helper.setSubject("FTP Server is Down/Not Working");
+		      helper.setText("Hi Team,"
+		      		+ "\n\n\n"
+		      		+ "FTP Server is not working,Kindly check in server side"
+		      		+ "\n\n\n\n\n\n"
+		      		+ "Thanks & Regards,"
+		      		+ "A4DataPro Team"
+		      		+ "\n\n"
+		      		+ "Note: This is Computer Generated Mail. No need to reply.*");
+			_LOGGER.info("Sending Email to : "+ Arrays.toString(toAddress));
+			   mailSender.send(mimeMessage);
+		       _LOGGER.info("FTP Server failure mail has been sent Successfully !!!");
+		      } catch (MessagingException e) {
+			    _LOGGER.error("FTP Server failure mail Not Sent Successfully,Error Msg:"+e.toString());
+			 }catch (Exception e) {
+			   _LOGGER.error("FTP Server failure mail Not Sent Successfully,Error Msg:"+e.toString());
+			}		
+	}
 	
 }
