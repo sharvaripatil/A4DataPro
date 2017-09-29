@@ -84,14 +84,15 @@ public class MailServiceImpl implements IMailService{
 	public void fileProcessStart(String body,String subject) {
 		try {
 		      MimeMessage mimeMessage = mailSender.createMimeMessage();
-		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false);
 		      helper.setFrom(senderMailName);
 		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
-		    		  "azam.rizvi@a4technology.com","amey.more@a4technology.com"};
+		    		  "amey.more@a4technology.com"};
 			/*String[] ccAddress = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
 					"amey.more@a4technology.com","azam.rizvi@a4technology.com" };*/
 			helper.setTo(toAddress); 
 			//helper.setTo("SPullins@asicentral.com");
+			//helper.setBcc(bccmails);
 		      helper.setSubject(subject);
 		      helper.setText(body);
 			_LOGGER.info("Sending Email to : "+ Arrays.toString(toAddress));
@@ -118,6 +119,7 @@ public class MailServiceImpl implements IMailService{
 				"amey.more@a4technology.com","azam.rizvi@a4technology.com" };
 		      helper.setTo(toAddress);
 		      //helper.setTo("SPullins@asicentral.com");
+		      //helper.setBcc(bccmails);
 		      helper.setSubject(subject);
 		      helper.setText(body);
 		      helper.addAttachment(file.getFilename(), file);
@@ -162,6 +164,33 @@ public class MailServiceImpl implements IMailService{
 			 }catch (Exception e) {
 			   _LOGGER.error("FTP Server failure mail Not Sent Successfully,Error Msg:"+e.toString());
 			}		
+	}
+	@Override
+	public void fileProcessFail(String fileName) {
+		try {
+		      MimeMessage mimeMessage = mailSender.createMimeMessage();
+		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		      helper.setFrom(senderMailName);
+		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
+		    		  "amey.more@a4technology.com"};
+			/*String[] ccAddress = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
+					"amey.more@a4technology.com","azam.rizvi@a4technology.com" };*/
+			helper.setTo(toAddress); 
+			//helper.setTo("SPullins@asicentral.com");
+		      helper.setSubject("Suppliler File Not Processed "+fileName);
+		      helper.setText("Hi Team,"
+		      		+ "\n\n"
+		      		+ fileName + "Supplier file not processed,Please check the log."
+		      				+ "\n\n\nThanks & Regards,"
+		      				+ "\nA4DataPro Process System");
+			_LOGGER.info("Sending Email to : "+ Arrays.toString(toAddress));
+			   mailSender.send(mimeMessage);
+		       _LOGGER.info("Process Status Mail Sent Successfully !!!");
+		      } catch (MessagingException e) {
+			    _LOGGER.error("Process Status Mail Not Sent Successfully,Error Msg:"+e.toString());
+			 }catch (Exception e) {
+			   _LOGGER.error("Process Status Mail Not Sent Successfully,Error Msg:"+e.toString());
+			}
 	}
 	
 }

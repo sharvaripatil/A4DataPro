@@ -42,7 +42,9 @@ public class FilesParsing {
 	public void ReadFtpFiles(File[] listOfFiles) {
 		_LOGGER.info("Enter ftp file parser");
 		for (File file : listOfFiles) {
-			String fileName = file.getName();
+			String fileName = "";
+			try{
+			 fileName = file.getName();
 			String asiNumber = getAsiNumberFile(fileName);
 			Workbook workBook = null;
 			/*boolean fileStatus = isFileProcess(fileName, asiNumber);
@@ -89,7 +91,12 @@ public class FilesParsing {
 				 processFileStatusMail(asiNumber, "ProcessEnd", batchId);
 			 }	
 			_LOGGER.info(fileName +":"+ "file parsing completed");
+           }catch (Exception exce) {
+			_LOGGER.error("Unable to process supplier file: "+fileName);
+			mailService.fileProcessFail(fileName);
 		}
+	 }// end for llop
+		
 	}
 
 	public boolean isFileProcess(String fileName, String asiNumber) {
