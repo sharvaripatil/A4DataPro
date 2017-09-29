@@ -420,6 +420,7 @@
 		<property name="blueGenerationMapping" ref="blueGenerId"/>
 		<property name="fitsAccessoriesMapping" ref="FITSAccessoriId"/>
 		<property name="baysStateMapping" ref="bayStateMappingId"/>
+		<property name="maxplusmapping" ref="maxplusmappingId"></property>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -871,9 +872,11 @@
             <property name="twintechColorObj" ref="twintechColorObjId"/>
             <property name="twintechPriceGridObj" ref="twintechPriceGridObjId"/>
             <property name="twintechProductAttributeObj" ref="twintechProductAttributeObjId"/>
+            <property name="roelProduct" ref="roelProductId"/>  <!-- ROEL supplier -->
+            
                   
             </bean>
-     
+            <bean id="roelProductId" class="parser.twintech.RoelProductAttributeParser"/>
             <bean id="twintechColorObjId" class="parser.twintech.TwintechColorParser"/>
             <bean id="twintechPriceGridObjId" class="parser.twintech.TwintechPriceGridParser"/>
             <bean id="twintechProductAttributeObjId" class="parser.twintech.TwintechProductAttributeParser">
@@ -992,6 +995,15 @@
      <bean id="bluGenattributeParserId" class="parser.BlueGeneration.BlueGenerationAttributeParser"></bean> 
      <!-- Blue Generation Configuration End -->
      
+     
+       <bean id="maxplusmappingId" class="com.a4tech.supplier.mapper.MaxplusMapping">
+           <property name="postServiceImpl" ref="postService"/>
+           <property name="productDaoObj" 	ref="productDao"/>
+           <property name="maxplusAttribute" 	ref="maxplusAttributeId"/>
+           
+        </bean>
+      <bean id="maxplusAttributeId" class="parser.maxplus.MaxpluProductAttributeParser"/>
+
      <!-- FITS Accessories Configuration Start -->
      <bean id="FITSAccessoriId" class="com.a4tech.supplier.mapper.FITSAccessoriesMapping">
      	<property name="postServiceImpl" 	ref="postService"/>

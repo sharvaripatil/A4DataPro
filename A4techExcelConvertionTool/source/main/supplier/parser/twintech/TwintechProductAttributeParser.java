@@ -178,7 +178,27 @@ public class TwintechProductAttributeParser {
 	  }else if(imprintMethodValue.contains("Laser"))
 	  {
 		  imprMethod.setType("Laser engraved");
-	  }else
+	  }else if(imprintMethodValue.contains("Etched"))	//for ROEL 	  
+	  {
+		  imprMethod.setType("Etched");
+	  }
+     else if(imprintMethodValue.contains("4-color"))	  
+	  {
+		  imprMethod.setType("Full Color");
+	  }
+      else if(imprintMethodValue.contains("Embossed"))
+      {
+		  imprMethod.setType("Embossed");
+      }
+       else if(imprintMethodValue.contains("Debossed"))
+       {
+    	   imprMethod.setType("Debossed");
+       }
+       else if(imprintMethodValue.contains("printed"))
+       {
+    	   imprMethod.setType("Printed");
+       }    
+       else 
 	  {
 		  imprMethod.setType("Other");
 	  }

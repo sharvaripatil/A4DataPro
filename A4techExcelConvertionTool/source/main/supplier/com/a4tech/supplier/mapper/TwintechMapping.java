@@ -6,26 +6,30 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
+
+import parser.twintech.RoelProductAttributeParser;
 import parser.twintech.TwintechColorParser;
 import parser.twintech.TwintechPriceGridParser;
 import parser.twintech.TwintechProductAttributeParser;
+
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Availability;
+//import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
-import com.a4tech.product.model.ImprintSize;
+//import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
@@ -41,7 +45,7 @@ import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
-public class TwintechMapping implements IExcelParser {
+public class TwintechMapping implements IExcelParser {  //EXCIT-752   RO-EL
 
 	private static final Logger _LOGGER = Logger
 			.getLogger(TwintechMapping.class);
@@ -51,6 +55,7 @@ public class TwintechMapping implements IExcelParser {
 	private TwintechColorParser twintechColorObj;
 	private TwintechPriceGridParser twintechPriceGridObj;
 	private TwintechProductAttributeParser twintechProductAttributeObj;
+	private RoelProductAttributeParser roelProduct;
 
 	public String readExcel(String accessToken, Workbook workbook,
 			Integer asiNumber, int batchId) {
@@ -59,18 +64,21 @@ public class TwintechMapping implements IExcelParser {
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		Set<String> productXids = new HashSet<String>();
 		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
-		List<ImprintSize> imprintSizeList = new ArrayList<ImprintSize>();
+		//List<ImprintSize> imprintSizeList = new ArrayList<ImprintSize>();
 		List<ImprintLocation> listImprintLocation = new ArrayList<ImprintLocation>();
 		List<ImprintMethod> listOfImprintMethods = new ArrayList<ImprintMethod>();
 		List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
 		List<String> productKeywords = new ArrayList<String>();
 		List<Theme> themeList = new ArrayList<Theme>();
 		List<Values> valuesList = new ArrayList<Values>();
+	//	List<ImprintLocation> listLocation = new ArrayList<ImprintLocation>();
 		List<FOBPoint> FobPointsList = new ArrayList<FOBPoint>();
 		List<Color> color = new ArrayList<Color>();
-		List<Availability> listOfAvailability = new ArrayList<Availability>();
+	//	List<Availability> listOfAvailability = new ArrayList<Availability>();
 
 		
+		List<String> complianceList = new ArrayList<String>();
+
 
 		Product productExcelObj = new Product();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
@@ -84,10 +92,12 @@ public class TwintechMapping implements IExcelParser {
 		RushTime rushTime = new RushTime();
 		StringBuilder listOfQuantity = new StringBuilder();
 		StringBuilder listOfPrices = new StringBuilder();
-		StringBuilder pricesPerUnit = new StringBuilder();
+	//	StringBuilder pricesPerUnit = new StringBuilder();
 		StringBuilder dimensionValue = new StringBuilder();
 		StringBuilder dimensionUnits = new StringBuilder();
 		StringBuilder dimensionType = new StringBuilder();
+		StringBuilder priceInclude = new StringBuilder();
+		ImprintLocation locationObj=new ImprintLocation();
 
 		try {
 
@@ -102,7 +112,7 @@ public class TwintechMapping implements IExcelParser {
 			String quoteUponRequest = null;
 			String quantity = null;
 			String listPrice = null;
-			String pricesUnit = null;
+		//	String pricesUnit = null;
 			String serviceCharge = null;
 			String cartonL = null;
 			String cartonW = null;
@@ -113,17 +123,18 @@ public class TwintechMapping implements IExcelParser {
 			String decorationMethod = null;
 			Product existingApiProduct = null;
 			String priceIncludesValue = null;
-			String imprintValue = null;
+		//	String imprintValue = null;
 			String prodTimeLo = null;
 			Cell cell2Data = null;
 			String rushProdTimeLo = null;
-			String AvailabilityValue=null;
+			//String AvailabilityValue=null;
 
 			while (iterator.hasNext()) {
 
 				try {
 					Row nextRow = iterator.next();
-					if (nextRow.getRowNum() < 7)
+					//if (nextRow.getRowNum() < 7)
+					if (nextRow.getRowNum() < 1)
 						continue;
 					Iterator<Cell> cellIterator = nextRow.cellIterator();
 					if (productId != null) {
@@ -135,7 +146,7 @@ public class TwintechMapping implements IExcelParser {
 						Cell cell = cellIterator.next();
 						String xid = null;
 						int columnIndex = cell.getColumnIndex();
-						cell2Data = nextRow.getCell(2);
+						cell2Data = nextRow.getCell(1);
 						if (columnIndex + 1 == 1) {
 							if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 								xid = cell.getStringCellValue();
@@ -154,7 +165,9 @@ public class TwintechMapping implements IExcelParser {
 						}
 						if (checkXid) {
 							if (!productXids.contains(xid)) {
-								if (nextRow.getRowNum() != 7) {
+							//	if (nextRow.getRowNum() != 7) {
+									if (nextRow.getRowNum() != 1) {
+
 									System.out
 											.println("Java object converted to JSON String, written to file");
 
@@ -215,13 +228,13 @@ public class TwintechMapping implements IExcelParser {
 
 									listOfQuantity = new StringBuilder();
 									listOfPrices = new StringBuilder();
-									pricesPerUnit = new StringBuilder();
+								//	pricesPerUnit = new StringBuilder();
 									dimensionValue = new StringBuilder();
 									dimensionUnits = new StringBuilder();
 									dimensionType = new StringBuilder();
 
 									priceGrids = new ArrayList<PriceGrid>();
-									imprintSizeList = new ArrayList<ImprintSize>();
+								//	imprintSizeList = new ArrayList<ImprintSize>();
 									listImprintLocation = new ArrayList<ImprintLocation>();
 									listOfImprintMethods = new ArrayList<ImprintMethod>();
 									listOfProductionTime = new ArrayList<ProductionTime>();
@@ -230,15 +243,15 @@ public class TwintechMapping implements IExcelParser {
 									valuesList = new ArrayList<Values>();
 									FobPointsList = new ArrayList<FOBPoint>();
 									color = new ArrayList<Color>();
-									listOfAvailability = new ArrayList<Availability>();
-									
+								//	listOfAvailability = new ArrayList<Availability>();
+									priceInclude = new StringBuilder();
 									rushTime = new RushTime();
 									finalDimensionObj = new Dimension();
 									size = new Size();
 									fobPintObj = new FOBPoint();
 									shipping = new ShippingEstimate();
 									productConfigObj = new ProductConfigurations();
-									AvailabilityValue = "";
+								//	AvailabilityValue = "";
 
 								}
 								if (!productXids.contains(xid)) {
@@ -252,10 +265,17 @@ public class TwintechMapping implements IExcelParser {
 									productExcelObj = new Product();
 								} else {
 									productExcelObj = new Product();
-									// productConfigObj=existingApiProduct.getProductConfigurations();
+									productConfigObj=existingApiProduct.getProductConfigurations();
 									List<Image> Img = existingApiProduct
 											.getImages();
 									productExcelObj.setImages(Img);
+									
+							    	 themeList=productConfigObj.getThemes();
+							    	 productConfigObj.setThemes(themeList);
+							    	 
+							    	 List<String>categoriesList=existingApiProduct.getCategories();
+							    	 productExcelObj.setCategories(categoriesList);
+							    	 
 
 								}
 								// productExcelObj = new Product();
@@ -263,11 +283,13 @@ public class TwintechMapping implements IExcelParser {
 						}
 
 						switch (columnIndex + 1) {
-						case 1:// ExternalProductID
-							productExcelObj.setExternalProductId(xid.trim());
+						case 1:// ExternalProductID 
 
 							break;
 						case 2:// ProductID
+							String XID=CommonUtility
+									.getCellValueStrinOrInt(cell);
+							productExcelObj.setExternalProductId(XID);                   
 
 							break;
 						case 3:// ItemNum
@@ -297,7 +319,7 @@ public class TwintechMapping implements IExcelParser {
 
 						case 6: // ExpirationDate
 
-							String priceConfirmedThru = cell
+							/*String priceConfirmedThru = cell
 									.getStringCellValue();
 							String strArr[] = priceConfirmedThru.split("/");
 							priceConfirmedThru = strArr[2] + "/" + strArr[0]
@@ -305,7 +327,7 @@ public class TwintechMapping implements IExcelParser {
 							priceConfirmedThru = priceConfirmedThru.replaceAll(
 									"/", "-");
 							productExcelObj
-									.setPriceConfirmedThru(priceConfirmedThru);
+									.setPriceConfirmedThru(priceConfirmedThru);*/
 
 							break;
 
@@ -358,9 +380,11 @@ public class TwintechMapping implements IExcelParser {
 
 						case 14: // Colors
 
-							String colorValue = cell.getStringCellValue();
+						String colorValue = cell.getStringCellValue();
 							if (!StringUtils.isEmpty(colorValue)) {
-								color = twintechColorObj
+							/*	color = twintechColorObj
+										.getColorCriteria(colorValue);*/
+								color = roelProduct
 										.getColorCriteria(colorValue);
 								productConfigObj.setColors(color);
 							}
@@ -369,7 +393,7 @@ public class TwintechMapping implements IExcelParser {
 
 						case 15:// Themes
 
-							themeValue = cell.getStringCellValue();
+							/*themeValue = cell.getStringCellValue();
 							Theme themeObj = null;
 							String Value = "";
 							String[] themes = CommonUtility.getValuesOfArray(
@@ -386,7 +410,7 @@ public class TwintechMapping implements IExcelParser {
 									themeList.add(themeObj);
 								}
 
-							}
+							}*/
 							break;
 						case 16: // Dimension1
 
@@ -549,7 +573,7 @@ public class TwintechMapping implements IExcelParser {
 							break;
 
 						case 37: // pricesPerUnit
-							priceCode = cell.getStringCellValue();
+					  	priceCode = cell.getStringCellValue();
 							break;
 						case 38:
 						case 39:
@@ -558,42 +582,54 @@ public class TwintechMapping implements IExcelParser {
 						case 42:
 
 						case 43:
-							pricesUnit = CommonUtility
+						/*	pricesUnit = CommonUtility
 									.getCellValueStrinOrInt(cell);
 							pricesPerUnit
 									.append(pricesUnit)
 									.append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 
-							break;
+*/							break;
 
 						case 44: //
-							quoteUponRequest = cell.getStringCellValue();
+					    	quoteUponRequest = cell.getStringCellValue();
 							break;
 
 						case 45: // priceIncludeClr
-
+							String Priceinclude1=cell.getStringCellValue();
+							 if(!StringUtils.isEmpty(Priceinclude1)){
+								 priceInclude=priceInclude.append(Priceinclude1).append(",");
+					          	}
 							break;
 						case 46: // PriceIncludeSide
-
+							String Priceinclude2=cell.getStringCellValue();
+							 if(!StringUtils.isEmpty(Priceinclude2)){
+								 priceInclude=priceInclude.append(Priceinclude2).append(","); 
+							 }
+							 
 							/*
 							 * ImprintOption=cell.getStringCellValue();
 							 * ImprintOptObj
 							 * =twintechProductAttributeObj.getImprintOption2
 							 * (ImprintOption); optionList.add(ImprintOptObj);
 							 */
-
 							break;
 
 						case 47: // PriceIncludeLoc
+							String Priceinclude3=cell.getStringCellValue();
+							 if(!StringUtils.isEmpty(Priceinclude3)){
+								 priceInclude=priceInclude.append(Priceinclude3);
+							 }
+							 priceIncludesValue= priceInclude.toString();
+							 
 							break;
 						case 48:// SetupChg
-							serviceCharge = CommonUtility
+						serviceCharge = CommonUtility
 									.getCellValueDouble(cell);
 
 							break;
 
 						case 49:// SetupChgCode
-							DiscountcodeUpcharge = CommonUtility
+				    	DiscountcodeUpcharge = CommonUtility
 									.getCellValueStrinOrInt(cell);
 
 							break;
@@ -658,7 +694,7 @@ public class TwintechMapping implements IExcelParser {
 
 							break;
 						case 70:// IsEnvironmentallyFriendly
-							String IsEnvironmentallyFriendly = cell
+						/*	String IsEnvironmentallyFriendly = cell
 									.getStringCellValue();
 
 							if (IsEnvironmentallyFriendly
@@ -668,7 +704,7 @@ public class TwintechMapping implements IExcelParser {
 								themeObj1.setName("Eco Friendly");
 
 								themeList.add(themeObj1);
-							}
+							}*/
 
 							break;
 						case 71:// IsNewProd
@@ -680,146 +716,128 @@ public class TwintechMapping implements IExcelParser {
 						case 73:// Exclusive
 
 							break;
-						case 74:// IsFood
+							
+						case 74:////Hazardous
+							break;
+							
+						case 75:////OfficiallyLicensed
+	
+							break;
+						case 76:// IsFood
 
 							break;
-						case 75: // IsClothing
+						case 77: // IsClothing
 
 							break;
 
-						case 76: // ImprintSize1
+						case 78: // ImprintSize1
 
 							break;
 
-						case 77: // ImprintSize1Units
+						case 79: // ImprintSize1Units
 	
 							break;
 
-						case 78: // ImprintSize1Type
+						case 80: // ImprintSize1Type
 
 							break;
 
-						case 79: // ImprintSize2
+						case 81: // ImprintSize2
 							
 							break;
 
-						case 80: // ImprintSize2Units
+						case 82: // ImprintSize2Units
 							
 							break;
 
-						case 81: // ImprintSize2Type
+						case 83: // ImprintSize2Type
 						
 							break;
-						case 82: // ImprintLoc
-							imprintValue = cell.getStringCellValue();
-							if (!StringUtils.isEmpty(imprintValue)) {
-							 AvailabilityValue=imprintValue;
-	
-							if(imprintValue.contains("X"))
-							{
-								imprintValue=imprintValue.replace("X", "x");	
+						case 84: // ImprintLoc
+							
+							String ImprintLocation=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(ImprintLocation)) {
+								locationObj.setValue(ImprintLocation);
+								listImprintLocation.add(locationObj);
+								productConfigObj.setImprintLocation(listImprintLocation);							
 							}
-							imprintValue=imprintValue.replaceAll("[^0-9|.x%/ ]", "");
-							if(imprintValue.contains("|")){	
-						     listImprintLocation=twintechProductAttributeObj
-											.getImprintMethodLocation(imprintValue);
-						     imprintSizeList=twintechProductAttributeObj
-										.getimprintsize(imprintValue);
-								productConfigObj.setImprintLocation(listImprintLocation);
-								productConfigObj.setImprintSize(imprintSizeList);
-						     
-
-							}else
-							{
-							imprintSizeList=twintechProductAttributeObj.getimprintsize(imprintValue);	
-							productConfigObj.setImprintSize(imprintSizeList);
-
-							}
-							}
-							if(AvailabilityValue.contains("|")){
-							    listOfAvailability=twintechProductAttributeObj
-						    	      	 .getAvaibilty(listImprintLocation,imprintSizeList);
-						     
-					    	  productExcelObj.setAvailability(listOfAvailability);
-					    	}
-							listOfAvailability = new ArrayList<Availability>();
+							
 							break;
 
-						case 83: // SecondImprintSize1
+						case 85: // SecondImprintSize1
 						
 							break;
 
-						case 84: // SecondImprintSize1Units
+						case 86: // SecondImprintSize1Units
 					
 
 							break;
 
-						case 85: // SecondImprintSize1Type
+						case 87: // SecondImprintSize1Type
 							
 
 							break;
 
-						case 86: // SecondImprintSize2
+						case 88: // SecondImprintSize2
 						
 							break;
 
-						case 87: // SecondImprintSize2Units
+						case 89: // SecondImprintSize2Units
 						
 							break;
 
-						case 88: // SecondImprintSize2Type
+						case 90: // SecondImprintSize2Type
 						
 							break;
-						case 89: // SecondImprintLoc
-							String imprintLocation2 = cell.getStringCellValue();
+						case 91: // SecondImprintLoc
+							/*String imprintLocation2 = cell.getStringCellValue();
 							if (!imprintLocation2.isEmpty()) {
 								ImprintLocation locationObj2 = new ImprintLocation();
 								locationObj2.setValue(imprintLocation2.trim());
 								listImprintLocation.add(locationObj2);
-							}
+							}*/
 
 							break;
 
-						case 90: // DecorationMethod
+						case 92: // DecorationMethod
 							decorationMethod = cell.getStringCellValue();
 							if (!StringUtils.isEmpty(decorationMethod)) {
 								listOfImprintMethods = twintechProductAttributeObj
 										.getImprintMethodValues(decorationMethod);
+							//	productConfigObj.setImprintMethods(listOfImprintMethods);
 							}
 
 							break;
-						case 91: // NoDecoration
+						case 93: // NoDecoration
 
 							break;
-						case 92: // NoDecorationOffered
+						case 94: // NoDecorationOffered
 
 							break;
-						case 93: // NewPictureURL
+						case 95: // NewPictureURL
 
 							break;
-						case 94: // NewPictureFile
+						case 96: // NewPictureFile
 
 							break;
-						case 95: // ErasePicture
+						case 97: // ErasePicture
 
 							break;
-						case 96: // NewBlankPictureURL
+						case 98: // NewBlankPictureURL
 
 							break;
-						case 97:// NewBlankPictureFile
+						case 99:// NewBlankPictureFile
 
 							break;
-						case 98: // EraseBlankPicture
+						case 100: // EraseBlankPicture
 
 							break;
-						case 99: // PicExists
-
-							break;
-						case 100: // NotPictured
+					
+						case 101: // NotPictured
 
 							break;
 
-						case 101:// MadeInCountry
+						case 102:// MadeInCountry
 							String madeInCountry = cell.getStringCellValue();
 							if (!madeInCountry.isEmpty()) {
 								List<Origin> listOfOrigin = twintechProductAttributeObj
@@ -828,11 +846,11 @@ public class TwintechMapping implements IExcelParser {
 							}
 
 							break;
-						case 102: // AssembledInCountry
+						case 103: // AssembledInCountry
 
 							break;
-						case 103: // DecoratedInCountry
-							String decoratedInCountry = cell
+						case 104: // DecoratedInCountry
+							/*String decoratedInCountry = cell
 									.getStringCellValue();
 							if (!decoratedInCountry.isEmpty()) {
 								decoratedInCountry = twintechProductAttributeObj
@@ -840,21 +858,27 @@ public class TwintechMapping implements IExcelParser {
 								productExcelObj
 										.setAdditionalProductInfo("Decorated country is: "
 												+ decoratedInCountry);
-							}
+							}*/
 							break;
-						case 104:// ComplianceList
+						case 105:// ComplianceList
+							String complnceValue=cell.getStringCellValue();
+							 if(!StringUtils.isEmpty(complnceValue))
+							   {
+						    	complianceList=roelProduct.getCompliancecert(complnceValue);
+						    	productExcelObj.setComplianceCerts(complianceList);
+							   }
+							
+							break;
+						case 106: // ComplianceMemo
 
 							break;
-						case 105: // ComplianceMemo
-
-							break;
-						case 106: // ProdTimeLo
+						case 107: // ProdTimeLo
 							prodTimeLo = CommonUtility
 									.getCellValueStrinOrInt(cell);
 
 							break;
 
-						case 107:// ProdTimeHi
+						case 108:// ProdTimeHi
 							String prodTimeHi = CommonUtility
 									.getCellValueStrinOrInt(cell);
 							ProductionTime productionTime = new ProductionTime();
@@ -870,14 +894,14 @@ public class TwintechMapping implements IExcelParser {
 								listOfProductionTime.add(productionTime);
 							}
 							break;
-						case 108:// RushProdTimeLo
+						case 109:// RushProdTimeLo
 							rushProdTimeLo = cell.getStringCellValue();
 
 							break;
 
-						case 109:// RushProdTimeHi
+						case 110:// RushProdTimeHi
 							String rushProdTimeH = cell.getStringCellValue();
-							if (!rushProdTimeH
+							if (!rushProdTimeLo
 									.equals(ApplicationConstants.CONST_STRING_ZERO)) {
 								rushTime = twintechProductAttributeObj
 										.getRushTimeValues(rushProdTimeLo,
@@ -886,63 +910,62 @@ public class TwintechMapping implements IExcelParser {
 
 							break;
 
-						case 110: // Packaging
+						case 111: // Packaging
 							String pack = cell.getStringCellValue();
 							List<Packaging> listOfPackaging = twintechProductAttributeObj
 									.getPackageValues(pack);
 							productConfigObj.setPackaging(listOfPackaging);
 
 							break;
-						case 111:// CartonL
+						case 112:// CartonL
 							cartonL = CommonUtility
 									.getCellValueStrinOrInt(cell);
 
 							break;
 
-						case 112:// CartonW
+						case 113:// CartonW
 							cartonW = CommonUtility
 									.getCellValueStrinOrInt(cell);
 
 							break;
-						case 113: // CartonH
+						case 114: // CartonH
 							cartonH = CommonUtility
 									.getCellValueStrinOrInt(cell);
 
 							break;
-						case 114: // WeightPerCarton
+						case 115: // WeightPerCarton
 							weightPerCarton = CommonUtility
 									.getCellValueStrinOrInt(cell);
 
 							break;
 
-						case 115: // UnitsPerCarton
+						case 116: // UnitsPerCarton
 							unitsPerCarton = CommonUtility
 									.getCellValueStrinOrInt(cell);
 							break;
 
-						case 116: // ShipPointCountry
+						case 117: // ShipPointCountry
 
 							break;
 
-						case 117: // ShipPointZip
+						case 118: // ShipPointZip
 							String FOBValue = CommonUtility
 									.getCellValueStrinOrInt(cell);
 							// List<String>fobLookupList =
 							// lookupServiceDataObj.getFobPoints(FOBLooup);
-							if (FOBValue.contains("90720")) {
-								fobPintObj
-										.setName("Los Alamitos, CA 90720 USA");
+							if (FOBValue.contains(/*"90720"*/"12901")) {
+								fobPintObj.setName(/*"Los Alamitos, CA 90720 USA"*/"Plattsburg, NY 12901 USA");
 								FobPointsList.add(fobPintObj);
 								productExcelObj.setFobPoints(FobPointsList);
 							}
 
 							break;
 
-						case 118: // Comment
+						case 119: // Comment
 
 							break;
 
-						case 119: // Verified
+						case 120: // Verified
 							String verified = cell.getStringCellValue();
 							if (verified.equalsIgnoreCase("True")) {
 								String priceConfimedThruString = "2017-12-31T00:00:00";
@@ -951,17 +974,17 @@ public class TwintechMapping implements IExcelParser {
 							}
 
 							break;
-						case 120: // UpdateInventory
+						case 121: // UpdateInventory
 
 							break;
-						case 121: // InventoryOnHand
+						case 122: // InventoryOnHand
 
 							break;
-						case 122: // InventoryOnHandAdd
+						case 123: // InventoryOnHandAdd
 
 							break;
 
-						case 123: // InventoryMemo
+						case 124: // InventoryMemo
 
 							break;
 
@@ -982,7 +1005,7 @@ public class TwintechMapping implements IExcelParser {
 								productName, "", priceGrids);
 					}
 
-					productConfigObj.setImprintMethods(listOfImprintMethods);
+				productConfigObj.setImprintMethods(listOfImprintMethods);
 
 					if (!StringUtils.isEmpty(serviceCharge)) {
 						for (int i = 0; i < listOfImprintMethods.size(); i++) {
@@ -1055,12 +1078,12 @@ public class TwintechMapping implements IExcelParser {
 
 			listOfQuantity = new StringBuilder();
 			listOfPrices = new StringBuilder();
-			pricesPerUnit = new StringBuilder();
+			//pricesPerUnit = new StringBuilder();
 			dimensionValue = new StringBuilder();
 			dimensionUnits = new StringBuilder();
 			dimensionType = new StringBuilder();
 			priceGrids = new ArrayList<PriceGrid>();
-			imprintSizeList = new ArrayList<ImprintSize>();
+		//	imprintSizeList = new ArrayList<ImprintSize>();
 			listImprintLocation = new ArrayList<ImprintLocation>();
 			listOfImprintMethods = new ArrayList<ImprintMethod>();
 			listOfProductionTime = new ArrayList<ProductionTime>();
@@ -1069,7 +1092,8 @@ public class TwintechMapping implements IExcelParser {
 			valuesList = new ArrayList<Values>();
 			FobPointsList = new ArrayList<FOBPoint>();
 			color = new ArrayList<Color>();
-			listOfAvailability = new ArrayList<Availability>();
+			priceInclude = new StringBuilder();
+		//	listOfAvailability = new ArrayList<Availability>();
 			finalDimensionObj = new Dimension();
 			size = new Size();
 			fobPintObj = new FOBPoint();
@@ -1120,6 +1144,14 @@ public class TwintechMapping implements IExcelParser {
 	public void setTwintechProductAttributeObj(
 			TwintechProductAttributeParser twintechProductAttributeObj) {
 		this.twintechProductAttributeObj = twintechProductAttributeObj;
+	}
+	
+	public RoelProductAttributeParser getRoelProduct() {
+		return roelProduct;
+	}
+
+	public void setRoelProduct(RoelProductAttributeParser roelProduct) {
+		this.roelProduct = roelProduct;
 	}
 
 	public PostServiceImpl getPostServiceImpl() {
