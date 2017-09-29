@@ -157,7 +157,7 @@ public class ExcelFactory {
 	      else if(name.equalsIgnoreCase("pslcad") || name.equals("90345")){
 		      return pslcadMapping;
 	      }
-	      else if(name.equalsIgnoreCase("twintech") || name.equals(/*"92357"*/"83140")){
+	      else if(name.equalsIgnoreCase("twintech") || name.equals("83140")){///*"92357"*/
 		      return twintechMapping;
 	      } else if(name.equalsIgnoreCase("alfa") || name.equals("34042")){
 	    	  return alfaMapping;

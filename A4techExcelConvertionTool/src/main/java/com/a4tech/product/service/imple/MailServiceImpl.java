@@ -132,17 +132,11 @@ public class MailServiceImpl implements IMailService{
 			   _LOGGER.error("Process Status Mail Not Sent Successfully,Error Msg:"+e.toString());
 			}
 	}
-	public String getSenderMailName() {
-		return senderMailName;
-	}
-	public void setSenderMailName(String senderMailName) {
-		this.senderMailName = senderMailName;
-	}
 	@Override
 	public void ftpServerFailure() {
 		try {
 		      MimeMessage mimeMessage = mailSender.createMimeMessage();
-		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false);
 		      helper.setFrom(senderMailName);
 		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
 		    		  "amey.more@a4technology.com"};
@@ -192,5 +186,10 @@ public class MailServiceImpl implements IMailService{
 			   _LOGGER.error("Process Status Mail Not Sent Successfully,Error Msg:"+e.toString());
 			}
 	}
-	
+	public String getSenderMailName() {
+		return senderMailName;
+	}
+	public void setSenderMailName(String senderMailName) {
+		this.senderMailName = senderMailName;
+	}
 }
