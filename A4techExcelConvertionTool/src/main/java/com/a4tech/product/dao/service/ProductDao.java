@@ -96,7 +96,7 @@ public class ProductDao implements IProductDao{
 			batchId = (int) session.save(batchEntity);
 			tx.commit();
 		}catch(Exception ex){
-			_LOGGER.error("unable to insert batch ids");
+			_LOGGER.error("unable to insert batch ids: "+ex.getCause());
 			if(tx != null){
 				tx.rollback();
 			}	

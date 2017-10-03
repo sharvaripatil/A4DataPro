@@ -94,6 +94,7 @@ public class BayStateMapping implements IExcelParser{
 		 Set<String> productNumbersAndColors = new HashSet<>();
 		 String productNumber = "";
 		 String color = "";
+		 StringBuilder colorsList = new StringBuilder();
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
@@ -126,10 +127,14 @@ public class BayStateMapping implements IExcelParser{
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
 							     
-						   productExcelObj.setSummary(productSummary.toString());
+						   productExcelObj.setSummary(CommonUtility.getStringLimitedChars(productSummary.toString(), 130));
 						     /*if(priceGrids.size() == 1){
 						    	 priceGrids = removeBasePriceConfig(priceGrids);
 						     }*/
+						   if(!StringUtils.isEmpty(colorsList.toString())){
+							   List<Color> productColors = bayStateParser.getProductColor(colorsList.toString());
+							   productConfigObj.setColors(productColors);
+						   }
 						     productConfigObj.setImprintMethods(imprintMethodList);
 									ShippingEstimate shippingEst = bayStateParser.getProductShipping(shippingDimension,
 											shippingWeight);
@@ -171,6 +176,7 @@ public class BayStateMapping implements IExcelParser{
 								  productNumbersAndColors = new HashSet<>();
 								  productNumber = "";
 								  color = "";
+								  colorsList = new StringBuilder();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -194,10 +200,13 @@ public class BayStateMapping implements IExcelParser{
 					 }*/
 					if(productXids.contains(xid) && repeatRows.size() != 0){
 						String values = productNumber + ":"+color;
-						 productNumbersAndColors.add(values);
+						if(!StringUtils.isEmpty(color)){
+							productNumbersAndColors.add(values);
+						}
 						 if(isRepeateColumn(columnIndex+1)){
 							 continue;
 						 }
+						 color = "";
 					}
 				}
 				
@@ -211,6 +220,9 @@ public class BayStateMapping implements IExcelParser{
 					  break;
 				case 3:// Name
 					String name = cell.getStringCellValue();
+					if(name.contains("|")){
+						name = name.replaceAll("\\|", "");
+					}
 					productExcelObj.setName(name);
 				    break;
 				case 4:// description
@@ -242,8 +254,7 @@ public class BayStateMapping implements IExcelParser{
 						 List<Option> productOption = bayStateParser.getProductOptions(color, "Product");
 						 productConfigObj.setOptions(productOption);
 					 } else {
-						 List<Color> productColors = bayStateParser.getProductColor(color);
-						 productConfigObj.setColors(productColors);
+						 colorsList.append(color).append(",");
 					 }
 				 }
 					break;
@@ -469,13 +480,17 @@ public class BayStateMapping implements IExcelParser{
 		}
 		workbook.close();
 		
-		productExcelObj.setSummary(productSummary.toString());
+		productExcelObj.setSummary(CommonUtility.getStringLimitedChars(productSummary.toString(), 130));
 	     /*if(priceGrids.size() == 1){
 	    	 priceGrids = removeBasePriceConfig(priceGrids);
 	     }*/
 	     productConfigObj.setImprintMethods(imprintMethodList);
 				ShippingEstimate shippingEst = bayStateParser.getProductShipping(shippingDimension,
 						shippingWeight);
+				if(!StringUtils.isEmpty(colorsList.toString())){
+					   List<Color> productColors = bayStateParser.getProductColor(colorsList.toString());
+					   productConfigObj.setColors(productColors);
+				   }
 				productConfigObj.setShippingEstimates(shippingEst);
 				if(!CollectionUtils.isEmpty(productNumbersAndColors)){
 					List<ProductNumber> listOfProductNumbers = bayStateParser.getProductNumbers(productNumbersAndColors);
@@ -534,10 +549,13 @@ public class BayStateMapping implements IExcelParser{
 	}
 	
 	public boolean isRepeateColumn(int columnIndex){
-		if (columnIndex != 3  && columnIndex != 6
+		/*if (columnIndex != 3  && columnIndex != 6
 				&& columnIndex != 8 && columnIndex != 10 && columnIndex != 11) {
 				return ApplicationConstants.CONST_BOOLEAN_TRUE;
-			}
+			}*/
+		if (columnIndex != 2  && columnIndex != 8){
+			return ApplicationConstants.CONST_BOOLEAN_TRUE;
+		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
 	private List<PriceGrid> removeBasePriceConfig(List<PriceGrid> oldPriceGrid){

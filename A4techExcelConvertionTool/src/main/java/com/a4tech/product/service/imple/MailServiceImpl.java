@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.util.StringUtils;
 
 import com.a4tech.product.service.IMailService;
 import com.a4tech.util.ApplicationConstants;
@@ -91,7 +92,7 @@ public class MailServiceImpl implements IMailService{
 			/*String[] ccAddress = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
 					"amey.more@a4technology.com","azam.rizvi@a4technology.com" };*/
 			//helper.setTo(toAddress); 
-			helper.setTo("SPullins@asicentral.com");
+//			helper.setTo("SPullins@asicentral.com");
 			helper.setBcc(bccmails);
 		      helper.setSubject(subject);
 		      helper.setText(body);
@@ -118,7 +119,7 @@ public class MailServiceImpl implements IMailService{
 		      String[] bccmails = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
 				"amey.more@a4technology.com"};
 		     // helper.setTo(toAddress);
-		      helper.setTo("SPullins@asicentral.com");
+	//	      helper.setTo("SPullins@asicentral.com");
 		      helper.setBcc(bccmails);
 		      helper.setSubject(subject);
 		      helper.setText(body);
@@ -185,6 +186,45 @@ public class MailServiceImpl implements IMailService{
 			 }catch (Exception e) {
 			   _LOGGER.error("Process Status Mail Not Sent Successfully,Error Msg:"+e.toString());
 			}
+	}
+	@Override
+	public void numberOfFileProcess(String subject,String fileNames) {
+		try {
+		      MimeMessage mimeMessage = mailSender.createMimeMessage();
+		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		      helper.setFrom(senderMailName);
+		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
+		    		  "amey.more@a4technology.com"};
+			/*String[] ccAddress = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
+					"amey.more@a4technology.com","azam.rizvi@a4technology.com" };*/
+			helper.setTo(toAddress); 
+			//helper.setTo("SPullins@asicentral.com");
+		      helper.setSubject(subject);
+		      if(StringUtils.isEmpty(fileNames)){
+		    	  helper.setText("Hi Team,"
+				      		+ "\n\n"
+				      		+ "There is no files in FTP Server"
+				      		+ "\n\n\nThanks & Regards,"
+				      				+ "\nA4DataPro Process System");
+		      } else {
+		    	  helper.setText("Hi Team,"
+				      		+ "\n\n"
+				      		+ "Following files are processing "
+				      		+ "\n"
+				      		+ fileNames
+				      				+ "\n\n\nThanks & Regards,"
+				      				+ "\nA4DataPro Process System");  
+		      }
+		      
+			_LOGGER.info("Sending Email to : "+ Arrays.toString(toAddress));
+			   mailSender.send(mimeMessage);
+		       _LOGGER.info("Process Status Mail Sent Successfully !!!");
+		      } catch (MessagingException e) {
+			    _LOGGER.error("Process Status Mail Not Sent Successfully,Error Msg:"+e.toString());
+			 }catch (Exception e) {
+			   _LOGGER.error("Process Status Mail Not Sent Successfully,Error Msg:"+e.toString());
+			}
+		
 	}
 	public String getSenderMailName() {
 		return senderMailName;

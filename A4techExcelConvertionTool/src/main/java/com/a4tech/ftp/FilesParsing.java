@@ -217,6 +217,8 @@ public class FilesParsing {
 				_LOGGER.error("File is not available:: " + e);
 			} catch (IOException e) {
 				_LOGGER.error("unable to convert Csv into excel: " + e);
+			} catch (Exception e) {
+				_LOGGER.error("unable to convert Csv into excel: " + e);
 			}
 			return null;
 		}

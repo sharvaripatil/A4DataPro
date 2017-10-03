@@ -7,5 +7,6 @@ public interface IMailService {
 	public void     fileProcessCompleted(String body,String subject,int batchNo);
 	public void     ftpServerFailure();
 	public void     fileProcessFail(String fileName);
+	public void     numberOfFileProcess(String subject,String fileNames);
 
 }

@@ -72,6 +72,9 @@ public class BayStateParser {
 		  Color colorObj = null;
 		  String[] productcolors = CommonUtility.getValuesOfArray(colors, ",");
 		  for (String colorName : productcolors) {
+			  if(StringUtils.isEmpty(colorName)){
+				  continue;
+			  }
 			  colorObj = new Color();
 			  String colorGroup = BayStateColorAndMaterialMapping.getColorGroup(colorName);
 			  if(colorGroup.contains("Combo")){
