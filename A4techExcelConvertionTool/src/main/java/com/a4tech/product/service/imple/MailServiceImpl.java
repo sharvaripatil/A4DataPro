@@ -68,7 +68,6 @@ public class MailServiceImpl implements IMailService{
 				"amey.more@a4technology.com" };
 */		     // helper.setCc(toAddress);
 		      helper.setCc(toAddress);
-		      //helper.setTo("SPullins@asicentral.com");
 		      helper.setSubject(subject);
 		      helper.setText(body);
 		      helper.setPriority(ApplicationConstants.CONST_INT_VALUE_ONE);
@@ -92,7 +91,7 @@ public class MailServiceImpl implements IMailService{
 			/*String[] ccAddress = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
 					"amey.more@a4technology.com","azam.rizvi@a4technology.com" };*/
 			//helper.setTo(toAddress); 
-//			helper.setTo("SPullins@asicentral.com");
+             helper.setTo("SPullins@asicentral.com");
 			helper.setBcc(bccmails);
 		      helper.setSubject(subject);
 		      helper.setText(body);
@@ -119,7 +118,7 @@ public class MailServiceImpl implements IMailService{
 		      String[] bccmails = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
 				"amey.more@a4technology.com"};
 		     // helper.setTo(toAddress);
-	//	      helper.setTo("SPullins@asicentral.com");
+              helper.setTo("SPullins@asicentral.com");
 		      helper.setBcc(bccmails);
 		      helper.setSubject(subject);
 		      helper.setText(body);
@@ -168,11 +167,8 @@ public class MailServiceImpl implements IMailService{
 		      helper.setFrom(senderMailName);
 		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
 		    		  "amey.more@a4technology.com"};
-			/*String[] ccAddress = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
-					"amey.more@a4technology.com","azam.rizvi@a4technology.com" };*/
 			helper.setTo(toAddress); 
-			//helper.setTo("SPullins@asicentral.com");
-		      helper.setSubject("Suppliler File Not Processed "+fileName);
+		    helper.setSubject("Suppliler File Not Processed "+fileName);
 		      helper.setText("Hi Team,"
 		      		+ "\n\n"
 		      		+ fileName + "Supplier file not processed,Please check the log."
@@ -195,11 +191,8 @@ public class MailServiceImpl implements IMailService{
 		      helper.setFrom(senderMailName);
 		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
 		    		  "amey.more@a4technology.com"};
-			/*String[] ccAddress = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
-					"amey.more@a4technology.com","azam.rizvi@a4technology.com" };*/
 			helper.setTo(toAddress); 
-			//helper.setTo("SPullins@asicentral.com");
-		      helper.setSubject(subject);
+		    helper.setSubject(subject);
 		      if(StringUtils.isEmpty(fileNames)){
 		    	  helper.setText("Hi Team,"
 				      		+ "\n\n"
@@ -224,7 +217,6 @@ public class MailServiceImpl implements IMailService{
 			 }catch (Exception e) {
 			   _LOGGER.error("Process Status Mail Not Sent Successfully,Error Msg:"+e.toString());
 			}
-		
 	}
 	public String getSenderMailName() {
 		return senderMailName;
