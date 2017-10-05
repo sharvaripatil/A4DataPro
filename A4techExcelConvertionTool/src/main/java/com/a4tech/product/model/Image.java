@@ -27,9 +27,10 @@ public class Image implements Comparator<Image>{
     private Boolean isvirtualized;
     @JsonProperty("Description")
     private String description;
-    
+    @JsonProperty("MediaTags")
+    private List<String> mediaTags;
 
-    public List<Configurations> getConfigurations() {
+	public List<Configurations> getConfigurations() {
 		return configurations;
 	}
 
@@ -82,7 +83,14 @@ public class Image implements Comparator<Image>{
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	@JsonProperty("MediaTags")
+    public List<String> getMediaTags() {
+		return mediaTags;
+	}
+    @JsonProperty("MediaTags")
+	public void setMediaTags(List<String> mediaTags) {
+		this.mediaTags = mediaTags;
+	}
 	@Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);

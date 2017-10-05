@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.util.StringUtils;
 
 import com.a4tech.product.service.IMailService;
 import com.a4tech.util.ApplicationConstants;
@@ -61,9 +62,12 @@ public class MailServiceImpl implements IMailService{
 		      MimeMessage mimeMessage = mailSender.createMimeMessage();
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 		      helper.setFrom(senderMailName);
-		     // String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com","azam.rizvi@a4technology.com"};
-		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com"};
-		      helper.setTo(toAddress);
+		     String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com",
+		    		 "sharvari.patil@a4technology.com","amey.more@a4technology.com"};
+/*		      String[] toAddress = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
+				"amey.more@a4technology.com" };
+*/		     // helper.setCc(toAddress);
+		      helper.setCc(toAddress);
 		      helper.setSubject(subject);
 		      helper.setText(body);
 		      helper.setPriority(ApplicationConstants.CONST_INT_VALUE_ONE);
@@ -80,15 +84,18 @@ public class MailServiceImpl implements IMailService{
 	public void fileProcessStart(String body,String subject) {
 		try {
 		      MimeMessage mimeMessage = mailSender.createMimeMessage();
-		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false);
 		      helper.setFrom(senderMailName);
-		     /* String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
-		    		  "azam.rizvi@a4technology.com","amey.more@a4technology.com"};*/
-		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com"};
-		      helper.setTo(toAddress);
+		      String[] bccmails = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
+		    		  "amey.more@a4technology.com"};
+			/*String[] ccAddress = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
+					"amey.more@a4technology.com","azam.rizvi@a4technology.com" };*/
+			//helper.setTo(toAddress); 
+             helper.setTo("SPullins@asicentral.com");
+			helper.setBcc(bccmails);
 		      helper.setSubject(subject);
 		      helper.setText(body);
-			_LOGGER.info("Sending Email to : "+ Arrays.toString(toAddress));
+			_LOGGER.info("Sending Email to : "+ Arrays.toString(bccmails));
 			   mailSender.send(mimeMessage);
 		       _LOGGER.info("Process Status Mail Sent Successfully !!!");
 		      } catch (MessagingException e) {
@@ -108,11 +115,100 @@ public class MailServiceImpl implements IMailService{
 		      helper.setFrom(senderMailName);
 		      /*String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
 		    		  "azam.rizvi@a4technology.com","amey.more@a4technology.com"};*/
-		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com"};
-		      helper.setTo(toAddress);
+		      String[] bccmails = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
+				"amey.more@a4technology.com"};
+		     // helper.setTo(toAddress);
+              helper.setTo("SPullins@asicentral.com");
+		      helper.setBcc(bccmails);
 		      helper.setSubject(subject);
 		      helper.setText(body);
 		      helper.addAttachment(file.getFilename(), file);
+			_LOGGER.info("Sending Email to : "+ Arrays.toString(bccmails));
+			   mailSender.send(mimeMessage);
+		       _LOGGER.info("Process Status Mail Sent Successfully !!!");
+		      } catch (MessagingException e) {
+			    _LOGGER.error("Process Status Mail Not Sent Successfully,Error Msg:"+e.toString());
+			 }catch (Exception e) {
+			   _LOGGER.error("Process Status Mail Not Sent Successfully,Error Msg:"+e.toString());
+			}
+	}
+	@Override
+	public void ftpServerFailure() {
+		try {
+		      MimeMessage mimeMessage = mailSender.createMimeMessage();
+		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false);
+		      helper.setFrom(senderMailName);
+		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
+		    		  "amey.more@a4technology.com"};
+			helper.setTo(toAddress); 
+		    helper.setSubject("FTP Server is Down/Not Working");
+		      helper.setText("Hi Team,"
+		      		+ "\n\n\n"
+		      		+ "FTP Server is not working,Kindly check in server side"
+		      		+ "\n\n\n\n\n\n"
+		      		+ "Thanks & Regards,"
+		      		+ "A4DataPro Team"
+		      		+ "\n\n"
+		      		+ "Note: This is Computer Generated Mail. No need to reply.*");
+			_LOGGER.info("Sending Email to : "+ Arrays.toString(toAddress));
+			   mailSender.send(mimeMessage);
+		       _LOGGER.info("FTP Server failure mail has been sent Successfully !!!");
+		      } catch (MessagingException e) {
+			    _LOGGER.error("FTP Server failure mail Not Sent Successfully,Error Msg:"+e.toString());
+			 }catch (Exception e) {
+			   _LOGGER.error("FTP Server failure mail Not Sent Successfully,Error Msg:"+e.toString());
+			}		
+	}
+	@Override
+	public void fileProcessFail(String fileName) {
+		try {
+		      MimeMessage mimeMessage = mailSender.createMimeMessage();
+		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		      helper.setFrom(senderMailName);
+		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
+		    		  "amey.more@a4technology.com"};
+			helper.setTo(toAddress); 
+		    helper.setSubject("Suppliler File Not Processed "+fileName);
+		      helper.setText("Hi Team,"
+		      		+ "\n\n"
+		      		+ fileName + "Supplier file not processed,Please check the log."
+		      				+ "\n\n\nThanks & Regards,"
+		      				+ "\nA4DataPro Process System");
+			_LOGGER.info("Sending Email to : "+ Arrays.toString(toAddress));
+			   mailSender.send(mimeMessage);
+		       _LOGGER.info("Process Status Mail Sent Successfully !!!");
+		      } catch (MessagingException e) {
+			    _LOGGER.error("Process Status Mail Not Sent Successfully,Error Msg:"+e.toString());
+			 }catch (Exception e) {
+			   _LOGGER.error("Process Status Mail Not Sent Successfully,Error Msg:"+e.toString());
+			}
+	}
+	@Override
+	public void numberOfFileProcess(String subject,String fileNames) {
+		try {
+		      MimeMessage mimeMessage = mailSender.createMimeMessage();
+		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		      helper.setFrom(senderMailName);
+		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
+		    		  "amey.more@a4technology.com"};
+			helper.setTo(toAddress); 
+		    helper.setSubject(subject);
+		      if(StringUtils.isEmpty(fileNames)){
+		    	  helper.setText("Hi Team,"
+				      		+ "\n\n"
+				      		+ "There is no files in FTP Server"
+				      		+ "\n\n\nThanks & Regards,"
+				      				+ "\nA4DataPro Process System");
+		      } else {
+		    	  helper.setText("Hi Team,"
+				      		+ "\n\n"
+				      		+ "Following files are processing "
+				      		+ "\n"
+				      		+ fileNames
+				      				+ "\n\n\nThanks & Regards,"
+				      				+ "\nA4DataPro Process System");  
+		      }
+		      
 			_LOGGER.info("Sending Email to : "+ Arrays.toString(toAddress));
 			   mailSender.send(mimeMessage);
 		       _LOGGER.info("Process Status Mail Sent Successfully !!!");
@@ -128,5 +224,4 @@ public class MailServiceImpl implements IMailService{
 	public void setSenderMailName(String senderMailName) {
 		this.senderMailName = senderMailName;
 	}
-	
 }

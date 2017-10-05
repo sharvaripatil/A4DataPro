@@ -32,7 +32,7 @@ public class ConvertCsvToExcel {
 			int rownum = 0;
 			for (; (nextLine = reader.readNext()) != null; rownum++) {
 				Row row = sheet.createRow(rownum);
-				for (int cellNum = 0; cellNum < 38; cellNum++) {
+				for (int cellNum = 0; cellNum < nextLine.length; cellNum++) {
 					Cell cell = row.createCell(cellNum);
 					cell.setCellValue(nextLine[cellNum]);
 				}

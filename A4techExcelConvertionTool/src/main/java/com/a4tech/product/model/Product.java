@@ -145,7 +145,11 @@ public class Product {
     @JsonProperty("RelatedProducts")
     @XmlElement(name="RelatedProducts")
     private List<RelatedProduct> relatedProducts;
-	
+    @JsonProperty("TaxCode")
+    private String taxCode;
+    @JsonProperty("ProductType")
+	private String productType;
+    
 	public Inventory getInventory() {
 		return inventory;
 	}
@@ -535,6 +539,22 @@ public class Product {
 
 	public void setRelatedProducts(List<RelatedProduct> relatedProducts) {
 		this.relatedProducts = relatedProducts;
+	}
+
+	public String getTaxCode() {
+		return taxCode;
+	}
+
+	public void setTaxCode(String taxCode) {
+		this.taxCode = taxCode;
+	}
+
+	public String getProductType() {
+		return productType;
+	}
+
+	public void setProductType(String productType) {
+		this.productType = productType;
 	}
 
 

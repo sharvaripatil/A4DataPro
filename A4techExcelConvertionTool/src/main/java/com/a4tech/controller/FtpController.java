@@ -15,6 +15,7 @@ import com.a4tech.ftp.model.FtpFileUploadBean;
 import com.a4tech.ftp.model.FtpLoginBean;
 import com.a4tech.ftp.service.FtpService;
 import com.a4tech.product.service.ILoginService;
+import com.a4tech.product.service.IProductDao;
 import com.a4tech.util.ApplicationConstants;
 
 @RestController
@@ -24,6 +25,8 @@ public class FtpController {
 	private ILoginService loginService;
 	@Autowired
 	private FtpService ftpServices;
+	@Autowired
+	private IProductDao productDao;
 	@RequestMapping(value="ftpLogin")
 	public ModelAndView welcomeFtpLogin(){
 		return new ModelAndView("ftpLogin", "ftpLoginBean", new FtpLoginBean());	
@@ -42,6 +45,9 @@ public class FtpController {
 						                                     ApplicationConstants.CONST_STRING_EMPTY);
 				return new ModelAndView("ftpLogin", "ftpLoginBean", new FtpLoginBean());	
 			}
+		if(productDao.isASINumberAvailable(ftpLogin.getAsiNumber())){
+			productDao.saveSupplierCridentials(ftpLogin);
+		}
 		} else {
 			return new ModelAndView("ftpLogin", "ftpLoginBean", new FtpLoginBean());	
 		}
@@ -61,6 +67,10 @@ public class FtpController {
 			FtpFileUploadBean ftpFileUploadBean = new FtpFileUploadBean();
 			ftpFileUploadBean.setAsiNumber(asiNumber);
 			return new ModelAndView("fileUpload", "ftpFileUploadBean", ftpFileUploadBean);
+		}
+		if(StringUtils.isEmpty(asiNumber)){
+			model.addAttribute("invalidAsiNum", "");
+			return new ModelAndView("fileUpload", "ftpFileUploadBean", new FtpFileUploadBean());
 		}
 		/*if(StringUtils.isEmpty(asiNumber)){
 			model.addAttribute("invalidAsiNum", "");
