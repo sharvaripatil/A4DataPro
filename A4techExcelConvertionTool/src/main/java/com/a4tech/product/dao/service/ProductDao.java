@@ -23,21 +23,23 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.core.errors.ErrorMessage;
 import com.a4tech.core.model.ExternalAPIResponse;
+import com.a4tech.ftp.model.FtpLoginBean;
 import com.a4tech.product.dao.entity.BatchEntity;
 import com.a4tech.product.dao.entity.ErrorEntity;
 import com.a4tech.product.dao.entity.FtpServerFileEntity;
 import com.a4tech.product.dao.entity.ProductEntity;
 import com.a4tech.product.dao.entity.SupplierLoginDetails;
+import com.a4tech.product.service.IProductDao;
 import com.a4tech.util.ApplicationConstants;
 
 
-public class ProductDao {
+public class ProductDao implements IProductDao{
 	
 	private static Logger _LOGGER = Logger.getLogger(ProductDao.class);
 	
 	SessionFactory sessionFactory;
-	String errorFileLocPath;
-	
+	String 		  errorFileLocPath;
+	@Override
 	public void save(ExternalAPIResponse errors ,String productNo ,Integer asiNumber){
 		_LOGGER.info("Enter the DAO class");
 		Set<ErrorEntity>  listErrorEntity = new HashSet<ErrorEntity>();
@@ -76,13 +78,11 @@ public class ProductDao {
 				session.close();
 			}catch(Exception ex){
 				_LOGGER.warn("Error while close session object");
-			}
-			
+			}	
 		}
 	}	
-		
 	}
-	
+	@Override
 	public int createBatchId(int asiNumber){
 		_LOGGER.info("Inside batch Id method");
 		Session session = null;
@@ -96,7 +96,7 @@ public class ProductDao {
 			batchId = (int) session.save(batchEntity);
 			tx.commit();
 		}catch(Exception ex){
-			_LOGGER.error("unable to insert batch ids");
+			_LOGGER.error("unable to insert batch ids: "+ex.getCause());
 			if(tx != null){
 				tx.rollback();
 			}	
@@ -112,21 +112,7 @@ public class ProductDao {
 		
 		return batchId;
 	}
-	public SessionFactory getSessionFactory() {
-		return sessionFactory;
-	}
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-
-	public String getErrorFileLocPath() {
-		return errorFileLocPath;
-	}
-
-	public void setErrorFileLocPath(String errorFileLocPath) {
-		this.errorFileLocPath = errorFileLocPath;
-	}
-	
+	@Override
 	public void save(List<ErrorMessage> errors ,String productNo ,Integer asiNumber,int batchId){
 		_LOGGER.info("Enter the DAO class ");
 		Session session = null;
@@ -148,7 +134,9 @@ public class ProductDao {
 				productEntity.addErrorEntity(errorEntity);	  
 		}
 		if(flag){
-			productNo=productNo+"-Failed:";
+			productNo=productNo+"-Failed: ";
+		}else{
+			productNo=productNo+"-Saved Successfully: ";
 		}
 		productEntity.setSupplierAsiNumber(asiNumber);
 		productEntity.setProductNo(productNo);
@@ -233,13 +221,13 @@ public class ProductDao {
 			}
 		}
 	}
-	
+	@Override
 	public String getFtpFileProcessStatus(String fileName,String asiNumber){
 		  Session session = null;
-		  Transaction transaction = null;
+		  //Transaction transaction = null;
 		  try{
 			  session = sessionFactory.openSession();
-			  transaction = session.beginTransaction();
+			 // transaction = session.beginTransaction();
 			  Criteria criteria = session.createCriteria(FtpServerFileEntity.class);
 	            criteria.add(Restrictions.eq("fileName", fileName));
 	            criteria.setProjection(Projections.property("fileStatus"));
@@ -260,7 +248,7 @@ public class ProductDao {
 		  }
 		  return null;
 	}
-	
+	@Override
 	public void updateFtpFileStatus(String fileName,String asiNumber,String fileStatus){
 		   Session session = null;
 		   Transaction transaction  = null;
@@ -289,13 +277,13 @@ public class ProductDao {
 			    }
 		   }
 	}
-	
+	@Override
 	public SupplierLoginDetails getSupplierLoginDetails(String asiNumber){
 		  Session session = null;
-		  Transaction transaction = null;
+		 // Transaction transaction = null;
 		  try{
 			  session = sessionFactory.openSession();
-			  transaction = session.beginTransaction();
+			//  transaction = session.beginTransaction();
 			  Criteria criteria = session.createCriteria(SupplierLoginDetails.class);
 	            criteria.add(Restrictions.eq("asiNumber", asiNumber));
 	            SupplierLoginDetails data =  (SupplierLoginDetails) criteria.uniqueResult();
@@ -313,4 +301,57 @@ public class ProductDao {
 		  }
 		  return null;
 	}
+	@Override
+	public void saveSupplierCridentials(FtpLoginBean ftpLoginBean){
+		  Session session = null;
+		  Transaction transaction = null;
+		  SupplierLoginDetails loginDetails = new SupplierLoginDetails();
+		  try{
+			  session = sessionFactory.openSession();
+			  transaction = session.beginTransaction();
+			  loginDetails.setAsiNumber(ftpLoginBean.getAsiNumber());
+			  loginDetails.setUserName(ftpLoginBean.getUserName());
+			  loginDetails.setPassword(ftpLoginBean.getPassword());
+			  session.save(loginDetails);
+			  transaction.commit();
+		  }catch(Exception exce){
+			  _LOGGER.error("unable to save supplier cridentials::"+exce.getMessage());
+			  if(transaction != null){
+				  transaction.rollback();
+			  }
+		  }finally{
+			  if(session != null){
+				  try{
+					  session.close();
+				  }catch(Exception exce){
+					  _LOGGER.error("unable to close session connection: "+exce.getMessage());
+				  }
+			  }
+		  }
+		
+	}
+	@Override
+	public boolean isASINumberAvailable(String asiNumber) {
+		SupplierLoginDetails supplierLoginDetails = getSupplierLoginDetails(asiNumber);
+		if(supplierLoginDetails == null){
+			return true;
+		}
+		return false;
+	}
+	public SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
+	public String getErrorFileLocPath() {
+		return errorFileLocPath;
+	}
+
+	public void setErrorFileLocPath(String errorFileLocPath) {
+		this.errorFileLocPath = errorFileLocPath;
+	}
+	
+
 }

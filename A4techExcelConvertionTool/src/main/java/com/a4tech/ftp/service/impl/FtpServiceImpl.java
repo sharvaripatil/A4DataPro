@@ -12,19 +12,22 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.a4tech.ftp.FilesParsing;
 import com.a4tech.ftp.service.FtpService;
+import com.a4tech.product.service.IMailService;
 
 public class FtpServiceImpl implements FtpService{
-  private FTPClient ftpClient ;
-  private String serveraddress ;
-  private String username  ;
-  private String password  ;
-  private String portNo  ;
-  private FilesParsing filesParsing;
-  
+  private FTPClient 	ftpClient ;
+  private String 		serveraddress ;
+  private String 		username  ;
+  private String 		password  ;
+  private String 		portNo  ;
+  private FilesParsing 	filesParsing;
+  @Autowired
+  private IMailService  mailService;
 private Logger _LOGGER = Logger.getLogger(FtpServiceImpl.class);
 	@Override
 	public boolean uploadFile(MultipartFile mFile ,String asiNumber) {
@@ -87,8 +90,18 @@ private Logger _LOGGER = Logger.getLogger(FtpServiceImpl.class);
 		ftpServerDisconnect();
 		File[] listOfFiles = getAllFiles();
 		_LOGGER.info("Ftp files Count::"+listOfFiles.length);
-		filesParsing.ReadFtpFiles(listOfFiles);
-		
+		if(listOfFiles.length == 0){
+			mailService.numberOfFileProcess("There Is No Files In FTP Server", "");
+		} else {
+			StringBuilder fileNames = new StringBuilder();
+			for (File file : listOfFiles) {
+				fileNames.append(file.getName()).append(",");
+			}
+			mailService.numberOfFileProcess("Following Files Needs to be Process", fileNames.toString());
+		}
+		if(listOfFiles.length != 0){// check the number of files ,if there is no files in server no need to call fileParsing 
+			filesParsing.ReadFtpFiles(listOfFiles);	
+		}
 		} catch (IOException e) {
 			_LOGGER.error("unable to connect to Ftp server: "+e.getMessage());
 		}catch (Exception e) {

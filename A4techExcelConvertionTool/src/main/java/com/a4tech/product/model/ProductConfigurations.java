@@ -27,10 +27,8 @@ public class ProductConfigurations {
     private List<Material>            materials            = null;
     @JsonProperty("Sizes")
     private Size                	  sizes                = null;
-    
     @JsonProperty("Shapes")
     private List<Shape>              shapes               = null;
-    
     @JsonProperty("Themes")
     private List<Theme>			  themes				= null;
     @JsonProperty("Options")
@@ -47,28 +45,10 @@ public class ProductConfigurations {
     private List<Artwork> artwork = null;
     @JsonProperty("Personalization")
     private List<Personalization>    personalization	   = null;
-
-    public List<Artwork> getArtwork() {
-		return artwork;
-	}
-
-	public void setArtwork(List<Artwork> artwork) {
-		this.artwork = artwork;
-	}
-
 	@JsonProperty("ProductionTime")
     private List<ProductionTime>      productionTime       = null;
     @JsonProperty("SameDayRush")
     private SameDayRush sameDayRush=null;
-    
-    public SameDayRush getSameDayRush() {
-		return sameDayRush;
-	}
-
-	public void setSameDayRush(SameDayRush sameDayRush) {
-		this.sameDayRush = sameDayRush;
-	}
-
 	@JsonProperty("RushTime")
     private RushTime            rushTime             = null;
     @JsonProperty("AdditionalColors")
@@ -77,43 +57,30 @@ public class ProductConfigurations {
     private List<AdditionalLocation>              additionalLocations  = null;
     @JsonProperty("ImprintSize")
     private List<ImprintSize> imprintSize = null;
-    
     @JsonProperty("ItemWeight")
     private Volume itemWeight = null;
-
     @JsonProperty("ImprintLocation")
     private List<ImprintLocation> imprintLocation = null;
-
     @JsonProperty("Carrier")
     private List<CarrierInformation> carrier = null;
-    
     @JsonProperty("Warranty")
     private List<WarrantyInformation> warranty = null; 
-
     @JsonProperty("ShippingEstimates")
     private ShippingEstimate    shippingEstimates    = null;
-    
     @JsonProperty("Battery")
     private List<BatteryInformation>    batteryInformation    = null;
-    
-    @JsonProperty("Battery")
-	public List<BatteryInformation> getBatteryInformation() {
-		return batteryInformation;
-	}
-
-    @JsonProperty("Battery")
-	public void setBatteryInformation(List<BatteryInformation> batteryInformation) {
-		this.batteryInformation = batteryInformation;
-	}
-
-	@JsonProperty("Colors")
+    @JsonProperty("Industries")
+    private List<Industry>             industry;
+    @JsonProperty("Events")
+    private List<Event>                event;
+   	@JsonProperty("Colors")
     @XmlElementWrapper(name = "Colors")
     @XmlElement(name = "Color")
     public List<Color> getColors() {
         return colors;
     }
 
-    @JsonProperty("Colors")
+   @JsonProperty("Colors")
     public void setColors(List<Color> colors) {
         this.colors = colors;
     }
@@ -151,24 +118,12 @@ public class ProductConfigurations {
     public void setShapes(List<Shape> shapes) {
         this.shapes = shapes;
     }
-
-   /* public List<String> getThemes() {
-		return themes;
-	}
-
-	public void setThemes(List<String> themes) {
-		this.themes = themes;
-	}*/
-    
-
 	@JsonProperty("Options")
     @XmlElementWrapper(name = "Options")
     @XmlElement(name = "Option")
     public List<Option> getOptions() {
         return options;
-    }
-
-    
+    }    
     @XmlElementWrapper(name = "Themes")
     @XmlElement(name = "Theme")
     public List<Theme> getThemes() {
@@ -362,6 +317,47 @@ public class ProductConfigurations {
     public void setItemWeight(Volume itemWeight) {
         this.itemWeight = itemWeight;
     }
+    public List<Artwork> getArtwork() {
+		return artwork;
+	}
+
+	public void setArtwork(List<Artwork> artwork) {
+		this.artwork = artwork;
+	}
+	public SameDayRush getSameDayRush() {
+		return sameDayRush;
+	}
+
+	public void setSameDayRush(SameDayRush sameDayRush) {
+		this.sameDayRush = sameDayRush;
+	}
+	@JsonProperty("Battery")
+	public List<BatteryInformation> getBatteryInformation() {
+		return batteryInformation;
+	}
+
+    @JsonProperty("Battery")
+	public void setBatteryInformation(List<BatteryInformation> batteryInformation) {
+		this.batteryInformation = batteryInformation;
+	}
+    public List<Industry> getIndustry() {
+		return industry;
+	}
+
+	public void setIndustry(List<Industry> industry) {
+		this.industry = industry;
+	}
+
+	public List<Event> getEvent() {
+		return event;
+	}
+
+	public void setEvent(List<Event> event) {
+		this.event = event;
+	}
+
+
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);

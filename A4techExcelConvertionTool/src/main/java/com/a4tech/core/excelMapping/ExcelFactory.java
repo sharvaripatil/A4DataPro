@@ -19,6 +19,7 @@ import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.AlfaMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
+import com.a4tech.supplier.mapper.BayStateMapping;
 import com.a4tech.supplier.mapper.BellaCanvas;
 import com.a4tech.supplier.mapper.BlueGenerationMapping;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
@@ -32,6 +33,7 @@ import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineMappingRevised;
+import com.a4tech.supplier.mapper.MaxplusMapping;
 import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
@@ -85,8 +87,9 @@ public class ExcelFactory {
 	private GillStudiosMapping 				gillStudiosMapping;
 	private BlueGenerationMapping			blueGenerationMapping;
 	private FITSAccessoriesMapping          fitsAccessoriesMapping;
-
-		public  IExcelParser getExcelParserObject(String name){
+	private BayStateMapping                 baysStateMapping;
+    private MaxplusMapping                  maxplusmapping;
+	public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
 		   }else if(name.equalsIgnoreCase("kl") || name.equals("64905")){
@@ -154,7 +157,7 @@ public class ExcelFactory {
 	      else if(name.equalsIgnoreCase("pslcad") || name.equals("90345")){
 		      return pslcadMapping;
 	      }
-	      else if(name.equalsIgnoreCase("twintech") || name.equals("92357")){
+	      else if(name.equalsIgnoreCase("twintech") || name.equals("83140")){///*"92357"*/
 		      return twintechMapping;
 	      } else if(name.equalsIgnoreCase("alfa") || name.equals("34042")){
 	    	  return alfaMapping;
@@ -174,6 +177,11 @@ public class ExcelFactory {
 			  return blueGenerationMapping;
 		  } else if(name.equalsIgnoreCase("FITSAccessories ") || name.equals("71107")){
 			  return fitsAccessoriesMapping;
+		  } else if(name.equals("38980") || name.equalsIgnoreCase("bayState")){
+			  return baysStateMapping;
+		  } else if(name.equalsIgnoreCase("maxplusmapping") || name.equals("69718")){
+			  return maxplusmapping;
+		  
 		  } 
 		return null;
 	}
@@ -475,12 +483,28 @@ public class ExcelFactory {
 	public void setBlueGenerationMapping(BlueGenerationMapping blueGenerationMapping) {
 		this.blueGenerationMapping = blueGenerationMapping;
 	}
+
+	public MaxplusMapping getMaxplusmapping() {
+		return maxplusmapping;
+	}
+
+	public void setMaxplusmapping(MaxplusMapping maxplusmapping) {
+		this.maxplusmapping = maxplusmapping;
+	}
+	
 	public FITSAccessoriesMapping getFitsAccessoriesMapping() {
 		return fitsAccessoriesMapping;
 	}
-
 	public void setFitsAccessoriesMapping(FITSAccessoriesMapping fitsAccessoriesMapping) {
 		this.fitsAccessoriesMapping = fitsAccessoriesMapping;
 	}
+	public BayStateMapping getBaysStateMapping() {
+		return baysStateMapping;
+	}
+	public void setBaysStateMapping(BayStateMapping baysStateMapping) {
+		this.baysStateMapping = baysStateMapping;
+	}
+
+
 
 }

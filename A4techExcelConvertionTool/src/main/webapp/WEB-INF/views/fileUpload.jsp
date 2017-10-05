@@ -59,6 +59,9 @@ h4 {
              	<c:when test="${invalidFile == ''}">
              		<h4 style="color: red;">Please Upload File</h4>
              	</c:when>
+             	<c:when test="${invalidAsiNum == ''}">
+             		<h4 style="color: red;">Please Enter Details in Login Page</h4>
+             	</c:when>
              </c:choose>
     <input type="file" name="file" id="file" class="file">
     <div class="input-group col-xs-12">
