@@ -227,7 +227,11 @@ public class BayStatePriceGridParser {
 		if(upChargeValue.contains("|")){
 			upChargeValue = upChargeValue.replaceAll("\\|", ",");
 		}
-		priceGrid.setDescription(upChargeValue);
+		if(upChargeValue.contains("Additional Color (max x colors):")){
+			priceGrid.setDescription("Additional Color");
+		} else {
+			priceGrid.setDescription(upChargeValue);
+		}
 		priceGrid.setIsQUR(qurFlag);
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);

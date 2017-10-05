@@ -139,11 +139,11 @@ public class BayStateMapping implements IExcelParser{
 									ShippingEstimate shippingEst = bayStateParser.getProductShipping(shippingDimension,
 											shippingWeight);
 									productConfigObj.setShippingEstimates(shippingEst);
-									if(!CollectionUtils.isEmpty(productNumbersAndColors)){
+								/*	if(!CollectionUtils.isEmpty(productNumbersAndColors)){
 										List<ProductNumber> listOfProductNumbers = bayStateParser.getProductNumbers(productNumbersAndColors);
 										productExcelObj.setProductNumbers(listOfProductNumbers);
 										productExcelObj.setAsiProdNo("");
-									}
+									}*/
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	productExcelObj.setProductRelationSkus(listProductSkus);
@@ -199,14 +199,14 @@ public class BayStateMapping implements IExcelParser{
 						 continue;
 					 }*/
 					if(productXids.contains(xid) && repeatRows.size() != 0){
-						String values = productNumber + ":"+color;
-						if(!StringUtils.isEmpty(color)){
+						//String values = productNumber + ":"+color;
+						/*if(!StringUtils.isEmpty(color)){
 							productNumbersAndColors.add(values);
-						}
+						}*/
 						 if(isRepeateColumn(columnIndex+1)){
 							 continue;
 						 }
-						 color = "";
+						 //color = "";
 					}
 				}
 				
@@ -227,11 +227,14 @@ public class BayStateMapping implements IExcelParser{
 				    break;
 				case 4:// description
 					String desc = cell.getStringCellValue();
+					desc = desc.replaceAll(";", ".");
 					productExcelObj.setDescription(desc);
 				    break;
 				case 5:// Callout(Summary)
 					String summary = cell.getStringCellValue();
-				   productSummary.append(summary);
+					if(!productSummary.toString().contains(summary)){
+						productSummary.append(summary);
+					}
 					break;
 				case 6://Note(Summary)
 					String note = cell.getStringCellValue();
@@ -330,7 +333,7 @@ public class BayStateMapping implements IExcelParser{
 						addImprintRunnChare = addImprintRunnChare.replaceAll("[^0-9.]", "");
 						String upchargeName = "Additional Color (max x colors):"+maxImprColors;
 								priceGrids = bayStatePriceGridParser.getUpchargePriceGrid("1", addImprintRunnChare, "G",
-										"Additional Colors", false, "USD", "", upchargeName, "Run Charge", "Other", 1,
+										"Additional Colors", false, "USD", "Per piece, per color. Max "+maxImprColors+" colors.", upchargeName, "Run Charge", "Other", 1,
 										priceGrids, "", "");
 					}
 				    break;
@@ -349,9 +352,10 @@ public class BayStateMapping implements IExcelParser{
 				case 20://PMSMatchingCHARGE
 					String pmsCharge = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(pmsCharge) && !pmsCharge.equals("N/A")){
+						String priceInclude = pmsCharge.split("\\)")[1].trim();
 						pmsCharge = pmsCharge.replaceAll("[^0-9.]", "");
 								priceGrids = bayStatePriceGridParser.getUpchargePriceGrid("1", pmsCharge, "G",
-										"Imprint Method", false, "USD", "",imprintMethod, "PMS Matching Charge", "Other", 1,
+										"Imprint Method", false, "USD",priceInclude,imprintMethod, "PMS Matching Charge", "Other", 1,
 										priceGrids, "", "");
 					}
 					break;
@@ -460,9 +464,17 @@ public class BayStateMapping implements IExcelParser{
 		}
 				productExcelObj.setPriceType("L");
 				if(StringUtils.isEmpty(specialPrice)){
-					priceGrids = bayStatePriceGridParser.getBasePriceGrid(listOfPrices.toString(), 
-							listOfQuantity.toString(), listOfDiscount.toString(), "USD",
-							         "", true, false, "","",priceGrids,"","","");
+					if(xid.equalsIgnoreCase("548-4885607")){
+						priceGrids = bayStatePriceGridParser.getBasePriceGrid(listOfPrices.toString(), 
+								listOfQuantity.toString(), listOfDiscount.toString(), "USD",
+								         "", true, false, color,"Product Color",priceGrids,"","",productNumber);
+						productExcelObj.setAsiProdNo("");
+					} else{
+						priceGrids = bayStatePriceGridParser.getBasePriceGrid(listOfPrices.toString(), 
+								listOfQuantity.toString(), listOfDiscount.toString(), "USD",
+								         "", true, false, "","",priceGrids,"","","");
+					}
+					
 				}else {
 					priceGrids = bayStatePriceGridParser.getBasePriceGrid(specialPrice, 
 							specialQty, specialDis.toString(), "USD",
@@ -470,6 +482,9 @@ public class BayStateMapping implements IExcelParser{
 				}
 					
 			    repeatRows.add(xid);
+			    listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+			    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+			    listOfDiscount = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			}catch(Exception e){
 				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"at column number(increament by 1):"+columnIndex);		 
 				ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet: "
@@ -492,11 +507,11 @@ public class BayStateMapping implements IExcelParser{
 					   productConfigObj.setColors(productColors);
 				   }
 				productConfigObj.setShippingEstimates(shippingEst);
-				if(!CollectionUtils.isEmpty(productNumbersAndColors)){
+				/*if(!CollectionUtils.isEmpty(productNumbersAndColors)){
 					List<ProductNumber> listOfProductNumbers = bayStateParser.getProductNumbers(productNumbersAndColors);
 					productExcelObj.setProductNumbers(listOfProductNumbers);
 					productExcelObj.setAsiProdNo("");
-				}
+				}*/
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	productExcelObj.setProductRelationSkus(listProductSkus);
@@ -553,7 +568,7 @@ public class BayStateMapping implements IExcelParser{
 				&& columnIndex != 8 && columnIndex != 10 && columnIndex != 11) {
 				return ApplicationConstants.CONST_BOOLEAN_TRUE;
 			}*/
-		if (columnIndex != 2  && columnIndex != 8){
+		if (columnIndex != 2  && columnIndex != 8 &&!(columnIndex >=24  && columnIndex <= 38)){
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
