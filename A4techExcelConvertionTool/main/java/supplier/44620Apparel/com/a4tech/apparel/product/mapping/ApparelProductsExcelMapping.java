@@ -276,11 +276,16 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				case 9: // size group i.e Standard & Numbered
 					break;
 				case 10: // UPC code
-					double upcVal= cell.getNumericCellValue();
-					BigDecimal bigDecimal = new BigDecimal(upcVal);
-					long number = bigDecimal.longValue();
-					  String value = Long.toString(number);
+					try{
+					//double upcVal= cell.getNumericCellValue();
+					//BigDecimal bigDecimal = new BigDecimal(upcVal);
+					//long number = bigDecimal.longValue();
+					  String value = CommonUtility.getCellValueStrinOrDecimal(cell);
+					  //value=CommonUtility.convertExponentValueIntoNumber(value);
 					  upcCode = value;
+					}catch(Exception e){
+						
+					}
 					 /*upcCode = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(upcCode)){
 						 upcCode = CommonUtility.convertExponentValueIntoNumber(upcCode);
@@ -291,6 +296,9 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				case 11:
 				    String  productDescription = cell.getStringCellValue();
 				    productDescription = productDescription.replaceAll("[^a-zA-Z0-9.%,'\\- ]", "");
+				    productDescription=productDescription.replace("ozyd2","oz/yd2");
+				    productDescription=productDescription.replace("ozlyd","oz/yd2");//ozlyd
+				    //oz/yd2
 				   /* if(productDescription.contains(ApplicationConstants.SQUARE_SYMBOL)){
 				    	productDescription = CommonUtility.removeSpecialSymbols(productDescription, 
                                                                     ApplicationConstants.SQUARE_SYMBOL);
@@ -336,9 +344,9 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				case 15:
 				String imprintMethod=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(imprintMethod)) {
-								imprintMethodsList = appaAttributeParser
-										.getImprintMethod(imprintMethod);
-								productConfigObj.setImprintMethods(imprintMethodsList);
+								productConfigObj = appaAttributeParser
+										.getImprintMethod(imprintMethod,productConfigObj);
+								//productConfigObj.setImprintMethods(imprintMethodsList);
 							}
 					break;
 				case 16:
@@ -352,9 +360,9 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				case 17:
 				String productionTimeValue=cell.getStringCellValue();
 				if(!StringUtils.isEmpty(productionTimeValue)){
-					List<ProductionTime> listOfPrdTime = appaAttributeParser.
-							                           getProductionTimeList(productionTimeValue);
-					productConfigObj.setProductionTime(listOfPrdTime);
+					productConfigObj = appaAttributeParser.
+							                           getProductionTimeList(productionTimeValue,productConfigObj);
+					//productConfigObj.setProductionTime(listOfPrdTime);
 				}
 					break;
 				case 18:
