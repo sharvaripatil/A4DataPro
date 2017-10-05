@@ -26,6 +26,7 @@ import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.FITSAccessoriesMapping;
+import com.a4tech.supplier.mapper.GempirepromotionsMapping;
 import com.a4tech.supplier.mapper.GillStudiosMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
@@ -87,7 +88,7 @@ public class ExcelFactory {
 	private BlueGenerationMapping			blueGenerationMapping;
 	private MaxplusMapping                  maxplusmapping;
 	private FITSAccessoriesMapping          fitsAccessoriesMapping;
-
+	private GempirepromotionsMapping        gempiresMapping;
 
 		public  IExcelParser getExcelParserObject(String name){
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -181,6 +182,9 @@ public class ExcelFactory {
 		  
 		  } else if(name.equalsIgnoreCase("FITSAccessories ") || name.equals("71107")){
 			  return fitsAccessoriesMapping;
+		  } 
+		  else if(name.equalsIgnoreCase("gempiresMapping") || name.equals("55610")){
+			  return gempiresMapping;
 		  } 
 
 		return null;
@@ -498,6 +502,14 @@ public class ExcelFactory {
 
 	public void setFitsAccessoriesMapping(FITSAccessoriesMapping fitsAccessoriesMapping) {
 		this.fitsAccessoriesMapping = fitsAccessoriesMapping;
+	}
+
+	public GempirepromotionsMapping getGempiresMapping() {
+		return gempiresMapping;
+	}
+
+	public void setGempiresMapping(GempirepromotionsMapping gempiresMapping) {
+		this.gempiresMapping = gempiresMapping;
 	}
 
 
