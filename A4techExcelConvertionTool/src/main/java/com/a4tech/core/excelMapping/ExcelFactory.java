@@ -27,6 +27,7 @@ import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.FITSAccessoriesMapping;
+import com.a4tech.supplier.mapper.GempirepromotionsMapping;
 import com.a4tech.supplier.mapper.GillStudiosMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
@@ -89,7 +90,12 @@ public class ExcelFactory {
 	private FITSAccessoriesMapping          fitsAccessoriesMapping;
 	private BayStateMapping                 baysStateMapping;
     private MaxplusMapping                  maxplusmapping;
+	private GempirepromotionsMapping        gempiresMapping;
+
+
+
 	public  IExcelParser getExcelParserObject(String name){
+
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
 		   }else if(name.equalsIgnoreCase("kl") || name.equals("64905")){
@@ -177,11 +183,16 @@ public class ExcelFactory {
 			  return blueGenerationMapping;
 		  } else if(name.equalsIgnoreCase("FITSAccessories ") || name.equals("71107")){
 			  return fitsAccessoriesMapping;
+
+		  } 
+		  else if(name.equalsIgnoreCase("gempiresMapping") || name.equals("55610")){
+			  return gempiresMapping;
 		  } else if(name.equals("38980") || name.equalsIgnoreCase("bayState")){
 			  return baysStateMapping;
 		  } else if(name.equalsIgnoreCase("maxplusmapping") || name.equals("69718")){
 			  return maxplusmapping;
 		  
+
 		  } 
 		return null;
 	}
@@ -498,12 +509,23 @@ public class ExcelFactory {
 	public void setFitsAccessoriesMapping(FITSAccessoriesMapping fitsAccessoriesMapping) {
 		this.fitsAccessoriesMapping = fitsAccessoriesMapping;
 	}
+
+
+	public GempirepromotionsMapping getGempiresMapping() {
+		return gempiresMapping;
+	}
+
+	public void setGempiresMapping(GempirepromotionsMapping gempiresMapping) {
+		this.gempiresMapping = gempiresMapping;
+	}
+
 	public BayStateMapping getBaysStateMapping() {
 		return baysStateMapping;
 	}
 	public void setBaysStateMapping(BayStateMapping baysStateMapping) {
 		this.baysStateMapping = baysStateMapping;
 	}
+
 
 
 
