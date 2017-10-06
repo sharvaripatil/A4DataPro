@@ -78,10 +78,22 @@ public class BayStateParser {
 			  colorObj = new Color();
 			  String colorGroup = BayStateColorAndMaterialMapping.getColorGroup(colorName);
 			  if(colorGroup.contains("Combo")){
-				  colorObj = getColorCombo(colorGroup, colorName);
+				  if(colorGroup.contains("Alias")){
+					  colorObj = getColorComboWithAlias(colorGroup);
+				  } else {
+					  colorObj = getColorCombo(colorGroup, colorName); 
+				  }
+				  
 			  } else {
-				  colorObj.setName(colorGroup);
-				  colorObj.setAlias(colorName);
+				  if(colorGroup.contains("Alias")){
+					  String[] colorVals = colorGroup.split("Alias");
+					  colorObj.setName(colorVals[0].replaceAll(":",""));
+					  colorObj.setAlias(colorVals[1].replaceAll(":",""));
+				  } else {
+					  colorObj.setName(colorGroup);
+					  colorObj.setAlias(colorName);
+				  }
+				  
 			  }
 			  colorsList.add(colorObj);
 		}
@@ -106,6 +118,20 @@ public class BayStateParser {
 		  colorObj.setAlias(alias);
 		  colorObj.setCombos(comboColorList);
 		 return colorObj;  
+	  }
+	  private Color getColorComboWithAlias(String val){
+		  Color colorObj = new Color();
+		  //Medium White:Combo:Dark Black:Secondary:Alias:xxxxxx
+		  String[] combos = val.split("Alias");
+		  String comboVal = combos[0];
+		  String temp = comboVal.substring(comboVal.length() - 1);// fetch last character
+		  if(temp.equals(":")){
+			  comboVal = comboVal.substring(0, comboVal.length() - 1); // remove lats char. if value is :
+		  }
+		  String alias = combos[1];
+		  alias = alias.replaceAll(":", "");
+		  colorObj = getColorCombo(comboVal, alias);
+		  return colorObj;
 	  }
   public List<ProductSkus> getProductSkus(String colorVal, String skuVal,
 			List<ProductSkus> existingSkus) {
@@ -330,9 +356,25 @@ private Dimensions getShippingDimensions(String val){
 			size.setVolume(volumnObj);
 			return size;
 		} else if(sizeVal.contains("Pad")){// dimension related
-			valuesObj = getOverAllSizeValObj(sizeVal.split("Pad")[0].trim(), "Height", "Width", "");
+			String val = sizeVal.split("Pad")[0].trim();
+			if(val.contains("W") && val.contains("L")){
+				val = val.replaceAll("[^0-9xX/ ]", "");
+				valuesObj = getOverAllSizeValObj(val, "Width", "Length", "");
+			} else if(val.contains("H") && val.contains("W")){
+				val = val.replaceAll("[^0-9xX/ ]", "");
+				valuesObj = getOverAllSizeValObj(val, "Height", "Width", "");
+			}
+			
 		} else if(sizeVal.contains("Open")){
-			valuesObj = getOverAllSizeValObj(sizeVal.split("Open:")[1].trim(), "oz", "", "");
+			String tempSize = sizeVal.split("Open:")[1];
+			if(tempSize.contains("H") && tempSize.contains("W")){
+				tempSize = tempSize.replaceAll("[^0-9xX/ ]", "");
+				valuesObj = getOverAllSizeValObj(tempSize, "Height", "Width", "Length");
+			} else {
+				tempSize = tempSize.replaceAll("[^0-9xX/ ]", "");
+				valuesObj = getOverAllSizeValObj(tempSize, "Length", "", "");
+			}
+			
 		} else if(sizeVal.contains("Product Length") || sizeVal.contains("USB")){
 			String[] vals = CommonUtility.getValuesOfArray(sizeVal, ";");
 			String lengthVal = "";
@@ -340,11 +382,28 @@ private Dimensions getShippingDimensions(String val){
 				 lengthVal = vals[0].split(":")[1];
 				lengthVal = lengthVal.replaceAll("[^0-9/ ]", "").trim();
 			} else {
-				 lengthVal = vals[0].split(":")[1];
+				 lengthVal = vals[1].split(":")[1];
 				lengthVal = lengthVal.replaceAll("[^0-9/ ]", "").trim();
 				
 			}
 			valuesObj = getOverAllSizeValObj(lengthVal, "Length", "", "");
+		} else if(sizeVal.contains("Spatula")){
+			String[] ss = sizeVal.split(";");
+			if(ss[0].contains("Spatula")){
+				sizeVal = ss[0].replaceAll("[^0-9xX/ ]", "");
+				valuesObj = getOverAllSizeValObj(sizeVal, "Width", "Length", "");
+			} else if(ss[1].contains("Spatula")){
+				sizeVal = ss[1].replaceAll("[^0-9xX/ ]", "");
+				valuesObj = getOverAllSizeValObj(sizeVal, "Width", "Length", "");
+			}
+		} else if(sizeVal.contains("Pen")){
+			String tempSize = sizeVal.split("Pen:")[1]; 
+			tempSize = tempSize.replaceAll("[^0-9xX/ ]", "");
+			valuesObj = getOverAllSizeValObj(tempSize, "Length", "", "");
+		} else if(sizeVal.contains("Spoon")){
+			String tempSize = sizeVal.split(";")[0]; 
+			tempSize = tempSize.replaceAll("[^0-9xX/ ]", "");
+			valuesObj = getOverAllSizeValObj(tempSize, "Length", "", "");
 		} else if(sizeVal.contains("H") && sizeVal.contains("W")){
 			sizeVal = sizeVal.replaceAll("[^0-9xX/ ]", "");
 			valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "Length");
@@ -376,7 +435,12 @@ private Dimensions getShippingDimensions(String val){
 		Value valObj3 = null;
 		List<Value> listOfValue = new ArrayList<>();
 		if(values.length == ApplicationConstants.CONST_INT_VALUE_ONE){
-			 valObj1 = getValueObj(values[0].trim(), unit1, "in");
+			if(unit1.equals("oz")){
+				valObj1 = getValueObj(values[0].trim(), "", unit1);
+			} else {
+				valObj1 = getValueObj(values[0].trim(), unit1, "in");	
+			}
+			 
 			  listOfValue.add(valObj1);
 		} else if(values.length == ApplicationConstants.CONST_INT_VALUE_TWO){
 			 valObj1 = getValueObj(values[0].trim(), unit1, "in");
@@ -399,7 +463,9 @@ private Dimensions getShippingDimensions(String val){
 	}
 	private Value getValueObj(String value,String attribute,String unit){
 		Value valueObj = new Value();
-		valueObj.setAttribute(attribute);
+		if(!StringUtils.isEmpty(attribute)){
+			valueObj.setAttribute(attribute);
+		}
 		valueObj.setUnit(unit);
 		valueObj.setValue(value);
 		return valueObj;

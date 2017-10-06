@@ -458,7 +458,16 @@ public class CommonUtility {
 		 values = new HashSet<String>(uniqueColorList).toArray(new String[0]);
 		 return values;
 	 }
-	/* public class IgnoreCaseStringList extends ArrayList<String>{
+	
+	 /*@Author :Venkat
+	  *@Description : this method used to remove non alphanumeric character from bignning of String,it will help to Name,Description ... 
+	  * @Param : String
+	  * @Return :String
+	  */
+	 public static String removeNonAlphaNumericInBeggingCharacter(String val){
+		 return val.replaceAll("^[^a-zA-Z0-9\\s]", "");
+	 }
+	 /* public class IgnoreCaseStringList extends ArrayList<String>{
 		@Override
 		public boolean contains(Object o) {
 			String paramStr = (String)o;

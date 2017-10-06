@@ -91,7 +91,7 @@ public class MailServiceImpl implements IMailService{
 			/*String[] ccAddress = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
 					"amey.more@a4technology.com","azam.rizvi@a4technology.com" };*/
 			//helper.setTo(toAddress); 
-             helper.setTo("SPullins@asicentral.com");
+    //         helper.setTo("SPullins@asicentral.com");
 			helper.setBcc(bccmails);
 		      helper.setSubject(subject);
 		      helper.setText(body);
@@ -118,7 +118,7 @@ public class MailServiceImpl implements IMailService{
 		      String[] bccmails = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
 				"amey.more@a4technology.com"};
 		     // helper.setTo(toAddress);
-              helper.setTo("SPullins@asicentral.com");
+      //        helper.setTo("SPullins@asicentral.com");
 		      helper.setBcc(bccmails);
 		      helper.setSubject(subject);
 		      helper.setText(body);
