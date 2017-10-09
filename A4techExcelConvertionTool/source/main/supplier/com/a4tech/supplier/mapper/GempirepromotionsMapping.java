@@ -105,6 +105,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 		String ListAllprice=null;
 		String ListAllquantity=null;
 
+		
+		String description1 =null;
 
 
 		try {
@@ -214,27 +216,12 @@ public class GempirepromotionsMapping implements IExcelParser {
 							productExcelObj.setExternalProductId(xid);
 							break;
 
-						case 2:// productcode
-
-							
+						case 2:// productcode							
 							 ProdNo=cell.getStringCellValue();
 							 productExcelObj.setAsiProdNo(ProdNo);
-
 							break;
 							
 						case 3: // productname
-
-							String Inventory=cell.getStringCellValue();
-							
-							if (!StringUtils.isEmpty(Inventory)) {
-                            Inventory invtObj=new Inventory();
-                            invtObj.setInventoryLink(Inventory);
-							productExcelObj.setInventory(invtObj);
-							}
-							
-							break;	
-							
-						case 8: // productdescription
 
 							productName = cell.getStringCellValue();
 							int len=productName.length();
@@ -244,29 +231,32 @@ public class GempirepromotionsMapping implements IExcelParser {
 								productName=(String) strTemp.subSequence(0, lenTemp);
 							}
 							productExcelObj.setName(productName);
-
-
+							
 							break;	
+							
+						case 8: // productdescription
+							 description1 = cell.getStringCellValue();
+							 if (!StringUtils.isEmpty(description1)) {
+								 description1="";							
+								 }
+							
+						break;	
 					
-						case 9: // productdescription
-
-							String Summary=cell.getStringCellValue();
-							if (!StringUtils.isEmpty(Summary)) {
-						    Summary=Summary.substring(0, 130);
-							productExcelObj.setSummary(Summary);	
+						case 9: // furtherdescription
+							String description2 = cell.getStringCellValue();
+							if (!StringUtils.isEmpty(description1)) {
+								description2="";
 							}
+							String description=null;
+							description=description.concat(description1).concat(description2);
+							productExcelObj
+										.setDescription(description);
+							
+						
 							break;	
 							
 						case 23: //Size
 
-							String description = cell.getStringCellValue();
-							description=description.replace("?","").replace("ã","").replace("¡", "").replace(":", "");
-							if (!StringUtils.isEmpty(description)) {
-								productExcelObj.setDescription(description);
-							} else {
-								productExcelObj
-										.setDescription(productName);
-							}
 
 							break;	
 					
@@ -388,22 +378,474 @@ public class GempirepromotionsMapping implements IExcelParser {
 
 							break;	
 							
-						case 42: //pricename_1
+					    case 42: //pricename_1
 
 
 							 Quantity2=CommonUtility.getCellValueStrinOrInt(cell);
 
 							break;
 							
+						 case 43 ://strikepricename_1
+
 							
-						case 345: // quantityunit_5
-
-		                    ListPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
-
-
 							break;	
-							
+						
+						 case 44://quantity1_1
 
+								
+								break;
+								
+						 case  46://price1_1
+
+								
+								break;
+								
+						 case  47://discountcode1_1
+
+								
+								break;
+								
+						 case 48 ://quantitystrikeprice1_1
+
+								
+								break;
+								
+						 case  49://quantity2_1
+
+								
+								break;
+								
+						 case  51://price2_1
+
+								
+								break;
+								
+						 case  52://discountcode2_1
+
+								
+								break;
+								
+						 case  53://quantitystrikeprice2_1
+
+								
+								break;
+								
+						 case  54://quantity3_1
+
+								
+								break;
+								
+						 case  56://price3_1
+
+								
+								break;
+								
+						 case  57://discountcode3_1
+
+								
+								break;
+								
+						 case  58://quantitystrikeprice3_1
+
+								
+								break;
+								
+						 case  59://quantity4_1
+
+								
+								break;
+								
+						 case  61://price4_1
+
+								
+								break;
+								
+						 case  62://discountcode4_1
+
+								
+								break;
+								
+						 case  63://quantitystrikeprice4_1
+
+								
+								break;
+								
+						 case  95://expirationdate_1
+
+								
+								break;
+								
+						 case  99://enablestrikeprice_1
+
+								
+								break;
+								
+						 case  100://isregularprice_1
+
+								
+								break;
+								
+						 case  103://pricename_2
+
+								
+								break;
+								
+						 case  104://strikepricename_2
+
+								
+								break;
+								
+						 case  105://quantity1_2
+
+								
+								break;
+								
+						 case  107://price1_2
+
+								
+								break;
+								
+						 case  108://discountcode1_2
+
+								
+								break;
+								
+						 case  109://quantitystrikeprice1_2
+
+								
+								break;
+								
+						 case  110://quantity2_2
+
+								
+								break;
+								
+						 case  111://quantitytext2_2
+
+								
+								break;
+								
+						 case  112://price2_2
+
+								
+								break;
+								
+						 case  113://discountcode2_2
+
+								
+								break;
+								
+						 case  114://quantitystrikeprice2_2
+
+								
+								break;
+								
+						 case  115://quantity3_2
+
+								
+								break;
+								
+						 case  116://quantitytext3_2
+
+								
+								break;
+								
+						 case  117://price3_2
+
+								
+								break;
+								
+						 case  118://discountcode3_2
+
+								
+								break;
+								
+						 case  119://quantitystrikeprice3_2
+
+								
+								break;
+								
+						 case  120://quantity4_2
+
+								
+								break;
+								
+						 case  122://price4_2
+
+								
+								break;
+								
+						 case  123://discountcode4_2
+
+								
+								break;
+								
+						 case  124://quantitystrikeprice4_2
+
+								
+								break;
+								
+						 case  156://expirationdate_2
+
+								
+								break;
+								
+						 case  160://enablestrikeprice_2
+
+								
+								break;
+								
+								
+						 case  161://isregularprice_2
+
+								
+								break;
+						 case  164://pricename_3
+
+								
+								break;
+								
+						 case  166://quantity1_3
+
+								
+								break;
+								
+						 case  168://price1_3
+
+								
+								break;
+								
+						 case  169://discountcode1_3
+
+								
+								break;
+								
+						 case  170://quantitystrikeprice1_3
+
+								
+								break;
+								
+						 case  171://quantity2_3
+
+								
+								break;
+								
+						 case  173://price2_3
+
+								
+								break;
+						 case  174://discountcode2_3
+
+
+								
+								break;
+						 case  175://quantitystrikeprice2_3
+
+
+								
+								break;
+						 case  176://quantity3_3
+
+
+								
+								break;
+						 case  178://price3_3
+
+
+								
+								break;
+						 case  179://discountcode3_3
+
+
+								
+								break;
+						 case  180://quantitystrikeprice3_3
+
+
+								
+								break;
+						 case  182://quantitytext4_3
+
+
+								
+								break;
+						 case  183://price4_3
+
+
+								
+								break;
+						 case  184://discountcode4_3
+
+
+								
+								break;
+						 case  185://quantitystrikeprice4_3
+
+
+								
+								break;
+						 case  225://pricename_4
+
+								
+								break;
+						 case  227://quantity1_4
+
+
+								
+								break;
+						 case  229://price1_4
+
+
+								
+								break;
+						 case  230://discountcode1_4
+
+
+								
+								break;
+						 case  231://quantitystrikeprice1_4
+
+								
+								break;
+						 case  232://quantity2_4
+
+								
+								break;
+						 case  234://price2_4
+
+
+								
+								break;
+						 case  235://discountcode2_4
+
+
+								
+								break;
+						 case  236://quantitystrikeprice2_4
+
+
+								
+								break;
+						 case  237://quantity3_4
+
+
+								
+								break;
+						 case  239://price3_4
+
+
+								
+								break;
+						 case  240://discountcode3_4
+
+
+								
+								break;
+						 case  241://quantitystrikeprice3_4
+
+
+								
+								break;
+						 case  244://price4_4
+
+
+								
+								break;
+						 case  245://discountcode4_4
+
+
+								
+								break;
+						 case  246://quantitystrikeprice4_4
+
+
+								
+								break;
+						 case  286://pricename_5
+
+
+								
+								break;
+						 case  288://quantity1_5
+
+
+								
+								break;
+						 case  290://price1_5
+
+
+								
+								break;
+						 case  291://discountcode1_5
+
+
+								
+								break;
+						 case  292://quantitystrikeprice1_5
+
+
+								
+								break;
+						 case  293://quantity2_5
+
+
+								
+								break;
+						 case  295://price2_5
+
+
+								
+								break;
+						 case  296://discountcode2_5
+
+
+								
+								break;
+						 case  297://quantitystrikeprice2_5
+
+
+								
+								break;
+						 case  298://quantity3_5
+
+
+								
+								break;
+						 case  299://quantitytext3_5
+
+
+								
+								break;
+						 case  300://price3_5
+
+
+								
+								break;
+						 case  301://discountcode3_5
+
+
+								
+								break;
+						 case  303://quantity4_5
+
+
+								
+								break;
+						 case  305://price4_5
+
+
+								
+								break;
+						 case  306://discountcode4_5
+
+
+								
+								break;
+						 case  307://quantitystrikeprice4_5
+
+
+								
+								break;
 							
 						
 
