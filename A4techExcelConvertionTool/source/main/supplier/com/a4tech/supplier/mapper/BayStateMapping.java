@@ -223,6 +223,11 @@ public class BayStateMapping implements IExcelParser{
 					if(name.contains("|")){
 						name = name.replaceAll("\\|", "");
 					}
+					if(name.contains("™")){
+						name = name.replaceAll("™", "a,");
+					}
+					name = CommonUtility.removeNonAlphaNumericInBeggingCharacter(name);
+					name = CommonUtility.getStringLimitedChars(name, 60);
 					productExcelObj.setName(name);
 				    break;
 				case 4:// description
@@ -548,7 +553,7 @@ public class BayStateMapping implements IExcelParser{
 		Cell xidCell =  row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
 		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
 		if(StringUtils.isEmpty(productXid)){
-		     xidCell = row.getCell(8);
+		     xidCell = row.getCell(1);
 		     productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
 		}
 		return productXid;

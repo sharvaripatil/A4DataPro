@@ -109,13 +109,13 @@ public static Map<String, String> MATERIAL_MAP =new HashMap<String, String>();
 		COLOR_MAP.put("White with Red Roller","Medium White:Combo:Medium Red:Secondary");
 		COLOR_MAP.put("Blue Grip and Crystal Blue Brush Handle","Medium Blue:Combo:Transparent Blue:Secondary");
 		COLOR_MAP.put("White Case With Charcoal Sponge","Medium White:Combo:Dark Black:Secondary");
-		COLOR_MAP.put("Rainbow","Multi Color");
+		COLOR_MAP.put("Rainbow Pill Boxes","Multi Color:Alias:Rainbow");
 		COLOR_MAP.put("Stock Art as Shown","Other");
-		COLOR_MAP.put("White Base with Rainbow Translucent Boxes","Medium White:combo:Multi Color:Secondary");
+		COLOR_MAP.put("White Base with 7 Individual Pill Boxes in Rainbow Translucent Colors","Medium White:combo:Multi Color:Secondary:Alias:White Base with Rainbow Translucent Boxes");
+		COLOR_MAP.put("White base with 7 Individual Pill Boxes in Rainbow Translucent Colors","Medium White:combo:Multi Color:Secondary:Alias:White Base with Rainbow Translucent Boxes");
 		COLOR_MAP.put("White Base with Translucent Pill Boxes","Medium White:combo:Clear:Secondary");
-		COLOR_MAP.put("White Base-Crystal Blue-Lavender","Medium White:Combo:Clear Blue:Secondary:Clear Purple:Trim");
-		COLOR_MAP.put("White Base-Rainbow Translucent Boxes","Medium White:Combo:Clear Multi Color:Secondary");
-		
+		COLOR_MAP.put("White Base with Lids in Translucent Colors of Crystal Blue and Lavender","Medium White:Combo:Clear Blue:Secondary:Clear Purple:Trim:Alias:White Base-Crystal Blue-Lavender");
+		COLOR_MAP.put("White Base with 4 Individual Weekly Pill Boxes in Rainbow Translucent Colors plus 1 White Daily Box","Medium White:Combo:Clear Multi Color:Secondary:Alias:White Base-Rainbow Translucent Boxes");		
 		
 	// Material Mapping
 		MATERIAL_MAP.put("Crystal Styrene", "ABS Plastic");

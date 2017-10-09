@@ -210,13 +210,13 @@ public class ProductDao implements IProductDao{
 		Query query = session.createQuery(hql);
 		List results = query.list();*/
 	}catch(Exception ex){
-		_LOGGER.error("Error in dao block : "+ex.getMessage());
+		_LOGGER.error("Error in dao block while saving error log: "+ex.getCause());
 	}finally{
 		if(session !=null){
 			try{
 				session.close();
 			}catch(Exception ex){
-				_LOGGER.warn("Error while close session object");
+				_LOGGER.warn("Error while close session object: "+ex.getCause());
 			}
 			}
 		}
@@ -236,13 +236,13 @@ public class ProductDao implements IProductDao{
 	           criteria.list();
 	            return data;
 		  }catch(Exception exce){
-			  _LOGGER.error("unable to fetch ftpFile status::"+exce.getMessage());
+			  _LOGGER.error("unable to fetch ftpFile status::"+exce.getCause());
 		  }finally{
 			  if(session != null){
 				  try{
 					  session.close();
 				  }catch(Exception exce){
-					  _LOGGER.error("unable to close session connection: "+exce.getMessage());
+					  _LOGGER.error("unable to close session connection: "+exce.getCause());
 				  }
 			  }
 		  }
@@ -263,7 +263,7 @@ public class ProductDao implements IProductDao{
 			    session.saveOrUpdate(fileEntity);
 			    transaction.commit();
 		   }catch(Exception exe){
-			     _LOGGER.error("unable to upadte ftp file status: "+exe.getMessage());
+			     _LOGGER.error("unable to upadte ftp file status: "+exe.getCause());
 			     if(transaction != null){
 			    	 transaction.rollback();
 			     }
@@ -272,7 +272,7 @@ public class ProductDao implements IProductDao{
 			    	 try{
 			    		 session.close();
 			    	 }catch(Exception exce){
-			    		 _LOGGER.error("unable to close session connection: "+exce.getMessage());
+			    		 _LOGGER.error("unable to close session connection: "+exce.getCause());
 			    	 }
 			    }
 		   }
@@ -289,13 +289,13 @@ public class ProductDao implements IProductDao{
 	            SupplierLoginDetails data =  (SupplierLoginDetails) criteria.uniqueResult();
 	            return data;
 		  }catch(Exception exce){
-			  _LOGGER.error("unable to fetch supplier login details::"+exce.getMessage());
+			  _LOGGER.error("unable to fetch supplier login details::"+exce.getCause());
 		  }finally{
 			  if(session != null){
 				  try{
 					  session.close();
 				  }catch(Exception exce){
-					  _LOGGER.error("unable to close session connection: "+exce.getMessage());
+					  _LOGGER.error("unable to close session connection: "+exce.getCause());
 				  }
 			  }
 		  }
@@ -315,7 +315,7 @@ public class ProductDao implements IProductDao{
 			  session.save(loginDetails);
 			  transaction.commit();
 		  }catch(Exception exce){
-			  _LOGGER.error("unable to save supplier cridentials::"+exce.getMessage());
+			  _LOGGER.error("unable to save supplier cridentials::"+exce.getCause());
 			  if(transaction != null){
 				  transaction.rollback();
 			  }
@@ -324,7 +324,7 @@ public class ProductDao implements IProductDao{
 				  try{
 					  session.close();
 				  }catch(Exception exce){
-					  _LOGGER.error("unable to close session connection: "+exce.getMessage());
+					  _LOGGER.error("unable to close session connection: "+exce.getCause());
 				  }
 			  }
 		  }
