@@ -1,5 +1,4 @@
 package com.a4tech.supplier.mapper;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,9 +35,9 @@ import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
-public class MaxplusMapping implements IExcelParser {
+public class GempirepromotionsMapping implements IExcelParser {
 	private static final Logger _LOGGER = Logger
-			.getLogger(MaxplusMapping.class);
+			.getLogger(GempirepromotionsMapping.class);
 	
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
@@ -56,13 +55,7 @@ public class MaxplusMapping implements IExcelParser {
 		List<Color> listColor = new ArrayList<Color>();
 		List<ImprintMethod> listimprintMethods = new ArrayList<ImprintMethod>();
 		List<ImprintSize> listimprintSize = new ArrayList<ImprintSize>();
-		List<Image> listImage= new ArrayList<Image>();
-
-		
-		
-
-
-		
+		List<Image> listImage= new ArrayList<Image>();		
 		Product productExcelObj = new Product();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
 		ProductionTime prodtimeObj=new ProductionTime();
@@ -221,14 +214,16 @@ public class MaxplusMapping implements IExcelParser {
 							productExcelObj.setExternalProductId(xid);
 							break;
 
-						case 2:// Sku
+						case 2:// productcode
+
 							
 							 ProdNo=cell.getStringCellValue();
 							 productExcelObj.setAsiProdNo(ProdNo);
 
 							break;
 							
-						case 11: // Product URL
+						case 3: // productname
+
 							String Inventory=cell.getStringCellValue();
 							
 							if (!StringUtils.isEmpty(Inventory)) {
@@ -239,7 +234,8 @@ public class MaxplusMapping implements IExcelParser {
 							
 							break;	
 							
-						case 12: // Name
+						case 8: // productdescription
+
 							productName = cell.getStringCellValue();
 							int len=productName.length();
 							 if(len>60){
@@ -252,7 +248,8 @@ public class MaxplusMapping implements IExcelParser {
 
 							break;	
 					
-						case 15: // ShortDescription
+						case 9: // productdescription
+
 							String Summary=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(Summary)) {
 						    Summary=Summary.substring(0, 130);
@@ -260,7 +257,8 @@ public class MaxplusMapping implements IExcelParser {
 							}
 							break;	
 							
-						case 16: // LongDescription
+						case 23: //Size
+
 							String description = cell.getStringCellValue();
 							description=description.replace("?","").replace("ã","").replace("¡", "").replace(":", "");
 							if (!StringUtils.isEmpty(description)) {
@@ -272,7 +270,8 @@ public class MaxplusMapping implements IExcelParser {
 
 							break;	
 					
-						case 19: // Large Image URL0
+						case 25: // Options & Accessories
+
 							 Image1=cell.getStringCellValue();
 							 if (!StringUtils.isEmpty(Image1)) {	
 								Image=Image.append(Image1).append(",");
@@ -280,7 +279,8 @@ public class MaxplusMapping implements IExcelParser {
 
 							break;	
 					
-						case 22: // Large Image URL1
+						case 26: //Set up Charge
+
 							 Image2=cell.getStringCellValue();
 							 if (!StringUtils.isEmpty(Image2)) {	
 									Image=Image.append(Image2).append(",");
@@ -288,7 +288,8 @@ public class MaxplusMapping implements IExcelParser {
 
 							break;	
 							
-						case 25: // Large Image URL2
+						case 27: // Plating
+
 							 Image3=cell.getStringCellValue();
 							 if (!StringUtils.isEmpty(Image3)) {	
 									Image=Image.append(Image3).append(",");
@@ -296,49 +297,56 @@ public class MaxplusMapping implements IExcelParser {
 
 							break;	
 							
-						case 28: // Large Image URL3
+						case 28: // Comments
+
 							 Image4=cell.getStringCellValue();
 							 if (!StringUtils.isEmpty(Image4)) {	
 									Image=Image.append(Image4).append(",");
 								  }
 							break;	
 							
-						case 31: // Large Image URL4
+						case 29: // Options & Accessories1
+
 							 Image5=cell.getStringCellValue();
 							 if (!StringUtils.isEmpty(Image5)) {	
 									Image=Image.append(Image5).append(",");
 								  }
 							break;	
 							
-						case 34: // Large Image URL5
+						case 30: // 2nd Side
+
 							 Image6=cell.getStringCellValue();
 							 if (!StringUtils.isEmpty(Image6)) {	
 									Image=Image.append(Image6).append(",");
 								  }
 							break;	
 							
-						case 37: // Large Image URL6
+						case 31: // Keyfetch
+
 							 Image7=cell.getStringCellValue();
 							 if (!StringUtils.isEmpty(Image7)) {	
 									Image=Image.append(Image7).append(",");
 								  }
 							break;	
 							
-						case 40: // Large Image URL7
+						case 32: //Standard Production
+
 							 Image8=cell.getStringCellValue();
 							 if (!StringUtils.isEmpty(Image8)) {	
 									Image=Image.append(Image8).append(",");
 								  }
 							break;	
 							
-						case 43: // Large Image URL8
+						case 34: // Carton Weight (Lbs)
+
 							 Image9=cell.getStringCellValue();
 							 if (!StringUtils.isEmpty(Image9)) {	
 									Image=Image.append(Image9).append(",");
 								  }
 							break;	
 	
-						case 46: // Large Image URL9
+						case 35: //Carton Width
+
 							 Image10=cell.getStringCellValue();
 							 if (!StringUtils.isEmpty(Image10)) {	
 									Image=Image.append(Image10).append(",");
@@ -351,323 +359,51 @@ public class MaxplusMapping implements IExcelParser {
 							break;	
 													
 							
-						case 67: // Price1
+						case 36: // Carton Height
+
 		                    ListPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
 
 							break;	
 							
 							
-						case 68: // QtyBreak1
+						case 37: // Carton Length
+
 							 Quantity1=CommonUtility.getCellValueStrinOrInt(cell);
 
 
 							break;	
 							
 							
-						case 69: // Price2
+						case 38: // Units Per Carton
+
 		                    ListPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
 
 
 							break;	
 							
 							
-						case 70: // QtyBreak2
+						case 41: // price_1 start here
+
 							 Quantity2=CommonUtility.getCellValueStrinOrInt(cell);
 
 							break;	
 							
+						case 42: //pricename_1
+
+
+							 Quantity2=CommonUtility.getCellValueStrinOrInt(cell);
+
+							break;
 							
-						case 71: // Price3
+							
+						case 345: // quantityunit_5
+
 		                    ListPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
 
 
 							break;	
 							
-							
-						case 72: // QtyBreak3
-							 Quantity3=CommonUtility.getCellValueStrinOrInt(cell);
 
-							break;	
-							
-							
-						case 73: // Price4
-		                    ListPrice4=CommonUtility.getCellValueStrinOrDecimal(cell);
-
-
-							break;	
-							
-							
-						case 74: // QtyBreak4
-							 Quantity4=CommonUtility.getCellValueStrinOrInt(cell);
-
-							break;	
-							
-							
-						case 75: // Price5
-		                    ListPrice5=CommonUtility.getCellValueStrinOrDecimal(cell);
-							 listOfPrices=listOfPrices.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
-									 append(ListPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice3).
-							 append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice4).append
-							 (ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice5);
-							 ListAllprice=listOfPrices.toString();
-
-							break;	
-							
-							
-						case 76: // QtyBreak5
-							 Quantity5=CommonUtility.getCellValueStrinOrInt(cell);
-							 listOfQuantity=listOfQuantity.append(Quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
-									 append(Quantity2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(Quantity3).
-							 append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(Quantity4).append
-							 (ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(Quantity5);
-								 ListAllquantity=listOfQuantity.toString();
-							break;	
-							
-							
-						case 77: // Price6
-		              //      ListPrice6=CommonUtility.getCellValueStrinOrDecimal(cell);
-
-
-							break;	
-							
-							
-						case 78: // QtyBreak6
-					//		 Quantity6=CommonUtility.getCellValueStrinOrInt(cell);
-
-							break;	
-							
-							
-						case 79: // Price7
-		             //       ListPrice7=CommonUtility.getCellValueStrinOrDecimal(cell);
-
-
-							break;	
-							
-							
-						case 80: // QtyBreak7
-						//	 Quantity7=CommonUtility.getCellValueStrinOrInt(cell);
-
-							break;	
-							
-							
-						case 81: // Price8
-		             //       ListPrice8=CommonUtility.getCellValueStrinOrDecimal(cell);
-
-
-							break;	
-							
-							
-						case 82: // QtyBreak8
-						//	 Quantity8=CommonUtility.getCellValueStrinOrInt(cell);
-
-							break;	
-							
-							
-						case 83: // Price9
-		              //      ListPrice9=CommonUtility.getCellValueStrinOrDecimal(cell);
-
-
-							break;	
-							
-							
-						case 84: // QtyBreak9
-					//		 Quantity9=CommonUtility.getCellValueStrinOrInt(cell);
-
-							break;	
-							
-							
-						case 85: // Price10
-
-
-							break;	
-							
-					
-							
-						case 107: // Price Point
-
-							break;	
-							
-							
-						case 108: // 
-
-							break;	
-							
-							
-						case 109: // Laser Engraving
-
-							break;	
-							
-							
-						case 110: // Setup Charge 3
-
-							break;	
-						
-						case 111: // Setup Charge 2
-
-							break;	
-							
-						case 112: // Imprint Area 3
-                        String ImprintSize1=cell.getStringCellValue();
-						if (!StringUtils.isEmpty(ImprintSize1)) {							
-                        ImprintSize=ImprintSize.append(ImprintSize1).append(",");	
-						}
-							
-							break;	
-							
-						case 113: // Imprint Area 2
-	                    String ImprintSize2=cell.getStringCellValue();
-						if (!StringUtils.isEmpty(ImprintSize2)) {							
-                        ImprintSize=ImprintSize.append(ImprintSize2).append(",");	
-						}				
-
-							break;	
-							
-						case 114: // Imprint Area
-	                    String ImprintSize3=cell.getStringCellValue();
-						if (!StringUtils.isEmpty(ImprintSize3)) {							
-                        ImprintSize=ImprintSize.append(ImprintSize3).append(",");	
-                        String Imprintsize=ImprintSize.toString();
-                        listimprintSize=maxplusAttribute.getImprintSize(Imprintsize);
-	
-                        productConfigObj.setImprintSize(listimprintSize);
-						}
-
-							break;	
-							
-							
-						case 115: // Imprint Method 3
-							String ImprintMethod1=cell.getStringCellValue();
-							if (!StringUtils.isEmpty(ImprintMethod1)) {							
-								ImprintMethod=ImprintMethod.append(ImprintMethod1).append(",");
-							}
-							break;	
-							
-							
-						case 116: // Imprint Method 2
-							String ImprintMethod2=cell.getStringCellValue();
-							if (!StringUtils.isEmpty(ImprintMethod2)) {							
-								ImprintMethod=ImprintMethod.append(ImprintMethod2).append(",");
-
-
-							}
-							break;	
-							
-							
-						case 117: // Imprint Method
-							String ImprintMethod3=cell.getStringCellValue();
-							if (!StringUtils.isEmpty(ImprintMethod3)) {							
-								ImprintMethod=ImprintMethod.append(ImprintMethod3).append(",");
-								String ImprintMthod=ImprintMethod.toString();
-								listimprintMethods=maxplusAttribute.getImprintMethod(ImprintMthod);
-                                productConfigObj.setImprintMethods(listimprintMethods);
-							}
-							break;	
-							
-							
-						case 118: // Size
-							String Size=cell.getStringCellValue();
-							if (!StringUtils.isEmpty(Size)) {							
-							sizeObj=maxplusAttribute.getSize(Size);	
-							productConfigObj.setSizes(sizeObj);	
-							}	
-							break;	
-							
-						case 119: // Rush Service
-							String RushService=cell.getStringCellValue();
-							if (!StringUtils.isEmpty(RushService)) {							
-								rushserviceObj.setAvailable(true);	
-								productConfigObj.setRushTime(rushserviceObj);
-							}
-
-							break;	
-							
-							
-						case 120: // Product Color
-                           String ProductColor=cell.getStringCellValue();
-                           ProductColor=ProductColor.replace("As Shown", "");
-                           if (!StringUtils.isEmpty(ProductColor)) {		
-                        	   
-                        	 listColor=maxplusAttribute.getColorCriteria(ProductColor); 
-                        	 productConfigObj.setColors(listColor);  
-                           }
-							
-							
-							break;	
-							
-							
-						case 121: // Approximate Production Time
-							String ProductionTime=cell.getStringCellValue();
-							if (!StringUtils.isEmpty(ProductionTime)) {
-								prodtimeObj.setBusinessDays("7-10");
-								listProductionTime.add(prodtimeObj);
-							    productConfigObj.setProductionTime(listProductionTime);	
-							}
-							break;	
-							
-							
-						case 122: // Items Per Carton
-							 ShippingItem=cell.getStringCellValue();
-
-							break;	
-							
-							
-						case 123: // Weight Per Carton (lbs.)
-							String ShippingWeight=cell.getStringCellValue();
-							shippingEstimateObj=maxplusAttribute.getShippingestimete(ShippingItem,ShippingWeight);
-							productConfigObj.setShippingEstimates(shippingEstimateObj);
-
-							break;	
-							
-							
-						case 124: // Setup Charge
-
-							break;	
-							
-							
-						case 125: // Running Charge
-
-							break;	
-							
-							
-						case 127: // Repeat Setup Charge
-
-							break;	
-							
-							
-						case 128: // Running Charge 2
-
-							break;	
-							
-							
-						case 129: // Running Charge 3
-
-							break;	
-							
-							
-						case 130: // Less Than Minimum Charge
-
-							break;	
-							
-							
-						case 131: // Additional Notes
-							 AdditionalInfo1=cell.getStringCellValue();
-							
-
-							break;	
-											
-						case 150: // MinimumQty
-							
-							String AdditionalproductInfo2=cell.getStringCellValue();
-							if (!StringUtils.isEmpty(AdditionalproductInfo2)) {
-								AdditionalproductInfo2=AdditionalInfo1.concat("Minimum quantity order is:"+AdditionalproductInfo2);
-								productExcelObj.setAdditionalProductInfo(AdditionalproductInfo2);
-							}else
-							{
-							productExcelObj.setAdditionalProductInfo(AdditionalInfo1);
-							}
-
-							break;	
-							
 							
 						
 

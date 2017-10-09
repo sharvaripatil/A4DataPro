@@ -2,15 +2,22 @@ package parser.maxplus;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.NumberOfItems;
+import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
+import com.a4tech.product.model.Weight;
+import com.a4tech.util.ApplicationConstants;
 
 
 public class MaxpluProductAttributeParser {
@@ -87,7 +94,8 @@ public class MaxpluProductAttributeParser {
 
 	 public Size getSize(String size) {
 		 String originalSize=size;
-		 size=size.replaceAll("[^0-9|LWHb.//-/x%/ ]", "");
+		 size=size.replaceAll("[^0-9-|b./x%/ ]","");
+		 size=size.replaceAll("-"," ");
 		 Size sizeObj=new Size();
 	      Dimension dimensionObj=new Dimension();
 
@@ -113,7 +121,7 @@ public class MaxpluProductAttributeParser {
        	  
            //sizeObj=new Size();   
             ValueObj=new Value();
-     		ValueObj.setValue(productSizeArr[i]);
+     		ValueObj.setValue(productSizeArr[i].trim());
      		ValueObj.setUnit("in");
      		
      		if(i==0){
@@ -140,8 +148,51 @@ public class MaxpluProductAttributeParser {
 		
 	}
 
-	
-	
+	 public ShippingEstimate getShippingestimete(String shippingItem,
+				String shippingWeight) {
+
+	        ShippingEstimate shippingEstimateObj=new ShippingEstimate();
+			List<NumberOfItems> numberOfItem = new ArrayList<NumberOfItems>();
+
+			NumberOfItems itemObj=new NumberOfItems();
+			itemObj.setValue(shippingItem);
+			itemObj.setUnit("case");
+			numberOfItem.add(itemObj);
+			shippingEstimateObj.setNumberOfItems(numberOfItem);
+		
+					
+			List<Weight> listOfWeightObj = new ArrayList<Weight>();
+			Weight  weightObj = new Weight();
+			weightObj.setValue(shippingWeight);
+			weightObj.setUnit("lbs");
+			listOfWeightObj.add(weightObj);
+			shippingEstimateObj.setWeight(listOfWeightObj);		 
+		 
+		 return shippingEstimateObj;
+		}
+
+	 public List<Image> getImages(String image10) {
+			List<Image> listImage= new ArrayList<Image>();
+			Image imgObj=new Image();
+
+			String imgArr[]=image10.split(",");
+			
+			for (String imgName : imgArr) {
+				imgObj=new Image();
+				imgObj.setImageURL(imgName);
+				listImage.add(imgObj);				
+			}		
+			return listImage;
+		}
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
 				
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;
@@ -162,6 +213,10 @@ public class MaxpluProductAttributeParser {
 	public void setLookupRestServiceObj(LookupRestService lookupRestServiceObj) {
 		this.lookupRestServiceObj = lookupRestServiceObj;
 	}
+
+	
+
+	
 
 
 
