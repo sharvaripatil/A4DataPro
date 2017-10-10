@@ -184,7 +184,8 @@
 		</property>
 		<property name="hibernateProperties">
 			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<!-- <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop> -->
 				<prop key="hibernate.current_session_context_class">thread</prop>
 				<prop key="show_sql">true</prop>
 				<prop key="hbm2ddl.auto">update</prop>
@@ -418,6 +419,9 @@
 		<property name="gillStudiosMapping" ref="gillStudiosMappingId"/>
 		<property name="blueGenerationMapping" ref="blueGenerId"/>
 		<property name="fitsAccessoriesMapping" ref="FITSAccessoriId"/>
+		<property name="baysStateMapping" ref="bayStateMappingId"/>
+		<property name="maxplusmapping" ref="maxplusmappingId"></property>
+		<property name="gempiresMapping" ref="gempiresMappingId"/>
 		<property name="edwardsGarmentMapping" ref="edwardsGarmentMappingId"/>
      </bean>
      
@@ -870,9 +874,11 @@
             <property name="twintechColorObj" ref="twintechColorObjId"/>
             <property name="twintechPriceGridObj" ref="twintechPriceGridObjId"/>
             <property name="twintechProductAttributeObj" ref="twintechProductAttributeObjId"/>
+            <property name="roelProduct" ref="roelProductId"/>  <!-- ROEL supplier -->
+            
                   
             </bean>
-     
+            <bean id="roelProductId" class="parser.twintech.RoelProductAttributeParser"/>
             <bean id="twintechColorObjId" class="parser.twintech.TwintechColorParser"/>
             <bean id="twintechPriceGridObjId" class="parser.twintech.TwintechPriceGridParser"/>
             <bean id="twintechProductAttributeObjId" class="parser.twintech.TwintechProductAttributeParser">
@@ -991,6 +997,19 @@
      <bean id="bluGenattributeParserId" class="parser.BlueGeneration.BlueGenerationAttributeParser"></bean> 
      <!-- Blue Generation Configuration End -->
      
+     
+       <bean id="maxplusmappingId" class="com.a4tech.supplier.mapper.MaxplusMapping">
+           <property name="postServiceImpl" ref="postService"/>
+           <property name="productDaoObj" 	ref="productDao"/>
+           <property name="maxplusAttribute" 	ref="maxplusAttributeId"/>
+           <property name="pricegrid" 	ref="pricegridId"/>
+           
+        </bean>
+      <bean id="maxplusAttributeId" class="parser.maxplus.MaxpluProductAttributeParser"/>
+      <bean id="pricegridId" class="parser.maxplus.MaxplusPriceGridParser"/>
+       <!-- Maxplus mapping  Configuration End -->
+       
+    
      <!-- FITS Accessories Configuration Start -->
      <bean id="FITSAccessoriId" class="com.a4tech.supplier.mapper.FITSAccessoriesMapping">
      	<property name="postServiceImpl" 	ref="postService"/>
@@ -1001,6 +1020,27 @@
      <bean id="fitsAttributeParserId" class="parser.FITSAccessories.FITSAttributeParser"/>
      <bean id="fitsPriceGridparserId" class="parser.FITSAccessories.FITSPriceGridParser"/>
      <!-- FITS Accessories Configuration End -->
+      <!-- Bay StateMapping Start -->
+     <bean id="bayStateMappingId" class="com.a4tech.supplier.mapper.BayStateMapping">
+     	<property name="postServiceImpl" 	ref="postService"/>
+        <property name="productDaoObj" 	   ref="productDao"/>
+        <property name="bayStateParser" 	ref="bayStateParserId"/>
+        <property name="bayStatePriceGridParser"  ref="bayStatePriceGridId"/>
+     </bean>
+     <bean id="bayStatePriceGridId" class="parser.bayState.BayStatePriceGridParser"/>
+     <bean id="bayStateParserId" class="parser.bayState.BayStateParser">
+     	<property name="lookupServiceData" ref="lookupServiceData"></property>
+     </bean>
+     
+     <!-- Bay State End -->
+     <!-- Gempire Promotions Configuration Start -->
+     <bean id="gempiresMappingId" class="com.a4tech.supplier.mapper.GempirepromotionsMapping">
+     	<property name="postServiceImpl" 	ref="postService"/>
+        <property name="productDaoObj" 	   ref="productDao"/>
+  
+     </bean>
+  
+     <!-- Gempire Promotions Configuration End -->
      <!-- supplier 51752 Edwards Garment Co configuration start -->
      <bean id="edwardsGarmentMappingId" class="com.a4tech.supplier.mapper.EdwardsGarmentMapping" autowire="byName">
        <property name="postServiceImpl" ref="postService"/>

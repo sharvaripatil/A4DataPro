@@ -158,11 +158,16 @@ public class ApparealProductAttributeParser {
 		return volume;
 	}
 	
-	public List<ImprintMethod> getImprintMethod(String data){
-		
+	public ProductConfigurations getImprintMethod(String data,ProductConfigurations productConfigObj){
+		//List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
+		List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+		if(!CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
+			List<ImprintMethod> listOfImprintMethodTemp = productConfigObj.getImprintMethods();
+			listOfImprintMethod.addAll(listOfImprintMethodTemp);
+		}
 		data = data.replaceAll("(&|and|or)", ApplicationConstants.CONST_DELIMITER_COMMA);
 		ImprintMethod	imprintMethodObj = null;	
-		List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+		
 		if(data.trim().equalsIgnoreCase("Screen Print (1 color, 1 location only)")){
 			data = "Screen Print";
 		}
@@ -197,10 +202,11 @@ public class ApparealProductAttributeParser {
 				  imprintMethodObj.setAlias(imprintMethodName);
 			  }
 			  listOfImprintMethod.add(imprintMethodObj);
+			  productConfigObj.setImprintMethods(listOfImprintMethod);
 		}
-		return listOfImprintMethod;
+		return productConfigObj;
 	}
-	public List<ProductionTime> getProductionTimeList(String prdTime){
+	public ProductConfigurations getProductionTimeList(String prdTime,ProductConfigurations productConfigObj){
 		List<ProductionTime> listOfProductionTime = new ArrayList<>();
 		ProductionTime proTimeObj = null;
 		if(prdTime.contains("Blank: 24 hours")){
@@ -208,6 +214,21 @@ public class ApparealProductAttributeParser {
 			proTimeObj.setBusinessDays("1");
 			proTimeObj.setDetails("Blank: 24 hours");
 			listOfProductionTime.add(proTimeObj);
+			productConfigObj.setProductionTime(listOfProductionTime);
+			
+			////////////////
+			List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+			if(!CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
+				List<ImprintMethod> listOfImprintMethodTemp = productConfigObj.getImprintMethods();
+				listOfImprintMethod.addAll(listOfImprintMethodTemp);
+			}
+			ImprintMethod	imprintMethodObj = new ImprintMethod();	
+			imprintMethodObj.setType("UNIMPRINTED");
+			imprintMethodObj.setAlias("UNIMPRINTED");
+			listOfImprintMethod.add(imprintMethodObj);
+			productConfigObj.setImprintMethods(listOfImprintMethod);
+			////////////////////
+			
 		}
 		if(prdTime.contains("5-10"))
 		{
@@ -215,6 +236,7 @@ public class ApparealProductAttributeParser {
 			proTimeObj.setBusinessDays("5-10");
 			proTimeObj.setDetails("Decorated");
 			listOfProductionTime.add(proTimeObj);
+			productConfigObj.setProductionTime(listOfProductionTime);
 		}
 		if(prdTime.contains("7-10"))
 		{
@@ -222,9 +244,10 @@ public class ApparealProductAttributeParser {
 			proTimeObj.setBusinessDays("7-10");
 			proTimeObj.setDetails("Decorated - after proof approval");
 			listOfProductionTime.add(proTimeObj);
+			productConfigObj.setProductionTime(listOfProductionTime);
 		}
 		
-		return listOfProductionTime;
+		return productConfigObj;
 	}
 	
 	public Product setImrintSizeAndLocation(String imprintValue,Product existingProduct){

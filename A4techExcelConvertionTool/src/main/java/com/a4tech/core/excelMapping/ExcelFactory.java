@@ -19,6 +19,7 @@ import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.AlfaMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
+import com.a4tech.supplier.mapper.BayStateMapping;
 import com.a4tech.supplier.mapper.BellaCanvas;
 import com.a4tech.supplier.mapper.BlueGenerationMapping;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
@@ -27,12 +28,14 @@ import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.EdwardsGarmentMapping;
 import com.a4tech.supplier.mapper.FITSAccessoriesMapping;
+import com.a4tech.supplier.mapper.GempirepromotionsMapping;
 import com.a4tech.supplier.mapper.GillStudiosMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineMappingRevised;
+import com.a4tech.supplier.mapper.MaxplusMapping;
 import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
@@ -82,13 +85,19 @@ public class ExcelFactory {
 	private HarvestIndustrialExcelMapping   harvestMapping;	
 	private HighCaliberLineMappingRevised hcLineExcelMapping;
 	private TowelSpecialtiesMapping        towelSpecialties;
-	private BagMakersMapping bagMakersMapping; 
-	private GillStudiosMapping gillStudiosMapping;
+	private BagMakersMapping 				bagMakersMapping; 
+	private GillStudiosMapping 				gillStudiosMapping;
 	private BlueGenerationMapping			blueGenerationMapping;
 	private FITSAccessoriesMapping          fitsAccessoriesMapping;
+	private BayStateMapping                 baysStateMapping;
+    private MaxplusMapping                  maxplusmapping;
+	private GempirepromotionsMapping        gempiresMapping;
 	private EdwardsGarmentMapping edwardsGarmentMapping;
 	
-		public  IExcelParser getExcelParserObject(String name){
+
+
+	public  IExcelParser getExcelParserObject(String name){
+
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
 		   }else if(name.equalsIgnoreCase("kl") || name.equals("64905")){
@@ -156,7 +165,7 @@ public class ExcelFactory {
 	      else if(name.equalsIgnoreCase("pslcad") || name.equals("90345")){
 		      return pslcadMapping;
 	      }
-	      else if(name.equalsIgnoreCase("twintech") || name.equals("92357")){
+	      else if(name.equalsIgnoreCase("twintech") || name.equals("83140")){///*"92357"*/
 		      return twintechMapping;
 	      } else if(name.equalsIgnoreCase("alfa") || name.equals("34042")){
 	    	  return alfaMapping;
@@ -168,17 +177,21 @@ public class ExcelFactory {
 
 	      } else if(name.equalsIgnoreCase("towelSpe") || name.equals("91605")){
 	    	  return towelSpecialties;
-
 	      }else if(name.equalsIgnoreCase("bagMakersMapping") || name.equals("37940")){
 		      return bagMakersMapping;
-
 	      }else if(name.equalsIgnoreCase("gillStudios") || name.equals("56950")){
 			   return gillStudiosMapping;
-		  }else if(name.equalsIgnoreCase("blueGeneration") || name.equals("40653")){
+		  } else if(name.equalsIgnoreCase("blueGeneration") || name.equals("40653")){
 			  return blueGenerationMapping;
 		  } else if(name.equalsIgnoreCase("FITSAccessories ") || name.equals("71107")){
 			  return fitsAccessoriesMapping;
-		  } else if(name.equalsIgnoreCase("edwardsGarment") || name.equals("51752")){
+		  }else if(name.equalsIgnoreCase("gempiresMapping") || name.equals("55610")){
+			  return gempiresMapping;
+		  } else if(name.equals("38980") || name.equalsIgnoreCase("bayState")){
+			  return baysStateMapping;
+		  } else if(name.equalsIgnoreCase("maxplusmapping") || name.equals("69718")){
+			  return maxplusmapping;
+		  }else if(name.equalsIgnoreCase("edwardsGarment") || name.equals("51752")){
 			   return edwardsGarmentMapping;
 		  }
 		return null;
@@ -481,6 +494,14 @@ public class ExcelFactory {
 	public void setBlueGenerationMapping(BlueGenerationMapping blueGenerationMapping) {
 		this.blueGenerationMapping = blueGenerationMapping;
 	}
+	
+	public MaxplusMapping getMaxplusmapping() {
+		return maxplusmapping;
+	}
+
+	public void setMaxplusmapping(MaxplusMapping maxplusmapping) {
+		this.maxplusmapping = maxplusmapping;
+	}
 	public FITSAccessoriesMapping getFitsAccessoriesMapping() {
 		return fitsAccessoriesMapping;
 	}
@@ -488,6 +509,21 @@ public class ExcelFactory {
 	public void setFitsAccessoriesMapping(FITSAccessoriesMapping fitsAccessoriesMapping) {
 		this.fitsAccessoriesMapping = fitsAccessoriesMapping;
 	}
+	public GempirepromotionsMapping getGempiresMapping() {
+		return gempiresMapping;
+	}
+
+	public void setGempiresMapping(GempirepromotionsMapping gempiresMapping) {
+		this.gempiresMapping = gempiresMapping;
+	}
+
+	public BayStateMapping getBaysStateMapping() {
+		return baysStateMapping;
+	}
+	public void setBaysStateMapping(BayStateMapping baysStateMapping) {
+		this.baysStateMapping = baysStateMapping;
+	}
+	
 	public EdwardsGarmentMapping getEdwardsGarmentMapping() {
 		return edwardsGarmentMapping;
 	}

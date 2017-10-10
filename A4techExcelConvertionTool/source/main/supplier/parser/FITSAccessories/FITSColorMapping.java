@@ -123,7 +123,7 @@ public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
 	}
 	public static String getColorGroup(String colorName){
 		//return COLOR_MAP.get(colorName.toUpperCase());
-		String group = COLOR_MAP.get(colorName);
+		String group = COLOR_MAP.get(colorName.trim());
 		return group == null?"Other":group;
 	}
 }

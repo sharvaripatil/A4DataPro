@@ -27,7 +27,7 @@ public  class TwintechLookupData {
 		Dimension1Type.put("5", "Dia");
 		Dimension1Type.put("6", "Thickness");
 		
-
+/*
 		COLOR_MAP.put("Red 199 C","Medium Red");	
 		COLOR_MAP.put("Orange 021 C","Medium Orange");	
 		COLOR_MAP.put("Orange 158 C","Medium Orange");	
@@ -114,8 +114,79 @@ public  class TwintechLookupData {
 		COLOR_MAP.put("Ivory Beige","IRIDESCENT BROWN");	
 		COLOR_MAP.put("Wood","Light Brown");	
 		COLOR_MAP.put("Metallic Gray","Metallic Gray");	
-		COLOR_MAP.put("Light Red","Light Red");	
+		COLOR_MAP.put("Light Red","Light Red");	*/
 
+		
+		COLOR_MAP.put("Black","Medium Black"); 
+		COLOR_MAP.put("Wine","Medium Red"); 
+		COLOR_MAP.put("Chocolate","Medium Brown"); 
+		COLOR_MAP.put("Red-White Top Hat","Red:Combo:White"); 
+		COLOR_MAP.put("Black-White Top Hat","Black:Combo:White"); 
+		COLOR_MAP.put("Navy-White Top Hat","Dark Blue:Combo:White"); 
+		COLOR_MAP.put("Black-White","Black:Combo:White"); 
+		COLOR_MAP.put("Medium Black","Medium Black"); 
+		COLOR_MAP.put("Dark Blue","Dark Blue"); 
+		COLOR_MAP.put("Red-White","Red:Combo:White"); 
+		COLOR_MAP.put("Green-White","Green:Combo:White"); 
+		COLOR_MAP.put("Bright Blue-White","Bright Blue:Combo:White"); 
+		COLOR_MAP.put("Dark Blue-White","Dark Blue:Combo:White"); 
+		COLOR_MAP.put("Medium-White","White"); 
+		COLOR_MAP.put("Medium White","Medium White"); 
+		COLOR_MAP.put("Pink","Medium Pink"); 
+		COLOR_MAP.put("Stone","Medium White"); 
+		COLOR_MAP.put("Orange","Medium Orange"); 
+		COLOR_MAP.put("Cobalt Blue","Medium Blue"); 
+		COLOR_MAP.put("Red","Medium Red"); 
+		COLOR_MAP.put("White","Medium White"); 
+		COLOR_MAP.put("Mahogany","Medium Brown"); 
+		COLOR_MAP.put("Brown","Brown"); 
+		COLOR_MAP.put("Navy","Dark Blue"); 
+		COLOR_MAP.put("Baby Blue","Medium Blue"); 
+		COLOR_MAP.put("Silver","Gray"); 
+		COLOR_MAP.put("Black-White Check","Black:Combo:White"); 
+		COLOR_MAP.put("Navy-White Check","Dark Blue:Combo:White"); 
+		COLOR_MAP.put("Black-Gray Check","Black:Combo:Gray"); 
+		COLOR_MAP.put("Navy-Gray Check","Dark Blue:Combo:Gray"); 
+		COLOR_MAP.put("Navy-White","Dark Blue:Combo:White"); 
+		COLOR_MAP.put("Royal-White","Bright Blue:Combo:White"); 
+		COLOR_MAP.put("Hunter-White","Green:Combo:White"); 
+		COLOR_MAP.put("Yellow","Medium Yellow"); 
+		COLOR_MAP.put("Royal","Medium Blue"); 
+		COLOR_MAP.put("Hunter Green","Medium Green"); 
+		COLOR_MAP.put("Gray","Medium Gray"); 
+		COLOR_MAP.put("Royal/White Check","Bright Blue:Combo:White"); 
+		COLOR_MAP.put("Black/White Check","Black:Combo:White"); 
+		COLOR_MAP.put("black-white stripe","Black:Combo:White"); 
+		COLOR_MAP.put("navy-white stripe","Dark Blue:Combo:White"); 
+		COLOR_MAP.put("royal-white stripe","Bright Blue:Combo:White"); 
+		COLOR_MAP.put("Navy/White","Medium Blue"); 
+		COLOR_MAP.put("Black/White","Medium Black"); 
+		COLOR_MAP.put("Olive","Dark Green"); 
+		COLOR_MAP.put("Bugundy","Dark Red"); 
+		COLOR_MAP.put("Black-Gray","Black:Combo:Red"); 
+		COLOR_MAP.put("Gray-Black","Gray:Combo:Black"); 
+		COLOR_MAP.put("Custom Print","Other"); 
+		COLOR_MAP.put("grey","Gray"); 
+		COLOR_MAP.put("BLACK/WHITE STRIPE","Black:Combo:White"); 
+		COLOR_MAP.put("BLACK/RED STRIPE","Black:Combo:Red"); 
+		COLOR_MAP.put("BLACK/ROYAL STRIPE","Black:Combo:Bright Blue"); 
+		COLOR_MAP.put("Tan","Light Brown"); 
+		COLOR_MAP.put("Forest Green","Dark Green"); 
+		COLOR_MAP.put("Rustic Brick","Medium Red"); 
+		COLOR_MAP.put("Plum","Purple"); 
+		COLOR_MAP.put("Tangerine","Orange"); 
+		COLOR_MAP.put("Goldenrod","Yellow"); 
+		COLOR_MAP.put("Blue","Medium Blue"); 
+		COLOR_MAP.put("Green","Medium Green"); 
+		COLOR_MAP.put("Lime","Bright Green"); 
+		COLOR_MAP.put("Navy Blue","Dark Blue"); 
+		COLOR_MAP.put("Multi color","Multi Color"); //Turquoise Blue
+		COLOR_MAP.put("Clear","Clear"); 
+		COLOR_MAP.put("Purple","Medium Purple"); 
+		COLOR_MAP.put("Turquoise Blue","Medium Blue"); 
+
+
+		
 
 		
 	}
