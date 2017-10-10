@@ -17,6 +17,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.lookup.service.LookupServiceData;
+import com.a4tech.product.model.Availability;
+import com.a4tech.product.model.AvailableVariations;
 import com.a4tech.product.model.BlendMaterial;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
@@ -523,6 +525,94 @@ public static boolean isComboColor(String colorValue){
 		return false;
 		
 	}
+	
+	
+	public boolean getAvailibilityStatus(HashMap<String,HashSet<String>> tempMap){
+		
+		boolean flag= false;
+		try{
+		if(tempMap.size()==1){
+			return false;
+		}else if(tempMap.size()==2){
+			HashSet<String> setTemp1= new HashSet<String>();//tempMap.get(0);
+			HashSet<String> setTemp2= new HashSet<String>();//tempMap.get(1);
+			int i=1;
+			for (Map.Entry<String,HashSet<String>> entry : tempMap.entrySet()) {
+				if(i==1){
+					setTemp1=entry.getValue();
+				}else{
+					setTemp2=entry.getValue();
+				}
+			    // ...
+			    i++;
+			}
+
+			 if(org.apache.commons.collections.CollectionUtils.isEqualCollection(setTemp1, setTemp2)){
+				 return false;
+			 }else{
+				 return true;
+			 }
+			 
+		}else if(tempMap.size()>2){
+			Map.Entry<String,HashSet<String>> entry = tempMap.entrySet().iterator().next();
+			HashSet<String> setTemp1= entry.getValue();//tempMap.get(0);
+			String oneVal=entry.getKey();
+			tempMap.remove(oneVal);
+			//tempMap=tempMap.remove
+			 for (HashSet<String> setTemp : tempMap.values()){
+				 if(org.apache.commons.collections.CollectionUtils.isEqualCollection(setTemp1, setTemp)){
+						flag=false;
+					}else{
+						flag=true;
+						break;
+					}
+		        }
+		}else{
+			 return false;
+		}
+		}catch(Exception e){
+			_LOGGER.error("Error while comparing avail Map");
+		}
+		return flag;
+    }
+	
+	
+	public List<Availability> getProductAvailablity(HashMap<String,HashSet<String>> tempMap) {	
+		List<Availability> listOfAvailablity = new ArrayList<>();
+		try{
+		Availability  availabilityObj = new Availability();
+		AvailableVariations  AvailableVariObj = null;
+		List<AvailableVariations> listOfVariAvail = new ArrayList<>();
+		List<Object> listOfParent = null;
+		List<Object> listOfChild = null;
+		
+		for (Map.Entry<String,HashSet<String>> entry : tempMap.entrySet()) {
+		    String ParentValue = entry.getKey();
+		    //ParentValue=ApplicationConstants.OPTION_MAP.get(ParentValue);
+		    HashSet<String> childSet = entry.getValue();
+		    for (String childValue : childSet) {
+				 AvailableVariObj = new AvailableVariations();
+				 listOfParent = new ArrayList<>();
+				 listOfChild = new ArrayList<>();
+				 listOfParent.add(childValue);//childValue
+				 listOfChild.add(ParentValue);
+				 AvailableVariObj.setParentValue(listOfParent);
+				 AvailableVariObj.setChildValue(listOfChild);
+				 listOfVariAvail.add(AvailableVariObj);
+			}
+		    
+		}
+		availabilityObj.setAvailableVariations(listOfVariAvail);
+		availabilityObj.setParentCriteria("Size");//"Product Color"
+		availabilityObj.setChildCriteria("Product Color");//"Size"
+		listOfAvailablity.add(availabilityObj);
+		}catch(Exception e){
+		   _LOGGER.error("Error while processing Options :"+e.getMessage());          
+	   return new ArrayList<Availability>();
+	   
+		}
+		return listOfAvailablity;
+		}
 	
 public LookupServiceData getLookupServiceDataObj() {
 	return lookupServiceDataObj;

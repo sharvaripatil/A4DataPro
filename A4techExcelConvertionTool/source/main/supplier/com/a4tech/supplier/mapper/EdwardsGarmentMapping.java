@@ -28,6 +28,7 @@ import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Apparel;
+import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Image;
@@ -105,6 +106,7 @@ public class EdwardsGarmentMapping implements IExcelParser{
 		HashSet<String> priceSet= new HashSet();
 		
 		HashMap<String , HashSet<String>> priceMap=new HashMap<String, HashSet<String>>();
+		HashMap<String , HashSet<String>> availMap=new HashMap<String, HashSet<String>>();
 		
 		String stockValue="";
 		int sizeCount=1;
@@ -168,7 +170,16 @@ while (iterator.hasNext()) {
 									List<Color> colorList=edwardsGarmentAttributeParser.getProductColors(new ArrayList<String>(colorSet));
 									productConfigObj.setColors(colorList);
 								}
-								
+								if(!CollectionUtils.isEmpty(availMap)){
+									HashMap<String , HashSet<String>> availMapTemp=new HashMap<String, HashSet<String>>();
+									availMapTemp=(HashMap)availMap.clone();
+							boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
+							
+							if(flag){
+							List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availMap);
+							productExcelObj.setAvailability(listOfAvailablity);
+							}
+								}
 								 if(!CollectionUtils.isEmpty(setSizes)){
 									 Apparel apparelObj = new Apparel();
 									 Size sizeObj=new Size();
@@ -232,6 +243,7 @@ while (iterator.hasNext()) {
 							 //	if(Prod_Status = false){
 							 /*	_LOGGER.info("Product Data : "
 										+ mapperObj.writeValueAsString(productExcelObj));*/
+								
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -343,6 +355,9 @@ while (iterator.hasNext()) {
 								setSizes.add(tempStr);
 								skuSet.add(tempStr+"_____"+colorValueTemp+"_____"+stockValue);
 								priceMap=	getPriceMap(priceMap, listPrice, tempStr);
+								 if(!StringUtils.isEmpty(tempStr) && !tempStr.equals("0")){
+								availMap=getAvailMap(availMap,colorValueTemp,tempStr);
+								 }
 								
 							}else if(containsOnlyNumbers(size2)){
 								//if(size1.equals(size2)){
@@ -351,6 +366,9 @@ while (iterator.hasNext()) {
 									skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
 									//priceSet.add(size1+"_____"+listPrice);
 									priceMap=	getPriceMap(priceMap, listPrice, size1);
+									 if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
+									availMap=getAvailMap(availMap,colorValueTemp,size1);
+									 }
 								
 							}else{
 								sizeCount++;
@@ -358,6 +376,9 @@ while (iterator.hasNext()) {
 								skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
 								//priceSet.add(size1+"_____"+listPrice);
 								priceMap=	getPriceMap(priceMap, listPrice, size1);
+								 if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
+								availMap=getAvailMap(availMap,colorValueTemp,size1);
+								 }
 							}
 						}else{
 							if(!StringUtils.isEmpty(size1)){
@@ -365,6 +386,9 @@ while (iterator.hasNext()) {
 							setSizes.add(size1.trim());
 							skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
 							priceMap=	getPriceMap(priceMap, listPrice, size1);
+							 if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
+							availMap=getAvailMap(availMap,colorValueTemp,size1);
+							 }
 							//priceSet.add(size1+"_____"+listPrice);
 							}
 						}
@@ -596,7 +620,15 @@ while (iterator.hasNext()) {
 				List<Color> colorList=edwardsGarmentAttributeParser.getProductColors(new ArrayList<String>(colorSet));
 				productConfigObj.setColors(colorList);
 			}
-			
+			if(!CollectionUtils.isEmpty(availMap)){
+				HashMap<String , HashSet<String>> availMapTemp=new HashMap<String, HashSet<String>>();
+				availMapTemp=(HashMap)availMap.clone();
+				boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
+				if(flag){
+				List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availMap);
+				productExcelObj.setAvailability(listOfAvailablity);
+				}
+					}
 			 if(!CollectionUtils.isEmpty(setSizes)){
 				 Apparel apparelObj = new Apparel();
 				 Size sizeObj=new Size();
@@ -660,7 +692,6 @@ while (iterator.hasNext()) {
 		 	/*_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));*/
 		 	//if(Prod_Status = false){
-		 	
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -841,6 +872,27 @@ while (iterator.hasNext()) {
 			}
 		}
 		return priceMap;
+	}
+	
+	public static HashMap<String, HashSet<String>> getAvailMap(HashMap<String , HashSet<String>> availMap,String color,String size){
+		if(CollectionUtils.isEmpty(availMap)){
+			HashSet<String>	sizeSet=new HashSet<String>();
+			sizeSet.add(size);
+			availMap.put(color, sizeSet);
+		}else{
+			if(availMap.containsKey(color)){
+				HashSet<String> sizeSetTemp= availMap.get(color);
+				sizeSetTemp.add(size);
+				availMap.put(color, sizeSetTemp);
+			}else{
+				HashSet<String> sizeSetTemp2= new HashSet<String>();
+				//priceSet=new HashSet<String>();
+				sizeSetTemp2.add(size);
+				availMap.put(color, sizeSetTemp2);
+				
+			}
+		}
+		return availMap;
 	}
 
 	public static String getProductCellData(Row row,int cellNo){
