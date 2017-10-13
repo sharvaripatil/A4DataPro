@@ -26,6 +26,7 @@ import com.a4tech.supplier.mapper.BrandwearExcelMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
+import com.a4tech.supplier.mapper.EdwardsGarmentMapping;
 import com.a4tech.supplier.mapper.FITSAccessoriesMapping;
 import com.a4tech.supplier.mapper.GempirepromotionsMapping;
 import com.a4tech.supplier.mapper.GillStudiosMapping;
@@ -91,7 +92,8 @@ public class ExcelFactory {
 	private BayStateMapping                 baysStateMapping;
     private MaxplusMapping                  maxplusmapping;
 	private GempirepromotionsMapping        gempiresMapping;
-
+	private EdwardsGarmentMapping edwardsGarmentMapping;
+	
 
 
 	public  IExcelParser getExcelParserObject(String name){
@@ -183,17 +185,15 @@ public class ExcelFactory {
 			  return blueGenerationMapping;
 		  } else if(name.equalsIgnoreCase("FITSAccessories ") || name.equals("71107")){
 			  return fitsAccessoriesMapping;
-
-		  } 
-		  else if(name.equalsIgnoreCase("gempiresMapping") || name.equals("55610")){
+		  }else if(name.equalsIgnoreCase("gempiresMapping") || name.equals("55610")){
 			  return gempiresMapping;
 		  } else if(name.equals("38980") || name.equalsIgnoreCase("bayState")){
 			  return baysStateMapping;
 		  } else if(name.equalsIgnoreCase("maxplusmapping") || name.equals("69718")){
 			  return maxplusmapping;
-		  
-
-		  } 
+		  }else if(name.equalsIgnoreCase("edwardsGarment") || name.equals("51752")){
+			   return edwardsGarmentMapping;
+		  }
 		return null;
 	}
 	
@@ -494,7 +494,7 @@ public class ExcelFactory {
 	public void setBlueGenerationMapping(BlueGenerationMapping blueGenerationMapping) {
 		this.blueGenerationMapping = blueGenerationMapping;
 	}
-
+	
 	public MaxplusMapping getMaxplusmapping() {
 		return maxplusmapping;
 	}
@@ -502,15 +502,13 @@ public class ExcelFactory {
 	public void setMaxplusmapping(MaxplusMapping maxplusmapping) {
 		this.maxplusmapping = maxplusmapping;
 	}
-	
 	public FITSAccessoriesMapping getFitsAccessoriesMapping() {
 		return fitsAccessoriesMapping;
 	}
+
 	public void setFitsAccessoriesMapping(FITSAccessoriesMapping fitsAccessoriesMapping) {
 		this.fitsAccessoriesMapping = fitsAccessoriesMapping;
 	}
-
-
 	public GempirepromotionsMapping getGempiresMapping() {
 		return gempiresMapping;
 	}
@@ -525,8 +523,13 @@ public class ExcelFactory {
 	public void setBaysStateMapping(BayStateMapping baysStateMapping) {
 		this.baysStateMapping = baysStateMapping;
 	}
+	
+	public EdwardsGarmentMapping getEdwardsGarmentMapping() {
+		return edwardsGarmentMapping;
+	}
 
-
-
-
+	public void setEdwardsGarmentMapping(EdwardsGarmentMapping edwardsGarmentMapping) {
+		this.edwardsGarmentMapping = edwardsGarmentMapping;
+	}
+	
 }
