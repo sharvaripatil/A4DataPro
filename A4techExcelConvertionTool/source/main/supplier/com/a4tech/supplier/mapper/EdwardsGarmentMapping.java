@@ -32,6 +32,7 @@ import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Image;
+import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
@@ -178,6 +179,9 @@ while (iterator.hasNext()) {
 							if(flag){
 							List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availMap);
 							productExcelObj.setAvailability(listOfAvailablity);
+							_LOGGER.info("Availability done for product:"+productExcelObj.getExternalProductId());
+							}else{
+								_LOGGER.info("No Availability detected for product:"+productExcelObj.getExternalProductId());
 							}
 								}
 								 if(!CollectionUtils.isEmpty(setSizes)){
@@ -195,7 +199,16 @@ while (iterator.hasNext()) {
 									productConfigObj.setSizes(sizeObj);
 									 }
 									}
-								 
+								
+									if(CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
+										 List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+										 ImprintMethod	imprintMethodObj = new ImprintMethod();	
+										imprintMethodObj.setType("UNIMPRINTED");
+										imprintMethodObj.setAlias("UNIMPRINTED");
+										listOfImprintMethod.add(imprintMethodObj);
+										productConfigObj.setImprintMethods(listOfImprintMethod);
+									}
+									
 							// process pring here
 								/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 										         listOfQuantity.toString(), priceCode, "USD",
@@ -271,6 +284,7 @@ while (iterator.hasNext()) {
 						         skuSet=new HashSet<String>();
 						         priceSet=new HashSet<String>();
 						         priceMap=new HashMap<String, HashSet<String>>();
+						         availMap=new HashMap<String, HashSet<String>>();
 						         firstValue="";
 						         sizeCount=1;
 						 }
@@ -627,6 +641,9 @@ while (iterator.hasNext()) {
 				if(flag){
 				List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availMap);
 				productExcelObj.setAvailability(listOfAvailablity);
+				_LOGGER.info("Availability done for product:"+productExcelObj.getExternalProductId());
+				}else{
+					_LOGGER.info("No Availability detected for product:"+productExcelObj.getExternalProductId());
 				}
 					}
 			 if(!CollectionUtils.isEmpty(setSizes)){
@@ -645,7 +662,15 @@ while (iterator.hasNext()) {
 				 }
 					
 				}
-			 
+			 if(CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
+				 List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+				 ImprintMethod	imprintMethodObj = new ImprintMethod();	
+				imprintMethodObj.setType("UNIMPRINTED");
+				imprintMethodObj.setAlias("UNIMPRINTED");
+				listOfImprintMethod.add(imprintMethodObj);
+				productConfigObj.setImprintMethods(listOfImprintMethod);
+			}
+			
 		// process pring here
 			/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 					         listOfQuantity.toString(), priceCode, "USD",
@@ -718,7 +743,7 @@ while (iterator.hasNext()) {
 	         skuSet=new HashSet<String>();
 	         priceSet=new HashSet<String>();
 	         priceMap=new HashMap<String, HashSet<String>>();
-	         
+	         availMap=new HashMap<String, HashSet<String>>();
 	         firstValue="";
 	         sizeCount=1;
 	         repeatRows.clear();
