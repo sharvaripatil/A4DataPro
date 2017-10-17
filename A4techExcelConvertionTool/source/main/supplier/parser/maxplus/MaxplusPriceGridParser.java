@@ -21,8 +21,8 @@ public class MaxplusPriceGridParser {
 	public List<PriceGrid> getPriceGrids(String listOfPrices,
 		    String listOfQuan, String listOfDisc,
 			String currency, String priceInclude, boolean isBasePrice,
-			String isQur, String priceName, String criterias/*,
-			List<PriceGrid> existingPriceGrid*/) {
+			String isQur, String priceName, String criterias,
+			List<PriceGrid> existingPriceGrid) {
 
 		Integer sequence = 1;
 		List<PriceGrid> priceGridsList = new ArrayList<PriceGrid>();
@@ -56,8 +56,8 @@ public class MaxplusPriceGridParser {
 		if(listOfPrice != null && !listOfPrice.isEmpty()){
 			priceGrid.setPrices(listOfPrice);
 		}
-		priceGridsList.add(priceGrid);
-		return priceGridsList;
+		existingPriceGrid.add(priceGrid);
+		return existingPriceGrid;
 
 	}
 
@@ -93,7 +93,7 @@ public class MaxplusPriceGridParser {
 			String upchargeUsageType, Integer upChargeSequence,
 		List<PriceGrid> existingPriceGrid) {
 
-	//	List<PriceGrid> priceGridsList = new ArrayList<PriceGrid>();
+		List<PriceGrid> priceGridsList = new ArrayList<PriceGrid>();
 
 		List<PriceConfiguration> configuration = new ArrayList<PriceConfiguration>() ;
 		//PriceConfiguration priceConfObj=new PriceConfiguration();

@@ -23,7 +23,6 @@ import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
-import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -56,12 +55,7 @@ public class MaxplusMapping implements IExcelParser {
 		List<Color> listColor = new ArrayList<Color>();
 		List<ImprintMethod> listimprintMethods = new ArrayList<ImprintMethod>();
 		List<ImprintSize> listimprintSize = new ArrayList<ImprintSize>();
-		List<Image> listImage= new ArrayList<Image>();
-
-		
-		
-
-
+		List<String> listKeyword = new ArrayList<String>();
 		
 		Product productExcelObj = new Product();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
@@ -69,7 +63,6 @@ public class MaxplusMapping implements IExcelParser {
 		RushTime rushserviceObj=new RushTime();
         StringBuilder ImprintMethod=new StringBuilder();
         StringBuilder ImprintSize=new StringBuilder();
-        StringBuilder Image=new StringBuilder();
     	StringBuilder listOfQuantity = new StringBuilder();
 		StringBuilder listOfPrices = new StringBuilder();
 		
@@ -85,34 +78,30 @@ public class MaxplusMapping implements IExcelParser {
 		String xid = null;
 		Cell cell2Data = null;
 		String ProdNo = null;
-		String AdditionalInfo1=null;
 		String ShippingItem=null;
-		String Image1=null;
-		String Image2=null;
-		String Image3=null;
-		String Image4=null;
-		String Image5=null;
-		String Image6=null;
-		String Image7=null;
-		String Image8=null;
-		String Image9=null;
-		String Image10=null;
+
 		String Quantity1=null;
 		String Quantity2=null;
 		String Quantity3=null;
 		String Quantity4=null;
 		String Quantity5=null;
-
+		String Quantity6=null;
+		
 		String ListPrice1=null;
 		String ListPrice2=null;
 		String ListPrice3=null;
 		String ListPrice4=null;
 		String ListPrice5=null;
+		String ListPrice6=null;
 		
 		String ListAllprice=null;
 		String ListAllquantity=null;
+		String SetUpcharge3=null;
+		String SetUpcharge2=null;
+		String SetUpcharge1=null;
 
-
+		String ImprintMethod1=null;
+		String ImprintMethod2=null;
 
 		try {
 
@@ -195,8 +184,8 @@ public class MaxplusMapping implements IExcelParser {
 									_LOGGER.info("Existing Xid is not available,product treated as new product");
 									productExcelObj = new Product();
 								} else {
-									 productExcelObj=existingApiProduct;
-									 productConfigObj=existingApiProduct.getProductConfigurations();
+										 productExcelObj=existingApiProduct;
+										 productConfigObj=existingApiProduct.getProductConfigurations();
 									 
 										List<Image> Img = existingApiProduct
 												.getImages();
@@ -229,17 +218,14 @@ public class MaxplusMapping implements IExcelParser {
 							break;
 							
 						case 11: // Product URL
-							String Inventory=cell.getStringCellValue();
+							/*String Inventory=cell.getStringCellValue();
 							
 							if (!StringUtils.isEmpty(Inventory)) {
                             Inventory invtObj=new Inventory();
                             invtObj.setInventoryLink(Inventory);
 							productExcelObj.setInventory(invtObj);
 							}
-							
-							break;	
-							
-						case 12: // Name
+							*/
 							productName = cell.getStringCellValue();
 							int len=productName.length();
 							 if(len>60){
@@ -249,10 +235,22 @@ public class MaxplusMapping implements IExcelParser {
 							}
 							productExcelObj.setName(productName);
 
+							break;	
+							
+						case 12: // Name
+							/*productName = cell.getStringCellValue();
+							int len=productName.length();
+							 if(len>60){
+								String strTemp=productName.substring(0, 60);
+								int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
+								productName=(String) strTemp.subSequence(0, lenTemp);
+							}
+							productExcelObj.setName(productName);
+*/
 
 							break;	
 					
-						case 15: // ShortDescription
+						case 14: // ShortDescription
 							String Summary=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(Summary)) {
 						    Summary=Summary.substring(0, 130);
@@ -260,10 +258,10 @@ public class MaxplusMapping implements IExcelParser {
 							}
 							break;	
 							
-						case 16: // LongDescription
-							String description = cell.getStringCellValue();
-							description=description.replace("?","").replace("ã","").replace("¡", "").replace(":", "");
+						case 15: // LongDescription
+							String description = CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(description)) {
+								description=description.replace("?","").replace("ã","").replace("¡", "").replace(":", "");
 								productExcelObj.setDescription(description);
 							} else {
 								productExcelObj
@@ -272,7 +270,7 @@ public class MaxplusMapping implements IExcelParser {
 
 							break;	
 					
-						case 19: // Large Image URL0
+					/*	case 19: // Large Image URL0
 							 Image1=cell.getStringCellValue();
 							 if (!StringUtils.isEmpty(Image1)) {	
 								Image=Image.append(Image1).append(",");
@@ -283,7 +281,10 @@ public class MaxplusMapping implements IExcelParser {
 						case 22: // Large Image URL1
 							 Image2=cell.getStringCellValue();
 							 if (!StringUtils.isEmpty(Image2)) {	
-									Image=Image.append(Image2).append(",");
+									Image=Image.append(Image2).append(""
+											+ ""
+											+ ""
+											+ ",");
 								  }
 
 							break;	
@@ -339,7 +340,7 @@ public class MaxplusMapping implements IExcelParser {
 							break;	
 	
 						case 46: // Large Image URL9
-							 Image10=cell.getStringCellValue();
+							 Image10=CommonUtility.getCellValueStrinOrInt(cell);
 							 if (!StringUtils.isEmpty(Image10)) {	
 									Image=Image.append(Image10).append(",");
 									Image10=Image1.toString();
@@ -348,86 +349,75 @@ public class MaxplusMapping implements IExcelParser {
 							 productExcelObj.setImages(listImage);
 
 
-							break;	
+							break;	*/
 													
 							
-						case 67: // Price1
+						case 46: // Price1
 		                    ListPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
 
 							break;	
 							
 							
-						case 68: // QtyBreak1
-							 Quantity1=CommonUtility.getCellValueStrinOrInt(cell);
-
+						case 47: // QtyBreak1
+							 Quantity2=CommonUtility.getCellValueStrinOrInt(cell);
 
 							break;	
 							
 							
-						case 69: // Price2
+						case 48: // Price2
 		                    ListPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
 
 
 							break;	
 							
 							
-						case 70: // QtyBreak2
-							 Quantity2=CommonUtility.getCellValueStrinOrInt(cell);
-
+						case 49: // QtyBreak2
+							 Quantity3=CommonUtility.getCellValueStrinOrInt(cell);
+							 
 							break;	
 							
 							
-						case 71: // Price3
+						case 50: // Price3
 		                    ListPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
 
 
 							break;	
 							
 							
-						case 72: // QtyBreak3
-							 Quantity3=CommonUtility.getCellValueStrinOrInt(cell);
+						case 51: // QtyBreak3
+							 Quantity4=CommonUtility.getCellValueStrinOrInt(cell);
 
 							break;	
 							
 							
-						case 73: // Price4
+						case 52: // Price4
 		                    ListPrice4=CommonUtility.getCellValueStrinOrDecimal(cell);
 
 
 							break;	
 							
 							
-						case 74: // QtyBreak4
-							 Quantity4=CommonUtility.getCellValueStrinOrInt(cell);
-
-							break;	
-							
-							
-						case 75: // Price5
-		                    ListPrice5=CommonUtility.getCellValueStrinOrDecimal(cell);
-							 listOfPrices=listOfPrices.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
-									 append(ListPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice3).
-							 append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice4).append
-							 (ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice5);
-							 ListAllprice=listOfPrices.toString();
-
-							break;	
-							
-							
-						case 76: // QtyBreak5
+						case 53: // QtyBreak4
 							 Quantity5=CommonUtility.getCellValueStrinOrInt(cell);
-							 listOfQuantity=listOfQuantity.append(Quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
-									 append(Quantity2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(Quantity3).
-							 append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(Quantity4).append
-							 (ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(Quantity5);
-								 ListAllquantity=listOfQuantity.toString();
+
 							break;	
 							
 							
-						case 77: // Price6
-		              //      ListPrice6=CommonUtility.getCellValueStrinOrDecimal(cell);
-
-
+						case 54: // Price5
+		                    ListPrice5=CommonUtility.getCellValueStrinOrDecimal(cell);
+							
+							break;	
+							
+							
+						case 55: // QtyBreak5
+							 Quantity6=CommonUtility.getCellValueStrinOrInt(cell);
+							 
+							 
+						  break;	
+							
+						case 56: // Price6
+		                 ListPrice6=CommonUtility.getCellValueStrinOrDecimal(cell);
+		         
 							break;	
 							
 							
@@ -478,35 +468,22 @@ public class MaxplusMapping implements IExcelParser {
 							
 						case 85: // Price10
 
-
 							break;	
 							
-					
+						case 89://Setup Charge 3
+							SetUpcharge3=CommonUtility.getCellValueStrinOrInt(cell);
+							SetUpcharge3=SetUpcharge3.replaceAll("[^0-9.%/ ]","");
 							
-						case 107: // Price Point
-
 							break;	
 							
-							
-						case 108: // 
+						case 90://Setup Charge 2
+							SetUpcharge2=CommonUtility.getCellValueStrinOrInt(cell);
+							SetUpcharge2=SetUpcharge2.replaceAll("[^0-9.%/ ]","");
 
-							break;	
 							
+							break;
 							
-						case 109: // Laser Engraving
-
-							break;	
-							
-							
-						case 110: // Setup Charge 3
-
-							break;	
-						
-						case 111: // Setup Charge 2
-
-							break;	
-							
-						case 112: // Imprint Area 3
+						case 91: // Imprint Area 3
                         String ImprintSize1=cell.getStringCellValue();
 						if (!StringUtils.isEmpty(ImprintSize1)) {							
                         ImprintSize=ImprintSize.append(ImprintSize1).append(",");	
@@ -514,7 +491,7 @@ public class MaxplusMapping implements IExcelParser {
 							
 							break;	
 							
-						case 113: // Imprint Area 2
+						case 92: // Imprint Area 2
 	                    String ImprintSize2=cell.getStringCellValue();
 						if (!StringUtils.isEmpty(ImprintSize2)) {							
                         ImprintSize=ImprintSize.append(ImprintSize2).append(",");	
@@ -522,7 +499,7 @@ public class MaxplusMapping implements IExcelParser {
 
 							break;	
 							
-						case 114: // Imprint Area
+						case 93: // Imprint Area
 	                    String ImprintSize3=cell.getStringCellValue();
 						if (!StringUtils.isEmpty(ImprintSize3)) {							
                         ImprintSize=ImprintSize.append(ImprintSize3).append(",");	
@@ -535,16 +512,16 @@ public class MaxplusMapping implements IExcelParser {
 							break;	
 							
 							
-						case 115: // Imprint Method 3
-							String ImprintMethod1=cell.getStringCellValue();
+						case 94: // Imprint Method 3
+							 ImprintMethod1=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(ImprintMethod1)) {							
 								ImprintMethod=ImprintMethod.append(ImprintMethod1).append(",");
 							}
 							break;	
 							
 							
-						case 116: // Imprint Method 2
-							String ImprintMethod2=cell.getStringCellValue();
+						case 95: // Imprint Method 2
+							 ImprintMethod2=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(ImprintMethod2)) {							
 								ImprintMethod=ImprintMethod.append(ImprintMethod2).append(",");
 
@@ -553,7 +530,7 @@ public class MaxplusMapping implements IExcelParser {
 							break;	
 							
 							
-						case 117: // Imprint Method
+						case 96: // Imprint Method
 							String ImprintMethod3=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(ImprintMethod3)) {							
 								ImprintMethod=ImprintMethod.append(ImprintMethod3).append(",");
@@ -564,7 +541,7 @@ public class MaxplusMapping implements IExcelParser {
 							break;	
 							
 							
-						case 118: // Size
+						case 97: // Size
 							String Size=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(Size)) {							
 							sizeObj=maxplusAttribute.getSize(Size);	
@@ -572,7 +549,7 @@ public class MaxplusMapping implements IExcelParser {
 							}	
 							break;	
 							
-						case 119: // Rush Service
+						case 98: // Rush Service
 							String RushService=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(RushService)) {							
 								rushserviceObj.setAvailable(true);	
@@ -582,7 +559,7 @@ public class MaxplusMapping implements IExcelParser {
 							break;	
 							
 							
-						case 120: // Product Color
+						case 99: // Product Color
                            String ProductColor=cell.getStringCellValue();
                            ProductColor=ProductColor.replace("As Shown", "");
                            if (!StringUtils.isEmpty(ProductColor)) {		
@@ -595,7 +572,7 @@ public class MaxplusMapping implements IExcelParser {
 							break;	
 							
 							
-						case 121: // Approximate Production Time
+						case 100: // Approximate Production Time
 							String ProductionTime=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(ProductionTime)) {
 								prodtimeObj.setBusinessDays("7-10");
@@ -605,67 +582,59 @@ public class MaxplusMapping implements IExcelParser {
 							break;	
 							
 							
-						case 122: // Items Per Carton
+						case 101: // Items Per Carton
 							 ShippingItem=cell.getStringCellValue();
 
 							break;	
 							
 							
-						case 123: // Weight Per Carton (lbs.)
+						case 102: // Weight Per Carton (lbs.)
 							String ShippingWeight=cell.getStringCellValue();
 							shippingEstimateObj=maxplusAttribute.getShippingestimete(ShippingItem,ShippingWeight);
 							productConfigObj.setShippingEstimates(shippingEstimateObj);
 
 							break;	
 							
+						case 103:
+							SetUpcharge1=CommonUtility.getCellValueStrinOrInt(cell);
+							SetUpcharge1=SetUpcharge1.replaceAll("[^0-9.%/ ]","");
 							
-						case 124: // Setup Charge
+							break;
+							
+						case 110://Additional Notes
 
-							break;	
-							
-							
-						case 125: // Running Charge
-
-							break;	
-							
-							
-						case 127: // Repeat Setup Charge
-
-							break;	
-							
-							
-						case 128: // Running Charge 2
-
-							break;	
-							
-							
-						case 129: // Running Charge 3
-
-							break;	
-							
-							
-						case 130: // Less Than Minimum Charge
-
-							break;	
-							
-							
-						case 131: // Additional Notes
-							 AdditionalInfo1=cell.getStringCellValue();
-							
-
-							break;	
-											
-						case 150: // MinimumQty
-							
-							String AdditionalproductInfo2=cell.getStringCellValue();
-							if (!StringUtils.isEmpty(AdditionalproductInfo2)) {
-								AdditionalproductInfo2=AdditionalInfo1.concat("Minimum quantity order is:"+AdditionalproductInfo2);
-								productExcelObj.setAdditionalProductInfo(AdditionalproductInfo2);
-							}else
-							{
-							productExcelObj.setAdditionalProductInfo(AdditionalInfo1);
+							String AdditionalproductInfo=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(AdditionalproductInfo)) {
+						    	AdditionalproductInfo=AdditionalproductInfo.replace("<br>", "");
+								productExcelObj.setAdditionalProductInfo(AdditionalproductInfo);
 							}
-
+							
+							break;
+							
+						case 107:
+							
+							break;
+							
+						case 108:
+						
+							
+							break;
+							
+						case 111:
+							String Keyword=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(Keyword)) {
+							String keywordArr[]=Keyword.split(",");
+							for (String KeywordName : keywordArr) {
+								listKeyword.add(KeywordName);
+							}
+							productExcelObj.setProductKeywords(listKeyword);	
+							}
+							break;
+											
+						case 129: // MinimumQty
+							Quantity1=CommonUtility.getCellValueStrinOrInt(cell);
+							
+							
 							break;	
 							
 							
@@ -679,10 +648,67 @@ public class MaxplusMapping implements IExcelParser {
 					// end inner while loop
 					productExcelObj.setPriceType("L");
 					
+			
+					
+			        listOfPrices=listOfPrices.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
+							 append(ListPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice3).
+					 append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice4).append
+					 (ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice5);
+			        
+			    	listOfQuantity=listOfQuantity.append(Quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
+							 append(Quantity2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(Quantity3).
+					 append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(Quantity4).append
+					 (ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(Quantity5);
+						
+			        
+			        if (!StringUtils.isEmpty(ListPrice5)) {
+			        	listOfPrices=listOfPrices.append
+								 (ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice6);
+			        	listOfQuantity=listOfQuantity.append(ApplicationConstants
+								 .PRICE_SPLITTER_BASE_PRICEGRID).append(Quantity5);
+			        }
+					 ListAllprice=listOfPrices.toString();
+					 ListAllquantity=listOfQuantity.toString();
+				
+					
 					priceGrids = pricegrid.getPriceGrids(ListAllprice,
 							ListAllquantity, "R", "USD",
-					         "", true, "N",productName ,""/*,priceGrids*/);
+					         "", true, "N",productName ,"",priceGrids);
 
+					
+					
+					if (!StringUtils.isEmpty(ImprintMethod1)) {
+						priceGrids = pricegrid
+								.getUpchargePriceGrid("1", SetUpcharge3,
+										"V",
+										"Imprint Method", "false", "USD",
+										ImprintMethod1,
+										"Set-up Charge", "Other",
+										new Integer(1), priceGrids);	
+					}
+					else if(!StringUtils.isEmpty(ImprintMethod2))
+					{
+						priceGrids = pricegrid
+								.getUpchargePriceGrid("1", SetUpcharge3,
+										"V",
+										"Imprint Method", "false", "USD",
+										ImprintMethod1,
+										"Set-up Charge", "Other",
+										new Integer(1), priceGrids);	
+						
+						
+						
+						
+						
+						
+					}
+					
+
+					
+					productExcelObj.setPriceGrids(priceGrids);
+					productExcelObj.setProductConfigurations(productConfigObj);		
+					
+					
 				} catch (Exception e) {
 					_LOGGER.error("Error while Processing ProductId and cause :"
 								+ productExcelObj.getExternalProductId()
@@ -692,9 +718,6 @@ public class MaxplusMapping implements IExcelParser {
 			}
 			workbook.close();
 
-			
-			productExcelObj.setPriceGrids(priceGrids);
-			productExcelObj.setProductConfigurations(productConfigObj);
 			int num = postServiceImpl.postProduct(accessToken, productExcelObj,
 					asiNumber, batchId);
 			if (num == 1) {

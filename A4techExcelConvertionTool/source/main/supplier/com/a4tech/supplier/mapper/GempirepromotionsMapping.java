@@ -12,25 +12,18 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
-
-import parser.maxplus.MaxpluProductAttributeParser;
-import parser.maxplus.MaxplusPriceGridParser;
-
+import parser.gempire.GempireProductAttributeParser;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
-import com.a4tech.product.model.ImprintMethod;
-import com.a4tech.product.model.ImprintSize;
-import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
-import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
+import com.a4tech.product.model.Weight;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -41,8 +34,7 @@ public class GempirepromotionsMapping implements IExcelParser {
 	
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
-	private MaxpluProductAttributeParser maxplusAttribute;
-	private MaxplusPriceGridParser pricegrid; 
+	private GempireProductAttributeParser prodAttribute;
 	
 	@Override
 	public String readExcel(String accessToken, Workbook workbook,
@@ -50,26 +42,9 @@ public class GempirepromotionsMapping implements IExcelParser {
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		Set<String> productXids = new HashSet<String>();
-		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
-		List<ProductionTime> listProductionTime = new ArrayList<ProductionTime>();
-		List<Color> listColor = new ArrayList<Color>();
-		List<ImprintMethod> listimprintMethods = new ArrayList<ImprintMethod>();
-		List<ImprintSize> listimprintSize = new ArrayList<ImprintSize>();
-		List<Image> listImage= new ArrayList<Image>();		
+		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();		
 		Product productExcelObj = new Product();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
-		ProductionTime prodtimeObj=new ProductionTime();
-		RushTime rushserviceObj=new RushTime();
-        StringBuilder ImprintMethod=new StringBuilder();
-        StringBuilder ImprintSize=new StringBuilder();
-        StringBuilder Image=new StringBuilder();
-    	StringBuilder listOfQuantity = new StringBuilder();
-		StringBuilder listOfPrices = new StringBuilder();
-		
-        ShippingEstimate shippingEstimateObj=new ShippingEstimate();
-        Size sizeObj=new Size();
-
-		
 		String productName = null;
 		String productId = null;
 		String finalResult = null;
@@ -78,35 +53,13 @@ public class GempirepromotionsMapping implements IExcelParser {
 		String xid = null;
 		Cell cell2Data = null;
 		String ProdNo = null;
-		String AdditionalInfo1=null;
-		String ShippingItem=null;
-		String Image1=null;
-		String Image2=null;
-		String Image3=null;
-		String Image4=null;
-		String Image5=null;
-		String Image6=null;
-		String Image7=null;
-		String Image8=null;
-		String Image9=null;
-		String Image10=null;
-		String Quantity1=null;
-		String Quantity2=null;
-		String Quantity3=null;
-		String Quantity4=null;
-		String Quantity5=null;
-
-		String ListPrice1=null;
-		String ListPrice2=null;
-		String ListPrice3=null;
-		String ListPrice4=null;
-		String ListPrice5=null;
-		
-		String ListAllprice=null;
-		String ListAllquantity=null;
-
-		
 		String description1 =null;
+		
+		List<ProductionTime> ListOfProductiontime = new ArrayList<ProductionTime>();		
+		ShippingEstimate shipObj=new ShippingEstimate();
+		List<Weight> ListOfWeight = new ArrayList<Weight>();		
+		Weight weightObj=new  Weight();
+		Size sizeObj=new Size();
 
 
 		try {
@@ -203,7 +156,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 								    	 List<String>categoriesList=existingApiProduct.getCategories();
 								    	 productExcelObj.setCategories(categoriesList);
 									 
-									 
+								    	 List<String>keywordList=existingApiProduct.getProductKeywords();
+								    	 productExcelObj.setProductKeywords(keywordList);
 								}
 								// productExcelObj = new Product();
 							}
@@ -244,10 +198,10 @@ public class GempirepromotionsMapping implements IExcelParser {
 					
 						case 9: // furtherdescription
 							String description2 = cell.getStringCellValue();
-							if (!StringUtils.isEmpty(description1)) {
+							if (!StringUtils.isEmpty(description2)) {
 								description2="";
 							}
-							String description=null;
+							String description="";
 							description=description.concat(description1).concat(description2);
 							productExcelObj
 										.setDescription(description);
@@ -256,109 +210,87 @@ public class GempirepromotionsMapping implements IExcelParser {
 							break;	
 							
 						case 23: //Size
-
-
+							String SizeValue=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(SizeValue)) {
+								sizeObj=prodAttribute.getSize(SizeValue);
+								productConfigObj.setSizes(sizeObj);
+							}
 							break;	
 					
 						case 25: // Options & Accessories
 
-							 Image1=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image1)) {	
-								Image=Image.append(Image1).append(",");
-							  }
-
+							
 							break;	
 					
 						case 26: //Set up Charge
-
-							 Image2=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image2)) {	
-									Image=Image.append(Image2).append(",");
-								  }
 
 							break;	
 							
 						case 27: // Plating
 
-							 Image3=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image3)) {	
-									Image=Image.append(Image3).append(",");
-								  }
+							
 
 							break;	
 							
 						case 28: // Comments
-
-							 Image4=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image4)) {	
-									Image=Image.append(Image4).append(",");
-								  }
+							String AdditionaProductInfo=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(AdditionaProductInfo)) {
+							 productExcelObj.setAdditionalProductInfo(AdditionaProductInfo);
+							}
+					
 							break;	
 							
 						case 29: // Options & Accessories1
 
-							 Image5=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image5)) {	
-									Image=Image.append(Image5).append(",");
-								  }
+				
 							break;	
 							
 						case 30: // 2nd Side
 
-							 Image6=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image6)) {	
-									Image=Image.append(Image6).append(",");
-								  }
+					
 							break;	
 							
 						case 31: // Keyfetch
 
-							 Image7=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image7)) {	
-									Image=Image.append(Image7).append(",");
-								  }
+						
 							break;	
 							
 						case 32: //Standard Production
-
-							 Image8=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image8)) {	
-									Image=Image.append(Image8).append(",");
-								  }
+							String ProductionTime=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(ProductionTime)) {
+								ListOfProductiontime=prodAttribute.getProductiontime(ProductionTime);
+								productConfigObj.setProductionTime(ListOfProductiontime);
+							}
+							
 							break;	
 							
 						case 34: // Carton Weight (Lbs)
-
-							 Image9=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image9)) {	
-									Image=Image.append(Image9).append(",");
-								  }
+							String ShippingWeight=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(ShippingWeight)) {
+								weightObj.setValue(ShippingWeight);
+								weightObj.setUnit("lbs");
+								ListOfWeight.add(weightObj);
+								shipObj.setWeight(ListOfWeight);
+								productConfigObj.setShippingEstimates(shipObj);
+							}
+	
+							
 							break;	
 	
 						case 35: //Carton Width
 
-							 Image10=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image10)) {	
-									Image=Image.append(Image10).append(",");
-									Image10=Image1.toString();
-									 listImage=maxplusAttribute.getImages(Image10);
-								  }
-							 productExcelObj.setImages(listImage);
-
-
+						
 							break;	
 													
 							
 						case 36: // Carton Height
 
-		                    ListPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
 
 							break;	
 							
 							
 						case 37: // Carton Length
 
-							 Quantity1=CommonUtility.getCellValueStrinOrInt(cell);
 
 
 							break;	
@@ -366,7 +298,6 @@ public class GempirepromotionsMapping implements IExcelParser {
 							
 						case 38: // Units Per Carton
 
-		                    ListPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
 
 
 							break;	
@@ -374,14 +305,12 @@ public class GempirepromotionsMapping implements IExcelParser {
 							
 						case 41: // price_1 start here
 
-							 Quantity2=CommonUtility.getCellValueStrinOrInt(cell);
 
 							break;	
 							
 					    case 42: //pricename_1
 
 
-							 Quantity2=CommonUtility.getCellValueStrinOrInt(cell);
 
 							break;
 							
@@ -433,6 +362,11 @@ public class GempirepromotionsMapping implements IExcelParser {
 						 case  54://quantity3_1
 
 								
+							 
+							 
+							 
+							 
+							 
 								break;
 								
 						 case  56://price3_1
@@ -857,9 +791,9 @@ public class GempirepromotionsMapping implements IExcelParser {
 					// end inner while loop
 					productExcelObj.setPriceType("L");
 					
-					priceGrids = pricegrid.getPriceGrids(ListAllprice,
+					/*priceGrids = pricegrid.getPriceGrids(ListAllprice,
 							ListAllquantity, "R", "USD",
-					         "", true, "N",productName ,""/*,priceGrids*/);
+					         "", true, "N",productName ,"",priceGrids);*/
 
 				} catch (Exception e) {
 					_LOGGER.error("Error while Processing ProductId and cause :"
@@ -909,13 +843,6 @@ public class GempirepromotionsMapping implements IExcelParser {
 
 	}
 	
-	public MaxpluProductAttributeParser getMaxplusAttribute() {
-		return maxplusAttribute;
-	}
-
-	public void setMaxplusAttribute(MaxpluProductAttributeParser maxplusAttribute) {
-		this.maxplusAttribute = maxplusAttribute;
-	}
 
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
@@ -933,14 +860,15 @@ public class GempirepromotionsMapping implements IExcelParser {
 		this.productDaoObj = productDaoObj;
 	}
 
-	public MaxplusPriceGridParser getPricegrid() {
-		return pricegrid;
+
+	public GempireProductAttributeParser getProdAttribute() {
+		return prodAttribute;
 	}
 
-	public void setPricegrid(MaxplusPriceGridParser pricegrid) {
-		this.pricegrid = pricegrid;
+
+	public void setProdAttribute(GempireProductAttributeParser prodAttribute) {
+		this.prodAttribute = prodAttribute;
 	}
-	
 	
 
 }
