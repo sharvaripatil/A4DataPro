@@ -422,6 +422,7 @@
 		<property name="baysStateMapping" ref="bayStateMappingId"/>
 		<property name="maxplusmapping" ref="maxplusmappingId"></property>
 		<property name="gempiresMapping" ref="gempiresMappingId"/>
+		<property name="edwardsGarmentMapping" ref="edwardsGarmentMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1019,7 +1020,7 @@
      <bean id="fitsAttributeParserId" class="parser.FITSAccessories.FITSAttributeParser"/>
      <bean id="fitsPriceGridparserId" class="parser.FITSAccessories.FITSPriceGridParser"/>
      <!-- FITS Accessories Configuration End -->
-     <!-- Bay StateMapping Start -->
+      <!-- Bay StateMapping Start -->
      <bean id="bayStateMappingId" class="com.a4tech.supplier.mapper.BayStateMapping">
      	<property name="postServiceImpl" 	ref="postService"/>
         <property name="productDaoObj" 	   ref="productDao"/>
@@ -1040,5 +1041,26 @@
      </bean>
   
      <!-- Gempire Promotions Configuration End -->
+     <!-- supplier 51752 Edwards Garment Co configuration start -->
+     <bean id="edwardsGarmentMappingId" class="com.a4tech.supplier.mapper.EdwardsGarmentMapping" autowire="byName">
+       <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj" ref="productDao"/>
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+         <property name="lookupRestServiceObj" ref="lookupRestService"/>
+       <property name="edwardsGarmentAttributeParser" ref="edwardsGarmentAttributeParserId" />
+       <property name="edwardGarmentPriceGridparser" ref="edwardGarmentPriceGridparserId" /> 
+     
+       </bean>
+       <bean id="edwardsGarmentAttributeParserId" name="edwardsGarmentAttributeParserObj"
+  		class="parser.EdwardsGarment.EdwardsGarmentAttributeParser" autowire="byName">
+  		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+  	</bean>
+  	<bean id="edwardGarmentPriceGridparserId" name="edwardGarmentPriceGridparserObj" class="parser.EdwardsGarment.EdwardGarmentPriceGridParser" autowire="byName"/>
+  	<!-- <bean id="gillStudiosPriceGridParserId" name="gillStudiosPriceGridParserObj" class="parser.gillstudios.GillStudiosPriceGridParser" autowire="byName"/>
+  	<bean id="gillStudiosImprintMethodParserId" name="gillStudiosImprintMethodParserObj" class="parser.gillstudios.GillStudiosImprintMethodParser" autowire="byName">
+  	<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+    <property name="lookupRestServiceObj" ref="lookupRestService"/>
+  	</bean> -->
+     <!-- supplier 51752 Edwards Garment Co configuration end --> 
 </beans>
 

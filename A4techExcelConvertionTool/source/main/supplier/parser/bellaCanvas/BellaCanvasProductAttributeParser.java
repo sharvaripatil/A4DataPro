@@ -118,19 +118,16 @@ public class BellaCanvasProductAttributeParser {
 		material=material.replace("²","");
 		List<Material> materiallist = new ArrayList<Material>();
 		Material materialObj = new Material();
-		List<String> listOfLookupMaterial = getMaterialType(material
-				.toUpperCase());
+		List<String> listOfLookupMaterial = getMaterialType(material.toUpperCase());
 		if(listOfLookupMaterial.get(0).equalsIgnoreCase("OTHER"))
 		{
 			listOfLookupMaterial.remove(0);
 			Collections.swap(listOfLookupMaterial, 0, 1);
-			
 		}
 		String PercentageValue[]=material.split("%");
 		PercentageValue[0]=PercentageValue[0].replace("[^0-9|.x%/ ]", "");
 		
-		if (!listOfLookupMaterial.isEmpty()) {	
-			
+		if (!listOfLookupMaterial.isEmpty()) {
 			if (listOfLookupMaterial.size()==2) {
 				BlendMaterial blendObj=new BlendMaterial();
 				BlendMaterial blendObj1=new BlendMaterial();
@@ -146,17 +143,13 @@ public class BellaCanvasProductAttributeParser {
 			    listOfBlend.add(blendObj1);
 			    materialObj.setAlias(material);
 				materialObj.setBlendMaterials(listOfBlend);
-			
 			}
 			else
 			{		
-				materialObj = getMaterialValue(listOfLookupMaterial.toString(),
-						material);
+				materialObj = getMaterialValue(listOfLookupMaterial.toString(),material);
 			}
-				materiallist.add(materialObj);	
-							
-		}		
-		
+				materiallist.add(materialObj);
+		}	
 		return materiallist;
 	}	
 	
@@ -165,8 +158,6 @@ public class BellaCanvasProductAttributeParser {
 		List<String> finalMaterialValues = listOfLookupMaterials.stream()
 				                                  .filter(mtrlName -> value.contains(mtrlName))
 				                                  .collect(Collectors.toList());
-                                                 
-				
 		return finalMaterialValues;	
 	}
 		
