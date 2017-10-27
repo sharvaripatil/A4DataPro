@@ -55,8 +55,10 @@ public class ProGolfInformationAttributeParser {
 		List<TradeName> listOfTradeNames = new ArrayList<>();
 		TradeName tradeNameObj  = new TradeName();
 		if(!"Travel Chair".equalsIgnoreCase(value)){
-			tradeNameObj.setName(value);
-			listOfTradeNames.add(tradeNameObj);
+			if(lookupServiceData.isTradeName(value)){
+				tradeNameObj.setName(value);
+				listOfTradeNames.add(tradeNameObj);
+			}
 		}
 		return listOfTradeNames;
 	}
@@ -557,18 +559,19 @@ public class ProGolfInformationAttributeParser {
 	public ShippingEstimate getProductShippingEstimation(String shippingDimensionVal,String shippingWeight,String shippingDimentionUnit,String shippingWeightUnit){
 		ShippingEstimate shippingEstimObj = new ShippingEstimate();
 		String[] shippingValues = CommonUtility.getValuesOfArray(shippingDimensionVal, ",");
-		if(!"0".equals(shippingValues[0])){
+		if(!shippingDimensionVal.equals(",,,") && !"0".equals(shippingValues[0])){
 			List<NumberOfItems> listOfNumberOfItems = getShippingNumberOfItems(shippingValues[0], "per Carton");
 			if(shippingValues.length>1){
 				Dimensions dimensionsObj = getShippingDimension(shippingValues[1], shippingValues[2], shippingValues[3],
 						                                        shippingDimentionUnit);
 				 shippingEstimObj.setDimensions(dimensionsObj);
 			}
-			if(!StringUtils.isEmpty(shippingWeight)){
-				List<Weight> listOfWeight = getShippingWeight(shippingWeight, shippingWeightUnit);
-				 shippingEstimObj.setWeight(listOfWeight);
-			}
+			
 			shippingEstimObj.setNumberOfItems(listOfNumberOfItems);
+		}
+		if(!StringUtils.isEmpty(shippingWeight)){
+			List<Weight> listOfWeight = getShippingWeight(shippingWeight, shippingWeightUnit);
+			 shippingEstimObj.setWeight(listOfWeight);
 		}
 		return shippingEstimObj;
 	}

@@ -46,7 +46,7 @@ public class ProGolfMapping implements IExcelParser{
 			  } else if("Product Shipping".equalsIgnoreCase(sheetName)){
 				  finalResult = productShippingMapping.readMapper(productsMap, sheet, accessToken, asiNumber, batchId);
 			  } else if("Product Variation".equalsIgnoreCase(sheetName)){
-				  //productsMap = productVariationMapping.readMapper(productsMap, sheet);
+				  productsMap = productVariationMapping.readMapper(productsMap, sheet);
 				  // only required while uploading "Callaway 2017 website export - mapped file only"
 			  } else{
 				  _LOGGER.info("sheet is not processed: "+sheetName);

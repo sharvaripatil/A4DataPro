@@ -41,7 +41,7 @@ import com.a4tech.util.CommonUtility;
 
 public class GoldbondAttributeParser {
 	
-	String pattern_remove_specialSymbols = "[^0-9.x/\\- ]";
+	String pattern_remove_specialSymbols = "[^0-9.xX/\\- ]";
 	private GoldbondPriceGridParser gbPriceGridParser;
 	private LookupServiceData lookupServiceData;
 	private static List<String> lookupFobPoints = null;
@@ -92,6 +92,9 @@ public class GoldbondAttributeParser {
 		    	priceVal = "15";
 		    	discountCode = "A";
 		    } else if(value.equalsIgnoreCase("$50.00 (G) per color, 2-color only (CANNOT BE CLOSE REGISTRATION)")){
+		    	priceVal = "50";
+		    	discountCode = "G";
+		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (close registration not available)")){
 		    	priceVal = "50";
 		    	discountCode = "G";
 		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (multi-color imprint not available for two side imprint)")){
@@ -158,20 +161,27 @@ public class GoldbondAttributeParser {
 			valuesObj = new Values();
 			if(sizeVal.equalsIgnoreCase("29.5 Inches")){
 				valuesObj = getOverAllSizeValObj("29.5", "Length", "", "");
-			} else if(sizeValues.contains("(") && (sizeValues.contains("Diameter") || sizeValues.contains("diameter"))){
-				String[] ss = sizeVal.split("\\(");
-				String firstVal = ss[0].replaceAll(pattern_remove_specialSymbols, "").trim();
-				String secondVal = ss[1].split(",")[0].replaceAll(pattern_remove_specialSymbols, "").trim();
-				String finalSizeVal = "";
-				if(firstVal.contains("x")){
-					finalSizeVal = firstVal;
-					finalSizeVal= finalSizeVal.replaceAll("-", " ");
+			} else if(sizeVal.contains("(") && (sizeVal.contains("Diameter") || sizeVal.contains("diameter"))){
+				if (sizeVal.contains("L") && sizeVal.contains("W") && sizeVal.contains("H")){
+					sizeVal = sizeVal.replaceAll("\\(.*\\)", "");
+					sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+					valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "Height");
 				} else {
-					 finalSizeVal = firstVal + "x" + secondVal;
-					finalSizeVal= finalSizeVal.replaceAll("-", " ");
-					finalSizeVal= finalSizeVal.replaceAll("  ", " ");
+					String[] ss = sizeVal.split("\\(");
+					String firstVal = ss[0].replaceAll(pattern_remove_specialSymbols, "").trim();
+					String secondVal = ss[1].split(",")[0].replaceAll(pattern_remove_specialSymbols, "").trim();
+					String finalSizeVal = "";
+					if(firstVal.contains("x")){
+						finalSizeVal = firstVal;
+						finalSizeVal= finalSizeVal.replaceAll("-", " ");
+					} else {
+						 finalSizeVal = firstVal + "x" + secondVal;
+						finalSizeVal= finalSizeVal.replaceAll("-", " ");
+						finalSizeVal= finalSizeVal.replaceAll("  ", " ");
+					}
+					valuesObj = getOverAllSizeValObj(finalSizeVal, "Height", "Dia", "");	
 				}
-				valuesObj = getOverAllSizeValObj(finalSizeVal, "Height", "Dia", "");
+				
 			} else if(sizeVal.equalsIgnoreCase("7- 3/4 or larger size heads")){
 				valuesObj = getOverAllSizeValObj("7 3/4", "Length", "Dia", "");
 			} else if (sizeVal.contains("H") && sizeVal.contains("L") && sizeVal.contains("D")) {
@@ -210,10 +220,25 @@ public class GoldbondAttributeParser {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
+			} else if((sizeVal.contains("Deep") && sizeVal.contains("Wide")) || sizeVal.contains("Wide")) {
+				//10" Deep x 8-1/2" Wide top dimensions
+				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
+				valuesObj = getOverAllSizeValObj(sizeVal, "Depth", "Width", "");
 			} else if(sizeVal.contains("L") && sizeVal.contains("H")){
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Height", "");
+				String[] values = null;
+				if(sizeVal.contains("X")){
+					values = sizeVal.split("X");
+				} else {
+					values = sizeVal.split("x");
+				}
+				if(values.length == 2){
+					valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Height", "");	
+				} else {//20" H x 9-1/5" H x 9-1/5" L
+					valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "Length");
+				}
 			} else if (sizeVal.contains("H") && (sizeVal.contains("dia") || sizeVal.contains("Dia"))) {
 				if(sizeVal.contains("ia.")){
 					sizeVal = sizeVal.replaceAll("ia.", "").trim();
@@ -449,24 +474,61 @@ public class GoldbondAttributeParser {
 		} else if(value.equalsIgnoreCase("3 day production standard, same day production available upon request")) {
 			productionTimeObj.setBusinessDays("3");
 			 productionTimeObj.setDetails("standard");
-		} else if(value.equalsIgnoreCase("1-Color: 5-7 Days; 4-Color: 10 Days")){
+		} else if(value.equalsIgnoreCase("1-Color: 5-7 Days; 4-Color: 10 Days") || 
+				value.equalsIgnoreCase("1-Color: 5-7 busienss days; 4-Color: 10 business days")){
 			/*productionTimeObj.setBusinessDays("5-7");
 			 productionTimeObj.setDetails("1-Color: 5-7 Days");
 			 listOfProductionTime.add(productionTimeObj);*/
 		} else if(value.equalsIgnoreCase("3 Day Standard<br>Same Day Optional")){
 			productionTimeObj.setBusinessDays("3");
 			 productionTimeObj.setDetails("standard");
-		} else if(value.contains("Embroidered shirts ship 7-10 days after art ")){
+		} else if(value.equalsIgnoreCase("3 business days standard<br>Same Day Optional")){
+			productionTimeObj.setBusinessDays("3");
+			 productionTimeObj.setDetails("standard");
+		}else if(value.contains("domes or inserts")){
+			String[] vals = null;
+			if(value.contains(",")){
+				vals = CommonUtility.getValuesOfArray(value, ",");
+			} else if(value.contains(";")){
+				vals = CommonUtility.getValuesOfArray(value, ";");
+			} else {
+				
+			}
+			for (String timeVal : vals) {
+				productionTimeObj = new ProductionTime();
+				String prodTimeVal = timeVal.replaceAll("[^0-9-]", "").trim();
+				timeVal = timeVal.replaceAll(prodTimeVal, "").replaceAll("business days", "");
+				productionTimeObj.setBusinessDays(prodTimeVal);
+				productionTimeObj.setDetails(timeVal);
+				listOfProductionTime.add(productionTimeObj);
+			}
+			productionTimeObj = new ProductionTime();
+		} else if(value.contains("Embroidered shirts ship 7-10 days after art ") || 
+				value.contains(" Embroidered shirts ship 7-10 business days")){
 			productionTimeObj.setBusinessDays("7-10");
+			value = value.replaceAll("business days", "");
+			value = value.replaceAll("  ", " ");
 			 productionTimeObj.setDetails(value);
-		} else if(value.equalsIgnoreCase("3 Day Standard<br>Next Day Optional<br>Orders in by 12:00 pm EST<br>Gold Rush rules apply")){
+		} else if(value.equalsIgnoreCase("3 Day Standard<br>Next Day Optional<br>Orders in by 12:00 pm EST<br>Gold Rush rules apply")
+				|| value.equalsIgnoreCase("3 business days standard<br>Next Day Optional<br>Orders in by 12:00 pm EST<br>Gold Rush rules apply")){
 			productionTimeObj.setBusinessDays("3");
 			 productionTimeObj.setDetails("Standard");
 		} else if(value.contains("weeks") || value.contains("Weeks")){
+			//Two Weeks after art approval for Titleist Wrap; Four weeks after art approval for custom wrap
 			 if(value.equalsIgnoreCase("Two Weeks after art approval for Titleist Wrap") ||
 					 value.equalsIgnoreCase("Two weeks for sew out then an additional 2 weeks production time after proof approval")){
 				 productionTimeObj.setBusinessDays("10");
 				 productionTimeObj.setDetails(value);
+			 } else if(value.equalsIgnoreCase("Two weeks for sew out then an additional 2-4  weeks production time after proof approval")){
+				 productionTimeObj.setBusinessDays("10");
+				 productionTimeObj.setDetails(value);
+			 } else if(value.equalsIgnoreCase("Two Weeks after art approval for Titleist Wrap; Four weeks after art approval for custom wrap")){
+				 productionTimeObj.setBusinessDays("10");
+				 productionTimeObj.setDetails("after art approval for Titleist Wrap");
+				 ProductionTime productionTimeObj1 = new ProductionTime();
+				 productionTimeObj1.setBusinessDays("20");
+				 productionTimeObj1.setDetails("after art approval for custom wrap");
+				 listOfProductionTime.add(productionTimeObj1);
 			 } else {
 				 String productionTime = value.replaceAll("[^0-9-]", "");
 				 productionTime = CommonUtility.convertProductionTimeWeekIntoDays(productionTime).trim();
@@ -480,7 +542,8 @@ public class GoldbondAttributeParser {
 			} else if(value.equalsIgnoreCase("8 days standard")){
 				 productionTimeObj.setBusinessDays("8");
 				 productionTimeObj.setDetails("standard");
-			} else if(value.equalsIgnoreCase("30 days for normal production, 10 day rush option")){
+			} else if(value.equalsIgnoreCase("30 days for normal production, 10 day rush option") ||
+					value.equalsIgnoreCase("30 business days for normal production, 10 day rush option")){
 				 productionTimeObj.setBusinessDays("30");
 				 productionTimeObj.setDetails("for normal production");
 			} else{
@@ -492,7 +555,9 @@ public class GoldbondAttributeParser {
 				 productionTimeObj.setDetails(value);
 			}
 		}
-		listOfProductionTime.add(productionTimeObj);
+		if(!StringUtils.isEmpty(productionTimeObj.getBusinessDays())){
+			listOfProductionTime.add(productionTimeObj);
+		}
 		return listOfProductionTime;
 	}
 	public Product getRushTime(String value,Product existingProduct){
@@ -655,7 +720,12 @@ public class GoldbondAttributeParser {
 	}
 	private Values getOverAllSizeValObj(String val,String unit1,String unit2,String unit3){
 		//Overall Size: 23.5" x 23.5"
-		String[] values = val.split("x");
+		String[] values = null;
+		if(val.contains("X")){
+			values = val.split("X");
+		} else {
+			values = val.split("x");
+		}
 		Value valObj1 = null;
 		Value valObj2 = null;
 		Value valObj3 = null;
@@ -754,7 +824,8 @@ public class GoldbondAttributeParser {
 			materialObj.setName("Rubber");
 			materialObj.setAlias(value);
 		} else if(value.equalsIgnoreCase("100% Microfiber Velour Front and 100% Cotton Terry Loops on back. Total fiber content: 70% cotton/30% microfiber polyester") ||
-				  value.equalsIgnoreCase("100% Microfiber Velour Front and 100% Cotton Terry Loops on back. Total fiber content 70% cotton/30% microfiber polyester")){
+				  value.equalsIgnoreCase("100% Microfiber Velour Front and 100% Cotton Terry Loops on back. Total fiber content 70% cotton/30% microfiber polyester") ||
+				  value.equalsIgnoreCase("100% Microfiber Velour Front & 100% Cotton Terry Loops on back. Total fiber content 70% cotton/30% microfiber polyester")){
 			//Other Fabric:Combo:Cotton=Microfiber Velour & Cotton Loops
 			comboObj = new Combo();
 			comboObj.setName("Cotton");
@@ -984,7 +1055,7 @@ public class GoldbondAttributeParser {
 			}
 			existingProduct.setAdditionalImprintInfo(existingAdditionalImprintInfo);
 		} else {
-			String[] imprMetodVals = CommonUtility.getValuesOfArray(imprMethodVal, ",");
+			String[] imprMetodVals = CommonUtility.getValuesOfArray(imprintMethodVals, ",");
 			for (String imprMethodName : imprMetodVals) {
 				imprintMethodObj = new ImprintMethod();
 				if(imprMethodName.contains("=")){//Silkscreen=Screen Print
@@ -1053,6 +1124,12 @@ public class GoldbondAttributeParser {
     	if(CollectionUtils.isEmpty(productOptions)){
     		productOptions = new ArrayList<>();
     	}
+    	if(CollectionUtils.isEmpty(imprintMethods)){
+    		ImprintMethod imprintMethod = new ImprintMethod();
+    		imprintMethod.setType("Unimprinted");
+    		imprintMethod.setAlias("Unimprinted");
+    		imprintMethods.add(imprintMethod);
+    	}
     	if(val.equalsIgnoreCase("Sized DST: Free; Non-Sized DST: $75.00 (G); Non DST: $300.00 (G)")){
     		productOptions = getOptions("DST", "Sized DST", "Imprint", productOptions);
     		productOptions = getOptions("Non-DST", "Non-Sized DST", "Imprint", productOptions);
@@ -1101,6 +1178,7 @@ public class GoldbondAttributeParser {
     		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1",price, discountCode, "Imprint Method", false,
 					"USD","", imprintMethodVals, "Set-up Charge", "Other", 1, priceGrid,"","");
     	}
+    	productConfig.setImprintMethods(imprintMethods);
     	productConfig.setOptions(productOptions);
     	product.setPriceGrids(priceGrid);
     	product.setProductConfigurations(productConfig);
