@@ -25,7 +25,7 @@ public class MaxplusPriceGridParser {
 			List<PriceGrid> existingPriceGrid) {
 
 		Integer sequence = 1;
-		List<PriceGrid> priceGridsList = new ArrayList<PriceGrid>();
+	//	List<PriceGrid> priceGridsList = new ArrayList<PriceGrid>();
 
 		PriceGrid priceGrid = new PriceGrid();
 		String[] prices = listOfPrices
@@ -34,14 +34,10 @@ public class MaxplusPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] discount = listOfDisc
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		
-		
 
-	priceGrid.setIsQUR(isQur.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_Y) ? ApplicationConstants.CONST_BOOLEAN_TRUE
+	    priceGrid.setIsQUR(isQur.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_Y) ? ApplicationConstants.CONST_BOOLEAN_TRUE
 					: ApplicationConstants.CONST_BOOLEAN_FALSE);
 		
-		
-
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription("");
 		priceGrid.setIsBasePrice(isBasePrice);
@@ -93,7 +89,7 @@ public class MaxplusPriceGridParser {
 			String upchargeUsageType, Integer upChargeSequence,
 		List<PriceGrid> existingPriceGrid) {
 
-		List<PriceGrid> priceGridsList = new ArrayList<PriceGrid>();
+	//	List<PriceGrid> priceGridsList = new ArrayList<PriceGrid>();
 
 		List<PriceConfiguration> configuration = new ArrayList<PriceConfiguration>() ;
 		//PriceConfiguration priceConfObj=new PriceConfiguration();
@@ -129,7 +125,17 @@ public class MaxplusPriceGridParser {
 
         priceGrid.setPrices(listOfPrice);
 		if (upChargeCriterias != null && !upChargeCriterias.isEmpty()) {
-		configuration = getConfigurations(upChargeCriterias,upChargeName);
+			if(upChargeName.contains(","))
+			{
+				String Upchargevalue[]=upChargeName.split(",");
+				
+				for (String Value : Upchargevalue) {
+					  configuration = getConfigurations(upChargeCriterias,Value);
+				}			
+			}else
+			{
+		  configuration = getConfigurations(upChargeCriterias,upChargeName);
+			}
 		}
        /* if(upChargeName.contains("Personalization"))
         {
