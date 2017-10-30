@@ -3,9 +3,9 @@ package parser.goldbond;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GoldbondColorMapping {
+public class GoldbondColorAndImprintMethodMapping {
 	public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
-	
+	public static Map<String, String> IMPRINT_METHOD_MAP =new HashMap<String, String>();
 	static{
 		// NEW COLOR MAPPING
 		COLOR_MAP.put("Name","Color Group");
@@ -558,9 +558,32 @@ public class GoldbondColorMapping {
 		COLOR_MAP.put("Black with Black Inner and Lid","Black");
 		COLOR_MAP.put("Clear - 2x8 standard label 12oz","Clear");
 		COLOR_MAP.put("Translucent Green_Black Refill","Green");*/
-
+		IMPRINT_METHOD_MAP.put("Laser engraving; Optional: Pad print", "Laser Engraved, Pad Print");
+		IMPRINT_METHOD_MAP.put("Screen/Pad printed; Mints: 4-color process label, 4-color process direct imprint or 1-color direct imprint", "Silkscreen=Screen Print, Pad Print, Full Color");
+		IMPRINT_METHOD_MAP.put("Screen print on ALB, ODIN, SW; 4-color process sublimation on 1033; Laser Engraving on ROLLO, IBOOST-EXEC; Full color imprint with protective dome on PVPTBH & PVPOKR", "Silkscreen=Screen Print, Full Color, Laser Engraved");
+		IMPRINT_METHOD_MAP.put("Odin: 1-Color screen printed / Multi-color pad printed / Laser Engraving; EZGRIP: Full color imprint with protective dome", "Silkscreen=Screen Print, Full Color, Laser Engraved, Pad Print");
+		IMPRINT_METHOD_MAP.put("Screen/Pad printed. Trail Mix: 4-color process print label or 1-color direct imprint", "Silkscreen=Screen Print, Pad Print, Full Color");
+		IMPRINT_METHOD_MAP.put("Screen printed (standard); Faux Etching (optional); or Laser engraving (optional)", "Silkscreen=Screen Print, Etched=Faux Etching, Laser Engraved");
+		IMPRINT_METHOD_MAP.put("Full color stock imprint on SSPSKIT; Screen print on NS, WVP, SW", "Silkscreen=Screen Print, Full Color");
+		IMPRINT_METHOD_MAP.put("Laser engraved standard on Black, Blue, and Red; Pad print on gold", "Laser Engraved, Pad Print");
+		IMPRINT_METHOD_MAP.put("Screen print on SPIRIT, CT, KWS, F925, 1518PBR, FRUITFUSION28, FC-02", "Silkscreen=Screen Print");
+		IMPRINT_METHOD_MAP.put("Pad printed on handle standard; laser engraved available on blade", "Laser Engraved, Pad Print");
+		IMPRINT_METHOD_MAP.put("Laser engraving standard for colors (Pad printing standard on silver and white pens only)", " Laser Engraved, Pad Print");
+		IMPRINT_METHOD_MAP.put("1-Color screen printed / Multi-color pad printed / Laser Engraving", "Silkscreen=Screen Print, Laser Engraved, Pad Print");
+		IMPRINT_METHOD_MAP.put("Screen 1 color", "Silkscreen=Screen Print");
+		IMPRINT_METHOD_MAP.put("Screen printed on case only", "Silkscreen=Screen Print");
+		IMPRINT_METHOD_MAP.put("Screen printed. Full color dome imprint add $0.40 (G)", "Silkscreen=Screen Print, Full Color");
+		IMPRINT_METHOD_MAP.put("Full color heat transfer with 30 day production, 1 or 2 color heat transfer with rush production", "Full Color, Heat Transfer");
+		IMPRINT_METHOD_MAP.put("4-color process print (standard); Embroidery or Full Color Dome (optional)", "Full Color, Embroidered");
+		IMPRINT_METHOD_MAP.put("Heat transfer on bag and Screen/Pad printed on balance", "Heat Transfer, Silkscreen=Screen Printed, Pad Print");
+		IMPRINT_METHOD_MAP.put("Heat transfer on bag, Screen/Pad printed on tees, towel, power device charger, full color imprint on Pringles and mints", "Heat Transfer, Silkscreen=Screen Printed, Pad Print, Full Color");
+		IMPRINT_METHOD_MAP.put("Screen printed (standard) / Faux Etching (optional)", "Silkscreen=Screen Print, Etched=Faux Etching");
+		IMPRINT_METHOD_MAP.put("4-color process print label or 1-color direct imprint", "Full Color=4-Color Process,Other=Direct Imprint");
 	}
 	public static String getColorGroup(String colorName){
 		return COLOR_MAP.get(colorName);
+	}
+	public static String getImprintMethodValues(String imprintMethodVal){
+		return IMPRINT_METHOD_MAP.get(imprintMethodVal);
 	}
 }

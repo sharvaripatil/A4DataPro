@@ -39,7 +39,7 @@ public class GoldbondPriceGridParser {
 		priceGrid.setDescription(priceName);
 		priceGrid.setPriceIncludes(priceInclude);
 		priceGrid.setIsQUR(isQurFlag);
-		if (!priceGrid.getIsQUR() && !CommonUtility.isdescending(prices)) {
+		if (!priceGrid.getIsQUR() && !CommonUtility.isdescending(prices) && StringUtils.isEmpty(listOfPrices)) {
 			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
 		}
 		priceGrid.setIsBasePrice(isBasePrice);
@@ -49,6 +49,7 @@ public class GoldbondPriceGridParser {
 			listOfPrice = getPrices(prices, quantity, discountCode,"");
 		} else {
 			listOfPrice = new ArrayList<Price>();
+			priceGrid.setPriceIncludes("");
 		}
 		priceGrid.setPrices(listOfPrice);
 		if (criterias != null && !criterias.isEmpty()) {
