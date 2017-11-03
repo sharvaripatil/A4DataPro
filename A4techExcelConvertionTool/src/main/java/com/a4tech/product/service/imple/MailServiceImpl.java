@@ -187,7 +187,7 @@ public class MailServiceImpl implements IMailService{
 	public void numberOfFileProcess(String subject,String fileNames) {
 		try {
 		      MimeMessage mimeMessage = mailSender.createMimeMessage();
-		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false);
 		      helper.setFrom(senderMailName);
 		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
 		    		  "amey.more@a4technology.com"};
