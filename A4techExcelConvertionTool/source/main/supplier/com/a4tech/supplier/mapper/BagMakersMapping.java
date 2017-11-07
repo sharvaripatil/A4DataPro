@@ -115,14 +115,27 @@ public class BagMakersMapping implements IExcelParser{
 			 boolean checkXid  = false;
 			
 			 while (cellIterator.hasNext()) {
-					Cell cell = cellIterator.next();
+					/*Cell cell = cellIterator.next();
 					  columnIndex = cell.getColumnIndex();
 					if(columnIndex + 1 == 1){
 						xid = getProductXid(nextRow);//CommonUtility.getCellValueStrinOrInt(cell);//
 						checkXid = true;
 					}else{
 						checkXid = false;
+					}*/
+				 Cell cell = cellIterator.next();
+					
+				 columnIndex = cell.getColumnIndex();
+				 if (columnIndex == 1) {
+						xid = getProductXid(nextRow);
+						checkXid = true;
+					} else {
+						checkXid = false;
 					}
+				if(columnIndex + 1 == 1){
+					xid = getProductXid(nextRow);
+					checkXid = true;
+				}
 					if(checkXid){
 						 if(!productXids.contains(xid)){
 							 if(nextRow.getRowNum() != 1){
@@ -215,7 +228,15 @@ public class BagMakersMapping implements IExcelParser{
 						break;
 					case  3://Item #
 						String asiProdNo=CommonUtility.getCellValueStrinOrDecimal(cell);
+						if(!StringUtils.isEmpty(xid)){
+							productExcelObj.setExternalProductId(xid);
+						}
 						if(!StringUtils.isEmpty(asiProdNo)){
+							
+							String temp=productExcelObj.getExternalProductId();
+							if(StringUtils.isEmpty(temp)){
+								productExcelObj.setExternalProductId(asiProdNo);
+							}
 							productExcelObj.setAsiProdNo(asiProdNo);
 						}
 						break;

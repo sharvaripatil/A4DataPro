@@ -40,14 +40,20 @@ public class BagMakerAttributeParser {
 	
 	public List<ImprintMethod> getImprintMethods(List<String> listOfImprintMethods){
 		List<ImprintMethod> listOfImprintMethodsNew = new ArrayList<ImprintMethod>();
+		String aliasName="";
 		for (String value : listOfImprintMethods) {
+			aliasName=value;
+			if(value.toLowerCase().contains("screen")){
+				value="Silkscreen";
+			}
+			
 			value=value.trim();
 			ImprintMethod imprintMethodObj =new ImprintMethod();
 			if(objLookUpService.isImprintMethod(value.toUpperCase())){
-				imprintMethodObj.setAlias(value);
+				imprintMethodObj.setAlias(aliasName);
 				imprintMethodObj.setType(value);
 			}else{
-				imprintMethodObj.setAlias(value);
+				imprintMethodObj.setAlias(aliasName);
 				imprintMethodObj.setType("OTHER");
 			}
 			listOfImprintMethodsNew.add(imprintMethodObj);
