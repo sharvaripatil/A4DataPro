@@ -19,7 +19,9 @@ import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Apparel;
+import com.a4tech.product.model.Color;
 import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.Option;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -207,35 +209,84 @@ public class InternationlMerchMapping implements IExcelParser{
 				case 27: 
 					//Ignore as per feedback i.e Size column
 					break;
-				case 28:
+				case 28:// COLOR
+					String color = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(color)){
+						List<Color> colorList = merchAttributeParser.getProductColor(color);
+						productConfigObj.setColors(colorList);
+					}
 					break;
-				case 29:
+				case 29:// Option
+					String optionVal = cell.getStringCellValue();
+							if (StringUtils.isEmpty(optionVal)) {
+								List<Option> listOfOptins = merchAttributeParser.getProductOption("Ink Refill",
+										"Product", optionVal);
+								productConfigObj.setOptions(listOfOptins);
+							}
 					break;
-				case 30: 
+				case 30: // Imprint Methods
+					String imprintMethodVal = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(imprintMethodVal)){
+						productExcelObj.setProductConfigurations(productConfigObj);
+						productExcelObj = merchAttributeParser.getProductImprintMethod(imprintMethodVal, productExcelObj);
+						productConfigObj = productExcelObj.getProductConfigurations();
+						priceGrids = productExcelObj.getPriceGrids();
+					}
 					break;
-				case 31:
+				case 31://packaging
+					String packVal = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(packVal)){
+						productExcelObj.setProductConfigurations(productConfigObj);
+						productExcelObj.setPriceGrids(priceGrids);
+						productExcelObj = merchAttributeParser.getProductPackaging(packVal, productExcelObj);
+						productConfigObj = productExcelObj.getProductConfigurations();
+						priceGrids = productExcelObj.getPriceGrids();
+					}
 					 break;
-				case 32:  
+				case 32:  //Ignore
 					  break;
-				case 33:
+				case 33://Standard productionTime
+					String prdTime = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(prdTime)){
+						productExcelObj.setProductConfigurations(productConfigObj);
+						productExcelObj.setPriceGrids(priceGrids);
+						productExcelObj = merchAttributeParser.getProductionTime(prdTime, productExcelObj);
+						productConfigObj = productExcelObj.getProductConfigurations();
+					}
 				    break;
-				case 34:
+				case 34://Rush Time
+					String rushTime = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(rushTime) && !rushTime.equals("N/A")){
+						productExcelObj.setProductConfigurations(productConfigObj);
+						productExcelObj.setPriceGrids(priceGrids);
+						productExcelObj = merchAttributeParser.getProductPackaging(rushTime, productExcelObj);
+						productConfigObj = productExcelObj.getProductConfigurations();
+						priceGrids = productExcelObj.getPriceGrids();
+					}
 				    break;
-				case 35:
+				case 35://price Include
+					String priceInclude = cell.getStringCellValue();
 					break;
-				case 36: 
+				case 36: //setup charge
+					String setupChargeVal = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(setupChargeVal)){
+						productExcelObj.setPriceGrids(priceGrids);
+								productExcelObj = merchAttributeParser.getUpchargeImprintMethdoColumns(setupChargeVal,
+										productExcelObj, "Set-up Charge");
+						priceGrids = productExcelObj.getPriceGrids();
+					}
 					break;
-				case 37:
+				case 37://Addl Color-Location
 					break;
-				case 38: 
+				case 38: //Screen Re-Order Setup
 					break;
-				case 39: 
+				case 39: //Less Than Minimum
 					break;
-				case 40: 
+				case 40: //Logo Modification
 					break;
-				case 41:
+				case 41://Setup
 					break;
-				case 42:
+				case 42://Addl Color-Location
 					break;
 				case 43:
 					break;

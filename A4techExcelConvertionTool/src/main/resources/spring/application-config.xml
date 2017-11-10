@@ -23,7 +23,7 @@
 	</bean>
 	<import resource="sageMapping.xml" />
 	<import resource="kuku_mapping.xml" />
-	<import resource="ftpSchedular.xml"/>
+	<!-- <import resource="ftpSchedular.xml"/> -->
 	<context:property-placeholder location="classpath:application.properties,classpath:sandbox-database.properties
 	                                       ,classpath:sandbox-externalApiEndPoints.properties"/>
 	<bean id="productService" class="com.a4tech.product.service.imple.ProductServiceImpl" />

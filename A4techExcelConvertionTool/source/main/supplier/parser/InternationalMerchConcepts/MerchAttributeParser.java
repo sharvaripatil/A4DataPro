@@ -1,17 +1,37 @@
 package parser.InternationalMerchConcepts;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.product.model.Availability;
+import com.a4tech.product.model.AvailableVariations;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.ImprintColor;
+import com.a4tech.product.model.ImprintColorValue;
+import com.a4tech.product.model.ImprintLocation;
+import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.Option;
+import com.a4tech.product.model.OptionValue;
+import com.a4tech.product.model.Packaging;
+import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductionTime;
+import com.a4tech.product.model.RushTime;
+import com.a4tech.product.model.RushTimeValue;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
@@ -20,7 +40,8 @@ import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
 public class MerchAttributeParser {
-	public Product keepExistingProductData(Product existingProduct){
+	private MerchPriceGridParser merchPriceGridParser;
+ 	public Product keepExistingProductData(Product existingProduct){
 		//Please keep the Categories,Images and Themes for existing products.
 		Product newProduct = new Product();
 		ProductConfigurations newConfiguration = new ProductConfigurations();
@@ -217,7 +238,7 @@ public class MerchAttributeParser {
 			colorObj.setAlias(colorName);
 		} else {
 			if(colorName.contains("-")){
-				
+				colorObj = getColorCombo(colorName);
 			} else {
 				colorObj.setName("Other");
 				colorObj.setAlias(colorName);
@@ -264,5 +285,308 @@ public class MerchAttributeParser {
 			colorObj.setCombos(listOfCombo);
 		}
 		return colorObj;
+	}
+  public List<Option> getProductOption(String optionName,String optionType,String optionValues){
+	  Option optionObj = null;
+	  List<OptionValue> valuesList=new ArrayList<OptionValue>();
+	  OptionValue optionValueObj=null;
+	  String[] optionVals = CommonUtility.getValuesOfArray(optionValues, ",");
+	  List<Option> listOfOptins = new ArrayList<>();
+	  for (String optionVal : optionVals) {
+		  optionObj=new Option();
+		  if(optionVal.contains(":")){//Rollerball: black ink, Ballpoint: blue ink
+			  String[] optionNameAndVal = CommonUtility.getValuesOfArray(optionVal, ":");
+			  optionName = optionNameAndVal[0];
+			  optionVal = optionNameAndVal[1];
+		  }
+		  optionValueObj = new OptionValue();
+		  optionValueObj.setValue(optionVal);
+		  valuesList.add(optionValueObj);
+		  optionObj.setName(optionName);
+		  optionObj.setOptionType(optionType);
+		  optionObj.setValues(valuesList);
+		  optionObj.setCanOnlyOrderOne(ApplicationConstants.CONST_BOOLEAN_FALSE);
+		  optionObj.setRequiredForOrder(ApplicationConstants.CONST_BOOLEAN_FALSE);
+		  optionObj.setAdditionalInformation("");
+		  listOfOptins.add(optionObj);
+	}
+	  return listOfOptins;
+  }
+  public Product getProductImprintMethod(String imprMethodVal,Product existingProduct){
+	  ProductConfigurations config = existingProduct.getProductConfigurations();
+	  List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
+	  if(CollectionUtils.isEmpty(priceGrids)){
+		  priceGrids = new ArrayList<>();
+	  }
+	  String tempImprintVal = imprMethodVal;
+	  List<ImprintMethod> imprintMethodList = new ArrayList<>();
+	  ImprintMethod imprintMethodObj = null;
+	  if(!tempImprintVal.contains("(")){
+		  tempImprintVal = tempImprintVal.replaceAll(" or ", ",");  
+	  }
+	  String[] imprMethodvals = CommonUtility.getValuesOfArray(tempImprintVal, ",");
+	  String[] imprVals = null;
+	  for (String imprintMethodName : imprMethodvals) {
+		  imprintMethodName = imprintMethodName.trim();
+		  if(imprintMethodName.equals("N-A")){
+			  continue;
+		  }
+		  imprintMethodObj = new ImprintMethod();
+		  String group = MerchImprintMethodMapping.getImprintMethodGroup(imprintMethodName);
+		  if(group == null){
+			  imprintMethodObj.setType("Other");
+			  imprintMethodObj.setAlias(imprintMethodName);
+			  imprintMethodList.add(imprintMethodObj);
+		  } else if(group.contains(",")){
+			  imprVals = CommonUtility.getValuesOfArray(imprintMethodName, ",");
+			  for (String imprName : imprVals) {
+				  imprintMethodObj = new ImprintMethod();
+				  imprVals = CommonUtility.getValuesOfArray(imprName, "=");
+				  imprintMethodObj.setType(imprVals[0]);
+				  imprintMethodObj.setAlias(imprVals[1]);
+				  imprintMethodList.add(imprintMethodObj);
+			}
+		  } else {
+			  imprVals = CommonUtility.getValuesOfArray(group, "=");
+			  imprintMethodObj.setType(imprVals[0]);
+			  imprintMethodObj.setAlias(imprVals[1]);
+			  imprintMethodList.add(imprintMethodObj);
+		  }
+	}
+		if (imprMethodVal.contains("Laser in matte Silver") || imprMethodVal.contains("Laser in Matte Silver")
+				|| imprMethodVal.contains("Lasers in Gold")
+				|| imprMethodVal.contains("Lasers in gold")) {
+			String imprVal = MerchImprintColorAndLocationMapping.getImprintColorAndImprintGroup(imprMethodVal);
+			ImprintColor imprintColors = getProductImprintColors(imprVal);
+			config.setImprintColors(imprintColors);
+
+		} else if (imprMethodVal.equalsIgnoreCase("Screen (on handle)")
+				|| imprMethodVal.equalsIgnoreCase("Screen (on pouch)")
+				|| imprMethodVal.equalsIgnoreCase("Laser, Screen (one location pen or box)")
+				|| imprMethodVal.equalsIgnoreCase(
+						"Pen: Laser, Screen. Laser on engraving plate also available. Setup & run charges apply.")
+				|| imprMethodVal.equalsIgnoreCase("Pen: Laser, Screen  Keychain: Laser")
+				|| imprMethodVal.equalsIgnoreCase(
+						"Laser on clip or engraving plate, screen on gift box. Setup & run charges apply.")
+				|| imprMethodVal.equalsIgnoreCase(
+						"Laser on Base included, Sandblast Etch on Globe (additional charges apply) -- base, globe")) {
+			String imprLoc = MerchImprintColorAndLocationMapping.getImprintColorAndImprintGroup(imprMethodVal);
+			List<ImprintLocation> imprintLocationList = getProductImprintLocation(imprLoc);
+			config.setImprintLocation(imprintLocationList);
+		}
+		if(imprMethodVal.equalsIgnoreCase("Deep Laser, Screen, Laser Polish (Add $.56(G) Per Unit)")){
+			//Laser Engraved=Laser Polish Create upcharge based off of Laser Polish ($.56(G) Per Quantity)
+			priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "0.56", "G", "Imprint Method", false, "USD",
+					"", "Laser Polish", "Imprint Method Charge", "Other", 1, priceGrids, "", "");
+		}
+		String imprintMethodValues = imprintMethodList.stream().map(ImprintMethod::getAlias)
+				.collect(Collectors.joining(","));
+		existingProduct.setDeliveryOption(imprintMethodValues);// for reference purpose use in upcharges
+		config.setImprintMethods(imprintMethodList);
+		existingProduct.setPriceGrids(priceGrids);
+		existingProduct.setProductConfigurations(config);
+	  return existingProduct;
+  }
+  private ImprintColor getProductImprintColors(String imprColor){
+	   List<ImprintColorValue> listOfImprintColorVals = new ArrayList<>();
+	   ImprintColorValue imprColorValObj = new ImprintColorValue();
+	   ImprintColor imprintColorObj = new ImprintColor();
+	   imprColorValObj.setName(imprColor);
+	   listOfImprintColorVals.add(imprColorValObj);
+	   imprintColorObj.setValues(listOfImprintColorVals);
+	   imprintColorObj.setType(ApplicationConstants.CONST_STRING_IMPRNT_COLR);
+	   return imprintColorObj;
+  }	
+  private List<ImprintLocation> getProductImprintLocation(String imprLocation){
+	  List<ImprintLocation> imprintLocationList = new ArrayList<>();
+	  ImprintLocation imprintLocationObj = null;
+	  String[] imprLocations = CommonUtility.getValuesOfArray(imprLocation, ",");
+	  for (String imprLocName : imprLocations) {
+		  imprintLocationObj = new ImprintLocation();
+		  imprintLocationObj.setValue(imprLocName);
+		  imprintLocationList.add(imprintLocationObj);
+	}
+	  return imprintLocationList;
+  }
+  public Product getProductPackaging(String packVal,Product existingProduct){
+	  ProductConfigurations config = existingProduct.getProductConfigurations();
+	  List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
+	  if(CollectionUtils.isEmpty(priceGrids)){
+		  priceGrids = new ArrayList<>();
+	  }
+	  List<Packaging> packagingList = null;
+	 if(packVal.equalsIgnoreCase("Bulk. Packaging Options: White Gift Box $0.70(G). Brown Mailer Box $1.20(G)")){
+		 packagingList = getPackageValues("Bulk,White Gift Box,Brown Mailer Box");
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "0.70", "G", "Packaging", false, "USD",
+					"", "White Gift Box", "Packaging Charge", "Other", 1, priceGrids, "", "");
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "1.20", "G", "Packaging", false, "USD",
+					"", "Brown Mailer Box", "Packaging Charge", "Other", 1, priceGrids, "", "");
+	 } else if(packVal.equalsIgnoreCase("Bulk. Packaging Options: Brown Mailer Box $1.20(G)")){
+		 packagingList = getPackageValues("Bulk,Brown Mailer Box");
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "1.20", "G", "Packaging", false, "USD",
+					"", "Brown Mailer Box", "Packaging Charge", "Other", 1, priceGrids, "", "");
+	 } else {
+		 packagingList = getPackageValues(packVal);
+	 }
+	  config.setPackaging(packagingList);
+	   existingProduct.setPriceGrids(priceGrids);
+	   existingProduct.setProductConfigurations(config);
+	  return existingProduct;
+  }
+  private List<Packaging> getPackageValues(String packVal){
+	  List<Packaging> packagingList = new ArrayList<>();
+	  String[] packVals = CommonUtility.getValuesOfArray(packVal, ",");
+	  Packaging packagingObj = null;
+	  for (String packName : packVals) {
+		  packagingObj = new Packaging();
+		  String group = MerchImprintColorAndLocationMapping.getPackagingGroup(packName);
+		  if(group!= null){
+			  packagingObj.setName(group);
+		  } else {
+			  packagingObj.setName(packName);	  
+		  } 
+		  packagingList.add(packagingObj);
+	}
+	  return packagingList;
+  }
+  public Product getProductionTime(String prdTimeVal,Product existingProdcut){
+	  ProductConfigurations configuration = existingProdcut.getProductConfigurations();
+	  List<ImprintMethod> imprintMethodList = configuration.getImprintMethods();
+	  if(CollectionUtils.isEmpty(imprintMethodList)){
+		  imprintMethodList = new ArrayList<>();
+	  }
+		String existingImprintMethods = imprintMethodList.stream().map(ImprintMethod::getAlias)
+				.collect(Collectors.joining(","));
+		if(prdTimeVal.equalsIgnoreCase("Blank: 2 business days; Embroidery: 7-10 business days")){
+			List<String> imprMethods = Arrays.asList("Embroidery,Unimprinted");
+			ImprintMethod imprMethObj = null;
+			for (String imprintMethodName : imprMethods) {
+				if(!existingImprintMethods.contains(imprintMethodName)){
+					imprMethObj = new ImprintMethod();
+					imprMethObj.setAlias(imprintMethodName);
+					if(imprintMethodName.equalsIgnoreCase("Embroidery")){
+						imprMethObj.setType("Embroidered");
+					} else {
+						imprMethObj.setType(imprintMethodName);
+					}
+					imprintMethodList.add(imprMethObj);
+				}
+			}
+			Map<String, String> imprAndPrdTimeAvailMap = new HashMap<>();
+			imprAndPrdTimeAvailMap.put("Unimprinted", "2 business days");
+			imprAndPrdTimeAvailMap.put("Embroidery", "7-10 business days");
+			List<Availability> availabilityList = getProductAvailablity(imprAndPrdTimeAvailMap);
+			existingProdcut.setAvailability(availabilityList);
+			prdTimeVal = "2 business days;7-10 business days";
+		}
+	  List<ProductionTime> productionTimeList = new ArrayList<>();
+	  ProductionTime prdTimeObj = null;
+	  prdTimeVal = prdTimeVal.replaceAll(";", ",");
+	  String[] prodTimes = CommonUtility.getValuesOfArray(prdTimeVal,",");
+	  for (String prdTime : prodTimes) {
+		  prdTimeObj = new ProductionTime();
+		  prdTime = prdTime.replaceAll("[^0-9-]", "").trim();
+		  prdTimeObj.setBusinessDays(prdTime);
+		  prdTimeObj.setDetails("");
+		  productionTimeList.add(prdTimeObj);
+	}
+	  configuration.setProductionTime(productionTimeList);
+	  existingProdcut.setProductConfigurations(configuration);
+	  return existingProdcut;
+  }
+  public List<Availability> getProductAvailablity(Map<String, String> availMap){
+	  
+		List<Availability> listOfAvailablity = new ArrayList<>();
+		Availability  availabilityObj = new Availability();
+		AvailableVariations  AvailableVariObj = null;
+		List<AvailableVariations> listOfVariAvail = new ArrayList<>();
+		List<Object> listOfParent = null;
+		List<Object> listOfChild = null;
+		for (Map.Entry<String, String> entry: availMap.entrySet()) {
+			String childImprintMethod = entry.getKey();
+			String parentPrdTimeValue = entry.getValue();
+			AvailableVariObj = new AvailableVariations();
+			 listOfParent = new ArrayList<>();
+			 listOfChild = new ArrayList<>();
+			 listOfParent.add(parentPrdTimeValue);
+			 listOfChild.add(childImprintMethod);
+			 AvailableVariObj.setParentValue(listOfParent);
+			 AvailableVariObj.setChildValue(listOfChild);
+			 listOfVariAvail.add(AvailableVariObj);
+		}
+		availabilityObj.setAvailableVariations(listOfVariAvail);
+		availabilityObj.setParentCriteria("Production Time");
+		availabilityObj.setChildCriteria(ApplicationConstants.CONST_STRING_IMPRINT_METHOD);
+		listOfAvailablity.add(availabilityObj);
+		return listOfAvailablity;
+	}
+ public Product getProductRushTime(String rushTimeVal,Product existingProduct){
+	 ProductConfigurations configuration = existingProduct.getProductConfigurations();
+	 List<PriceGrid> priceGrid = existingProduct.getPriceGrids();
+	 if(CollectionUtils.isEmpty(priceGrid)){
+		 priceGrid = new ArrayList<>();
+	 }
+	 List<RushTimeValue> listOfRushTimeValue = new ArrayList<>();
+		RushTimeValue rushTimeValueObj = null;
+		RushTime rushTimeObj = new RushTime();
+		String[] rushTimes = CommonUtility.getValuesOfArray(rushTimeVal, ",");
+		String priceVal = null, rushTime = null,rushDetails = null;
+		for (String rushTimVal : rushTimes) {
+			rushTimeValueObj = new RushTimeValue();
+			     priceVal = null; rushTime = null;rushDetails = null;
+			    if(rushTimVal.contains("3/4")){//3/4 days: $50.00(G)
+			    	rushTime = "3-4";priceVal = "50.00";rushDetails = "";
+			    } else if(rushTimVal.equalsIgnoreCase("3 day rush:  30% of order total. $60.00(G) minimum")){
+			    	rushTime = "3";priceVal = "";rushDetails = "30% of order total. $60.00(G) minimum";
+			    } else if(rushTimVal.equalsIgnoreCase("Rush service may be available. Contact IMC for details")){
+			    	rushTime = "";priceVal = "";rushDetails = "Rush service may be available. Contact IMC for details.";
+			    } else if(rushTimVal.equalsIgnoreCase("2 days (laser only):  $100.00(G)")){
+			    	rushTime = "2";priceVal = "100.00";rushDetails = "";
+			    } else{
+			    	
+			    }
+			    rushTimeValueObj.setBusinessDays(rushTime);
+		    	rushTimeValueObj.setDetails(rushDetails);
+				listOfRushTimeValue.add(rushTimeValueObj);
+				if(!StringUtils.isEmpty(priceVal)){
+				priceGrid = merchPriceGridParser.getUpchargePriceGrid("1", priceVal, "G", "Rush Service", false, "USD",
+						"", rushTime + " business days", "Rush Service Charge", "Other", 1, priceGrid, "", "");
+				}
+		}
+			rushTimeObj.setRushTimeValues(listOfRushTimeValue);
+			rushTimeObj.setAvailable(ApplicationConstants.CONST_BOOLEAN_TRUE);
+			configuration.setRushTime(rushTimeObj);
+			existingProduct.setPriceGrids(priceGrid);
+	 return existingProduct; 
+ }
+ public Product getUpchargeImprintMethdoColumns(String val,Product existingProduct,String upchargeType){
+	 String imprintMethodVals = existingProduct.getDeliveryOption();
+	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
+	 String[] vals = CommonUtility.getValuesOfArray(val, ",");
+	 String priceInclude = "";
+	 for (String priceVal : vals) {
+		 priceInclude = "";
+		    if(priceVal.equalsIgnoreCase("$85.00 (G) 1-color wrap")){
+		    	 priceVal = "85.00";priceInclude = "1-color wrap";
+		    } else if(priceVal.equalsIgnoreCase("")){
+		    	
+		    } else if(priceVal.equalsIgnoreCase("")){
+		    	
+		    } else {
+		    	priceVal = priceVal.replaceAll("[^0-9.]", "");
+		    }
+		    if(!StringUtils.isEmpty(imprintMethodVals)){
+		    	priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", priceVal, "G", "Imprint Method", false, "USD", priceInclude,
+						imprintMethodVals, upchargeType, "Other", 1, priceGrids, "", "");	
+		    }
+	}
+	 return existingProduct;
+ }
+  public MerchPriceGridParser getMerchPriceGridParser() {
+		return merchPriceGridParser;
+	}
+
+	public void setMerchPriceGridParser(MerchPriceGridParser merchPriceGridParser) {
+		this.merchPriceGridParser = merchPriceGridParser;
 	}
 }
