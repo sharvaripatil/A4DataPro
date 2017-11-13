@@ -60,7 +60,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 
 
 	
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 		
 		  List<String> numOfProductsSuccess = new ArrayList<String>();
 		  List<String> numOfProductsFailure = new ArrayList<String>();
@@ -809,7 +809,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				case 116: //ShipPointZip
 					String FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
 					String FOBLooup=null;
-					List<String>fobLookupList = lookupServiceDataObj.getFobPoints(FOBLooup);
+					List<String>fobLookupList = lookupServiceDataObj.getFobPoints(FOBLooup,environmentType);
 					if(fobLookupList.contains(FOBValue))
 					{
 						fobPintObj.setName(FOBValue);

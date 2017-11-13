@@ -68,6 +68,17 @@
                 <!-- <input type="password" name="form-email" placeholder="Password..." class="form-email form-control" id="form-email"> -->
                <p id="asipassftp" class="txt_red"></p>
               </div>
+               <div class="form-group">
+
+									<%-- <c:if test="${empty environemtType}"> --%>
+									<!-- <label for="sel1">Select Type Of Enviornmet</label> -->
+										<form:select class="form-control" path="environemtType">
+											<form:option value="NONE" label="Select Type Of Enviornmet"></form:option>
+											<form:option value="Sand">Sandbox</form:option>
+											<form:option value="Prod">Production</form:option>
+										</form:select>
+									<%-- </c:if> --%>
+								</div>
               <div class="submitbtn">
               <!-- <a href="fileUpload" class="btn btn-lg btn-primary">Submit</a> -->
               <form:button value="submit" class="btn1 btn-primary btn-lg pull-right" onclick="return validateForm()">Submit</form:button>
@@ -77,6 +88,26 @@
               </form:form>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Confirmation Environment</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button"  class="btn btn-lg btn-default pull-left" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn1 btn-primary btn-lg">Proceed</button>
       </div>
     </div>
   </div>
@@ -101,6 +132,7 @@ function validateForm(){
 	var userName = document.getElementById("userName").value;
 	var password = document.getElementById("password").value;
 	document.getElementById("dataId").innerHTML = "";
+	$('#exampleModal').dialog('open');
 	if (asiNumber==null || asiNumber==''){
 		  document.getElementById("asinumftp").innerHTML = "<i><b>!</b></i> &nbsp;Enter your ASI Number";
 		  document.getElementById("asinumftp").focus();
@@ -122,7 +154,20 @@ function validateForm(){
 	}else{
 		document.getElementById("asipassftp").innerHTML = "";
 	}
+	$('test123').click();
 }
+function checkEnvironment(){
+	alert('hi');
+	document.getElementById('exampleModal').style.display = "block";
+	/* $('#exampleModal').show(); */
+}
+$(function() {
+	alert('new')
+    $('#exampleModal').change(function() {
+        var divselection = $(this);  
+    });
+	alert('new end')
+});
 </script>
 
 <!--[if lt IE 10]>

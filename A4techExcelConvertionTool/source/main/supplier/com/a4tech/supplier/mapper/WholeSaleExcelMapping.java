@@ -46,7 +46,7 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 	WholeSaleAttributeParser wholeSaleAttributeParser;
 	WholeSalePriceGridParser wholeSalePriceGridParser;
 	private LookupServiceData lookupServiceDataObj;
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 	
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
@@ -183,7 +183,7 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 						    	 existingFlag=false;
 						     }else{
 						    	 _LOGGER.info("Existing Xid available,Processing existing Data");
-						    	 productExcelObj=wholeSaleAttributeParser.getExistingProductData(existingApiProduct,existingApiProduct.getProductConfigurations(),accessToken);
+						    	 productExcelObj=wholeSaleAttributeParser.getExistingProductData(existingApiProduct,existingApiProduct.getProductConfigurations(),accessToken,environmentType);
 						    	 productConfigObj=productExcelObj.getProductConfigurations();
 								 existingFlag=true;
 								 // priceGrids = productExcelObj.getPriceGrids();
@@ -409,7 +409,7 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 						case 20://F.O.B
 							if(!existingFlag)
 							{
-							List<String> fobPointsTemp=lookupServiceDataObj.getFobPoints(accessToken);
+							List<String> fobPointsTemp=lookupServiceDataObj.getFobPoints(accessToken,environmentType);
 							if(!CollectionUtils.isEmpty(fobPointsTemp)){
 							String tempValue=null;
 							for (String string : fobPointsTemp) {

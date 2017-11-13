@@ -40,7 +40,7 @@ public class TomaxUsaMapping implements IExcelParser{
 	TomaxUsaAttributeParser tomaxUsaAttributeParser;
 	TomaxProductTabParser tomaxProductTabParser;
 	
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 	
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();

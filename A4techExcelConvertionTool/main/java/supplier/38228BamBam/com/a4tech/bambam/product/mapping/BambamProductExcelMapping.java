@@ -49,11 +49,11 @@ public class BambamProductExcelMapping implements IExcelParser{
 	private BamOptionParser					bamOptionParser;
 	
 	@Override
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		String finalResult = null;
-		bamLookupData.loadFobPoints(String.valueOf(asiNumber), accessToken);
+		bamLookupData.loadFobPoints(String.valueOf(asiNumber), accessToken,environmentType);
 		Set<String>  productXids = new HashSet<String>();
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();

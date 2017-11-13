@@ -603,10 +603,10 @@ public class ProGolfInformationAttributeParser {
 		dimensionsObj.setWidthUnit(unit);
 		return dimensionsObj;
 	}
-	public List<FOBPoint> getFobPoint(String value,String authToken){
+	public List<FOBPoint> getFobPoint(String value,String authToken,String environment){
 		List<FOBPoint> listOfFobPoint = new ArrayList<>();
 		if(fobPoints == null){
-			fobPoints = lookupServiceData.getFobPoints(authToken);
+			fobPoints = lookupServiceData.getFobPoints(authToken,environment);
 		}
 		value = value.replaceAll("[^0-9]", "").trim();
 		String data = value;

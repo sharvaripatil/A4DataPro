@@ -85,7 +85,7 @@ public class FilesParsing {
 			 int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 			 if(workBook != null){
 				 processFileStatusMail(asiNumber, "ProcessStart", batchId);
-				 excelParserImpl.readExcel(accessToken, workBook, Integer.parseInt(asiNumber), batchId);
+				 excelParserImpl.readExcel(accessToken, workBook, Integer.parseInt(asiNumber), batchId, null);
 				 productDao.updateFtpFileStatus(fileName, asiNumber,
 							ApplicationConstants.CONST_STRING_YES);
 				 processFileStatusMail(asiNumber, "ProcessEnd", batchId);

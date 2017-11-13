@@ -38,7 +38,7 @@ public class BallProShippingMapping {
 	private BallProInformationAttributeParser ballProAttributeParser;
 
 	public String readMapper(Map<String, Product> productMaps, Sheet sheet, String accessToken,
-			Integer asiNumber, int batchId) {
+			Integer asiNumber, int batchId,String environment) {
 
 		int columnIndex = 0;
 
@@ -137,7 +137,7 @@ public class BallProShippingMapping {
 						case "Free_On_Board":
 							String fobPointValue = cell.getStringCellValue();
 							List<FOBPoint> listOfFobPoint = ballProAttributeParser.getFobPoint(fobPointValue,
-									accessToken);
+									accessToken,environment);
 							if (!CollectionUtils.isEmpty(listOfFobPoint)) {
 								existingProduct.setFobPoints(listOfFobPoint);
 							}

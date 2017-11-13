@@ -17,7 +17,7 @@ public class LookupServiceData {
 	public List<String>        lineNames 			= null;
 	public List<String>        tradeNames  			= null;
 	public static List<String> categories 			= null;
-	public static List<Catalog> catalogs            = null;
+	public  List<Catalog> catalogs                  = null;
 	public static List<String>   themes  		    = null;
     public static List<String> packages             = null;
     
@@ -48,15 +48,15 @@ public class LookupServiceData {
 		}
 		return listOfOrigins;
 	}
-	public List<String> getFobPoints(String authToken){
+	public List<String> getFobPoints(String authToken,String environemtType){
 		if(listOfFobPoints == null){
-			listOfFobPoints = lookupRestService.getFobPoints(authToken);
+			listOfFobPoints = lookupRestService.getFobPoints(authToken,environemtType);
 		}
 		return listOfFobPoints;
 	}
-	public List<String> getLineNames(String authToken){
+	public List<String> getLineNames(String authToken,String environemtType){
 		if(lineNames == null){
-			lineNames = lookupRestService.getLineNames(authToken);
+			lineNames = lookupRestService.getLineNames(authToken,environemtType);
 		}
 		return lineNames;
 	}
@@ -125,9 +125,9 @@ public class LookupServiceData {
  		return categories.contains(categoryName);
      }
      
-     public List<Catalog> getCatalog(String authToken){
+     public List<Catalog> getCatalog(String authToken,String environemtType){
     	 if(catalogs == null){
-    		 catalogs = lookupRestService.getCatalogs(authToken);
+    		 catalogs = lookupRestService.getCatalogs(authToken,environemtType);
     	 }
     	 return catalogs;
      }

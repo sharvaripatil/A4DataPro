@@ -59,7 +59,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 	PrimeLineImprintTabParser primeLineImprintTabParser;
 	 private HashMap<String, Product> sheetMap =new HashMap<String, Product>();
 	 private HashMap<String, StringBuilder>  priceMap=new HashMap<String, StringBuilder>();
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();

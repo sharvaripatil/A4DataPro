@@ -58,7 +58,7 @@ public class TwintechMapping implements IExcelParser {  //EXCIT-752   RO-EL
 	private RoelProductAttributeParser roelProduct;
 
 	public String readExcel(String accessToken, Workbook workbook,
-			Integer asiNumber, int batchId) {
+			Integer asiNumber, int batchId, String environmentType) {
 
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();

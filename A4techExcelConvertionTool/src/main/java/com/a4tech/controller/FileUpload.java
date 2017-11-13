@@ -47,12 +47,12 @@ public class FileUpload {
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String welcomePage(Map<String, Object> model) {
-		FileBean fileBean = new FileBean();
+		/*FileBean fileBean = new FileBean();
 		model.put("filebean", fileBean);
-		return ApplicationConstants.CONST_STRING_HOME;
-		/*FtpLoginBean ftpLogin = new FtpLoginBean(); //uncommented code while using ftp
+		return ApplicationConstants.CONST_STRING_HOME;*/
+		FtpLoginBean ftpLogin = new FtpLoginBean(); //uncommented code while using ftp
 		model.put("ftpLoginBean", ftpLogin);
-		return "ftpLogin";*/ 
+		return "ftpLogin"; 
 		}
 
 	@RequestMapping(method = RequestMethod.POST)
@@ -94,7 +94,7 @@ public class FileUpload {
 			IExcelParser parserObject = excelFactory.getExcelParserObject(asiNumber);
 			if(parserObject != null){ // new implemention
 				finalResult = parserObject.readExcel(accessToken, workbook, 
-                        Integer.valueOf(asiNumber), batchId);
+                        Integer.valueOf(asiNumber), batchId, null);
 		    	if (finalResult != null) {
 					parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 				}

@@ -59,7 +59,7 @@ public class ESPTemplateMapping implements IExcelParser{
 	
 
 
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 		int columnIndex = 0;
 		
 		Set<String>  productXids = new HashSet<String>();

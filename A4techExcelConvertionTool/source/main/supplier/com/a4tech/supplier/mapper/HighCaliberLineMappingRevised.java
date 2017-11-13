@@ -53,7 +53,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 	HighCaliberPriceGridParser highCalPriceGridParser;
 	
 	@SuppressWarnings("finally")
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId, String environmentType){
 		int columnIndex = 0;
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();

@@ -24,8 +24,9 @@
 	<import resource="sageMapping.xml" />
 	<import resource="kuku_mapping.xml" />
 	<!-- <import resource="ftpSchedular.xml"/> -->
-	<context:property-placeholder location="classpath:application.properties,classpath:sandbox-database.properties
-	                                       ,classpath:sandbox-externalApiEndPoints.properties"/>
+	<context:property-placeholder
+	location="classpath:application.properties,classpath:sandbox-database.properties
+	                                       ,classpath:sandbox-externalApiEndPoints.properties,classpath:externalApiEndPointsFtp.properties" />
 	<bean id="productService" class="com.a4tech.product.service.imple.ProductServiceImpl" />
 	<bean id="postServiceImplV2" name="postServiceImplV2"
 		class="com.a4tech.v2.service.postImpl.PostServiceImpl">
@@ -179,6 +180,8 @@
 				<value>com.a4tech.product.dao.entity.BatchEntity</value>
 				<value>com.a4tech.product.dao.entity.FtpServerFileEntity</value>
 				<value>com.a4tech.product.dao.entity.SupplierLoginDetails</value>
+				<value>com.a4tech.product.dao.entity.ProductionSupplierLoginDetails</value>
+				<value>com.a4tech.product.dao.entity.BaseSupplierLoginDetails</value>
 				<!-- <value>parser.highcaliberline.HighCalColorEntity</value> -->
 			</list>
 		</property>

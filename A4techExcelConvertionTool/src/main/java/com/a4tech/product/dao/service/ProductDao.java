@@ -24,10 +24,12 @@ import org.springframework.util.StringUtils;
 import com.a4tech.core.errors.ErrorMessage;
 import com.a4tech.core.model.ExternalAPIResponse;
 import com.a4tech.ftp.model.FtpLoginBean;
+import com.a4tech.product.dao.entity.BaseSupplierLoginDetails;
 import com.a4tech.product.dao.entity.BatchEntity;
 import com.a4tech.product.dao.entity.ErrorEntity;
 import com.a4tech.product.dao.entity.FtpServerFileEntity;
 import com.a4tech.product.dao.entity.ProductEntity;
+import com.a4tech.product.dao.entity.ProductionSupplierLoginDetails;
 import com.a4tech.product.dao.entity.SupplierLoginDetails;
 import com.a4tech.product.service.IProductDao;
 import com.a4tech.util.ApplicationConstants;
@@ -302,20 +304,66 @@ public class ProductDao implements IProductDao{
 		  return null;
 	}
 	@Override
+	public BaseSupplierLoginDetails getSupplierLoginDetailsBase(String asiNumber,String type){
+		  Session session = null;
+		 // Transaction transaction = null;
+		  try{
+			  session = sessionFactory.openSession();
+			//  transaction = session.beginTransaction();
+			  BaseSupplierLoginDetails data = null ;
+			  if(type.equals("Sand")){
+				  Criteria criteria = session.createCriteria(SupplierLoginDetails.class);
+		            criteria.add(Restrictions.eq("asiNumber", asiNumber));
+		             data =  (SupplierLoginDetails) criteria.setMaxResults(1).uniqueResult();  
+			  } else {
+				  Criteria criteria = session.createCriteria(ProductionSupplierLoginDetails.class);
+		            criteria.add(Restrictions.eq("asiNumber", asiNumber));
+		             data =  (ProductionSupplierLoginDetails) criteria.setMaxResults(1).uniqueResult();
+			  }
+			  
+	            return data;
+		  }catch(Exception exce){
+			  _LOGGER.error("unable to fetch supplier login details::"+exce.getCause());
+		  }finally{
+			  if(session != null){
+				  try{
+					  session.close();
+				  }catch(Exception exce){
+					  _LOGGER.error("unable to close session connection: "+exce.getCause());
+				  }
+			  }
+		  }
+		  return null;
+	}
+	@Override
 	public void saveSupplierCridentials(FtpLoginBean ftpLoginBean){
 		  Session session = null;
 		  Transaction transaction = null;
-		  SupplierLoginDetails loginDetails = new SupplierLoginDetails();
+		  BaseSupplierLoginDetails baseSupp = null;
+		  ProductionSupplierLoginDetails prodLoginDetails = null;
+		  SupplierLoginDetails loginDetails = null;
+		  if(ftpLoginBean.getEnvironemtType().equals("Sand")){
+			   loginDetails = new SupplierLoginDetails();
+		  } else {//production
+			   prodLoginDetails = new ProductionSupplierLoginDetails();
+		  }
 		  try{
 			  session = sessionFactory.openSession();
 			  transaction = session.beginTransaction();
-			  loginDetails.setAsiNumber(ftpLoginBean.getAsiNumber());
-			  loginDetails.setUserName(ftpLoginBean.getUserName());
-			  loginDetails.setPassword(ftpLoginBean.getPassword());
-			  session.save(loginDetails);
+			  if(ftpLoginBean.getEnvironemtType().equals("Sand")){
+				  loginDetails.setAsiNumber(ftpLoginBean.getAsiNumber());
+				  loginDetails.setUserName(ftpLoginBean.getUserName());
+				  loginDetails.setPassword(ftpLoginBean.getPassword());
+				  session.save(loginDetails);  
+			  } else{
+				prodLoginDetails.setAsiNumber(ftpLoginBean.getAsiNumber());
+				  prodLoginDetails.setUserName(ftpLoginBean.getUserName());
+				  prodLoginDetails.setPassword(ftpLoginBean.getPassword());
+				  session.save(prodLoginDetails);
+			  }  
 			  transaction.commit();
 		  }catch(Exception exce){
-			  _LOGGER.error("unable to save supplier cridentials::"+exce.getCause());
+			  _LOGGER.error("unable to save supplier cridentials in ::"+exce.getCause());
 			  if(transaction != null){
 				  transaction.rollback();
 			  }

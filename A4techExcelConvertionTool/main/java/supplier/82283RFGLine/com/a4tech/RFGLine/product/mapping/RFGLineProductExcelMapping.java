@@ -42,7 +42,7 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 	private ProductDao productDaoObj;
 
 	public String readExcel(String accessToken, Workbook workbook,
-			Integer asiNumber, int batchId) {
+			Integer asiNumber, int batchId, String environmentType) {
 		int columnIndex = 0;
 
 		Set<String> productXids = new HashSet<String>();

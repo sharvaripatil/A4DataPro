@@ -5,12 +5,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 
-@Entity
-@Table(name="supplier_login_details")
-public class SupplierLoginDetails extends BaseSupplierLoginDetails{
-	/*@Id
+@MappedSuperclass
+public class BaseSupplierLoginDetails {
+	@Id
 	@Column(name="ID")
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Integer id;
@@ -45,5 +45,5 @@ public class SupplierLoginDetails extends BaseSupplierLoginDetails{
 		this.password = password;
 	}
 	
-*/
+
 }

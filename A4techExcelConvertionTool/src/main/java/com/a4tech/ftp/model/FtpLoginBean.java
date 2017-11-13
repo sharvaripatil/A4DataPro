@@ -4,6 +4,13 @@ public class FtpLoginBean {
 	private String asiNumber;
 	private String userName;
 	private String password;
+	private String environemtType;
+	public String getEnvironemtType() {
+		return environemtType;
+	}
+	public void setEnvironemtType(String environemtType) {
+		this.environemtType = environemtType;
+	}
 	public String getAsiNumber() {
 		return asiNumber;
 	}

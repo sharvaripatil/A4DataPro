@@ -76,7 +76,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 	private GoldstarCanadaImprintsizeParser gcImprintSizeParser;
 	private GoldstarCanadaColorParser gccolorparser;
 
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
@@ -359,8 +359,6 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					
 				case 10: //Catalogs page number, Page1
 					String PageNO=CommonUtility.getCellValueStrinOrInt(cell);
-					String value=null;
-					catalogsList = lookupServiceDataObj.getCatalog(value);
 					if(CatYear.contains("2017")){
 						catlogObj.setCatalogName("2017 Goldstar Canada");
 						catlogObj.setCatalogPage(PageNO);

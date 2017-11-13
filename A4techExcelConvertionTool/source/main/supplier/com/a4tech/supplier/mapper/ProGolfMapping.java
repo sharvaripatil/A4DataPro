@@ -28,7 +28,7 @@ public class ProGolfMapping implements IExcelParser{
 	private Logger _LOGGER = Logger.getLogger(ProGolfMapping.class);
 	
 	@Override
-	public String readExcel(String accessToken, Workbook workbook, Integer asiNumber, int batchId) {
+	public String readExcel(String accessToken, Workbook workbook, Integer asiNumber, int batchId, String environmentType) {
 		_LOGGER.info("mapping process start ProGolf supplier File");
 		Map<String, Product> productsMap = new LinkedHashMap<>();
 		String finalResult = "";
@@ -44,7 +44,7 @@ public class ProGolfMapping implements IExcelParser{
 			  } else if("Product Images".equalsIgnoreCase(sheetName)){
 				 // no need to mapping for images since supplier images does not meet asi standrd
 			  } else if("Product Shipping".equalsIgnoreCase(sheetName)){
-				  finalResult = productShippingMapping.readMapper(productsMap, sheet, accessToken, asiNumber, batchId);
+				  finalResult = productShippingMapping.readMapper(productsMap, sheet, accessToken, asiNumber, batchId,environmentType);
 			  } else if("Product Variation".equalsIgnoreCase(sheetName)){
 				  productsMap = productVariationMapping.readMapper(productsMap, sheet);
 				  // only required while uploading "Callaway 2017 website export - mapped file only"

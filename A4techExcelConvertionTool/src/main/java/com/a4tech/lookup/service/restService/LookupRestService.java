@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -38,7 +40,8 @@ public class LookupRestService {
    private String catalogLookupUrl;
    private String themeLookupUrl;
    private String packagesLookupUrl;
-   
+   @Autowired
+   private Environment environemt;
 	public List<String> getImprintMethodData(){
 		 try{
 			 HttpHeaders headers = new HttpHeaders();
@@ -98,12 +101,13 @@ public class LookupRestService {
 		 }
 		return null;
 	}
-	public List<String> getFobPoints(String authToken){
+	public List<String> getFobPoints(String authToken,String environemtType){
 		HttpHeaders headers = new HttpHeaders();
 		try{
 			headers.add("Accept", "application/json");
 			headers.add("Content-Type", "application/json");
 	        headers.add("AuthToken", authToken);
+	        fobPointLookupUrl = environemt.getProperty(environemtType+".fobPoint.lookup.url");
 	        HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
 	       ResponseEntity<FobPoints> response = restTemplate.exchange(fobPointLookupUrl, HttpMethod.GET, 
 	                                                                 requestEntity, FobPoints.class);
@@ -129,12 +133,13 @@ public class LookupRestService {
 		}
 		return null;
 	}
-	public List<String> getLineNames(String authToken){
+	public List<String> getLineNames(String authToken,String environemtType){
 		HttpHeaders headers = new HttpHeaders();
 		try{
 			headers.add("Accept", "application/json");
 			headers.add("Content-Type", "application/json");
 	        headers.add("AuthToken", authToken);
+	        lineNamesLookupUrl = environemt.getProperty(environemtType+".lineName.lookup.url");
 	        HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
 	       ResponseEntity<LineName> response = restTemplate.exchange(lineNamesLookupUrl, HttpMethod.GET, 
 	                                                                 requestEntity, LineName.class);
@@ -159,15 +164,17 @@ public class LookupRestService {
 		 }
 		return null;
 	}
-	public List<Catalog> getCatalogs(String authToken){
+	public List<Catalog> getCatalogs(String authToken,String environemtType){
 		HttpHeaders headers = new HttpHeaders();
 		try{
+			catalogLookupUrl = environemt.getProperty(environemtType+".catalog.lookup.url");
 			headers.add("Accept", "application/json");
 			headers.add("Content-Type", "application/json");
 	        headers.add("AuthToken", authToken);
 	        HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
-	       ResponseEntity<Catalogs> response = restTemplate.exchange(catalogLookupUrl, HttpMethod.GET, 
-	                                                                 requestEntity, Catalogs.class);
+	        ResponseEntity<Catalogs> response = restTemplate.exchange(catalogLookupUrl, HttpMethod.GET, 
+                        requestEntity, Catalogs.class);
+	       
 	       Catalogs data = response.getBody();
 	      return data.getListOfCatalog();
 		}catch(Exception exce){
