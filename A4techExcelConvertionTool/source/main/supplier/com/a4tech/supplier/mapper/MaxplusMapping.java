@@ -27,6 +27,7 @@ import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
@@ -112,6 +113,9 @@ public class MaxplusMapping implements IExcelParser {
 		String ImprintMethod1=null;
 		String ImprintMethod2=null;
 		String ImprintMethod3=null;
+		
+		String ExstngDescription=null;
+
 	
 		try {
 
@@ -228,6 +232,8 @@ public class MaxplusMapping implements IExcelParser {
 										productExcelObj.setImages(Img);
 										
 										
+										ExstngDescription=existingApiProduct.getDescription();
+										productExcelObj.setDescription(ExstngDescription);
 										
 										List<Theme> themeList=existingApiProduct.getProductConfigurations().getThemes();
 										if(themeList != null){
@@ -257,6 +263,10 @@ public class MaxplusMapping implements IExcelParser {
 								    	 List<ImprintSize>imprintList=new ArrayList<ImprintSize>();
 								    	 productConfigObj.setImprintSize(imprintList);
 									 
+								    	List<ProductNumber>ProdNolist=new ArrayList<ProductNumber>();
+								    	 productExcelObj.setProductNumbers(ProdNolist);
+								    	 
+								    	 
 								}
 								// productExcelObj = new Product();
 							}
@@ -323,13 +333,18 @@ public class MaxplusMapping implements IExcelParser {
 							
 						case 15: // LongDescription
 							String description = CommonUtility.getCellValueStrinOrInt(cell);
-							if (!StringUtils.isEmpty(description)) {
+							if (!StringUtils.isEmpty(ExstngDescription)) {
 								description=description.replace("?","").replace("ã","").replace("¡", "").replace(":", "");
 								productExcelObj.setDescription(description);
-							} else {
-								productExcelObj
-										.setDescription(productName);
 							}
+							
+//							if (!StringUtils.isEmpty(description)) {
+//								description=description.replace("?","").replace("ã","").replace("¡", "").replace(":", "");
+//								productExcelObj.setDescription(description);
+//							} else {
+//								productExcelObj
+//										.setDescription(productName);
+//							}
 
 							break;	
 					
