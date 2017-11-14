@@ -513,7 +513,14 @@ public class GoldbondAttributeParser {
 				|| value.equalsIgnoreCase("3 business days standard<br>Next Day Optional<br>Orders in by 12:00 pm EST<br>Gold Rush rules apply")){
 			productionTimeObj.setBusinessDays("3");
 			 productionTimeObj.setDetails("Standard");
-		} else if(value.contains("weeks") || value.contains("Weeks")){
+		} else  if(value.equalsIgnoreCase("30 days. May be longer during holiday periods. Digital proof turnaround time, 7 days.")){
+			 productionTimeObj.setBusinessDays("30");
+			 productionTimeObj.setDetails("May be longer during holiday periods");
+			 ProductionTime productionTimeObj1 = new ProductionTime();
+			 productionTimeObj1.setBusinessDays("7");
+			 productionTimeObj1.setDetails("Digital proof turnaround time");
+			 listOfProductionTime.add(productionTimeObj1);
+		 } else if(value.contains("weeks") || value.contains("Weeks")){
 			//Two Weeks after art approval for Titleist Wrap; Four weeks after art approval for custom wrap
 			 if(value.equalsIgnoreCase("Two Weeks after art approval for Titleist Wrap") ||
 					 value.equalsIgnoreCase("Two weeks for sew out then an additional 2 weeks production time after proof approval")){
@@ -947,7 +954,7 @@ public class GoldbondAttributeParser {
 		List<ImprintMethod> listOfImprintMethods = new ArrayList<>();
 		ImprintMethod imprintMethodObj = null;
 		List<String> tempImprintMethodVals = new ArrayList<>();
-		String imprintMethodVals = GoldbondColorAndImprintMethodMapping.getImprintMethodValues(imprMethodVal);
+		String imprintMethodVals = GoldBondImprintMethodMapping.getImprintMethodValues(imprMethodVal);
 		// Few values mapped in mapping class ,if values are getting from mapping,no need to check all condition below if loop
 		// directly jump into else part
 		if(imprintMethodVals == null){
@@ -998,19 +1005,30 @@ public class GoldbondAttributeParser {
 					if(imprMethodName.contains("Dye sublimation")){
 						imprintMethodType = "Sublimation";
 						imprintMethodAlias = "Dye sublimation";
+					} else if(imprMethodName.equalsIgnoreCase("Embroidery")){
+						imprintMethodType = "Embroidered";
+						imprintMethodAlias = "Embroidery";
 					} else if(imprMethodName.equalsIgnoreCase("N/A")){
 						continue;
-					} else if(imprMethodName.contains("4-color")){
+					} else if(imprMethodName.contains("4-color") || imprMethodName.contains("4-Color")){
 						imprintMethodType = "Full Color";
 						imprintMethodAlias = "4-color Process";
+					} else if(imprMethodName.equalsIgnoreCase("Four color process print")){
+						imprintMethodType = "Full Color";
+						imprintMethodAlias = "Four color process print";
 					} else if(imprMethodName.contains("Screen Printed") ||
-							      imprMethodName.contains("screen printed")) {
+							      imprMethodName.contains("screen printed") || imprMethodName.contains("Screen print")) {
 						imprintMethodType = "Silkscreen";
 						imprintMethodAlias = "Screen Printed";
 					} else if(imprMethodName.contains("pad printed") ||
-							  imprMethodName.contains("Pad Printed")){
+							  imprMethodName.contains("Pad Printed") || imprMethodName.contains("Pad print") ||
+							   imprMethodName.contains("Pad Print")){
 						imprintMethodType = "Pad Print";
-						imprintMethodAlias = "Pad Printed";
+						if(imprMethodName.equalsIgnoreCase("Pad Print") || imprMethodName.equalsIgnoreCase("Pad print")){
+							imprintMethodAlias = "Pad Print";
+						} else {
+							imprintMethodAlias = "Pad Printed";	
+						}
 					} else if(imprMethodName.contains("Faux Laser")){
 						imprintMethodType = "Laser Engraved";
 						imprintMethodAlias = "Faux Laser";
@@ -1021,6 +1039,9 @@ public class GoldbondAttributeParser {
 					} else if(imprMethodName.contains("ColorfinityHD")){
 						imprintMethodType = "Other";
 						imprintMethodAlias = "ColorfinityHD";
+					} else if(imprMethodName.equalsIgnoreCase("Offset 4-Color Process")){
+						imprintMethodType = "Full Color";
+						imprintMethodAlias = "Offset 4-Color Process";
 					} else if(imprMethodName.equalsIgnoreCase("Blank")){
 						imprintMethodType = "Unimprinted";
 						imprintMethodAlias = "Unimprinted";
@@ -1058,6 +1079,7 @@ public class GoldbondAttributeParser {
 			String[] imprMetodVals = CommonUtility.getValuesOfArray(imprintMethodVals, ",");
 			for (String imprMethodName : imprMetodVals) {
 				imprintMethodObj = new ImprintMethod();
+				imprMethodName = imprMethodName.trim();
 				if(imprMethodName.contains("=")){//Silkscreen=Screen Print
 					String[]valss = CommonUtility.getValuesOfArray(imprMethodName, "=");
 					imprintMethodObj.setType(valss[0]);
@@ -1069,7 +1091,6 @@ public class GoldbondAttributeParser {
 				listOfImprintMethods.add(imprintMethodObj);
 			}
 		}
-
 		config.setImprintMethods(listOfImprintMethods);
 		existingProduct.setProductConfigurations(config);
 		return existingProduct;
