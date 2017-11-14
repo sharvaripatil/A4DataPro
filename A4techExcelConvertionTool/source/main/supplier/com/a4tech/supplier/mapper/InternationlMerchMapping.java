@@ -26,6 +26,7 @@ import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductSkus;
+import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
@@ -54,6 +55,9 @@ public class InternationlMerchMapping implements IExcelParser{
 		ProductConfigurations productConfigObj=new ProductConfigurations();
 		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		List<String> repeatRows = new ArrayList<>();
+		StringBuilder shippingDimention = new StringBuilder();
+		String shippingWeight = null;
+		String noOfItems = null;
  		try{
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 	    Sheet sheet = workbook.getSheetAt(0);
@@ -112,7 +116,10 @@ public class InternationlMerchMapping implements IExcelParser{
 						    		   productExcelObj.setDescription(description.toString());
 						    	   }
 						       }
-							 	productExcelObj.setPriceGrids(priceGrids);
+									ShippingEstimate shippingEstimation = merchAttributeParser
+											.getProductShippingEstimates(noOfItems, shippingDimention.toString(), shippingWeight);
+									productConfigObj.setShippingEstimates(shippingEstimation);
+									productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	productExcelObj.setProductRelationSkus(listProductSkus);
 							 		int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
@@ -130,6 +137,9 @@ public class InternationlMerchMapping implements IExcelParser{
 								ProductDataStore.clearProductColorSet();
 								repeatRows.clear();
 								listProductSkus = new ArrayList<>();
+								shippingDimention = new StringBuilder();
+								shippingWeight = null;
+								noOfItems = null;
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -264,10 +274,13 @@ public class InternationlMerchMapping implements IExcelParser{
 						priceGrids = productExcelObj.getPriceGrids();
 					}
 				    break;
-				case 35://price Include
+				case 35:// Embroidery Production Time
+					 //missing case
+					 break;
+				case 36://price Include (it is case 36)
 					String priceInclude = cell.getStringCellValue();
 					break;
-				case 36: //setup charge
+				case 37: //setup charge
 					String setupChargeVal = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(setupChargeVal)){
 						productExcelObj.setPriceGrids(priceGrids);
@@ -276,41 +289,98 @@ public class InternationlMerchMapping implements IExcelParser{
 						priceGrids = productExcelObj.getPriceGrids();
 					}
 					break;
-				case 37://Addl Color-Location
+				case 38://Addl Color-Location
+					String addColorLoc = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(addColorLoc)){
+						productExcelObj.setProductConfigurations(productConfigObj);
+						productExcelObj.setPriceGrids(priceGrids);
+						merchAttributeParser.getUpchargeAdditionalColorAndLocation(addColorLoc, productExcelObj);
+						productConfigObj = productExcelObj.getProductConfigurations();
+						priceGrids = productExcelObj.getPriceGrids();
+					}
 					break;
-				case 38: //Screen Re-Order Setup
+				case 39: //Screen Re-Order Setup
+					String screenReorderVal = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(screenReorderVal)){
+						productExcelObj.setProductConfigurations(productConfigObj);
+						productExcelObj.setPriceGrids(priceGrids);
+						merchAttributeParser.getUpchargeBasedOnScreenReOrderSetup(screenReorderVal, productExcelObj);
+						productConfigObj = productExcelObj.getProductConfigurations();
+						priceGrids = productExcelObj.getPriceGrids();
+					}
 					break;
-				case 39: //Less Than Minimum
+				case 40: //Less Than Minimum
+					String lessThanVal = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(lessThanVal)){
+						productExcelObj.setPriceGrids(priceGrids);
+						merchAttributeParser.getUpchargeBasedOnLessThanMin(lessThanVal, productExcelObj);
+						priceGrids = productExcelObj.getPriceGrids();
+					}
 					break;
-				case 40: //Logo Modification
+				case 41: //Logo Modification
+					String logoModificationVal = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(logoModificationVal)){
+						productExcelObj.setProductConfigurations(productConfigObj);
+						productExcelObj.setPriceGrids(priceGrids);
+						merchAttributeParser.getUpchargeBasedOnLogoModification(logoModificationVal, productExcelObj);
+						productConfigObj = productExcelObj.getProductConfigurations();
+						priceGrids = productExcelObj.getPriceGrids();
+					}
 					break;
-				case 41://Setup
+				case 42://setup
+					//this column data equals to screen setup column(Case 37)
+					//that's cause ignore this column
 					break;
-				case 42://Addl Color-Location
+				case 43://Addl-Color Loc
+					//this column data equals to screen setup column(Case 38)
+					//that's cause ignore this column
 					break;
-				case 43:
-					break;
-				case 44:
+				case 44://max imprint
+					String maxImprint = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(maxImprint)){
+						description.append(",").append(" ").append(maxImprint);
+					}
 			        break;
-				case 45:
+				case 45://tape charge
+					String tapeCharge = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(tapeCharge)){
+						productExcelObj.setProductConfigurations(productConfigObj);
+						productExcelObj.setPriceGrids(priceGrids);
+						merchAttributeParser.getUpchargeBasedOnScreenReOrderSetup(tapeCharge, productExcelObj);
+						productConfigObj = productExcelObj.getProductConfigurations();
+						priceGrids = productExcelObj.getPriceGrids();
+					}
 					break;
 				case 46:
-					break;
 				case 47:
-					break;
 				case 48:
-					break;
 				case 49: 
+					//ignore as per feedback
 					break;
-				case 50:
+				case 50://shipping weight
+					shippingWeight = cell.getStringCellValue();
+					
 					break;
-				case 51:
+				case 51://shipping width
+					String shiWidth = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(shiWidth)){
+						shippingDimention.append(shiWidth).append("x");
+					}
 					break;
-				case 52: 
+				case 52: //shipping height
+					String shiheight = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(shiheight)){
+						shippingDimention.append(shiheight).append("x");;
+					}
 					break;
-				case 53:
+				case 53:// shipping length
+					String shiLength = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(shiLength)){
+						shippingDimention.append(shiLength);
+					}
 					break;
-				case 54: 
+				case 54: // shipping items
+					 noOfItems = cell.getStringCellValue();
 					break;
 				case 55: // discount
 					break;
