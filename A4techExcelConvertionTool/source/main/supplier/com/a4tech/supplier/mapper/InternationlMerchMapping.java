@@ -382,9 +382,9 @@ public class InternationlMerchMapping implements IExcelParser{
 				case 54: // shipping items
 					 noOfItems = cell.getStringCellValue();
 					break;
-				case 55: // discount
-					break;
+				case 55: 
 				case 56:
+					// ignore as per feedback
 					break;
 				case 57:
 					break;
