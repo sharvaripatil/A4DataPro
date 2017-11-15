@@ -160,7 +160,7 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 							   productConfigObj.setImprintMethods(listOfImprintMethods);
 								productExcelObj.setProductConfigurations(productConfigObj);
 								productExcelObj.setPriceGrids(priceGrids);
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	//ProductProcessedList.add(productExcelObj.getExternalProductId());
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -196,7 +196,7 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid.trim());
 						    }
-						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid);
+						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid, environmentType);
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
@@ -866,7 +866,7 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 		   productConfigObj.setImprintMethods(listOfImprintMethods);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	productExcelObj.setPriceGrids(priceGrids);
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){

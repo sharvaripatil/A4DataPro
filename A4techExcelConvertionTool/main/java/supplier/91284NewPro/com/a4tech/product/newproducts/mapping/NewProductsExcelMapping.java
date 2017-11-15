@@ -143,7 +143,7 @@ public class NewProductsExcelMapping implements IExcelParser{
 								   // Add repeatable sets here
 								 	productExcelObj.setPriceGrids(priceGrids);
 								 	productExcelObj.setProductConfigurations(productConfigObj);
-								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
 								 	}else if(num == 0) {
@@ -171,7 +171,7 @@ public class NewProductsExcelMapping implements IExcelParser{
 					case 2:
 						productId=CommonUtility.getCellValueStrinOrInt(cell);
 						/////imp code 
-						existingApiProduct=postServiceImpl.getProduct(accessToken, productId);
+						existingApiProduct=postServiceImpl.getProduct(accessToken, productId, environmentType);
 						if(existingApiProduct!=null){
 							_LOGGER.info("Product "+productId+" is an existing product Using existing product also");
 							productExcelObj=existingApiProduct;
@@ -426,7 +426,7 @@ public class NewProductsExcelMapping implements IExcelParser{
 	 	productExcelObj.setPriceGrids(priceGrids);
 	 	productExcelObj.setProductConfigurations(productConfigObj);
 
-	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 	 	if(num ==1){
 	 		numOfProductsSuccess.add("1");
 	 	}else if(num == 0){

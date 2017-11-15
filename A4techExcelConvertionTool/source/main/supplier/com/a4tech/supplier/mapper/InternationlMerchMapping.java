@@ -115,7 +115,7 @@ public class InternationlMerchMapping implements IExcelParser{
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	productExcelObj.setProductRelationSkus(listProductSkus);
-							 		int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 		int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
 								 	}else if(num == 0){
@@ -136,7 +136,7 @@ public class InternationlMerchMapping implements IExcelParser{
 						    	//repeatRows.add(xid);
 						    }
 						    productExcelObj = new Product();
-     						 productExcelObj = postServiceImpl.getProduct(accessToken, xid);
+     						 productExcelObj = postServiceImpl.getProduct(accessToken, xid, environmentType);
 						   
 						     if(productExcelObj == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
@@ -751,7 +751,7 @@ public class InternationlMerchMapping implements IExcelParser{
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	productExcelObj.setProductRelationSkus(listProductSkus);
-		 		int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+		 		int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 			 	if(num ==1){
 			 		numOfProductsSuccess.add("1");
 			 	}else if(num == 0){

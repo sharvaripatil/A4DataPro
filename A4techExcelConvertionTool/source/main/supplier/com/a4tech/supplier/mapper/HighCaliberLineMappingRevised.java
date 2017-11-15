@@ -229,7 +229,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 								 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 								 		productExcelObj.setAvailability(new ArrayList<Availability>());
 								 	}*/
-								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
 								 	}else if(num == 0) {
@@ -270,7 +270,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 							    	productXids.add(productId);
 							    }
 								 productExcelObj = new Product();
-								 existingApiProduct = postServiceImpl.getProduct(accessToken, productId); 
+								 existingApiProduct = postServiceImpl.getProduct(accessToken, productId, environmentType); 
 								     if(existingApiProduct == null){
 								    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 								    	 productExcelObj = new Product();
@@ -911,7 +911,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 	 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 	 		productExcelObj.setAvailability(new ArrayList<Availability>());
 	 	}*/
-	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 	 	if(num ==1){
 	 		numOfProductsSuccess.add("1");
 	 	}else if(num == 0){

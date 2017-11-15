@@ -40,8 +40,8 @@ public class LookupRestService {
    private String catalogLookupUrl;
    private String themeLookupUrl;
    private String packagesLookupUrl;
-   @Autowired
-   private Environment environemt;
+  /* @Autowired
+   private Environment environemt;*/
 	public List<String> getImprintMethodData(){
 		 try{
 			 HttpHeaders headers = new HttpHeaders();
@@ -107,7 +107,11 @@ public class LookupRestService {
 			headers.add("Accept", "application/json");
 			headers.add("Content-Type", "application/json");
 	        headers.add("AuthToken", authToken);
-	        fobPointLookupUrl = environemt.getProperty(environemtType+".fobPoint.lookup.url");
+	        if(environemtType.equals("Sand")){
+	        	fobPointLookupUrl = "https://sandbox-productservice.asicentral.com/api/v4/lookup/fobpoints";
+	        } else{
+	        	fobPointLookupUrl = "https://productservice.asicentral.com/api/v4/lookup/fobpoints";
+	        }
 	        HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
 	       ResponseEntity<FobPoints> response = restTemplate.exchange(fobPointLookupUrl, HttpMethod.GET, 
 	                                                                 requestEntity, FobPoints.class);
@@ -139,7 +143,11 @@ public class LookupRestService {
 			headers.add("Accept", "application/json");
 			headers.add("Content-Type", "application/json");
 	        headers.add("AuthToken", authToken);
-	        lineNamesLookupUrl = environemt.getProperty(environemtType+".lineName.lookup.url");
+	        if(environemtType.equals("Sand")){
+	        	lineNamesLookupUrl = "https://sandbox-productservice.asicentral.com/api/v4/lookup/selectedlinenames";
+	        } else {
+	        	lineNamesLookupUrl = "https://productservice.asicentral.com/api/v4/lookup/selectedlinenames";
+	        }
 	        HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
 	       ResponseEntity<LineName> response = restTemplate.exchange(lineNamesLookupUrl, HttpMethod.GET, 
 	                                                                 requestEntity, LineName.class);
@@ -167,7 +175,11 @@ public class LookupRestService {
 	public List<Catalog> getCatalogs(String authToken,String environemtType){
 		HttpHeaders headers = new HttpHeaders();
 		try{
-			catalogLookupUrl = environemt.getProperty(environemtType+".catalog.lookup.url");
+			if(environemtType.equals("Sand")){
+				catalogLookupUrl = "https://sandbox-productservice.asicentral.com/api/v4/lookup/mediacitations";
+			} else{
+				catalogLookupUrl = "https://productservice.asicentral.com/api/v4/lookup/mediacitations";
+			}
 			headers.add("Accept", "application/json");
 			headers.add("Content-Type", "application/json");
 	        headers.add("AuthToken", authToken);

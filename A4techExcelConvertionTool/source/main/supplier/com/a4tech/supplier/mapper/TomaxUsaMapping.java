@@ -132,7 +132,7 @@ public class TomaxUsaMapping implements IExcelParser{
 			_LOGGER.info("Set size:"+xidSet.size());
 			for (String string : xidSet) {
 				try{
-				postServiceImpl.getProduct(accessToken, string);
+				postServiceImpl.getProduct(accessToken, string, environmentType);
 				}catch(Exception e){
 					_LOGGER.error(e.getMessage());
 				}
@@ -152,7 +152,7 @@ public class TomaxUsaMapping implements IExcelParser{
 				
 			//postServiceImpl.deleteProduct(accessToken, productId, asiNumber, batchId);
 			}else if(tabNo==1){
-				finalResult=tomaxProductTabParser.readExcel(accessToken, workbook, asiNumber, batchId);
+				finalResult=tomaxProductTabParser.readExcel(accessToken, workbook, asiNumber, batchId,environmentType);
 			}
 				}
 			//return finalResult;

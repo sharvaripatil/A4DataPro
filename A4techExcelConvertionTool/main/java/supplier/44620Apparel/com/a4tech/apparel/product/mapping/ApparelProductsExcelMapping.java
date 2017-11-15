@@ -152,7 +152,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 							 	productExcelObj.setImages(listOfImage);
 									productExcelObj = appaAttributeParser.getExistingProductData(productExcelObj,
 											productConfigObj.getImprintMethods());
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -185,7 +185,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 						    	repeatRows.add(xid);
 						    }
 						    productExcelObj = new Product();
-     						 productExcelObj = postServiceImpl.getProduct(accessToken, xid);
+     						 productExcelObj = postServiceImpl.getProduct(accessToken, xid, environmentType);
 						     if(productExcelObj == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
@@ -456,7 +456,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 		 	productExcelObj.setImages(listOfImage);
 		 	productExcelObj = appaAttributeParser.getExistingProductData(productExcelObj,
 					productConfigObj.getImprintMethods());
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){

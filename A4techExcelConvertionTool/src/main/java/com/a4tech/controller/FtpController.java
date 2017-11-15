@@ -32,13 +32,8 @@ public class FtpController {
 	@Autowired
 	private IProductDao productDao;
 	@RequestMapping(value="ftpLogin")
-	public ModelAndView welcomeFtpLogin(Model model){
-		List<String> environmentList = Arrays.asList("Sandbox","Production");
-		 model.addAttribute("environmentList", environmentList);
-		 Map<String,String> javaSkill = new LinkedHashMap<String,String>();
-			javaSkill.put("Sand", "Sandbox");
-			javaSkill.put("prod", "Production");
-			 model.addAttribute("environmentList", javaSkill);
+	public ModelAndView welcomeFtpLogin(){
+		
 		return new ModelAndView("ftpLogin", "ftpLoginBean", new FtpLoginBean());	
 	}
 	
@@ -48,9 +43,7 @@ public class FtpController {
 		_LOGGER.info("Enter FTP file upload Process controller");
 		
 		String accessToken = "";
-		productDao.saveSupplierCridentials(ftpLogin);
-		productDao.getSupplierLoginDetailsBase(ftpLogin.getAsiNumber(), ftpLogin.getEnvironemtType());
-		accessToken = loginService.doLogin(ftpLogin.getAsiNumber(), ftpLogin.getUserName(), ftpLogin.getPassword());
+		accessToken = loginService.doLogin(ftpLogin.getAsiNumber(), ftpLogin.getUserName(), ftpLogin.getPassword(), ftpLogin.getEnvironemtType());
 		if (accessToken != null) {
 			if (ApplicationConstants.CONST_STRING_UN_AUTHORIZED.equals(accessToken)) {
 				accessToken = null;

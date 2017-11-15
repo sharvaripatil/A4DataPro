@@ -205,7 +205,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 							    	productExcelObj.setAvailability(availabilityList);
 							    }
 							    
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -250,7 +250,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 						    	repeatRows.add(xid);
 						    }
 						    productExcelObj = new Product();
-						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid);
+						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid, environmentType);
 
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
@@ -646,7 +646,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 		    } 
 		   
 		    
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){

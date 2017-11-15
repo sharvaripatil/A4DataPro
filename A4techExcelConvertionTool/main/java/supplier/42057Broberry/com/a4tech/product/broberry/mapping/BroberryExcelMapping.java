@@ -218,7 +218,7 @@ public class BroberryExcelMapping implements IExcelParser{
 								 	/*_LOGGER.info("Product Data : "
 											+ mapperObj.writeValueAsString(productExcelObj));*/
 								 	
-							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -257,7 +257,7 @@ public class BroberryExcelMapping implements IExcelParser{
 						    	repeatRows.add(xid);
 						    }
 						    productExcelObj = new Product();
-						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
+						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid, environmentType); 
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
@@ -611,7 +611,7 @@ public class BroberryExcelMapping implements IExcelParser{
 		 productExcelObj.setProductConfigurations(productConfigObj);
 		 	/*_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));*/
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){

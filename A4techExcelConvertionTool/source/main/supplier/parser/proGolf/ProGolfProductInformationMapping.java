@@ -36,7 +36,7 @@ public class ProGolfProductInformationMapping {
 
 	private static Logger _LOGGER = Logger.getLogger(ProGolfProductInformationMapping.class);
 
-	public Map<String, Product> readMapper(String accessToken, Sheet sheet, Map<String, Product> productsMap) {
+	public Map<String, Product> readMapper(String accessToken, Sheet sheet, Map<String, Product> productsMap,String environmentType) {
 		int columnIndex = 0;
 
 		Set<String> productXids = new HashSet<String>();
@@ -113,7 +113,7 @@ public class ProGolfProductInformationMapping {
 								if(StringUtils.isEmpty(productId)){
 									break;
 								}
-								existingApiProduct = postServiceImpl.getProduct(accessToken, productId);
+								existingApiProduct = postServiceImpl.getProduct(accessToken, productId, environmentType);
 								if (existingApiProduct == null) {
 									_LOGGER.info("Existing Xid is not available,product treated as new product");
 									productExcelObj = new Product();

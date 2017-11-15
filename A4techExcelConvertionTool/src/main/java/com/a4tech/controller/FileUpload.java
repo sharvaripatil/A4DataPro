@@ -71,7 +71,7 @@ public class FileUpload {
 		}
 		try  {
 			accessToken = loginService.doLogin(fileBean.getAsiNumber(),
-					fileBean.getUserName(), fileBean.getPassword());
+					fileBean.getUserName(), fileBean.getPassword(), null);
 			if (accessToken != null) {
 				if (ApplicationConstants.CONST_STRING_UN_AUTHORIZED.equals(accessToken)) {
 					accessToken = null;
@@ -94,7 +94,7 @@ public class FileUpload {
 			IExcelParser parserObject = excelFactory.getExcelParserObject(asiNumber);
 			if(parserObject != null){ // new implemention
 				finalResult = parserObject.readExcel(accessToken, workbook, 
-                        Integer.valueOf(asiNumber), batchId, null);
+                        Integer.valueOf(asiNumber), batchId,"" );
 		    	if (finalResult != null) {
 					parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 				}

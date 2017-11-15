@@ -140,7 +140,7 @@ public class CutterBuckExcelMapping implements IExcelParser{
 								}
 								productExcelObj = new Product();
 							
-								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
+								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid, environmentType); 
 								   if(existingApiProduct == null){
 								    	 productExcelObj = new Product();
 								     }else{
@@ -287,7 +287,7 @@ public class CutterBuckExcelMapping implements IExcelParser{
           else{
             
         	 // cutterBuckSheetObj.readMapper(accessToken, workbook, asiNumber, batchId,test);
-      			cutterBuckSheetObj.readMapper(accessToken, workbook, asiNumber, batchId,SheetMap,ProductNoMap);
+      			cutterBuckSheetObj.readMapper(accessToken, workbook, asiNumber, batchId,SheetMap,ProductNoMap,environmentType);
         	  }
 			  }
 			  

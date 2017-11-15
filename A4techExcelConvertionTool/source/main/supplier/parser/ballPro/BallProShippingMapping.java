@@ -106,7 +106,7 @@ public class BallProShippingMapping {
 									}
 									if (!StringUtils.isEmpty(existingProduct.getExternalProductId())) {
 										int num = postServiceImpl.postProduct(accessToken, existingProduct, asiNumber,
-												batchId);
+												batchId, environment);
 										if (num == 1) {
 											numOfProductsSuccess.add("1");
 										} else if (num == 0) {
@@ -212,7 +212,7 @@ public class BallProShippingMapping {
 				existingProduct.setDistributorOnlyComments(distributorOnlyComments);
 			}
 			if (!StringUtils.isEmpty(existingProduct.getExternalProductId())) {
-				int num = postServiceImpl.postProduct(accessToken, existingProduct, asiNumber, batchId);
+				int num = postServiceImpl.postProduct(accessToken, existingProduct, asiNumber, batchId, environment);
 				if (num == 1) {
 					numOfProductsSuccess.add("1");
 				} else if (num == 0) {

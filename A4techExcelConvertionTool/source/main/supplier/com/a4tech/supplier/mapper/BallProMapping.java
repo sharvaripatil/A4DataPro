@@ -40,7 +40,7 @@ public class BallProMapping implements IExcelParser{
 			 String sheetName = sheet.getSheetName().trim();
 			  _LOGGER.info("Sheet Name::"+sheetName);
 			  if("Product Information".equalsIgnoreCase(sheetName)){
-				  productsMap=  ballProProductInfoMapping.readMapper(accessToken,sheet,productsMap);
+				  productsMap=  ballProProductInfoMapping.readMapper(accessToken,sheet,productsMap,environmentType);
 			  } else if("Product Pricing".equalsIgnoreCase(sheetName)){
 				 productsMap = ballProProductPricingMapping.readMapper(productsMap, sheet);
 			  } else if("Imprint Charges".equalsIgnoreCase(sheetName)){

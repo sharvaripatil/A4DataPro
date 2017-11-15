@@ -213,7 +213,7 @@ public class TwintechMapping implements IExcelParser {  //EXCIT-752   RO-EL
 
 									int num = postServiceImpl.postProduct(
 											accessToken, productExcelObj,
-											asiNumber, batchId);
+											asiNumber, batchId, environmentType);
 									if (num == 1) {
 										numOfProductsSuccess.add("1");
 									} else if (num == 0) {
@@ -259,7 +259,7 @@ public class TwintechMapping implements IExcelParser {  //EXCIT-752   RO-EL
 								}
 								existingApiProduct = postServiceImpl
 										.getProduct(accessToken,
-												xid = xid.replace("\t", ""));
+												xid = xid.replace("\t", ""), environmentType);
 								if (existingApiProduct == null) {
 									_LOGGER.info("Existing Xid is not available,product treated as new product");
 									productExcelObj = new Product();
@@ -1061,7 +1061,7 @@ public class TwintechMapping implements IExcelParser {  //EXCIT-752   RO-EL
 			productExcelObj.setProductConfigurations(productConfigObj);
 
 			int num = postServiceImpl.postProduct(accessToken, productExcelObj,
-					asiNumber, batchId);
+					asiNumber, batchId, environmentType);
 			if (num == 1) {
 				numOfProductsSuccess.add("1");
 			} else if (num == 0) {

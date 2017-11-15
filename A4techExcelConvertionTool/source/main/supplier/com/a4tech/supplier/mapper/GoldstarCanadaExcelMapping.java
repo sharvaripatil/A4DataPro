@@ -237,7 +237,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 //	if(Prod_Status = false){
 
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -277,7 +277,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid.trim());
 						    }
-						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid=xid.replace("\t",""));
+						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid=xid.replace("\t",""), environmentType);
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
@@ -1139,7 +1139,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 	
 		 	
 		 	//if(Prod_Status = false){
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){

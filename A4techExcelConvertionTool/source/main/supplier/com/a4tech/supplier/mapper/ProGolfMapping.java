@@ -36,7 +36,7 @@ public class ProGolfMapping implements IExcelParser{
 			 String sheetName = sheet.getSheetName().trim();
 			  _LOGGER.info("Sheet Name::"+sheetName);
 			  if("Product Information".equalsIgnoreCase(sheetName)){
-				  productsMap=  prodInfoMapping.readMapper(accessToken,sheet,productsMap);
+				  productsMap=  prodInfoMapping.readMapper(accessToken,sheet,productsMap,environmentType);
 			  } else if("Product Pricing".equalsIgnoreCase(sheetName)){
 				 productsMap = productPricingMapping.readMapper(productsMap, sheet);
 			  } else if("Imprint Charges".equalsIgnoreCase(sheetName)){

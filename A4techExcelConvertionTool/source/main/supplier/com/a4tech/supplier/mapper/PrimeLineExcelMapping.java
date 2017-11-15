@@ -267,7 +267,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 						    	repeatRows.add(xid);
 						    }
 						    productExcelObj = new Product();
-						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
+						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid, null); 
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
@@ -689,7 +689,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 				}else if(i==3){
 					sheetMap=primeLineImprintTabParser.readImprintTab(accessToken, workbook, asiNumber, batchId, sheetMap);
 				}else if(i==4){
-					finalResult=postingProducts(accessToken,asiNumber,batchId,sheetMap);
+					finalResult=postingProducts(accessToken,asiNumber,batchId,sheetMap,environmentType);
 				}
 			}
 		return finalResult;
@@ -711,7 +711,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 
 	
 
-	private String postingProducts(String accessToken,Integer asiNumber,int batchId,HashMap<String, Product> sheetMap) {
+	private String postingProducts(String accessToken,Integer asiNumber,int batchId,HashMap<String, Product> sheetMap,String environmentType) {
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		
@@ -720,7 +720,7 @@ public class PrimeLineExcelMapping  implements IExcelParser{
 			try{
 			Product productExcelObj=productEntry.getValue();
 			productExcelObj.setPriceType("L");
-			int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+			int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
