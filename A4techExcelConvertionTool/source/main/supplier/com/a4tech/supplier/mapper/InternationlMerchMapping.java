@@ -41,7 +41,6 @@ public class InternationlMerchMapping implements IExcelParser{
 	
 	private PostServiceImpl 				postServiceImpl;
 	private ProductDao 						productDaoObj;
-	
 	private MerchAttributeParser           merchAttributeParser;
 	
 	@Override
@@ -392,104 +391,79 @@ public class InternationlMerchMapping implements IExcelParser{
 					break;
 				case 59:
 				    break;
-				case 60:
+				case 60:// base pricegrid_1 QTY
+				case 65:
+				case 70:
+				case 75:
+				case 80:
+				case 85:
+				case 90:
+				case 95:
+				case 100:
+				case 105:
+					//grid_1 qty
 					break;
 				case 61: 
 					break;
-				case 62: 
+				case 62: // grid_1 Prices
+				case 67:
+				case 72:
+				case 77:
+				case 82:
+				case 87:
+				case 92:
+				case 97:
+				case 102:
+				case 107:
 					break;
-				case 63: 
+				case 63: //gird_1 discount
+				case 68:
+				case 73:
+				case 78:
+				case 83:
+				case 88:
+				case 93:
+				case 98:
+				case 103:
+				case 108:
+					
 					break;
 				case 64: 
 					break;
-				case 65: 
-					break;
 				case 66:
 					break;
-				case 67:
-					break;
-				case 68:
-					 break;
 				case 69:
 			        break;
-				case 70:
-					break;
 				case 71:
-					break;
-				case 72:
-					break;
-				case 73:
 					break;
 				case 74: 
 					break;
-				case 75:
-					break;
 				case 76:
-					break;
-				case 77: 
-					break;
-				case 78:
 					break;
 				case 79:
 					break;
-				case 80: 
-					break;
 				case 81:
 					 break;
-				case 82:
-					  break;
-				case 83:
-				    break;
 				case 84:
 				    break;
-				case 85:
-					break;
 				case 86: 	
-					break;
-				case 87:  
-					break;
-				case 88: 
 					break;
 				case 89: 
 					break;
-				case 90: 
-					break;
 				case 91:
 					break;
-				case 92:
-					break;
-				case 93:				
-					 break;
 				case 94:
 			        break;
-				case 95:
-					break;
 				case 96:
-					break;
-				case 97:
-					break;
-				case 98:
 					break;
 				case 99: 
 					break;
-				case 100:
-					break;
 				case 101:
-					break;
-				case 102: 
-					break;
-				case 103:
 					break;
 				case 104:
 					break;
-				case 105: 
-					break;
 				case 106:
 					 break;
-				case 107:
-					  break;
-				case 108:
-				    break;
 				case 109:
 					break;	
 			   case 110:
@@ -512,103 +486,78 @@ public class InternationlMerchMapping implements IExcelParser{
 					break;
 				case 119:
 					break;
-				case 120:
+				case 120://grid_2 QTY
+				case 125:
+				case 130:
+				case 135:
+				case 140:
+				case 145:
+				case 150:
+				case 155:
+				case 160:
+				case 165:
+					
 					break;
 				case 121: 
 					break;
-				case 122:
+				case 122:// grid_2 Prices
+				case 127:
+				case 132:
+				case 137:
+				case 142:
+				case 147:
+				case 152:
+				case 157:
+				case 162:
+				case 167:
 					break;
-				case 123: 
+				case 123://grid_2 discount
+				case 128:
+				case 133:
+				case 138:
+				case 143:
+				case 148:
+				case 153:
+				case 158:
+				case 163:
+				case 168:
 					break;
 				case 124: 
 					break;
-				case 125: 
-					break;
 				case 126:
-					break;
-				case 127:
-					break;
-				case 128:
 					break;
 				case 129:
 					break;
-				case 130:
-					break;
 				case 131: 
-					break;
-				case 132:
-					break;
-				case 133: 
 					break;
 				case 134: 
 					break;
-				case 135: 
-					break;
 				case 136:
 					break;
-				case 137: 
-					break;
-				case 138: 
-				    break;
 				case 139:
 				    break;
-				case 140:
-					break;
 				case 141: 
-					break;
-				case 142:  
-					break;
-				case 143: 
 					break;
 				case 144: 
 					break;
-				case 145: 
-					break;
 				case 146:
 					 break;
-				case 147:
-					 break;
-				case 148:
-				    break;
 				case 149: 
 				    break;
-				case 150:
-					break;
 				case 151:
-					break;
-				case 152:
-					break;
-				case 153:  
 					break;
 				case 154:	
 					break;
-				case 155:
-					break;
 				case 156:
 					 break;
-				case 157:
-					  break;
-				case 158:
-				    break;
+
 				case 159:
 				    break;
-				case 160:
-					break;
 				case 161: 
-					break;
-				case 162:
-					break;
-				case 163: 
 					break;
 				case 164: 
 					break;
-				case 165: 
-					break;
 				case 166:
-					break;
-				case 167:
-					break;
-				case 168:
 					break;
 				case 169:
 					break;
