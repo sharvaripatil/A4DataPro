@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -39,8 +40,9 @@ import com.a4tech.product.model.Values;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
-public class GoldbondAttributeParser {
-	
+public class BACK_UP_EXCIT_678_GoldbondAttributeParser {
+
+	private static Logger _LOGGER = Logger.getLogger(GoldbondAttributeParser.class);
 	String pattern_remove_specialSymbols = "[^0-9.xX/\\- ]";
 	private GoldbondPriceGridParser gbPriceGridParser;
 	private LookupServiceData lookupServiceData;
@@ -52,17 +54,7 @@ public class GoldbondAttributeParser {
 		ProductConfigurations existingConfiguration = existingProduct.getProductConfigurations();
 		List<Theme> existingThemes = existingConfiguration.getThemes();
 		if(!CollectionUtils.isEmpty(existingThemes)){
-			List<Theme> themesList = new ArrayList<>();
-			  for (Theme theme : existingThemes) {
-				if(theme.getName().contains("ECO")){
-					Theme themeObj = new Theme();
-					themeObj.setName("Eco & Environmentally Friendly");
-					themesList.add(themeObj);
-				}else {
-					themesList.add(theme);
-				}
-			}
-			newConfiguration.setThemes(themesList);
+			newConfiguration.setThemes(existingThemes);
 		}
 		if(!CollectionUtils.isEmpty(existingProduct.getCategories())){
 		  newProduct.setCategories(existingProduct.getCategories());
@@ -70,11 +62,43 @@ public class GoldbondAttributeParser {
 		if(!CollectionUtils.isEmpty(existingProduct.getImages())){
 			newProduct.setImages(existingProduct.getImages());
 		}
-		newProduct.setProductConfigurations(newConfiguration);
+		//keepExistingUpchargesAndCriteria
+		//
+		List<PriceGrid> newPriceGrid = new ArrayList<>();
+		List<PriceGrid> oldPriceGrids = existingProduct.getPriceGrids();
+		for (PriceGrid priceGrid : oldPriceGrids) {
+			if(priceGrid.getIsBasePrice() ){
+				continue;
+			}
+            if(priceGrid.getUpchargeType().contains("Sample Charge") || priceGrid.getUpchargeType().contains("Proof Charge") ||
+            		priceGrid.getUpchargeType().contains("Less than Minimum Charge") || priceGrid.getUpchargeType().contains("Shipping")){
+            	newPriceGrid.add(priceGrid);
+            }
+		}
+		if(existingConfiguration.getSamples() != null){
+        	newConfiguration.setSamples(existingConfiguration.getSamples());
+        }
+        if(existingConfiguration.getArtwork() != null){
+        	newConfiguration.setArtwork(existingConfiguration.getArtwork());
+        }
+        if(existingProduct.isCanOrderLessThanMinimum()){
+        	newProduct.setCanOrderLessThanMinimum(existingProduct.isCanOrderLessThanMinimum());
+        }
+        if(existingConfiguration.getShippingEstimates() != null){
+        	newConfiguration.setShippingEstimates(existingConfiguration.getShippingEstimates());
+        }
+        if(!CollectionUtils.isEmpty(existingConfiguration.getOptions())){
+        	List<Option> existingOptions = existingConfiguration.getOptions();
+			List<Option> newOptions = existingOptions.stream()
+					.filter(option -> "Shipping".equalsIgnoreCase(option.getOptionType()))
+					.collect(Collectors.toList());
+			newConfiguration.setOptions(newOptions);
+        }
+        newProduct.setPriceGrids(newPriceGrid);
+		 newProduct.setProductConfigurations(newConfiguration);
 		return newProduct;
 	}
-	
-	public Product getAdditionalColor(Product existingProduct,String value){
+	public Product getMultiColorCharge(Product existingProduct,String value,String upchargeName){
 		   String priceVal = "";
 		   String discountCode = "";
 		   List<PriceGrid> existingPriceGrid = existingProduct.getPriceGrids();
@@ -82,6 +106,7 @@ public class GoldbondAttributeParser {
 			   existingPriceGrid = new ArrayList<>();
 		   }
 		   ProductConfigurations existingConfiguration = existingProduct.getProductConfigurations();
+		   String priceInclude = "";
 		    if(value.equalsIgnoreCase("$50.00 (G) per color, applies to repeat orders")){
 		    	priceVal = "50";
 		    	discountCode = "G";
@@ -94,25 +119,24 @@ public class GoldbondAttributeParser {
 		    } else if(value.equalsIgnoreCase("$50.00 (G) per color, 2-color only (CANNOT BE CLOSE REGISTRATION)")){
 		    	priceVal = "50";
 		    	discountCode = "G";
-		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (close registration not available)")){
-		    	priceVal = "50";
-		    	discountCode = "G";
 		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (multi-color imprint not available for two side imprint)")){
 		    	priceVal = "50";
 		    	discountCode = "G";
+		    	priceInclude = "multi-color imprint not available for two side imprint";
 		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (up to 2 colors), applies to repeat orders")){
 		    	priceVal = "50";
 		    	discountCode = "G";
-		    } else {
-		    	
+		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (close registration not available)")) {
+		    	priceVal = "50";
+		    	discountCode = "G";
+		    	priceInclude = "close registration not available";
+		    } else if(value.contains("$50.00 (G)")){
+		    	priceVal = "50";
+		    	discountCode = "G";
 		    }
 		    existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", priceVal, discountCode, "Additional Colors", false,
-					"USD","", "additional color available", "Set-up Charge", "Per Order", 1, existingPriceGrid,"","");
-		    List<AdditionalColor> listOfAdditionalColor = existingConfiguration.getAdditionalColors();
-	    	if(CollectionUtils.isEmpty(listOfAdditionalColor)){
-	    		listOfAdditionalColor = new ArrayList<>();
-	    	}
-		    listOfAdditionalColor = getAdditionalColors("additional color available",listOfAdditionalColor);
+					"USD",priceInclude, upchargeName, "Set-up Charge", "Per Order", 1, existingPriceGrid,"","");
+		    List<AdditionalColor> listOfAdditionalColor = getAdditionalColors(upchargeName);
 		    existingConfiguration.setAdditionalColors(listOfAdditionalColor);
 		    existingProduct.setProductConfigurations(existingConfiguration);
 		    existingProduct.setPriceGrids(existingPriceGrid);
@@ -127,8 +151,11 @@ public class GoldbondAttributeParser {
 		  for (String colorName : allColors) {
 			  colorObj = new Color();
 			     String alias = colorName;
-			     colorName = colorName.replaceAll("\\(.*?\\)", "").trim();
 			     String colorGroup = GoldbondColorAndImprintMethodMapping.getColorGroup(colorName);
+			     if(colorGroup == null){
+			    	 colorName = colorName.replaceAll("\\(.*?\\)", "").trim();
+			    	 colorGroup = GoldbondColorAndImprintMethodMapping.getColorGroup(colorName);
+			     }
 			     if(colorGroup == null){
 			    	 colorGroup = "Other";
 			     }
@@ -161,27 +188,20 @@ public class GoldbondAttributeParser {
 			valuesObj = new Values();
 			if(sizeVal.equalsIgnoreCase("29.5 Inches")){
 				valuesObj = getOverAllSizeValObj("29.5", "Length", "", "");
-			} else if(sizeVal.contains("(") && (sizeVal.contains("Diameter") || sizeVal.contains("diameter"))){
-				if (sizeVal.contains("L") && sizeVal.contains("W") && sizeVal.contains("H")){
-					sizeVal = sizeVal.replaceAll("\\(.*\\)", "");
-					sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-					valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "Height");
+			} else if(sizeValues.contains("(") && (sizeValues.contains("Diameter") || sizeValues.contains("diameter"))){
+				String[] ss = sizeVal.split("\\(");
+				String firstVal = ss[0].replaceAll(pattern_remove_specialSymbols, "").trim();
+				String secondVal = ss[1].split(",")[0].replaceAll(pattern_remove_specialSymbols, "").trim();
+				String finalSizeVal = "";
+				if(firstVal.contains("x")){
+					finalSizeVal = firstVal;
+					finalSizeVal= finalSizeVal.replaceAll("-", " ");
 				} else {
-					String[] ss = sizeVal.split("\\(");
-					String firstVal = ss[0].replaceAll(pattern_remove_specialSymbols, "").trim();
-					String secondVal = ss[1].split(",")[0].replaceAll(pattern_remove_specialSymbols, "").trim();
-					String finalSizeVal = "";
-					if(firstVal.contains("x")){
-						finalSizeVal = firstVal;
-						finalSizeVal= finalSizeVal.replaceAll("-", " ");
-					} else {
-						 finalSizeVal = firstVal + "x" + secondVal;
-						finalSizeVal= finalSizeVal.replaceAll("-", " ");
-						finalSizeVal= finalSizeVal.replaceAll("  ", " ");
-					}
-					valuesObj = getOverAllSizeValObj(finalSizeVal, "Height", "Dia", "");	
+					 finalSizeVal = firstVal + "x" + secondVal;
+					finalSizeVal= finalSizeVal.replaceAll("-", " ");
+					finalSizeVal= finalSizeVal.replaceAll("  ", " ");
 				}
-				
+				valuesObj = getOverAllSizeValObj(finalSizeVal, "Height", "Dia", "");
 			} else if(sizeVal.equalsIgnoreCase("7- 3/4 or larger size heads")){
 				valuesObj = getOverAllSizeValObj("7 3/4", "Length", "Dia", "");
 			} else if (sizeVal.contains("H") && sizeVal.contains("L") && sizeVal.contains("D")) {
@@ -197,11 +217,13 @@ public class GoldbondAttributeParser {
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "Depth");
 			} else if(sizeVal.contains("L") && sizeVal.contains("W") && sizeVal.contains("H")){
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
 				if(sizeVal.split("x")[0].contains("L")){//4-3/4" L x 4" W x 2-1/8" H
+					sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+					sizeVal= sizeVal.replaceAll("-", " ");
 					valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "Height");
 				} else {//36" H x 12" W x 12" L
+					sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+					sizeVal= sizeVal.replaceAll("-", " ");
 					valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "Length");
 				}
 			} else if (sizeVal.contains("H") && sizeVal.contains("W")) {
@@ -220,25 +242,10 @@ public class GoldbondAttributeParser {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
-			} else if((sizeVal.contains("Deep") && sizeVal.contains("Wide")) || sizeVal.contains("Wide")) {
-				//10" Deep x 8-1/2" Wide top dimensions
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Depth", "Width", "");
 			} else if(sizeVal.contains("L") && sizeVal.contains("H")){
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
-				String[] values = null;
-				if(sizeVal.contains("X")){
-					values = sizeVal.split("X");
-				} else {
-					values = sizeVal.split("x");
-				}
-				if(values.length == 2){
-					valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Height", "");	
-				} else {//20" H x 9-1/5" H x 9-1/5" L
-					valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "Length");
-				}
+				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Height", "");
 			} else if (sizeVal.contains("H") && (sizeVal.contains("dia") || sizeVal.contains("Dia"))) {
 				if(sizeVal.contains("ia.")){
 					sizeVal = sizeVal.replaceAll("ia.", "").trim();
@@ -260,6 +267,10 @@ public class GoldbondAttributeParser {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Dia", "", "");
+			} else if(sizeVal.contains("Wide")){
+				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
+				valuesObj = getOverAllSizeValObj(sizeVal, "Depth", "Width", "");
 			} else if (sizeVal.contains("H")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
@@ -285,98 +296,6 @@ public class GoldbondAttributeParser {
 		sizeObj.setDimension(dimentionObj);
 		return sizeObj;
 	}
-	/*public Size getProductSize(String sizeValues){
-		Size sizeObj = new Size();
-		Dimension dimentionObj = new Dimension();
-		Values valuesObj = null;
-		List<Values> listOfValues = new ArrayList<>();
-		if(sizeValues.contains(";")){
-			sizeValues = sizeValues.replaceAll(ApplicationConstants.CONST_DELIMITER_SEMICOLON, 
-					                                     ApplicationConstants.CONST_STRING_COMMA_SEP);
-		}
-		String[] sizess = CommonUtility.getValuesOfArray(sizeValues, ApplicationConstants.CONST_STRING_COMMA_SEP);
-		for (String sizeVal : sizess) {
-			valuesObj = new Values();
-			if(sizeVal.equalsIgnoreCase("29.5 Inches")){
-				valuesObj = getOverAllSizeValObj("29.5", "Length", "", "");
-			} else if(sizeVal.equalsIgnoreCase("7- 3/4 or larger size heads")){
-				valuesObj = getOverAllSizeValObj("7 3/4", "Length", "", "");
-			} else if (sizeVal.contains("H") && sizeVal.contains("L") && sizeVal.contains("D")) {
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Length", "Depth");
-			} else if (sizeVal.contains("H") && sizeVal.contains("W") && sizeVal.contains("D")) {
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "Depth");
-			} else if (sizeVal.contains("L") && sizeVal.contains("W") && sizeVal.contains("D")) {
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "Depth");
-			} else if(sizeVal.contains("L") && sizeVal.contains("W") && sizeVal.contains("H")){
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
-				if(sizeVal.split("x")[0].contains("L")){//4-3/4" L x 4" W x 2-1/8" H
-					valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "Height");
-				} else {//36" H x 12" W x 12" L
-					valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "Length");
-				}
-			} else if (sizeVal.contains("H") && sizeVal.contains("W")) {
-				if(sizeVal.equalsIgnoreCase("PVPWS: 4\" H x 1-5/8\" W PVPCS: 7\" H x 2-1/2\" W")){
-					valuesObj = getOverAllSizeValObj("4x1 5/8", "Height", "Width", "");
-					listOfValues.add(valuesObj);
-					sizeVal = "7x 2 1/2";
-				}
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "");
-			} else if(sizeVal.contains("L") && sizeVal.contains("W")){
-				if(sizeVal.contains("Approximately")){
-					sizeVal = sizeVal.replaceAll("Approximately", "").trim();
-				}
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
-			} else if (sizeVal.contains("H") && (sizeVal.contains("dia") || sizeVal.contains("Dia"))) {
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Dia", "");
-			}  else if (sizeVal.contains("arc")) {
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Arc", "", "");
-			} else if (sizeVal.contains("Dia") || sizeVal.contains("dia")) {
-				if(sizeVal.contains("Approximately")){
-					sizeVal = sizeVal.replaceAll("Approximately", "").trim();
-				}
-				if(sizeVal.contains("ia.")){
-					sizeVal = sizeVal.replaceAll("ia.", "").trim();
-				}
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Dia", "", "");
-			} else if (sizeVal.contains("H")) {
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "", "");
-			} else if (sizeVal.contains("L")) {
-				if(sizeVal.equalsIgnoreCase("5-3/4\" L (excluding gauge)")){
-					sizeVal = "5-3/4";
-				}
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "", "");
-			} else {
-				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
-				sizeVal= sizeVal.replaceAll("-", " ");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "Height");
-			}
-			listOfValues.add(valuesObj);
-		}
-		dimentionObj.setValues(listOfValues);
-		sizeObj.setDimension(dimentionObj);
-		return sizeObj;
-	}*/
 	
 	public List<ImprintSize> getProductImprintSize(String imprSizeVal){
 		String imprintsize_remove_specialSymbols = "[^a-zA-Z0-9.x/: ]";
@@ -384,8 +303,16 @@ public class GoldbondAttributeParser {
 		ImprintSize imprintSizeObj = null;
 		if(imprSizeVal.contains(";")){
 			imprSizeVal = imprSizeVal.replaceAll(";", ",");
+			if(imprSizeVal.contains("<br>")){
+				imprSizeVal = imprSizeVal.replaceAll("<br>", ",");
+			}
+			if(imprSizeVal.contains("<BR>")){
+				imprSizeVal = imprSizeVal.replaceAll("<BR>", ",");
+			}
 		} else if(imprSizeVal.contains("<br>")){
 			imprSizeVal = imprSizeVal.replaceAll("<br>", ",");
+		} else if(imprSizeVal.contains("<BR>")){
+			imprSizeVal = imprSizeVal.replaceAll("<BR>", ",");
 		}
 		
 		String[] values = imprSizeVal.split(",");
@@ -474,68 +401,24 @@ public class GoldbondAttributeParser {
 		} else if(value.equalsIgnoreCase("3 day production standard, same day production available upon request")) {
 			productionTimeObj.setBusinessDays("3");
 			 productionTimeObj.setDetails("standard");
-		} else if(value.equalsIgnoreCase("1-Color: 5-7 Days; 4-Color: 10 Days") || 
-				value.equalsIgnoreCase("1-Color: 5-7 busienss days; 4-Color: 10 business days")){
+		} else if(value.equalsIgnoreCase("1-Color: 5-7 Days; 4-Color: 10 Days")){
 			/*productionTimeObj.setBusinessDays("5-7");
 			 productionTimeObj.setDetails("1-Color: 5-7 Days");
 			 listOfProductionTime.add(productionTimeObj);*/
 		} else if(value.equalsIgnoreCase("3 Day Standard<br>Same Day Optional")){
 			productionTimeObj.setBusinessDays("3");
 			 productionTimeObj.setDetails("standard");
-		} else if(value.equalsIgnoreCase("3 business days standard<br>Same Day Optional")){
-			productionTimeObj.setBusinessDays("3");
-			 productionTimeObj.setDetails("standard");
-		}else if(value.contains("domes or inserts")){
-			String[] vals = null;
-			if(value.contains(",")){
-				vals = CommonUtility.getValuesOfArray(value, ",");
-			} else if(value.contains(";")){
-				vals = CommonUtility.getValuesOfArray(value, ";");
-			} else {
-				
-			}
-			for (String timeVal : vals) {
-				productionTimeObj = new ProductionTime();
-				String prodTimeVal = timeVal.replaceAll("[^0-9-]", "").trim();
-				timeVal = timeVal.replaceAll(prodTimeVal, "").replaceAll("business days", "");
-				productionTimeObj.setBusinessDays(prodTimeVal);
-				productionTimeObj.setDetails(timeVal);
-				listOfProductionTime.add(productionTimeObj);
-			}
-			productionTimeObj = new ProductionTime();
-		} else if(value.contains("Embroidered shirts ship 7-10 days after art ") || 
-				value.contains(" Embroidered shirts ship 7-10 business days")){
+		} else if(value.contains("Embroidered shirts ship 7-10 days after art ")){
 			productionTimeObj.setBusinessDays("7-10");
-			value = value.replaceAll("business days", "");
-			value = value.replaceAll("  ", " ");
 			 productionTimeObj.setDetails(value);
-		} else if(value.equalsIgnoreCase("3 Day Standard<br>Next Day Optional<br>Orders in by 12:00 pm EST<br>Gold Rush rules apply")
-				|| value.equalsIgnoreCase("3 business days standard<br>Next Day Optional<br>Orders in by 12:00 pm EST<br>Gold Rush rules apply")){
+		} else if(value.equalsIgnoreCase("3 Day Standard<br>Next Day Optional<br>Orders in by 12:00 pm EST<br>Gold Rush rules apply")){
 			productionTimeObj.setBusinessDays("3");
 			 productionTimeObj.setDetails("Standard");
-		} else  if(value.equalsIgnoreCase("30 days. May be longer during holiday periods. Digital proof turnaround time, 7 days.")){
-			 productionTimeObj.setBusinessDays("30");
-			 productionTimeObj.setDetails("May be longer during holiday periods");
-			 ProductionTime productionTimeObj1 = new ProductionTime();
-			 productionTimeObj1.setBusinessDays("7");
-			 productionTimeObj1.setDetails("Digital proof turnaround time");
-			 listOfProductionTime.add(productionTimeObj1);
-		 } else if(value.contains("weeks") || value.contains("Weeks")){
-			//Two Weeks after art approval for Titleist Wrap; Four weeks after art approval for custom wrap
+		} else if(value.contains("weeks") || value.contains("Weeks")){
 			 if(value.equalsIgnoreCase("Two Weeks after art approval for Titleist Wrap") ||
 					 value.equalsIgnoreCase("Two weeks for sew out then an additional 2 weeks production time after proof approval")){
 				 productionTimeObj.setBusinessDays("10");
 				 productionTimeObj.setDetails(value);
-			 } else if(value.equalsIgnoreCase("Two weeks for sew out then an additional 2-4  weeks production time after proof approval")){
-				 productionTimeObj.setBusinessDays("10");
-				 productionTimeObj.setDetails(value);
-			 } else if(value.equalsIgnoreCase("Two Weeks after art approval for Titleist Wrap; Four weeks after art approval for custom wrap")){
-				 productionTimeObj.setBusinessDays("10");
-				 productionTimeObj.setDetails("after art approval for Titleist Wrap");
-				 ProductionTime productionTimeObj1 = new ProductionTime();
-				 productionTimeObj1.setBusinessDays("20");
-				 productionTimeObj1.setDetails("after art approval for custom wrap");
-				 listOfProductionTime.add(productionTimeObj1);
 			 } else {
 				 String productionTime = value.replaceAll("[^0-9-]", "");
 				 productionTime = CommonUtility.convertProductionTimeWeekIntoDays(productionTime).trim();
@@ -549,8 +432,7 @@ public class GoldbondAttributeParser {
 			} else if(value.equalsIgnoreCase("8 days standard")){
 				 productionTimeObj.setBusinessDays("8");
 				 productionTimeObj.setDetails("standard");
-			} else if(value.equalsIgnoreCase("30 days for normal production, 10 day rush option") ||
-					value.equalsIgnoreCase("30 business days for normal production, 10 day rush option")){
+			} else if(value.equalsIgnoreCase("30 days for normal production, 10 day rush option")){
 				 productionTimeObj.setBusinessDays("30");
 				 productionTimeObj.setDetails("for normal production");
 			} else{
@@ -562,9 +444,7 @@ public class GoldbondAttributeParser {
 				 productionTimeObj.setDetails(value);
 			}
 		}
-		if(!StringUtils.isEmpty(productionTimeObj.getBusinessDays())){
-			listOfProductionTime.add(productionTimeObj);
-		}
+		listOfProductionTime.add(productionTimeObj);
 		return listOfProductionTime;
 	}
 	public Product getRushTime(String value,Product existingProduct){
@@ -632,31 +512,29 @@ public class GoldbondAttributeParser {
 			listOfPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.55", "G", "Packaging", false, "USD","",
 					"Mailer", "Packaging Charge", "Per Quantity", 1, listOfPriceGrid,
 					"","");
-		} else if(value.equalsIgnoreCase("Bulk. Polybag add $0.15 (G) ea.")){
+		} else if(value.equalsIgnoreCase("Bulk. Polybag add $0.15 (G) ea.")){//
 			packObj.setName("Bulk");
 			packObj1.setName("Poly Bag");
 			listOfPackaging.add(packObj1);
 			listOfPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.15", "G", "Packaging", false, "USD","",
 					"Poly Bag", "Packaging Charge", "Per Quantity", 1, listOfPriceGrid,
 					"","");
-		} else if(value.contains("Especially for You")){
-			packObj.setName("Especially for You Gift Folder");
 		} else if(value.equalsIgnoreCase("Bulk")){
 			packObj.setName(value);
 		} else if(value.equalsIgnoreCase("Gift boxed")) {
 			packObj.setName("Gift Boxes");
 		} else if(value.equalsIgnoreCase("Bulk (standard); Polybagged (optional $0.44 (G) ea.)")){
 			packObj.setName("Bulk");
-			packObj1.setName("Poly Bag");
+			packObj1.setName("Individual Poly Bag");
 			listOfPackaging.add(packObj1);
 			listOfPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.44", "G", "Packaging", false, "USD","",
-					"Poly Bag", "Packaging Charge", "Per Quantity", 1, listOfPriceGrid,
+					"Individual Poly Bag", "Packaging Charge", "Per Quantity", 1, listOfPriceGrid,
 					"","");
 		} else if(value.contains("Individually")){
 			 if(value.contains("Bulk")){
 				 packObj.setName("Bulk");
 			 }
-			 if(value.contains("polybagged") || value.contains("poly-bagged")){
+			 if(value.contains("polybagged") || value.contains("poly-bagged") || value.contains("packaged")){
 				 packObj1.setName("Individual Poly Bag");
 				 listOfPackaging.add(packObj1);
 			 } else if(value.contains("gift box")){
@@ -665,7 +543,10 @@ public class GoldbondAttributeParser {
 			 } else if(value.contains("shrink-wrapped")){
 				 packObj1.setName("Shrink Wrap");
 				 listOfPackaging.add(packObj1);
-			 }
+			 } /*else{
+				 packObj1.setName("Individual Poly Bag");
+				 listOfPackaging.add(packObj1);
+			 }*/
 		} else {
 			if(value.contains("Bulk")){
 				packObj.setName("Bulk");
@@ -728,11 +609,12 @@ public class GoldbondAttributeParser {
 	private Values getOverAllSizeValObj(String val,String unit1,String unit2,String unit3){
 		//Overall Size: 23.5" x 23.5"
 		String[] values = null;
-		if(val.contains("X")){
-			values = val.split("X");
-		} else {
+		if(val.contains("x")){
 			values = val.split("x");
+		} else {
+			values = val.split("X");
 		}
+		
 		Value valObj1 = null;
 		Value valObj2 = null;
 		Value valObj3 = null;
@@ -757,20 +639,30 @@ public class GoldbondAttributeParser {
 		 valuesObj.setValue(listOfValue);
 		 return valuesObj;
 	}
-	
-	public List<Artwork> getProductArtwork(String value){
-		List<Artwork> listOfArtwork = new ArrayList<>();
-		Artwork artworkObj = new Artwork();
-		artworkObj.setValue(value);
-		artworkObj.setComments("");
-		listOfArtwork.add(artworkObj);
+	public List<Artwork> getProductArtwork(String value,List<Artwork> listOfArtwork){
+		
+		if(CollectionUtils.isEmpty(listOfArtwork)){
+			listOfArtwork = new ArrayList<>();
+			Artwork artworkObj = new Artwork();
+			artworkObj.setValue(value);
+			artworkObj.setComments("");
+			listOfArtwork.add(artworkObj);
+		} else{
+			if(!listOfArtwork.stream().anyMatch(artwork -> "PRE-PRODUCTION PROOF".equalsIgnoreCase(artwork.getValue()))){
+				Artwork artworkObj = new Artwork();
+				artworkObj.setValue(value);
+				artworkObj.setComments("");
+				listOfArtwork.add(artworkObj);
+			}
+		}
 		return listOfArtwork;
 	}
-	private List<AdditionalColor> getAdditionalColors(String value,List<AdditionalColor> existingAddiColors){
+	private List<AdditionalColor> getAdditionalColors(String value){
+		    List<AdditionalColor> listOfAdditionalColors = new ArrayList<>();
 		    AdditionalColor additionalColorObj = new AdditionalColor();
 		    additionalColorObj.setName(value);
-		    existingAddiColors.add(additionalColorObj);
-		    return existingAddiColors;
+		    listOfAdditionalColors.add(additionalColorObj);
+		    return listOfAdditionalColors;
 	}
 	private Color getColorCombo(String comboValue,String alias,String separator){
 		  //Medium White:Combo:Medium Pink
@@ -795,18 +687,14 @@ public class GoldbondAttributeParser {
 		optionValList.add(optionValObj);
 		optionObj.setValues(optionValList);
 		optionObj.setAdditionalInformation("");
+		optionObj.setRequiredForOrder(false);
 		optionObj.setCanOnlyOrderOne(false);
-		if(optionType.equals("Imprint,requiredOrder")){
-			optionObj.setRequiredForOrder(true);
-			optionType = "Imprint";
-		} else{
-			optionObj.setRequiredForOrder(false);
-		}
 		optionObj.setOptionType(optionType);
 		listOfOptions.add(optionObj);
 		return listOfOptions;
 	}
 	public Product getProductMaterial(String value,Product existingProduct){
+		try{
 		ProductConfigurations config = existingProduct.getProductConfigurations();
 		String additionalInfo = existingProduct.getAdditionalProductInfo();
 		if(StringUtils.isEmpty(additionalInfo)){
@@ -831,8 +719,7 @@ public class GoldbondAttributeParser {
 			materialObj.setName("Rubber");
 			materialObj.setAlias(value);
 		} else if(value.equalsIgnoreCase("100% Microfiber Velour Front and 100% Cotton Terry Loops on back. Total fiber content: 70% cotton/30% microfiber polyester") ||
-				  value.equalsIgnoreCase("100% Microfiber Velour Front and 100% Cotton Terry Loops on back. Total fiber content 70% cotton/30% microfiber polyester") ||
-				  value.equalsIgnoreCase("100% Microfiber Velour Front & 100% Cotton Terry Loops on back. Total fiber content 70% cotton/30% microfiber polyester")){
+				  value.equalsIgnoreCase("100% Microfiber Velour Front and 100% Cotton Terry Loops on back. Total fiber content 70% cotton/30% microfiber polyester")){
 			//Other Fabric:Combo:Cotton=Microfiber Velour & Cotton Loops
 			comboObj = new Combo();
 			comboObj.setName("Cotton");
@@ -888,6 +775,9 @@ public class GoldbondAttributeParser {
 		config.setMaterials(listOfMaterial);
 		existingProduct.setProductConfigurations(config);
 		existingProduct.setAdditionalProductInfo(additionalInfo);
+	 } catch(Exception exce){
+	    _LOGGER.error("unable to parser to material: "+exce.getMessage());
+	  }
 		return existingProduct;
 	}
 	private List<BlendMaterial> getBlendMaterials(String belndVal){
@@ -954,144 +844,117 @@ public class GoldbondAttributeParser {
 		List<ImprintMethod> listOfImprintMethods = new ArrayList<>();
 		ImprintMethod imprintMethodObj = null;
 		List<String> tempImprintMethodVals = new ArrayList<>();
-		String imprintMethodVals = GoldBondImprintMethodMapping.getImprintMethodValues(imprMethodVal);
-		// Few values mapped in mapping class ,if values are getting from mapping,no need to check all condition below if loop
-		// directly jump into else part
-		if(imprintMethodVals == null){
-			if(imprMethodVal.equalsIgnoreCase("Laser engraved (Black, Blue, Lime, Red); Screen Printed (Silver)")){
-				additionalImprintInfo = "";
-				tempImprintMethodVals = Arrays.asList("Laser Engraved:Laser Engraved","Silkscreen:Screen Printed");
-			} else if(imprMethodVal.equalsIgnoreCase("Laser engraving standard for colors (Pad printing standard on silver and white pens only)")) {
-				additionalImprintInfo = "Laser engraving standard for colors. Pad printing standard on silver and white pens only.";
-				tempImprintMethodVals = Arrays.asList("Laser Engraved:Laser Engraving","Pad Print:Pad Printing");
-			} else if(imprMethodVal.equalsIgnoreCase("Blank standard. Embroidery optional up to 6,000 stiches")){
-				additionalImprintInfo = "Blank standard. Embroidery optional up to 6000 stitches.";
-				tempImprintMethodVals = Arrays.asList("Unimprinted:Unimprinted","Embroidered:Embroidery");
-			} else if(imprMethodVal.equalsIgnoreCase("Screen print on case, car charger and wallet. Laser on LED pen and full color on mobile charger")){
-				additionalImprintInfo = "Screen print on case, car charger and wallet. Laser on LED pen and full color on mobile charger.";
-				tempImprintMethodVals = Arrays.asList("Silkscreen:Screen Print","Laser Engraved:Laser Engraved","Full Color:Full Color");
-			} else if(imprMethodVal.equalsIgnoreCase("Screen print on case and car charger. Full color on mobile charger and wall charger")){
-				additionalImprintInfo = imprMethodVal;
-			} else if(imprMethodVal.equalsIgnoreCase("Full color heat transfer with 30 day production, 1 or 2 color heat transfer with rush production")){
-				tempImprintMethodVals = Arrays.asList("Full Color:Full Color","Heat Transfer:Heat Transfer");
-			} else if(imprMethodVal.equalsIgnoreCase("Embroidery up to 6,000 stitches")){
-				tempImprintMethodVals = Arrays.asList("Embroidered:Embroidery");
-			} else if(imprMethodVal.equalsIgnoreCase("Screen/Pad printed")){
-				tempImprintMethodVals = Arrays.asList("Other:Screen/Pad printed");
-			} else if(imprMethodVal.equalsIgnoreCase("Pad printed on handle standard - laser engraved available on blade")){
-				tempImprintMethodVals = Arrays.asList("Pad Print:Pad printed","Laser Engraved:Laser Engraved");
+		if(imprMethodVal.equalsIgnoreCase("Laser engraved (Black, Blue, Lime, Red); Screen Printed (Silver)")){
+			additionalImprintInfo = "";
+			tempImprintMethodVals = Arrays.asList("Laser Engraved:Laser Engraved","Silkscreen:Screen Printed");
+		} else if(imprMethodVal.equalsIgnoreCase("Laser engraving standard for colors (Pad printing standard on silver and white pens only)")) {
+			additionalImprintInfo = "Laser engraving standard for colors. Pad printing standard on silver and white pens only.";
+			tempImprintMethodVals = Arrays.asList("Laser Engraved:Laser Engraving","Pad Print:Pad Printing");
+		} else if(imprMethodVal.equalsIgnoreCase("Blank standard. Embroidery optional up to 6,000 stiches")){
+			additionalImprintInfo = "Blank standard. Embroidery optional up to 6000 stitches.";
+			tempImprintMethodVals = Arrays.asList("Unimprinted:Unimprinted","Embroidered:Embroidery");
+		} else if(imprMethodVal.equalsIgnoreCase("Screen print on case, car charger and wallet. Laser on LED pen and full color on mobile charger")){
+			additionalImprintInfo = "Screen print on case, car charger and wallet. Laser on LED pen and full color on mobile charger.";
+			tempImprintMethodVals = Arrays.asList("Silkscreen:Screen Print","Laser Engraved:Laser Engraved","Full Color:Full Color");
+		} else if(imprMethodVal.equalsIgnoreCase("Screen print on case and car charger. Full color on mobile charger and wall charger")){
+			additionalImprintInfo = imprMethodVal;
+		} else if(imprMethodVal.equalsIgnoreCase("Full color heat transfer with 30 day production, 1 or 2 color heat transfer with rush production")){
+			tempImprintMethodVals = Arrays.asList("Full Color:Full Color","Heat Transfer:Heat Transfer");
+		} else if(imprMethodVal.equalsIgnoreCase("Embroidery up to 6,000 stitches")){
+			tempImprintMethodVals = Arrays.asList("Embroidered:Embroidery");
+		} else if(imprMethodVal.equalsIgnoreCase("Screen/Pad printed")){
+			tempImprintMethodVals = Arrays.asList("Other:Screen/Pad printed");
+		} else if(imprMethodVal.equalsIgnoreCase("Pad printed on handle standard - laser engraved available on blade")){
+			tempImprintMethodVals = Arrays.asList("Pad Print:Pad printed","Laser Engraved:Laser Engraved");
+		} else if(imprMethodVal.equalsIgnoreCase("4-color process print label or 1-color direct imprint")){
+			tempImprintMethodVals = Arrays.asList("Full Color:4-color process","Other:direct imprint");
+		} else if(imprMethodVal.equalsIgnoreCase("Full color imprint with protective dome")){
+			tempImprintMethodVals = Arrays.asList("Full Color:Full color");
+		}
+		else {
+			if(imprMethodVal.equalsIgnoreCase("Pad printed on handle standard; laser engraved available on blade")){
+				additionalImprintInfo = imprMethodVal.replaceAll(";", ",");
+			} else if(imprMethodVal.equalsIgnoreCase("1-Color screen printed / Multi-color pad printed / Laser Engraving")){
+				additionalImprintInfo = "1-Color Screen Print, Multi-Color Pad Print";
+			} else if(imprMethodVal.equalsIgnoreCase("1-Color screen printed / Laser Engraving")){
+				additionalImprintInfo = "1-Color Screen Print";
 			}
-			else {
-				if(imprMethodVal.equalsIgnoreCase("Pad printed on handle standard; laser engraved available on blade")){
-					additionalImprintInfo = imprMethodVal.replaceAll(";", ",");
-				} else if(imprMethodVal.equalsIgnoreCase("1-Color screen printed / Multi-color pad printed / Laser Engraving")){
-					additionalImprintInfo = "1-Color Screen Print, Multi-Color Pad Print";
-				} else if(imprMethodVal.equalsIgnoreCase("1-Color screen printed / Laser Engraving")){
-					additionalImprintInfo = "1-Color Screen Print";
-				}
-				if(imprMethodVal.contains("/")){
-					imprMethodVal = imprMethodVal.replaceAll("/", ",");
-				}
-				if(imprMethodVal.contains(";")){
-					imprMethodVal = imprMethodVal.replaceAll(";", ",");
-				}
-				String[] imprMetodVals = CommonUtility.getValuesOfArray(imprMethodVal, ",");
-				String imprintMethodType = "";
-				String imprintMethodAlias = "";
-				for (String imprMethodName : imprMetodVals) {
-					 imprintMethodType = "";
-					 imprintMethodAlias = "";
-					imprintMethodObj = new ImprintMethod();
-					if(imprMethodName.contains("Dye sublimation")){
-						imprintMethodType = "Sublimation";
-						imprintMethodAlias = "Dye sublimation";
-					} else if(imprMethodName.equalsIgnoreCase("Embroidery")){
-						imprintMethodType = "Embroidered";
-						imprintMethodAlias = "Embroidery";
-					} else if(imprMethodName.equalsIgnoreCase("N/A")){
-						continue;
-					} else if(imprMethodName.contains("4-color") || imprMethodName.contains("4-Color")){
-						imprintMethodType = "Full Color";
-						imprintMethodAlias = "4-color Process";
-					} else if(imprMethodName.equalsIgnoreCase("Four color process print")){
-						imprintMethodType = "Full Color";
-						imprintMethodAlias = "Four color process print";
-					} else if(imprMethodName.contains("Screen Printed") ||
-							      imprMethodName.contains("screen printed") || imprMethodName.contains("Screen print")) {
-						imprintMethodType = "Silkscreen";
-						imprintMethodAlias = "Screen Printed";
-					} else if(imprMethodName.contains("pad printed") ||
-							  imprMethodName.contains("Pad Printed") || imprMethodName.contains("Pad print") ||
-							   imprMethodName.contains("Pad Print")){
-						imprintMethodType = "Pad Print";
-						if(imprMethodName.equalsIgnoreCase("Pad Print") || imprMethodName.equalsIgnoreCase("Pad print")){
-							imprintMethodAlias = "Pad Print";
-						} else {
-							imprintMethodAlias = "Pad Printed";	
-						}
-					} else if(imprMethodName.contains("Faux Laser")){
-						imprintMethodType = "Laser Engraved";
-						imprintMethodAlias = "Faux Laser";
-					} else if(imprMethodName.contains("Laser Engraving") || 
-							    imprMethodName.contains("Laser engraving")) {
-						imprintMethodType = "Laser Engraved";
-						imprintMethodAlias = "Laser engraving";
-					} else if(imprMethodName.contains("ColorfinityHD")){
-						imprintMethodType = "Other";
-						imprintMethodAlias = "ColorfinityHD";
-					} else if(imprMethodName.equalsIgnoreCase("Offset 4-Color Process")){
-						imprintMethodType = "Full Color";
-						imprintMethodAlias = "Offset 4-Color Process";
-					} else if(imprMethodName.equalsIgnoreCase("Blank")){
-						imprintMethodType = "Unimprinted";
-						imprintMethodAlias = "Unimprinted";
-					}
-					else {
-						if(lookupServiceData.isImprintMethod(imprMethodName.toUpperCase())){
-							imprintMethodType = imprMethodName;
-							imprintMethodAlias = imprMethodName;
-						} else {
-								imprintMethodType = "Other";
-								imprintMethodAlias = imprMethodName;
-						}
-					}
-					imprintMethodObj.setType(imprintMethodType);
-					imprintMethodObj.setAlias(imprintMethodAlias);
-					listOfImprintMethods.add(imprintMethodObj);
-				}
-
+			if(imprMethodVal.contains("/")){
+				imprMethodVal = imprMethodVal.replaceAll("/", ",");
 			}
-			if(!CollectionUtils.isEmpty(tempImprintMethodVals)){
-				listOfImprintMethods = getImprintMethods(tempImprintMethodVals);
+			if(imprMethodVal.contains(";")){
+				imprMethodVal = imprMethodVal.replaceAll(";", ",");
 			}
-			
-			if(!StringUtils.isEmpty(additionalImprintInfo)){
-				if(StringUtils.isEmpty(existingAdditionalImprintInfo)){
-					existingAdditionalImprintInfo = additionalImprintInfo;
-				} else {
-					existingAdditionalImprintInfo = CommonUtility.appendStrings(existingAdditionalImprintInfo,
-							additionalImprintInfo, " ");
-				}
-				
-			}
-			existingProduct.setAdditionalImprintInfo(existingAdditionalImprintInfo);
-		} else {
-			String[] imprMetodVals = CommonUtility.getValuesOfArray(imprintMethodVals, ",");
+			String[] imprMetodVals = CommonUtility.getValuesOfArray(imprMethodVal, ",");
+			String imprintMethodType = "";
+			String imprintMethodAlias = "";
 			for (String imprMethodName : imprMetodVals) {
+				 imprintMethodType = "";
+				 imprintMethodAlias = "";
 				imprintMethodObj = new ImprintMethod();
-				imprMethodName = imprMethodName.trim();
-				if(imprMethodName.contains("=")){//Silkscreen=Screen Print
-					String[]valss = CommonUtility.getValuesOfArray(imprMethodName, "=");
-					imprintMethodObj.setType(valss[0]);
-					imprintMethodObj.setAlias(valss[1]);
-				} else {
-					imprintMethodObj.setType(imprMethodName);
-					imprintMethodObj.setAlias(imprMethodName);
+				if(imprMethodName.contains("Dye sublimation")){
+					imprintMethodType = "Sublimation";
+					imprintMethodAlias = "Dye sublimation";
+				} else if(imprMethodName.equalsIgnoreCase("N/A")){
+					continue;
+				} else if(imprMethodName.contains("4-color")){
+					imprintMethodType = "Full Color";
+					imprintMethodAlias = "4-color Process";
+					boolean isImprintMethodPresent = listOfImprintMethods.stream().anyMatch(imprMetho  -> imprMetho.getAlias().contains("4-color Process"));
+		    		if(isImprintMethodPresent){
+		    			continue;
+		    		}
+				} else if(imprMethodName.contains("Screen Printed") ||
+						      imprMethodName.contains("screen printed")) {
+					imprintMethodType = "Silkscreen";
+					imprintMethodAlias = "Screen Printed";
+				} else if(imprMethodName.contains("pad printed") ||
+						  imprMethodName.contains("Pad Printed")){
+					imprintMethodType = "Pad Print";
+					imprintMethodAlias = "Pad Printed";
+				} else if(imprMethodName.contains("Faux Laser")){
+					imprintMethodType = "Laser Engraved";
+					imprintMethodAlias = "Faux Laser";
+				} else if(imprMethodName.contains("Laser Engraving") || 
+						    imprMethodName.contains("Laser engraving")) {
+					imprintMethodType = "Laser Engraved";
+					imprintMethodAlias = "Laser engraving";
+				} else if(imprMethodName.contains("ColorfinityHD")){
+					imprintMethodType = "Other";
+					imprintMethodAlias = "ColorfinityHD";
+				} else if(imprMethodName.equalsIgnoreCase("Blank")){
+					imprintMethodType = "Unimprinted";
+					imprintMethodAlias = "Unimprinted";
 				}
+				else {
+					if(lookupServiceData.isImprintMethod(imprMethodName.toUpperCase())){
+						imprintMethodType = imprMethodName;
+						imprintMethodAlias = imprMethodName;
+					} else {
+							imprintMethodType = "Other";
+							imprintMethodAlias = imprMethodName;
+					}
+				}
+				imprintMethodObj.setType(imprintMethodType);
+				imprintMethodObj.setAlias(imprintMethodAlias);
 				listOfImprintMethods.add(imprintMethodObj);
 			}
+
+		}
+		if(!CollectionUtils.isEmpty(tempImprintMethodVals)){
+			listOfImprintMethods = getImprintMethods(tempImprintMethodVals);
 		}
 		config.setImprintMethods(listOfImprintMethods);
+		if(!StringUtils.isEmpty(additionalImprintInfo)){
+			if(StringUtils.isEmpty(existingAdditionalImprintInfo)){
+				existingAdditionalImprintInfo = additionalImprintInfo;
+			} else {
+				existingAdditionalImprintInfo = CommonUtility.appendStrings(existingAdditionalImprintInfo,
+						additionalImprintInfo, " ");
+			}
+			
+		}
+		existingProduct.setAdditionalImprintInfo(existingAdditionalImprintInfo);
 		existingProduct.setProductConfigurations(config);
 		return existingProduct;
 	}
@@ -1110,14 +973,18 @@ public class GoldbondAttributeParser {
     public Product getMultipleColorUpcharge(String value,Product existingProduct){
     	ProductConfigurations productConfig = existingProduct.getProductConfigurations();
     	List<PriceGrid> priceGrid = existingProduct.getPriceGrids();
-    	List<AdditionalColor> listOfAdditionalColor = productConfig.getAdditionalColors();
-    	if(CollectionUtils.isEmpty(listOfAdditionalColor)){
-    		listOfAdditionalColor = new ArrayList<>();
+    	List<AdditionalColor> additinalColorList = productConfig.getAdditionalColors();
+    	if(CollectionUtils.isEmpty(additinalColorList)){
+    		 additinalColorList = getAdditionalColors("additional color available");
+    		
+    	} else {
+    		if(!additinalColorList.stream().anyMatch(color -> "additional color available".equalsIgnoreCase(color.getName()))){
+    			AdditionalColor additinalColorObj = new AdditionalColor();
+    			additinalColorObj.setName("additional color available");
+    			additinalColorList.add(additinalColorObj);
+    		}
     	}
-    	if(CollectionUtils.isEmpty(productConfig.getAdditionalColors())){
-    		listOfAdditionalColor = getAdditionalColors("additional color available",listOfAdditionalColor);
-    		productConfig.setAdditionalColors(listOfAdditionalColor);
-    	}
+    	productConfig.setAdditionalColors(additinalColorList);
     	String priceVal = "";
     	if(value.contains("$0.30 (G)")|| value.contains("$.30 (G)")){
     		priceVal = "0.30";
@@ -1133,79 +1000,44 @@ public class GoldbondAttributeParser {
     	existingProduct.setPriceGrids(priceGrid);
     	return existingProduct;
     }
-    public Product getSetupCharge(Product product,String val){
-    	List<PriceGrid> priceGrid = product.getPriceGrids();
-    	ProductConfigurations productConfig = product.getProductConfigurations();
-    	List<Option>  productOptions = productConfig.getOptions();
-    	List<ImprintMethod> imprintMethods = productConfig.getImprintMethods();
+    public Product getSetupChargeForImprintMethod(String priceValue,Product existingProduct){
+    	ProductConfigurations productConfig = existingProduct.getProductConfigurations();
+    	List<PriceGrid> priceGrid = existingProduct.getPriceGrids();
     	List<AdditionalColor> listOfAdditionalColor = null;
-    	if(CollectionUtils.isEmpty(priceGrid)){
-    		priceGrid = new ArrayList<>();
-    	}
-    	if(CollectionUtils.isEmpty(productOptions)){
-    		productOptions = new ArrayList<>();
-    	}
-    	if(CollectionUtils.isEmpty(imprintMethods)){
-    		ImprintMethod imprintMethod = new ImprintMethod();
-    		imprintMethod.setType("Unimprinted");
-    		imprintMethod.setAlias("Unimprinted");
-    		imprintMethods.add(imprintMethod);
-    	}
-    	if(val.equalsIgnoreCase("Sized DST: Free; Non-Sized DST: $75.00 (G); Non DST: $300.00 (G)")){
-    		productOptions = getOptions("DST", "Sized DST", "Imprint", productOptions);
-    		productOptions = getOptions("Non-DST", "Non-Sized DST", "Imprint", productOptions);
-    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "75.00", "G", "Imprint Option", false, "USD", "", "Sized DST",
-					"Set-up Charge", "Other", 1, priceGrid, "DST", "");
-    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "300.00", "G", "Imprint Option", false, "USD", "", "Non-Sized DST",
-					"Set-up Charge", "Other", 1, priceGrid, "Non-DST", "");
-    	} else if(val.contains("vector EPS")){
-    		//$70.00 (G) with vector EPS file; $145.00 (G) without vector EPS file
-    		productOptions = getOptions("Vector EPS File", "Vector EPS File", "Imprint,requiredOrder", productOptions);
-    		productOptions = getOptions("Without Vector EPS File", "Without Vector EPS File", "Imprint,requiredOrder", productOptions);
-    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "75.00", "G", "Imprint Option", false, "USD", "", "Vector EPS File",
-					"Set-up Charge", "Other", 1, priceGrid, "Vector EPS File", "");
-    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "300.00", "G", "Imprint Option", false, "USD", "", "Without Vector EPS File",
-					"Set-up Charge", "Other", 1, priceGrid, "Without Vector EPS File", "");
-    	} else if(val.equalsIgnoreCase("$50.00 (G) for 1-2 colors; additional $50.00 (G) for 3-4 colors")){
-    		 listOfAdditionalColor = productConfig.getAdditionalColors();
-	    	if(CollectionUtils.isEmpty(listOfAdditionalColor)){
-	    		listOfAdditionalColor = new ArrayList<>();
-	    	}
-		    listOfAdditionalColor = getAdditionalColors("1-2 Colors",listOfAdditionalColor);
-		    listOfAdditionalColor = getAdditionalColors("3-4 Colors",listOfAdditionalColor);
-		    priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "50.00", "G", "Additional Colors", false,
-					"USD","", "1-2 Colors", "Set-up Charge", "Other", 1, priceGrid,"","");
-		    priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "50.00", "G", "Additional Colors", false,
-					"USD","", "3-4 Colors", "Set-up Charge", "Other", 1, priceGrid,"","");
-		    productConfig.setAdditionalColors(listOfAdditionalColor);
-    	} else if(val.equalsIgnoreCase("4-Color Process Label: $50.00 (G); Direct Imprint: $60.00 (G)")) {
-    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "50.00", "G", "Imprint Method", false,
-					"USD","", "4-Color Process", "Set-up Charge", "Other", 1, priceGrid,"","");
-    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "60.00", "G", "Imprint Method", false,
-					"USD","", "Direct Imprint", "Set-up Charge", "Other", 1, priceGrid,"","");
-    	} else if(val.equalsIgnoreCase("<b>One Color or Faux Etching (two-sided standard):</b> $50.00 (G)<br><b>Multi-Color (one-sided):</b> $50.00 (G) per color<br><b>Laser (one-sided standard):</b> $50.00 (G) per location")
-    			|| val.equalsIgnoreCase("<b>One Color or Faux Etching (two-sided standard):</b> $50.00 (G)<br><b>Laser (one-sided standard):</b> $50.00 (G) per location")){
-    		//<b>One Color or Faux Etching (two-sided standard):</b> $50.00 (G)<br><b>Multi-Color (one-sided):
-    		//</b> $50.00 (G) per color<br><b>Laser (one-sided standard):</b> $50.00 (G) per location
-    		String imprintMethodVals = imprintMethods.stream().map(ImprintMethod::getAlias).collect(Collectors.joining(","));
-    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "50.00", "G", "Imprint Method", false,
-					"USD","", imprintMethodVals, "Set-up Charge", "Other", 1, priceGrid,"","");
+    	/*if(CollectionUtils.isEmpty(productConfig.getAdditionalColors())){
+    		 listOfAdditionalColor = getAdditionalColors("additional color available");
+    		productConfig.setAdditionalColors(listOfAdditionalColor);
     	} else {
-    		//Screen printed (standard) / Faux Etching (optional)
-    		// it is collecting all imprint method values
-    		String discountCode = CommonUtility.extractValueSpecialCharacter("(", ")", val);
-    		String price = val.replaceAll("[^0-9\\.]", "").trim();
-    		String imprintMethodVals = imprintMethods.stream().map(ImprintMethod::getAlias).collect(Collectors.joining(","));
-    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1",price, discountCode, "Imprint Method", false,
-					"USD","", imprintMethodVals, "Set-up Charge", "Other", 1, priceGrid,"","");
+    		 listOfAdditionalColor = productConfig.getAdditionalColors();
+    		boolean isAddColorAvail = listOfAdditionalColor.stream().anyMatch(addColor  -> addColor.getName().contains("additional color available"));
+    		if(!isAddColorAvail){
+    			listOfAdditionalColor = getAdditionalColors("additional color available");
+        		productConfig.setAdditionalColors(listOfAdditionalColor);
+    		}
+    	}*/
+    	String priceVal = "50";
+    	String desc = "";
+    	if(priceValue.contains("G")){
+    		desc = "G";
+    	} else if(priceValue.contains("A")){
+    		desc = "A";
+    	} else if(priceValue.contains("C")){
+    		desc = "C";
     	}
-    	productConfig.setImprintMethods(imprintMethods);
-    	productConfig.setOptions(productOptions);
-    	product.setPriceGrids(priceGrid);
-    	product.setProductConfigurations(productConfig);
-    	return product;
-    	
+    	priceValue = priceValue.replaceAll("[^0-9.]", "").trim();
+    	String imprintMethodVals = getImprintMethodAlias(productConfig.getImprintMethods());
+    	if(!StringUtils.isEmpty(priceVal) && !StringUtils.isEmpty(imprintMethodVals)){
+    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", priceValue, desc, "Imprint Method", false,
+					"USD","", imprintMethodVals, "Set-up Charge", "Per Quantity", 1, priceGrid,"","");
+    	}
+    	existingProduct.setPriceGrids(priceGrid);
+    	return existingProduct;
     }
+    private String getImprintMethodAlias(List<ImprintMethod> listOfImprintMethod){
+		String imprintMethodAlias = listOfImprintMethod.stream().map(ImprintMethod::getAlias)
+				.collect(Collectors.joining(","));
+		return imprintMethodAlias;
+	}
 	public GoldbondPriceGridParser getGbPriceGridParser() {
 		return gbPriceGridParser;
 	}
@@ -1217,6 +1049,10 @@ public class GoldbondAttributeParser {
 	}
 	public void setLookupServiceData(LookupServiceData lookupServiceData) {
 		this.lookupServiceData = lookupServiceData;
-	}	
+	}
 
+	
+
+
+	
 }

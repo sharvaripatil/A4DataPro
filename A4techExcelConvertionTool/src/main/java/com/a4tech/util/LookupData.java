@@ -15,6 +15,7 @@ public class LookupData {
 	public static final Set<String> shapes = new HashSet<String>();
 	public static final Map<String,List<String>> listOfLineNames = new HashMap<>();
 	private static final Map<String, List<String>> listOfFobPoints = new HashMap<>();
+	private static final Map<String, String> sizeMap = new HashMap<>();
 	private LookupServiceData lookupServiceData = null;
 	static{
 		
@@ -158,7 +159,14 @@ public class LookupData {
 		shapes.add("Circle");
 		shapes.add("Octagon");
 		shapes.add("Oval");
-		
+		sizeMap.put("L", "Length");
+		sizeMap.put("W", "Width");
+		sizeMap.put("H", "Height");
+		sizeMap.put("DIA", "Dia");
+		sizeMap.put("Dia", "Dia");
+		sizeMap.put("dia", "Dia");
+		sizeMap.put("D", "Depth");
+		sizeMap.put("SQ", "SQ");	
 	}
 	
 	public static boolean isRepeateIndex(String indexNo){
@@ -211,5 +219,8 @@ public class LookupData {
 
 	public void setLookupServiceData(LookupServiceData lookupServiceData) {
 		this.lookupServiceData = lookupServiceData;
+	}
+	public static String getSizeUnit(String value){
+	     return	sizeMap.get(value);
 	}
 }

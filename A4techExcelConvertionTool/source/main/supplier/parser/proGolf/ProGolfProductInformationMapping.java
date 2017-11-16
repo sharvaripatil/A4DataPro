@@ -230,7 +230,8 @@ public class ProGolfProductInformationMapping {
 								Size sizes = proInfoAttributeParser.getProductSizeArc(sizeArc.trim());
 								productConfigObj.setSizes(sizes);
 							}
-						case "ATTR_Imprint_Color":
+						case "ATTR_Imprint_Color"://ATTR_Imprint Color
+						case "ATTR_Imprint Color":
 							String imprintColor = cell.getStringCellValue();
 							if (imprintColor.contains("PMS Match at No Charge")) {
 								productExcelObj.setDistributorOnlyComments("PMS Match at No Charge");
@@ -238,6 +239,7 @@ public class ProGolfProductInformationMapping {
 							break;
 						case "ATTR_imprint_Size":
 						case "ATTR_Imprint_Size":
+						case "ATTR_Imprint Size":
 							String imprintSize = cell.getStringCellValue();
 							if(!StringUtils.isEmpty(imprintSize)){
 								productConfigObj = proInfoAttributeParser.getImprintSizes(imprintSize,productConfigObj);

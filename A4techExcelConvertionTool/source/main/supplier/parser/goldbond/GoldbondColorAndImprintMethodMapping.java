@@ -3,9 +3,8 @@ package parser.goldbond;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GoldbondColorMapping {
+public class GoldbondColorAndImprintMethodMapping {
 	public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
-	
 	static{
 		// NEW COLOR MAPPING
 		COLOR_MAP.put("Name","Color Group");
@@ -558,9 +557,9 @@ public class GoldbondColorMapping {
 		COLOR_MAP.put("Black with Black Inner and Lid","Black");
 		COLOR_MAP.put("Clear - 2x8 standard label 12oz","Clear");
 		COLOR_MAP.put("Translucent Green_Black Refill","Green");*/
-
 	}
 	public static String getColorGroup(String colorName){
 		return COLOR_MAP.get(colorName);
 	}
+	
 }
