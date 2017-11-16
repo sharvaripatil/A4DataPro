@@ -189,20 +189,7 @@
 
 			}
 			return false;
-			/* $('test123').click(); */
 		}
-		function checkEnvironment() {
-			alert('hi');
-			document.getElementById('exampleModal').style.display = "block";
-			/* $('#exampleModal').show(); */
-		}
-		$(function() {
-			alert('new')
-			$('#exampleModal').change(function() {
-				var divselection = $(this);
-			});
-			alert('new end')
-		});
 	</script>
 
 	<!--[if lt IE 10]>
