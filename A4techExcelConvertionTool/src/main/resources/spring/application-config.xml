@@ -155,7 +155,19 @@
      <property name="productDaoObj" ref="productDao" />
    	</bean>
 	
-	
+		<!-- 
+		<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
+		<property name="url" value="jdbc:sqlserver://localhost\SQLSERVER:1433;databaseName=a4datapro" />
+		<property name="url" value="jdbc:sqlserver://[AMEY\SQLSERVER][:1433];databaseName=a4datapro" />
+		<property name="url" value="jdbc:sqlserver://localhost;databaseName=a4datapro;instanceName=SQLSERVER;" />
+	    <property name="username" value="sa" />
+		<property name="password" value="admin@123" /> 
+		<property name="url" value="jdbc:sqlserver://${db.host}:${db.port};databaseName=${db.database}" />
+		<property name="username" value="${db.username}" />
+		<property name="password" value="${db.password}" />
+		</bean>
+		-->
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="${mysql.db.driverClassName}" />
@@ -193,46 +205,6 @@
 		</property>
 
 	</bean>
-	
-	
-	<!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-		<property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
-		<property name="url" value="jdbc:sqlserver://localhost\SQLSERVER:1433;databaseName=a4datapro" />
-		<property name="url" value="jdbc:sqlserver://[AMEY\SQLSERVER][:1433];databaseName=a4datapro" />
-		<property name="url" value="jdbc:sqlserver://localhost;databaseName=a4datapro;instanceName=SQLSERVER;" />
-	    <property name="username" value="sa" />
-		<property name="password" value="admin@123" /> 
-		
-		"jdbc:sqlserver://[AMEY\SQLEXPRESS][:53113];databaseName=SpringHBNT" 
-		<property name="url" value="jdbc:sqlserver://${db.host}:${db.port};databaseName=${db.database}" />
-		
-		<property name="username" value="${db.username}" />
-		<property name="password" value="${db.password}" />
-</bean>
-	    
-    <bean id="hibernate3AnnotatedSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="annotatedClasses">
-			<list>
-				<value>com.a4tech.product.dao.entity.ProductEntity</value>
-				<value>com.a4tech.product.dao.entity.ErrorEntity</value>
-				<value>com.a4tech.product.dao.entity.BatchEntity</value>
-				<value>com.a4tech.product.dao.entity.FtpServerFileEntity</value>
-				<value>com.a4tech.product.dao.entity.SupplierLoginDetails</value>
-				<value>parser.highcaliberline.HighCalColorEntity</value>
-			</list>
-		</property>
-		<property name="hibernateProperties">
-			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-				<prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>
-				<prop key="hibernate.current_session_context_class">thread</prop>
-				<prop key="hibernate.show_sql">false</prop>
-                <prop key="hbm2ddl.auto">update</prop>
-			</props>
-		</property>
-		
-	</bean> -->
 	<bean id="productDao" name="productDao"
 		class="com.a4tech.product.dao.service.ProductDao">
 		<property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory"></property>
