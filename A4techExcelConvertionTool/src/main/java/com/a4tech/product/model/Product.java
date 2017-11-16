@@ -150,6 +150,17 @@ public class Product {
     @JsonProperty("ProductType")
 	private String productType;
     
+    
+    //MakeActiveDate
+    @JsonProperty("MakeActiveDate")
+	private String makeActiveDate;
+    
+    
+	
+	//EndDate
+	 @JsonProperty("EndDate")
+		private String endDate;
+	
 	public Inventory getInventory() {
 		return inventory;
 	}
@@ -556,6 +567,21 @@ public class Product {
 	public void setProductType(String productType) {
 		this.productType = productType;
 	}
+	public String getEndDate() {
+		return endDate;
+	}
 
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+	
+	public String getMakeActiveDate() {
+		return makeActiveDate;
+	}
+
+	public void setMakeActiveDate(String makeActiveDate) {
+		this.makeActiveDate = makeActiveDate;
+	}
+	
 
 }
