@@ -68,10 +68,25 @@ public class GempirepromotionsMapping implements IExcelParser {
 		String pricename_1="";
 		boolean T =true;
 		boolean N =false;
-    	    StringJoiner listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		    StringJoiner listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		    StringJoiner listOfDiscounts = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+    	    StringJoiner listOfQuantity1 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfPrices1 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfDiscounts1 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 
+		    StringJoiner listOfQuantity2 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfPrices2 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfDiscounts2 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    
+		    StringJoiner listOfQuantity3 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfPrices3 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfDiscounts3 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    
+		    StringJoiner listOfQuantity4 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfPrices4 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfDiscounts4 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    
+		    StringJoiner listOfQuantity5 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfPrices5 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfDiscounts5 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		List<String> listOfPricename = new ArrayList<>();
 		List<String> listQuantity = new ArrayList<>();
 		List<String> listPrice = new ArrayList<>();
@@ -144,12 +159,13 @@ public class GempirepromotionsMapping implements IExcelParser {
 											+ numOfProductsFailure.size());
 									 listOfPricename = new ArrayList<>();	
 									 productConfigObj = new ProductConfigurations();
-							    	 listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-									 listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-									 listOfDiscounts = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 									 listQuantity = new ArrayList<>();
 									 listPrice = new ArrayList<>();
 								     listDiscount = new ArrayList<>();
+								     listOfQuantity1 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+									 listOfPrices1 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+									 listOfDiscounts1 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+								     
 
 								}
 								if (!productXids.contains(xid)) {
@@ -317,8 +333,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 						 case  59://quantity4_1
 								String priceQty1 = CommonUtility.getCellValueStrinOrInt(cell);
 								if(!StringUtils.isEmpty(priceQty1) && !priceQty1.equals("0")){
-									listOfQuantity.add(priceQty1);
-								//	listQuantity.add(listOfQuantity.toString());
+									listOfQuantity1.add(priceQty1);
+							//		listQuantity.add(listOfQuantity1.toString());
 
 								}
 						
@@ -330,8 +346,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 						 case  61://price4_1
 								String listPricing1 = CommonUtility.getCellValueDouble(cell);
 								if(!StringUtils.isEmpty(listPricing1) && !listPricing1.equals("0.0") && !listPricing1.equals("0.00")){
-									listOfPrices.add(listPricing1);
-								//	listPrice.add(listOfPrices.toString());
+									listOfPrices1.add(listPricing1);
+							//		listPrice.add(listOfPrices1.toString());
 									
 								}
 								break;
@@ -342,8 +358,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 						 case  62://discountcode4_1
 								String discountCode1 = CommonUtility.getCellValueStrinOrInt(cell);
 								if(!StringUtils.isEmpty(discountCode1)){
-									listOfDiscounts.add(discountCode1);
-								//	listDiscount.add(listOfDiscounts.toString());
+									listOfDiscounts1.add(discountCode1);
+						//			listDiscount.add(listOfDiscounts1.toString());
 								}		
 								break;
 								
@@ -360,8 +376,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 						 case  120://quantity4_2
 								String priceQty2 = CommonUtility.getCellValueStrinOrInt(cell);
 								if(!StringUtils.isEmpty(priceQty2) && !priceQty2.equals("0")){
-									listOfQuantity.add(priceQty2);
-								//	listQuantity.add(listOfQuantity.toString());
+									listOfQuantity2.add(priceQty2);
+							//	listQuantity.add(listOfQuantity2.toString());
 
 								}
 								
@@ -372,8 +388,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 						 case  122://price4_2
 							 String listPricing2 = CommonUtility.getCellValueDouble(cell);
 								if(!StringUtils.isEmpty(listPricing2) && !listPricing2.equals("0.0") && !listPricing2.equals("0.00")){
-									listOfPrices.add(listPricing2);
-								//	listPrice.add(listOfPrices.toString());
+									listOfPrices2.add(listPricing2);
+							//		listPrice.add(listOfPrices2.toString());
 
 								}
 								
@@ -384,8 +400,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 						 case  123://discountcode4_2
 							 String discountCode2 = CommonUtility.getCellValueStrinOrInt(cell);
 								if(!StringUtils.isEmpty(discountCode2)){
-									listOfDiscounts.add(discountCode2);
-								//	listDiscount.add(listOfDiscounts.toString());
+									listOfDiscounts2.add(discountCode2);
+							//		listDiscount.add(listOfDiscounts2.toString());
 
 								}
 								
@@ -404,8 +420,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 						 case  181://quantity4_3
 								String priceQty3 = CommonUtility.getCellValueStrinOrInt(cell);
 								if(!StringUtils.isEmpty(priceQty3) && !priceQty3.equals("0")){
-									listOfQuantity.add(priceQty3);
-								//	listQuantity.add(listOfQuantity.toString());
+									listOfQuantity3.add(priceQty3);
+							//		listQuantity.add(listOfQuantity3.toString());
 
 								} 
 							 break;
@@ -417,8 +433,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 						 case  183://price4_3
 							 String listPricing3 = CommonUtility.getCellValueDouble(cell);
 								if(!StringUtils.isEmpty(listPricing3) && !listPricing3.equals("0.0") && !listPricing3.equals("0.00")){
-									listOfPrices.add(listPricing3);
-								//	listPrice.add(listOfPrices.toString());
+									listOfPrices3.add(listPricing3);
+							//		listPrice.add(listOfPrices3.toString());
 
 								}
 							 break;
@@ -429,8 +445,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 						 case  184://discountcode4_3
 							 String discountCode3 = CommonUtility.getCellValueStrinOrInt(cell);
 								if(!StringUtils.isEmpty(discountCode3)){
-									listOfDiscounts.add(discountCode3);
-								//	listDiscount.add(listOfDiscounts.toString());
+									listOfDiscounts3.add(discountCode3);
+							//		listDiscount.add(listOfDiscounts3.toString());
 
 								}
 								
@@ -449,8 +465,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 						 case  242://quantity4_4
 							 String priceQty4 = CommonUtility.getCellValueStrinOrInt(cell);
 								if(!StringUtils.isEmpty(priceQty4) && !priceQty4.equals("0")){
-									listOfQuantity.add(priceQty4);
-								//	listQuantity.add(listOfQuantity.toString());
+									listOfQuantity4.add(priceQty4);
+							//		listQuantity.add(listOfQuantity4.toString());
 
 								} 
 								break;
@@ -462,8 +478,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 						 case  244://price4_4
 							 String listPricing4 = CommonUtility.getCellValueDouble(cell);
 								if(!StringUtils.isEmpty(listPricing4) && !listPricing4.equals("0.0") && !listPricing4.equals("0.00")){
-									listOfPrices.add(listPricing4);
-								//	listPrice.add(listOfPrices.toString());
+									listOfPrices4.add(listPricing4);
+							//		listPrice.add(listOfPrices4.toString());
 
 								}
 								break;
@@ -475,8 +491,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 				    	 case  245://discountcode4_4
 				    		 String discountCode4 = CommonUtility.getCellValueStrinOrInt(cell);
 								if(!StringUtils.isEmpty(discountCode4)){
-									listOfDiscounts.add(discountCode4);
-								//	listDiscount.add(listOfDiscounts.toString());
+									listOfDiscounts4.add(discountCode4);
+							//	listDiscount.add(listOfDiscounts4.toString());
 
 								}
 								break;
@@ -493,8 +509,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 						 case  303://quantity4_5
 							 String priceQty5 = CommonUtility.getCellValueStrinOrInt(cell);
 								if(!StringUtils.isEmpty(priceQty5) && !priceQty5.equals("0")){
-									listOfQuantity.add(priceQty5);
-								//	listQuantity.add(listOfQuantity.toString());
+									listOfQuantity5.add(priceQty5);
+							//		listQuantity.add(listOfQuantity5.toString());
 
 								} 
 								break;
@@ -505,8 +521,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 						 case  305://price4_5
 							 String listPricing5 = CommonUtility.getCellValueDouble(cell);
 								if(!StringUtils.isEmpty(listPricing5) && !listPricing5.equals("0.0") && !listPricing5.equals("0.00")){
-									listOfPrices.add(listPricing5);
-								//	listPrice.add(listOfPrices.toString());
+									listOfPrices5.add(listPricing5);
+							//	listPrice.add(listOfPrices5.toString());
 
 								}
 								break;
@@ -517,8 +533,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 				    	 case  306://discountcode4_5
 				    		 String discountCode5 = CommonUtility.getCellValueStrinOrInt(cell);
 								if(!StringUtils.isEmpty(discountCode5)){
-									listOfDiscounts.add(discountCode5);
-								//	listDiscount.add(listOfDiscounts.toString());
+									listOfDiscounts5.add(discountCode5);
+								//	listDiscount.add(listOfDiscounts5.toString());
 
 								}
 								break;
@@ -530,15 +546,36 @@ public class GempirepromotionsMapping implements IExcelParser {
 
 					// end inner while loop
 					productExcelObj.setPriceType("L");
-					listQuantity.add(listOfQuantity.toString());
-					listPrice.add(listOfPrices.toString());
-					listDiscount.add(listOfDiscounts.toString());
+					listQuantity.add(listOfQuantity1.toString());
+					listPrice.add(listOfPrices1.toString());
+					listDiscount.add(listOfDiscounts1.toString());
 					
+					listQuantity.add(listOfQuantity2.toString());
+					listPrice.add(listOfPrices2.toString());
+					listDiscount.add(listOfDiscounts2.toString());
+					
+					listQuantity.add(listOfQuantity3.toString());
+					listPrice.add(listOfPrices3.toString());
+					listDiscount.add(listOfDiscounts3.toString());
+					
+					listQuantity.add(listOfQuantity4.toString());
+					listPrice.add(listOfPrices4.toString());
+					listDiscount.add(listOfDiscounts4.toString());
+					
+					listQuantity.add(listOfQuantity5.toString());
+					listPrice.add(listOfPrices5.toString());
+					listDiscount.add(listOfDiscounts5.toString());
+							
 					String names[]=listOfPricename.toArray(new String[listOfPricename.size()]);
-					for (int i=1;i<names.length;i++) {
-						if(!names[i].equalsIgnoreCase("")){
-							priceGrids = pricegrid.getBasePriceGrids(listPrice.get(i).toString(),
-									listQuantity.get(i).toString(), listDiscount.get(i).toString(), "USD",
+					String PriceArr[]=listPrice.toArray(new String[listPrice.size()]);
+					String QuantityArr[]=listQuantity.toArray(new String[listQuantity.size()]);
+					String discountArr[]=listDiscount.toArray(new String[listDiscount.size()]);
+
+			
+					for (int i=0;i<names.length;i++) {
+						if(!names[i].equalsIgnoreCase("") && !QuantityArr[i].equalsIgnoreCase("") ){
+							priceGrids = pricegrid.getBasePriceGrids(PriceArr[i],
+									QuantityArr[i],discountArr[i], "USD",
 							         "", T, N,names[i],"",priceGrids);
 							}	
 					}
@@ -573,9 +610,6 @@ public class GempirepromotionsMapping implements IExcelParser {
 			productDaoObj.saveErrorLog(asiNumber, batchId);
 			 listOfPricename = new ArrayList<>();	
 			 productConfigObj = new ProductConfigurations();
-	    	 listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-			 listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-			 listOfDiscounts = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			 listQuantity = new ArrayList<>();
 			 listPrice = new ArrayList<>();
 		     listDiscount = new ArrayList<>();	

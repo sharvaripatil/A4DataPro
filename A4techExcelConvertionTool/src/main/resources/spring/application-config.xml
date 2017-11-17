@@ -178,7 +178,7 @@
 				<value>com.a4tech.product.dao.entity.ErrorEntity</value>
 				<value>com.a4tech.product.dao.entity.BatchEntity</value>
 				<value>com.a4tech.product.dao.entity.FtpServerFileEntity</value>
-				<value>com.a4tech.product.dao.entity.SupplierLoginDetails</value>
+				<value>com.a4tech.product.dao.entity.SupplierLoginDetails</value>				
 				<!-- <value>parser.highcaliberline.HighCalColorEntity</value> -->
 			</list>
 		</property>
