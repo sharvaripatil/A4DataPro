@@ -46,7 +46,12 @@ public class BagMakersPriceGridParser {
 				.setIsQUR(qurFlag.equalsIgnoreCase(ApplicationConstants.CONST_STRING_FALSE) ? ApplicationConstants.CONST_BOOLEAN_FALSE
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);
 		if(!isBasePrice){
-			priceGrid.setServiceCharge(ApplicationConstants.CONST_STRING_SERVICECHARGE);
+			if(criterias.contains("Product Option")){
+				priceGrid.setServiceCharge("Optional");
+			}else{
+				priceGrid.setServiceCharge(ApplicationConstants.CONST_STRING_SERVICECHARGE);
+			}
+			
 			priceGrid.setUpchargeType(upChargeType);
 			priceGrid.setUpchargeUsageType(upchargeUsageType);
 			//UpchargeUsageType

@@ -20,6 +20,7 @@ public class LookupServiceData {
 	public static List<Catalog> catalogs            = null;
 	public static List<String>   themes  		    = null;
     public static List<String> packages             = null;
+    public static List<String> colorValues 		= null;
     
 	public  List<String> getImprintMethods(){
 		  if(imprintMethods == null){
@@ -35,6 +36,14 @@ public class LookupServiceData {
 			  return materialValues;
 		  }
 		return materialValues;
+	}
+	public  List<String> getColorValues(){
+		 
+		  if(colorValues == null){
+			  colorValues = lookupRestService.getColorData();
+			  return colorValues;
+		  }
+		return colorValues;
 	}
 	public List<String> getShapeValues(){
 		if(shapes == null){
