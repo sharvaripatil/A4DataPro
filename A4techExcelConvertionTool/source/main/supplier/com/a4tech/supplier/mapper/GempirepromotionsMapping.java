@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.StringJoiner;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -13,24 +14,20 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import parser.maxplus.MaxpluProductAttributeParser;
-import parser.maxplus.MaxplusPriceGridParser;
+import parser.gempire.GempirePriceGridParser;
+import parser.gempire.GempireProductAttributeParser;
 
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
-import com.a4tech.product.model.ImprintMethod;
-import com.a4tech.product.model.ImprintSize;
-import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
-import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
+import com.a4tech.product.model.Weight;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -38,11 +35,10 @@ import com.a4tech.util.CommonUtility;
 public class GempirepromotionsMapping implements IExcelParser {
 	private static final Logger _LOGGER = Logger
 			.getLogger(GempirepromotionsMapping.class);
-	
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
-	private MaxpluProductAttributeParser maxplusAttribute;
-	private MaxplusPriceGridParser pricegrid; 
+	private GempireProductAttributeParser prodAttribute;
+	private GempirePriceGridParser pricegrid;
 	
 	@Override
 	public String readExcel(String accessToken, Workbook workbook,
@@ -50,26 +46,9 @@ public class GempirepromotionsMapping implements IExcelParser {
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		Set<String> productXids = new HashSet<String>();
-		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
-		List<ProductionTime> listProductionTime = new ArrayList<ProductionTime>();
-		List<Color> listColor = new ArrayList<Color>();
-		List<ImprintMethod> listimprintMethods = new ArrayList<ImprintMethod>();
-		List<ImprintSize> listimprintSize = new ArrayList<ImprintSize>();
-		List<Image> listImage= new ArrayList<Image>();		
+		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();		
 		Product productExcelObj = new Product();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
-		ProductionTime prodtimeObj=new ProductionTime();
-		RushTime rushserviceObj=new RushTime();
-        StringBuilder ImprintMethod=new StringBuilder();
-        StringBuilder ImprintSize=new StringBuilder();
-        StringBuilder Image=new StringBuilder();
-    	StringBuilder listOfQuantity = new StringBuilder();
-		StringBuilder listOfPrices = new StringBuilder();
-		
-        ShippingEstimate shippingEstimateObj=new ShippingEstimate();
-        Size sizeObj=new Size();
-
-		
 		String productName = null;
 		String productId = null;
 		String finalResult = null;
@@ -78,35 +57,40 @@ public class GempirepromotionsMapping implements IExcelParser {
 		String xid = null;
 		Cell cell2Data = null;
 		String ProdNo = null;
-		String AdditionalInfo1=null;
-		String ShippingItem=null;
-		String Image1=null;
-		String Image2=null;
-		String Image3=null;
-		String Image4=null;
-		String Image5=null;
-		String Image6=null;
-		String Image7=null;
-		String Image8=null;
-		String Image9=null;
-		String Image10=null;
-		String Quantity1=null;
-		String Quantity2=null;
-		String Quantity3=null;
-		String Quantity4=null;
-		String Quantity5=null;
-
-		String ListPrice1=null;
-		String ListPrice2=null;
-		String ListPrice3=null;
-		String ListPrice4=null;
-		String ListPrice5=null;
+		String description1 =null;
 		
-		String ListAllprice=null;
-		String ListAllquantity=null;
+		List<ProductionTime> ListOfProductiontime = new ArrayList<ProductionTime>();		
+		ShippingEstimate shipObj=new ShippingEstimate();
+		List<Weight> ListOfWeight = new ArrayList<Weight>();		
+		Weight weightObj=new  Weight();
+		Size sizeObj=new Size();
+		
+		String pricename_1="";
+		boolean T =true;
+		boolean N =false;
+    	    StringJoiner listOfQuantity1 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfPrices1 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfDiscounts1 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 
-
-
+		    StringJoiner listOfQuantity2 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfPrices2 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfDiscounts2 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    
+		    StringJoiner listOfQuantity3 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfPrices3 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfDiscounts3 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    
+		    StringJoiner listOfQuantity4 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfPrices4 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfDiscounts4 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    
+		    StringJoiner listOfQuantity5 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfPrices5 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		    StringJoiner listOfDiscounts5 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		List<String> listOfPricename = new ArrayList<>();
+		List<String> listQuantity = new ArrayList<>();
+		List<String> listPrice = new ArrayList<>();
+		List<String> listDiscount = new ArrayList<>();
 		try {
 
 			_LOGGER.info("Total sheets in excel::"
@@ -130,7 +114,7 @@ public class GempirepromotionsMapping implements IExcelParser {
 					while (cellIterator.hasNext()) {
 						Cell cell = cellIterator.next();
 						/* int */columnIndex = cell.getColumnIndex();
-						cell2Data = nextRow.getCell(3);
+						cell2Data = nextRow.getCell(1);
 						if (columnIndex + 1 == 1) {
 							if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 								xid = cell.getStringCellValue();
@@ -173,9 +157,15 @@ public class GempirepromotionsMapping implements IExcelParser {
 											+ numOfProductsSuccess.size());
 									_LOGGER.info("Failure list size>>>>>>>"
 											+ numOfProductsFailure.size());
-
-									productConfigObj = new ProductConfigurations();
-							
+									 listOfPricename = new ArrayList<>();	
+									 productConfigObj = new ProductConfigurations();
+									 listQuantity = new ArrayList<>();
+									 listPrice = new ArrayList<>();
+								     listDiscount = new ArrayList<>();
+								     listOfQuantity1 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+									 listOfPrices1 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+									 listOfDiscounts1 = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+								     
 
 								}
 								if (!productXids.contains(xid)) {
@@ -201,7 +191,8 @@ public class GempirepromotionsMapping implements IExcelParser {
 								    	 List<String>categoriesList=existingApiProduct.getCategories();
 								    	 productExcelObj.setCategories(categoriesList);
 									 
-									 
+								    	 List<String>keywordList=existingApiProduct.getProductKeywords();
+								    	 productExcelObj.setProductKeywords(keywordList);
 								}
 								// productExcelObj = new Product();
 							}
@@ -214,27 +205,19 @@ public class GempirepromotionsMapping implements IExcelParser {
 							productExcelObj.setExternalProductId(xid);
 							break;
 
-						case 2:// productcode
-
-							
+						case 2:// productcode							
 							 ProdNo=cell.getStringCellValue();
+								if (!StringUtils.isEmpty(ProdNo)) {
+									int ProdNolength=ProdNo.length();	
+									if(ProdNolength > 14){
+										ProdNo=ProdNo.substring(0, 14);
+									}
+									productExcelObj.setSummary(ProdNo);	
+									}
 							 productExcelObj.setAsiProdNo(ProdNo);
-
 							break;
 							
 						case 3: // productname
-
-							String Inventory=cell.getStringCellValue();
-							
-							if (!StringUtils.isEmpty(Inventory)) {
-                            Inventory invtObj=new Inventory();
-                            invtObj.setInventoryLink(Inventory);
-							productExcelObj.setInventory(invtObj);
-							}
-							
-							break;	
-							
-						case 8: // productdescription
 
 							productName = cell.getStringCellValue();
 							int len=productName.length();
@@ -244,168 +227,317 @@ public class GempirepromotionsMapping implements IExcelParser {
 								productName=(String) strTemp.subSequence(0, lenTemp);
 							}
 							productExcelObj.setName(productName);
-
-
+							
 							break;	
+							
+						case 8: // productdescription
+							 description1 = cell.getStringCellValue();
+							 if (!StringUtils.isEmpty(description1)) {
+								 description1="";							
+								 }
+							
+						break;	
 					
-						case 9: // productdescription
-
-							String Summary=cell.getStringCellValue();
-							if (!StringUtils.isEmpty(Summary)) {
-						    Summary=Summary.substring(0, 130);
-							productExcelObj.setSummary(Summary);	
+						case 9: // furtherdescription
+							String description2 = cell.getStringCellValue();
+							if (!StringUtils.isEmpty(description2)) {
+								description2="";
 							}
+							String description="";
+							description=description.concat(description1).concat(description2);
+							productExcelObj
+										.setDescription(description);
+							
+						
 							break;	
 							
 						case 23: //Size
-
-							String description = cell.getStringCellValue();
-							description=description.replace("?","").replace("ã","").replace("¡", "").replace(":", "");
-							if (!StringUtils.isEmpty(description)) {
-								productExcelObj.setDescription(description);
-							} else {
-								productExcelObj
-										.setDescription(productName);
+							String SizeValue=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(SizeValue)) {
+								sizeObj=prodAttribute.getSize(SizeValue);
+								productConfigObj.setSizes(sizeObj);
 							}
-
 							break;	
 					
 						case 25: // Options & Accessories
 
-							 Image1=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image1)) {	
-								Image=Image.append(Image1).append(",");
-							  }
-
+							
 							break;	
 					
 						case 26: //Set up Charge
-
-							 Image2=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image2)) {	
-									Image=Image.append(Image2).append(",");
-								  }
 
 							break;	
 							
 						case 27: // Plating
 
-							 Image3=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image3)) {	
-									Image=Image.append(Image3).append(",");
-								  }
+							
 
 							break;	
 							
 						case 28: // Comments
-
-							 Image4=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image4)) {	
-									Image=Image.append(Image4).append(",");
-								  }
+							String AdditionaProductInfo=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(AdditionaProductInfo)) {
+							 productExcelObj.setAdditionalProductInfo(AdditionaProductInfo);
+							}
+					
 							break;	
 							
 						case 29: // Options & Accessories1
 
-							 Image5=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image5)) {	
-									Image=Image.append(Image5).append(",");
-								  }
+				
 							break;	
 							
 						case 30: // 2nd Side
 
-							 Image6=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image6)) {	
-									Image=Image.append(Image6).append(",");
-								  }
+					
 							break;	
 							
 						case 31: // Keyfetch
 
-							 Image7=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image7)) {	
-									Image=Image.append(Image7).append(",");
-								  }
+						
 							break;	
 							
 						case 32: //Standard Production
-
-							 Image8=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image8)) {	
-									Image=Image.append(Image8).append(",");
-								  }
+							String ProductionTime=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(ProductionTime)) {
+								ListOfProductiontime=prodAttribute.getProductiontime(ProductionTime);
+								productConfigObj.setProductionTime(ListOfProductiontime);
+							}
+							
 							break;	
 							
 						case 34: // Carton Weight (Lbs)
-
-							 Image9=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image9)) {	
-									Image=Image.append(Image9).append(",");
-								  }
+							String ShippingWeight=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(ShippingWeight)) {
+								weightObj.setValue(ShippingWeight);
+								weightObj.setUnit("lbs");
+								ListOfWeight.add(weightObj);
+								shipObj.setWeight(ListOfWeight);
+								productConfigObj.setShippingEstimates(shipObj);
+							}
+							
 							break;	
-	
-						case 35: //Carton Width
 
-							 Image10=cell.getStringCellValue();
-							 if (!StringUtils.isEmpty(Image10)) {	
-									Image=Image.append(Image10).append(",");
-									Image10=Image1.toString();
-									 listImage=maxplusAttribute.getImages(Image10);
-								  }
-							 productExcelObj.setImages(listImage);
-
-
-							break;	
-													
-							
-						case 36: // Carton Height
-
-		                    ListPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
-
-							break;	
-							
-							
-						case 37: // Carton Length
-
-							 Quantity1=CommonUtility.getCellValueStrinOrInt(cell);
-
-
-							break;	
-							
-							
-						case 38: // Units Per Carton
-
-		                    ListPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
-
-
-							break;	
-							
-							
-						case 41: // price_1 start here
-
-							 Quantity2=CommonUtility.getCellValueStrinOrInt(cell);
-
-							break;	
-							
-						case 42: //pricename_1
-
-
-							 Quantity2=CommonUtility.getCellValueStrinOrInt(cell);
-
+					    case 42: //pricename_1
+					    	pricename_1=cell.getStringCellValue();
+							if (pricename_1.equalsIgnoreCase("")) {
+								pricename_1=productName;
+							}
+					    	listOfPricename.add(pricename_1);
+					    	 pricename_1="";
 							break;
 							
-							
-						case 345: // quantityunit_5
+						 case  44://quantity1_1
+						 case  49://quantity2_1
+						 case  54://quantity3_1
+						 case  59://quantity4_1
+								String priceQty1 = CommonUtility.getCellValueStrinOrInt(cell);
+								if(!StringUtils.isEmpty(priceQty1) && !priceQty1.equals("0")){
+									listOfQuantity1.add(priceQty1);
+							//		listQuantity.add(listOfQuantity1.toString());
 
-		                    ListPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
-
-
-							break;	
-							
-
-							
+								}
 						
+								break;
+					
+						 case  46://price1_1
+				    	 case  51://price2_1
+					     case  56://price3_1
+						 case  61://price4_1
+								String listPricing1 = CommonUtility.getCellValueDouble(cell);
+								if(!StringUtils.isEmpty(listPricing1) && !listPricing1.equals("0.0") && !listPricing1.equals("0.00")){
+									listOfPrices1.add(listPricing1);
+							//		listPrice.add(listOfPrices1.toString());
+									
+								}
+								break;
+								
+						 case  47://discountcode1_1
+						 case  52://discountcode2_1
+						 case  57://discountcode3_1
+						 case  62://discountcode4_1
+								String discountCode1 = CommonUtility.getCellValueStrinOrInt(cell);
+								if(!StringUtils.isEmpty(discountCode1)){
+									listOfDiscounts1.add(discountCode1);
+						//			listDiscount.add(listOfDiscounts1.toString());
+								}		
+								break;
+								
+								
+						 case  103://pricename_2
+							 pricename_1=cell.getStringCellValue();
+								listOfPricename.add(pricename_1);
+							 	 pricename_1="";
+								break;
+	
+						 case  105://quantity1_2
+						 case  110://quantity2_2
+						 case  115://quantity3_2
+						 case  120://quantity4_2
+								String priceQty2 = CommonUtility.getCellValueStrinOrInt(cell);
+								if(!StringUtils.isEmpty(priceQty2) && !priceQty2.equals("0")){
+									listOfQuantity2.add(priceQty2);
+							//	listQuantity.add(listOfQuantity2.toString());
+
+								}
+								
+								break;
+						 case  107://price1_2
+						 case  112://price2_2
+						 case  117://price3_2	
+						 case  122://price4_2
+							 String listPricing2 = CommonUtility.getCellValueDouble(cell);
+								if(!StringUtils.isEmpty(listPricing2) && !listPricing2.equals("0.0") && !listPricing2.equals("0.00")){
+									listOfPrices2.add(listPricing2);
+							//		listPrice.add(listOfPrices2.toString());
+
+								}
+								
+								break;
+						 case  108://discountcode1_2
+						 case  113://discountcode2_2
+						 case  118://discountcode3_2
+						 case  123://discountcode4_2
+							 String discountCode2 = CommonUtility.getCellValueStrinOrInt(cell);
+								if(!StringUtils.isEmpty(discountCode2)){
+									listOfDiscounts2.add(discountCode2);
+							//		listDiscount.add(listOfDiscounts2.toString());
+
+								}
+								
+								break;
+					
+						 case  164://pricename_3
+							 pricename_1=cell.getStringCellValue();
+								listOfPricename.add(pricename_1);
+							 	 pricename_1="";
+								break;
+					
+				
+						 case  166://quantity1_3	
+						 case  171://quantity2_3
+						 case  176://quantity3_3
+						 case  181://quantity4_3
+								String priceQty3 = CommonUtility.getCellValueStrinOrInt(cell);
+								if(!StringUtils.isEmpty(priceQty3) && !priceQty3.equals("0")){
+									listOfQuantity3.add(priceQty3);
+							//		listQuantity.add(listOfQuantity3.toString());
+
+								} 
+							 break;
+								
+								
+						 case  168://price1_3
+						 case  173://price2_3
+						 case  178://price3_3
+						 case  183://price4_3
+							 String listPricing3 = CommonUtility.getCellValueDouble(cell);
+								if(!StringUtils.isEmpty(listPricing3) && !listPricing3.equals("0.0") && !listPricing3.equals("0.00")){
+									listOfPrices3.add(listPricing3);
+							//		listPrice.add(listOfPrices3.toString());
+
+								}
+							 break;
+								
+						 case  169://discountcode1_3
+						 case  174://discountcode2_3
+						 case  179://discountcode3_3
+						 case  184://discountcode4_3
+							 String discountCode3 = CommonUtility.getCellValueStrinOrInt(cell);
+								if(!StringUtils.isEmpty(discountCode3)){
+									listOfDiscounts3.add(discountCode3);
+							//		listDiscount.add(listOfDiscounts3.toString());
+
+								}
+								
+								break;
+			
+						 case  225://pricename_4
+							 pricename_1=cell.getStringCellValue();
+								listOfPricename.add(pricename_1);
+							 	 pricename_1="";
+								break;
+				
+									
+						 case  227://quantity1_4
+						 case  232://quantity2_4
+						 case  237://quantity3_4
+						 case  242://quantity4_4
+							 String priceQty4 = CommonUtility.getCellValueStrinOrInt(cell);
+								if(!StringUtils.isEmpty(priceQty4) && !priceQty4.equals("0")){
+									listOfQuantity4.add(priceQty4);
+							//		listQuantity.add(listOfQuantity4.toString());
+
+								} 
+								break;
+								
+								
+						 case  229://price1_4
+						 case  234://price2_4
+						 case  239://price3_4
+						 case  244://price4_4
+							 String listPricing4 = CommonUtility.getCellValueDouble(cell);
+								if(!StringUtils.isEmpty(listPricing4) && !listPricing4.equals("0.0") && !listPricing4.equals("0.00")){
+									listOfPrices4.add(listPricing4);
+							//		listPrice.add(listOfPrices4.toString());
+
+								}
+								break;
+								
+								
+						 case  230://discountcode1_4
+						 case  235://discountcode2_4
+						 case  240://discountcode3_4
+				    	 case  245://discountcode4_4
+				    		 String discountCode4 = CommonUtility.getCellValueStrinOrInt(cell);
+								if(!StringUtils.isEmpty(discountCode4)){
+									listOfDiscounts4.add(discountCode4);
+							//	listDiscount.add(listOfDiscounts4.toString());
+
+								}
+								break;
+										
+						 case  286://pricename_5
+							 pricename_1=cell.getStringCellValue();
+								listOfPricename.add(pricename_1);
+							 	 pricename_1="";
+								break;
+					
+						 case  288://quantity1_5
+						 case  293://quantity2_5
+						 case  298://quantity3_5
+						 case  303://quantity4_5
+							 String priceQty5 = CommonUtility.getCellValueStrinOrInt(cell);
+								if(!StringUtils.isEmpty(priceQty5) && !priceQty5.equals("0")){
+									listOfQuantity5.add(priceQty5);
+							//		listQuantity.add(listOfQuantity5.toString());
+
+								} 
+								break;
+								
+						 case  290://price1_5
+						 case  295://price2_5
+						 case  300://price3_5
+						 case  305://price4_5
+							 String listPricing5 = CommonUtility.getCellValueDouble(cell);
+								if(!StringUtils.isEmpty(listPricing5) && !listPricing5.equals("0.0") && !listPricing5.equals("0.00")){
+									listOfPrices5.add(listPricing5);
+							//	listPrice.add(listOfPrices5.toString());
+
+								}
+								break;
+																
+						 case  291://discountcode1_5
+						 case  296://discountcode2_5
+				    	 case  301://discountcode3_5
+				    	 case  306://discountcode4_5
+				    		 String discountCode5 = CommonUtility.getCellValueStrinOrInt(cell);
+								if(!StringUtils.isEmpty(discountCode5)){
+									listOfDiscounts5.add(discountCode5);
+								//	listDiscount.add(listOfDiscounts5.toString());
+
+								}
+								break;
 
 						} // end inner while loop
 
@@ -414,10 +546,40 @@ public class GempirepromotionsMapping implements IExcelParser {
 
 					// end inner while loop
 					productExcelObj.setPriceType("L");
+					listQuantity.add(listOfQuantity1.toString());
+					listPrice.add(listOfPrices1.toString());
+					listDiscount.add(listOfDiscounts1.toString());
 					
-					priceGrids = pricegrid.getPriceGrids(ListAllprice,
-							ListAllquantity, "R", "USD",
-					         "", true, "N",productName ,""/*,priceGrids*/);
+					listQuantity.add(listOfQuantity2.toString());
+					listPrice.add(listOfPrices2.toString());
+					listDiscount.add(listOfDiscounts2.toString());
+					
+					listQuantity.add(listOfQuantity3.toString());
+					listPrice.add(listOfPrices3.toString());
+					listDiscount.add(listOfDiscounts3.toString());
+					
+					listQuantity.add(listOfQuantity4.toString());
+					listPrice.add(listOfPrices4.toString());
+					listDiscount.add(listOfDiscounts4.toString());
+					
+					listQuantity.add(listOfQuantity5.toString());
+					listPrice.add(listOfPrices5.toString());
+					listDiscount.add(listOfDiscounts5.toString());
+							
+					String names[]=listOfPricename.toArray(new String[listOfPricename.size()]);
+					String PriceArr[]=listPrice.toArray(new String[listPrice.size()]);
+					String QuantityArr[]=listQuantity.toArray(new String[listQuantity.size()]);
+					String discountArr[]=listDiscount.toArray(new String[listDiscount.size()]);
+
+			
+					for (int i=0;i<names.length;i++) {
+						if(!names[i].equalsIgnoreCase("") && !QuantityArr[i].equalsIgnoreCase("") ){
+							priceGrids = pricegrid.getBasePriceGrids(PriceArr[i],
+									QuantityArr[i],discountArr[i], "USD",
+							         "", T, N,names[i],"",priceGrids);
+							}	
+					}
+			
 
 				} catch (Exception e) {
 					_LOGGER.error("Error while Processing ProductId and cause :"
@@ -446,8 +608,11 @@ public class GempirepromotionsMapping implements IExcelParser {
 			finalResult = numOfProductsSuccess.size() + ","
 					+ numOfProductsFailure.size();
 			productDaoObj.saveErrorLog(asiNumber, batchId);
-			productConfigObj = new ProductConfigurations();
-
+			 listOfPricename = new ArrayList<>();	
+			 productConfigObj = new ProductConfigurations();
+			 listQuantity = new ArrayList<>();
+			 listPrice = new ArrayList<>();
+		     listDiscount = new ArrayList<>();	
 			return finalResult;
 		} catch (Exception e) {
 			_LOGGER.error("Error while Processing excel sheet "
@@ -467,13 +632,6 @@ public class GempirepromotionsMapping implements IExcelParser {
 
 	}
 	
-	public MaxpluProductAttributeParser getMaxplusAttribute() {
-		return maxplusAttribute;
-	}
-
-	public void setMaxplusAttribute(MaxpluProductAttributeParser maxplusAttribute) {
-		this.maxplusAttribute = maxplusAttribute;
-	}
 
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
@@ -491,14 +649,25 @@ public class GempirepromotionsMapping implements IExcelParser {
 		this.productDaoObj = productDaoObj;
 	}
 
-	public MaxplusPriceGridParser getPricegrid() {
+
+	public GempireProductAttributeParser getProdAttribute() {
+		return prodAttribute;
+	}
+
+
+	public void setProdAttribute(GempireProductAttributeParser prodAttribute) {
+		this.prodAttribute = prodAttribute;
+	}
+
+
+	public GempirePriceGridParser getPricegrid() {
 		return pricegrid;
 	}
 
-	public void setPricegrid(MaxplusPriceGridParser pricegrid) {
+
+	public void setPricegrid(GempirePriceGridParser pricegrid) {
 		this.pricegrid = pricegrid;
 	}
-	
 	
 
 }

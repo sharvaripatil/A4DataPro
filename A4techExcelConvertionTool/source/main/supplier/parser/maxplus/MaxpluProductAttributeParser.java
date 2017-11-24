@@ -1,9 +1,6 @@
 package parser.maxplus;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.util.StringUtils;
-
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.model.Color;
@@ -17,7 +14,6 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Weight;
-import com.a4tech.util.ApplicationConstants;
 
 
 public class MaxpluProductAttributeParser {

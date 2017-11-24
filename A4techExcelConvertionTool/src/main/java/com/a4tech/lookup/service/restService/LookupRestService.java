@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import com.a4tech.lookup.model.Catalog;
 import com.a4tech.lookup.model.Catalogs;
 import com.a4tech.lookup.model.Categories;
+import com.a4tech.lookup.model.Colors;
 import com.a4tech.lookup.model.FobPoints;
 import com.a4tech.lookup.model.ImprintMethods;
 import com.a4tech.lookup.model.LineName;
@@ -22,6 +23,7 @@ import com.a4tech.lookup.model.Packages;
 import com.a4tech.lookup.model.Shapes;
 import com.a4tech.lookup.model.Themes;
 import com.a4tech.lookup.model.TradeNames;
+import com.a4tech.product.model.Color;
 
 public class LookupRestService {
 	
@@ -38,6 +40,7 @@ public class LookupRestService {
    private String catalogLookupUrl;
    private String themeLookupUrl;
    private String packagesLookupUrl;
+   private String colorLookupUrl;
    
 	public List<String> getImprintMethodData(){
 		 try{
@@ -65,6 +68,20 @@ public class LookupRestService {
 			 return data.getMaterialValues();
 		 }catch(Exception exce){
 			 _LOGGER.error("unable to get Materials lookup data: "+exce.getCause());
+		 }
+		return null;
+	}
+	public List<String> getColorData(){
+		 try{
+			 HttpHeaders headers = new HttpHeaders();
+			 headers.add("Content-Type", "application/json");
+			 HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+			 ResponseEntity<Colors> response = restTemplate.exchange(colorLookupUrl, HttpMethod.GET, 
+					                                                requestEntity, Colors.class);
+			 Colors data = response.getBody();
+			 return data.getListColor();
+		 }catch(Exception exce){
+			 _LOGGER.error("unable to get Color lookup data: "+exce.getCause());
 		 }
 		return null;
 	}
@@ -291,5 +308,14 @@ public class LookupRestService {
 		public void setPackagesLookupUrl(String packagesLookupUrl) {
 			this.packagesLookupUrl = packagesLookupUrl;
 		}
+
+		public String getColorLookupUrl() {
+			return colorLookupUrl;
+		}
+
+		public void setColorLookupUrl(String colorLookupUrl) {
+			this.colorLookupUrl = colorLookupUrl;
+		}
+		
 		
 }
