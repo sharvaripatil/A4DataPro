@@ -423,6 +423,7 @@
 		<property name="maxplusmapping" ref="maxplusmappingId"></property>
 		<property name="gempiresMapping" ref="gempiresMappingId"/>
 		<property name="edwardsGarmentMapping" ref="edwardsGarmentMappingId"/>
+		<property name="merchMapping" ref="merchMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1062,5 +1063,19 @@
     <property name="lookupRestServiceObj" ref="lookupRestService"/>
   	</bean> -->
      <!-- supplier 51752 Edwards Garment Co configuration end --> 
+     
+     <!-- supplier 62820 InternationalMerch configuration Start-->
+     <bean id="merchMappingId" class="com.a4tech.supplier.mapper.InternationlMerchMapping">
+      <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj" ref="productDao"/>
+       <property name="merchAttributeParser" ref="merchAttributeParserId"/>
+     </bean>
+     <bean id="merchAttributeParserId" class="parser.InternationalMerchConcepts.MerchAttributeParser">
+      <property name="merchPriceGridParser" ref="merchPriceGridParserId"/>
+     </bean>
+     <bean id="merchPriceGridParserId" class="parser.InternationalMerchConcepts.MerchPriceGridParser"/>
+     <!-- supplier 62820 InternationalMerch configuration end --> 
+     
+      
 </beans>
 

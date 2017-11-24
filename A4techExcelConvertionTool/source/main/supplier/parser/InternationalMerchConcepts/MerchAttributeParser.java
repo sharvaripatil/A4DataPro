@@ -5,10 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -20,6 +17,7 @@ import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.AvailableVariations;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.ImprintColor;
@@ -34,9 +32,11 @@ import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.RushTimeValue;
+import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
@@ -233,26 +233,29 @@ public class MerchAttributeParser {
 	}
 	  return imprintSizeList;
   }
-  public List<Color> getProductColor(String color){
+  public List<Color> getProductColor(List<String> colorsList){
 	  List<Color> colorList = new ArrayList<>();
 	  Color colorObj = null;
-	  String[] colors = CommonUtility.getValuesOfArray(color, ",");
-	  for (String colorName : colors) {
-		colorObj = new Color();
-		String colorGroup = MerchColorMapping.getColorGroup(colorName);
-		if(colorGroup!= null){
-			colorObj.setName(colorGroup);
-			colorObj.setAlias(colorName);
-		} else {
-			if(colorName.contains("-")){
-				colorObj = getColorCombo(colorName);
-			} else {
-				colorObj.setName("Other");
+	  for (String colorVal : colorsList) {
+		  String[] colors = CommonUtility.getValuesOfArray(colorVal, ",");
+		  for (String colorName : colors) {
+			colorObj = new Color();
+			String colorGroup = MerchColorMapping.getColorGroup(colorName);
+			if(colorGroup!= null){
+				colorObj.setName(colorGroup);
 				colorObj.setAlias(colorName);
+			} else {
+				if(colorName.contains("-")){
+					colorObj = getColorCombo(colorName);
+				} else {
+					colorObj.setName("Other");
+					colorObj.setAlias(colorName);
+				}
 			}
+			colorList.add(colorObj);
 		}
-		colorList.add(colorObj);
 	}
+	  
 	  return colorList;
   }
   
@@ -566,13 +569,12 @@ public class MerchAttributeParser {
 			existingProduct.setPriceGrids(priceGrid);
 	 return existingProduct; 
  }
- public Product getUpchargeImprintMethdoColumns(String val,Product existingProduct,String upchargeType){
+ public Product getUpchargeImprintMethdoColumns(String val,Product existingProduct,String upchargeType,String priceInclude){
 	 String imprintMethodVals = existingProduct.getDeliveryOption();
 	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
 	 String[] vals = CommonUtility.getValuesOfArray(val, ",");
-	 String priceInclude = "";
+	 //String priceInclude = "";
 	 for (String priceVal : vals) {
-		 priceInclude = "";
 		    if(priceVal.equalsIgnoreCase("$85.00 (G) 1-color wrap")){
 		    	 priceVal = "85.00";priceInclude = "1-color wrap";
 		    } else if(priceVal.equalsIgnoreCase("")){// future purpse
@@ -586,7 +588,9 @@ public class MerchAttributeParser {
 		    	priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", priceVal, "G", "Imprint Method", false, "USD", priceInclude,
 						imprintMethodVals, upchargeType, "Other", 1, priceGrids, "", "");	
 		    }
+		    //priceInclude = "";
 	}
+	 existingProduct.setPriceGrids(priceGrids);
 	 return existingProduct;
  }
  public Product getUpchargeAdditionalColorAndLocation(String val,Product existingProduct){
@@ -619,7 +623,7 @@ public class MerchAttributeParser {
 		 }*/
 		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", val, "G", "Additional Location", false, "USD", "per unit + setup",
 				 addLocVals, "Add. Location Charge", "Per Quantity", 1, priceGrids, "", "");
-		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", val, "G", "Additional Color", false, "USD", "per unit + setup",
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", val, "G", "Additional Colors", false, "USD", "per unit + setup",
 				 addColorVals, "Add. Color Charge", "Per Quantity", 1, priceGrids, "", "");
 	 }
 	 config.setAdditionalColors(additionalColorList);
@@ -630,7 +634,7 @@ public class MerchAttributeParser {
  }
  private String getImprintMethodAliasName(List<ImprintMethod> imprList,String imprintMethodType){
 	 for (ImprintMethod imprintMethod : imprList) {
-		if(imprintMethod.getType().equalsIgnoreCase("")){
+		if(imprintMethod.getType().equalsIgnoreCase(imprintMethodType)){
 			return imprintMethod.getAlias();
 		}
 	}
@@ -689,6 +693,9 @@ public class MerchAttributeParser {
  }
  private List<ImprintMethod> getImprintMethod(String alias,String type,List<ImprintMethod> existingImprintMethod){
 	 ImprintMethod imprintMethodObj = new ImprintMethod();
+	 if(CollectionUtils.isEmpty(existingImprintMethod)){
+		 existingImprintMethod = new ArrayList<>();
+	 }
 	 imprintMethodObj.setType(type);
 	 imprintMethodObj.setAlias(alias);
 	 existingImprintMethod.add(imprintMethodObj);
@@ -781,7 +788,7 @@ private List<Weight> getShippingWeight(String val) {
 private Dimensions getShippingDimensions(String val) {//W X H X L
 	String[] vals = val.split("x");
 	Dimensions dimensionsObj = new Dimensions();	
-		dimensionsObj.setLength(vals[3].trim());
+		dimensionsObj.setLength(vals[2].trim());
 		dimensionsObj.setWidth(vals[0].trim());
 		dimensionsObj.setHeight(vals[1].trim());
 		dimensionsObj.setLengthUnit(ApplicationConstants.CONST_STRING_INCHES);
@@ -789,7 +796,51 @@ private Dimensions getShippingDimensions(String val) {//W X H X L
 		dimensionsObj.setHeightUnit(ApplicationConstants.CONST_STRING_INCHES);	
 	return dimensionsObj;
 }
-
+public Product getBasePriceColumns(String qty,String prices,String discount,String priceName,String priceInclude,Product existingProduct,String imprintMethodType){
+	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
+	 ProductConfigurations config = existingProduct.getProductConfigurations();
+	 List<ImprintMethod> imprintMethodList = config.getImprintMethods();
+	 String imprMethodAlias = getImprintMethodAliasName(imprintMethodList, imprintMethodType);
+	 if(StringUtils.isEmpty(imprMethodAlias)){
+		 imprintMethodList = getImprintMethod(imprintMethodType, imprintMethodType, imprintMethodList);
+		 imprMethodAlias = imprintMethodType;
+	 }
+	 if(StringUtils.isEmpty(priceName)){
+		 priceName =  imprintMethodType;
+	 }
+	 String criteria = "Imprint Method:"+imprMethodAlias;
+		priceGrids = merchPriceGridParser.getBasePriceGrid(prices, qty, discount, "USD", priceInclude, true, false,
+				priceName,criteria, priceGrids, "", "", "");
+		config.setImprintMethods(imprintMethodList);
+		existingProduct.setProductConfigurations(config);
+		existingProduct.setPriceGrids(priceGrids);
+   return existingProduct;
+}
+public List<ProductNumber> getProductNumbers(Map<String, String> prdNumbers){
+	List<ProductNumber> productNumberList = new ArrayList<>();
+	ProductNumber productNumberObj = null;
+	for (Map.Entry<String,String> numbers : prdNumbers.entrySet()) {
+		String prdNo = numbers.getKey();
+		String colorVal = numbers.getValue();
+		 productNumberObj = new ProductNumber();
+		 productNumberObj.setProductNumber(prdNo);
+			List<Configurations> listOfConfig = new ArrayList<>();
+			Configurations configObj = new Configurations();
+			configObj.setCriteria("Product Color");
+			configObj.setValue(Arrays.asList(colorVal));
+			listOfConfig.add(configObj);
+			productNumberObj.setConfigurations(listOfConfig);
+			productNumberList.add(productNumberObj);
+	}
+	return productNumberList;
+}
+public List<Shape> getProductShape(String shapeVal){
+	List<Shape> shapeList = new ArrayList<>();
+	Shape shapeObj = new Shape();
+	shapeObj.setName(shapeVal);
+	shapeList.add(shapeObj);
+	return shapeList;
+}
   public MerchPriceGridParser getMerchPriceGridParser() {
 		return merchPriceGridParser;
 	}
