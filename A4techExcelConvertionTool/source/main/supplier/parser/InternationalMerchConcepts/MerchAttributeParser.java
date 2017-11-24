@@ -115,7 +115,8 @@ public class MerchAttributeParser {
 					|| sizeVal.contains("D") || sizeVal.contains("SQ") || sizeVal.contains("DIA") 
 					|| sizeVal.contains("Dia") || sizeVal.contains("dia")) {
 				sizeVal = getFinalSizeValue(sizeVal);
-               String[] sss = CommonUtility.getValuesOfArray(sizeVal, ":");
+				sizeVal = sizeVal.substring(0, sizeVal.length() - 1);// trim last character i.e :
+                String[] sss = CommonUtility.getValuesOfArray(sizeVal, ":");
                if(sss.length == 2){
             	   String finalSize = sss[0];
             	   valuesObj = getOverAllSizeValObj(finalSize, sss[1], "", "");
@@ -124,7 +125,7 @@ public class MerchAttributeParser {
 					valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], "");
                } else if(sss.length == 6){
             	   String finalSize = sss[0] + "x"+sss[2]+ "x"+sss[4];
-					valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], sss[3]);
+					valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], sss[5]);
                }
 			}
 			listOfValues.add(valuesObj);
@@ -136,7 +137,8 @@ public class MerchAttributeParser {
    }
    
    private String getFinalSizeValue(String val){
-	   val = val.replaceAll("[^0-9/,DWLDSQDiadiaxX ]", "");
+	   val = removeWordsFromSize(val);
+	   val = val.replaceAll("[^0-9/,DWLHSQDiadiaxXDIA ]", "");
 	   String[] sizes = null;
 	   StringBuilder sizess = new StringBuilder();
 	   if(val.contains("SQ")){
@@ -148,15 +150,31 @@ public class MerchAttributeParser {
 			   sizes = CommonUtility.getValuesOfArray(val, "X");
 		   }
 		   for (String size : sizes) {
-			String sizeVal =  size.replaceAll("[^0-9/ ]", "");
+			String sizeVal =  size.replaceAll("[^0-9/ ]", "").trim();
 			String sizeUnit = size.replaceAll("[^a-zA-Z]", "").trim();
+			if(StringUtils.isEmpty(sizeUnit)){
+				sizeUnit = "L";// default value assign
+			}
 			sizeUnit = LookupData.getSizeUnit(sizeUnit);
 			String ss = sizeVal+":"+sizeUnit;
-			sizess.append(ss).append("x");
+			sizess.append(ss).append(":");
 		}   
 	   }  
 	   return sizess.toString();
    }
+   private String removeWordsFromSize(String size){
+	   if(size.contains("Holder")){
+		   size = size.replaceAll("Holder", "");
+	   } else if(size.contains("box")){
+		   size = size.replaceAll("Holder", "");
+	   } else if(size.contains("expanded")){
+		   size = size.replaceAll("expanded", "");
+	   } else if(size.contains("Tray")){
+		   size = size.replaceAll("Tray", "");
+	   }
+	   return size;
+   }
+   
    private StringBuilder getSizeSqure(String sizeVal){
 	   StringBuilder finlSize = new StringBuilder();
 	   if(sizeVal.contains("x")){//7/8" SQ x 3 3/4" L

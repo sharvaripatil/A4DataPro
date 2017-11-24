@@ -283,7 +283,12 @@ public class InternationlMerchMapping implements IExcelParser{
 				case 23:
 				case 24:// Ignore as per feedback 
 					break;
-				case 25:
+				case 25:// dimension
+					String sizeVal = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(sizeVal)){
+					  Size sizeVals = merchAttributeParser.getProductSize(sizeVal);
+					  productConfigObj.setSizes(sizeVals);
+					}
 					break;
 				case 26:// Imprint size
 					String imprintSize = cell.getStringCellValue();
