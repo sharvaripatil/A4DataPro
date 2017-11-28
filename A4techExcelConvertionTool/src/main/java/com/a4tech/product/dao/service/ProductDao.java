@@ -30,6 +30,7 @@ import com.a4tech.product.dao.entity.ErrorEntity;
 import com.a4tech.product.dao.entity.FtpServerFileEntity;
 import com.a4tech.product.dao.entity.ProductEntity;
 import com.a4tech.product.dao.entity.ProductionSupplierLoginDetails;
+import com.a4tech.product.dao.entity.SupplierColumnsEntity;
 import com.a4tech.product.dao.entity.SupplierLoginDetails;
 import com.a4tech.product.service.IProductDao;
 import com.a4tech.util.ApplicationConstants;
@@ -375,8 +376,7 @@ public class ProductDao implements IProductDao{
 					  _LOGGER.error("unable to close session connection: "+exce.getCause());
 				  }
 			  }
-		  }
-		
+		  }	
 	}
 	@Override
 	public boolean isASINumberAvailable(String asiNumber) {
@@ -385,6 +385,31 @@ public class ProductDao implements IProductDao{
 			return true;
 		}
 		return false;
+	}
+	@Override
+	public int getSupplierColumnsCount(String asiNumber) {
+		 Session session = null;
+		 // Transaction transaction = null;
+		  try{
+			  session = sessionFactory.openSession();
+			  String columnsCount = (String) session.createQuery("select columnCount from SupplierColumnsEntity where asiNumber = :asiNumber").
+					  setParameter("asiNumber", asiNumber).uniqueResult();
+			 /* Criteria criteria = session.createCriteria(SupplierColumnsEntity.class);
+	            criteria.add(Restrictions.eq("asiNumber", asiNumber));
+	            count =  (int) criteria.uniqueResult();*/
+	            return Integer.parseInt(columnsCount);
+		  }catch(Exception exce){
+			  _LOGGER.error("unable to fetch supplier column count::"+exce.getCause());
+		  }finally{
+			  if(session != null){
+				  try{
+					  session.close();
+				  }catch(Exception exce){
+					  _LOGGER.error("unable to close session connection: "+exce.getCause());
+				  }
+			  }
+		  }
+		return 0;
 	}
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
@@ -400,6 +425,4 @@ public class ProductDao implements IProductDao{
 	public void setErrorFileLocPath(String errorFileLocPath) {
 		this.errorFileLocPath = errorFileLocPath;
 	}
-	
-
 }

@@ -62,6 +62,9 @@ h4 {
              	<c:when test="${invalidAsiNum == ''}">
              		<h4 style="color: red;">Please Enter Details in Login Page</h4>
              	</c:when>
+             	<c:when test="${misMatchCoumns == 'misMatchCoumns'}">
+             	   <h4 style="color: red;">Please Enter Correct Supplier File Format As Columns Are Mismatch</h4>
+				 </c:when>
              </c:choose>
     <input type="file" name="file" id="file" class="file">
     <div class="input-group col-xs-12">
