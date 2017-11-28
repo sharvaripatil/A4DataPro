@@ -588,9 +588,15 @@ public class MerchAttributeParser {
 	 return existingProduct; 
  }
  public Product getUpchargeImprintMethdoColumns(String val,Product existingProduct,String upchargeType,String priceInclude){
-	 String imprintMethodVals = existingProduct.getDeliveryOption();
 	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
 	 String[] vals = CommonUtility.getValuesOfArray(val, ",");
+	 ProductConfigurations config = existingProduct.getProductConfigurations();
+	 List<ImprintMethod> imprintMethodList = config.getImprintMethods();
+	 String screenAlias = getImprintMethodAliasName(imprintMethodList, "Silkscreen");
+	 if(StringUtils.isEmpty(screenAlias)){
+		 imprintMethodList = getImprintMethod("Screen", "Silkscreen", imprintMethodList);
+		 screenAlias = "Screen";
+	 }
 	 //String priceInclude = "";
 	 for (String priceVal : vals) {
 		    if(priceVal.equalsIgnoreCase("$85.00 (G) 1-color wrap")){
@@ -602,12 +608,14 @@ public class MerchAttributeParser {
 		    } else {
 		    	priceVal = priceVal.replaceAll("[^0-9.]", "");
 		    }
-		    if(!StringUtils.isEmpty(imprintMethodVals)){
+		    if(!StringUtils.isEmpty(screenAlias)){
 		    	priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", priceVal, "G", "Imprint Method", false, "USD", priceInclude,
-						imprintMethodVals, upchargeType, "Other", 1, priceGrids, "", "");	
+		    			screenAlias, upchargeType, "Other", 1, priceGrids, "", "");	
 		    }
 		    //priceInclude = "";
 	}
+	 config.setImprintMethods(imprintMethodList);
+	 existingProduct.setProductConfigurations(config);
 	 existingProduct.setPriceGrids(priceGrids);
 	 return existingProduct;
  }
@@ -640,9 +648,9 @@ public class MerchAttributeParser {
 			 val = val.replaceAll("[^0-9.]", "").trim();priceInclude="setup";
 		 }*/
 		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", val, "G", "Additional Location", false, "USD", "per unit + setup",
-				 addLocVals, "Add. Location Charge", "Per Quantity", 1, priceGrids, "", "");
+				 addLocVals, "Add. Location Charge", "Other", 1, priceGrids, "", "");
 		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", val, "G", "Additional Colors", false, "USD", "per unit + setup",
-				 addColorVals, "Add. Color Charge", "Per Quantity", 1, priceGrids, "", "");
+				 addColorVals, "Add. Color Charge", "Other", 1, priceGrids, "", "");
 	 }
 	 config.setAdditionalColors(additionalColorList);
 	 config.setAdditionalLocations(additionalLocationList);
@@ -736,19 +744,19 @@ public class MerchAttributeParser {
  public Product getUpchargeBasedOnLogoModification(String priceVal,Product existingProduct){// it is used to artwork 
 	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
 	 ProductConfigurations config = existingProduct.getProductConfigurations();
-	 List<Artwork> artworkList = getArtWork("Art Services");
+	 List<Artwork> artworkList = getArtWork("Art Services","Logo Modification");
 	 priceVal = priceVal.replaceAll("[^0-9.]", "").trim(); 
 	 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", priceVal, "G", "Artwork & Proofs", false, "USD", "",
-			 "Art Services", "Artwork Charge", "Other", 1, priceGrids, "", "");
+			 "Art Services", "Artwork Charge", "Per Order", 1, priceGrids, "", "");
 	 config.setArtwork(artworkList);
 	 existingProduct.setPriceGrids(priceGrids);
  return existingProduct;
  }
-private List<Artwork> getArtWork(String artworkVal){
+private List<Artwork> getArtWork(String artworkVal,String comment){
 	List<Artwork> artworkList = new ArrayList<>();
 	Artwork artworkObj = new Artwork();
 	artworkObj.setValue(artworkVal);
-	artworkObj.setComments("");
+	artworkObj.setComments(comment);
 	artworkList.add(artworkObj);
 	return artworkList;
 }

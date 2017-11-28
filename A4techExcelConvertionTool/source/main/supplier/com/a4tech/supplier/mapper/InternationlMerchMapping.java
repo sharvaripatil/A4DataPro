@@ -365,16 +365,18 @@ public class InternationlMerchMapping implements IExcelParser{
 				case 36://price Include (it is case 36)
 					priceInclude_upcharge = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(priceInclude_upcharge) && priceInclude_upcharge.contains("Price includes")){
-						priceInclude_upcharge = priceInclude_upcharge.replaceAll("priceInclude_upcharge", "").trim();	
+						priceInclude_upcharge = priceInclude_upcharge.replaceAll("Price includes", "").trim();	
 					}
 					break;
 				case 37: //screen setup charge
 					String setupChargeVal = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(setupChargeVal)){
+						productExcelObj.setProductConfigurations(productConfigObj);
 						productExcelObj.setPriceGrids(priceGrids);
 								productExcelObj = merchAttributeParser.getUpchargeImprintMethdoColumns(setupChargeVal,
 										productExcelObj, "Set-up Charge",priceInclude_upcharge);
 						priceGrids = productExcelObj.getPriceGrids();
+						productConfigObj = productExcelObj.getProductConfigurations();
 					}
 					break;
 				case 38://Addl Color-Location
