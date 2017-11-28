@@ -35,6 +35,7 @@ import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineMappingRevised;
+import com.a4tech.supplier.mapper.InternationlMerchMapping;
 import com.a4tech.supplier.mapper.MaxplusMapping;
 import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
@@ -95,6 +96,8 @@ public class ExcelFactory {
 	private GempirepromotionsMapping        gempiresMapping;
 	private EdwardsGarmentMapping edwardsGarmentMapping;
 	private TekweldMapping tekweldMapping;
+    private InternationlMerchMapping        merchMapping;	
+
 
 
 	public  IExcelParser getExcelParserObject(String name){
@@ -197,10 +200,20 @@ public class ExcelFactory {
 		  }
 		  else if(name.equalsIgnoreCase("tekweldMapping") || name.equals("90807")){
 			   return edwardsGarmentMapping;
+		  } else if(name.equalsIgnoreCase("internationalMerchMapping") || name.equals("62820")){
+			  return merchMapping;
 		  }
 		return null;
 	}
 	
+	public InternationlMerchMapping getMerchMapping() {
+		return merchMapping;
+	}
+
+	public void setMerchMapping(InternationlMerchMapping merchMapping) {
+		this.merchMapping = merchMapping;
+	}
+
 	public ESPTemplateMapping getEspTemplateMapping() {
 		return espTemplateMapping;
 	}

@@ -8,7 +8,7 @@ public static Map<String, String> IMPRINT_METHOD_MAP =new HashMap<String, String
 	
 	static{
 		IMPRINT_METHOD_MAP.put("Supplier value","group");
-		IMPRINT_METHOD_MAP.put("Laser","Laser Engraved= Laser");
+		IMPRINT_METHOD_MAP.put("Laser","Laser Engraved=Laser");
 		IMPRINT_METHOD_MAP.put("Screen","Silkscreen=Screen");
 		IMPRINT_METHOD_MAP.put("Heat Transfer","Heat Transfer=Heat Transfer");
 		IMPRINT_METHOD_MAP.put("Laser in Gold ","Laser Engraved=Laser in Gold");
@@ -54,11 +54,11 @@ public static Map<String, String> IMPRINT_METHOD_MAP =new HashMap<String, String
 		IMPRINT_METHOD_MAP.put("Screen (black only)","Silkscreen=Screen (black only)");
 		IMPRINT_METHOD_MAP.put("Laser (in gold)","Laser Engraved=Laser (in gold)");
 		IMPRINT_METHOD_MAP.put("Embroidery (Not Included in Pricing)","Embroidered=Embroidery");
-		IMPRINT_METHOD_MAP.put("Pen: Laser, Screen  Keychain: Laser","Laser Engraved=Laser, Silkscreen=Screen");
+		IMPRINT_METHOD_MAP.put("Pen: Laser, Screen  Keychain: Laser","Laser Engraved=Laser,Silkscreen=Screen");
 		IMPRINT_METHOD_MAP.put("Screen  (One Side)","Silkscreen=Screen  (One Side)");
-		IMPRINT_METHOD_MAP.put("Pen: Laser, Screen. Laser on engraving plate also available. Setup & run charges apply.","Laser Engraved=Laser, Silkscreen=Screen");
-		IMPRINT_METHOD_MAP.put("Laser on clip or engraving plate, screen on gift box. Setup & run charges apply.","Laser Engraved=Laser, Silkscreen=Screen");
-		IMPRINT_METHOD_MAP.put("Laser on Base included, Sandblast Etch on Globe (additional charges apply)","Laser Engraved=Laser, Etched=Sandblast Etch");
+		IMPRINT_METHOD_MAP.put("Pen: Laser, Screen. Laser on engraving plate also available. Setup & run charges apply.","Laser Engraved=Laser,Silkscreen=Screen");
+		IMPRINT_METHOD_MAP.put("Laser on clip or engraving plate, screen on gift box. Setup & run charges apply.","Laser Engraved=Laser,Silkscreen=Screen");
+		IMPRINT_METHOD_MAP.put("Laser on Base included, Sandblast Etch on Globe (additional charges apply)","Laser Engraved=Laser,Etched=Sandblast Etch");
 		IMPRINT_METHOD_MAP.put("Screen (Sold Unimprinted)","Silkscreen=Screen");
 		       
 	}
