@@ -40,6 +40,7 @@ import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
+import com.a4tech.supplier.mapper.TekweldMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.TowelSpecialtiesMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
@@ -93,7 +94,7 @@ public class ExcelFactory {
     private MaxplusMapping                  maxplusmapping;
 	private GempirepromotionsMapping        gempiresMapping;
 	private EdwardsGarmentMapping edwardsGarmentMapping;
-	
+	private TekweldMapping tekweldMapping;
 
 
 	public  IExcelParser getExcelParserObject(String name){
@@ -192,6 +193,9 @@ public class ExcelFactory {
 		  } else if(name.equalsIgnoreCase("maxplusmapping") || name.equals("69718")){
 			  return maxplusmapping;
 		  }else if(name.equalsIgnoreCase("edwardsGarment") || name.equals("51752")){
+			   return edwardsGarmentMapping;
+		  }
+		  else if(name.equalsIgnoreCase("tekweldMapping") || name.equals("90807")){
 			   return edwardsGarmentMapping;
 		  }
 		return null;
@@ -530,6 +534,14 @@ public class ExcelFactory {
 
 	public void setEdwardsGarmentMapping(EdwardsGarmentMapping edwardsGarmentMapping) {
 		this.edwardsGarmentMapping = edwardsGarmentMapping;
+	}
+
+	public TekweldMapping getTekweldMapping() {
+		return tekweldMapping;
+	}
+
+	public void setTekweldMapping(TekweldMapping tekweldMapping) {
+		this.tekweldMapping = tekweldMapping;
 	}
 	
 }
