@@ -744,10 +744,10 @@ public class MerchAttributeParser {
  public Product getUpchargeBasedOnLogoModification(String priceVal,Product existingProduct){// it is used to artwork 
 	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
 	 ProductConfigurations config = existingProduct.getProductConfigurations();
-	 List<Artwork> artworkList = getArtWork("Art Services","Logo Modification");
+	 List<Artwork> artworkList = getArtWork("Logo Modification","");
 	 priceVal = priceVal.replaceAll("[^0-9.]", "").trim(); 
 	 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", priceVal, "G", "Artwork & Proofs", false, "USD", "",
-			 "Art Services", "Artwork Charge", "Per Order", 1, priceGrids, "", "");
+			 "Logo Modification", "Artwork Charge", "Per Order", 1, priceGrids, "", "");
 	 config.setArtwork(artworkList);
 	 existingProduct.setPriceGrids(priceGrids);
  return existingProduct;

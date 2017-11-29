@@ -160,7 +160,7 @@ public class InternationlMerchMapping implements IExcelParser{
 									productExcelObj.setProductConfigurations(productConfigObj);
 									productExcelObj.setPriceGrids(priceGrids);
 										productExcelObj = merchAttributeParser.getBasePriceColumns(grid_1Quantity.toString(),
-												grid_1Prices.toString(), grid_1Discounts.toString(), priceGridName_1, priceInclude_1,
+												grid_1Prices.toString(), grid_1Discounts.toString(), priceGridName_1, priceInclude_upcharge,
 												productExcelObj, "Debossed");
 									productConfigObj = productExcelObj.getProductConfigurations();
 									priceGrids = productExcelObj.getPriceGrids();
@@ -374,7 +374,7 @@ public class InternationlMerchMapping implements IExcelParser{
 						productExcelObj.setProductConfigurations(productConfigObj);
 						productExcelObj.setPriceGrids(priceGrids);
 								productExcelObj = merchAttributeParser.getUpchargeImprintMethdoColumns(setupChargeVal,
-										productExcelObj, "Set-up Charge",priceInclude_upcharge);
+										productExcelObj, "Set-up Charge","");
 						priceGrids = productExcelObj.getPriceGrids();
 						productConfigObj = productExcelObj.getProductConfigurations();
 					}
@@ -920,7 +920,7 @@ public class InternationlMerchMapping implements IExcelParser{
 				productExcelObj.setProductConfigurations(productConfigObj);
 				productExcelObj.setPriceGrids(priceGrids);
 					productExcelObj = merchAttributeParser.getBasePriceColumns(grid_1Quantity.toString(),
-							grid_1Prices.toString(), grid_1Discounts.toString(), priceGridName_1, priceInclude_1,
+							grid_1Prices.toString(), grid_1Discounts.toString(), priceGridName_1, priceInclude_upcharge,
 							productExcelObj, "Debossed");
 				productConfigObj = productExcelObj.getProductConfigurations();
 				priceGrids = productExcelObj.getPriceGrids();
