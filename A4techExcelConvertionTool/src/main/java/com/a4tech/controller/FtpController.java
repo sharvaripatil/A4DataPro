@@ -64,8 +64,9 @@ public class FtpController {
 						                                     ApplicationConstants.CONST_STRING_EMPTY);
 				return new ModelAndView("ftpLogin", "ftpLoginBean", new FtpLoginBean());	
 			}
-		if(productDao.isASINumberAvailable(ftpLogin.getAsiNumber())){
-			//productDao.saveSupplierCridentials(ftpLogin);
+		if(productDao.isASINumberAvailable(ftpLogin.getAsiNumber())){//if true means there is no cridentials in DB ,
+			                                                          //then we need to save our DB
+			productDao.saveSupplierCridentials(ftpLogin);
 		}
 		} else {
 			return new ModelAndView("ftpLogin", "ftpLoginBean", new FtpLoginBean());	
