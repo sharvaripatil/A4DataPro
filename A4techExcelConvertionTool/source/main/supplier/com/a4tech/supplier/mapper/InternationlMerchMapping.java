@@ -157,11 +157,15 @@ public class InternationlMerchMapping implements IExcelParser{
 						       }
 						       if(!StringUtils.isEmpty(grid_1Prices.toString())){
 									// grid based on Debossed 
+						    	   String imprintMethodType = "";
+						    	   if(!StringUtils.isEmpty(grid_2Prices.toString())){
+						    		   imprintMethodType = "Debossed";
+						    	   } 
 									productExcelObj.setProductConfigurations(productConfigObj);
 									productExcelObj.setPriceGrids(priceGrids);
 										productExcelObj = merchAttributeParser.getBasePriceColumns(grid_1Quantity.toString(),
 												grid_1Prices.toString(), grid_1Discounts.toString(), priceGridName_1, priceInclude_upcharge,
-												productExcelObj, "Debossed");
+												productExcelObj, imprintMethodType);
 									productConfigObj = productExcelObj.getProductConfigurations();
 									priceGrids = productExcelObj.getPriceGrids();
 								}
@@ -916,12 +920,16 @@ public class InternationlMerchMapping implements IExcelParser{
 	    	   productConfigObj.setColors(colorList);
 	       }
 	       if(!StringUtils.isEmpty(grid_1Prices.toString())){
-				// grid based on Debossed 
+				// grid based on Debossed
+	    	   String imprintMethodType = "";
+	    	   if(!StringUtils.isEmpty(grid_2Prices.toString())){
+	    		   imprintMethodType = "Debossed";
+	    	   } 
 				productExcelObj.setProductConfigurations(productConfigObj);
 				productExcelObj.setPriceGrids(priceGrids);
 					productExcelObj = merchAttributeParser.getBasePriceColumns(grid_1Quantity.toString(),
 							grid_1Prices.toString(), grid_1Discounts.toString(), priceGridName_1, priceInclude_upcharge,
-							productExcelObj, "Debossed");
+							productExcelObj, imprintMethodType);
 				productConfigObj = productExcelObj.getProductConfigurations();
 				priceGrids = productExcelObj.getPriceGrids();
 			}

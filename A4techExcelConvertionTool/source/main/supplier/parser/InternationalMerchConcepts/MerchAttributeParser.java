@@ -744,10 +744,10 @@ public class MerchAttributeParser {
  public Product getUpchargeBasedOnLogoModification(String priceVal,Product existingProduct){// it is used to artwork 
 	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
 	 ProductConfigurations config = existingProduct.getProductConfigurations();
-	 List<Artwork> artworkList = getArtWork("Logo Modification","");
+	 List<Artwork> artworkList = getArtWork("Art Services","Logo Modification");
 	 priceVal = priceVal.replaceAll("[^0-9.]", "").trim(); 
 	 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", priceVal, "G", "Artwork & Proofs", false, "USD", "",
-			 "Logo Modification", "Artwork Charge", "Per Order", 1, priceGrids, "", "");
+			 "Art Services", "Artwork Charge", "Per Order", 1, priceGrids, "", "");
 	 config.setArtwork(artworkList);
 	 existingProduct.setPriceGrids(priceGrids);
  return existingProduct;
@@ -825,19 +825,22 @@ private Dimensions getShippingDimensions(String val) {//W X H X L
 public Product getBasePriceColumns(String qty,String prices,String discount,String priceName,String priceInclude,Product existingProduct,String imprintMethodType){
 	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
 	 ProductConfigurations config = existingProduct.getProductConfigurations();
-	 List<ImprintMethod> imprintMethodList = config.getImprintMethods();
-	 String imprMethodAlias = getImprintMethodAliasName(imprintMethodList, imprintMethodType);
-	 if(StringUtils.isEmpty(imprMethodAlias)){
-		 imprintMethodList = getImprintMethod(imprintMethodType, imprintMethodType, imprintMethodList);
-		 imprMethodAlias = imprintMethodType;
+	 String criteria = "";
+	 if(!StringUtils.isEmpty(imprintMethodType)){
+		 List<ImprintMethod> imprintMethodList = config.getImprintMethods();
+		 String imprMethodAlias = getImprintMethodAliasName(imprintMethodList, imprintMethodType);
+		 if(StringUtils.isEmpty(imprMethodAlias)){
+			 imprintMethodList = getImprintMethod(imprintMethodType, imprintMethodType, imprintMethodList);
+			 imprMethodAlias = imprintMethodType;
+		 }
+		 if(StringUtils.isEmpty(priceName)){
+			 priceName =  imprintMethodType;
+		 }
+		 criteria = "Imprint Method:"+imprMethodAlias;
+		 config.setImprintMethods(imprintMethodList);
 	 }
-	 if(StringUtils.isEmpty(priceName)){
-		 priceName =  imprintMethodType;
-	 }
-	 String criteria = "Imprint Method:"+imprMethodAlias;
 		priceGrids = merchPriceGridParser.getBasePriceGrid(prices, qty, discount, "USD", priceInclude, true, false,
 				priceName,criteria, priceGrids, "", "", "");
-		config.setImprintMethods(imprintMethodList);
 		existingProduct.setProductConfigurations(config);
 		existingProduct.setPriceGrids(priceGrids);
    return existingProduct;

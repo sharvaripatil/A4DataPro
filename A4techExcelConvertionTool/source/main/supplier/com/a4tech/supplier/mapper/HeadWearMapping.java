@@ -15,11 +15,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import parser.goldstarcanada.GoldstarCanadaLookupData;
-import parser.harvestIndustrail.HarvestColorParser;
-import parser.harvestIndustrail.HarvestPriceGridParser;
-import parser.harvestIndustrail.HarvestProductAttributeParser;
-
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
@@ -47,16 +42,19 @@ import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
+import parser.goldstarcanada.GoldstarCanadaLookupData;
+import parser.headWear.HeadWearPriceGridParser;
+import parser.headWear.HeadWearProductAttributeParser;
+
 public class HeadWearMapping implements IExcelParser{
 
 private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 	
-	private PostServiceImpl postServiceImpl;
-	private ProductDao productDaoObj;
-	private LookupServiceData lookupServiceDataObj;
-	private HarvestColorParser harvestColorObj;
-	private HarvestPriceGridParser harvestPriceGridObj;
-	private HarvestProductAttributeParser harvestProductAttributeObj;
+	private PostServiceImpl 				postServiceImpl;
+	private ProductDao 						productDaoObj;
+	private LookupServiceData 				lookupServiceDataObj;
+	private HeadWearPriceGridParser 		headWearPriceGridObj;
+	private HeadWearProductAttributeParser 	headWearProductAttributeObj;
 
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
 		
@@ -74,7 +72,6 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 
 		List<Values> valuesList = new ArrayList<Values>();
 		List<FOBPoint> FobPointsList = new ArrayList<FOBPoint>();
-		List<Color> color = new ArrayList<Color>();		
 		List<Shape> shapelist = new ArrayList<Shape>();		
 
 
@@ -178,7 +175,7 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 									String DimensionRef = null;
 									DimensionRef = dimensionValue.toString();
 									if (!StringUtils.isEmpty(DimensionRef)) {
-										valuesList = harvestProductAttributeObj
+										valuesList = headWearProductAttributeObj
 												.getValues(dimensionValue
 														.toString(),
 														dimensionUnits
@@ -193,7 +190,7 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 								
 								
 									if(!FirstImprintsize1.contains("")){
-										imprintSizeList=harvestProductAttributeObj.getimprintsize(ImprintSizevalue);
+										imprintSizeList=headWearProductAttributeObj.getimprintsize(ImprintSizevalue);
 										 imprintSizeList.removeAll(Collections.singleton(null));
 									productConfigObj.setImprintSize(imprintSizeList);
 									}
@@ -201,7 +198,7 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 											.setProductionTime(listOfProductionTime);
 									productConfigObj.setRushTime(rushTime);
 
-									shipping = harvestProductAttributeObj
+									shipping = headWearProductAttributeObj
 											.getShippingEstimateValues(cartonL,
 													cartonW, cartonH,
 													weightPerCarton,
@@ -249,7 +246,6 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 									themeList = new ArrayList<Theme>();
 									valuesList = new ArrayList<Values>();
 									FobPointsList = new ArrayList<FOBPoint>();
-									color = new ArrayList<Color>();									
 									rushTime = new RushTime();
 									finalDimensionObj = new Dimension();
 									size = new Size();
@@ -270,37 +266,8 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 									_LOGGER.info("Existing Xid is not available,product treated as new product");
 									productExcelObj = new Product();
 								} else {
-									productExcelObj = new Product();
-								    productConfigObj=existingApiProduct.getProductConfigurations();
-									List<Image> Img = existingApiProduct
-											.getImages();
-									productExcelObj.setImages(Img);
-									
-
-							    	 themeList=productConfigObj.getThemes();
-							    	 if(themeList != null){
-							    	 int i= themeList.size();
-							    	 if(i > 5)
-							    	 {
-							    		 
-							    		 exstlist = themeList.subList(0, 5);
-    		 
-							    	 }
-							    	 productConfigObj.setThemes(exstlist);
-							    	 } 
-							    	 List<String>categoriesList=existingApiProduct.getCategories();
-							    	 productExcelObj.setCategories(categoriesList);
-							    	 
-							    	 Summary=existingApiProduct.getSummary();
-							    	 productExcelObj.setSummary(Summary);
-
-							    	 List<Option> optionList = new ArrayList<Option>();
-							    	 productConfigObj.setOptions(optionList);
-							    	 
-							    	 productConfigObj.setShapes(shapelist);
-							    	 
-								}
-								// productExcelObj = new Product();
+									productExcelObj= headWearProductAttributeObj.keepExistingProductData(productExcelObj);
+							    	 productConfigObj=productExcelObj.getProductConfigurations();								}
 							}
 						}
 
@@ -308,7 +275,6 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 				switch (columnIndex + 1) {
 				case 1:// ExternalProductID
 					productExcelObj.setExternalProductId(xid.trim());
-
 					break;
 				case 2:// ProductID
 
@@ -322,21 +288,7 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 
 				case 4:// Name
 					productName = cell.getStringCellValue();
-					productName=productName.replace("?","").replace("ã","").replace("¡", "").replace(":", "");
-					if(productName.contains(asiProdNo))
-					{
-						productName=productName.replace(asiProdNo, "");			
-					}		
-					int len = productName.length();
-					if (len > 60) {
-						String strTemp = productName.substring(0, 60);
-						int lenTemp = strTemp
-								.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
-						productName = (String) strTemp.subSequence(0,
-								lenTemp);
-					}
 					productExcelObj.setName(productName);
-
 					break;
 
 				case 5:// CatYear
@@ -367,85 +319,36 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 					break;
 
 				case 12: // Description
-
 					String description = cell.getStringCellValue();
-					description=description.replace("?","").replace("ã","").replace("¡", "").replace(":", "");
-					if (!StringUtils.isEmpty(description)) {
-						productExcelObj.setDescription(description);
-					} else {
-						productExcelObj
-								.setDescription(productName);
-					}
-					if (StringUtils.isEmpty(Summary) || Summary.contains("null")) {
-						String Newsummary=null;
-						String summayArr[]=description.split("\\.");
-						if(summayArr[0].length()>130)
-						{
-						 Newsummary=summayArr[0].substring(0, 130);
-						}else {
-							Newsummary=	summayArr[0];
-						}
-						productExcelObj.setSummary(Newsummary);
-					}
-					
-					
-
+							productExcelObj.setDescription(CommonUtility.getStringLimitedChars(description, 800));
 					break;
 
 				case 13: // Keywords
 
 					String productKeyword = cell.getStringCellValue();
-					productKeyword=productKeyword.replace("®", "R").replace(" ’", " '");
-					String KeywordArr[] = productKeyword.toLowerCase().split(",");
-                   if(!productKeywords.contains(productKeyword.toLowerCase())){
-				 	for (String string : KeywordArr) {
-					if(!(string.length()>30)){
-						productKeywords.add(string);
-					}if(productKeywords.size()==30){
-							break;
-					}}
-					productExcelObj.setProductKeywords(productKeywords);
-				    }
-
+					if(!StringUtils.isEmpty(productKeyword)){
+						List<String> keywordList = headWearProductAttributeObj.getProductKeywords(productKeyword);
+						productExcelObj.setProductKeywords(keywordList);
+					}
 					break;
 
 				case 14: // Colors
 
 					String colorValue = cell.getStringCellValue();
 					if (!StringUtils.isEmpty(colorValue)) {
-						color = harvestColorObj
-								.getColorCriteria(colorValue);
-						productConfigObj.setColors(color);
+						List<Color> colorsList = headWearProductAttributeObj
+								.getProductColor(colorValue);
+						productConfigObj.setColors(colorsList);
 					}
 
 					break;
 
 				case 15:// Themes
-
-					themeValue = cell.getStringCellValue();
-					if(exstlist == null){
-					themeValue=themeValue.replace("Outdoor,", "").replace("Summer", "");
-					if (StringUtils.isEmpty(themeList) || themeList.contains("null")) {
-					themeList = new ArrayList<Theme>();
-			    	Theme themeObj = new Theme();;
-					String Value = "";
-					String[] themes = CommonUtility.getValuesOfArray(
-							themeValue,
-							ApplicationConstants.CONST_DELIMITER_COMMA);
-					List<String> themeLookupList = lookupServiceDataObj
-							.getTheme(Value);
-
-					for (String themeName : themes) {
-						themeName=themeName.toUpperCase();
-						if (themeLookupList.contains(themeName) && themeList.size() <5 ) {
-							themeObj = new Theme();
-							themeObj.setName(themeName);
-							themeList.add(themeObj);
-						}
-
-					}
-					}
-					}
+					String themeVal = cell.getStringCellValue();
+				   if(!StringUtils.isEmpty(themeVal)){
+					   List<Theme> themesList = headWearProductAttributeObj.getProductThemes(themeVal);
+					   productConfigObj.setThemes(themesList);
+				   }
 					break;
 				case 16: // Dimension1
 
@@ -472,7 +375,6 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 								.append(dimensionUnits1.trim())
 								.append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
-
 					break;
 
 				case 18: // Dimension1Type
@@ -852,7 +754,7 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 				case 90: // DecorationMethod
 					decorationMethod = cell.getStringCellValue();
 					if (!StringUtils.isEmpty(decorationMethod)) {
-						listOfImprintMethods = harvestProductAttributeObj
+						listOfImprintMethods = headWearProductAttributeObj
 								.getImprintMethodValues(decorationMethod);
 					}
 
@@ -900,7 +802,7 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 				case 101:// MadeInCountry
 					String madeInCountry = cell.getStringCellValue();
 					if (!madeInCountry.isEmpty()) {
-						List<Origin> listOfOrigin = harvestProductAttributeObj
+						List<Origin> listOfOrigin = headWearProductAttributeObj
 								.getOriginValues(madeInCountry);
 						productConfigObj.setOrigins(listOfOrigin);
 					}
@@ -911,7 +813,7 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 					String AssembledCountry = cell
 					.getStringCellValue();
 			   if (!AssembledCountry.isEmpty()) {
-				   AssembledCountry = harvestProductAttributeObj
+				   AssembledCountry = headWearProductAttributeObj
 						.getCountryCodeConvertName(AssembledCountry);
 				productExcelObj.setAdditionalProductInfo("Assembled country is: "
 								+ AssembledCountry);
@@ -922,7 +824,7 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 					String decoratedInCountry = cell
 					.getStringCellValue();
 			if (!decoratedInCountry.isEmpty()) {
-				decoratedInCountry = harvestProductAttributeObj
+				decoratedInCountry = headWearProductAttributeObj
 						.getCountryCodeConvertName(decoratedInCountry);
 				productExcelObj.setAdditionalImprintInfo("Decorated country is: "
 								+ decoratedInCountry);
@@ -967,7 +869,7 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 					String rushProdTimeH = cell.getStringCellValue();
 					if (!rushProdTimeH
 							.equals(ApplicationConstants.CONST_STRING_ZERO)) {
-						rushTime = harvestProductAttributeObj
+						rushTime = headWearProductAttributeObj
 								.getRushTimeValues(rushProdTimeLo,
 										rushProdTimeH);
 					}
@@ -976,7 +878,7 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 
 				case 110: // Packaging
 					String pack = cell.getStringCellValue();
-					List<Packaging> listOfPackaging = harvestProductAttributeObj
+					List<Packaging> listOfPackaging = headWearProductAttributeObj
 							.getPackageValues(pack);
 					productConfigObj.setPackaging(listOfPackaging);
 
@@ -1065,7 +967,7 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 					productExcelObj.setPriceType("L");
 					if (listOfPrices != null
 							&& !listOfPrices.toString().isEmpty()) {
-						priceGrids = harvestPriceGridObj.getPriceGrids(
+						priceGrids = headWearPriceGridObj.getPriceGrids(
 								listOfPrices.toString(),
 								listOfQuantity.toString(), priceCode, "USD",
 								priceIncludesValue, true, quoteUponRequest,
@@ -1073,14 +975,11 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 					}
 					else
 					{
-						
-						priceGrids = harvestPriceGridObj.getPriceGrids(
+						priceGrids = headWearPriceGridObj.getPriceGrids(
 								listOfPrices.toString(),
 								listOfQuantity.toString(), priceCode, "USD",
 								priceIncludesValue, true, quoteUponRequest,
-								productName, "", priceGrids);
-						
-						
+								productName, "", priceGrids);	
 					}
 					productConfigObj.setImprintMethods(listOfImprintMethods);
 
@@ -1102,7 +1001,7 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 			String DimensionRef = null;
 			DimensionRef = dimensionValue.toString();
 			if (!StringUtils.isEmpty(DimensionRef)) {
-				valuesList = harvestProductAttributeObj.getValues(
+				valuesList = headWearProductAttributeObj.getValues(
 						dimensionValue.toString(), dimensionUnits.toString(),
 						dimensionType.toString());
 				finalDimensionObj.setValues(valuesList);
@@ -1111,14 +1010,14 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 			}
 			
 			 if(!FirstImprintsize1.contains("")){
-				 imprintSizeList=harvestProductAttributeObj.getimprintsize(ImprintSizevalue);
+				 imprintSizeList=headWearProductAttributeObj.getimprintsize(ImprintSizevalue);
 				 imprintSizeList.removeAll(Collections.singleton(null));
 			productConfigObj.setImprintSize(imprintSizeList);
 			}
 			productConfigObj.setProductionTime(listOfProductionTime);
 			productConfigObj.setRushTime(rushTime);
 
-			shipping = harvestProductAttributeObj.getShippingEstimateValues(
+			shipping = headWearProductAttributeObj.getShippingEstimateValues(
 					cartonL, cartonW, cartonH, weightPerCarton, unitsPerCarton);
 			if (!StringUtils.isEmpty(unitsPerCarton)) {
 				productConfigObj.setShippingEstimates(shipping);
@@ -1158,7 +1057,6 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 			themeList = new ArrayList<Theme>();
 			valuesList = new ArrayList<Values>();
 			FobPointsList = new ArrayList<FOBPoint>();
-			color = new ArrayList<Color>();
 			finalDimensionObj = new Dimension();
 			size = new Size();
 			fobPintObj = new FOBPoint();
@@ -1213,32 +1111,18 @@ private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
 		this.lookupServiceDataObj = lookupServiceDataObj;
 	}
-
-
-	public HarvestColorParser getHarvestColorObj() {
-		return harvestColorObj;
+	public HeadWearPriceGridParser getHeadWearPriceGridObj() {
+		return headWearPriceGridObj;
+	}
+	public void setHeadWearPriceGridObj(HeadWearPriceGridParser headWearPriceGridObj) {
+		this.headWearPriceGridObj = headWearPriceGridObj;
+	}
+	public HeadWearProductAttributeParser getHeadWearProductAttributeObj() {
+		return headWearProductAttributeObj;
+	}
+	public void setHeadWearProductAttributeObj(HeadWearProductAttributeParser headWearProductAttributeObj) {
+		this.headWearProductAttributeObj = headWearProductAttributeObj;
 	}
 
-	public void setHarvestColorObj(HarvestColorParser harvestColorObj) {
-		this.harvestColorObj = harvestColorObj;
-	}
 
-	public HarvestPriceGridParser getHarvestPriceGridObj() {
-		return harvestPriceGridObj;
-	}
-
-	public void setHarvestPriceGridObj(HarvestPriceGridParser harvestPriceGridObj) {
-		this.harvestPriceGridObj = harvestPriceGridObj;
-	}
-
-	public HarvestProductAttributeParser getHarvestProductAttributeObj() {
-		return harvestProductAttributeObj;
-	}
-
-	public void setHarvestProductAttributeObj(
-			HarvestProductAttributeParser harvestProductAttributeObj) {
-		this.harvestProductAttributeObj = harvestProductAttributeObj;
-	}
-
-	
 }

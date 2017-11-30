@@ -1,7 +1,11 @@
 package parser.headWear;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
+
+import org.springframework.util.CollectionUtils;
 
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.Availability;
@@ -15,9 +19,12 @@ import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.Packaging;
+import com.a4tech.product.model.Product;
+import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.RushTimeValue;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Weight;
@@ -30,10 +37,21 @@ import parser.harvestIndustrail.HarvestLookupData;
 public class HeadWearProductAttributeParser {
 	private LookupServiceData lookupServiceDataObj;
 	
-	
+	 public Product keepExistingProductData(Product existingProduct){
+		  Product newProduct = new Product();
+		  ProductConfigurations newConfig = new ProductConfigurations();
+		  if(!CollectionUtils.isEmpty(existingProduct.getImages())){
+			  newProduct.setImages(existingProduct.getImages());
+		  }
+	    if(!CollectionUtils.isEmpty(existingProduct.getCategories())){
+	    	newProduct.setCategories(existingProduct.getCategories());
+	    }
+		  newProduct.setProductConfigurations(newConfig);
+		  return newProduct;
+	  }
 	public List<Values> getValues(String dimensionValue, String dimensionUnits,
 			String dimensionType) {
-
+  
 		String dimensionValueArr[] = dimensionValue
 				.split(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 		String dimensionUnitsArr[] = dimensionUnits
@@ -302,7 +320,7 @@ public class HeadWearProductAttributeParser {
 		
 		return imprintSizeList;
 	}
-       public List<Color> getColorCriteria(String colorValue) {
+       public List<Color> getProductColor(String colorValue) {
    		List<Color> listOfProductColors = new ArrayList<>();
    		List<Combo> combolist = new ArrayList<>();
 
@@ -315,7 +333,7 @@ public class HeadWearProductAttributeParser {
    			colorObj = new Color();
    			 comboObj=new Combo();
    			String OriginalcolorName = colorName.trim();
-   			String colorLookUpName=HarvestLookupData.COLOR_MAP.get(colorName.trim()).trim();
+   			String colorLookUpName=HarvestLookupData.COLOR_MAP.get(colorName.trim().toLowerCase()).trim();
    			if(colorLookUpName.contains("Secondary"))
    			{
    				Combo comboObj1=new Combo();
@@ -358,6 +376,28 @@ public class HeadWearProductAttributeParser {
    		}
    		return listOfProductColors;
    	}
+       public List<Theme> getProductThemes(String theme){
+    	   List<Theme> themeList = new ArrayList<>();
+    	   Theme themeObj = null;
+    	   String[] themes = CommonUtility.getValuesOfArray(theme, ",");
+    	   for (String themeVal : themes) {
+    		   themeObj = new Theme();
+			   themeVal = themeVal.trim();
+			   	if(themeVal.equalsIgnoreCase("Sport")){
+			   		themeVal = "Sports";
+			   	}
+				if(lookupServiceDataObj.isTheme(themeVal)){
+					themeObj.setName(themeVal);
+					themeList.add(themeObj);
+				}
+			}
+    	   return themeList;
+       }
+      public List<String> getProductKeywords(String keyWord){
+    	  String[] keyWords = CommonUtility.getValuesOfArray(keyWord, ",");
+    	  List<String> keyWordList = Arrays.asList(keyWords);
+    	  return keyWordList;
+      }
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;
 	}
