@@ -198,8 +198,8 @@ public class ExcelFactory {
 		  }else if(name.equalsIgnoreCase("edwardsGarment") || name.equals("51752")){
 			   return edwardsGarmentMapping;
 		  }
-		  else if(name.equalsIgnoreCase("tekweldMapping") || name.equals("90807")){
-			   return edwardsGarmentMapping;
+		  else if(name.equalsIgnoreCase("tekweld") || name.equals("90807")){
+			   return tekweldMapping;
 		  } else if(name.equalsIgnoreCase("internationalMerchMapping") || name.equals("62820")){
 			  return merchMapping;
 		  }

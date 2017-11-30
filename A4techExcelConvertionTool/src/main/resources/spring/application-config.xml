@@ -1088,8 +1088,10 @@
      <bean id="tekweldMappingId" class="com.a4tech.supplier.mapper.TekweldMapping">
      	<property name="postServiceImpl" 	ref="postService"/>
         <property name="productDaoObj" 	   ref="productDao"/>
+        <property name="tekweldAttribute" 	   ref="tekweldAttributeId"/>
         
      </bean>
+        <bean id="tekweldAttributeId" class="parser.tekweld.TekweldProductAttributeParser"/>
        
      
      <!-- TekweldMapping Configuration End  --> 

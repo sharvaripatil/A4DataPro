@@ -14,32 +14,29 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import parser.maxplus.MaxpluProductAttributeParser;
-import parser.maxplus.MaxplusPriceGridParser;
+import parser.tekweld.TekweldProductAttributeParser;
+
+import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.model.ProductNumber;
-
-import com.a4tech.product.model.Theme;
+import com.a4tech.product.model.ProductionTime;
+import com.a4tech.product.model.Size;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
-import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
-public class TekweldMapping {
+public class TekweldMapping implements IExcelParser {
 	
 	private static final Logger _LOGGER = Logger
 			.getLogger(TekweldMapping.class);
 	
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
-	private MaxpluProductAttributeParser maxplusAttribute;
-	private MaxplusPriceGridParser pricegrid; 
-	
+	private TekweldProductAttributeParser tekweldAttribute;
+
 
 	public String readExcel(String accessToken, Workbook workbook,
 			Integer asiNumber, int batchId) {		
@@ -64,7 +61,9 @@ public class TekweldMapping {
 		boolean T =true;
 
 		String ExstngDescription=null;
-
+		List<ProductionTime> listofProductionTime = new ArrayList<ProductionTime>();
+		List<ImprintSize> listofImprintSize = new ArrayList<ImprintSize>();
+		Size sizeObj=new Size();
 	
 		try {
 
@@ -90,16 +89,25 @@ public class TekweldMapping {
 						Cell cell = cellIterator.next();
 						/* int */columnIndex = cell.getColumnIndex();
 						cell2Data = nextRow.getCell(1);
-						if (columnIndex + 1 == 1) {
+						if (columnIndex + 1 == 2) {
 							if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 								xid = cell.getStringCellValue();
 							} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 								xid = String.valueOf((int) cell
 										.getNumericCellValue());
 							} else {
-								ProdNo = CommonUtility
-										.getCellValueStrinOrInt(cell2Data);
-								xid = ProdNo;
+								String newXID=cell2Data.toString();
+								if(newXID.contains(","))
+								{
+									String newXIDArr[]=newXID.split(",");
+									xid = newXIDArr[1];
+								}
+								else{
+									xid = newXID;
+
+								}
+								
+								
 							}
 							checkXid = true;
 						} else {
@@ -151,7 +159,12 @@ public class TekweldMapping {
 								} else {
 										// productExcelObj=existingApiProduct;
 										// productConfigObj=existingApiProduct.getProductConfigurations();
-			
+									List<Image> Img = existingApiProduct
+											.getImages();
+									productExcelObj.setImages(Img);
+								 	 
+							    	 List<String>categoriesList=existingApiProduct.getCategories();
+							    	 productExcelObj.setCategories(categoriesList);
 								    	 
 								}
 								// productExcelObj = new Product();
@@ -195,43 +208,32 @@ public class TekweldMapping {
 							
 						case 5:// QTY 1
 
-							ProdNo=cell.getStringCellValue();
-							 productExcelObj.setAsiProdNo(ProdNo);
-
 							break;
 							
 						case 6:// QTY 1 Price
 		
-							 ProdNo=cell.getStringCellValue();
-							 productExcelObj.setAsiProdNo(ProdNo);
-
+		
 							break;
 							
 						case 7:// QTY 2
 							
-							 ProdNo=cell.getStringCellValue();
-							 productExcelObj.setAsiProdNo(ProdNo);
 
 							break;
 							
 						case 8:// QTY 2 Price
 						
-							 ProdNo=cell.getStringCellValue();
-							 productExcelObj.setAsiProdNo(ProdNo);
 
 							break;
 							
 						case 9://QTY 3
  						
-							 ProdNo=cell.getStringCellValue();
-							 productExcelObj.setAsiProdNo(ProdNo);
+						
 
 							break;
 							
 						case 10:// QTY 3 Price
 			
-							 ProdNo=cell.getStringCellValue();
-							 productExcelObj.setAsiProdNo(ProdNo);
+					
 
 							break;
 							
@@ -244,29 +246,11 @@ public class TekweldMapping {
 							
 						case 12: // QTY 4 Price
 
-							/*productName = cell.getStringCellValue();
-							int len=productName.length();
-							 if(len>60){
-								String strTemp=productName.substring(0, 60);
-								int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
-								productName=(String) strTemp.subSequence(0, lenTemp);
-							}
-							productExcelObj.setName(productName);
-*/
-
+		
 							break;	
 					
 						case 13: // QTY 5
 
-							String Summary=cell.getStringCellValue();
-							if (!StringUtils.isEmpty(Summary)) {
-							int Summarylength=Summary.length();	
-							if(Summarylength > 130){
-						    Summary=Summary.substring(0, 130);
-							}
-							productExcelObj.setSummary(Summary);	
-							}
-							
 							break;	
 							
 						case 14: // QTY 5 Price
@@ -295,13 +279,22 @@ public class TekweldMapping {
 							break;	
 							
 						case 19: //ITEM SIZE
-
+							String ProductSize=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(ProductSize)) {
+								sizeObj=tekweldAttribute.getProductsize(ProductSize);
+								productConfigObj.setSizes(sizeObj);
+							}
 							
 							break;	
 							
 						case 20: //IMPRINT SIZE
-
-							
+							String ImpringSizeValue=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(ImpringSizeValue)) {
+								ImprintSize imprintsizeObj=new ImprintSize();
+								imprintsizeObj.setValue(ImpringSizeValue);
+								listofImprintSize.add(imprintsizeObj);
+								productConfigObj.setImprintSize(listofImprintSize);
+							}
 							break;	
 							
 						case 21: //4CP Digital Printing Y OR N
@@ -364,12 +357,22 @@ public class TekweldMapping {
 							
 						case 31: // production time
 							
-							
-
+							String ProductionTime=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(ProductionTime)) {
+								ProductionTime prodTimeObj=new ProductionTime();
+								prodTimeObj.setBusinessDays("10");
+								prodTimeObj.setDetails(ProductionTime);
+								listofProductionTime.add(prodTimeObj);
+								productConfigObj.setProductionTime(listofProductionTime);
+							}
 							break;
 							
 						case 32: // Shipping
-
+							
+							String DistrubutorComment=cell.getStringCellValue();
+							if (!StringUtils.isEmpty(DistrubutorComment)) {
+							productExcelObj.setDistributorOnlyComments(DistrubutorComment);
+							}
 							break;	
 							
 			
@@ -383,13 +386,13 @@ public class TekweldMapping {
 					productExcelObj.setCanOrderLessThanMinimum(T);
 			
 	
-						priceGrids = pricegrid
+						/*priceGrids = pricegrid
 								.getUpchargePriceGrid("1", "25",
 										"V",
 										"Less than Minimum", "false", "USD",
 										"Can order less than minimum",
 										"Less than Minimum Charge", "Other",
-										new Integer(1), priceGrids);		 
+										new Integer(1), priceGrids);		 */
 					 
 					 
 					productExcelObj.setPriceGrids(priceGrids);
@@ -446,13 +449,6 @@ public class TekweldMapping {
 
 	}
 	
-	public MaxpluProductAttributeParser getMaxplusAttribute() {
-		return maxplusAttribute;
-	}
-
-	public void setMaxplusAttribute(MaxpluProductAttributeParser maxplusAttribute) {
-		this.maxplusAttribute = maxplusAttribute;
-	}
 
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
@@ -470,24 +466,18 @@ public class TekweldMapping {
 		this.productDaoObj = productDaoObj;
 	}
 
-	public MaxplusPriceGridParser getPricegrid() {
-		return pricegrid;
+
+	public TekweldProductAttributeParser getTekweldAttribute() {
+		return tekweldAttribute;
 	}
 
-	public void setPricegrid(MaxplusPriceGridParser pricegrid) {
-		this.pricegrid = pricegrid;
-	}
-	
-	
 
-	
-	
-	
-	
-	
-	
-	
-	
+	public void setTekweldAttribute(TekweldProductAttributeParser tekweldAttribute) {
+		this.tekweldAttribute = tekweldAttribute;
+	}
+
+
+
 	
 
 }
