@@ -308,6 +308,9 @@ public class InternationlMerchMapping implements IExcelParser{
 					String color = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(color)){
 						//colorName = color;
+						if(!colorsList.contains(color)){
+							
+						}
 						colorsList.add(color);
 						if(!color.contains(",")){
 							productNumbersMap.put(prdNumber, color);

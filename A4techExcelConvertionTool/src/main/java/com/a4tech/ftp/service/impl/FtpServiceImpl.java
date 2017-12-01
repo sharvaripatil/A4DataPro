@@ -42,7 +42,7 @@ private Logger _LOGGER = Logger.getLogger(FtpServiceImpl.class);
 			if(!FTPReply.isPositiveCompletion(reply)){
 				ftpClient.disconnect();
 			}
-			//ftpClient.enterLocalPassiveMode();
+			ftpClient.enterLocalPassiveMode();
 			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 			InputStream inputStream =  new BufferedInputStream(mFile.getInputStream());
 			String fileName = asiNumber + "_"+mFile.getOriginalFilename();

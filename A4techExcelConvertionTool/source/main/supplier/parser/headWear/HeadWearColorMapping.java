@@ -7,8 +7,11 @@ public class HeadWearColorMapping {
 public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
 	
 	static{
-		COLOR_MAP.put("name","Color Group");
 		COLOR_MAP.put("black","Medium Black");
+		COLOR_MAP.put("navy blue","Dark Blue");
+		COLOR_MAP.put("royal blue","Bright Blue");
+		COLOR_MAP.put("red","Medium Red");
+		COLOR_MAP.put("stone","Medium Gray");
 		COLOR_MAP.put("forest green","Medium Green");
 		COLOR_MAP.put("beige","Light Brown");
 		COLOR_MAP.put("maroon red","Medium Purple");
@@ -24,6 +27,8 @@ public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
 		COLOR_MAP.put("dark gray","Dark Gray");
 		COLOR_MAP.put("brown","Medium Brown");
 		COLOR_MAP.put("cyan blue","Light Blue");
+		COLOR_MAP.put("green","Medium Green");
+		COLOR_MAP.put("charcoal gray","Dark Gray");
 		COLOR_MAP.put("gold","Gold Metal");
 		COLOR_MAP.put("khaki beige","Light Brown");
 		COLOR_MAP.put("natural beige","Light Brown");
@@ -31,6 +36,7 @@ public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
 		COLOR_MAP.put("olive green","Dark Green");
 		COLOR_MAP.put("yellow","Medium Yellow");
 		COLOR_MAP.put("pink","Medium Pink");
+		COLOR_MAP.put("bright green","Bright Green");
 		COLOR_MAP.put("assorted","Multi Color");
 		COLOR_MAP.put("khaki green","Medium Green");
 		COLOR_MAP.put("stone beige","Light Brown");
@@ -68,15 +74,18 @@ public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
 		COLOR_MAP.put("conceal green","Medium Green");
 		COLOR_MAP.put("charcoal grey","Dark Gray");
 		COLOR_MAP.put("light gray","Light Gray");
+		COLOR_MAP.put("tan beige","Light Brown");
 		COLOR_MAP.put("tan","Light Brown");
 		COLOR_MAP.put("silver","Silve Metal");
 		COLOR_MAP.put("bottle","Clear");
 		COLOR_MAP.put("blue","Medium Blue");
+	    COLOR_MAP.put("grey","Medium Gray");
 
 	}
 	
 	public static String getColorGroup(String colorName){
-		return COLOR_MAP.get(colorName);
+		String colorGroup = COLOR_MAP.get(colorName);
+		return colorGroup == null ?"Other": colorGroup;
 	}
 	
 	

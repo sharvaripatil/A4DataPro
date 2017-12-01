@@ -11,12 +11,13 @@ import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
 public class HeadWearPriceGridParser {
 
 	private Logger              _LOGGER              = Logger.getLogger(getClass());
-	public List<PriceGrid> getPriceGrids(String listOfPrices,
+	public List<PriceGrid> getBasePriceGrids(String listOfPrices,
 		    String listOfQuan, String discountCodes,
 			String currency, String priceInclude, boolean isBasePrice,
 			String qurFlag, String priceName, String criterias,
@@ -116,11 +117,21 @@ public class HeadWearPriceGridParser {
 			}
 
 		} else {
-			
-			configs = new PriceConfiguration();
-			configs.setCriteria(criterias);
-			configs.setValue(Arrays.asList((Object) UpchargeName));
-			priceConfiguration.add(configs);
+			if(UpchargeName.contains(",")){
+				String[] upchargeNames = CommonUtility.getValuesOfArray(UpchargeName, ",");
+				for (String upchargeNameVal : upchargeNames) {
+					configs = new PriceConfiguration();
+					configs.setCriteria(criterias);
+					configs.setValue(Arrays.asList((Object) upchargeNameVal));
+					priceConfiguration.add(configs);
+
+				}
+			} else {
+				configs = new PriceConfiguration();
+				configs.setCriteria(criterias);
+				configs.setValue(Arrays.asList((Object) UpchargeName));
+				priceConfiguration.add(configs);
+			}
 			
 			
 		}

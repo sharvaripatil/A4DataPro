@@ -691,9 +691,9 @@ public class MerchAttributeParser {
 		 if(StringUtils.isEmpty(imprintMethodAlias)){
 			 imprintMethodList = getImprintMethod("Screen", "Silkscreen", imprintMethodList);
 			 imprintMethodAlias = "Screen";
-			 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "37.50", "G", "Imprint Method", false, "USD", "",
-					 imprintMethodAlias, "Re-Order Charge", "Other", 1, priceGrids, "", "");
 		 }
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "37.50", "G", "Imprint Method", false, "USD", "",
+				 imprintMethodAlias, "Re-Order Charge", "Other", 1, priceGrids, "", "");
 	 } else if(val.equalsIgnoreCase("Laser-NC, Insert-$37.50 (G)")){
 		 //the upcharges should be based on whatever Imprint Method that exists that's not Laser Engraved. 
 		 //If no other imprint methods currently exist please create one using "Printed=Insert".

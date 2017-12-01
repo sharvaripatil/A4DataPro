@@ -33,6 +33,7 @@ import com.a4tech.supplier.mapper.GillStudiosMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping;
+import com.a4tech.supplier.mapper.HeadWearMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineMappingRevised;
 import com.a4tech.supplier.mapper.InternationlMerchMapping;
@@ -94,8 +95,8 @@ public class ExcelFactory {
     private MaxplusMapping                  maxplusmapping;
 	private GempirepromotionsMapping        gempiresMapping;
 	private EdwardsGarmentMapping edwardsGarmentMapping;
-    private InternationlMerchMapping        merchMapping;	
-
+    private InternationlMerchMapping        merchMapping;
+    private HeadWearMapping                 headWearMapping;
 
 	public  IExcelParser getExcelParserObject(String name){
 
@@ -196,6 +197,8 @@ public class ExcelFactory {
 			   return edwardsGarmentMapping;
 		  } else if(name.equalsIgnoreCase("internationalMerchMapping") || name.equals("62820")){
 			  return merchMapping;
+		  } else if(name.equalsIgnoreCase("headWearMapping") || name.equals("60282")){
+			  return headWearMapping;
 		  }
 		return null;
 	}
@@ -541,6 +544,13 @@ public class ExcelFactory {
 
 	public void setEdwardsGarmentMapping(EdwardsGarmentMapping edwardsGarmentMapping) {
 		this.edwardsGarmentMapping = edwardsGarmentMapping;
+	}
+	public HeadWearMapping getHeadWearMapping() {
+		return headWearMapping;
+	}
+
+	public void setHeadWearMapping(HeadWearMapping headWearMapping) {
+		this.headWearMapping = headWearMapping;
 	}
 	
 }

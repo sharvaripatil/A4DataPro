@@ -436,6 +436,7 @@
 		<property name="gempiresMapping" ref="gempiresMappingId"/>
 		<property name="edwardsGarmentMapping" ref="edwardsGarmentMappingId"/>
 		<property name="merchMapping" ref="merchMappingId"/>
+		<property name="headWearMapping" ref="headWearMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1093,6 +1094,19 @@
      <bean id="merchPriceGridParserId" class="parser.InternationalMerchConcepts.MerchPriceGridParser"/>
      <!-- supplier 62820 InternationalMerch configuration end --> 
      
+     <!-- head Wear configuration start-->
+     <bean id="headWearMappingId" class="com.a4tech.supplier.mapper.HeadWearMapping">
+     	 <property name="postServiceImpl" ref="postService"/>
+     	 <property name="productDaoObj" ref="productDao"/>
+     	 <property name="headWearAttributeParser" ref="headWearAttributeParserId"/>
+     	 <property name="headWearPriceGridParser" ref="headWearpriceGridParserId"/>
+     </bean>
+     <bean id="headWearAttributeParserId" class="parser.headWear.HeadWearAttributeParser">
+     	<property name="headWearPriceGridParser" ref="headWearpriceGridParserId"/>
+     	<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     </bean>
+     <bean id="headWearpriceGridParserId" class="parser.headWear.HeadWearPriceGridParser"/>
+      <!-- Head wear configuration end-->
       
 </beans>
 
