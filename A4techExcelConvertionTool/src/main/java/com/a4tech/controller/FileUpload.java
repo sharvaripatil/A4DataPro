@@ -70,8 +70,9 @@ public class FileUpload {
 			return ApplicationConstants.CONST_STRING_HOME;
 		}
 		try  {
+			//if file upload for Production ,please change the environemnt Type "Sand" to "Prod"
 			accessToken = loginService.doLogin(fileBean.getAsiNumber(),
-					fileBean.getUserName(), fileBean.getPassword(), null);
+					fileBean.getUserName(), fileBean.getPassword(), "Sand");//here change environment type
 			if (accessToken != null) {
 				if (ApplicationConstants.CONST_STRING_UN_AUTHORIZED.equals(accessToken)) {
 					accessToken = null;
@@ -93,8 +94,9 @@ public class FileUpload {
 					String.valueOf(batchId));
 			IExcelParser parserObject = excelFactory.getExcelParserObject(asiNumber);
 			if(parserObject != null){ // new implemention
+				//if file upload for Production ,please change the environemnt Type "Sand" to "Prod"
 				finalResult = parserObject.readExcel(accessToken, workbook, 
-                        Integer.valueOf(asiNumber), batchId,"" );
+                        Integer.valueOf(asiNumber), batchId,"Sand");//here change environment type
 		    	if (finalResult != null) {
 					parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 				}
