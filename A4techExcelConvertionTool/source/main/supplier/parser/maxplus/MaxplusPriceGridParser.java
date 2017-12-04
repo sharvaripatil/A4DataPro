@@ -21,11 +21,11 @@ public class MaxplusPriceGridParser {
 	public List<PriceGrid> getPriceGrids(String listOfPrices,
 		    String listOfQuan, String listOfDisc,
 			String currency, String priceInclude, boolean isBasePrice,
-			String isQur, String priceName, String criterias/*,
-			List<PriceGrid> existingPriceGrid*/) {
+			String isQur, String priceName, String criterias,
+			List<PriceGrid> existingPriceGrid) {
 
 		Integer sequence = 1;
-		List<PriceGrid> priceGridsList = new ArrayList<PriceGrid>();
+	//	List<PriceGrid> priceGridsList = new ArrayList<PriceGrid>();
 
 		PriceGrid priceGrid = new PriceGrid();
 		String[] prices = listOfPrices
@@ -34,14 +34,10 @@ public class MaxplusPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] discount = listOfDisc
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		
-		
 
-	priceGrid.setIsQUR(isQur.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_Y) ? ApplicationConstants.CONST_BOOLEAN_TRUE
+	    priceGrid.setIsQUR(isQur.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_Y) ? ApplicationConstants.CONST_BOOLEAN_TRUE
 					: ApplicationConstants.CONST_BOOLEAN_FALSE);
 		
-		
-
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription("");
 		priceGrid.setIsBasePrice(isBasePrice);
@@ -56,8 +52,8 @@ public class MaxplusPriceGridParser {
 		if(listOfPrice != null && !listOfPrice.isEmpty()){
 			priceGrid.setPrices(listOfPrice);
 		}
-		priceGridsList.add(priceGrid);
-		return priceGridsList;
+		existingPriceGrid.add(priceGrid);
+		return existingPriceGrid;
 
 	}
 
@@ -129,7 +125,17 @@ public class MaxplusPriceGridParser {
 
         priceGrid.setPrices(listOfPrice);
 		if (upChargeCriterias != null && !upChargeCriterias.isEmpty()) {
-		configuration = getConfigurations(upChargeCriterias,upChargeName);
+			if(upChargeName.contains(","))
+			{
+				String Upchargevalue[]=upChargeName.split(",");
+				
+				for (String Value : Upchargevalue) {
+					  configuration = getConfigurations(upChargeCriterias,Value);
+				}			
+			}else
+			{
+		  configuration = getConfigurations(upChargeCriterias,upChargeName);
+			}
 		}
        /* if(upChargeName.contains("Personalization"))
         {

@@ -339,7 +339,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 				    break;
 					
 				case 6://PriceConfirmedThru
-					 priceConfirmedThru = cell.getDateCellValue();
+				//	 priceConfirmedThru = cell.getDateCellValue();
 		
 					break;
 					
@@ -673,12 +673,19 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 				case 69:
 					       break;
 				case 70:
-				String IsEnvironmentallyFriendly = cell.getStringCellValue();
-			
+				  String IsEnvironmentallyFriendly ="";
+				  if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+				   IsEnvironmentallyFriendly = cell.getStringCellValue();
+
+				}else
+				{
+					 boolean boovar = cell.getBooleanCellValue();
+					 IsEnvironmentallyFriendly = String.valueOf(boovar);
+				}
 					if(IsEnvironmentallyFriendly.equalsIgnoreCase("true"))			
 					{ Theme themeObj1 = new Theme();
 
-						themeObj1.setName("Eco Friendly");	
+						themeObj1.setName("Eco & Environmentally Friendly");	
 
 						themeList.add(themeObj1);
 					}
