@@ -84,7 +84,7 @@ public class FtpController {
 		String environmentType = fileUploadBean.getEnvironmentType();
 		MultipartFile   file= fileUploadBean.getFile();
 		long fileSize = file.getSize();
-		Workbook wb = getWorkBook(file);
+		/*Workbook wb = getWorkBook(file);
 		int noOfColumnsInCurrentFile = getSupplierFileColumnsCount(wb);
 		int noOfColumnsFromDataBase = productDao.getSupplierColumnsCount(asiNumber);
 		//This is checking supplier file columns is same or not
@@ -94,7 +94,7 @@ public class FtpController {
 			ftpFileUploadBean.setAsiNumber(asiNumber);
 			ftpFileUploadBean.setEnvironmentType(environmentType);
 			return new ModelAndView("fileUpload", "ftpFileUploadBean", ftpFileUploadBean);
-		} 
+		} */
 		if(fileSize == 0){
 			model.addAttribute("invalidFile", "");
 			FtpFileUploadBean ftpFileUploadBean = new FtpFileUploadBean();
