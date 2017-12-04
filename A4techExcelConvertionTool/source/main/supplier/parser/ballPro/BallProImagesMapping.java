@@ -30,7 +30,7 @@ public class BallProImagesMapping{
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
 	public String readMapper(String accessToken, Workbook workbook,
-			Integer asiNumber, int batchId, HashMap<String, Product> SheetMap, HashMap<String, String> productNoMap) {
+			Integer asiNumber, int batchId, HashMap<String, Product> SheetMap, HashMap<String, String> productNoMap,String environmentType) {
 
 		
 		int columnIndex = 0;
@@ -101,7 +101,7 @@ public class BallProImagesMapping{
 						if(nextRow.getRowNum() != 1){
 							     productExcelObj.setProductConfigurations(productConfigObj);
 							     if(!StringUtils.isEmpty(productExcelObj.getExternalProductId())){
-						 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+						 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 						 	if(num ==1){
 						 		numOfProductsSuccess.add("1");
 						 	}else if(num == 0){
@@ -138,7 +138,7 @@ public class BallProImagesMapping{
 							    }// else create new producct and check existing data for it -getproduct,put in map
 							 else{
 								 Product existingApiProduct =null;
-								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
+								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid, null); 
 								     productExcelObj=existingApiProduct;
 									 productConfigObj=productExcelObj.getProductConfigurations();
 									 productExcelObj.setExternalProductId(xid);	
@@ -180,7 +180,7 @@ public class BallProImagesMapping{
 	
 	     if(!StringUtils.isEmpty(productExcelObj.getExternalProductId())){
 	 	    postServiceImpl.postProduct(accessToken, productExcelObj,
-					asiNumber, batchId);
+					asiNumber, batchId, environmentType);
 	     }
 
 		_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());

@@ -47,7 +47,7 @@ public class FITSAccessoriesMapping implements IExcelParser{
 	private FITSPriceGridParser             fitsPriceGridParser;
 	
 	@Override
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
@@ -133,7 +133,7 @@ public class FITSAccessoriesMapping implements IExcelParser{
 							 }
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	productExcelObj.setProductRelationSkus(listProductSkus);
-							 		int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 		int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
 								 	}else if(num == 0){
@@ -157,7 +157,7 @@ public class FITSAccessoriesMapping implements IExcelParser{
 						    	//repeatRows.add(xid);
 						    }
 						    productExcelObj = new Product();
-     						 productExcelObj = postServiceImpl.getProduct(accessToken, xid);
+     						 productExcelObj = postServiceImpl.getProduct(accessToken, xid, environmentType);
 						   
 						     if(productExcelObj == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
@@ -279,7 +279,7 @@ public class FITSAccessoriesMapping implements IExcelParser{
 		 productConfigObj.setColors(colorList);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	productExcelObj.setProductRelationSkus(listProductSkus);
-		 		int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+		 		int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 			 	if(num ==1){
 			 		numOfProductsSuccess.add("1");
 			 	}else if(num == 0){

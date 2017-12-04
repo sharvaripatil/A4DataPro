@@ -46,7 +46,7 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 	WholeSaleAttributeParser wholeSaleAttributeParser;
 	WholeSalePriceGridParser wholeSalePriceGridParser;
 	private LookupServiceData lookupServiceDataObj;
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 	
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
@@ -142,7 +142,7 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 							productExcelObj.setProductConfigurations(productConfigObj);
 							/*_LOGGER.info("Product Data : "
 									+ mapperObj.writeValueAsString(productExcelObj));*/
-							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -176,14 +176,14 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 						    	repeatRows.add(xid);
 						    }
 						    productExcelObj = new Product();
-						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
+						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid, environmentType); 
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						    	 existingFlag=false;
 						     }else{
 						    	 _LOGGER.info("Existing Xid available,Processing existing Data");
-						    	 productExcelObj=wholeSaleAttributeParser.getExistingProductData(existingApiProduct,existingApiProduct.getProductConfigurations(),accessToken);
+						    	 productExcelObj=wholeSaleAttributeParser.getExistingProductData(existingApiProduct,existingApiProduct.getProductConfigurations(),accessToken,environmentType);
 						    	 productConfigObj=productExcelObj.getProductConfigurations();
 								 existingFlag=true;
 								 // priceGrids = productExcelObj.getPriceGrids();
@@ -409,7 +409,7 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 						case 20://F.O.B
 							if(!existingFlag)
 							{
-							List<String> fobPointsTemp=lookupServiceDataObj.getFobPoints(accessToken);
+							List<String> fobPointsTemp=lookupServiceDataObj.getFobPoints(accessToken,environmentType);
 							if(!CollectionUtils.isEmpty(fobPointsTemp)){
 							String tempValue=null;
 							for (String string : fobPointsTemp) {
@@ -477,7 +477,7 @@ public class WholeSaleExcelMapping  implements IExcelParser{
 		productExcelObj.setProductConfigurations(productConfigObj);
 		 	/*_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));*/
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){

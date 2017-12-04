@@ -73,7 +73,7 @@ public class GillStudiosMapping implements IExcelParser{
 	ObjectMapper mapperObj;
 	
 	@SuppressWarnings("unused")
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
@@ -291,7 +291,7 @@ while (iterator.hasNext()) {
 							 //	if(Prod_Status = false){
 							 	_LOGGER.info("Product Data : "
 										+ mapperObj.writeValueAsString(productExcelObj));
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -345,7 +345,7 @@ while (iterator.hasNext()) {
 						    	productXids.add(xid.trim());
 						    	repeatRows.add(xid.trim());
 						    }
-						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid=xid.replace("\t",""));
+						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid=xid.replace("\t",""), environmentType);
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
@@ -1376,7 +1376,7 @@ while (iterator.hasNext()) {
 					+ mapperObj.writeValueAsString(productExcelObj));
 		 	//if(Prod_Status = false){
 		 	productExcelObj.setPriceType("L");
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){

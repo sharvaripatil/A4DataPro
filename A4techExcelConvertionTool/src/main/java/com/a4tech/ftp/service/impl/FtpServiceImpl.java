@@ -30,7 +30,7 @@ public class FtpServiceImpl implements FtpService{
   private IMailService  mailService;
 private Logger _LOGGER = Logger.getLogger(FtpServiceImpl.class);
 	@Override
-	public boolean uploadFile(MultipartFile mFile ,String asiNumber) {
+	public boolean uploadFile(MultipartFile mFile ,String asiNumber,String environmentType) {
 		_LOGGER.info("Enter the Upload file class");
 		try {
 			ftpClient.connect(serveraddress,Integer.parseInt(portNo));
@@ -45,7 +45,7 @@ private Logger _LOGGER = Logger.getLogger(FtpServiceImpl.class);
 			ftpClient.enterLocalPassiveMode();
 			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 			InputStream inputStream =  new BufferedInputStream(mFile.getInputStream());
-			String fileName = asiNumber + "_"+mFile.getOriginalFilename();
+			String fileName = environmentType+"_"+asiNumber + "_"+mFile.getOriginalFilename();
 			boolean fileStatus = ftpClient.storeFile(fileName, inputStream);
 			inputStream.close();
 			return fileStatus;

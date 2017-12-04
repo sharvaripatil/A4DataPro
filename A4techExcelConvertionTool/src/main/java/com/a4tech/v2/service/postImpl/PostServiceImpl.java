@@ -106,11 +106,17 @@ public class PostServiceImpl implements PostService{
 
 
 		@Override
-		public int postProduct(String authToken,
-				com.a4tech.product.model.Product product, int asiNumber) {
+		public int postProduct(String authToken, com.a4tech.product.model.Product product, int asiNumber, int batchId, String environmentType)
+				throws IOException {
 			// TODO Auto-generated method stub
 			return 0;
 		}
 
+
+		@Override
+		public com.a4tech.product.model.Product getProduct(String authToken, String productId, String environmentType) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 
 	}

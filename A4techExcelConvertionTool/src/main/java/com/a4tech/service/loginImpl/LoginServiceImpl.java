@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,21 +36,27 @@ public class LoginServiceImpl implements ILoginService {
 	@Autowired
 	ObjectMapper mapper;
 	private String loginApiURL ;
+	/*@Autowired
+	private Environment environment;*/
 
 	@Override
-	public String doLogin(String asiNumber,String userName,String password) {
+	public String doLogin(String asiNumber,String userName,String password, String environmentType) {
 		//ObjectMapper mapper = new ObjectMapper();
         //mapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
        
         AccessBean accessBean = null;
         try {
+        	if(environmentType.equals("Sand")){
+        		loginApiURL = "https://sandbox-productservice.asicentral.com/api/v4/Login";
+        	} else{
+        		loginApiURL = "https://productservice.asicentral.com/api/v4/Login";
+        	}
+        	//loginApiURL = environment.getProperty(environmentType+".login.endpoint.URL");
         	HttpHeaders header = new HttpHeaders();
             header.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
             header.setContentType(MediaType.APPLICATION_JSON);
-          
-            
             Map<String, String> body = new HashMap<String, String>();     
-            
+          
             body.put(ApplicationConstants.CONST_ASI_NUMBER, asiNumber);
             body.put(ApplicationConstants.CONST_USERNAME,userName);
             body.put(ApplicationConstants.CONST_PASSWORD, password);

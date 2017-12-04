@@ -191,10 +191,10 @@ public class LookupData {
 	}
 	//public static String
 
-	public void loadLineNames(String supplierNo,String authToken){
+	public void loadLineNames(String supplierNo,String authToken,String environment){
 		List<String> SupplierLineNames = listOfLineNames.get(supplierNo);
 		if(SupplierLineNames == null){
-			SupplierLineNames = lookupServiceData.getLineNames(authToken);
+			SupplierLineNames = lookupServiceData.getLineNames(authToken,environment);
 			listOfLineNames.put(supplierNo, SupplierLineNames);
 		}
 		
@@ -202,10 +202,10 @@ public class LookupData {
 	public List<String> getLineNames(String supplierNo){
 	     return	listOfLineNames.get(supplierNo);
 	}
-	public void loadFobPoints(String supplierNo,String authToken){
+	public void loadFobPoints(String supplierNo,String authToken,String environment){
 		List<String> SupplierLineNames = listOfFobPoints.get(supplierNo);
 		if(SupplierLineNames == null){
-			SupplierLineNames = lookupServiceData.getFobPoints(authToken);
+			SupplierLineNames = lookupServiceData.getFobPoints(authToken,environment);
 			listOfFobPoints.put(supplierNo, SupplierLineNames);
 		}
 		

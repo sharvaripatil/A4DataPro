@@ -20,7 +20,7 @@ import com.a4tech.util.ApplicationConstants;
 public class WholeSaleAttributeParser {
 	private static final Logger _LOGGER = Logger.getLogger(WholeSaleAttributeParser.class);
 	private LookupServiceData lookupServiceDataObj;
-	public Product getExistingProductData(Product existingProduct , ProductConfigurations existingProductConfig,String accessToken){
+	public Product getExistingProductData(Product existingProduct , ProductConfigurations existingProductConfig,String accessToken,String environment){
 		
 		ProductConfigurations newProductConfigurations=new ProductConfigurations();
 		Product newProduct=new Product();
@@ -50,7 +50,7 @@ public class WholeSaleAttributeParser {
 			if(!CollectionUtils.isEmpty(fobPoints)){
 				newProduct.setFobPoints(fobPoints);
 			}else{
-				List<String> fobPointsTemp=lookupServiceDataObj.getFobPoints(accessToken);
+				List<String> fobPointsTemp=lookupServiceDataObj.getFobPoints(accessToken,environment);
 				String tempValue=null;
 				for (String string : fobPointsTemp) {
 					if(string.toUpperCase().contains("NY")){

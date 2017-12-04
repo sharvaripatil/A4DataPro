@@ -38,7 +38,7 @@ public class ProGolfShippingMapping {
 	private ProGolfInformationAttributeParser proGolfAttributeParser;
 
 	public String readMapper(Map<String, Product> productMaps, Sheet sheet, String accessToken,
-			Integer asiNumber, int batchId) {
+			Integer asiNumber, int batchId,String environmet) {
 
 		int columnIndex = 0;
 
@@ -106,7 +106,7 @@ public class ProGolfShippingMapping {
 									}
 									if (!StringUtils.isEmpty(existingProduct.getExternalProductId())) {
 										int num = postServiceImpl.postProduct(accessToken, existingProduct, asiNumber,
-												batchId);
+												batchId, environmet);
 										if (num == 1) {
 											numOfProductsSuccess.add("1");
 										} else if (num == 0) {
@@ -137,7 +137,7 @@ public class ProGolfShippingMapping {
 						case "Free_On_Board":
 							String fobPointValue = cell.getStringCellValue();
 							List<FOBPoint> listOfFobPoint = proGolfAttributeParser.getFobPoint(fobPointValue,
-									accessToken);
+									accessToken,environmet);
 							if (!CollectionUtils.isEmpty(listOfFobPoint)) {
 								existingProduct.setFobPoints(listOfFobPoint);
 							}
@@ -212,7 +212,7 @@ public class ProGolfShippingMapping {
 				existingProduct.setDistributorOnlyComments(distributorOnlyComments);
 			}
 			if (!StringUtils.isEmpty(existingProduct.getExternalProductId())) {
-				int num = postServiceImpl.postProduct(accessToken, existingProduct, asiNumber, batchId);
+				int num = postServiceImpl.postProduct(accessToken, existingProduct, asiNumber, batchId, environmet);
 				if (num == 1) {
 					numOfProductsSuccess.add("1");
 				} else if (num == 0) {
