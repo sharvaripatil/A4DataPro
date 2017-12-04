@@ -47,6 +47,13 @@ import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
 public class MerchAttributeParser {
+	public static List<String> listOfXidForBasePriceGrid  = Arrays.asList("1920-4883523",
+			"1920-4883314", "1920-4883278", "1920-4883282", "1920-6645277", "1920-4883297", "1920-4883300",
+			"1920-4883305", "1920-4883308", "1920-550517749", "1920-550517737", "1920-4883358", "1920-4883319",
+			"1920-4883347", "1920-4883583", "1920-4883234", "1920-550042661", "1920-4883396", "1920-4883411",
+			"1920-4883206", "1920-4883422", "1920-4883426", "1920-4883429", "1920-5643964", "1920-4883231",
+			"1920-4883213", "1920-4883222", "1920-4883239", "1920-4883247", "1920-4883255", "1920-4883258",
+			"1920-550042656", "1920-550517755", "1920-550517762");
 	private MerchPriceGridParser merchPriceGridParser;
  	public Product keepExistingProductData(Product existingProduct){
 		//Please keep the Categories,Images and Themes for existing products.
@@ -67,69 +74,120 @@ public class MerchAttributeParser {
 		newProduct.setProductConfigurations(newConfiguration);
 		return newProduct;
 	}
-	
-   public Size getProductSize(String val){
+ 	public Values getProductSizeValue(String sizeVal){
+ 		Values valuesObj = new Values();
+ 			if (sizeVal.contains("CUBE") || sizeVal.contains("Cube") || sizeVal.contains("cube")) {
+ 				String value = sizeVal.replaceAll("[^0-9/ ]", "");
+ 				value = value + "x" + value + "x" + value;
+ 				valuesObj = getOverAllSizeValObj(value, "Length", "Width", "Height");
+ 			} else if (sizeVal.contains("globe")) {
+ 				sizeVal = sizeVal.replaceAll("[^0-9/ ]", "");
+ 				valuesObj = getOverAllSizeValObj(sizeVal, "Circumference", "", "");
+ 			} else if(sizeVal.contains("adjustable strap")){
+ 			} else if(sizeVal.contains("handles") || sizeVal.contains("handle") ||
+ 					sizeVal.contains("Strap") || sizeVal.contains("strap")){
+ 				String value = sizeVal.replaceAll("[^0-9/ ]", "");
+ 				valuesObj = getOverAllSizeValObj(value, "Length", "", "");
+ 			} else if(sizeVal.equalsIgnoreCase("Closed: 14\" L, Open: 23\" L, 37\" Span")){
+ 				sizeVal = "23X37";
+ 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
+ 			} else if(sizeVal.equalsIgnoreCase("Closed: 39 1/2\" L, Open: 57\" Span")){
+ 				sizeVal = "39X57";
+ 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
+ 			} else if(sizeVal.contains("Span") || sizeVal.contains("span")){
+ 				if(sizeVal.contains(",")){//33" L, 47" Span
+ 					sizeVal  = sizeVal.replaceAll("[^0-9/, ]", "");
+ 					String[] ss = CommonUtility.getValuesOfArray(sizeVal, ",");
+ 					String finalSize = ss[0] + "x"+ss[1];
+ 					valuesObj = getOverAllSizeValObj(finalSize, "Length", "Width", "");
+ 				} else {
+ 					String value = sizeVal.replaceAll("[^0-9/ ]", "");
+ 					valuesObj = getOverAllSizeValObj(value, "Width", "", "");
+ 				}
+ 			} else if (sizeVal.contains("L") || sizeVal.contains("H") || sizeVal.contains("W")
+ 					|| sizeVal.contains("D") || sizeVal.contains("SQ") || sizeVal.contains("DIA") 
+ 					|| sizeVal.contains("Dia") || sizeVal.contains("dia")) {
+ 				sizeVal = getFinalSizeValue(sizeVal);
+ 				sizeVal = sizeVal.substring(0, sizeVal.length() - 1);// trim last character i.e :
+                 String[] sss = CommonUtility.getValuesOfArray(sizeVal, ":");
+                if(sss.length == 2){
+             	   String finalSize = sss[0];
+             	   valuesObj = getOverAllSizeValObj(finalSize, sss[1], "", "");
+                } else if(sss.length == 4){
+             	   String finalSize = sss[0] + "x"+sss[2];
+ 					valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], "");
+                } else if(sss.length == 6){
+             	   String finalSize = sss[0] + "x"+sss[2]+ "x"+sss[4];
+ 					valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], sss[5]);
+                }
+ 			}
+ 		return valuesObj;
+    }
+   public Size getProductSize(List<String> sizeList){
 	   Size sizeObj = new Size();
 	   Values valuesObj = null;
 	   Dimension dimentionObj = new Dimension();
 	   List<Values> listOfValues = new ArrayList<>();
-	   val = val.replaceAll(";", ",");
-	   String[] vals = null;
-	   if(val.contains("Closed:")){
-		   vals = new String[]{val};
-	   } else {
-		   vals = CommonUtility.getValuesOfArray(val, ",");
-	   }
-		for (String sizeVal : vals) {
-			valuesObj = new Values();
-			if (sizeVal.contains("CUBE") || sizeVal.contains("Cube") || sizeVal.contains("cube")) {
-				String value = sizeVal.replaceAll("[^0-9/ ]", "");
-				value = value + "x" + value + "x" + value;
-				valuesObj = getOverAllSizeValObj(value, "Length", "Width", "Height");
-			} else if (sizeVal.contains("globe")) {
-				sizeVal = sizeVal.replaceAll("[^0-9/ ]", "");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Circumference", "", "");
-			} else if(sizeVal.contains("adjustable strap")){
-				continue;
-			} else if(sizeVal.contains("handles") || sizeVal.contains("handle") ||
-					sizeVal.contains("Strap") || sizeVal.contains("strap")){
-				String value = sizeVal.replaceAll("[^0-9/ ]", "");
-				valuesObj = getOverAllSizeValObj(value, "Length", "", "");
-			} else if(sizeVal.equalsIgnoreCase("Closed: 14\" L, Open: 23\" L, 37\" Span")){
-				sizeVal = "23X37";
-				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
-			} else if(sizeVal.equalsIgnoreCase("Closed: 39 1/2\" L, Open: 57\" Span")){
-				sizeVal = "39X57";
-				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
-			} else if(sizeVal.contains("Span") || sizeVal.contains("span")){
-				if(sizeVal.contains(",")){//33" L, 47" Span
-					sizeVal  = sizeVal.replaceAll("[^0-9/, ]", "");
-					String[] ss = CommonUtility.getValuesOfArray(sizeVal, ",");
-					String finalSize = ss[0] + "x"+ss[1];
-					valuesObj = getOverAllSizeValObj(finalSize, "Length", "Width", "");
-				} else {
+	   for (String val : sizeList) {
+		   		   val = val.replaceAll(";", ",");
+		   String[] vals = null;
+		   if(val.contains("Closed:")){
+			   vals = new String[]{val};
+		   } else {
+			   vals = CommonUtility.getValuesOfArray(val, ",");
+		   }
+			for (String sizeVal : vals) {
+				valuesObj = new Values();
+				if (sizeVal.contains("CUBE") || sizeVal.contains("Cube") || sizeVal.contains("cube")) {
 					String value = sizeVal.replaceAll("[^0-9/ ]", "");
-					valuesObj = getOverAllSizeValObj(value, "Width", "", "");
+					value = value + "x" + value + "x" + value;
+					valuesObj = getOverAllSizeValObj(value, "Length", "Width", "Height");
+				} else if (sizeVal.contains("globe")) {
+					sizeVal = sizeVal.replaceAll("[^0-9/ ]", "");
+					valuesObj = getOverAllSizeValObj(sizeVal, "Circumference", "", "");
+				} else if(sizeVal.contains("adjustable strap")){
+					continue;
+				} else if(sizeVal.contains("handles") || sizeVal.contains("handle") ||
+						sizeVal.contains("Strap") || sizeVal.contains("strap")){
+					String value = sizeVal.replaceAll("[^0-9/ ]", "");
+					valuesObj = getOverAllSizeValObj(value, "Length", "", "");
+				} else if(sizeVal.equalsIgnoreCase("Closed: 14\" L, Open: 23\" L, 37\" Span")){
+					sizeVal = "23X37";
+					valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
+				} else if(sizeVal.equalsIgnoreCase("Closed: 39 1/2\" L, Open: 57\" Span")){
+					sizeVal = "39X57";
+					valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
+				} else if(sizeVal.contains("Span") || sizeVal.contains("span")){
+					if(sizeVal.contains(",")){//33" L, 47" Span
+						sizeVal  = sizeVal.replaceAll("[^0-9/, ]", "");
+						String[] ss = CommonUtility.getValuesOfArray(sizeVal, ",");
+						String finalSize = ss[0] + "x"+ss[1];
+						valuesObj = getOverAllSizeValObj(finalSize, "Length", "Width", "");
+					} else {
+						String value = sizeVal.replaceAll("[^0-9/ ]", "");
+						valuesObj = getOverAllSizeValObj(value, "Width", "", "");
+					}
+				} else if (sizeVal.contains("L") || sizeVal.contains("H") || sizeVal.contains("W")
+						|| sizeVal.contains("D") || sizeVal.contains("SQ") || sizeVal.contains("DIA") 
+						|| sizeVal.contains("Dia") || sizeVal.contains("dia")) {
+					sizeVal = getFinalSizeValue(sizeVal);
+					sizeVal = sizeVal.substring(0, sizeVal.length() - 1);// trim last character i.e :
+	                String[] sss = CommonUtility.getValuesOfArray(sizeVal, ":");
+	               if(sss.length == 2){
+	            	   String finalSize = sss[0];
+	            	   valuesObj = getOverAllSizeValObj(finalSize, sss[1], "", "");
+	               } else if(sss.length == 4){
+	            	   String finalSize = sss[0] + "x"+sss[2];
+						valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], "");
+	               } else if(sss.length == 6){
+	            	   String finalSize = sss[0] + "x"+sss[2]+ "x"+sss[4];
+						valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], sss[5]);
+	               }
 				}
-			} else if (sizeVal.contains("L") || sizeVal.contains("H") || sizeVal.contains("W")
-					|| sizeVal.contains("D") || sizeVal.contains("SQ") || sizeVal.contains("DIA") 
-					|| sizeVal.contains("Dia") || sizeVal.contains("dia")) {
-				sizeVal = getFinalSizeValue(sizeVal);
-				sizeVal = sizeVal.substring(0, sizeVal.length() - 1);// trim last character i.e :
-                String[] sss = CommonUtility.getValuesOfArray(sizeVal, ":");
-               if(sss.length == 2){
-            	   String finalSize = sss[0];
-            	   valuesObj = getOverAllSizeValObj(finalSize, sss[1], "", "");
-               } else if(sss.length == 4){
-            	   String finalSize = sss[0] + "x"+sss[2];
-					valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], "");
-               } else if(sss.length == 6){
-            	   String finalSize = sss[0] + "x"+sss[2]+ "x"+sss[4];
-					valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], sss[5]);
-               }
+				listOfValues.add(valuesObj);
 			}
-			listOfValues.add(valuesObj);
-		}
+	}
+	   
 	   
 	   dimentionObj.setValues(listOfValues);
 		sizeObj.setDimension(dimentionObj);
@@ -238,16 +296,18 @@ public class MerchAttributeParser {
 		valueObj.setValue(value);
 		return valueObj;
 	}
-  public List<ImprintSize> getProductImprintSize(String imprSize){
-	  imprSize = imprSize.replaceAll("or", ",");
-	  imprSize = imprSize.replaceAll(";", ",");
+  public List<ImprintSize> getProductImprintSize(List<String> imprSizeList){
 	  List<ImprintSize> imprintSizeList = new ArrayList<>();
 	  ImprintSize imprintSizeObj = null;
-	  String[] imprSizes = CommonUtility.getValuesOfArray(imprSize, ",");
-	  for (String imprSizeName : imprSizes) {
-		  imprintSizeObj = new ImprintSize();
-		  imprintSizeObj.setValue(imprSizeName);
-		  imprintSizeList.add(imprintSizeObj);
+	  for (String imprSize : imprSizeList) {
+		  imprSize = imprSize.replaceAll("or", ",");
+		  imprSize = imprSize.replaceAll(";", ",");
+		  String[] imprSizes = CommonUtility.getValuesOfArray(imprSize, ",");
+		  for (String imprSizeName : imprSizes) {
+			  imprintSizeObj = new ImprintSize();
+			  imprintSizeObj.setValue(imprSizeName);
+			  imprintSizeList.add(imprintSizeObj);
+		}
 	}
 	  return imprintSizeList;
   }
@@ -869,6 +929,9 @@ public List<Shape> getProductShape(String shapeVal){
 	shapeObj.setName(shapeVal);
 	shapeList.add(shapeObj);
 	return shapeList;
+}
+public boolean isSpecialBasePriceGrid(String xid){
+	return listOfXidForBasePriceGrid.contains(xid);
 }
   public MerchPriceGridParser getMerchPriceGridParser() {
 		return merchPriceGridParser;

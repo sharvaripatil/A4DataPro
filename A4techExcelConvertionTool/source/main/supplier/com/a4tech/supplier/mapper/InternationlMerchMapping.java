@@ -40,6 +40,7 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 import parser.InternationalMerchConcepts.MerchAttributeParser;
+import parser.InternationalMerchConcepts.MerchColorMapping;
 
 public class InternationlMerchMapping implements IExcelParser{
 	
@@ -86,6 +87,10 @@ public class InternationlMerchMapping implements IExcelParser{
 		List<String> colorsList = new ArrayList<>();
 		String prdNumber = "";
 		Map<String, String> productNumbersMap = new HashMap<>();
+		List<String> supplierImprSizeList = new ArrayList<>();
+		List<String> supplierSizeValList  = new ArrayList<>();
+		String sizeValue = "";
+		String imprintSizeVal = "";
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
@@ -155,29 +160,36 @@ public class InternationlMerchMapping implements IExcelParser{
 						    	   List<Color> colorList = merchAttributeParser.getProductColor(colorsList);
 						    	   productConfigObj.setColors(colorList);
 						       }
-						       if(!StringUtils.isEmpty(grid_1Prices.toString())){
-									// grid based on Debossed 
-						    	   String imprintMethodType = "";
-						    	   if(!StringUtils.isEmpty(grid_2Prices.toString())){
-						    		   imprintMethodType = "Debossed";
-						    	   } 
-									productExcelObj.setProductConfigurations(productConfigObj);
-									productExcelObj.setPriceGrids(priceGrids);
-										productExcelObj = merchAttributeParser.getBasePriceColumns(grid_1Quantity.toString(),
-												grid_1Prices.toString(), grid_1Discounts.toString(), priceGridName_1, priceInclude_upcharge,
-												productExcelObj, imprintMethodType);
-									productConfigObj = productExcelObj.getProductConfigurations();
-									priceGrids = productExcelObj.getPriceGrids();
-								}
-								if(!StringUtils.isEmpty(grid_2Prices.toString())){
-									// grid based on Silkscreen 
-									productExcelObj.setProductConfigurations(productConfigObj);
-									productExcelObj.setPriceGrids(priceGrids);
-									productExcelObj = merchAttributeParser.getBasePriceColumns(grid_2Quantity.toString(),
-											grid_2Prices.toString(), grid_2Discounts.toString(), priceGridName_2, priceInclude_2,
-											productExcelObj, "Silkscreen");
-									productConfigObj = productExcelObj.getProductConfigurations();
-									priceGrids = productExcelObj.getPriceGrids();
+									List<ImprintSize> imprintSizeList = merchAttributeParser
+											.getProductImprintSize(supplierImprSizeList);
+								productConfigObj.setImprintSize(imprintSizeList);
+								Size sizeVals = merchAttributeParser.getProductSize(supplierSizeValList);
+								productConfigObj.setSizes(sizeVals);
+								if(!merchAttributeParser.isSpecialBasePriceGrid(xid)){
+									if(!StringUtils.isEmpty(grid_1Prices.toString())){
+										// grid based on Debossed 
+							    	   String imprintMethodType = "";
+							    	   if(!StringUtils.isEmpty(grid_2Prices.toString())){
+							    		   imprintMethodType = "Debossed";
+							    	   } 
+										productExcelObj.setProductConfigurations(productConfigObj);
+										productExcelObj.setPriceGrids(priceGrids);
+											productExcelObj = merchAttributeParser.getBasePriceColumns(grid_1Quantity.toString(),
+													grid_1Prices.toString(), grid_1Discounts.toString(), priceGridName_1, priceInclude_upcharge,
+													productExcelObj, imprintMethodType);
+										productConfigObj = productExcelObj.getProductConfigurations();
+										priceGrids = productExcelObj.getPriceGrids();
+									}
+									if(!StringUtils.isEmpty(grid_2Prices.toString())){
+										// grid based on Silkscreen 
+										productExcelObj.setProductConfigurations(productConfigObj);
+										productExcelObj.setPriceGrids(priceGrids);
+										productExcelObj = merchAttributeParser.getBasePriceColumns(grid_2Quantity.toString(),
+												grid_2Prices.toString(), grid_2Discounts.toString(), priceGridName_2, priceInclude_2,
+												productExcelObj, "Silkscreen");
+										productConfigObj = productExcelObj.getProductConfigurations();
+										priceGrids = productExcelObj.getPriceGrids();
+									}
 								}
 									ShippingEstimate shippingEstimation = merchAttributeParser
 											.getProductShippingEstimates(noOfItems, shippingDimention.toString(), shippingWeight);
@@ -220,6 +232,10 @@ public class InternationlMerchMapping implements IExcelParser{
 								  prdNumber = "";
 								  productNumbersMap = new HashMap<>();
 								  description = new StringBuilder();
+								  supplierImprSizeList = new ArrayList<>();
+								  supplierSizeValList  = new ArrayList<>();
+								  sizeValue = "";
+								  imprintSizeVal = "";
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -241,7 +257,7 @@ public class InternationlMerchMapping implements IExcelParser{
 						 continue;
 					 }*/
 					if(productXids.contains(xid) && repeatRows.size() != 0){
-						 if(isRepeateColumn(columnIndex+1)){
+						 if(isRepeateColumn(columnIndex+1,xid)){
 							 continue;
 						 }
 					}
@@ -290,15 +306,13 @@ public class InternationlMerchMapping implements IExcelParser{
 				case 25:// dimension
 					String sizeVal = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(sizeVal)){
-					  Size sizeVals = merchAttributeParser.getProductSize(sizeVal);
-					  productConfigObj.setSizes(sizeVals);
+						supplierSizeValList.add(sizeVal);
 					}
 					break;
 				case 26:// Imprint size
 					String imprintSize = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintSize)){
-						List<ImprintSize> imprintSizeList = merchAttributeParser.getProductImprintSize(imprintSize);
-						productConfigObj.setImprintSize(imprintSizeList);
+						supplierImprSizeList.add(imprintSize);
 					}
 					break;
 				case 27: 
@@ -881,6 +895,23 @@ public class InternationlMerchMapping implements IExcelParser{
 			}  // end inner while loop
 					 
 		}
+			if(merchAttributeParser.isSpecialBasePriceGrid(xid)){
+				if(!StringUtils.isEmpty(grid_1Prices.toString())){
+							    	   String imprintMethodType = "";
+		    	   if(!StringUtils.isEmpty(grid_2Prices.toString())){
+		    		   imprintMethodType = "Debossed";
+		    	   } 
+					productExcelObj.setProductConfigurations(productConfigObj);
+					productExcelObj.setPriceGrids(priceGrids);
+					// changes are required for price configuration,
+						productExcelObj = merchAttributeParser.getBasePriceColumns(grid_1Quantity.toString(),
+								grid_1Prices.toString(), grid_1Discounts.toString(), priceGridName_1, priceInclude_upcharge,
+								productExcelObj, imprintMethodType);
+					productConfigObj = productExcelObj.getProductConfigurations();
+					priceGrids = productExcelObj.getPriceGrids();
+				}	
+			}
+			
 				productExcelObj.setPriceType("L");
 			    repeatRows.add(xid);
 			}catch(Exception e){
@@ -922,29 +953,31 @@ public class InternationlMerchMapping implements IExcelParser{
 	    	   List<Color> colorList = merchAttributeParser.getProductColor(colorsList);
 	    	   productConfigObj.setColors(colorList);
 	       }
-	       if(!StringUtils.isEmpty(grid_1Prices.toString())){
-				// grid based on Debossed
-	    	   String imprintMethodType = "";
-	    	   if(!StringUtils.isEmpty(grid_2Prices.toString())){
-	    		   imprintMethodType = "Debossed";
-	    	   } 
-				productExcelObj.setProductConfigurations(productConfigObj);
-				productExcelObj.setPriceGrids(priceGrids);
-					productExcelObj = merchAttributeParser.getBasePriceColumns(grid_1Quantity.toString(),
-							grid_1Prices.toString(), grid_1Discounts.toString(), priceGridName_1, priceInclude_upcharge,
-							productExcelObj, imprintMethodType);
-				productConfigObj = productExcelObj.getProductConfigurations();
-				priceGrids = productExcelObj.getPriceGrids();
-			}
-			if(!StringUtils.isEmpty(grid_2Prices.toString())){
-				// grid based on Silkscreen 
-				productExcelObj.setProductConfigurations(productConfigObj);
-				productExcelObj.setPriceGrids(priceGrids);
-				productExcelObj = merchAttributeParser.getBasePriceColumns(grid_2Quantity.toString(),
-						grid_2Prices.toString(), grid_2Discounts.toString(), priceGridName_2, priceInclude_2,
-						productExcelObj, "Silkscreen");
-				productConfigObj = productExcelObj.getProductConfigurations();
-				priceGrids = productExcelObj.getPriceGrids();
+	       if(!merchAttributeParser.isSpecialBasePriceGrid(xid)){
+				if(!StringUtils.isEmpty(grid_1Prices.toString())){
+					// grid based on Debossed 
+		    	   String imprintMethodType = "";
+		    	   if(!StringUtils.isEmpty(grid_2Prices.toString())){
+		    		   imprintMethodType = "Debossed";
+		    	   } 
+					productExcelObj.setProductConfigurations(productConfigObj);
+					productExcelObj.setPriceGrids(priceGrids);
+						productExcelObj = merchAttributeParser.getBasePriceColumns(grid_1Quantity.toString(),
+								grid_1Prices.toString(), grid_1Discounts.toString(), priceGridName_1, priceInclude_upcharge,
+								productExcelObj, imprintMethodType);
+					productConfigObj = productExcelObj.getProductConfigurations();
+					priceGrids = productExcelObj.getPriceGrids();
+				}
+				if(!StringUtils.isEmpty(grid_2Prices.toString())){
+					// grid based on Silkscreen 
+					productExcelObj.setProductConfigurations(productConfigObj);
+					productExcelObj.setPriceGrids(priceGrids);
+					productExcelObj = merchAttributeParser.getBasePriceColumns(grid_2Quantity.toString(),
+							grid_2Prices.toString(), grid_2Discounts.toString(), priceGridName_2, priceInclude_2,
+							productExcelObj, "Silkscreen");
+					productConfigObj = productExcelObj.getProductConfigurations();
+					priceGrids = productExcelObj.getPriceGrids();
+				}
 			}
 				ShippingEstimate shippingEstimation = merchAttributeParser
 						.getProductShippingEstimates(noOfItems, shippingDimention.toString(), shippingWeight);
@@ -1001,10 +1034,19 @@ public class InternationlMerchMapping implements IExcelParser{
 		size.setApparel(appareal);
 		return size;
 	}
-	public boolean isRepeateColumn(int columnIndex){
-		if (columnIndex != 2 && columnIndex != 28) {
+	public boolean isRepeateColumn(int columnIndex,String xid){
+  //merchAttributeParser.
+		if(merchAttributeParser.isSpecialBasePriceGrid(xid)){
+			if (columnIndex != 2 && columnIndex != 28 && columnIndex != 25 && columnIndex != 26
+					&& (columnIndex >= 60 || columnIndex < 84)) {
+				return ApplicationConstants.CONST_BOOLEAN_TRUE;
+			}	
+		} else {
+			if (columnIndex != 2 && columnIndex != 28 ){
 				return ApplicationConstants.CONST_BOOLEAN_TRUE;
 			}
+		}
+		
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
 	private String specialCaseXid(String xid,Row row){
