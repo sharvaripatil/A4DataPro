@@ -1031,9 +1031,16 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					}
 					else if(FOBValue.contains("TN"))
 					{
-						fobPintObj.setName("Shelbyville, TN 37162 USA");
-						FobPointsList.add(fobPintObj);
+						if(asiNumber==57711){
+							fobPintObj.setName("Shelbyville, TN 37162 USA");
+							FobPointsList.add(fobPintObj);
+					     }
+						else{
+							fobPintObj.setName("Shelbyville, TN 37160 USA");
+							FobPointsList.add(fobPintObj);
+						}
 					}
+
 					if(FOBValue.contains("02"))
 					{
 						

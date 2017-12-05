@@ -136,7 +136,7 @@ public class ExcelFactory {
 		   else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
 			   return bamExcelMapping;
 		   }
-		   else if(name.equalsIgnoreCase("goldCanada") || name.equals("57711")){
+		   else if(name.equalsIgnoreCase("goldCanada") || name.equals("57711") || name.equals("73295") ){
 			   return goldcanadaExcelMapping;
 
 		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
