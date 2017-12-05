@@ -54,7 +54,7 @@ public class BBIProductsExcelMapping implements IExcelParser{
 	ProductImprintMethodParser imprintMethodParser;
 	BBIPriceGridParser bbiPriceGridParser;
 	@SuppressWarnings("finally")
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId, String environmentType){
 		int columnIndex = 0;
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
@@ -146,7 +146,7 @@ public class BBIProductsExcelMapping implements IExcelParser{
 								   // Add repeatable sets here
 								 	productExcelObj.setPriceGrids(priceGrids);
 								 	productExcelObj.setProductConfigurations(productConfigObj);
-								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
 								 	}else if(num == 0) {
@@ -174,7 +174,7 @@ public class BBIProductsExcelMapping implements IExcelParser{
 					case 1:
 						productId=CommonUtility.getCellValueStrinOrInt(cell);
 						/////imp code 
-						existingApiProduct=postServiceImpl.getProduct(accessToken, productId);
+						existingApiProduct=postServiceImpl.getProduct(accessToken, productId, null);
 						if(existingApiProduct!=null){
 							_LOGGER.info("Product "+productId+" is an existing product Using existing product also");
 							productExcelObj=existingApiProduct;
@@ -466,7 +466,7 @@ public class BBIProductsExcelMapping implements IExcelParser{
 	 	productExcelObj.setPriceGrids(priceGrids);
 	 	productExcelObj.setProductConfigurations(productConfigObj);
 
-	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 	 	if(num ==1){
 	 		numOfProductsSuccess.add("1");
 	 	}else if(num == 0){

@@ -4,5 +4,5 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 public interface IExcelParser {
 	
-       public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId);
+       public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType);
 }

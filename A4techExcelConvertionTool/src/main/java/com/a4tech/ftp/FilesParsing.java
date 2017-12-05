@@ -9,7 +9,6 @@ import java.util.Calendar;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -20,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.a4tech.core.excelMapping.ExcelFactory;
 import com.a4tech.excel.service.IExcelParser;
-import com.a4tech.product.dao.entity.SupplierLoginDetails;
+import com.a4tech.product.dao.entity.BaseSupplierLoginDetails;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.service.ILoginService;
 import com.a4tech.product.service.IMailService;
@@ -46,15 +45,16 @@ public class FilesParsing {
 			try{
 			 fileName = file.getName();
 			String asiNumber = getAsiNumberFile(fileName);
+			 String environmentType = getEnvironment(fileName);
 			Workbook workBook = null;
 			/*boolean fileStatus = isFileProcess(fileName, asiNumber);
 			if (fileStatus) {
 				_LOGGER.info(fileName +" :"+ "file already processed");
 				continue;
 			}*/
-			String accessToken = getAccessToken(asiNumber);
+			String accessToken = getAccessToken(asiNumber,environmentType);
 			if( accessToken == null){
-				invalidSupplierDetails(asiNumber);
+				invalidSupplierDetails(asiNumber,environmentType);
 				continue;
 			}
 			//This is used to pause mins before processing first file
@@ -84,11 +84,11 @@ public class FilesParsing {
 			}
 			 int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 			 if(workBook != null){
-				 processFileStatusMail(asiNumber, "ProcessStart", batchId);
-				 excelParserImpl.readExcel(accessToken, workBook, Integer.parseInt(asiNumber), batchId);
+				 processFileStatusMail(asiNumber, "ProcessStart", batchId,environmentType);
+				 excelParserImpl.readExcel(accessToken, workBook, Integer.parseInt(asiNumber), batchId, environmentType);
 				 productDao.updateFtpFileStatus(fileName, asiNumber,
 							ApplicationConstants.CONST_STRING_YES);
-				 processFileStatusMail(asiNumber, "ProcessEnd", batchId);
+				 processFileStatusMail(asiNumber, "ProcessEnd", batchId,environmentType);
 			 }	
 			_LOGGER.info(fileName +":"+ "file parsing completed");
            }catch (Exception exce) {
@@ -109,36 +109,41 @@ public class FilesParsing {
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
 	
-	public String getAccessToken(String asiNumber){
-		   SupplierLoginDetails loginDetails = productDao.getSupplierLoginDetails(asiNumber);
+	public String getAccessToken(String asiNumber,String environmentType){
+		BaseSupplierLoginDetails loginDetails = productDao.getSupplierLoginDetailsBase(asiNumber,environmentType);
 		   if(loginDetails != null){
 			   String accessToken = loginService.doLogin(loginDetails.getAsiNumber(),
-						loginDetails.getUserName(), loginDetails.getPassword());
+						loginDetails.getUserName(), loginDetails.getPassword(), environmentType);
 			   return accessToken;
 		   } else {
 			   return null;
 		   }
 	}
-    private String getAsiNumberFile(String fileName){
+    private String getAsiNumberFile(String fileName){//Sand_123_fileName
     	String[] names = fileName.split(ApplicationConstants.CONST_DELIMITER_UNDER_SCORE);
-    	return names[0];
+    	return names[1];
     }
-    private void invalidSupplierDetails(String supplierNo){
- 
+    private void invalidSupplierDetails(String supplierNo,String environmentType){
+       if(environmentType.equals("Sand")){
+    	   environmentType = "Sandbox Environment ";
+       } else {
+    	   environmentType = "Production Environment ";
+       }
     	String subject = supplierNo + " "+ "Supplier Details Are Invalid/Not Available";
     	String body = "Dear Team,"
-    			      +"\n \n"+supplierNo+" "+ "supplier login details are Invalid/Expired/Not Available"
+    			      +"\n \n"+environmentType+ supplierNo+" "+ "supplier login details are Invalid/Expired/Not Available"
     			      +"\n\nPlease contact ASI team for update login details"
     			      + "\n\n\n\n\n"
     		            +"Thanks and Regards,"
     		  			+"\nA4Tech Team";
     	mailService.supplierLoginFailureMail(supplierNo, body, subject);
     }
-    private void processFileStatusMail(String supplierNo,String type,int batchNo){
-    	String subject = "";;
+    private void processFileStatusMail(String supplierNo,String type,int batchNo,String environment){
+    	String subject = "";
     	String body = "";
+    	environment = environment.equals("Sand")?"Sandbox":"Production";
     	if(type.equals("ProcessStart")){
-    		subject = supplierNo +" "+ "File Processing Start";
+    		subject =environment+" "+ supplierNo +" "+ "File Processing Start";
     		body = "Dear Team,"
   			      +"\n \n"+supplierNo+" "+ "File processing Start"
   			      +"\n\n You will get separate mail once Process completed"+
@@ -149,7 +154,7 @@ public class FilesParsing {
   	    		+"Note: This is Computer Generated Mail. No need to reply.*";
     		mailService.fileProcessStart(body, subject);
     	}else if(type.equals("ProcessEnd")){
-    		subject = supplierNo +" "+ "File Process completed";
+    		subject = environment+" "+supplierNo +" "+ "File Process completed";
     		body = "Dear Team,"
   			      +"\n \n"+supplierNo+" "+ "File process completed"
   			      +"\n\nKindly find the attached " +batchNo +".txt Product Error File"
@@ -238,7 +243,10 @@ public class FilesParsing {
 		
 		return file;
 	}
-
+private String getEnvironment(String fileName){//Sand_1242_BestDeal.xls
+	String[] types = CommonUtility.getValuesOfArray(fileName, "_");
+	return types[0];
+}
 	public ProductDao getProductDao() {
 		return productDao;
 	}

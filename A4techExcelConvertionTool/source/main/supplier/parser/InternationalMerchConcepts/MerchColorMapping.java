@@ -5,7 +5,6 @@ import java.util.Map;
 
 public class MerchColorMapping {
 public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
-	
 	static{
 		COLOR_MAP.put("Black","Medium Black");
 		COLOR_MAP.put("Pure White","Medium White");

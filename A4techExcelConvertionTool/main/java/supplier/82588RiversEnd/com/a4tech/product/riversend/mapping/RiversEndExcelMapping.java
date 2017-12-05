@@ -76,7 +76,7 @@ public class RiversEndExcelMapping  implements IExcelParser{
 		XIDS.add("3063-6163863");
 	}
 	
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 	
 		StringBuilder FinalKeyword = new StringBuilder();
 		StringBuilder AdditionalInfo = new StringBuilder();
@@ -193,7 +193,7 @@ public class RiversEndExcelMapping  implements IExcelParser{
 								 	if(XIDS.contains(productExcelObj.getExternalProductId().trim())){
 								 		productExcelObj.setAvailability(new ArrayList<Availability>());
 								 	}
-							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -226,7 +226,7 @@ public class RiversEndExcelMapping  implements IExcelParser{
 						    	repeatRows.add(xid);
 						    }
 						    productExcelObj = new Product();
-						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
+						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid, environmentType); 
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
@@ -444,7 +444,7 @@ public class RiversEndExcelMapping  implements IExcelParser{
 		 	if(XIDS.contains(productExcelObj.getExternalProductId().trim())){
 		 		productExcelObj.setAvailability(new ArrayList<Availability>());
 		 	}
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){

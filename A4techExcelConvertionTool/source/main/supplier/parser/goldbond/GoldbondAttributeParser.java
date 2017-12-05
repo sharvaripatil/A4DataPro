@@ -697,10 +697,10 @@ public class GoldbondAttributeParser {
 		existingProduct.setPriceGrids(priceGrids);
 		return existingProduct;
 	}
-	public List<FOBPoint> getFobPoint(final String  value,String authToken){
+	public List<FOBPoint> getFobPoint(final String  value,String authToken,String environment){
 		List<FOBPoint> listOfFobPoint = new ArrayList<>();
 		if(lookupFobPoints == null){
-			lookupFobPoints = lookupServiceData.getFobPoints(authToken);
+			lookupFobPoints = lookupServiceData.getFobPoints(authToken,environment);
 		}
 		String finalFobValue = lookupFobPoints.stream().filter(fobValue -> fobValue.contains(value))
 				                              .collect(Collectors.joining());

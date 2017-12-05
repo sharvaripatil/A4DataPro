@@ -8,8 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="supplier_login_details")
-public class SupplierLoginDetails extends BaseSupplierLoginDetails{
+@Table(name="prod_supplier_login_details")
+public class ProductionSupplierLoginDetails extends BaseSupplierLoginDetails{
 	/*@Id
 	@Column(name="ID")
 	@GeneratedValue(strategy=GenerationType.AUTO)

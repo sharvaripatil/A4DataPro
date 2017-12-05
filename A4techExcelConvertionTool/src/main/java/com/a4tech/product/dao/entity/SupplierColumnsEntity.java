@@ -7,43 +7,44 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
 @Entity
-@Table(name="supplier_login_details")
-public class SupplierLoginDetails extends BaseSupplierLoginDetails{
-	/*@Id
+@Table(name="supplier_file_column_count")
+public class SupplierColumnsEntity {
+
+	@Id
 	@Column(name="ID")
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Integer id;
-	@Column(name="ASI_NUMBER")
+	
+	@Column(name="ASI_NO")
 	private String  asiNumber;
-	@Column(name="USER_NAME")
-	private String  userName;
-	@Column(name="PASSWORD")
-	private String  password;
+	
+	@Column(name="COLUMNS_COUNT")
+	private String  columnCount;
+
 	public Integer getId() {
 		return id;
 	}
+
 	public void setId(Integer id) {
 		this.id = id;
 	}
+
 	public String getAsiNumber() {
 		return asiNumber;
 	}
+
 	public void setAsiNumber(String asiNumber) {
 		this.asiNumber = asiNumber;
 	}
-	public String getUserName() {
-		return userName;
+
+	public String getColumnCount() {
+		return columnCount;
 	}
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
+
+	public void setColumnCount(String columnCount) {
+		this.columnCount = columnCount;
 	}
 	
-*/
 }

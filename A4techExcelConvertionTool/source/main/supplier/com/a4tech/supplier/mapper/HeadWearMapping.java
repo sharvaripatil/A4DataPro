@@ -1,7 +1,9 @@
 package com.a4tech.supplier.mapper;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -10,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -39,21 +42,21 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 import parser.goldstarcanada.GoldstarCanadaLookupData;
-import parser.sageRMKWorldwide.SageRMKWorldwideAttributeParser;
-import parser.sageRMKWorldwide.SageRMKWorldwidePriceGridParser;
+import parser.headWear.HeadWearAttributeParser;
+import parser.headWear.HeadWearPriceGridParser;
 
 
-public class SageRMKWorldWideMapping implements IExcelParser{
+public class HeadWearMapping implements IExcelParser{
 	
-	private static final Logger _LOGGER = Logger.getLogger(SageRMKWorldWideMapping.class);
+	private static final Logger _LOGGER = Logger.getLogger(HeadWearMapping.class);
 	
 	private PostServiceImpl 				postServiceImpl;
 	private ProductDao 						productDaoObj;
-	private SageRMKWorldwideAttributeParser sageAttributeParser;
-	private SageRMKWorldwidePriceGridParser priceGridParser;
+    private HeadWearAttributeParser        headWearAttributeParser;
+    private HeadWearPriceGridParser        headWearPriceGridParser;
 
 	@Override
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId,String environmentType){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
@@ -116,13 +119,13 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 		Product existingApiProduct = null;
 		String rushProdTimeLo = "";
 	   Map<String, String>  imprintMethodUpchargeMap = new LinkedHashMap<>();
+	   List<ImprintMethod> imprintMethodList = new ArrayList<>();
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
 			if (nextRow.getRowNum() < 7)
 				continue;
 			// this value is check first column or not becuase first column is skipped if value is not present
-			boolean isFirstColum = true;
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
 			if(productId != null){
 				productXids.add(productId);
@@ -133,34 +136,22 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 				String xid = null;
 				int columnIndex = cell.getColumnIndex();
 				if(columnIndex + 1 == 1){
-					xid = getProductXid(nextRow,false);
-					if(ProductProcessedList.contains(xid)){
-						xid = getProductXid(nextRow,true);
-					}
+					xid = getProductXid(nextRow);
 					checkXid = true;
-					isFirstColum = false;
 				}else{
 					checkXid = false;
-					if(isFirstColum){
-						xid = getProductXid(nextRow,false);
-						if(ProductProcessedList.contains(xid)){
-							xid = getProductXid(nextRow,true);
-						}
-						checkXid = true;
-						isFirstColum = false;
-					}
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 7){
 							 System.out.println("Java object converted to JSON String, written to file");
-							   if(CollectionUtils.isEmpty(listOfImprintMethods)){
-								   listOfImprintMethods = sageAttributeParser.getImprintMethodValues(listOfImprintMethods, "Printed");
+							 if(CollectionUtils.isEmpty(listOfImprintMethods)){
+								   listOfImprintMethods = headWearAttributeParser.getImprintMethodValues("Unimprinted", imprintMethodList);
 							   }
 							   productConfigObj.setImprintMethods(listOfImprintMethods);
 								productExcelObj.setProductConfigurations(productConfigObj);
 								productExcelObj.setPriceGrids(priceGrids);
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId,environmentType);
 							 	//ProductProcessedList.add(productExcelObj.getExternalProductId());
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -192,11 +183,12 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 							     additionalColorPriceVal = "";
 						         additionalColorCode     = "";
 						         asiProdNo = "";
+						         imprintMethodList = new ArrayList<>();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid.trim());
 						    }
-						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid, environmentType);
+						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid,environmentType);
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
@@ -204,7 +196,7 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 						     }else{
 						  	//   productExcelObj=existingApiProduct;
 							//	productConfigObj=existingApiProduct.getProductConfigurations();
-						    	 productExcelObj = sageAttributeParser.keepExistingProductData(existingApiProduct);
+						    	 productExcelObj = headWearAttributeParser.keepExistingProductData(existingApiProduct);
 						    	 productExcelObj.setExternalProductId(xid);
 						        String confthruDate=existingApiProduct.getPriceConfirmedThru();
 						        productExcelObj.setPriceConfirmedThru(confthruDate);
@@ -235,7 +227,6 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 					  break;
 				case 4://Name
 					 productName = cell.getStringCellValue();
-					 productName = getFinalProductName(productName, asiProdNo);
 					 productExcelObj.setName(productName);
 						break;
 				case 5://CatYear(Not used)
@@ -243,8 +234,8 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 				    break;
 					
 				case 6://PriceConfirmedThru
-					// priceConfirmedThru = cell.getDateCellValue();
-					 
+					String expireDate = getPriceConfirmThroughDate(cell);
+					productExcelObj.setPriceConfirmedThru(expireDate);
 					break;
 					
 				case 7: //  product status ,discontinued
@@ -254,7 +245,7 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 					 break;
 					
 				case 8://catalog1
-					
+					//catalog name does not meet ASI standrd,So no need to process catalogs
 					break;
 					
 				case 9: // catalog2
@@ -270,15 +261,13 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 					
 				case 12:  //Description
 					String description =CommonUtility.getCellValueStrinOrInt(cell);
-					description = getFinalDescription(description, asiProdNo);
-					productExcelObj.setDescription(description);
-									
+					productExcelObj.setDescription(description);			
 					break;
 				
 				case 13:  // keywords
 					String productKeyword = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(productKeyword)){
-						List<String> productKeyWords = sageAttributeParser.getProductKeywords(productKeyword);
+						List<String> productKeyWords = headWearAttributeParser.getProductKeywords(productKeyword);
 					 productExcelObj.setProductKeywords(productKeyWords);
 					}
 					break;
@@ -286,7 +275,7 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 				case 14: //Colors
 				String colorValue=cell.getStringCellValue();
 				  if(!StringUtils.isEmpty(colorValue)){
-					  List<Color> colorsList = sageAttributeParser.getProductColor(colorValue);
+					  List<Color> colorsList = headWearAttributeParser.getProductColor(colorValue);
 						productConfigObj.setColors(colorsList);  
 				  }
 					break;
@@ -294,7 +283,7 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 				case 15: // Themes
 					 String themeValue=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(themeValue)){
-						 themeList = sageAttributeParser.getProductTheme(themeValue);
+						 themeList = headWearAttributeParser.getProductThemes(themeValue);
 					 }					 
 					break;
 					
@@ -664,18 +653,16 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 					break;
 				case 90: // DecorationMethod 
 					decorationMethod = cell.getStringCellValue();
-					 if(StringUtils.isEmpty(decorationMethod)){
-						 decorationMethod = "Printed";
-					   }
-					 listOfImprintMethods = sageAttributeParser.getImprintMethodValues(decorationMethod);
+							listOfImprintMethods = headWearAttributeParser.getImprintMethodValues(decorationMethod,
+									imprintMethodList);
 					 break; 
 					 
 				case 91: //NoDecoration
 					String noDecoration = cell.getStringCellValue();
 				    if(!StringUtils.isEmpty(noDecoration)){
 				    	if(noDecoration.equalsIgnoreCase("True")){
-									listOfImprintMethods = sageAttributeParser
-											.getImprintMethodValues(listOfImprintMethods, "Unimprinted");
+									listOfImprintMethods = headWearAttributeParser
+											.getImprintMethodValues("Unimprinted", imprintMethodList);
 				    	}
 				    }
 					 break;
@@ -703,21 +690,30 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 					
 					String madeInCountry = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(madeInCountry)){
-						List<Origin> listOfOrigin = sageAttributeParser.getOriginValues(madeInCountry);
+						List<Origin> listOfOrigin = headWearAttributeParser.getOriginValues(madeInCountry);
 						productConfigObj.setOrigins(listOfOrigin);
 					}
 					break;
 				case 102:// AssembledInCountry
-			     String additionalProductInfo = cell.getStringCellValue();
-			     if(!StringUtils.isEmpty(additionalProductInfo)) {
-			    	productExcelObj.setAdditionalProductInfo(additionalProductInfo); 
-			       }
+					String AssembledCountry = cell
+					.getStringCellValue();
+			   if (!AssembledCountry.isEmpty()) {
+				   AssembledCountry = headWearAttributeParser
+						.getCountryCodeConvertName(AssembledCountry);
+				productExcelObj.setAdditionalProductInfo("Assembled country is: "
+								+ AssembledCountry);
+		        	}
 					break;
 				case 103: //DecoratedInCountry
-					String additionalImprintInfo = cell.getStringCellValue();
-					 if(!StringUtils.isEmpty(additionalImprintInfo)) {
-						 productExcelObj.setAdditionalImprintInfo(additionalImprintInfo);
-					   }
+					String decoratedInCountry = cell
+					.getStringCellValue();
+			if (!decoratedInCountry.isEmpty()) {
+				decoratedInCountry = headWearAttributeParser
+						.getCountryCodeConvertName(decoratedInCountry);
+				productExcelObj.setAdditionalImprintInfo("Decorated country is: "
+								+ decoratedInCountry);
+						
+			}
 					
 					break;
 				case 104: //ComplianceList  -- No data
@@ -740,7 +736,7 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 				case 107: //ProdTimeHi
 					String prodTimeHi = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!prodTimeHi.equals("0")){
-						List<ProductionTime> productionTimeList = sageAttributeParser.getProductionTime(prodTimeLo, prodTimeHi);
+						List<ProductionTime> productionTimeList = headWearAttributeParser.getProductionTime(prodTimeLo, prodTimeHi);
 						productConfigObj.setProductionTime(productionTimeList);
 					}
 					break;
@@ -750,14 +746,14 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 				case 109://RushProdTimeH
 					String rushProdTimeH  = cell.getStringCellValue();
 					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO)){
-					  RushTime productRushTime = sageAttributeParser.getProductRushTime(rushProdTimeLo, rushProdTimeH);
+					  RushTime productRushTime = headWearAttributeParser.getProductRushTime(rushProdTimeLo, rushProdTimeH);
 					  productConfigObj.setRushTime(productRushTime);
 					}
 					break;
 				case 110://Packaging
 					String pack  = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(pack)){
-						List<Packaging> listOfPackaging = sageAttributeParser.getPackageValues(pack);
+						List<Packaging> listOfPackaging = headWearAttributeParser.getPackageValues(pack);
 						productConfigObj.setPackaging(listOfPackaging);
 					}
 					break;
@@ -812,47 +808,47 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 			ProductProcessedList.add(productExcelObj.getExternalProductId());
 			productExcelObj.setPriceType("L");
 			if(!StringUtils.isEmpty(dimensionValue.toString())){
-				Size productSize = sageAttributeParser.getProductSize(dimensionValue.toString(),
+				Size productSize = headWearAttributeParser.getProductSize(dimensionValue.toString(),
 		                dimensionUnits.toString(), dimensionType.toString());
 				productConfigObj.setSizes(productSize);
 			}
 			if(!CollectionUtils.isEmpty(themeList)){
 				productConfigObj.setThemes(themeList);
 			}
-			imprintSizeList=sageAttributeParser.getimprintsize(ImprintSizevalue);
+			imprintSizeList=headWearAttributeParser.getimprintsize(ImprintSizevalue);
 			if(FirstImprintsize1 != "" || FirstImprintsize2 !="" ||
 					SecondImprintsize1 != "" ||	SecondImprintsize2 !=""){
 			productConfigObj.setImprintSize(imprintSizeList);}
-					ShippingEstimate shippingEstimation = sageAttributeParser
+					ShippingEstimate shippingEstimation = headWearAttributeParser
 							.getShippingEstimateValues(shippingDimensions.toString(), weightPerCarton, unitsPerCarton);
 					productConfigObj.setShippingEstimates(shippingEstimation);
 			if(listOfPrices != null && !listOfPrices.toString().isEmpty()){
-				priceGrids = priceGridParser.getBasePriceGrids(listOfPrices.toString(), 
+				priceGrids = headWearPriceGridParser.getBasePriceGrids(listOfPrices.toString(), 
 						         listOfQuantity.toString(), priceCode, "USD",
 						         priceIncludesValue, true, quoteUponRequest, productName,"",priceGrids);
 			} else {
-				priceGrids = priceGridParser.getBasePriceGrids(listOfPrices.toString(), 
+				priceGrids = headWearPriceGridParser.getBasePriceGrids(listOfPrices.toString(), 
 				         listOfQuantity.toString(), priceCode, "USD",
 				         priceIncludesValue, true, "true", productName,"",priceGrids);
 			}
 			    if(!imprintMethodUpchargeMap.isEmpty()){
-			    	priceGrids = sageAttributeParser.getImprintMethodUpcharges(imprintMethodUpchargeMap,
+			    	priceGrids = headWearAttributeParser.getImprintMethodUpcharges(imprintMethodUpchargeMap,
                             listOfImprintMethods, priceGrids);
 			    }
 					
 					List<AdditionalColor> additionalColorList = null;
 				if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
-					 additionalColorList = sageAttributeParser.getAdditionalColor("Additional Color");
-						priceGrids = sageAttributeParser.getAdditionalColorUpcharge(additionalClrRunChrgCode,
+					 additionalColorList = headWearAttributeParser.getAdditionalColor("Additional Color");
+						priceGrids = headWearAttributeParser.getAdditionalColorUpcharge(additionalClrRunChrgCode,
 								   additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge");
 						productConfigObj.setAdditionalColors(additionalColorList);
 				}
 				if(!StringUtils.isEmpty(additionalColorPriceVal) && !additionalColorPriceVal.equals("0")){
 					if(additionalColorList == null){
-						additionalColorList = sageAttributeParser.getAdditionalColor("Additional Color");
+						additionalColorList = headWearAttributeParser.getAdditionalColor("Additional Color");
 						productConfigObj.setAdditionalColors(additionalColorList);
 					}
-					priceGrids = sageAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
+					priceGrids = headWearAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
 							   additionalColorPriceVal, priceGrids,"Add. Color Charge");
 				}
 			}catch(Exception e){
@@ -861,12 +857,12 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 		}
 		workbook.close();
 		 if(CollectionUtils.isEmpty(listOfImprintMethods)){
-			   listOfImprintMethods = sageAttributeParser.getImprintMethodValues(listOfImprintMethods, "Printed");
+			   listOfImprintMethods = headWearAttributeParser.getImprintMethodValues("Unimprinted", imprintMethodList);
 		   }
 		   productConfigObj.setImprintMethods(listOfImprintMethods);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	productExcelObj.setPriceGrids(priceGrids);
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId,environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
@@ -894,93 +890,27 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 		}	
 	}
 	
-	private String getProductXid(Row row,boolean isRepeatProduct){
-		Cell xidCell = null;
-		String productXid = "";
-		if(isRepeatProduct){
+	private String getProductXid(Row row){
+		Cell xidCell = row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
+		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		if (StringUtils.isEmpty(productXid)) {
 			xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_TWO);
 			productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
-		} else {
-			xidCell = row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
-			productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
-			if (StringUtils.isEmpty(productXid)) {
-				xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_TWO);
-				productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
-			}
 		}
-		
 		return productXid.trim();
 	}
-	private String getFinalDescription(String description, String asiProdNo){
-		description = CommonUtility.removeRestrictSymbols(description);
-		if(description.contains("·")){
-			description = description.replaceAll("·", "");
-		}
-		if(description.contains("Porsche")){
-			description = description.replaceAll("Porsche", "");
-		}
-		if(description.toUpperCase().contains(asiProdNo)){
-			description = CommonUtility.removeSpecificWord(description, asiProdNo);
-			description = description.replaceAll(asiProdNo, "");
-		}
-		if(description.contains("m&m")){
-			description = description.replaceAll("m&m", "");
-		}
-		if(description.contains("iPAD") || description.contains("iPad") || description.contains("Ipad")){
-			description = description.replaceAll("iPAD", "");
-			description = description.replaceAll("iPad", "");
-			description = description.replaceAll("Ipad", "");
-		}
-		if(description.contains("nano")){
-			description = description.replaceAll("nano", "");
-		}
-		if(description.contains("shuffle")){
-			description = description.replaceAll("shuffle", "");
-		}
-		if(description.contains("²")){
-			description = description.replaceAll("²", "");
-		}
-		if(description.contains("at a glance")){
-			description = description.replaceAll("at a glance", "");
-		}
-		if(description.contains("—")){
-			description = description.replaceAll("—", "");
-		}
-		if(description.contains("|")){
-			description = description.replaceAll("\\|", "");
-		}
-		description = CommonUtility.getStringLimitedChars(description, 800);
-	 return description;
-	}
-	private String getFinalProductName(String productName,String asiProdNo){
-		 if(productName.contains("Porsche")){
-			 productName = productName.replaceAll("Porsche", "");
+	private String getPriceConfirmThroughDate(Cell cell){
+		String expireDate = "";
+		if(HSSFDateUtil.isCellDateFormatted(cell)){
+			Date date = cell.getDateCellValue();
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			 expireDate = df.format(date);
+			if(CommonUtility.isPriceConfirmThroughDate(expireDate)){
 			}
-		 if(productName.contains("®")){
-			 productName = productName.replaceAll("®", "");
-		 }
-		 if(productName.toUpperCase().contains(asiProdNo)){
-			 productName = CommonUtility.removeSpecificWord(productName, asiProdNo);
-			 productName = productName.replaceAll(asiProdNo, "");
-			}
-		 if(productName.contains("M&M's")){
-			 productName = productName.replaceAll("M&M's", "");
-		 }
-		 if(productName.contains("™")){
-			 productName = productName.replaceAll("™", "");
-		 }
-		 if(productName.contains("NANO")){
-			 productName = productName.replaceAll("NANO", "");
-		 }
-		 if(productName.contains("iPAD") || productName.contains("iPad")){
-			 productName = productName.replaceAll("iPAD", "");
-			 productName = productName.replaceAll("iPad", "");
-			}
-		 if(productName.contains("|")){
-			 productName = productName.replaceAll("\\|", "");
-			}
-		 productName = CommonUtility.getStringLimitedChars(productName, 60);
-		 return productName;
+		} else{
+			expireDate = cell.getStringCellValue();
+		}
+		return expireDate;
 	}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
@@ -996,17 +926,21 @@ public class SageRMKWorldWideMapping implements IExcelParser{
 	public void setProductDaoObj(ProductDao productDaoObj) {
 		this.productDaoObj = productDaoObj;
 	}
-	public SageRMKWorldwideAttributeParser getSageAttributeParser() {
-		return sageAttributeParser;
+	public HeadWearAttributeParser getHeadWearAttributeParser() {
+		return headWearAttributeParser;
 	}
-	public void setSageAttributeParser(SageRMKWorldwideAttributeParser sageAttributeParser) {
-		this.sageAttributeParser = sageAttributeParser;
+
+	public void setHeadWearAttributeParser(HeadWearAttributeParser headWearAttributeParser) {
+		this.headWearAttributeParser = headWearAttributeParser;
 	}
-	public SageRMKWorldwidePriceGridParser getPriceGridParser() {
-		return priceGridParser;
+
+	public HeadWearPriceGridParser getHeadWearPriceGridParser() {
+		return headWearPriceGridParser;
 	}
-	public void setPriceGridParser(SageRMKWorldwidePriceGridParser priceGridParser) {
-		this.priceGridParser = priceGridParser;
+
+	public void setHeadWearPriceGridParser(HeadWearPriceGridParser headWearPriceGridParser) {
+		this.headWearPriceGridParser = headWearPriceGridParser;
 	}
+
 	
 }

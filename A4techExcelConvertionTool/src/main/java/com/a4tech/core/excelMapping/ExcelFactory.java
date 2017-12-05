@@ -33,6 +33,7 @@ import com.a4tech.supplier.mapper.GillStudiosMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping;
+import com.a4tech.supplier.mapper.HeadWearMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineMappingRevised;
 import com.a4tech.supplier.mapper.InternationlMerchMapping;
@@ -97,7 +98,7 @@ public class ExcelFactory {
 	private EdwardsGarmentMapping edwardsGarmentMapping;
 	private TekweldMapping tekweldMapping;
     private InternationlMerchMapping        merchMapping;	
-
+    private HeadWearMapping                 headWearMapping;
 
 
 	public  IExcelParser getExcelParserObject(String name){
@@ -202,6 +203,8 @@ public class ExcelFactory {
 			   return tekweldMapping;
 		  } else if(name.equalsIgnoreCase("internationalMerchMapping") || name.equals("62820")){
 			  return merchMapping;
+		  } else if(name.equalsIgnoreCase("headWearMapping") || name.equals("60282")){
+			  return headWearMapping;
 		  }
 		return null;
 	}
@@ -549,12 +552,21 @@ public class ExcelFactory {
 		this.edwardsGarmentMapping = edwardsGarmentMapping;
 	}
 
+
 	public TekweldMapping getTekweldMapping() {
 		return tekweldMapping;
 	}
 
 	public void setTekweldMapping(TekweldMapping tekweldMapping) {
 		this.tekweldMapping = tekweldMapping;
+	}
+	public HeadWearMapping getHeadWearMapping() {
+		return headWearMapping;
+	}
+
+	public void setHeadWearMapping(HeadWearMapping headWearMapping) {
+		this.headWearMapping = headWearMapping;
+
 	}
 	
 }

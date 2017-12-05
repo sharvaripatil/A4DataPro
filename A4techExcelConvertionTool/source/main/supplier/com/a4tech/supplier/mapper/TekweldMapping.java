@@ -28,7 +28,7 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.CommonUtility;
 
-public class TekweldMapping implements IExcelParser {
+public  class TekweldMapping implements IExcelParser {
 	
 	private static final Logger _LOGGER = Logger
 			.getLogger(TekweldMapping.class);
@@ -39,7 +39,7 @@ public class TekweldMapping implements IExcelParser {
 
 
 	public String readExcel(String accessToken, Workbook workbook,
-			Integer asiNumber, int batchId) {		
+			Integer asiNumber, int batchId, String environmentType) {		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		Set<String> productXids = new HashSet<String>();
@@ -127,7 +127,7 @@ public class TekweldMapping implements IExcelParser {
 
 									int num = postServiceImpl.postProduct(
 											accessToken, productExcelObj,
-											asiNumber, batchId);
+											asiNumber, batchId, environmentType);
 									if (num == 1) {
 										numOfProductsSuccess.add("1");
 									} else if (num == 0) {
@@ -152,7 +152,7 @@ public class TekweldMapping implements IExcelParser {
 								}
 								existingApiProduct = postServiceImpl
 										.getProduct(accessToken,
-												xid = xid.replace("\t", ""));
+												xid = xid.replace("\t", ""), environmentType);
 								if (existingApiProduct == null) {
 									_LOGGER.info("Existing Xid is not available,product treated as new product");
 									productExcelObj = new Product();
@@ -409,7 +409,7 @@ public class TekweldMapping implements IExcelParser {
 			workbook.close();
 
 			int num = postServiceImpl.postProduct(accessToken, productExcelObj,
-					asiNumber, batchId);
+					asiNumber, batchId, environmentType);
 			if (num == 1) {
 				numOfProductsSuccess.add("1");
 			} else if (num == 0) {

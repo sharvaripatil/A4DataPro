@@ -10,10 +10,10 @@ public class BamLookupData {
 	private LookupServiceData lookupServiceData = null;
 	private static final Map<String, List<String>> listOfFobPoints = new HashMap<>();
 	
-	public void loadFobPoints(String supplierNo,String authToken){
+	public void loadFobPoints(String supplierNo,String authToken,String environment){
 		List<String> SupplierLineNames = listOfFobPoints.get(supplierNo);
 		if(SupplierLineNames == null){
-			SupplierLineNames = lookupServiceData.getFobPoints(authToken);
+			SupplierLineNames = lookupServiceData.getFobPoints(authToken,environment);
 			listOfFobPoints.put(supplierNo, SupplierLineNames);
 		}
 		

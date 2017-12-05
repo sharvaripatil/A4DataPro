@@ -48,7 +48,7 @@ public class PSLMapping implements IExcelParser {
 		private PSLPriceGridParser pslPriceGridObj;
 
 		
-		public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+		public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 			
 			  List<String> numOfProductsSuccess = new ArrayList<String>();
 			  List<String> numOfProductsFailure = new ArrayList<String>();
@@ -134,7 +134,7 @@ public class PSLMapping implements IExcelParser {
 									productExcelObj.setPriceGrids(priceGrids);
 								 	productExcelObj.setProductConfigurations(productConfigObj);
 
-								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
 								 	}else if(num == 0){
@@ -171,7 +171,7 @@ public class PSLMapping implements IExcelParser {
 							 if(!productXids.contains(xid)){
 							    	productXids.add(xid.trim());
 							    }
-						        existingApiProduct = postServiceImpl.getProduct(accessToken, xid=xid.replace("\t",""));
+						        existingApiProduct = postServiceImpl.getProduct(accessToken, xid=xid.replace("\t",""), environmentType);
 							     if(existingApiProduct == null){
 							    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 							    	 productExcelObj = new Product();
@@ -468,7 +468,7 @@ public class PSLMapping implements IExcelParser {
 				productExcelObj.setPriceGrids(priceGrids);
 			 	productExcelObj.setProductConfigurations(productConfigObj);
 			 	
-			 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+			 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 			 	if(num ==1){
 			 		numOfProductsSuccess.add("1");
 			 	}else if(num == 0){
