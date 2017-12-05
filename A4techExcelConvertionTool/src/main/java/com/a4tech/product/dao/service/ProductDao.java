@@ -379,8 +379,8 @@ public class ProductDao implements IProductDao{
 		  }	
 	}
 	@Override
-	public boolean isASINumberAvailable(String asiNumber) {
-		SupplierLoginDetails supplierLoginDetails = getSupplierLoginDetails(asiNumber);
+	public boolean isASINumberAvailable(String asiNumber,String environmetType) {
+		BaseSupplierLoginDetails supplierLoginDetails = getSupplierLoginDetailsBase(asiNumber,environmetType);
 		if(supplierLoginDetails == null){
 			return true;
 		}

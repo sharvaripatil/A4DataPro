@@ -60,7 +60,7 @@ public class MailServiceImpl implements IMailService{
 	public void supplierLoginFailureMail(String supplierNo, String body,String subject) {
 		try {
 		      MimeMessage mimeMessage = mailSender.createMimeMessage();
-		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false);
 		      helper.setFrom(senderMailName);
 		     String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com",
 		    		 "sharvari.patil@a4technology.com","amey.more@a4technology.com"};
@@ -163,7 +163,7 @@ public class MailServiceImpl implements IMailService{
 	public void fileProcessFail(String fileName) {
 		try {
 		      MimeMessage mimeMessage = mailSender.createMimeMessage();
-		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false);
 		      helper.setFrom(senderMailName);
 		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
 		    		  "amey.more@a4technology.com"};

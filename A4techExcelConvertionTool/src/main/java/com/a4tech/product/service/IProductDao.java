@@ -17,7 +17,7 @@ public interface IProductDao {
 	public void 		updateFtpFileStatus(String fileName,String asiNumber,String fileStatus);
 	public String 		getFtpFileProcessStatus(String fileName,String asiNumber);
 	public void 		saveSupplierCridentials(FtpLoginBean ftpLoginBean);
-	public boolean 		isASINumberAvailable(String asiNumber);
+	public boolean 		isASINumberAvailable(String asiNumber,String environmentType);
 	public BaseSupplierLoginDetails getSupplierLoginDetailsBase(String asiNumber,String type);
 	public int         getSupplierColumnsCount(String asiNumber);
 }

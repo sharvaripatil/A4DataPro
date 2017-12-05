@@ -1,10 +1,9 @@
 package com.a4tech.ftp.service.impl;
 
-import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.net.ftp.FTP;
@@ -13,7 +12,6 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.a4tech.ftp.FilesParsing;
 import com.a4tech.ftp.service.FtpService;
@@ -30,7 +28,7 @@ public class FtpServiceImpl implements FtpService{
   private IMailService  mailService;
 private Logger _LOGGER = Logger.getLogger(FtpServiceImpl.class);
 	@Override
-	public boolean uploadFile(MultipartFile mFile ,String asiNumber,String environmentType) {
+	public boolean uploadFile(File file ,String asiNumber,String environmentType) {
 		_LOGGER.info("Enter the Upload file class");
 		try {
 			ftpClient.connect(serveraddress,Integer.parseInt(portNo));
@@ -44,10 +42,10 @@ private Logger _LOGGER = Logger.getLogger(FtpServiceImpl.class);
 			}
 			ftpClient.enterLocalPassiveMode();
 			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-			InputStream inputStream =  new BufferedInputStream(mFile.getInputStream());
-			String fileName = environmentType+"_"+asiNumber + "_"+mFile.getOriginalFilename();
-			boolean fileStatus = ftpClient.storeFile(fileName, inputStream);
-			inputStream.close();
+			//InputStream inputStream =  new BufferedInputStream();
+			String fileName = environmentType+"_"+asiNumber + "_"+file.getName();
+			boolean fileStatus = ftpClient.storeFile(fileName, new FileInputStream(file));
+			//inputStream.close();
 			return fileStatus;
 		} catch (IOException exe) {
 			_LOGGER.error("unable to save file in Ftp Server: "+exe.getMessage());

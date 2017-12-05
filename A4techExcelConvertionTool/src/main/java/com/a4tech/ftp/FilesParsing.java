@@ -84,11 +84,11 @@ public class FilesParsing {
 			}
 			 int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 			 if(workBook != null){
-				 processFileStatusMail(asiNumber, "ProcessStart", batchId);
+				 processFileStatusMail(asiNumber, "ProcessStart", batchId,environmentType);
 				 excelParserImpl.readExcel(accessToken, workBook, Integer.parseInt(asiNumber), batchId, environmentType);
 				 productDao.updateFtpFileStatus(fileName, asiNumber,
 							ApplicationConstants.CONST_STRING_YES);
-				 processFileStatusMail(asiNumber, "ProcessEnd", batchId);
+				 processFileStatusMail(asiNumber, "ProcessEnd", batchId,environmentType);
 			 }	
 			_LOGGER.info(fileName +":"+ "file parsing completed");
            }catch (Exception exce) {
@@ -138,11 +138,12 @@ public class FilesParsing {
     		  			+"\nA4Tech Team";
     	mailService.supplierLoginFailureMail(supplierNo, body, subject);
     }
-    private void processFileStatusMail(String supplierNo,String type,int batchNo){
-    	String subject = "";;
+    private void processFileStatusMail(String supplierNo,String type,int batchNo,String environment){
+    	String subject = "";
     	String body = "";
+    	environment = environment.equals("Sand")?"Sandbox":"Production";
     	if(type.equals("ProcessStart")){
-    		subject = supplierNo +" "+ "File Processing Start";
+    		subject =environment+" "+ supplierNo +" "+ "File Processing Start";
     		body = "Dear Team,"
   			      +"\n \n"+supplierNo+" "+ "File processing Start"
   			      +"\n\n You will get separate mail once Process completed"+
@@ -153,7 +154,7 @@ public class FilesParsing {
   	    		+"Note: This is Computer Generated Mail. No need to reply.*";
     		mailService.fileProcessStart(body, subject);
     	}else if(type.equals("ProcessEnd")){
-    		subject = supplierNo +" "+ "File Process completed";
+    		subject = environment+" "+supplierNo +" "+ "File Process completed";
     		body = "Dear Team,"
   			      +"\n \n"+supplierNo+" "+ "File process completed"
   			      +"\n\nKindly find the attached " +batchNo +".txt Product Error File"

@@ -64,7 +64,7 @@ public class FtpController {
 						                                     ApplicationConstants.CONST_STRING_EMPTY);
 				return new ModelAndView("ftpLogin", "ftpLoginBean", new FtpLoginBean());	
 			}
-		if(productDao.isASINumberAvailable(ftpLogin.getAsiNumber())){//if true means there is no cridentials in DB ,
+		if(productDao.isASINumberAvailable(ftpLogin.getAsiNumber(),ftpLogin.getEnvironemtType())){//if true means there is no cridentials in DB ,
 			                                                          //then we need to save our DB
 			productDao.saveSupplierCridentials(ftpLogin);
 		}
@@ -82,19 +82,9 @@ public class FtpController {
 		String accessToken = "";
 		String asiNumber = fileUploadBean.getAsiNumber();
 		String environmentType = fileUploadBean.getEnvironmentType();
-		MultipartFile   file= fileUploadBean.getFile();
-		long fileSize = file.getSize();
-		/*Workbook wb = getWorkBook(file);
-		int noOfColumnsInCurrentFile = getSupplierFileColumnsCount(wb);
-		int noOfColumnsFromDataBase = productDao.getSupplierColumnsCount(asiNumber);
-		//This is checking supplier file columns is same or not
-		if(noOfColumnsInCurrentFile != noOfColumnsFromDataBase){
-			model.addAttribute("misMatchCoumns", "misMatchCoumns");
-			FtpFileUploadBean ftpFileUploadBean = new FtpFileUploadBean();
-			ftpFileUploadBean.setAsiNumber(asiNumber);
-			ftpFileUploadBean.setEnvironmentType(environmentType);
-			return new ModelAndView("fileUpload", "ftpFileUploadBean", ftpFileUploadBean);
-		} */
+		MultipartFile   mfile= fileUploadBean.getFile();
+		File file = convertMultiPartFileIntoFile(mfile);
+		long fileSize = file.length(); 
 		if(fileSize == 0){
 			model.addAttribute("invalidFile", "");
 			FtpFileUploadBean ftpFileUploadBean = new FtpFileUploadBean();
@@ -106,10 +96,17 @@ public class FtpController {
 			model.addAttribute("invalidAsiNum", "");
 			return new ModelAndView("fileUpload", "ftpFileUploadBean", new FtpFileUploadBean());
 		}
-		/*if(StringUtils.isEmpty(asiNumber)){
-			model.addAttribute("invalidAsiNum", "");
-			return new ModelAndView("fileUpload", "ftpFileUploadBean", new FtpFileUploadBean());
-		}*/
+		Workbook wb = getWorkBook(file);
+		int noOfColumnsInCurrentFile = getSupplierFileColumnsCount(wb);
+		int noOfColumnsFromDataBase = productDao.getSupplierColumnsCount(asiNumber);
+		//This is checking supplier file columns is same or not
+		if(noOfColumnsInCurrentFile != noOfColumnsFromDataBase){
+			model.addAttribute("misMatchCoumns", "misMatchCoumns");
+			FtpFileUploadBean ftpFileUploadBean = new FtpFileUploadBean();
+			ftpFileUploadBean.setAsiNumber(asiNumber);
+			ftpFileUploadBean.setEnvironmentType(environmentType);
+			return new ModelAndView("fileUpload", "ftpFileUploadBean", ftpFileUploadBean);
+		}
 		if (accessToken != null) {
 			if (ApplicationConstants.CONST_STRING_UN_AUTHORIZED.equals(accessToken)) {
 				accessToken = null;
@@ -117,15 +114,7 @@ public class FtpController {
 						                                     ApplicationConstants.CONST_STRING_EMPTY);
 				return new ModelAndView(ApplicationConstants.CONST_STRING_HOME);
 			}
-		}
-		/*Workbook wb = convertCsvToExcel.getWorkBook(file);
-		int noOfColumnsInCurrentFile = getSupplierFileColumnsCount(wb);
-		int noOfColumnsFromDataBase = productDao.getSupplierColumnsCount(asiNumber);
-		//This is checking supplier file columns is same or not
-		if(noOfColumnsInCurrentFile != noOfColumnsFromDataBase){
-			model.addAttribute("misMatchCoumns", "misMatchCoumns");
-            return new ModelAndView(ApplicationConstants.CONST_STRING_HOME);
-		}*/ 
+		} 
 	   boolean fileStaus = ftpServices.uploadFile(file,asiNumber,environmentType);
 	   if(fileStaus == true){
 		   model.addAttribute("ftpMessage", "success");
@@ -143,10 +132,10 @@ public class FtpController {
 	Row headerRow = sheet.getRow(0);
 	return headerRow.getLastCellNum();
  }
- private  Workbook getWorkBook(MultipartFile mfile){
-	    String fileExtension = CommonUtility.getFileExtension(mfile.getOriginalFilename());
+ private  Workbook getWorkBook(File file){
+	    String fileExtension = CommonUtility.getFileExtension(file.getName());
 	    ZipSecureFile.setMinInflateRatio(0.001d);
-	    File file = convertMultiPartFileIntoFile(mfile);
+	   // File file = convertMultiPartFileIntoFile(mfile);
 	    Workbook workBook = null;
 	    if(ApplicationConstants.CONST_STRING_XLS.equalsIgnoreCase(fileExtension)){
 	    	try(Workbook workbook1 = new HSSFWorkbook(new FileInputStream(file))) {
