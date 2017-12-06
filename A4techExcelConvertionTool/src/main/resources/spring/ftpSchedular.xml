@@ -10,7 +10,7 @@
 	 <bean id="ftpServerCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 	 	<property name="jobDetail" ref="ftpServerCronJobDetails"></property> 
 	 	<!-- <property name="cronExpression" value="0 33 17 * * ?"></property> 0 20 19 ? * TUE * -->
-	 	 <property name="cronExpression" value="0 17 16 ? * TUE *"></property> 
+	 	 <property name="cronExpression" value="0 35 12 ? * WED *"></property> 
 	 	 <!-- <property name="cronExpression" value="0 0 9 ? * TUE,WED,THU,FRI *"></property> --> 
 	 </bean>
 	<!--  <bean id="ftpServerFailureCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
