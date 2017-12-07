@@ -9,6 +9,7 @@ import java.util.Calendar;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -143,10 +144,10 @@ public class FilesParsing {
     	String body = "";
     	environment = environment.equals("Sand")?"Sandbox":"Production";
     	if(type.equals("ProcessStart")){
-    		subject =environment+" "+ supplierNo +" "+ "File Processing Start";
+    		subject =environment+" "+ supplierNo +" "+ "File processing has been started";
     		body = "Dear Team,"
-  			      +"\n \n"+supplierNo+" "+ "File processing Start"
-  			      +"\n\n You will get separate mail once Process completed"+
+  			      +"\n \n"+supplierNo+" "+ "File processing has been started"
+  			      +"\n\n You will get separate mail once Processing is completed"+
   			     "\n\n\n\n"
   	            +"Thanks and Regards,"
   	  			+"\nA4Tech Team"
@@ -154,9 +155,9 @@ public class FilesParsing {
   	    		+"Note: This is Computer Generated Mail. No need to reply.*";
     		mailService.fileProcessStart(body, subject);
     	}else if(type.equals("ProcessEnd")){
-    		subject = environment+" "+supplierNo +" "+ "File Process completed";
+    		subject = environment+" "+supplierNo +" "+ "File processing is completed";
     		body = "Dear Team,"
-  			      +"\n \n"+supplierNo+" "+ "File process completed"
+  			      +"\n \n"+supplierNo+" "+ "File processing is completed"
   			      +"\n\nKindly find the attached " +batchNo +".txt Product Error File"
   			+ "\n\n\n\n"
             +"Thanks and Regards,"
@@ -179,6 +180,7 @@ public class FilesParsing {
 	    //String fileExtension = CommonUtility.getFileExtension(mfile.getOriginalFilename());
 	   // File file = convertMultiPartFileIntoFile(mfile);
 	    Workbook workBook = null;
+	    ZipSecureFile.setMinInflateRatio(-1.0d); 
 	    if(ApplicationConstants.CONST_STRING_XLS.equalsIgnoreCase(fileExtension)){
 	    	try(Workbook workbook1 = new HSSFWorkbook(inputStream)) {
 				return workbook1;
