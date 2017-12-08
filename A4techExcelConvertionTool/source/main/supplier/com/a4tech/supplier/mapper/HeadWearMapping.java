@@ -391,8 +391,10 @@ public class HeadWearMapping implements IExcelParser{
 				case 44:
 					     quoteUponRequest = cell.getStringCellValue();
 					      break;
-				case 45:  // priceIncludeClr    
-					      priceIncludes.append(cell.getStringCellValue()).append(" ");
+				case 45:  // priceIncludeClr  
+					    String priceInclude = cell.getStringCellValue();
+					    priceInclude = priceInclude.replaceAll("includes", "").trim();
+					      priceIncludes.append(priceInclude).append(" ");
 					     break;
 				case 46: // priceIncludeSide
 						
@@ -520,7 +522,7 @@ public class HeadWearMapping implements IExcelParser{
 							String IsEnvironmentallyFriendly = cell.getStringCellValue();
 							if (IsEnvironmentallyFriendly.equalsIgnoreCase("true")) {
 								Theme themeObj = new Theme();
-								themeObj.setName("Eco Friendly");
+								themeObj.setName("Eco & Environmentally Friendly");
 								themeList.add(themeObj);
 							}
 					break;

@@ -51,7 +51,11 @@ public class HeadWearAttributeParser {
 	    	newProduct.setCategories(existingProduct.getCategories());
 	    }
 	    if(!StringUtils.isEmpty(existingProduct.getSummary())){
-	    	newProduct.setSummary(existingProduct.getSummary());
+	    	String summary = existingProduct.getSummary();
+	    	if(summary.contains("Velcro")){
+	    		summary = summary.replaceAll("Velcro", "");
+	    	}
+	    	newProduct.setSummary(summary);
 	    }
 		  newProduct.setProductConfigurations(newConfig);
 		  return newProduct;
@@ -376,7 +380,9 @@ public class HeadWearAttributeParser {
 			if(keywordName.contains("®")){
 				keywordName = keywordName.replaceAll("®", "").trim();
 			}
-		   productKeyWords.add(keywordName);	
+			if(keywordName.length()<= 30){
+				productKeyWords.add(keywordName);
+			}
 		}
 		return productKeyWords;
 	}
