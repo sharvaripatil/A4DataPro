@@ -227,6 +227,7 @@ public class HeadWearMapping implements IExcelParser{
 					  break;
 				case 4://Name
 					 productName = cell.getStringCellValue();
+					 productName = CommonUtility.getStringLimitedChars(productName, 60);
 					 productExcelObj.setName(productName);
 						break;
 				case 5://CatYear(Not used)
@@ -390,8 +391,10 @@ public class HeadWearMapping implements IExcelParser{
 				case 44:
 					     quoteUponRequest = cell.getStringCellValue();
 					      break;
-				case 45:  // priceIncludeClr    
-					      priceIncludes.append(cell.getStringCellValue()).append(" ");
+				case 45:  // priceIncludeClr  
+					    String priceInclude = cell.getStringCellValue();
+					    priceInclude = priceInclude.replaceAll("includes", "").trim();
+					      priceIncludes.append(priceInclude).append(" ");
 					     break;
 				case 46: // priceIncludeSide
 						
@@ -519,7 +522,7 @@ public class HeadWearMapping implements IExcelParser{
 							String IsEnvironmentallyFriendly = cell.getStringCellValue();
 							if (IsEnvironmentallyFriendly.equalsIgnoreCase("true")) {
 								Theme themeObj = new Theme();
-								themeObj.setName("Eco Friendly");
+								themeObj.setName("Eco & Environmentally Friendly");
 								themeList.add(themeObj);
 							}
 					break;
