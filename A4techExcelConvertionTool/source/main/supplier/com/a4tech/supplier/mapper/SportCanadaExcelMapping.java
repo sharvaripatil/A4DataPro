@@ -284,20 +284,12 @@ public class SportCanadaExcelMapping implements IExcelParser{
 						     }else{
 						  	//   productExcelObj=existingApiProduct;
 							//	productConfigObj=existingApiProduct.getProductConfigurations();
-						        String confthruDate=existingApiProduct.getPriceConfirmedThru();
-						        productExcelObj.setPriceConfirmedThru(confthruDate);
-						        
+						 
 						    	 List<Image> Img=existingApiProduct.getImages();
 						    	 productExcelObj.setImages(Img);
 						    	 
 						    	 themeList=productConfigObj.getThemes();
 						    	 productConfigObj.setThemes(themeList);
-						    	 
-						    	 List<Availability> AvailibilityList=null;
-						    	 productExcelObj.setAvailability(AvailibilityList);
-						    	 
-						    	 List<ProductNumber> ProductNumberList=null;
-						    	 productExcelObj.setProductNumbers(ProductNumberList);
 						    	 
 						    	 List<String>categoriesList=existingApiProduct.getCategories();
 						    	 productExcelObj.setCategories(categoriesList);
@@ -557,9 +549,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 39://PiecesPerUnit5
 				case 40://PiecesPerUnit6
 					try{
-					}catch (Exception e) {
-						_LOGGER.info("Error in pricePerUnit field "+e.getMessage());
-					}
+					
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 						quantity = cell.getStringCellValue();
 				         if(!StringUtils.isEmpty(quantity) && !quantity.equals("0")){
@@ -572,7 +562,9 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				         }
 					}else{
 					}  				
-					
+					}catch (Exception e) {
+						_LOGGER.info("Error in pricePerUnit field "+e.getMessage());
+					}
 					break;
 				case 41://QuoteUponRequest
 				     quoteUponRequest = cell.getStringCellValue();
@@ -613,7 +605,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 						
 						break;
 						
-				case 48:    //ScreenChgCode
+				case 48://ScreenChgCode
  
 					
 				  break;
@@ -674,6 +666,22 @@ public class SportCanadaExcelMapping implements IExcelParser{
 
 							break;
 				case 67://IsEnvironmentallyFriendly
+					 String IsEnvironmentallyFriendly ="";
+					  if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+					   IsEnvironmentallyFriendly = cell.getStringCellValue();
+
+					}else
+					{
+						 boolean boovar = cell.getBooleanCellValue();
+						 IsEnvironmentallyFriendly = String.valueOf(boovar);
+					}
+						if(IsEnvironmentallyFriendly.equalsIgnoreCase("true"))			
+						{ Theme themeObj1 = new Theme();
+
+							themeObj1.setName("Eco & Environmentally Friendly");	
+
+							themeList.add(themeObj1);
+						}
 
 							break;
 				case 68://IsNewProd
@@ -981,6 +989,11 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					break;
 					
 				case 106: //RushProdTimeLo
+					String rushProdTimeLo  = cell.getStringCellValue();
+					if(!rushProdTimeLo.equals(ApplicationConstants.CONST_STRING_ZERO)){
+						rushTime = gcRushTimeParser.getRushTimeValues(rushProdTimeLo, rushTime);
+					}
+					
 				
 					break;
 				case 107: //RushProdTimeHi
@@ -1014,28 +1027,67 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					
 					break;
 				case 112://WeightPerCarton
-
+					weightPerCarton  =CommonUtility.getCellValueStrinOrInt(cell);
 					break;
 	
 				case 113://UnitsPerCarton
-
+					unitsPerCarton  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
 				case 114: //ShipPointCountry
 
-					weightPerCarton  =CommonUtility.getCellValueStrinOrInt(cell);
+				
 					break;
 				case 115: //ShipPointZip
 
-					unitsPerCarton  = CommonUtility.getCellValueStrinOrInt(cell);
+					
 					break;
 					
 				case 116: //Comment
+					/* FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
+						//String FOBLooup=null;
+						//List<String>fobLookupList = lookupServiceDataObj.getFobPoints(FOBLooup);
+					
+						if(FOBValue.contains("CA"))
+						{
+							fobPintObj.setName("San Diego, CA 92131 USA");
+							FobPointsList.add(fobPintObj);
+						}
+						else if(FOBValue.contains("TN"))
+						{
+							if(asiNumber==57711){
+								fobPintObj.setName("Shelbyville, TN 37162 USA");
+								FobPointsList.add(fobPintObj);
+						     }
+							else{
+								fobPintObj.setName("Shelbyville, TN 37160 USA");
+								FobPointsList.add(fobPintObj);
+							}
+						}
 
+						if(FOBValue.contains("02"))
+						{
+							
+							ProdoptionObj.setOptionType("Product");
+							ProdoptionObj.setName("Pencil Sharpening");
+							ProdoptionValueObj.setValue("Pencil Sharpening Available");
+							ProdvaluesList.add(ProdoptionValueObj);
+							ProdoptionObj.setValues(ProdvaluesList);
+							ProdoptionList.add(ProdoptionObj);
+							 productConfigObj.setOptions(ProdoptionList);
+						}
+							*/
+							
+							
 
 					break;
 					
 				case 117: //Verified
-
+					String verified=cell.getStringCellValue();
+					if(verified.equalsIgnoreCase("True")){
+					String priceConfimedThruString="2017-12-31T00:00:00";
+					productExcelObj.setPriceConfirmedThru(priceConfimedThruString);
+					}
+					
 					
 					break;
 					

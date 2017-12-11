@@ -431,6 +431,8 @@
 		<property name="tekweldMapping" ref="tekweldMappingId"/>
 		<property name="merchMapping" ref="merchMappingId"/>
 		<property name="headWearMapping" ref="headWearMappingId"/>
+		<property name="sportMapping" ref="sportMappingId"/>
+		
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1117,6 +1119,44 @@
      <bean id="headWearpriceGridParserId" class="parser.headWear.HeadWearPriceGridParser"/>
       <!-- Head wear configuration end-->
       
+   <!--supplier 30251 configuration Start  -->  
+   
+       <bean id="sportMappingId" class="com.a4tech.supplier.mapper.SportCanadaExcelMapping">
+       <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj"   ref="productDao"/>
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+	   <property name="lookupRestServiceObj" ref="lookupRestService"/>
+       <property name="gcdimensionObj"   ref="gcdimensionObjId1"/>
+       <property name="gcimprintMethodParser"   ref="gcimprintMethodParserId1"/>
+       <property name="gcOriginParser"   ref="gcOriginParserId1"/>
+       <property name="gcRushTimeParser"   ref="gcRushTimeParserId1"/>
+       <property name="gcPackagingParser"   ref="gcPackagingParserId1"/>
+       <property name="gcShippingParser"   ref="gcShippingParserId1"/>
+       <property name="gcPricegridParser"   ref="gcPricegridParserId1"/>
+       <property name="gcImprintSizeParser"   ref="gcImprintSizeParserId1"/>
+       <property name="gccolorparser"   ref="gccolorparserId1"/>
+      
+       
+       
+       </bean>
+
+
+     <bean id="gcdimensionObjId1" class="parser.goldstarcanada.GoldstarCanadaDimensionParser"/> 
+     <bean id="gcimprintMethodParserId1" class="parser.goldstarcanada.GoldstarCanadaImprintMethodParser"> 
+     <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     <property name="lookupRestServiceObj" ref="lookupRestService"/>
+     </bean>
+     <bean id="gcOriginParserId1" class="parser.goldstarcanada.GoldstarCanadaOriginParser"/> 
+     <bean id="gcRushTimeParserId1" class="parser.goldstarcanada.GoldstarCanadaRushTimeParser"/> 
+     <bean id="gcPackagingParserId1" class="parser.goldstarcanada.GoldstarCanadaPackagingParser"/>    
+     <bean id="gcPricegridParserId1" class="parser.goldstarcanada.GoldstarCanadaPriceGridParser"/> 
+     <bean id="gcShippingParserId1" class="parser.goldstarcanada.GoldstarCanadaShippingEstimateParser"/> 
+     <bean id="gcImprintSizeParserId1" class="parser.goldstarcanada.GoldstarCanadaImprintsizeParser"/> 
+     <bean id="gccolorparserId1" class="parser.goldstarcanada.GoldstarCanadaColorParser"/> 
+
+
+     <!--supplier 30251 configuration end  -->  
+
 
 </beans>
 

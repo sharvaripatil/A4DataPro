@@ -1051,10 +1051,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						ProdoptionObj.setValues(ProdvaluesList);
 						ProdoptionList.add(ProdoptionObj);
 						 productConfigObj.setOptions(ProdoptionList);
-					}
-						
-						
-						
+					}	
 						
 					break;
 					
