@@ -163,6 +163,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 		String imprintLocation = null;
 		String ProductStatus=null;
 		boolean Prod_Status;
+		String rushProdTimeLo=null;
 		Product existingApiProduct = null;
 		
 		while (iterator.hasNext()) {
@@ -182,7 +183,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				Cell cell = cellIterator.next();
 				String xid = null;
 				int columnIndex = cell.getColumnIndex();
-				  cell2Data =  nextRow.getCell(2);
+				  cell2Data =  nextRow.getCell(1);
 				if(columnIndex + 1 == 1){
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 						xid = cell.getStringCellValue();
@@ -569,7 +570,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 41://QuoteUponRequest
 				     quoteUponRequest = cell.getStringCellValue();
 
-
+				     break;
 				case 42://PriceIncludeClr
 				      priceIncludes.append(cell.getStringCellValue()).append(" ");
 
@@ -975,11 +976,13 @@ public class SportCanadaExcelMapping implements IExcelParser{
 
 					if(prodTimeLo.equalsIgnoreCase(prodTimeHi))
 					{
+						productionTime = new ProductionTime();
 						productionTime.setBusinessDays(prodTimeHi);
 						listOfProductionTime.add(productionTime);
 					}
 					else
-					{
+					{	
+						productionTime = new ProductionTime();
 						String prodTimeTotal="";
 						prodTimeTotal=prodTimeTotal.concat(prodTimeLo).concat("-").concat(prodTimeHi);
 						productionTime.setBusinessDays(prodTimeTotal);
@@ -989,7 +992,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					break;
 					
 				case 106: //RushProdTimeLo
-					String rushProdTimeLo  = cell.getStringCellValue();
+				    rushProdTimeLo  = cell.getStringCellValue();
 					if(!rushProdTimeLo.equals(ApplicationConstants.CONST_STRING_ZERO)){
 						rushTime = gcRushTimeParser.getRushTimeValues(rushProdTimeLo, rushTime);
 					}
@@ -998,7 +1001,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					break;
 				case 107: //RushProdTimeHi
 					String rushProdTimeH  = cell.getStringCellValue();
-					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO)){
+					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO) && !rushProdTimeLo.equalsIgnoreCase(rushProdTimeH) ){
 						rushTime = gcRushTimeParser.getRushTimeValues(rushProdTimeH, rushTime);
 					}
 					
@@ -1043,42 +1046,34 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					break;
 					
 				case 116: //Comment
-					/* FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
-						//String FOBLooup=null;
-						//List<String>fobLookupList = lookupServiceDataObj.getFobPoints(FOBLooup);
-					
-						if(FOBValue.contains("CA"))
+			     	 FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
+			
+					 if(!StringUtils.isEmpty(FOBValue))
+					 {
+						if(FOBValue.contains("NY"))
 						{
-							fobPintObj.setName("San Diego, CA 92131 USA");
+							fobPintObj=new FOBPoint();
+							fobPintObj.setName("Buffalo, NY 14150 USA");
 							FobPointsList.add(fobPintObj);
-						}
-						else if(FOBValue.contains("TN"))
-						{
-							if(asiNumber==57711){
-								fobPintObj.setName("Shelbyville, TN 37162 USA");
-								FobPointsList.add(fobPintObj);
-						     }
-							else{
-								fobPintObj.setName("Shelbyville, TN 37160 USA");
-								FobPointsList.add(fobPintObj);
-							}
-						}
 
-						if(FOBValue.contains("02"))
-						{
-							
-							ProdoptionObj.setOptionType("Product");
-							ProdoptionObj.setName("Pencil Sharpening");
-							ProdoptionValueObj.setValue("Pencil Sharpening Available");
-							ProdvaluesList.add(ProdoptionValueObj);
-							ProdoptionObj.setValues(ProdvaluesList);
-							ProdoptionList.add(ProdoptionObj);
-							 productConfigObj.setOptions(ProdoptionList);
 						}
-							*/
-							
-							
+						 if(FOBValue.contains("CA"))
+						{
+							fobPintObj=new FOBPoint();
+							fobPintObj.setName("San Diego, CA 92126 USA");
+							FobPointsList.add(fobPintObj);
 
+						}
+						 if(FOBValue.contains("TN"))
+						{
+							fobPintObj=new FOBPoint();
+							fobPintObj.setName("Shelbyville, TN 37160 USA");
+							FobPointsList.add(fobPintObj);
+
+							
+						}
+					 }
+					 
 					break;
 					
 				case 117: //Verified
@@ -1107,20 +1102,8 @@ public class SportCanadaExcelMapping implements IExcelParser{
 			}
 			
 		
-		  if(FOBValue.contains("02"))
-			{
-			priceGrids = gcPricegridParser.getUpchargePriceGrid("1", "2", "C", "Product Option", 
-							"false", "USD", "Pencil Sharpening Available", "Product Option Charge", "Other", new Integer(1), priceGrids);
-		 	productExcelObj.setPriceGrids(priceGrids);
-
-			}
-		  else{
-			  
 			 	productExcelObj.setPriceGrids(priceGrids);
-		  }
-				
-				
-			
+		  
 			    
 			}catch(Exception e){
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
