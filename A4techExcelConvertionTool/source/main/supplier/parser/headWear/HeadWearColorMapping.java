@@ -76,7 +76,7 @@ public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
 		COLOR_MAP.put("light gray","Light Gray");
 		COLOR_MAP.put("tan beige","Light Brown");
 		COLOR_MAP.put("tan","Light Brown");
-		COLOR_MAP.put("silver","Silve Metal");
+		COLOR_MAP.put("silver","Silver Metal");
 		COLOR_MAP.put("bottle","Clear");
 		COLOR_MAP.put("blue","Medium Blue");
 	    COLOR_MAP.put("grey","Medium Gray");
