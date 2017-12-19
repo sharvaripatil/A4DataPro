@@ -8,9 +8,8 @@ public static Map<String, String> COLOR_MAP = new HashMap<>();
 public static Map<String,String> IMPRINT_METHOD_MAP = new HashMap<>();
 	static{
 		
-		COLOR_MAP.put("Yellow","Medium Yellow");  
 		IMPRINT_METHOD_MAP.put("Blank","Unimprinted");
-		IMPRINT_METHOD_MAP.put("Deboss/Foil/Pad","Debossed, Foil Stamped, Pad Print");
+		IMPRINT_METHOD_MAP.put("Deboss/Foil/Pad","Debossed,Foil Stamped,Pad Print");
 		IMPRINT_METHOD_MAP.put("Pad Print","Pad Print");
 		IMPRINT_METHOD_MAP.put("Silkscreen","Silkscreen");
 		IMPRINT_METHOD_MAP.put("RotaWrap™","Other=RotaWrap");
@@ -27,7 +26,7 @@ public static Map<String,String> IMPRINT_METHOD_MAP = new HashMap<>();
 		IMPRINT_METHOD_MAP.put("SpectraPrint™","Other=SpectraPrint");
 		IMPRINT_METHOD_MAP.put("ThermaPrint TM","Other=ThermaPrint");
        
-		
+		COLOR_MAP.put("Yellow","Medium Yellow");  
 		COLOR_MAP.put("Supplier Value","Color Group"); 
 		COLOR_MAP.put("White with Blue accents","White:Combo:Blue"); 
 		COLOR_MAP.put("White with Black accents","White:Combo:Black"); 

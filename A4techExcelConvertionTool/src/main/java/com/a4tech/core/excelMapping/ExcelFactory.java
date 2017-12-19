@@ -47,6 +47,7 @@ import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.TowelSpecialtiesMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
+import com.a4tech.supplier.mapper.SunScopeMapping;
 import com.a4tech.supplier.mapper.TwintechMapping;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 import com.a4tech.supplier.mapper.BagMakersMapping;
@@ -99,7 +100,7 @@ public class ExcelFactory {
 	private TekweldMapping tekweldMapping;
     private InternationlMerchMapping        merchMapping;	
     private HeadWearMapping                 headWearMapping;
-
+    private SunScopeMapping                 sunScopeMapping;
 
 	public  IExcelParser getExcelParserObject(String name){
 
@@ -205,6 +206,8 @@ public class ExcelFactory {
 			  return merchMapping;
 		  } else if(name.equalsIgnoreCase("headWearMapping") || name.equals("60282")){
 			  return headWearMapping;
+		  }  else if(name.equalsIgnoreCase("sunScope") || name.equals("90075")){
+			  return sunScopeMapping;
 		  }
 		return null;
 	}
@@ -566,7 +569,13 @@ public class ExcelFactory {
 
 	public void setHeadWearMapping(HeadWearMapping headWearMapping) {
 		this.headWearMapping = headWearMapping;
-
 	}
+	public SunScopeMapping getSunScopeMapping() {
+		return sunScopeMapping;
+	}
+	public void setSunScopeMapping(SunScopeMapping sunScopeMapping) {
+		this.sunScopeMapping = sunScopeMapping;
+	}
+
 	
 }

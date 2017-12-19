@@ -430,6 +430,7 @@
 		<property name="tekweldMapping" ref="tekweldMappingId"/>
 		<property name="merchMapping" ref="merchMappingId"/>
 		<property name="headWearMapping" ref="headWearMappingId"/>
+		<property name="sunScopeMapping" ref="sunScopeMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1115,7 +1116,17 @@
      </bean>
      <bean id="headWearpriceGridParserId" class="parser.headWear.HeadWearPriceGridParser"/>
       <!-- Head wear configuration end-->
-      
-
+    <!-- Sun Scope Configuration Start --> 
+     <bean id="sunScopeMappingId" class="com.a4tech.supplier.mapper.SunScopeMapping">
+     	 <property name="postServiceImpl"         ref="postService"/>
+     	 <property name="productDaoObj"           ref="productDao"/>
+     	 <property name="sunScopeAttributeParser" ref="sunScopeParserId"/>
+     </bean>
+     <bean id="sunScopeParserId" class="parser.sunscope.SunScopeAttributeParser">
+     	<property name="sunScopePriceGridParser"  ref="sunScopePriceGridId"/>
+     </bean>
+     <bean id="sunScopePriceGridId" class="parser.sunscope.SunScopePriceGridParser"/>
+    <!-- Sun scope configuration End -->  
+   
 </beans>
 

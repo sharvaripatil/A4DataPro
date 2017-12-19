@@ -21,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -50,7 +51,7 @@ public class FtpController {
 		return new ModelAndView("ftpLogin", "ftpLoginBean", new FtpLoginBean());	
 	}
 	
-	@RequestMapping(value="checkLoginDetails")
+	@RequestMapping(value="ftpLogin",method= RequestMethod.POST)
 	public ModelAndView fileUpload(@ModelAttribute("ftpLoginBean") FtpLoginBean ftpLogin,Model model){
 		FtpFileUploadBean ftpFileUploadBean = new FtpFileUploadBean();
 		_LOGGER.info("Enter FTP file upload Process controller");
