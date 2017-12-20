@@ -64,7 +64,7 @@ public  class TekweldMapping implements IExcelParser {
 		List<ProductionTime> listofProductionTime = new ArrayList<ProductionTime>();
 		List<ImprintSize> listofImprintSize = new ArrayList<ImprintSize>();
 		Size sizeObj=new Size();
-	
+		ProductionTime prodTimeObj=new ProductionTime();
 		try {
 
 			_LOGGER.info("Total sheets in excel::"
@@ -142,9 +142,11 @@ public  class TekweldMapping implements IExcelParser {
 									priceGrids = new ArrayList<PriceGrid>();
 							        listOfQuantity = new StringBuilder();
 									listOfPrices = new StringBuilder();
-							    	
+									listofProductionTime = new ArrayList<ProductionTime>();
 									productConfigObj = new ProductConfigurations();
-							
+								    prodTimeObj=new ProductionTime();
+									listofImprintSize = new ArrayList<ImprintSize>();
+								    sizeObj=new Size();
 
 								}
 								if (!productXids.contains(xid)) {
@@ -359,7 +361,7 @@ public  class TekweldMapping implements IExcelParser {
 							
 							String ProductionTime=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(ProductionTime)) {
-								ProductionTime prodTimeObj=new ProductionTime();
+								prodTimeObj=new ProductionTime();
 								prodTimeObj.setBusinessDays("10");
 								prodTimeObj.setDetails(ProductionTime);
 								listofProductionTime.add(prodTimeObj);
@@ -427,9 +429,12 @@ public  class TekweldMapping implements IExcelParser {
 			priceGrids = new ArrayList<PriceGrid>();
 	        listOfQuantity = new StringBuilder();
 			listOfPrices = new StringBuilder();
-
+			listofProductionTime = new ArrayList<ProductionTime>();
 			productConfigObj = new ProductConfigurations();
-
+			prodTimeObj=new ProductionTime();
+			listofImprintSize = new ArrayList<ImprintSize>();
+			sizeObj=new Size();
+			    
 			return finalResult;
 		} catch (Exception e) {
 			_LOGGER.error("Error while Processing excel sheet "

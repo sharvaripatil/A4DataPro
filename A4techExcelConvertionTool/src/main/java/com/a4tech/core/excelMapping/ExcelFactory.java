@@ -42,6 +42,7 @@ import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
+import com.a4tech.supplier.mapper.SportCanadaExcelMapping;
 import com.a4tech.supplier.mapper.TekweldMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.TowelSpecialtiesMapping;
@@ -100,6 +101,7 @@ public class ExcelFactory {
 	private TekweldMapping tekweldMapping;
     private InternationlMerchMapping        merchMapping;	
     private HeadWearMapping                 headWearMapping;
+    private SportCanadaExcelMapping         sportMapping;
     private SunScopeMapping                 sunScopeMapping;
 
 	public  IExcelParser getExcelParserObject(String name){
@@ -206,6 +208,8 @@ public class ExcelFactory {
 			  return merchMapping;
 		  } else if(name.equalsIgnoreCase("headWearMapping") || name.equals("60282")){
 			  return headWearMapping;
+		  }else if(name.equalsIgnoreCase("sportMapping") || name.equals("30251")){
+			  return sportMapping;
 		  }  else if(name.equalsIgnoreCase("sunScope") || name.equals("90075")){
 			  return sunScopeMapping;
 		  }
@@ -570,12 +574,23 @@ public class ExcelFactory {
 	public void setHeadWearMapping(HeadWearMapping headWearMapping) {
 		this.headWearMapping = headWearMapping;
 	}
+
+
+	public SportCanadaExcelMapping getSportMapping() {
+		return sportMapping;
+	}
+
+	public void setSportMapping(SportCanadaExcelMapping sportMapping) {
+		this.sportMapping = sportMapping;
+	}
+
 	public SunScopeMapping getSunScopeMapping() {
 		return sunScopeMapping;
 	}
 	public void setSunScopeMapping(SunScopeMapping sunScopeMapping) {
 		this.sunScopeMapping = sunScopeMapping;
 	}
+
 
 	
 }

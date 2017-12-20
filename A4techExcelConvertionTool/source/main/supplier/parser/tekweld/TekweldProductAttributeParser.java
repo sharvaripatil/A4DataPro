@@ -33,22 +33,27 @@ public class TekweldProductAttributeParser {
 	         for (int i=0;i<productSizeArr.length;i++) {
 	       	  
 	            ValueObj=new Value();
-	     		ValueObj.setValue(productSizeArr[i].trim());
 	     		ValueObj.setUnit("in");
 	     		
 	     		if(productSizeArr[i].contains("L")){
 	   	     	ValueObj.setAttribute("Length");
+	   	        productSizeArr[i]=productSizeArr[i].replace("L", "");
 	     		}else if(productSizeArr[i].contains("W"))
 	     		{
 	     		ValueObj.setAttribute("Width");	
+	   	        productSizeArr[i]=productSizeArr[i].replace("W", "");
 	     		}else if(productSizeArr[i].contains("H"))
 	     		{
 	         	ValueObj.setAttribute("Height");	
+	   	        productSizeArr[i]=productSizeArr[i].replace("H", "");
 	     		}
 	     		else if(productSizeArr[i].contains("D"))
 	     		{
 	         	ValueObj.setAttribute("Depth");	
+	   	        productSizeArr[i]=productSizeArr[i].replace("D", "");
 	     		}
+	     		ValueObj.setValue(productSizeArr[i].replace("\"", "").trim());
+
 	     		listOfValue.add(ValueObj);
 	   	
 		     	}

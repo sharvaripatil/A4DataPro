@@ -2,7 +2,6 @@ package com.a4tech.supplier.mapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -30,8 +29,7 @@ import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Availability;
-import com.a4tech.product.model.Catalog;
+import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.FOBPoint;
@@ -39,14 +37,10 @@ import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
-import com.a4tech.product.model.Option;
-import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Origin;
-import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
@@ -76,6 +70,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 	private GoldstarCanadaImprintsizeParser gcImprintSizeParser;
 	private GoldstarCanadaColorParser gccolorparser;
 
+	@SuppressWarnings("deprecation")
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId,String environmentType){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
@@ -96,30 +91,24 @@ public class SportCanadaExcelMapping implements IExcelParser{
 		  StringBuilder priceIncludes = new StringBuilder();
 		  StringBuilder pricesPerUnit = new StringBuilder();
 		  StringBuilder ImprintSizevalue = new StringBuilder();
-	
+		  StringBuilder listofUpcharges = new StringBuilder();
+
 			List<Color> colorList = new ArrayList<Color>();
 			List<ImprintLocation> listImprintLocation = new ArrayList<ImprintLocation>();
 			List<ImprintMethod> listOfImprintMethods = new ArrayList<ImprintMethod>();
 			List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
 			List<String> productKeywords = new ArrayList<String>();
 			List<Theme> themeList = new ArrayList<Theme>();
-			List<Catalog> catalogList = new ArrayList<Catalog>();
 			List<String> complianceList = new ArrayList<String>();
-			List<Image> listOfImages= new ArrayList<Image>();
 		    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
-		    List<com.a4tech.lookup.model.Catalog> catalogsList=new ArrayList<>();
 		    List<Values> valuesList =new ArrayList<Values>();
 			RushTime rushTime  = new RushTime();
 			Size size=new Size();
-		    Catalog catlogObj=new Catalog();
 			List<FOBPoint> FobPointsList = new ArrayList<FOBPoint>();
 			FOBPoint fobPintObj=new FOBPoint();
-			List<Option> ProdoptionList = new ArrayList<Option>();
-			List<OptionValue> ProdvaluesList = new ArrayList<OptionValue>();
-			OptionValue ProdoptionValueObj=new OptionValue();
-			Option ProdoptionObj=new Option();
-		  
-		    
+			 List<String>categoriesList= new ArrayList<String>();
+			 List<AdditionalColor>additionalcolorList= new ArrayList<>();
+
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -135,13 +124,14 @@ public class SportCanadaExcelMapping implements IExcelParser{
 		String productName = null;
 		String quoteUponRequest  = null;
 		String quantity = null;
+		String price=null;
+		String priceunit=null;
 		String cartonL = null;
 		String cartonW = null;
 		String cartonH = null;
 		String weightPerCarton = null;
 		String unitsPerCarton = null;
 		String decorationMethod =null;
-		 Date  priceConfirmedThru =null;
 		String FirstImprintsize1=null;
 		String FirstImprintunit1=null;
 		String FirstImprinttype1=null;
@@ -154,17 +144,20 @@ public class SportCanadaExcelMapping implements IExcelParser{
 		String SecondImprintsize2=null;
 		String SecondImprintunit2=null;
 		String SecondImprinttype2=null;
-		String CatYear=null;
 		Cell cell2Data = null;
 		String prodTimeLo = null;
 		String FOBValue= null;
 		String themeValue=null;
 		String priceIncludesValue=null;
 		String imprintLocation = null;
-		String ProductStatus=null;
-		boolean Prod_Status;
+		String Category1=null;
+		String rushProdTimeLo=null;
 		Product existingApiProduct = null;
-		
+		String Setupcharge=null;
+		String Setupcode=null;
+		String Addcolorcharge=null;
+		String Upchargecode="";
+		String Addclearcode=null;
 		while (iterator.hasNext()) {
 			
 			try{
@@ -182,7 +175,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				Cell cell = cellIterator.next();
 				String xid = null;
 				int columnIndex = cell.getColumnIndex();
-				  cell2Data =  nextRow.getCell(2);
+				  cell2Data =  nextRow.getCell(1);
 				if(columnIndex + 1 == 1){
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 						xid = cell.getStringCellValue();
@@ -226,16 +219,12 @@ public class SportCanadaExcelMapping implements IExcelParser{
 								imprintSizeList=gcImprintSizeParser.getimprintsize(ImprintSizevalue);
 								if(imprintSizeList!=null){
 								productConfigObj.setImprintSize(imprintSizeList);}
-							//	productExcelObj.setImages(listOfImages);
 								productConfigObj.setColors(colorList);
 								if(!StringUtils.isEmpty(FobPointsList)){
 								productExcelObj.setFobPoints(FobPointsList);
 								}
-
-								
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
-							 //	if(Prod_Status = false){
 
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId,environmentType);
 							 	if(num ==1){
@@ -245,7 +234,6 @@ public class SportCanadaExcelMapping implements IExcelParser{
 							 	}else{
 							 		
 							 	}
-							 //	}
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 								priceGrids = new ArrayList<PriceGrid>();
@@ -255,24 +243,23 @@ public class SportCanadaExcelMapping implements IExcelParser{
 								themeList = new ArrayList<Theme>();
 								finalDimensionObj = new Dimension();
 								 valuesList = new ArrayList<>();
-								catalogList = new ArrayList<Catalog>();
 								productKeywords = new ArrayList<String>();
 								listOfProductionTime = new ArrayList<ProductionTime>();
 								rushTime = new RushTime();
 								listImprintLocation = new ArrayList<ImprintLocation>();
 								listOfImprintMethods = new ArrayList<ImprintMethod>();
-								listOfImages= new ArrayList<Image>();
 								imprintSizeList =new ArrayList<ImprintSize>();
 								ImprintSizevalue = new StringBuilder();
 								size=new Size();
 								colorList = new ArrayList<Color>();
 								FobPointsList = new ArrayList<FOBPoint>();
-								ProdoptionList = new ArrayList<Option>();
 								 dimensionValue = new StringBuilder();
 								 dimensionUnits = new StringBuilder();
 								 dimensionType = new StringBuilder();
 								 priceIncludes = new StringBuilder();
 								 priceIncludesValue=null;
+								 additionalcolorList= new ArrayList<>();
+								 listofUpcharges = new StringBuilder();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid.trim());
@@ -284,23 +271,18 @@ public class SportCanadaExcelMapping implements IExcelParser{
 						     }else{
 						  	//   productExcelObj=existingApiProduct;
 							//	productConfigObj=existingApiProduct.getProductConfigurations();
-						        String confthruDate=existingApiProduct.getPriceConfirmedThru();
-						        productExcelObj.setPriceConfirmedThru(confthruDate);
-						        
+						 
 						    	 List<Image> Img=existingApiProduct.getImages();
 						    	 productExcelObj.setImages(Img);
 						    	 
 						    	 themeList=productConfigObj.getThemes();
 						    	 productConfigObj.setThemes(themeList);
 						    	 
-						    	 List<Availability> AvailibilityList=null;
-						    	 productExcelObj.setAvailability(AvailibilityList);
-						    	 
-						    	 List<ProductNumber> ProductNumberList=null;
-						    	 productExcelObj.setProductNumbers(ProductNumberList);
-						    	 
-						    	 List<String>categoriesList=existingApiProduct.getCategories();
+						    	 categoriesList=existingApiProduct.getCategories();
 						    	 productExcelObj.setCategories(categoriesList);
+						    	 
+						    	 String Summary=existingApiProduct.getSummary();
+						    	 productExcelObj.setSummary(Summary);
 						     
 						     }
 							//productExcelObj = new Product();
@@ -317,8 +299,13 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				
 				case 2://ItemNum
 					 String asiProdNo=CommonUtility.getCellValueStrinOrInt(cell);
+					int Nolength=asiProdNo.length();
+					 if(Nolength>14){
+							String strTemp=productName.substring(0, 14);
+						     productExcelObj.setAsiProdNo(strTemp);		
+					 }else{
 				     productExcelObj.setAsiProdNo(asiProdNo);		
-
+					 }
 					
 					 break;
 				case 3://Name
@@ -334,29 +321,26 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					  break;
 				case 4://CatYear
 
-					
-						break;
+					break;
 				case 5://ExpirationDate
 
-					 CatYear=CommonUtility.getCellValueStrinOrInt(cell);
-					
-					
 				    break;
-					
 				case 6://Discontinued
-
-				//	 priceConfirmedThru = cell.getDateCellValue();
 		
 					break;
-					
 				case 7: //Cat1Name
-					
-					// ProductStatus=cell.getStringCellValue();
-					// Prod_Status=cell.getBooleanCellValue();
+					Category1=cell.getStringCellValue();
+				
 					 break;
-					
 				case 8://Cat2Name
-
+					String Category2=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(categoriesList)){
+						if(Category1.equalsIgnoreCase("Lanyards")){
+						categoriesList.add(Category1);}
+						if(Category2.equalsIgnoreCase("Lanyards")){
+						categoriesList.add(Category2);}
+						productExcelObj.setCategories(categoriesList);
+					}
 					break;
 					
 				case 9: // Description
@@ -522,6 +506,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					}catch (Exception e) {
 						_LOGGER.info("Error in base price Quantity field "+e.getMessage());
 					}
+					break;
 				case 28://Prc1
 				case 29://Prc2
 				case 30://Prc3
@@ -530,14 +515,14 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 33://Prc6
 					try{
 						 if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-								quantity = cell.getStringCellValue();
-						         if(!StringUtils.isEmpty(quantity)&& !quantity.equals("0")){
-						        	 listOfPrices.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							 price = cell.getStringCellValue();
+						         if(!StringUtils.isEmpty(price)&& !price.equals("0")){
+						        	 listOfPrices.append(price).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 						         }
 							}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-								double quantity1 = (double)cell.getNumericCellValue();
-						         if(!StringUtils.isEmpty(quantity1)){
-						        	 listOfPrices.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+								double price1 = (double)cell.getNumericCellValue();
+						         if(!StringUtils.isEmpty(price1)){
+						        	 listOfPrices.append(price1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 						         }
 							}else{
 							}  
@@ -557,35 +542,34 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 39://PiecesPerUnit5
 				case 40://PiecesPerUnit6
 					try{
-					}catch (Exception e) {
-						_LOGGER.info("Error in pricePerUnit field "+e.getMessage());
-					}
+					
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						quantity = cell.getStringCellValue();
-				         if(!StringUtils.isEmpty(quantity) && !quantity.equals("0")){
-				        	 pricesPerUnit.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						priceunit = cell.getStringCellValue();
+				         if(!StringUtils.isEmpty(priceunit) && !priceunit.equals("0")){
+				        	 pricesPerUnit.append(priceunit).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
 					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						double quantity1 = (double)cell.getNumericCellValue();
-				         if(!StringUtils.isEmpty(quantity1)){
-				        	 pricesPerUnit.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						double priceunit1 = (double)cell.getNumericCellValue();
+				         if(!StringUtils.isEmpty(priceunit1)){
+				        	 pricesPerUnit.append(priceunit1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
 					}else{
 					}  				
-					
+					}catch (Exception e) {
+						_LOGGER.info("Error in pricePerUnit field "+e.getMessage());
+					}
 					break;
 				case 41://QuoteUponRequest
 				     quoteUponRequest = cell.getStringCellValue();
 
-
+				     break;
 				case 42://PriceIncludeClr
 				      priceIncludes.append(cell.getStringCellValue()).append(" ");
-
+				      break;
 
 				case 43://PriceIncludeSide
 					priceIncludes.append(cell.getStringCellValue()).append(" ");
-					
-					      break;
+					break;
 				case 44://PriceIncludeLoc
 					priceIncludes.append(cell.getStringCellValue());
 					int PriceIncludeLength=priceIncludes.length();
@@ -599,81 +583,80 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					
 					      break;
 				case 45:  //SetupChg
-
-					    
+					Setupcharge=cell.getStringCellValue();
+					
 					     break;
 				case 46: // SetupChgCode
-
-						
-						
+					Setupcode=cell.getStringCellValue();	
 						break;
-				case 47: //ScreenChg
-
-						
-						
-						break;
-						
-				case 48:    //ScreenChgCode
- 
-					
-				  break;
-				case 49://PlateChg
-
-					
-					
-				  break;
-				case 50://PlateChgCode
-
-							break;
-				case 51://DieChg
-
-							break;
-				case 52://DieChgCode
-
-							break;
-				case 53://ToolingChg
-
-							break;
-				case 54://ToolingChgCode
-
-							break;
-				case 55://RepeatChg
-
-							break;
-				case 56://RepeatChgCode
-
-							break;
+			
+				
 				case 57://AddClrChg
+					Addcolorcharge=cell.getStringCellValue();
 
 							break;
 				case 58://AddClrChgCode
 	
 							break; 
 				case 59://AddClrRunChg1
-
-							break;
 				case 60://AddClrRunChg2
-					
-							break;
 				case 61://AddClrRunChg3
-
-							break;
 				case 62://AddClrRunChg4
-
-							break;
 				case 63://AddClrRunChg5
-
-							break;
 				case 64://AddClrRunChg6
-
+					try{
+						
+						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+							quantity = cell.getStringCellValue();
+					         if(!StringUtils.isEmpty(quantity) && !quantity.equals("0")){
+					        	 listofUpcharges.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
+						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+							double quantity1 = (double)cell.getNumericCellValue();
+					         if(!StringUtils.isEmpty(quantity1)){
+					        	 listofUpcharges.append(quantity1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					         }
+						}else{
+						}  				
+						}catch (Exception e) {
+							_LOGGER.info("Error in pricePerUnit field "+e.getMessage());
+						}
 							break;
 				case 65://AddClrRunChgCode
+					 Addclearcode=cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(Addclearcode))
+					 {
+					if(Addclearcode.contains("P"))
+					{
+						Upchargecode="P";
+					}
+					else if(Addclearcode.contains("R"))
+					{
+						Upchargecode="R";
 
+					}
+			     	}
 							break;
 				case 66://IsRecyclable
 
 							break;
 				case 67://IsEnvironmentallyFriendly
+					 String IsEnvironmentallyFriendly ="";
+					  if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+					   IsEnvironmentallyFriendly = cell.getStringCellValue();
+
+					}else
+					{
+						 boolean boovar = cell.getBooleanCellValue();
+						 IsEnvironmentallyFriendly = String.valueOf(boovar);
+					}
+						if(IsEnvironmentallyFriendly.equalsIgnoreCase("true"))			
+						{ Theme themeObj1 = new Theme();
+
+							themeObj1.setName("Eco & Environmentally Friendly");	
+
+							themeList.add(themeObj1);
+						}
 
 							break;
 				case 68://IsNewProd
@@ -700,7 +683,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 75://ImprintSize1
 
 					 FirstImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(FirstImprintsize1) || FirstImprintsize1 !=  null ){
+					 if(!StringUtils.isEmpty(FirstImprintsize1) || FirstImprintsize1 !=  "0" ){
 					 ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize1).append(" ");
 					
 					 }
@@ -708,7 +691,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 76: //ImprintSize1Units
 					FirstImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 					
-					 if(!StringUtils.isEmpty(FirstImprintunit1) || FirstImprintunit1 !=  null ){
+					 if(!StringUtils.isEmpty(FirstImprintunit1) || FirstImprintunit1 !=  "0" ){
 					FirstImprintunit1=GoldstarCanadaLookupData.Dimension1Units.get(FirstImprintunit1);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit1).append(" ");
 					 }	 
@@ -718,7 +701,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 77: //ImprintSize1Type
 					FirstImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 					
-					   if(!StringUtils.isEmpty(FirstImprinttype1) || FirstImprinttype1 !=  null ){
+					   if(!StringUtils.isEmpty(FirstImprinttype1) || FirstImprinttype1 !=  "0" ){
 						FirstImprinttype1=GoldstarCanadaLookupData.Dimension1Type.get(FirstImprinttype1);
 						ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype1).append(" ").append("x");
 					   }
@@ -727,16 +710,15 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 78:   //ImprintSize2
 					FirstImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 					
-					 if(!StringUtils.isEmpty(FirstImprintsize2) || FirstImprinttype1 != null ){
+					 if(!StringUtils.isEmpty(FirstImprintsize2) || FirstImprinttype1 != "0" ){
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize2).append(" ");
 					 }
-		
-						
+				
 				  
 				case 79: // ImprintSize2Units
 
 			      FirstImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(FirstImprintunit2) || FirstImprintunit2 !=  null ){
+				    if(!StringUtils.isEmpty(FirstImprintunit2) || FirstImprintunit2 !=  "0" ){
 					FirstImprintunit2=GoldstarCanadaLookupData.Dimension1Units.get(FirstImprintunit2);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit2).append(" ");
 				    }
@@ -746,7 +728,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					  	
 				case 80:	// ImprintSize2Type
 		     	FirstImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(FirstImprinttype2) || FirstImprinttype2 !=  null ){
+				    if(!StringUtils.isEmpty(FirstImprinttype2) || FirstImprinttype2 !=  "0" ){
 
 					FirstImprinttype2=GoldstarCanadaLookupData.Dimension1Type.get(FirstImprinttype2);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype2).append(" ");
@@ -769,7 +751,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 
                 	SecondImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 					
-				    if(!StringUtils.isEmpty(SecondImprintsize1) || SecondImprintsize1 !=  null ){
+				    if(!StringUtils.isEmpty(SecondImprintsize1) || SecondImprintsize1 !=  "0" ){
 
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprintsize1).append(" ");
 				    }
@@ -780,7 +762,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 
 	              SecondImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 					
-				    if(!StringUtils.isEmpty(SecondImprintunit1) || SecondImprintunit1 != null ){
+				    if(!StringUtils.isEmpty(SecondImprintunit1) || SecondImprintunit1 != "0" ){
 					SecondImprintunit1=GoldstarCanadaLookupData.Dimension1Units.get(SecondImprintunit1);
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprintunit1).append(" ");
 
@@ -791,7 +773,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 84:  //SecondImprintSize1Type
 					SecondImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 					
-				    if(!StringUtils.isEmpty(SecondImprinttype1) || SecondImprinttype1 !=  null ){
+				    if(!StringUtils.isEmpty(SecondImprinttype1) || SecondImprinttype1 !=  "0" ){
 					SecondImprinttype1=GoldstarCanadaLookupData.Dimension1Type.get(SecondImprinttype1);
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprinttype1).append(" ").append("x");
 
@@ -803,7 +785,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 85:  // SecondImprintSize2
 					SecondImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 					
-				    if(!StringUtils.isEmpty(SecondImprintsize2) || SecondImprintsize2 !=  null ){
+				    if(!StringUtils.isEmpty(SecondImprintsize2) || SecondImprintsize2 !=  "0" ){
 				    ImprintSizevalue=ImprintSizevalue.append(SecondImprintsize2).append(" ");
 				    
 				    }
@@ -815,7 +797,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 86: // SecondImprintSize2Units
 
 					SecondImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprintunit2) || SecondImprintunit2 !=  null ){
+				    if(!StringUtils.isEmpty(SecondImprintunit2) || SecondImprintunit2 !=  "0" ){
 					SecondImprintunit2=GoldstarCanadaLookupData.Dimension1Units.get(SecondImprintunit2);
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprintunit2).append(" ");
 
@@ -826,7 +808,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 87: //SecondImprintSize2Type
 
 					SecondImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprinttype2) || SecondImprinttype2 != null ){
+				    if(!StringUtils.isEmpty(SecondImprinttype2) || SecondImprinttype2 != "0" ){
 					SecondImprinttype2=GoldstarCanadaLookupData.Dimension1Type.get(SecondImprinttype2);
 					ImprintSizevalue=ImprintSizevalue.append(SecondImprinttype2).append(" ");
 
@@ -868,47 +850,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					
 					
 					 break;
-				case 92: //NewPictureURL
-
-					
-					 break;
-				case 93: //NewPictureFile
-
-					/*String ImageValue1=cell.getStringCellValue();
-					 Image image = new Image();
-					 if(!StringUtils.isEmpty(ImageValue1)){
-					// Image image = new Image();
-				      image.setImageURL(ImageValue1);
-				      image.setIsPrimary(true);
-				      image.setRank(1);
-				      listOfImages.add(image);
-					  }*/
-					break;
-				case 94:  //ErasePicture
-
-					break;
-				case 95: //NewBlankPictureURL
-
-					break;
-				case 96: //NewBlankPictureFile
-
-					/*String ImageValue2=cell.getStringCellValue();
-					if(!StringUtils.isEmpty(ImageValue2))
-					{
-						  image = new Image();
-					      image.setImageURL(ImageValue2);
-					      image.setIsPrimary(false);
-					      image.setRank(2);
-					      listOfImages.add(image);
-					}*/
-				
-					break;
-				case 97: //EraseBlankPicture
-
-					break;
-				case 98://NotPictured
-
-					break;
+			
 					 
 				case 99: //MadeInCountry
 					String madeInCountry = cell.getStringCellValue();
@@ -947,16 +889,9 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					break;
 				case 103: //ComplianceMemo
 
-					String productDataSheet=cell.getStringCellValue();
-					 if(!StringUtils.isEmpty(productDataSheet))
-					   {
-						 productExcelObj.setProductDataSheet(productDataSheet);
-					   }
-					
 					break;
 				case 104: //ProdTimeLo
 					   prodTimeLo = CommonUtility.getCellValueStrinOrInt(cell);
-
 				
 					break;
 					
@@ -967,11 +902,13 @@ public class SportCanadaExcelMapping implements IExcelParser{
 
 					if(prodTimeLo.equalsIgnoreCase(prodTimeHi))
 					{
+						productionTime = new ProductionTime();
 						productionTime.setBusinessDays(prodTimeHi);
 						listOfProductionTime.add(productionTime);
 					}
 					else
-					{
+					{	
+						productionTime = new ProductionTime();
 						String prodTimeTotal="";
 						prodTimeTotal=prodTimeTotal.concat(prodTimeLo).concat("-").concat(prodTimeHi);
 						productionTime.setBusinessDays(prodTimeTotal);
@@ -981,11 +918,16 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					break;
 					
 				case 106: //RushProdTimeLo
+				    rushProdTimeLo  = cell.getStringCellValue();
+					if(!rushProdTimeLo.equals(ApplicationConstants.CONST_STRING_ZERO)){
+						rushTime = gcRushTimeParser.getRushTimeValues(rushProdTimeLo, rushTime);
+					}
+					
 				
 					break;
 				case 107: //RushProdTimeHi
 					String rushProdTimeH  = cell.getStringCellValue();
-					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO)){
+					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO) && !rushProdTimeLo.equalsIgnoreCase(rushProdTimeH) ){
 						rushTime = gcRushTimeParser.getRushTimeValues(rushProdTimeH, rushTime);
 					}
 					
@@ -994,8 +936,10 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 108://Packaging
 
 					String pack  = cell.getStringCellValue();
-					List<Packaging> listOfPackaging = gcPackagingParser.getPackageValues(pack);
-					productConfigObj.setPackaging(listOfPackaging);
+					 if(!StringUtils.isEmpty(pack))
+					 {
+					productExcelObj.setAdditionalShippingInfo(pack);
+					 }
 					 break; 	 
 				case 109://CartonL
 
@@ -1014,28 +958,61 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					
 					break;
 				case 112://WeightPerCarton
-
+					weightPerCarton  =CommonUtility.getCellValueStrinOrInt(cell);
 					break;
 	
 				case 113://UnitsPerCarton
-
+					unitsPerCarton  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
 				case 114: //ShipPointCountry
 
-					weightPerCarton  =CommonUtility.getCellValueStrinOrInt(cell);
+				
 					break;
 				case 115: //ShipPointZip
 
-					unitsPerCarton  = CommonUtility.getCellValueStrinOrInt(cell);
+					
 					break;
 					
 				case 116: //Comment
+			     	 FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
+			
+					 if(!StringUtils.isEmpty(FOBValue))
+					 {
+						if(FOBValue.contains("NY"))
+						{
+							fobPintObj=new FOBPoint();
+							fobPintObj.setName("Buffalo, NY 14150 USA");
+							FobPointsList.add(fobPintObj);
 
+						}
+						 if(FOBValue.contains("CA"))
+						{
+							fobPintObj=new FOBPoint();
+							fobPintObj.setName("San Diego, CA 92126 USA");
+							FobPointsList.add(fobPintObj);
 
+						}
+						 if(FOBValue.contains("TN"))
+						{
+							fobPintObj=new FOBPoint();
+							fobPintObj.setName("Shelbyville, TN 37160 USA");
+							FobPointsList.add(fobPintObj);
+
+							
+						}
+						 
+						 productExcelObj.setAdditionalProductInfo(FOBValue);
+					 }
+					 
 					break;
 					
 				case 117: //Verified
-
+					String verified=cell.getStringCellValue();
+					if(verified.equalsIgnoreCase("True")){
+					String priceConfimedThruString="2018-12-31T00:00:00";
+					productExcelObj.setPriceConfirmedThru(priceConfimedThruString);
+					}
+					
 					
 					break;
 					
@@ -1048,27 +1025,62 @@ public class SportCanadaExcelMapping implements IExcelParser{
 			
 			 // end inner while loop
 			productExcelObj.setPriceType("L");
+			
 			if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
 				priceGrids = gcPricegridParser.getPriceGrids(listOfPrices.toString(), 
 						         listOfQuantity.toString(), priceCode, "USD",
 						         priceIncludesValue, true, quoteUponRequest, productName,"",priceGrids);	
 			}
 			
-		
-		  if(FOBValue.contains("02"))
-			{
-			priceGrids = gcPricegridParser.getUpchargePriceGrid("1", "2", "C", "Product Option", 
-							"false", "USD", "Pencil Sharpening Available", "Product Option Charge", "Other", new Integer(1), priceGrids);
-		 	productExcelObj.setPriceGrids(priceGrids);
+			if (!StringUtils.isEmpty(decorationMethod)) {
+				for (int i = 0; i < listOfImprintMethods.size(); i++) {
+					String ImprintMethodValue = listOfImprintMethods
+							.get(i).getAlias();
 
-			}
-		  else{
-			  
-			 	productExcelObj.setPriceGrids(priceGrids);
-		  }
-				
-				
+					priceGrids = gcPricegridParser
+							.getUpchargePriceGrid("1", Setupcharge,
+									Setupcode,
+									"Imprint Method", "false", "USD",
+									ImprintMethodValue,
+									"Set-up Charge", "Other",
+									new Integer(1), priceGrids);
+
+				}
 			
+			}						
+	
+			if(!Addcolorcharge.equalsIgnoreCase("0"))
+			{
+				AdditionalColor addcolor=new AdditionalColor();
+				addcolor.setName("Additional Colors");
+				additionalcolorList.add(addcolor);
+				productConfigObj.setAdditionalColors(additionalcolorList);
+				priceGrids = gcPricegridParser
+						.getUpchargePriceGrid("1", Addcolorcharge,
+								"V",
+								"Additional Colors", "false", "USD",
+								"Additional Colors",
+								"Set-up Charge", "Other",
+								new Integer(1), priceGrids);	
+			}
+			
+		     if(!StringUtils.isEmpty(Addclearcode))
+		     {
+				priceGrids = gcPricegridParser
+						.getUpchargePriceGrid("1", listofUpcharges.toString(),
+								Upchargecode,
+								"Additional Colors", "false", "USD",
+								"Additional Colors",
+								"Run Charge", "Other",
+								new Integer(1), priceGrids);	
+				
+			}
+			
+			
+			
+			
+			productExcelObj.setPriceGrids(priceGrids);
+		  
 			    
 			}catch(Exception e){
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
@@ -1079,7 +1091,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 		ShippingEstimate shipping = gcShippingParser.getShippingEstimateValues(cartonL, cartonW,
 				                               cartonH, weightPerCarton, unitsPerCarton);
 		productConfigObj.setImprintLocation(listImprintLocation);
-		productConfigObj.setImprintMethods(listOfImprintMethods);
+	
 	//	if(!StringUtils.isEmpty(themeValue) ){
 		productConfigObj.setThemes(themeList);
 	//	}
@@ -1096,10 +1108,11 @@ public class SportCanadaExcelMapping implements IExcelParser{
 		size.setDimension(finalDimensionObj);
 		productConfigObj.setSizes(size);
 		}
-		
+		productConfigObj.setImprintMethods(listOfImprintMethods);
+
 		imprintSizeList=gcImprintSizeParser.getimprintsize(ImprintSizevalue);
 		 imprintSizeList.removeAll(Collections.singleton(null));
-		if(!StringUtils.isEmpty(imprintSizeList)){
+		 if(!StringUtils.isEmpty(FirstImprintsize1) || FirstImprintsize1 !=  "0" ){
 		productConfigObj.setImprintSize(imprintSizeList);
 		}
 		//productExcelObj.setImages(listOfImages);
@@ -1123,7 +1136,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 		 	}
 		 //	}
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
-		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
+		    _LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
 	       productDaoObj.saveErrorLog(asiNumber,batchId);
 		    
@@ -1133,26 +1146,25 @@ public class SportCanadaExcelMapping implements IExcelParser{
 			productConfigObj = new ProductConfigurations();
 			themeList = new ArrayList<Theme>();
 			finalDimensionObj = new Dimension();
-			 valuesList = new ArrayList<>();
-			catalogList = new ArrayList<Catalog>();
+			valuesList = new ArrayList<>();
 			productKeywords = new ArrayList<String>();
 			listOfProductionTime = new ArrayList<ProductionTime>();
 			rushTime = new RushTime();
 			listImprintLocation = new ArrayList<ImprintLocation>();
 			listOfImprintMethods = new ArrayList<ImprintMethod>();
-			listOfImages= new ArrayList<Image>();
 			imprintSizeList =new ArrayList<ImprintSize>();
 			size=new Size();
 			colorList = new ArrayList<Color>();
 			FobPointsList = new ArrayList<FOBPoint>();
 			ImprintSizevalue = new StringBuilder();
-			ProdoptionList = new ArrayList<Option>();
 			DimensionRef=null;
-			 dimensionValue = new StringBuilder();
-			 dimensionUnits = new StringBuilder();
-			 dimensionType = new StringBuilder();
-			 priceIncludesValue=null;
-			 priceIncludes = new StringBuilder();
+			dimensionValue = new StringBuilder();
+			dimensionUnits = new StringBuilder();
+			dimensionType = new StringBuilder();
+			priceIncludesValue=null;
+			priceIncludes = new StringBuilder();
+			additionalcolorList= new ArrayList<>();
+			listofUpcharges = new StringBuilder();
 			 
 	       return finalResult;
 		}catch(Exception e){
