@@ -21,6 +21,8 @@ public class GoldstarCanadaImprintMethodParser {
 		imprintMethod=imprintMethod.replace("4-color process", "Full Color");
 		imprintMethod=imprintMethod.replace("Pad printed", "Pad Print");
 		imprintMethod=imprintMethod.replace("Screen printed", "Silkscreen");
+		imprintMethod=imprintMethod.replace("Full-color digital", "Full Color");
+
 		ImprintMethod imprMethod = new ImprintMethod();
 		
 		if(imprintMethod.contains("Laser"))
