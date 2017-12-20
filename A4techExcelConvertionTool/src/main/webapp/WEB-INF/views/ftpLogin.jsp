@@ -48,7 +48,7 @@
 
 						<div class="form-bottom">
 							<form:form name="fileUpload" enctype="multipart/form-data"
-								modelAttribute="ftpLoginBean" action="checkLoginDetails">
+								modelAttribute="ftpLoginBean" action="ftpLogin">
 								<div class="form-group">
 									<c:choose>
 										<c:when test="${invalidDetails == ''}">
