@@ -101,7 +101,7 @@ public class ProGolfImagesMapping{
 						if(nextRow.getRowNum() != 1){
 							     productExcelObj.setProductConfigurations(productConfigObj);
 							     if(!StringUtils.isEmpty(productExcelObj.getExternalProductId())){
-						 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+						 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, "");
 						 	if(num ==1){
 						 		numOfProductsSuccess.add("1");
 						 	}else if(num == 0){
@@ -138,7 +138,7 @@ public class ProGolfImagesMapping{
 							    }// else create new producct and check existing data for it -getproduct,put in map
 							 else{
 								 Product existingApiProduct =null;
-								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
+								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid, null); 
 								     productExcelObj=existingApiProduct;
 									 productConfigObj=productExcelObj.getProductConfigurations();
 									 productExcelObj.setExternalProductId(xid);	
@@ -180,7 +180,7 @@ public class ProGolfImagesMapping{
 	
 	     if(!StringUtils.isEmpty(productExcelObj.getExternalProductId())){
 	 	    postServiceImpl.postProduct(accessToken, productExcelObj,
-					asiNumber, batchId);
+					asiNumber, batchId, "");
 	     }
 
 		_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());

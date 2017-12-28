@@ -218,7 +218,7 @@ public class UsbProductsExcelMapping {
 							   // Add repeatable sets here
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, "");
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0) {
@@ -1027,7 +1027,7 @@ public class UsbProductsExcelMapping {
 		   // Add repeatable sets here
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, "");
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){

@@ -9,8 +9,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="supplier_login_details")
-public class SupplierLoginDetails {
-	@Id
+public class SupplierLoginDetails extends BaseSupplierLoginDetails{
+	/*@Id
 	@Column(name="ID")
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Integer id;
@@ -45,5 +45,5 @@ public class SupplierLoginDetails {
 		this.password = password;
 	}
 	
-
+*/
 }

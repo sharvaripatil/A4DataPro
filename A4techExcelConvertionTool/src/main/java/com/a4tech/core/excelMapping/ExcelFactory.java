@@ -33,6 +33,7 @@ import com.a4tech.supplier.mapper.GillStudiosMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping;
+import com.a4tech.supplier.mapper.HeadWearMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineMappingRevised;
 import com.a4tech.supplier.mapper.InternationlMerchMapping;
@@ -41,10 +42,13 @@ import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
+import com.a4tech.supplier.mapper.SportCanadaExcelMapping;
+import com.a4tech.supplier.mapper.TekweldMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.TowelSpecialtiesMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
+import com.a4tech.supplier.mapper.SunScopeMapping;
 import com.a4tech.supplier.mapper.TwintechMapping;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 import com.a4tech.supplier.mapper.BagMakersMapping;
@@ -94,8 +98,11 @@ public class ExcelFactory {
     private MaxplusMapping                  maxplusmapping;
 	private GempirepromotionsMapping        gempiresMapping;
 	private EdwardsGarmentMapping edwardsGarmentMapping;
+	private TekweldMapping tekweldMapping;
     private InternationlMerchMapping        merchMapping;	
-
+    private HeadWearMapping                 headWearMapping;
+    private SportCanadaExcelMapping         sportMapping;
+    private SunScopeMapping                 sunScopeMapping;
 
 	public  IExcelParser getExcelParserObject(String name){
 
@@ -132,7 +139,7 @@ public class ExcelFactory {
 		   else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
 			   return bamExcelMapping;
 		   }
-		   else if(name.equalsIgnoreCase("goldCanada") || name.equals("57711")){
+		   else if(name.equalsIgnoreCase("goldCanada") || name.equals("57711") || name.equals("73295") ){
 			   return goldcanadaExcelMapping;
 
 		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
@@ -194,8 +201,17 @@ public class ExcelFactory {
 			  return maxplusmapping;
 		  }else if(name.equalsIgnoreCase("edwardsGarment") || name.equals("51752")){
 			   return edwardsGarmentMapping;
+		  }
+		  else if(name.equalsIgnoreCase("tekweld") || name.equals("90807")){
+			   return tekweldMapping;
 		  } else if(name.equalsIgnoreCase("internationalMerchMapping") || name.equals("62820")){
 			  return merchMapping;
+		  } else if(name.equalsIgnoreCase("headWearMapping") || name.equals("60282")){
+			  return headWearMapping;
+		  }else if(name.equalsIgnoreCase("sportMapping") || name.equals("30251")){
+			  return sportMapping;
+		  }  else if(name.equalsIgnoreCase("sunScope") || name.equals("90075")){
+			  return sunScopeMapping;
 		  }
 		return null;
 	}
@@ -542,5 +558,39 @@ public class ExcelFactory {
 	public void setEdwardsGarmentMapping(EdwardsGarmentMapping edwardsGarmentMapping) {
 		this.edwardsGarmentMapping = edwardsGarmentMapping;
 	}
+
+
+	public TekweldMapping getTekweldMapping() {
+		return tekweldMapping;
+	}
+
+	public void setTekweldMapping(TekweldMapping tekweldMapping) {
+		this.tekweldMapping = tekweldMapping;
+	}
+	public HeadWearMapping getHeadWearMapping() {
+		return headWearMapping;
+	}
+
+	public void setHeadWearMapping(HeadWearMapping headWearMapping) {
+		this.headWearMapping = headWearMapping;
+	}
+
+
+	public SportCanadaExcelMapping getSportMapping() {
+		return sportMapping;
+	}
+
+	public void setSportMapping(SportCanadaExcelMapping sportMapping) {
+		this.sportMapping = sportMapping;
+	}
+
+	public SunScopeMapping getSunScopeMapping() {
+		return sunScopeMapping;
+	}
+	public void setSunScopeMapping(SunScopeMapping sunScopeMapping) {
+		this.sunScopeMapping = sunScopeMapping;
+	}
+
+
 	
 }

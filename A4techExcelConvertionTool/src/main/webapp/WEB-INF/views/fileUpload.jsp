@@ -62,6 +62,9 @@ h4 {
              	<c:when test="${invalidAsiNum == ''}">
              		<h4 style="color: red;">Please Enter Details in Login Page</h4>
              	</c:when>
+             	<c:when test="${misMatchCoumns == 'misMatchCoumns'}">
+             	   <h4 style="color: red;">Please Enter Correct Supplier File Format As Columns Are Mismatch</h4>
+				 </c:when>
              </c:choose>
     <input type="file" name="file" id="file" class="file">
     <div class="input-group col-xs-12">
@@ -70,6 +73,7 @@ h4 {
         <button class="browse btn btn-primary input-lg" type="button"><i class="glyphicon glyphicon-search"></i> Browse</button>
       </span>
        <form:hidden path="asiNumber"/>
+       <form:hidden path="environmentType"/>
      <%--  <input type="file" name="file" id="file-1" class="inputfile inputfile-1" data-multiple-caption="{count} files selected" multiple ismap="ismap"/>
       <span class="input-group-btn">
       <form:button value="submit" class="browse btn btn-primary input-lg">Submit</form:button> --%>

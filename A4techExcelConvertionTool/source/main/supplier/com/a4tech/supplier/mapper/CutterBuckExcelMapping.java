@@ -49,7 +49,7 @@ public class CutterBuckExcelMapping implements IExcelParser{
  
 	@Override
 	public String readExcel(String accessToken, Workbook workbook,
-			Integer asiNumber, int batchId) {
+			Integer asiNumber, int batchId, String environmentType) {
 		int columnIndex = 0;
 
 		Set<String> productXids = new HashSet<String>();
@@ -140,7 +140,7 @@ public class CutterBuckExcelMapping implements IExcelParser{
 								}
 								productExcelObj = new Product();
 							
-								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
+								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid, environmentType); 
 								   if(existingApiProduct == null){
 								    	 productExcelObj = new Product();
 								     }else{
@@ -250,7 +250,7 @@ public class CutterBuckExcelMapping implements IExcelParser{
 						case 10://Label
 							String Linename=cell.getStringCellValue();
 							String value=null;
-						    listOfLookupLinenames = lookupServiceDataObj.getLineNames(value);
+						    listOfLookupLinenames = lookupServiceDataObj.getLineNames(value,environmentType);
 						    if(listOfLookupLinenames.contains(Linename))
 						    {
 						    listOfLinenames.add(Linename);
@@ -287,7 +287,7 @@ public class CutterBuckExcelMapping implements IExcelParser{
           else{
             
         	 // cutterBuckSheetObj.readMapper(accessToken, workbook, asiNumber, batchId,test);
-      			cutterBuckSheetObj.readMapper(accessToken, workbook, asiNumber, batchId,SheetMap,ProductNoMap);
+      			cutterBuckSheetObj.readMapper(accessToken, workbook, asiNumber, batchId,SheetMap,ProductNoMap,environmentType);
         	  }
 			  }
 			  

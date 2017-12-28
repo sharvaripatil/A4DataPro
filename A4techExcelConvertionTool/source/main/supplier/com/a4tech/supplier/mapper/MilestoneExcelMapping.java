@@ -60,7 +60,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 
 
 	
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 		
 		  List<String> numOfProductsSuccess = new ArrayList<String>();
 		  List<String> numOfProductsFailure = new ArrayList<String>();
@@ -205,7 +205,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 								productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -249,7 +249,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 						 if(!productXids.contains(xid)){
 						    	productXids.add(xid.trim());
 						    }
-						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid=xid.replace("\t",""));
+						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid=xid.replace("\t",""), environmentType);
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
@@ -809,7 +809,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				case 116: //ShipPointZip
 					String FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
 					String FOBLooup=null;
-					List<String>fobLookupList = lookupServiceDataObj.getFobPoints(FOBLooup);
+					List<String>fobLookupList = lookupServiceDataObj.getFobPoints(FOBLooup,environmentType);
 					if(fobLookupList.contains(FOBValue))
 					{
 						fobPintObj.setName(FOBValue);
@@ -922,7 +922,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 			productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){

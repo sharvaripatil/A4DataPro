@@ -37,7 +37,7 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 	private CBColorProductNumberParser cbColorProductNumberObj;
 
 	public String readMapper(String accessToken, Workbook workbook,
-			Integer asiNumber, int batchId, HashMap<String, Product> SheetMap, HashMap<String, String> productNoMap) {
+			Integer asiNumber, int batchId, HashMap<String, Product> SheetMap, HashMap<String, String> productNoMap,String environmentType) {
 
 		CutterBuckExcelMapping cutterBuckObj = new CutterBuckExcelMapping();
 	
@@ -132,7 +132,7 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 								}
 							     productExcelObj.setProductConfigurations(productConfigObj);
 							     if(!StringUtils.isEmpty(productExcelObj.getExternalProductId())){
-						 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+						 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 						 	if(num ==1){
 						 		numOfProductsSuccess.add("1");
 						 	}else if(num == 0){
@@ -182,7 +182,7 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 							    }// else create new producct and check existing data for it -getproduct,put in map
 							 else{
 								 Product existingApiProduct =null;
-								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
+								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid, null); 
 								  /* if(existingApiProduct == null){
 								    	 productExcelObj = new Product();
 								    	 productExcelObj.setExternalProductId(xid);	
@@ -268,7 +268,7 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 	     if(!StringUtils.isEmpty(productExcelObj.getExternalProductId())){
 
 	 	 int num = postServiceImpl.postProduct(accessToken, productExcelObj,
-				asiNumber, batchId);
+				asiNumber, batchId, environmentType);
 	     }
 
 		_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());

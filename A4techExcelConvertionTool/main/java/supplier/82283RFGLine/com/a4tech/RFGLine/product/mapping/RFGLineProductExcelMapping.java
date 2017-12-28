@@ -42,7 +42,7 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 	private ProductDao productDaoObj;
 
 	public String readExcel(String accessToken, Workbook workbook,
-			Integer asiNumber, int batchId) {
+			Integer asiNumber, int batchId, String environmentType) {
 		int columnIndex = 0;
 
 		Set<String> productXids = new HashSet<String>();
@@ -121,7 +121,7 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 											.setProductConfigurations(productConfigObj);
 									int num = postServiceImpl.postProduct(
 											accessToken, productExcelObj,
-											asiNumber, batchId);
+											asiNumber, batchId, environmentType);
 									if (num == 1) {
 										numOfProductsSuccess.add("1");
 									} else if (num == 0) {
@@ -349,7 +349,7 @@ public class RFGLineProductExcelMapping implements IExcelParser{
 			productExcelObj.setProductConfigurations(productConfigObj);
 
 			int num = postServiceImpl.postProduct(accessToken, productExcelObj,
-					asiNumber, batchId);
+					asiNumber, batchId, environmentType);
 			if (num == 1) {
 				numOfProductsSuccess.add("1");
 			} else if (num == 0) {

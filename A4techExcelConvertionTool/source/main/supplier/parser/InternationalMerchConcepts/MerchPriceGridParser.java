@@ -177,7 +177,12 @@ public class MerchPriceGridParser {
 		if(upChargeValue.contains("|")){
 			upChargeValue = upChargeValue.replaceAll("\\|", ",");
 		}
-		priceGrid.setDescription(upChargeValue);
+		if(upChargeValue.equals("Art Services")){
+			priceGrid.setDescription("Logo Modification");
+		} else {
+			priceGrid.setDescription(upChargeValue);	
+		}
+		
 		priceGrid.setIsQUR(qurFlag);
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);

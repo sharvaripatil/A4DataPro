@@ -54,7 +54,7 @@ public class BellaCanvas implements IExcelParser {
 
 	@SuppressWarnings("unused")
 	public String readExcel(String accessToken, Workbook workbook,
-			Integer asiNumber, int batchId) {
+			Integer asiNumber, int batchId, String environmentType) {
 
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
@@ -148,7 +148,7 @@ public class BellaCanvas implements IExcelParser {
 
 									int num = postServiceImpl.postProduct(
 											accessToken, productExcelObj,
-											asiNumber, batchId);
+											asiNumber, batchId, environmentType);
 									if (num == 1) {
 										numOfProductsSuccess.add("1");
 									} else if (num == 0) {
@@ -174,7 +174,7 @@ public class BellaCanvas implements IExcelParser {
 								}
 								existingApiProduct = postServiceImpl
 										.getProduct(accessToken,
-												xid = xid.replace("\t", ""));
+												xid = xid.replace("\t", ""), environmentType);
 								if (existingApiProduct == null) {
 									_LOGGER.info("Existing Xid is not available,product treated as new product");
 									productExcelObj = new Product();
@@ -307,7 +307,7 @@ public class BellaCanvas implements IExcelParser {
 			productExcelObj.setDescription(Description);
 			productExcelObj.setProductConfigurations(productConfigObj);
 			int num = postServiceImpl.postProduct(accessToken, productExcelObj,
-					asiNumber, batchId);
+					asiNumber, batchId, environmentType);
 			if (num == 1) {
 				numOfProductsSuccess.add("1");
 			} else if (num == 0) {

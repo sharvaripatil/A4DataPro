@@ -32,7 +32,7 @@ public class BallProMapping implements IExcelParser{
 	private Logger _LOGGER = Logger.getLogger(BallProMapping.class);
 	
 	@Override
-	public String readExcel(String accessToken, Workbook workbook, Integer asiNumber, int batchId) {
+	public String readExcel(String accessToken, Workbook workbook, Integer asiNumber, int batchId, String environmentType) {
 		_LOGGER.info("mapping process start ProGolf supplier File");
 		Map<String, Product> productsMap = new LinkedHashMap<>();
 		String finalResult = "";
@@ -40,7 +40,7 @@ public class BallProMapping implements IExcelParser{
 			 String sheetName = sheet.getSheetName().trim();
 			  _LOGGER.info("Sheet Name::"+sheetName);
 			  if("Product Information".equalsIgnoreCase(sheetName)){
-				  productsMap=  ballProProductInfoMapping.readMapper(accessToken,sheet,productsMap);
+				  productsMap=  ballProProductInfoMapping.readMapper(accessToken,sheet,productsMap,environmentType);
 			  } else if("Product Pricing".equalsIgnoreCase(sheetName)){
 				 productsMap = ballProProductPricingMapping.readMapper(productsMap, sheet);
 			  } else if("Imprint Charges".equalsIgnoreCase(sheetName)){
@@ -48,7 +48,7 @@ public class BallProMapping implements IExcelParser{
 			  } else if("Product Images".equalsIgnoreCase(sheetName)){
 				 // no need to mapping for images since supplier images does not meet asi standrd
 			  } else if("Product Shipping".equalsIgnoreCase(sheetName)){
-				  finalResult = ballProProductShippingMapping.readMapper(productsMap, sheet, accessToken, asiNumber, batchId);
+				  finalResult = ballProProductShippingMapping.readMapper(productsMap, sheet, accessToken, asiNumber, batchId,environmentType);
 			  } else if("Product Variation".equalsIgnoreCase(sheetName)){
 				  //productsMap = productVariationMapping.readMapper(productsMap, sheet);
 				  // only required while uploading "Callaway 2017 website export - mapped file only"

@@ -24,8 +24,9 @@
 	<import resource="sageMapping.xml" />
 	<import resource="kuku_mapping.xml" />
 	<!-- <import resource="ftpSchedular.xml"/> -->
-	<context:property-placeholder location="classpath:application.properties,classpath:sandbox-database.properties
-	                                       ,classpath:sandbox-externalApiEndPoints.properties"/>
+	<context:property-placeholder
+	location="classpath:application.properties,classpath:sandbox-database.properties
+	                                       ,classpath:sandbox-externalApiEndPoints.properties,classpath:externalApiEndPointsFtp.properties" />
 	<bean id="productService" class="com.a4tech.product.service.imple.ProductServiceImpl" />
 	<bean id="postServiceImplV2" name="postServiceImplV2"
 		class="com.a4tech.v2.service.postImpl.PostServiceImpl">
@@ -155,31 +156,19 @@
      <property name="productDaoObj" ref="productDao" />
    	</bean>
 	
-		
-		<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-		<property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
-		<property name="url" value="jdbc:sqlserver://192.168.1.10;databaseName=a4datapro;" />
-	    <property name="username" value="sa" />
-		<property name="password" value="P@$$w0rd123" /> 
-		
-		</bean>
-		<!-- <property name="url" value="jdbc:sqlserver://${db.host}:${db.port};databaseName=${db.database}" />
-		<property name="username" value="${db.username}" />
-		<property name="password" value="${db.password}" /> -->
-		<!-- <property name="url" value="jdbc:sqlserver://localhost\SQLSERVER:1433;databaseName=a4datapro" />
-		<property name="url" value="jdbc:sqlserver://[AMEY\SQLSERVER][:1433];databaseName=a4datapro" /> -->
-	<!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+	<!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+  		<property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
+  		<property name="url" value="jdbc:sqlserver://192.168.1.10;databaseName=a4datapro;" />
+     	<property name="username" value="sa" />
+  		<property name="password" value="P@$$w0rd123" />
+  	</bean> --> 
+	 <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="${mysql.db.driverClassName}" />
 		<property name="url" value="${mysql.db.url}" />
 		<property name="username" value="${mysql.db.username}" />
 		<property name="password" value="${mysql.db.password}" />
-
-		server details
-		<property name="url" value="${server.mysql.db.url}" /> <property name="username" 
-			value="${server.mysql.db.username}" /> <property name="password" value="${server.mysql.db.password}" 
-			/>
-	</bean> -->
+	</bean>
 
 	<bean id="hibernate3AnnotatedSessionFactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
@@ -191,13 +180,16 @@
 				<value>com.a4tech.product.dao.entity.BatchEntity</value>
 				<value>com.a4tech.product.dao.entity.FtpServerFileEntity</value>
 				<value>com.a4tech.product.dao.entity.SupplierLoginDetails</value>				
+				<value>com.a4tech.product.dao.entity.ProductionSupplierLoginDetails</value>
+				<value>com.a4tech.product.dao.entity.BaseSupplierLoginDetails</value>
+				<value>com.a4tech.product.dao.entity.SupplierColumnsEntity</value>
 				<!-- <value>parser.highcaliberline.HighCalColorEntity</value> -->
 			</list>
 		</property>
 		<property name="hibernateProperties">
 			<props>
-				 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-				<!-- <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop> -->
+				  <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+			<!-- <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop> --> 
 				<prop key="hibernate.current_session_context_class">thread</prop>
 				<prop key="show_sql">true</prop>
 				<prop key="hbm2ddl.auto">update</prop>
@@ -435,7 +427,12 @@
 		<property name="maxplusmapping" ref="maxplusmappingId"></property>
 		<property name="gempiresMapping" ref="gempiresMappingId"/>
 		<property name="edwardsGarmentMapping" ref="edwardsGarmentMappingId"/>
+		<property name="tekweldMapping" ref="tekweldMappingId"/>
 		<property name="merchMapping" ref="merchMappingId"/>
+		<property name="headWearMapping" ref="headWearMappingId"/>
+		<property name="sportMapping" ref="sportMappingId"/>
+		<property name="sunScopeMapping" ref="sunScopeMappingId"/>
+
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1081,6 +1078,21 @@
   	</bean> -->
      <!-- supplier 51752 Edwards Garment Co configuration end --> 
      
+
+     <!-- TekweldMapping Configuration Start -->
+     
+     <bean id="tekweldMappingId" class="com.a4tech.supplier.mapper.TekweldMapping">
+     	<property name="postServiceImpl" 	ref="postService"/>
+        <property name="productDaoObj" 	   ref="productDao"/>
+        <property name="tekweldAttribute" 	   ref="tekweldAttributeId"/>
+        
+     </bean>
+        <bean id="tekweldAttributeId" class="parser.tekweld.TekweldProductAttributeParser"/>
+       
+     
+     <!-- TekweldMapping Configuration End  --> 
+
+
      <!-- supplier 62820 InternationalMerch configuration Start-->
      <bean id="merchMappingId" class="com.a4tech.supplier.mapper.InternationlMerchMapping">
       <property name="postServiceImpl" ref="postService"/>
@@ -1093,6 +1105,72 @@
      <bean id="merchPriceGridParserId" class="parser.InternationalMerchConcepts.MerchPriceGridParser"/>
      <!-- supplier 62820 InternationalMerch configuration end --> 
      
+     <!-- head Wear configuration start-->
+     <bean id="headWearMappingId" class="com.a4tech.supplier.mapper.HeadWearMapping">
+     	 <property name="postServiceImpl" ref="postService"/>
+     	 <property name="productDaoObj" ref="productDao"/>
+     	 <property name="headWearAttributeParser" ref="headWearAttributeParserId"/>
+     	 <property name="headWearPriceGridParser" ref="headWearpriceGridParserId"/>
+     </bean>
+     <bean id="headWearAttributeParserId" class="parser.headWear.HeadWearAttributeParser">
+     	<property name="headWearPriceGridParser" ref="headWearpriceGridParserId"/>
+     	<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     </bean>
+     <bean id="headWearpriceGridParserId" class="parser.headWear.HeadWearPriceGridParser"/>
+      <!-- Head wear configuration end-->
+
       
+   <!--supplier 30251 configuration Start  -->  
+   
+       <bean id="sportMappingId" class="com.a4tech.supplier.mapper.SportCanadaExcelMapping">
+       <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj"   ref="productDao"/>
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+	   <property name="lookupRestServiceObj" ref="lookupRestService"/>
+       <property name="gcdimensionObj"   ref="gcdimensionObjId1"/>
+       <property name="gcimprintMethodParser"   ref="gcimprintMethodParserId1"/>
+       <property name="gcOriginParser"   ref="gcOriginParserId1"/>
+       <property name="gcRushTimeParser"   ref="gcRushTimeParserId1"/>
+       <property name="gcPackagingParser"   ref="gcPackagingParserId1"/>
+       <property name="gcShippingParser"   ref="gcShippingParserId1"/>
+       <property name="gcPricegridParser"   ref="gcPricegridParserId1"/>
+       <property name="gcImprintSizeParser"   ref="gcImprintSizeParserId1"/>
+       <property name="gccolorparser"   ref="gccolorparserId1"/>
+      
+       
+       
+       </bean>
+
+
+     <bean id="gcdimensionObjId1" class="parser.goldstarcanada.GoldstarCanadaDimensionParser"/> 
+     <bean id="gcimprintMethodParserId1" class="parser.goldstarcanada.GoldstarCanadaImprintMethodParser"> 
+     <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     <property name="lookupRestServiceObj" ref="lookupRestService"/>
+     </bean>
+     <bean id="gcOriginParserId1" class="parser.goldstarcanada.GoldstarCanadaOriginParser"/> 
+     <bean id="gcRushTimeParserId1" class="parser.goldstarcanada.GoldstarCanadaRushTimeParser"/> 
+     <bean id="gcPackagingParserId1" class="parser.goldstarcanada.GoldstarCanadaPackagingParser"/>    
+     <bean id="gcPricegridParserId1" class="parser.goldstarcanada.GoldstarCanadaPriceGridParser"/> 
+     <bean id="gcShippingParserId1" class="parser.goldstarcanada.GoldstarCanadaShippingEstimateParser"/> 
+     <bean id="gcImprintSizeParserId1" class="parser.goldstarcanada.GoldstarCanadaImprintsizeParser"/> 
+     <bean id="gccolorparserId1" class="parser.goldstarcanada.GoldstarCanadaColorParser"/> 
+
+
+     <!--supplier 30251 configuration end  -->  
+
+
+    <!-- Sun Scope Configuration Start --> 
+     <bean id="sunScopeMappingId" class="com.a4tech.supplier.mapper.SunScopeMapping">
+     	 <property name="postServiceImpl"         ref="postService"/>
+     	 <property name="productDaoObj"           ref="productDao"/>
+     	 <property name="sunScopeAttributeParser" ref="sunScopeParserId"/>
+     </bean>
+     <bean id="sunScopeParserId" class="parser.sunscope.SunScopeAttributeParser">
+     	<property name="sunScopePriceGridParser"  ref="sunScopePriceGridId"/>
+     </bean>
+     <bean id="sunScopePriceGridId" class="parser.sunscope.SunScopePriceGridParser"/>
+    <!-- Sun scope configuration End -->  
+   
+
 </beans>
 

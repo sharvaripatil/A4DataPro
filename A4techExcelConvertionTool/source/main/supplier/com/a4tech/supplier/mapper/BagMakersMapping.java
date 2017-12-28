@@ -55,7 +55,7 @@ public class BagMakersMapping implements IExcelParser{
 	@Autowired
 	ObjectMapper mapperObj;
 	
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId, String environmentType){
 		int columnIndex = 0;
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
@@ -177,7 +177,7 @@ public class BagMakersMapping implements IExcelParser{
 								 		productExcelObj.setAvailability(new ArrayList<Availability>());
 								 	}*/
 								 	productExcelObj.setMakeActiveDate("2018-01-01T00:00:00");//priceConfirmedThru
-								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
 								 	}else if(num == 0) {
@@ -212,7 +212,7 @@ public class BagMakersMapping implements IExcelParser{
 							    	listOfProductXids.add(xid);
 							    }
 								 productExcelObj = new Product();
-								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid); 
+								 existingApiProduct = postServiceImpl.getProduct(accessToken, xid, environmentType); 
 								     if(existingApiProduct == null){
 								    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 								    	 productExcelObj = new Product();
@@ -792,7 +792,7 @@ public class BagMakersMapping implements IExcelParser{
 	 		productExcelObj.setAvailability(new ArrayList<Availability>());
 	 	}*/
 	 	productExcelObj.setMakeActiveDate("2018-01-01T00:00:00");
-	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 	 	if(num ==1){
 	 		numOfProductsSuccess.add("1");
 	 	}else if(num == 0) {

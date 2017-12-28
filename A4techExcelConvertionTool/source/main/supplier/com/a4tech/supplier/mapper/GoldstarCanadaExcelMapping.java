@@ -76,7 +76,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 	private GoldstarCanadaImprintsizeParser gcImprintSizeParser;
 	private GoldstarCanadaColorParser gccolorparser;
 
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
@@ -237,7 +237,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 //	if(Prod_Status = false){
 
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -277,7 +277,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid.trim());
 						    }
-						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid=xid.replace("\t",""));
+						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid=xid.replace("\t",""), environmentType);
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
@@ -359,8 +359,6 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					
 				case 10: //Catalogs page number, Page1
 					String PageNO=CommonUtility.getCellValueStrinOrInt(cell);
-					String value=null;
-					catalogsList = lookupServiceDataObj.getCatalog(value);
 					if(CatYear.contains("2017")){
 						catlogObj.setCatalogName("2017 Goldstar Canada");
 						catlogObj.setCatalogPage(PageNO);
@@ -1033,9 +1031,16 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					}
 					else if(FOBValue.contains("TN"))
 					{
-						fobPintObj.setName("Shelbyville, TN 37162 USA");
-						FobPointsList.add(fobPintObj);
+						if(asiNumber==57711){
+							fobPintObj.setName("Shelbyville, TN 37162 USA");
+							FobPointsList.add(fobPintObj);
+					     }
+						else{
+							fobPintObj.setName("Shelbyville, TN 37160 USA");
+							FobPointsList.add(fobPintObj);
+						}
 					}
+
 					if(FOBValue.contains("02"))
 					{
 						
@@ -1046,10 +1051,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						ProdoptionObj.setValues(ProdvaluesList);
 						ProdoptionList.add(ProdoptionObj);
 						 productConfigObj.setOptions(ProdoptionList);
-					}
-						
-						
-						
+					}	
 						
 					break;
 					
@@ -1148,7 +1150,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 	
 		 	
 		 	//if(Prod_Status = false){
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){

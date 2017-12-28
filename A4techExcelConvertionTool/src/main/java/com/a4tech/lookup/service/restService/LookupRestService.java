@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -115,12 +117,17 @@ public class LookupRestService {
 		 }
 		return null;
 	}
-	public List<String> getFobPoints(String authToken){
+	public List<String> getFobPoints(String authToken,String environemtType){
 		HttpHeaders headers = new HttpHeaders();
 		try{
 			headers.add("Accept", "application/json");
 			headers.add("Content-Type", "application/json");
 	        headers.add("AuthToken", authToken);
+	        if(environemtType.equals("Sand")){
+	        	fobPointLookupUrl = "https://sandbox-productservice.asicentral.com/api/v4/lookup/fobpoints";
+	        } else{
+	        	fobPointLookupUrl = "https://productservice.asicentral.com/api/v4/lookup/fobpoints";
+	        }
 	        HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
 	       ResponseEntity<FobPoints> response = restTemplate.exchange(fobPointLookupUrl, HttpMethod.GET, 
 	                                                                 requestEntity, FobPoints.class);
@@ -146,12 +153,17 @@ public class LookupRestService {
 		}
 		return null;
 	}
-	public List<String> getLineNames(String authToken){
+	public List<String> getLineNames(String authToken,String environemtType){
 		HttpHeaders headers = new HttpHeaders();
 		try{
 			headers.add("Accept", "application/json");
 			headers.add("Content-Type", "application/json");
 	        headers.add("AuthToken", authToken);
+	        if(environemtType.equals("Sand")){
+	        	lineNamesLookupUrl = "https://sandbox-productservice.asicentral.com/api/v4/lookup/selectedlinenames";
+	        } else {
+	        	lineNamesLookupUrl = "https://productservice.asicentral.com/api/v4/lookup/selectedlinenames";
+	        }
 	        HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
 	       ResponseEntity<LineName> response = restTemplate.exchange(lineNamesLookupUrl, HttpMethod.GET, 
 	                                                                 requestEntity, LineName.class);
@@ -176,9 +188,14 @@ public class LookupRestService {
 		 }
 		return null;
 	}
-	public List<Catalog> getCatalogs(String authToken){
+	public List<Catalog> getCatalogs(String authToken,String environemtType){
 		HttpHeaders headers = new HttpHeaders();
 		try{
+			if(environemtType.equals("Sand")){
+				catalogLookupUrl = "https://sandbox-productservice.asicentral.com/api/v4/lookup/mediacitations";
+			} else{
+				catalogLookupUrl = "https://productservice.asicentral.com/api/v4/lookup/mediacitations";
+			}
 			headers.add("Accept", "application/json");
 			headers.add("Content-Type", "application/json");
 	        headers.add("AuthToken", authToken);

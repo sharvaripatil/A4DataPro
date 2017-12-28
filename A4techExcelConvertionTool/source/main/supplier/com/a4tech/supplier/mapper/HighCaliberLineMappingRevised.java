@@ -53,7 +53,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 	HighCaliberPriceGridParser highCalPriceGridParser;
 	
 	@SuppressWarnings("finally")
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId, String environmentType){
 		int columnIndex = 0;
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
@@ -229,7 +229,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 								 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 								 		productExcelObj.setAvailability(new ArrayList<Availability>());
 								 	}*/
-								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
 								 	}else if(num == 0) {
@@ -270,7 +270,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 							    	productXids.add(productId);
 							    }
 								 productExcelObj = new Product();
-								 existingApiProduct = postServiceImpl.getProduct(accessToken, productId); 
+								 existingApiProduct = postServiceImpl.getProduct(accessToken, productId, environmentType); 
 								     if(existingApiProduct == null){
 								    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 								    	 productExcelObj = new Product();
@@ -911,7 +911,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 	 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 	 		productExcelObj.setAvailability(new ArrayList<Availability>());
 	 	}*/
-	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId);
+	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 	 	if(num ==1){
 	 		numOfProductsSuccess.add("1");
 	 	}else if(num == 0){

@@ -1,8 +1,8 @@
 package com.a4tech.ftp.service;
 
-import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
 
 public interface FtpService {
-  public boolean uploadFile(MultipartFile mFile,String asiNumber);
+  public boolean uploadFile(File mFile,String asiNumber,String environmentType);
   public void downloadFiles();
 }

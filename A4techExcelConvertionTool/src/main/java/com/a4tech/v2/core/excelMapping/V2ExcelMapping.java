@@ -234,7 +234,8 @@ public class V2ExcelMapping {
 							 	productExcelObj.setProductRelationSkus(productsku);
 							 	productExcelObj.setProductNumbers(pnumberList);
 							 	//productList.add(productExcelObj);
-							 	int num = postServiceImplV2.postProduct(accessToken, productExcelObj,asiNumber);
+							 	//int num = postServiceImplV2.postProduct(accessToken, productExcelObj,asiNumber, null);
+							 	int num = 1;
 							 	if(num ==1){
 							 		numOfProducts.add("1");
 							 	}
@@ -1093,7 +1094,8 @@ public class V2ExcelMapping {
 		 	productExcelObj.setProductRelationSkus(productsku);
 		 	productExcelObj.setProductNumbers(pnumberList);
 		 	//productList.add(productExcelObj);
-		 	int num = postServiceImplV2.postProduct(accessToken, productExcelObj,asiNumber);
+		 	//int num = postServiceImplV2.postProduct(accessToken, productExcelObj,asiNumber, null);
+		 	int num = 1;
 		 	if(num ==1){
 		 		numOfProducts.add("1");
 		 	}

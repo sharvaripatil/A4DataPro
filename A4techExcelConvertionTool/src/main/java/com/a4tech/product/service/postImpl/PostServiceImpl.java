@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,10 +36,18 @@ public class PostServiceImpl implements PostService {
 	private String getProductUrl;
 	@Autowired
 	ObjectMapper mapperObj;
-	
-	public int postProduct(String authTokens, Product product,int asiNumber ,int batchId) throws IOException {
+	/*@Autowired
+	private Environment environment;*/
+	@Override
+	public int postProduct(String authTokens, Product product,int asiNumber ,int batchId, String environmentType) throws IOException {
 
 		try {
+			if(environmentType.equals("Sand")){
+				postApiURL = "https://sandbox-productservice.asicentral.com/api/v4/product/";
+			} else{
+				postApiURL = "https://productservice.asicentral.com/api/v4/product/";
+			}
+			//postApiURL = environment.getProperty(environmentType+".product.post.URL");
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("AuthToken", authTokens);
 			headers.add("Content-Type", "application/json ; charset=utf-8");
@@ -132,9 +141,15 @@ public class PostServiceImpl implements PostService {
 		}
 
 	}
-	
-	public Product getProduct(String authToken,String productId){
+	@Override
+	public Product getProduct(String authToken,String productId, String environmentType){
 	try{
+		if(environmentType.equals("Sand")){
+			getProductUrl = "https://sandbox-productservice.asicentral.com/api/v4/product/{xid}";
+		} else{
+			getProductUrl = "https://productservice.asicentral.com/api/v4/product/{xid}";
+		}
+		//postApiURL = environment.getProperty(environmentType+".product.get.URL");
 		 HttpHeaders headers = new HttpHeaders();
 		 headers.add("AuthToken", authToken);
 		 headers.add("Content-Type", "application/json");
@@ -254,12 +269,6 @@ public class PostServiceImpl implements PostService {
 
 	public void setProductDao(ProductDao productDao) {
 		this.productDao = productDao;
-	}
-
-	@Override
-	public int postProduct(String authToken, Product product, int asiNumber) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 	public String getGetProductUrl() {
 		return getProductUrl;
