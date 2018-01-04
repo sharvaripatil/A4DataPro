@@ -158,8 +158,8 @@
 	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
   		<property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
-  			<!-- <property name="url" value="jdbc:sqlserver://192.168.1.10;databaseName=a4datapro;" /> -->
-  		<property name="url" value="jdbc:sqlserver://219.91.244.206;databaseName=a4datapro;" />
+  			<property name="url" value="jdbc:sqlserver://192.168.1.10;databaseName=a4datapro;" />
+  		<!-- <property name="url" value="jdbc:sqlserver://219.91.244.206;databaseName=a4datapro;" /> -->
      	<property name="username" value="sa" />
   		<property name="password" value="P@$$w0rd123" />
   	</bean>
