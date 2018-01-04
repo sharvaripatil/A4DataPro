@@ -70,7 +70,8 @@ public class FilesParsing {
 				inputStream = new FileInputStream(new File(file.getPath()));
 				String fileExtension = CommonUtility.getFileExtension(file.getPath());
 				if (ApplicationConstants.CONST_STRING_XLS.equalsIgnoreCase(fileExtension)
-						|| ApplicationConstants.CONST_STRING_XLSX.equalsIgnoreCase(fileExtension)) {
+						|| ApplicationConstants.CONST_STRING_XLSX.equalsIgnoreCase(fileExtension)
+						|| "xlsm".equalsIgnoreCase(fileExtension)) {
 					workBook = getWorkBook(inputStream, fileExtension);	
 				} else if(ApplicationConstants.CONST_STRING_CSV.equalsIgnoreCase(fileExtension)){
 					workBook = getcsvIntoWorkbook(file.getPath());
@@ -184,7 +185,7 @@ public class FilesParsing {
 			} catch (IOException e) {
 				_LOGGER.error("unable to file convert into HSSFWorkbook: "+e);
 			}
-	     }else if(ApplicationConstants.CONST_STRING_XLSX.equalsIgnoreCase(fileExtension)){
+	     }else if(ApplicationConstants.CONST_STRING_XLSX.equalsIgnoreCase(fileExtension) || "xlsm".equalsIgnoreCase(fileExtension)){
 	    	try(Workbook workBook2 = new XSSFWorkbook(inputStream)) {
 	    		return workBook2;
 			} catch (IOException e) {
