@@ -25,10 +25,15 @@ import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.Image;
+import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.Origin;
+import com.a4tech.product.model.Packaging;
+import com.a4tech.product.model.Personalization;
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
@@ -63,7 +68,7 @@ public class SunGraphixMapping {
 		StringBuilder FinalKeyword = new StringBuilder();
 		StringBuilder AdditionalInfo = new StringBuilder();
 		String AddionnalInfo1=null;
-		List<Material> listOfMaterial =new ArrayList<Material>();
+		//List<Material> listOfMaterial =new ArrayList<Material>();
 		List<String> productKeywords = new ArrayList<String>();
 		List<String> listOfCategories = new ArrayList<String>();
 		List<ProductSkus> ProductSkusList = new ArrayList<>();
@@ -102,6 +107,7 @@ public class SunGraphixMapping {
 		  String Keyword1 =null;
 		  List<String> imagesList   = new ArrayList<String>();
 		  String productName=null;
+		  ShippingEstimate shippingEstObj = new ShippingEstimate();
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -259,7 +265,7 @@ public class SunGraphixMapping {
 				case 7: //Summary Description
 					String summary = cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(summary)){
-						 productExcelObj.setSummary(summary);
+						 productExcelObj.setSummary(CommonUtility.getStringLimitedChars(summary, 130));
 					 }
 					break;
 				case 8: //Cat.Page"
@@ -315,6 +321,14 @@ public class SunGraphixMapping {
 							}
 					break;
 				case 12: //Cover Material"
+					String material = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(material)){
+						material = material.trim();
+						if(!StringUtils.isEmpty(material)){
+							List<Material> listOfMaterial = sunGraphixAttributeParser.getMaterialList(material);
+							productConfigObj.setMaterials(listOfMaterial);
+						}
+					}
 					break;
 				case 13: //Hard orFlex."
 					String hardFlex=CommonUtility.getCellValueStrinOrInt(cell);
@@ -342,15 +356,36 @@ public class SunGraphixMapping {
 					 }
 					break;
 				case 15: //ImprintMethod"
+					String impmtdValue=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(impmtdValue)){
+						 productConfigObj= sunGraphixAttributeParser.getImprintMethod(impmtdValue,productExcelObj.getProductConfigurations());
+						productExcelObj.setProductConfigurations(productConfigObj);
+					    }
 					break;
 				case 16: //Imprint Area
+					String impSize=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(impSize)){
+                        
+						 List<ImprintSize> listOfImpSize=new ArrayList<ImprintSize>();
+						 
+						 listOfImpSize=	sunGraphixAttributeParser.getProductImprintSize(impSize);
+						 productConfigObj.setImprintSize(listOfImpSize);
+					 }
+				
 					break;
 				case 17: //Pers.
-					/*String personalizationVaue=cell.getStringCellValue();
-					 if(!StringUtils.isEmpty(personalizationVaue)&&personalizationVaue.equalsIgnoreCase(ApplicationConstants.CONST_STRING_YES)){
-						 listPers = personlizationParser.getPersonalizationCriteria(ApplicationConstants.CONST_STRING_PERSONALIZATION);
-							productConfigObj.setPersonalization(listPers);
-					  }*/
+					String personalizationVaue=cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(personalizationVaue)){
+						 personalizationVaue=personalizationVaue.toUpperCase().trim();
+						 if(personalizationVaue.equals("YES") || personalizationVaue.contains("PER")){
+							 List<Personalization> listPers = new ArrayList<Personalization>();
+							 listPers = sunGraphixAttributeParser.getPersonalizationCriteria(ApplicationConstants.CONST_STRING_PERSONALIZATION);
+							 productConfigObj.setPersonalization(listPers);
+							  
+						 }
+						/* listPers = personlizationParser.getPersonalizationCriteria(ApplicationConstants.CONST_STRING_PERSONALIZATION);
+							productConfigObj.setPersonalization(listPers);*/
+					  }
 					break;
 				case 18: //Pocket (s)
 					break;
@@ -425,6 +460,21 @@ public class SunGraphixMapping {
 					
 					break;
 				case 50: //FOB
+					String fobPoint=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(fobPoint)){
+						fobPoint=fobPoint.toUpperCase().trim();
+						 if(fobPoint.equals("tx") || fobPoint.equals("ny")){
+						FOBPoint fobPointObj=new FOBPoint();
+						List<FOBPoint> listfobPoints = new ArrayList<FOBPoint>();
+						if(fobPoint.equals("tx")){
+							fobPointObj.setName("Dallas, TX 75019 USA");
+						}else {
+							fobPointObj.setName("Champlain, NY 12919 USA");
+						}
+						listfobPoints.add(fobPointObj);
+						productExcelObj.setFobPoints(listfobPoints);
+						 }
+					}
 					break;
 				case 51: //Production Time"
 					//production Time
@@ -434,6 +484,7 @@ public class SunGraphixMapping {
 					ProductionTime productionTime = new ProductionTime();
 					prodTimeLo=CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(prodTimeLo)){
+					prodTimeLo=prodTimeLo.toLowerCase().trim();
 				    prodTimeLo=prodTimeLo.replaceAll(ApplicationConstants.CONST_STRING_DAYS,ApplicationConstants.CONST_STRING_EMPTY);
 					productionTime.setBusinessDays(prodTimeLo.trim());
 					productionTime.setDetails(ApplicationConstants.CONST_STRING_DAYS);
@@ -444,36 +495,57 @@ public class SunGraphixMapping {
 				case 52: //Units / Weight
 					String shippingItem=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(shippingItem)){
-						 shippingEstObj=tomaxUsaAttributeParser.getShippingEstimates(shippingItem,shippingEstObj,"NOI");
+						 shippingEstObj=sunGraphixAttributeParser.getShippingEstimates(shippingItem,shippingEstObj,"NOI");
 						 productConfigObj.setShippingEstimates(shippingEstObj);
 					 }
 					break;
 				case 53: //L
-					String shippingItem=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(shippingItem)){
-						 shippingEstObj=tomaxUsaAttributeParser.getShippingEstimates(shippingItem,shippingEstObj,"NOI");
+					String shippingLen=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(shippingLen)){
+						 shippingEstObj=sunGraphixAttributeParser.getShippingEstimates(shippingLen,shippingEstObj,"NOI");
 						 productConfigObj.setShippingEstimates(shippingEstObj);
 					 }
 					break;
 				case 54: //W
-					String shippingItem=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(shippingItem)){
-						 shippingEstObj=tomaxUsaAttributeParser.getShippingEstimates(shippingItem,shippingEstObj,"NOI");
+					String shippingWT=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(shippingWT)){
+						 shippingEstObj=sunGraphixAttributeParser.getShippingEstimates(shippingWT,shippingEstObj,"NOI");
 						 productConfigObj.setShippingEstimates(shippingEstObj);
 					 }
 					break;
 				case 55: //H
-					String shippingItem=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(shippingItem)){
-						 shippingEstObj=tomaxUsaAttributeParser.getShippingEstimates(shippingItem,shippingEstObj,"NOI");
+					String shippingHT=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(shippingHT)){
+						 shippingEstObj=sunGraphixAttributeParser.getShippingEstimates(shippingHT,shippingEstObj,"NOI");
 						 productConfigObj.setShippingEstimates(shippingEstObj);
 					 }
 					break;
 				case 56: //Book
+					String prodItemWT=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(prodItemWT)){
+						 Volume itemWeight=new Volume();
+						 itemWeight=sunGraphixAttributeParser.getItemWeightvolume(prodItemWT);
+					      productConfigObj.setItemWeight(itemWeight);
+					 }
+					
 					break;
 				case 57: //Gift Box
+					String packGTValue=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(packGTValue)){
+						 List<Packaging>          listPackaging               = new ArrayList<Packaging>();
+						 listPackaging=sunGraphixAttributeParser.getPackaging(packGTValue);
+					 }
 					break;
 				case 58: //Mailer
+					String mailPackValue=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(mailPackValue)){
+						 List<Packaging>          listPackagingM               = new ArrayList<Packaging>();
+						 if(!CollectionUtils.isEmpty(productConfigObj.getPackaging())){
+							 listPackagingM.addAll(productConfigObj.getPackaging());
+							}
+						 
+						 listPackagingM=sunGraphixAttributeParser.getPackaging(mailPackValue);
+					 }
 					break;
 				case 59: //Made
 					String origin = cell.getStringCellValue();
@@ -558,7 +630,7 @@ public class SunGraphixMapping {
 		priceGridMap=new HashMap<String, String>();
 		priceGridMapTemp=new HashMap<String, String>();
 		pnumberList=new ArrayList<ProductNumber>();
-		listOfMaterial=new ArrayList<Material>();
+		//listOfMaterial=new ArrayList<Material>();
 		sizeValuesSet = new HashSet<>();
 		listOfAvailablity=new ArrayList<Availability>();
 		productOptionSet=new HashSet<String>();

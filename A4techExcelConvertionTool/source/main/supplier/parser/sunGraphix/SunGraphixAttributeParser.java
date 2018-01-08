@@ -2,18 +2,21 @@ package parser.sunGraphix;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.lookup.service.LookupServiceData;
+import com.a4tech.product.model.BlendMaterial;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.Material;
 import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.Personalization;
@@ -225,9 +228,9 @@ public List<Personalization> getPersonalizationCriteria(String persValue){
 		
 	}
 
-	private static List<ImprintSize> getProductImprintSize(String imprSize,List<ImprintSize> listOfImprintSize){
+	public List<ImprintSize> getProductImprintSize(String imprSize){
 		//String imprintSizeValue = imprSize.split("IMPRINT SIZE ")[1].trim();
-		//List<ImprintSize> listOfImprintSize = new ArrayList<>();
+		List<ImprintSize> listOfImprintSize = new ArrayList<>();
 		ImprintSize imprSizeObj = new ImprintSize();
 		imprSizeObj.setValue(imprSize);
 		listOfImprintSize.add(imprSizeObj);
@@ -411,6 +414,128 @@ public List<Personalization> getPersonalizationCriteria(String persValue){
 		}
 		return listOfProTime;
 	}
+	
+public List<Material> getMaterialList(String originalMaterialvalue){
+		
+		Material materialObj = new Material();
+		List<Material> listOfMaterial = new ArrayList<>();
+		/*if(!StringUtils.isEmpty(originalMaterialvalue)){
+			originalMaterialvalue = CommonUtility.removeSpecialSymbols(originalMaterialvalue,specialCharacters);
+			originalMaterialvalue = originalMaterialvalue.replaceAll("é", "e");
+		}*/
+		List<String> listOfLookupMaterial = getMaterialType(originalMaterialvalue.toUpperCase());
+		if(!listOfLookupMaterial.isEmpty()){
+			int numOfMaterials = listOfLookupMaterial.size();
+			  if(numOfMaterials == ApplicationConstants.CONST_INT_VALUE_ONE){ // this condition used to single material value(E.X 100% smooth knit polyester)
+				  materialObj = getMaterialValue(listOfLookupMaterial.toString(), originalMaterialvalue);
+				  listOfMaterial.add(materialObj);
+			  }else if(numOfMaterials == ApplicationConstants.CONST_INT_VALUE_TWO){
+				   materialObj = getMaterialValue(listOfLookupMaterial.toString(), originalMaterialvalue, // this condition used to two material value(E.X 100% polyester fleece, 300gsm or 8.85 oz./yd2 )
+						                                  ApplicationConstants.CONST_STRING_COMBO_TEXT);
+				   listOfMaterial.add(materialObj);
+			  }else if(isBlendMaterial(originalMaterialvalue)){  // this condition for blend material
+				 String[] values = CommonUtility.getValuesOfArray(originalMaterialvalue,ApplicationConstants.CONST_DELIMITER_FSLASH);
+		    	 BlendMaterial blentMaterialObj = null;
+		    	 List<BlendMaterial> listOfBlendMaterial = new ArrayList<>();
+				     if(values.length == ApplicationConstants.CONST_INT_VALUE_TWO){
+				    	 for (String materialValue : values) {
+				    		 blentMaterialObj = new BlendMaterial();
+				    		 String mtrlType = getMaterialType(materialValue.toUpperCase()).toString();
+				    		 if(materialValue.contains(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)){
+								  String percentage = materialValue.split(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)[0];
+								  blentMaterialObj.setName(mtrlType);
+								  blentMaterialObj.setPercentage(percentage);
+								  listOfBlendMaterial.add(blentMaterialObj);
+							  }
+				    		 materialObj.setBlendMaterials(listOfBlendMaterial);
+				    		 listOfMaterial.add(materialObj);
+				    	 }
+				     }else{ // this condition for combo and blend values
+				    	 Combo comboObj = new Combo();
+				    	 for (String materialValue : values) {
+				    		 blentMaterialObj = new BlendMaterial();
+							  String mtrlType = getMaterialType(materialValue.toUpperCase()).toString();
+							  if(materialValue.contains(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)){
+								  String percentage = materialValue.split(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)[0];
+								  if(!StringUtils.isEmpty(mtrlType)){
+									  blentMaterialObj.setName(mtrlType);  
+								  }else{
+									blentMaterialObj.setName(ApplicationConstants.CONST_STRING_OTHER_FABRIC);  
+								  }
+								  blentMaterialObj.setPercentage(percentage);
+								  listOfBlendMaterial.add(blentMaterialObj);
+							  }else{
+								  materialObj.setName(mtrlType);
+								  materialObj.setAlias(originalMaterialvalue);  
+							  }
+						} 
+				    	 comboObj.setBlendMaterials(listOfBlendMaterial);
+				    	 comboObj.setName(ApplicationConstants.CONST_STRING_BLEND_TEXT);
+				    	 materialObj.setCombo(comboObj);
+				    	 listOfMaterial.add(materialObj);
+				     }	        
+			  }
+		}else{ // used for Material is not available in lookup, then it goes in Others
+			materialObj = getMaterialValue(ApplicationConstants.CONST_VALUE_TYPE_OTHER, originalMaterialvalue);
+			listOfMaterial.add(materialObj);
+		}
+		return listOfMaterial;
+	}
+
+public List<String> getMaterialType(String value){
+	List<String> listOfLookupMaterials = lookupServiceData.getMaterialValues();
+	List<String> finalMaterialValues = listOfLookupMaterials.stream()
+			                                  .filter(mtrlName -> value.contains(mtrlName))
+			                                  .collect(Collectors.toList());
+                                             
+			
+	return finalMaterialValues;	
+}
+/*
+ * @author Venkat
+ * @param String String ,type of material alias name
+ * @description this method design for setting the material name and alias name for single value
+ * @return Material Object 
+ */
+public Material getMaterialValue(String name,String alias){
+	Material materialObj = new Material();
+	name = CommonUtility.removeCurlyBraces(name);
+	materialObj.setName(name);
+	materialObj.setAlias(alias);
+	return materialObj;
+}
+/*
+ * @author Venkat
+ * @param String String ,type of material alias name
+ * @description this method design for setting the material name and alias name for combo 
+ * @return Material Object 
+ */
+public Material getMaterialValue(String name,String alias ,String materialType){
+	Material materialObj = new Material();
+	 Combo comboObj = null;
+	 String[] materials = null;
+	 name = CommonUtility.removeCurlyBraces(name);
+	if(name.contains(ApplicationConstants.CONST_DELIMITER_COMMA)){
+		materials = name.split(ApplicationConstants.CONST_DELIMITER_COMMA); 
+		materialObj.setName(materials[0]);
+		materialObj.setAlias(alias);
+		comboObj = new Combo();
+    	comboObj.setName(materials[1]);
+    	materialObj.setCombo(comboObj);
+	}
+	return materialObj;
+}
+
+public boolean isBlendMaterial(String data){
+	if(data.contains(ApplicationConstants.CONST_DELIMITER_FSLASH) && 
+			              data.contains(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)){
+		return true;
+	}else if(data.split(ApplicationConstants.CONST_DELIMITER_FSLASH).length == 
+			                    ApplicationConstants.CONST_INT_VALUE_THREE){
+		return true;
+	}
+	return false;
+}
 	public LookupServiceData getLookupServiceData() {
 		return lookupServiceData;
 	}
