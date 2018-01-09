@@ -1,7 +1,6 @@
 package com.a4tech.supplier.mapper;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,9 +19,15 @@ import parser.tekweld.TekweldProductAttributeParser;
 
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.AdditionalColor;
+import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
+import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.Option;
+import com.a4tech.product.model.OptionValue;
+import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -53,11 +58,35 @@ public class TekweldMapping  implements IExcelParser {
 		Color colorObj=new Color();
 		List<ProductionTime> listofProductionTime = new ArrayList<ProductionTime>();
 		List<ImprintSize> listofImprintSize = new ArrayList<ImprintSize>();
+		List<ImprintMethod> listOfImprintMethods = new ArrayList<ImprintMethod>();
+		ImprintMethod methdObj=new ImprintMethod();
+		List<Packaging> listOfPackaging = new ArrayList<Packaging>();
+		Packaging packObj=new Packaging();
+		List<AdditionalLocation> listOfLocation= new ArrayList<AdditionalLocation>();
+		AdditionalLocation locObj=new AdditionalLocation();
+		List<AdditionalColor> listOfColor= new ArrayList<AdditionalColor>();
+		AdditionalColor colObj=new AdditionalColor();
+		AdditionalColor colObj1=new AdditionalColor();
+		List<Option> shippingOption= new ArrayList<Option>();
+		Option optionObj=new Option();
+		List<OptionValue> listValue= new ArrayList<OptionValue>();
+		OptionValue valueObj=new  OptionValue();
+		OptionValue valueObj1=new  OptionValue();
+
+		OptionValue valueObj3=new  OptionValue();
+		Option optionObj3=new Option();
+		List<OptionValue> listValue3= new ArrayList<OptionValue>();
+		
+		OptionValue valueObj4=new  OptionValue();
+
+		
 		Size sizeObj=new Size();
 		ProductionTime prodTimeObj=new ProductionTime();
 		Product productExcelObj = new Product();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
 		String finalResult = null;
+		String Setupcharge=null;
+		String Secndcl=null;
 
 		try {
 
@@ -126,7 +155,8 @@ public class TekweldMapping  implements IExcelParser {
 
 									System.out
 											.println("Java object converted to JSON String, written to file");
-
+									productConfigObj.setOptions(shippingOption);
+									
 									productExcelObj.setPriceGrids(priceGrids);
 									productExcelObj.setProductConfigurations(productConfigObj);
 						
@@ -154,7 +184,24 @@ public class TekweldMapping  implements IExcelParser {
 								    listofProductionTime = new ArrayList<ProductionTime>();
 								    listofImprintSize = new ArrayList<ImprintSize>();
 								    sizeObj=new Size();
-								  prodTimeObj=new ProductionTime();
+							    	listOfImprintMethods = new ArrayList<ImprintMethod>();
+								    methdObj=new ImprintMethod();
+							    	prodTimeObj=new ProductionTime();
+							    	listOfLocation= new ArrayList<AdditionalLocation>();
+									locObj=new AdditionalLocation();
+									listOfColor= new ArrayList<AdditionalColor>();
+									colObj=new AdditionalColor();
+									shippingOption= new ArrayList<Option>();
+								    optionObj=new Option();
+								    listValue= new ArrayList<OptionValue>();
+									valueObj=new  OptionValue();
+									valueObj1=new  OptionValue();
+								    listOfPackaging = new ArrayList<Packaging>();
+								    packObj=new Packaging();
+								    valueObj3=new  OptionValue();
+								    optionObj3=new Option();
+									listValue3= new ArrayList<OptionValue>();
+									valueObj4=new  OptionValue();
 									productConfigObj = new ProductConfigurations();
 								
 								}
@@ -279,6 +326,8 @@ public class TekweldMapping  implements IExcelParser {
 							break;	
 							
 						case 22: // Setup
+							Setupcharge= CommonUtility
+									.getCellValueStrinOrDecimal(cell);
 
 							
 							break;	
@@ -289,6 +338,8 @@ public class TekweldMapping  implements IExcelParser {
 							break;	
 	
 						case 24: //2nd Color / Location 
+							Secndcl=CommonUtility
+									.getCellValueStrinOrDecimal(cell);
 
 							
 							break;	
@@ -313,7 +364,11 @@ public class TekweldMapping  implements IExcelParser {
 							
 							
 						case 28: // Packing
-
+							
+							String Packaging=cell.getStringCellValue();
+							packObj.setName("Bulk");
+							listOfPackaging.add(packObj);
+							productConfigObj.setPackaging(listOfPackaging);
 							 
 							break;	
 							
@@ -362,11 +417,63 @@ public class TekweldMapping  implements IExcelParser {
 					colorObj.setName("Multi color");
 					colorList.add(colorObj);
 					productConfigObj.setColors(colorList);
-					
-					
 					productExcelObj.setPriceType("L");
-				//	productExcelObj.setCanOrderLessThanMinimum(T);
-			
+					
+					methdObj.setAlias("Full Color");
+					methdObj.setType("Full Color");
+					listOfImprintMethods.add(methdObj);
+					productConfigObj.setImprintMethods(listOfImprintMethods);
+					
+					colObj.setName("2nd Color");
+					colObj1.setName("2nd Color Setup");
+					listOfColor.add(colObj);
+					listOfColor.add(colObj1);
+					productConfigObj.setAdditionalColors(listOfColor);
+					
+					locObj.setName("2nd Location");
+					listOfLocation.add(locObj);
+					productConfigObj.setAdditionalLocations(listOfLocation);
+					
+					optionObj.setName("Optional Packaging");
+					optionObj.setOptionType("Shipping");
+					valueObj.setValue("Board");
+					valueObj1.setValue("Foam Inserts");
+					valueObj4.setValue("Insert Items");
+					listValue.add(valueObj);
+					listValue.add(valueObj1);
+					listValue.add(valueObj4);
+					optionObj.setValues(listValue);
+					optionObj.setAdditionalInformation("");
+					optionObj.setCanOnlyOrderOne(false);
+					optionObj.setRequiredForOrder(false);
+					shippingOption.add(optionObj);
+					
+					
+					
+					optionObj3.setName("Optional Assembly");
+					optionObj3.setOptionType("Shipping");
+					valueObj3.setValue("Assemble Box");
+					listValue3.add(valueObj3);
+					optionObj3.setValues(listValue3);
+					optionObj3.setAdditionalInformation("");
+					optionObj3.setCanOnlyOrderOne(false);
+					optionObj3.setRequiredForOrder(false);
+					shippingOption.add(optionObj3);
+	/*				
+					optionObj4.setName("Optional Packaging");
+					optionObj4.setOptionType("Shipping");
+					valueObj4.setValue("Insert Items");
+					listValue4.add(valueObj4);
+					optionObj4.setValues(listValue4);
+					optionObj4.setAdditionalInformation("");
+					optionObj4.setCanOnlyOrderOne(false);
+					optionObj4.setRequiredForOrder(false);
+					shippingOption.add(optionObj4);*/
+					
+					productConfigObj.setOptions(shippingOption);
+				
+					
+					
 					
 					priceGrids = tekweldpricegrid.getPriceGrids(
 							listOfPrices.toString(),
@@ -374,6 +481,76 @@ public class TekweldMapping  implements IExcelParser {
 							"", true,  quoteUponRequest,
 							ProductName, "", priceGrids);
 		
+					priceGrids = tekweldpricegrid
+							.getUpchargePriceGrid("1", Setupcharge,
+									"V",
+									"Imprint Method", "false", "USD",
+									"Full Color",
+									"Set-up Charge", "Per Order",
+									new Integer(1), "",priceGrids);	
+					
+					priceGrids = tekweldpricegrid
+							.getUpchargePriceGrid("1", Secndcl,
+									"Z",
+									"Additional Colors", "false", "USD",
+									"2nd Color",
+									"Add. Color Charge", "Per Order",
+									new Integer(2),"", priceGrids);
+					
+					priceGrids = tekweldpricegrid
+							.getUpchargePriceGrid("1", Secndcl,
+									"Z",
+									"Additional Location", "false", "USD",
+									"2nd Location",
+									"Add. Location Charge", "Per Order",
+									new Integer(3), "",priceGrids);
+					
+					
+					priceGrids = tekweldpricegrid
+							.getUpchargePriceGrid("1", "50",
+									"V",
+									"Additional Colors", "false", "USD",
+									"2nd Color Setup",
+									"Set-up Charge", "Per Order",
+									new Integer(4),"", priceGrids);
+					
+					
+					priceGrids = tekweldpricegrid
+							.getUpchargePriceGrid("", "",
+									"",
+									"Shipping Option", "true", "USD",
+									"Board",
+									"Packaging Charge", "Per Quantity",
+									new Integer(5),"Optional Packaging", priceGrids);
+					
+					priceGrids = tekweldpricegrid
+							.getUpchargePriceGrid("", "",
+									"",
+									"Shipping Option", "true", "USD",
+									"Foam Inserts",
+									"Packaging Charge", "Per Quantity",
+									new Integer(6),"Optional Packaging", priceGrids);
+					
+					
+					priceGrids = tekweldpricegrid
+							.getUpchargePriceGrid("1", "0.60",
+									"V",
+									"Shipping Option", "false", "USD",
+									"Assemble Box",
+									"Shipping Charge", "Per Quantity",
+									new Integer(7),"Optional Assembly", priceGrids);
+
+					
+					priceGrids = tekweldpricegrid
+							.getUpchargePriceGrid("", "",
+									"",
+									"Shipping Option", "true", "USD",
+									"Insert Items",
+									"Packaging Charge", "Per Quantity",
+									new Integer(8),"Optional Packaging", priceGrids);		
+		
+					
+					
 				} catch (Exception e) {
 					_LOGGER.error("Error while Processing ProductId and cause :"
 							+ productExcelObj.getExternalProductId()
@@ -413,6 +590,23 @@ public class TekweldMapping  implements IExcelParser {
 			sizeObj=new Size();
 		    colorList = new ArrayList<Color>();
 	        colorObj=new Color();
+	    	listOfImprintMethods = new ArrayList<ImprintMethod>();
+		    methdObj=new ImprintMethod();
+			listOfLocation= new ArrayList<AdditionalLocation>();
+			locObj=new AdditionalLocation();
+			listOfColor= new ArrayList<AdditionalColor>();
+			colObj=new AdditionalColor();
+			shippingOption= new ArrayList<Option>();
+		    optionObj=new Option();
+		    listValue= new ArrayList<OptionValue>();
+			valueObj=new  OptionValue();
+			valueObj1=new  OptionValue();
+			listOfPackaging = new ArrayList<Packaging>();
+			packObj=new Packaging();
+			valueObj3=new  OptionValue();
+			optionObj3=new Option();
+	        listValue3= new ArrayList<OptionValue>();
+	        valueObj4=new  OptionValue();
 			productConfigObj = new ProductConfigurations();
 
 			return finalResult;

@@ -84,7 +84,7 @@ public class TekweldPriceGridParser {
 		return listOfPrices;
 	}
 
-	public List<PriceConfiguration> getConfigurations(String criterias,String UpchargeName) {
+	public List<PriceConfiguration> getConfigurations(String criterias,String UpchargeName,String OptionName) {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
 		String[] config = null;
 		PriceConfiguration configs = null;
@@ -97,6 +97,7 @@ public class TekweldPriceGridParser {
 				PriceConfiguration configuraion = new PriceConfiguration();
 				config = criteria.split(ApplicationConstants.CONST_DELIMITER_COLON);
 				String criteriaValue = LookupData.getCriteriaValue(config[0]);
+				
 				configuraion.setCriteria(criteriaValue);
 				if (config[1].contains(ApplicationConstants.CONST_STRING_COMMA_SEP)) {
 					String[] values = config[1].split(ApplicationConstants.CONST_STRING_COMMA_SEP);
@@ -104,6 +105,9 @@ public class TekweldPriceGridParser {
 						configs = new PriceConfiguration();
 						configs.setCriteria(criteriaValue);
 						configs.setValue(Arrays.asList((Object) Value));
+						if(!OptionName.equalsIgnoreCase("")){
+							configs.setOptionName(OptionName);
+							}
 						priceConfiguration.add(configs);
 					}
 				} else {
@@ -112,6 +116,9 @@ public class TekweldPriceGridParser {
 					//String criteriaValue = LookupData.getCriteriaValue(config[0]);
 					configs.setCriteria(criteriaValue);
 					configs.setValue(Arrays.asList((Object) config[1]));
+					if(!OptionName.equalsIgnoreCase("")){
+						configs.setOptionName(OptionName);
+						}
 					priceConfiguration.add(configs);
 					
 				}
@@ -121,6 +128,9 @@ public class TekweldPriceGridParser {
 			
 			configs = new PriceConfiguration();
 			configs.setCriteria(criterias);
+			if(!OptionName.equalsIgnoreCase("")){
+				configs.setOptionName(OptionName);
+				}
 			configs.setValue(Arrays.asList((Object) UpchargeName));
 			priceConfiguration.add(configs);
 			
@@ -135,7 +145,7 @@ public class TekweldPriceGridParser {
 	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
 			String discounts, String upChargeCriterias, String qurFlag,
 			String currency, String upChargeName, String upChargeType,
-			String upchargeUsageType, Integer upChargeSequence,
+			String upchargeUsageType, Integer upChargeSequence,String OptionName,
 			List<PriceGrid> existingPriceGrid) {
 		try{
 		List<PriceConfiguration> configuration = null;
@@ -148,9 +158,15 @@ public class TekweldPriceGridParser {
 
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(upChargeName);
+		if(qurFlag=="false"){
 		priceGrid
 				.setIsQUR((qurFlag.equalsIgnoreCase("Y")) ? ApplicationConstants.CONST_BOOLEAN_TRUE
 						: ApplicationConstants.CONST_BOOLEAN_FALSE);
+		}else
+		{
+			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
+			
+		}
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);
 		priceGrid.setUpchargeType(upChargeType);
@@ -166,7 +182,7 @@ public class TekweldPriceGridParser {
 
 		priceGrid.setPrices(listOfPrice);
 		if (upChargeCriterias != null && !upChargeCriterias.isEmpty()) {
-			configuration = getConfigurations(upChargeCriterias,upChargeName);
+			configuration = getConfigurations(upChargeCriterias,upChargeName,OptionName);
 		}
 		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
