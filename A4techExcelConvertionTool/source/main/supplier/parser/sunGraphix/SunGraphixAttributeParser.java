@@ -18,6 +18,8 @@ import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.NumberOfItems;
+import com.a4tech.product.model.Option;
+import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.Personalization;
 import com.a4tech.product.model.ProductConfigurations;
@@ -329,7 +331,30 @@ public List<Personalization> getPersonalizationCriteria(String persValue){
 		}
 		return listOfPackaging;
 	}
-	
+	public  List<Option> getOptions(String optionName,String  optionDataValue,String additionalInfo,boolean canOrder,boolean reqOrder,String optionType) {
+		List<Option> optionList=new ArrayList<>();
+		try{
+		Option optionObj=new Option();
+		      List<OptionValue> valuesList=new ArrayList<OptionValue>();
+				 OptionValue optionValueObj=new OptionValue();
+					  optionValueObj.setValue(optionDataValue.trim());
+					  valuesList.add(optionValueObj);
+					  optionObj.setOptionType("optionType");
+					  optionObj.setName(optionName);
+					  optionObj.setValues(valuesList); 
+					  optionObj.setAdditionalInformation(additionalInfo);
+					  optionObj.setCanOnlyOrderOne(canOrder);
+					  optionObj.setRequiredForOrder(reqOrder);
+					  optionList.add(optionObj);
+				  
+		   }catch(Exception e){
+			   _LOGGER.error("Error while processing Options :"+e.getMessage());          
+		      return new ArrayList<Option>();
+		      
+		     }
+		  return optionList;
+		  
+		 }
 	public ShippingEstimate getShippingEstimates( String shippingValue,ShippingEstimate shippingEstObj,String str) {
 		//ShippingEstimate shipingObj = new ShippingEstimate();
 		if(str.equals("NOI")){

@@ -19,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import parser.sunGraphix.SunGraphixAttributeParser;
+import parser.sunGraphix.SunGraphixPriceGridParser;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
@@ -31,6 +32,7 @@ import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.NumberOfItems;
+import com.a4tech.product.model.Option;
 import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.Personalization;
@@ -60,7 +62,7 @@ public class SunGraphixMapping {
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
 	private SunGraphixAttributeParser sunGraphixAttributeParser;
-	private RiverEndPriceGridParser riverEndPriceGridParser;
+	private SunGraphixPriceGridParser sunGraphixPriceGridParser;
 	@Autowired
 	ObjectMapper mapperObj;
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
@@ -156,12 +158,12 @@ public class SunGraphixMapping {
 								if(!CollectionUtils.isEmpty(priceGridMap)){
 								boolean flag=false;
 								productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_NET);
-								if(colorSet.size()>1){
+								/*if(colorSet.size()>1){
 									flag=true;
 									priceGrids=riverEndPriceGridParser.getPriceGrids(priceGridMapTemp,flag);
 								}else{
 								priceGrids=riverEndPriceGridParser.getPriceGrids(priceGridMap,flag);
-								}
+								}*/
 								productExcelObj.setPriceGrids(priceGrids);
 								}
 							/*if(!CollectionUtils.isEmpty(sizeValuesSet)){
@@ -448,6 +450,27 @@ public class SunGraphixMapping {
 				case 47: //Insert Fee
 					break;
 				case 48: //Drop Shipments
+					//bottom
+					//create option over here
+					String shipOption=cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(shipOption)){
+					List<Option> optionList=sunGraphixAttributeParser.getOptions("Drop Shipping","Drop Shipments","First one is free. Drop ship charge per additional address.",false,false,"Shipping");
+					productConfigObj.setOptions(optionList);
+					//create pricegrid over here
+					if(shipOption.contains("10.50(G)")){
+						priceGrids = sunGraphixPriceGridParser.getPriceGrids(
+								"10.50","1","G",
+								ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+								"false","Drop Shipments","Shipping Option",new Integer(1),"Shipping Charge", "Per Order","Optional",
+								new ArrayList<PriceGrid>());
+						/*String listOfPrices, String listOfQuan, String discountCodes,
+						String currency, String priceInclude, boolean isBasePrice,
+						String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,String serviceCharge
+						List<PriceGrid> existingPriceGrid)*/					
+						
+						}
+					 }
+				
 					break;
 				case 49: //Distributor Comments Only
 					String Distributorcomment = cell.getStringCellValue();
@@ -533,7 +556,8 @@ public class SunGraphixMapping {
 					String packGTValue=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(packGTValue)){
 						 List<Packaging>          listPackaging               = new ArrayList<Packaging>();
-						 listPackaging=sunGraphixAttributeParser.getPackaging(packGTValue);
+						 listPackaging=sunGraphixAttributeParser.getPackaging("MAILER");
+						 productConfigObj.setPackaging(listPackaging);
 					 }
 					break;
 				case 58: //Mailer
@@ -545,6 +569,7 @@ public class SunGraphixMapping {
 							}
 						 
 						 listPackagingM=sunGraphixAttributeParser.getPackaging(mailPackValue);
+						 productConfigObj.setPackaging(listPackagingM);
 					 }
 					break;
 				case 59: //Made
@@ -589,12 +614,12 @@ public class SunGraphixMapping {
 		if(!CollectionUtils.isEmpty(priceGridMap)){
 			boolean flag=false;
 			productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_NET);
-			if(colorSet.size()>1){
+			/*if(colorSet.size()>1){
 				flag=true;
 				priceGrids=riverEndPriceGridParser.getPriceGrids(priceGridMapTemp,flag);
 			}else{
 			priceGrids=riverEndPriceGridParser.getPriceGrids(priceGridMap,flag);
-			}
+			}*/
 			productExcelObj.setPriceGrids(priceGrids);
 			}
 		
@@ -724,6 +749,32 @@ public class SunGraphixMapping {
 	
 	public void setMapperObj(ObjectMapper mapperObj) {
 		this.mapperObj = mapperObj;
+	}
+
+
+
+	public SunGraphixAttributeParser getSunGraphixAttributeParser() {
+		return sunGraphixAttributeParser;
+	}
+
+
+
+	public void setSunGraphixAttributeParser(
+			SunGraphixAttributeParser sunGraphixAttributeParser) {
+		this.sunGraphixAttributeParser = sunGraphixAttributeParser;
+	}
+
+
+
+	public SunGraphixPriceGridParser getSunGraphixPriceGridParser() {
+		return sunGraphixPriceGridParser;
+	}
+
+
+
+	public void setSunGraphixPriceGridParser(
+			SunGraphixPriceGridParser sunGraphixPriceGridParser) {
+		this.sunGraphixPriceGridParser = sunGraphixPriceGridParser;
 	}
 
 
