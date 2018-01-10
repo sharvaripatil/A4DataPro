@@ -21,6 +21,7 @@ import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -87,16 +88,22 @@ public class BlueGenerationMapping implements IExcelParser{
 				//repeatRows.add(xid);
 			}
 			 boolean checkXid  = false;
-			
+			boolean isRowStart = true;
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
 				 columnIndex = cell.getColumnIndex();
-				 if (columnIndex == 0) {
+				 if (columnIndex == 0 && isRowStart) {
 						xid = getProductXid(nextRow);
 						checkXid = true;
+						isRowStart = false;
 					} else {
 						checkXid = false;
 					}
+				 if (isRowStart) {
+					 xid = getProductXid(nextRow);
+					 checkXid = true;
+					 isRowStart = false;
+				 }
 				/*if(columnIndex + 1 == 1){
 					xid = getProductXid(nextRow);
 					checkXid = true;
@@ -120,6 +127,10 @@ public class BlueGenerationMapping implements IExcelParser{
 						 productConfigObj.setColors(listOfColor);
 						     if(priceGrids.size() == 1){
 						    	 priceGrids = removeBasePriceConfig(priceGrids);
+						     }
+						     if(CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
+						    	 List<ImprintMethod> imprintMethodList = addImprintMethod();
+						    	 productConfigObj.setImprintMethods(imprintMethodList);
 						     }
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
@@ -162,6 +173,7 @@ public class BlueGenerationMapping implements IExcelParser{
 						    	 productExcelObj= blueGenerationattributeParser.keepExistingProductData(productExcelObj);
 						    	 productConfigObj=productExcelObj.getProductConfigurations();
 						     }	
+						     productExcelObj.setExternalProductId(xid);
 					 }
 				}else{
 					/*if(isRepeateColumn(columnIndex+1)){
@@ -307,6 +319,10 @@ public class BlueGenerationMapping implements IExcelParser{
 		 if(priceGrids.size() == 1){
 	    	 priceGrids = removeBasePriceConfig(priceGrids);
 	     }
+		 if(CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
+	    	 List<ImprintMethod> imprintMethodList = addImprintMethod();
+	    	 productConfigObj.setImprintMethods(imprintMethodList);
+	     }
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	productExcelObj.setProductRelationSkus(listProductSkus);
@@ -447,6 +463,14 @@ public class BlueGenerationMapping implements IExcelParser{
 			}
 		}
 		return newPricegrid;
+	}
+	private List<ImprintMethod>  addImprintMethod(){
+		List<ImprintMethod> imprintMethodList = new ArrayList<>();
+			ImprintMethod imprintMethodObj = new ImprintMethod();
+			imprintMethodObj.setAlias(ApplicationConstants.CONST_STRING_UNIMPRINTED);
+			imprintMethodObj.setType(ApplicationConstants.CONST_STRING_UNIMPRINTED);
+			imprintMethodList.add(imprintMethodObj);
+		return imprintMethodList;
 	}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
