@@ -276,7 +276,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			if(colorGroup!=null){
 			if(colorGroup.toUpperCase().contains("COMBO")){
 				colorGroup=colorGroup.replaceAll(":","");
-				colorGroup=colorGroup.replace("Combo","/");
+				colorGroup=colorGroup.replace("COMBO","/");
 				colorName=colorGroup;
 			}
 			}

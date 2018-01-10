@@ -844,9 +844,10 @@ while (iterator.hasNext()) {
 			break;  
 				case 69:
 					       break;
-				case 70:
+				case 70://IsEnvironmentallyFriendly
+
 				String IsEnvironmentallyFriendly =  CommonUtility.getCellValueStrinOrInt(cell);
-			
+				
 					if(IsEnvironmentallyFriendly.equalsIgnoreCase("true"))			
 					{ Theme themeObj1 = new Theme();
 
@@ -855,69 +856,90 @@ while (iterator.hasNext()) {
 						themeList.add(themeObj1);
 					}
 					break;
-				case 71:
+				case 71://IsNewProd
+
 					break;
-				case 72:
+				case 72://NotSuitable
+
 					break;
-				case 73:
+					
+				
+				case 73://Exclusive
+
 					break;
-				case 74:
+					
+				case 74://Hazardous
+					String hazardous =  CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(hazardous)){
+					if(hazardous.equalsIgnoreCase("true"))			
+					{ 
+						productExcelObj.setHazmat("TRUE");
+					}
+					}
 					break;
-				case 75:
+					
+				case 75://OfficiallyLicensed
+
 					break;
-				case 76: // Imprint size1
+				case 76://IsFood
+
+					break;
+				case 77://IsClothing
+
+					break;
+				case 78: // Imprint size1
 					 FirstImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(FirstImprintsize1.trim())){
+					 if(!StringUtils.isEmpty(FirstImprintsize1.trim()) && !FirstImprintsize1.equals("0")){
 					 ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize1).append(" ");
 					
 					 }
 					    break;
 					    
-				case 77: //// Imprint size1 unit
+				case 79: //// Imprint size1 unit
 					FirstImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(FirstImprintunit1.trim())){
+					 if(!StringUtils.isEmpty(FirstImprintunit1.trim()) && !FirstImprintunit1.equals("0")){
 					FirstImprintunit1=GillStudiosLookupData.Dimension1Units.get(FirstImprintunit1);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit1).append(" ");
 					 }	 
 					   	break;
 					   	
-				case 78:   // Imprint size1 Type
+				case 80:   // Imprint size1 Type
 					FirstImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
-				   if(!StringUtils.isEmpty(FirstImprinttype1.trim())){
+				   if(!StringUtils.isEmpty(FirstImprinttype1.trim()) && !FirstImprinttype1.equals("0")){
 					FirstImprinttype1=GillStudiosLookupData.Dimension1Type.get(FirstImprinttype1);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype1).append(" ").append("x");
 				   }
 						break;
 						
 				  
-				case 79: // // Imprint size2
+				case 81: // // Imprint size2
 					FirstImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(FirstImprintsize2.trim())){
+					 if(!StringUtils.isEmpty(FirstImprintsize2.trim()) && !FirstImprintsize2.equals("0")){
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize2).append(" ");
 					 }
 
 					  	break;
 					  	
-				case 80:	// Imprint size2 Unit
+				case 82:	// Imprint size2 Unit
 					FirstImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(FirstImprintunit2.trim())){
+				    if(!StringUtils.isEmpty(FirstImprintunit2.trim()) && !FirstImprintunit2.equals("0")){
 					FirstImprintunit2=GillStudiosLookupData.Dimension1Units.get(FirstImprintunit2);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit2).append(" ");
 				    }
 					    break;
 					    
-				case 81: // Imprint size2 Type
+				case 83: // Imprint size2 Type
 					FirstImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(FirstImprinttype2.trim())){
+				    if(!StringUtils.isEmpty(FirstImprinttype2.trim()) && !FirstImprinttype2.equals("0")){
 					FirstImprinttype2=GillStudiosLookupData.Dimension1Type.get(FirstImprinttype2);
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype2).append(" ");
 				    }
 					break;
 					  	
-				case 82:  // Imprint location
+				case 84:  // Imprint location
 					
 					 imprintLocation =  CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(imprintLocation)){
+					if(!StringUtils.isEmpty(imprintLocation) && !imprintLocation.equals("0")){
 						ImprintLocation locationObj = new ImprintLocation();
 						locationObj.setValue(imprintLocation);
 						listImprintLocation.add(locationObj);
@@ -925,17 +947,17 @@ while (iterator.hasNext()) {
 					 break;
 					 
 					 
-				case 83:  // Second Imprintsize1
+				case 85:  // Second Imprintsize1
 					
 					SecondImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprintsize1.trim())){
+				    if(!StringUtils.isEmpty(SecondImprintsize1.trim()) && !SecondImprintsize1.equals("0")){
 					ImprintSizevalue2=ImprintSizevalue2.append(SecondImprintsize1).append(" ");
 				    }
 					   	break;
 					   	
-				case 84:  // Second Imprintsize1 unit
+				case 86:  // Second Imprintsize1 unit
 					SecondImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprintunit1.trim())){
+				    if(!StringUtils.isEmpty(SecondImprintunit1.trim()) && !SecondImprintunit1.equals("0")){
 					SecondImprintunit1=GillStudiosLookupData.Dimension1Units.get(SecondImprintunit1);
 					ImprintSizevalue2=ImprintSizevalue2.append(SecondImprintunit1).append(" ");
 
@@ -943,9 +965,9 @@ while (iterator.hasNext()) {
 					
 						break;
 						
-				case 85:  // Second Imprintsize1 type
+				case 87:  // Second Imprintsize1 type
 					SecondImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprinttype1.trim())){
+				    if(!StringUtils.isEmpty(SecondImprinttype1.trim())  && !SecondImprinttype1.equals("0")){
 					SecondImprinttype1=GillStudiosLookupData.Dimension1Type.get(SecondImprinttype1);
 					ImprintSizevalue2=ImprintSizevalue2.append(SecondImprinttype1).append(" ").append("x");
 
@@ -953,9 +975,9 @@ while (iterator.hasNext()) {
 				
 					  break;
 					  
-				case 86: // Second Imprintsize2
+				case 88: // Second Imprintsize2
 					SecondImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprintsize2.trim())){
+				    if(!StringUtils.isEmpty(SecondImprintsize2.trim())  && !SecondImprintsize2.equals("0")){
 				    ImprintSizevalue2=ImprintSizevalue2.append(SecondImprintsize2).append(" ");
 				    
 				    }
@@ -963,9 +985,9 @@ while (iterator.hasNext()) {
 					
 					break;
 					
-				case 87: //Second Imprintsize2 Unit
+				case 89: //Second Imprintsize2 Unit
 					SecondImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprintunit2.trim())){
+				    if(!StringUtils.isEmpty(SecondImprintunit2.trim()) && !SecondImprintunit2.equals("0")){
 					SecondImprintunit2=GillStudiosLookupData.Dimension1Units.get(SecondImprintunit2);
 					ImprintSizevalue2=ImprintSizevalue2.append(SecondImprintunit2).append(" ");
 
@@ -973,9 +995,9 @@ while (iterator.hasNext()) {
 
 					break;
 					
-				case 88: // Second Imprintsize2 type	
+				case 90: // Second Imprintsize2 type	
 					SecondImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
-				    if(!StringUtils.isEmpty(SecondImprinttype2.trim())){
+				    if(!StringUtils.isEmpty(SecondImprinttype2.trim()) && !SecondImprinttype2.equals("0")){
 					SecondImprinttype2=GillStudiosLookupData.Dimension1Type.get(SecondImprinttype2);
 					ImprintSizevalue2=ImprintSizevalue2.append(SecondImprinttype2).append(" ");
 
@@ -990,22 +1012,22 @@ while (iterator.hasNext()) {
 					*/
 					  break;
 					  
-				case 89: // Second Imprint location
+				case 91: // Second Imprint location
 					String imprintLocation2 =  CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(imprintLocation2)){
+					if(!StringUtils.isEmpty(imprintLocation2) && !imprintLocation.contains("0")){
 						ImprintLocation locationObj2 = new ImprintLocation();
 						locationObj2.setValue(imprintLocation2);
 						listImprintLocation.add(locationObj2);
 					}
 					break;
-				case 90: // DecorationMethod
+				case 92: // DecorationMethod
 					 decorationMethod =  CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(decorationMethod)){
 					listOfImprintMethods = gillStudiosImprintMethodParser.getImprintMethodValues(decorationMethod,listOfImprintMethods);
 					 } 
 					break; 
 					   
-				case 91: //NoDecoration
+				case 93: //NoDecoration
 					String noDecoration = CommonUtility.getCellValueStrinOrInt(cell);//cell.getStringCellValue();
 					if(!StringUtils.isEmpty(noDecoration)){
 					if(noDecoration.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
@@ -1017,7 +1039,7 @@ while (iterator.hasNext()) {
 					}
 					}
 					 break;
-				case 92: //NoDecorationOffered
+				case 94: //NoDecorationOffered
 					String noDecorationOffered =  CommonUtility.getCellValueStrinOrInt(cell);//cell.getStringCellValue();
 					if(!StringUtils.isEmpty(noDecorationOffered) && !firstValue.equals("PRESENT")){
 					if(noDecorationOffered.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
@@ -1026,7 +1048,7 @@ while (iterator.hasNext()) {
 					}
 					}
 					 break;
-				case 93: //NewPictureURL
+				case 95: //NewPictureURL
 					/*String ImageValue1=cell.getStringCellValue();
 					 Image image = new Image();
 					 if(!StringUtils.isEmpty(ImageValue1)){
@@ -1037,11 +1059,12 @@ while (iterator.hasNext()) {
 				      listOfImages.add(image);
 					  }*/
 					break;
-				case 94:  //NewPictureFile  -- not used
+				case 96:  //NewPictureFile  -- not used
 					break;
-				case 95: //ErasePicture -- not used
+				case 97: //ErasePicture -- not used
 					break;
-				case 96: //NewBlankPictureURL
+					
+				case 98: //NewBlankPictureURL
 					/*String ImageValue2=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(ImageValue2))
 					{
@@ -1053,16 +1076,16 @@ while (iterator.hasNext()) {
 					}*/
 				
 					break;
-				case 97: //NewBlankPictureFile -- not used
+				case 99: //NewBlankPictureFile -- not used
 					break;
-				case 98://EraseBlankPicture  -- not used
+				case 100://EraseBlankPicture  -- not used
 					break;
-					 
+			/*		 
 				case 99: //PicExists   -- not used
+					break;*/
+				case 101: //NotPictured  -- not used
 					break;
-				case 100: //NotPictured  -- not used
-					break;
-				case 101: //MadeInCountry
+				case 102: //MadeInCountry
 					
 					String madeInCountry =  CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(madeInCountry)){
@@ -1071,7 +1094,7 @@ while (iterator.hasNext()) {
 					}
 					break;
 					
-				case 102:// AssembledInCountry
+				case 103:// AssembledInCountry
 			     String additionalProductInfo =  CommonUtility.getCellValueStrinOrInt(cell);
 			     if(!StringUtils.isEmpty(additionalProductInfo))
 			       {
@@ -1079,7 +1102,7 @@ while (iterator.hasNext()) {
 			       }
 				
 					break;
-				case 103: //DecoratedInCountry
+				case 104: //DecoratedInCountry
 					String additionalImprintInfo =  CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(additionalImprintInfo))
 					   {
@@ -1087,7 +1110,7 @@ while (iterator.hasNext()) {
 					   }
 					
 					break;
-				case 104: //ComplianceList  -- No data
+				case 105: //ComplianceList  -- No data
 					String complnceValuet= CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(complnceValuet))
 					   {
@@ -1096,7 +1119,7 @@ while (iterator.hasNext()) {
 					   }
 					break;
 					
-				case 105://ComplianceMemo  -- No data
+				case 106://ComplianceMemo  -- No data
 					String productDataSheet= CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(productDataSheet))
 					   {
@@ -1104,14 +1127,14 @@ while (iterator.hasNext()) {
 					   }
 					break;
 					
-				case 106: //ProdTimeLo
+				case 107: //ProdTimeLo
 				   prodTimeLo = CommonUtility.getCellValueStrinOrInt(cell);
 					/*ProductionTime productionTime = new ProductionTime();
 					
 					productionTime.setBusinessDays(prodTimeLo);
 					listOfProductionTime.add(productionTime);*/
 					break;
-				case 107: //ProdTimeHi
+				case 108: //ProdTimeHi
 					String prodTimeHi = CommonUtility.getCellValueStrinOrInt(cell);
 					ProductionTime productionTime = new ProductionTime();
 				
@@ -1130,21 +1153,21 @@ while (iterator.hasNext()) {
 					
 					}
 					break;
-				case 108://RushProdTimeLo
+				case 109://RushProdTimeLo
 					String rushProdTimeLo  =  CommonUtility.getCellValueStrinOrInt(cell);
 					if(!rushProdTimeLo.equals(ApplicationConstants.CONST_STRING_ZERO)){
 						rushTime = gillStudiosAttributeParser.getRushTimeValues(rushProdTimeLo, rushTime);
 					}
 					
 					 break; 	 
-				case 109://RushProdTimeH
+				case 110://RushProdTimeH
 					String rushProdTimeH  =  CommonUtility.getCellValueStrinOrInt(cell);
 					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO)){
 						rushTime = gillStudiosAttributeParser.getRushTimeValues(rushProdTimeH, rushTime);
 					}
 					break;
 					
-				case 110://Packaging
+				case 111://Packaging
 				
 					String pack  =  CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(pack)){
@@ -1153,38 +1176,38 @@ while (iterator.hasNext()) {
 					}
 					break;
 					
-				case 111: //CartonL
+				case 112: //CartonL
 					 cartonL  = CommonUtility.getCellValueStrinOrInt(cell);
 					
 					break;
-				case 112://CartonW
+				case 113://CartonW
 					cartonW  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
 	
-				case 113://CartonH
+				case 114://CartonH
 					cartonH  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 114: //WeightPerCarton
+				case 115: //WeightPerCarton
 					weightPerCarton  =CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 115: //UnitsPerCarton
+				case 116: //UnitsPerCarton
 					unitsPerCarton  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
 					
-				case 116: //ShipPointCountry
+				case 117: //ShipPointCountry
 
 					break;
 					
-				case 117: //ShipPointZip
+				case 118: //ShipPointZip
 					
 					break;
 					
-				case 118: //Comment // after review on 12 june
+				case 119: //Comment // after review on 12 june
 					String additionalProductValue=CommonUtility.getCellValueStrinOrInt(cell);
 					productExcelObj.setAdditionalProductInfo(additionalProductValue);
 					break;
 					
-				case 119: //Verified
+				case 120: //Verified
 					String verified= CommonUtility.getCellValueStrinOrInt(cell);
 					if(verified.equalsIgnoreCase("True")){
 					String priceConfimedThruString="2017-12-31T00:00:00";
@@ -1192,18 +1215,18 @@ while (iterator.hasNext()) {
 					}
 					break;
 			
-				case 120: //UpdateInventory
+				case 121: //UpdateInventory
 					
 					break;
 				
-				case 121: //InventoryOnHand
+				case 122: //InventoryOnHand
 					
 					break;
 					
-				case 122: //InventoryOnHandAdd
+				case 123: //InventoryOnHandAdd
 					break;
 					
-				case 123: //InventoryMemo
+				case 124: //InventoryMemo
 				break;
 			
 			}  // end inner while loop
