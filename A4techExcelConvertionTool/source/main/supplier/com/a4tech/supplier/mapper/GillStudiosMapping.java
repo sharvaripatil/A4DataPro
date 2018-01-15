@@ -439,8 +439,11 @@ while (iterator.hasNext()) {
 				    break;
 					
 				case 6://ExpirationDate / PriceConfirmedThru
-					// priceConfirmedThru = cell.getDateCellValue();
-					// need to work on this
+					//String verified= CommonUtility.getCellValueStrinOrInt(cell);
+					//if(verified.equalsIgnoreCase("True")){
+					String priceConfimedThruString="2018-12-31T00:00:00";
+					  productExcelObj.setPriceConfirmedThru(priceConfimedThruString);
+					//}
 					break;
 					
 				case 7: //  product status ,discontinued
@@ -547,9 +550,18 @@ while (iterator.hasNext()) {
 					
 				case 15: // Themes
 					 themeValue= CommonUtility.getCellValueStrinOrInt(cell);
+					 List<Theme> themeListTemp = productConfigObj.getThemes();
+					 if(CollectionUtils.isEmpty(themeList)){
 					 themeList = new ArrayList<Theme>();
+					 }
 					 if(!StringUtils.isEmpty(themeValue)){
 						 themeList = gillStudiosAttributeParser.getProductTheme(themeValue);
+						 if(!CollectionUtils.isEmpty(themeList)){
+							 if(!CollectionUtils.isEmpty(themeListTemp)){
+								 themeList.addAll(themeListTemp);
+								 }
+						 productConfigObj.setThemes(themeList);
+						 }
 					 }
 					break;
 					
@@ -847,13 +859,29 @@ while (iterator.hasNext()) {
 				case 70://IsEnvironmentallyFriendly
 
 				String IsEnvironmentallyFriendly =  CommonUtility.getCellValueStrinOrInt(cell);
-				
+				boolean flag=true;
 					if(IsEnvironmentallyFriendly.equalsIgnoreCase("true"))			
-					{ Theme themeObj1 = new Theme();
-
-						themeObj1.setName("Eco Friendly");	
-
+					{ 
+						List<Theme> themeListTempp = productConfigObj.getThemes();
+						 if(!CollectionUtils.isEmpty(themeListTempp)){
+							 for (Theme theme : themeListTempp) {
+								if(theme.getName().toUpperCase().contains("ECO")){
+									flag=false;
+								}
+							}
+						 }
+						///
+						 if(CollectionUtils.isEmpty(themeList)){
+							 themeList = new ArrayList<Theme>();
+							 }
+						 if(flag){
+						Theme themeObj1 = new Theme();
+						themeObj1.setName("ECO & ENVIRONMENTALLY FRIENDLY");
 						themeList.add(themeObj1);
+						 if(!CollectionUtils.isEmpty(themeListTempp)){
+							 themeList.addAll(themeListTempp);
+						 }
+						 }
 					}
 					break;
 				case 71://IsNewProd
@@ -1208,11 +1236,11 @@ while (iterator.hasNext()) {
 					break;
 					
 				case 120: //Verified
-					String verified= CommonUtility.getCellValueStrinOrInt(cell);
+					/*String verified= CommonUtility.getCellValueStrinOrInt(cell);
 					if(verified.equalsIgnoreCase("True")){
 					String priceConfimedThruString="2017-12-31T00:00:00";
 					  productExcelObj.setPriceConfirmedThru(priceConfimedThruString);
-					}
+					}*/
 					break;
 			
 				case 121: //UpdateInventory

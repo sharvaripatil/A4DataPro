@@ -67,7 +67,21 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		//themes
 		List<Theme>	themes=existingProductConfig.getThemes();
 		if(!CollectionUtils.isEmpty(themes)){
-			newProductConfigurations.setThemes(themes);
+			List<Theme>	themesTemp=new ArrayList<Theme>();
+			for (Theme theme : themes) {
+				Theme themeObj=new Theme();
+				String tempValue=theme.getName();
+				tempValue=tempValue.trim();
+				if(tempValue.toUpperCase().contains("ECO") || tempValue.toUpperCase().contains("FRIENDLY")){
+				String	themeName="ECO & ENVIRONMENTALLY FRIENDLY";
+				themeObj.setName(themeName);
+				themesTemp.add(themeObj);
+				}else{
+					themeObj.setName(tempValue);
+					themesTemp.add(themeObj);
+				}
+			}
+			newProductConfigurations.setThemes(themesTemp);
 		}
 		//catalogs
 		List<Catalog>	catlogsList=existingProduct.getCatalogs();
@@ -486,6 +500,9 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		for (String themeName : themes) {
 			if(lookupServiceDataObj.isTheme(themeName.toUpperCase().trim())){
 				themeObj = new Theme();
+				if(themeName.toUpperCase().contains("ECO")){
+					themeName="ECO & ENVIRONMENTALLY FRIENDLY";
+				}
 				themeObj.setName(themeName);
 				listOfTheme.add(themeObj);
 			}
