@@ -145,7 +145,7 @@ public class TekweldPriceGridParser {
 	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
 			String discounts, String upChargeCriterias, String qurFlag,
 			String currency, String upChargeName, String upChargeType,
-			String upchargeUsageType, Integer upChargeSequence,String OptionName,
+			String upchargeUsageType, Integer upChargeSequence,String OptionName,String Servicecharge,
 			List<PriceGrid> existingPriceGrid) {
 		try{
 		List<PriceConfiguration> configuration = null;
@@ -170,7 +170,7 @@ public class TekweldPriceGridParser {
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);
 		priceGrid.setUpchargeType(upChargeType);
-		priceGrid.setServiceCharge("Required");
+		priceGrid.setServiceCharge(Servicecharge);
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {

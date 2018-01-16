@@ -412,7 +412,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 14: //Dimension1Units
 
 					String dimensionUnits1 = CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!dimensionUnits1.contains("0")){
+					 if(!dimensionUnits1.equals("0")){
 						 dimensionUnits.append(dimensionUnits1.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
 					break;
@@ -420,7 +420,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 15: // Dimension1Type
 
 					String dimensionType1 =CommonUtility.getCellValueStrinOrInt(cell);
-					if(!dimensionType1.contains("0")){
+					if(!dimensionType1.equals("0")){
 						dimensionType.append(dimensionType1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					  
@@ -437,7 +437,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 17: //Dimension2Units
 
 					  String dimensionUnits2 = CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!dimensionUnits2.contains("0")){
+					 if(!dimensionUnits2.equals("0")){
 						 dimensionUnits.append(dimensionUnits2.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
 					  break;
@@ -445,7 +445,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 18: //Dimension2Type
 					String  dimensionType2 = CommonUtility.getCellValueStrinOrInt(cell);
 
-					if(!dimensionType2.contains("0")){
+					if(!dimensionType2.equals("0")){
 						dimensionType.append(dimensionType2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					
@@ -465,7 +465,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 20:  //Dimension3Units
 
 					String dimensionUnits3 = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!dimensionUnits3.contains("0")){
+					if(!dimensionUnits3.equals("0")){
 						 dimensionUnits.append(dimensionUnits3.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else
 					{
@@ -476,7 +476,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 21: //Dimension3Type
 
 					String dimensionType3 = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!dimensionType3.contains("0")){
+					if(!dimensionType3.equals("0")){
 						dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else
 					{

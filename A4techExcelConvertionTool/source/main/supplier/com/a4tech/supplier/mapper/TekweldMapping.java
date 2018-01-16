@@ -64,6 +64,7 @@ public class TekweldMapping  implements IExcelParser {
 		Packaging packObj=new Packaging();
 		List<AdditionalLocation> listOfLocation= new ArrayList<AdditionalLocation>();
 		AdditionalLocation locObj=new AdditionalLocation();
+	//	AdditionalLocation locObj1=new AdditionalLocation();
 		List<AdditionalColor> listOfColor= new ArrayList<AdditionalColor>();
 		AdditionalColor colObj=new AdditionalColor();
 		AdditionalColor colObj1=new AdditionalColor();
@@ -191,6 +192,7 @@ public class TekweldMapping  implements IExcelParser {
 									locObj=new AdditionalLocation();
 									listOfColor= new ArrayList<AdditionalColor>();
 									colObj=new AdditionalColor();
+									colObj1=new AdditionalColor();
 									shippingOption= new ArrayList<Option>();
 								    optionObj=new Option();
 								    listValue= new ArrayList<OptionValue>();
@@ -302,7 +304,7 @@ public class TekweldMapping  implements IExcelParser {
 							break;	
 							
 						case 19: //ITEM SIZE
-							String ProductSize=cell.getStringCellValue();
+							String ProductSize=CommonUtility.getCellValueStrinOrDecimal(cell);
 							if (!StringUtils.isEmpty(ProductSize)) {
 								sizeObj=tekweldAttribute.getProductsize(ProductSize);
 								productConfigObj.setSizes(sizeObj);
@@ -402,6 +404,7 @@ public class TekweldMapping  implements IExcelParser {
 							
 							String DistrubutorComment=cell.getStringCellValue();
 							if (!StringUtils.isEmpty(DistrubutorComment)) {
+							DistrubutorComment=DistrubutorComment.replaceAll("\\*","");
 							productExcelObj.setDistributorOnlyComments(DistrubutorComment);
 							}
 							break;	
@@ -419,7 +422,7 @@ public class TekweldMapping  implements IExcelParser {
 					productConfigObj.setColors(colorList);
 					productExcelObj.setPriceType("L");
 					
-					methdObj.setAlias("Full Color");
+					methdObj.setAlias("4CP Digital Printing");
 					methdObj.setType("Full Color");
 					listOfImprintMethods.add(methdObj);
 					productConfigObj.setImprintMethods(listOfImprintMethods);
@@ -431,7 +434,9 @@ public class TekweldMapping  implements IExcelParser {
 					productConfigObj.setAdditionalColors(listOfColor);
 					
 					locObj.setName("2nd Location");
+				//	locObj1.setName("2nd Location Setup");
 					listOfLocation.add(locObj);
+				//	listOfLocation.add(locObj1);
 					productConfigObj.setAdditionalLocations(listOfLocation);
 					
 					optionObj.setName("Optional Packaging");
@@ -459,17 +464,7 @@ public class TekweldMapping  implements IExcelParser {
 					optionObj3.setCanOnlyOrderOne(false);
 					optionObj3.setRequiredForOrder(false);
 					shippingOption.add(optionObj3);
-	/*				
-					optionObj4.setName("Optional Packaging");
-					optionObj4.setOptionType("Shipping");
-					valueObj4.setValue("Insert Items");
-					listValue4.add(valueObj4);
-					optionObj4.setValues(listValue4);
-					optionObj4.setAdditionalInformation("");
-					optionObj4.setCanOnlyOrderOne(false);
-					optionObj4.setRequiredForOrder(false);
-					shippingOption.add(optionObj4);*/
-					
+
 					productConfigObj.setOptions(shippingOption);
 				
 					
@@ -485,25 +480,25 @@ public class TekweldMapping  implements IExcelParser {
 							.getUpchargePriceGrid("1", Setupcharge,
 									"V",
 									"Imprint Method", "false", "USD",
-									"Full Color",
+									"4CP Digital Printing",
 									"Set-up Charge", "Per Order",
-									new Integer(1), "",priceGrids);	
+									new Integer(1), "","Required",priceGrids);	
 					
 					priceGrids = tekweldpricegrid
 							.getUpchargePriceGrid("1", Secndcl,
 									"Z",
 									"Additional Colors", "false", "USD",
 									"2nd Color",
-									"Add. Color Charge", "Per Order",
-									new Integer(2),"", priceGrids);
+									"Add. Color Charge", "Other",
+									new Integer(2),"","Optional", priceGrids);
 					
 					priceGrids = tekweldpricegrid
 							.getUpchargePriceGrid("1", Secndcl,
 									"Z",
 									"Additional Location", "false", "USD",
 									"2nd Location",
-									"Add. Location Charge", "Per Order",
-									new Integer(3), "",priceGrids);
+									"Add. Location Charge", "Other",
+									new Integer(3),"","Optional",priceGrids);
 					
 					
 					priceGrids = tekweldpricegrid
@@ -512,8 +507,15 @@ public class TekweldMapping  implements IExcelParser {
 									"Additional Colors", "false", "USD",
 									"2nd Color Setup",
 									"Set-up Charge", "Per Order",
-									new Integer(4),"", priceGrids);
+									new Integer(4),"","optional", priceGrids);
 					
+			/*		priceGrids = tekweldpricegrid
+							.getUpchargePriceGrid("1", "50",
+									"V",
+									"Additional Location", "false", "USD",
+									"2nd Location Setup",
+									"Set-up Charge", "Per Order",
+									new Integer(5),"","optional", priceGrids);*/
 					
 					priceGrids = tekweldpricegrid
 							.getUpchargePriceGrid("", "",
@@ -521,7 +523,7 @@ public class TekweldMapping  implements IExcelParser {
 									"Shipping Option", "true", "USD",
 									"Board",
 									"Packaging Charge", "Per Quantity",
-									new Integer(5),"Optional Packaging", priceGrids);
+									new Integer(5),"Optional Packaging","optional", priceGrids);
 					
 					priceGrids = tekweldpricegrid
 							.getUpchargePriceGrid("", "",
@@ -529,7 +531,7 @@ public class TekweldMapping  implements IExcelParser {
 									"Shipping Option", "true", "USD",
 									"Foam Inserts",
 									"Packaging Charge", "Per Quantity",
-									new Integer(6),"Optional Packaging", priceGrids);
+									new Integer(6),"Optional Packaging","optional", priceGrids);
 					
 					
 					priceGrids = tekweldpricegrid
@@ -538,7 +540,7 @@ public class TekweldMapping  implements IExcelParser {
 									"Shipping Option", "false", "USD",
 									"Assemble Box",
 									"Shipping Charge", "Per Quantity",
-									new Integer(7),"Optional Assembly", priceGrids);
+									new Integer(7),"Optional Assembly","optional", priceGrids);
 
 					
 					priceGrids = tekweldpricegrid
@@ -547,7 +549,7 @@ public class TekweldMapping  implements IExcelParser {
 									"Shipping Option", "true", "USD",
 									"Insert Items",
 									"Packaging Charge", "Per Quantity",
-									new Integer(8),"Optional Packaging", priceGrids);		
+									new Integer(8),"Optional Packaging","optional", priceGrids);		
 		
 					
 					
@@ -596,6 +598,7 @@ public class TekweldMapping  implements IExcelParser {
 			locObj=new AdditionalLocation();
 			listOfColor= new ArrayList<AdditionalColor>();
 			colObj=new AdditionalColor();
+			colObj1=new AdditionalColor();
 			shippingOption= new ArrayList<Option>();
 		    optionObj=new Option();
 		    listValue= new ArrayList<OptionValue>();
