@@ -567,7 +567,7 @@ while (iterator.hasNext()) {
 					
 				case 16://Dimension1//size --  value
 						String dimensionValue1=CommonUtility.getCellValueStrinOrInt(cell);
-						if(!StringUtils.isEmpty(dimensionValue1) && !dimensionValue1.contains("0")){
+						if(!StringUtils.isEmpty(dimensionValue1) && !dimensionValue1.equals("0")){
 							criteriaFlag=false;
 						   dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 						 
@@ -576,14 +576,14 @@ while (iterator.hasNext()) {
 					break;
 				case 17: //  Dimension1Units// size -- Unit
 					  String dimensionUnits1 = CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(dimensionUnits1) && !dimensionUnits1.contains("0")){
+					 if(!StringUtils.isEmpty(dimensionUnits1) && !dimensionUnits1.equals("0")){
 						 dimensionUnits.append(dimensionUnits1.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
 					  break;
 				
 				case 18: //Dimension1Type//size -- type
 					String dimensionType1 =CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(dimensionType1) && !dimensionType1.contains("0")){
+					 if(!StringUtils.isEmpty(dimensionType1) && !dimensionType1.equals("0")){
 						dimensionType.append(dimensionType1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					  
@@ -592,7 +592,7 @@ while (iterator.hasNext()) {
 				
 				 case 19: //Dimension2 // size
 					 String dimensionValue2 =CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(dimensionValue2) && !dimensionValue2.contains("0")){
+					 if(!StringUtils.isEmpty(dimensionValue2) && !dimensionValue2.equals("0")){
 						 criteriaFlag=false;
 						 dimensionValue.append(dimensionValue2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
@@ -602,7 +602,7 @@ while (iterator.hasNext()) {
 				case 20:  //Dimension2Units //size
 					String dimensionUnits2 =CommonUtility.getCellValueStrinOrInt(cell);
 					
-					if(!StringUtils.isEmpty(dimensionUnits2) && !dimensionUnits2.contains("0")){
+					if(!StringUtils.isEmpty(dimensionUnits2) && !dimensionUnits2.equals("0")){
 						dimensionUnits.append(dimensionUnits2.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					break;
@@ -610,7 +610,7 @@ while (iterator.hasNext()) {
 				case 21: //Dimension2Type //size
 					String  dimensionType2 = CommonUtility.getCellValueStrinOrInt(cell);
 
-					if(!StringUtils.isEmpty(dimensionType2) && !dimensionType2.contains("0")){
+					if(!StringUtils.isEmpty(dimensionType2) && !dimensionType2.equals("0")){
 						dimensionType.append(dimensionType2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					
@@ -618,7 +618,7 @@ while (iterator.hasNext()) {
 					
 				case 22: //Dimension3 // size
 					String dimensionValue3  =CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(dimensionValue3) && !dimensionValue3.contains("0")){
+					if(!StringUtils.isEmpty(dimensionValue3) && !dimensionValue3.equals("0")){
 						criteriaFlag=false;
 						dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else{
@@ -629,7 +629,7 @@ while (iterator.hasNext()) {
 					
 				case 23: //Dimension3Units // size
 					String dimensionUnits3 = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(dimensionUnits3) && !dimensionUnits3.contains("0")){
+					if(!StringUtils.isEmpty(dimensionUnits3) && !dimensionUnits3.equals("0")){
 						 dimensionUnits.append(dimensionUnits3.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else
 					{
@@ -639,7 +639,7 @@ while (iterator.hasNext()) {
 					
 				case 24: //Dimension3Type // size
 					String dimensionType3 = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(dimensionType3) && !dimensionType3.contains("0")){
+					if(!StringUtils.isEmpty(dimensionType3) && !dimensionType3.equals("0")){
 						dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else
 					{
@@ -1042,7 +1042,7 @@ while (iterator.hasNext()) {
 					  
 				case 91: // Second Imprint location
 					String imprintLocation2 =  CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(imprintLocation2) && !imprintLocation.contains("0")){
+					if(!StringUtils.isEmpty(imprintLocation2) && !imprintLocation.equals("0")){
 						ImprintLocation locationObj2 = new ImprintLocation();
 						locationObj2.setValue(imprintLocation2);
 						listImprintLocation.add(locationObj2);
