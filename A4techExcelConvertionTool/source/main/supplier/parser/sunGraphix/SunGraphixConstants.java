@@ -5,7 +5,26 @@ import java.util.TreeMap;
 
 public class SunGraphixConstants {
 	public static Map<String, String> SUNCOLOR_MAP =new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);//new HashMap<String, String>();
+	public static Map<String, StringBuilder> SUNDISCOUNTCODE_MAP =new TreeMap<String, StringBuilder>(String.CASE_INSENSITIVE_ORDER);//new HashMap<String, String>();
+	
+	static StringBuilder dsic1 = new StringBuilder();
+	static StringBuilder dsic2 = new StringBuilder();
+	static StringBuilder dsic3 = new StringBuilder();
+	static StringBuilder dsic4 = new StringBuilder();
+	static StringBuilder dsic5 = new StringBuilder();
+	
 	static {
+		dsic1.append("C___C___C___C___C");
+		dsic2.append("C___C___C___C___C");
+		dsic3.append("A___A___B___B___C");
+		dsic4.append("A___A___A___B___B___C");
+		dsic5.append("A___A___A___A___A___A");
+		
+		SUNDISCOUNTCODE_MAP.put("5C",dsic1);
+		SUNDISCOUNTCODE_MAP.put("4C",dsic2);
+		SUNDISCOUNTCODE_MAP.put("2A2BC",dsic3);
+		SUNDISCOUNTCODE_MAP.put("3A2BC",dsic4);
+		SUNDISCOUNTCODE_MAP.put("6A",dsic5);
 		SUNCOLOR_MAP.put("NAME","COLOR GROUP");
 		SUNCOLOR_MAP.put("BLACK","MEDIUM BLACK");
 		SUNCOLOR_MAP.put("DARK BLACK","DARK BLACK");

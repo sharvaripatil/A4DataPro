@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import parser.primeline.PrimeLineConstants;
 import parser.sunGraphix.SunGraphixAttributeParser;
 import parser.sunGraphix.SunGraphixPriceGridParser;
 
@@ -111,7 +112,11 @@ public class SunGraphixMapping {
 		  String productName=null;
 		  ShippingEstimate shippingEstObj = new ShippingEstimate();
 		try{
-			 
+			  StringBuilder listOfQuantity = new StringBuilder();
+			  StringBuilder listOfPrices = new StringBuilder();
+			  StringBuilder priceIncludes = new StringBuilder();
+			  StringBuilder listOfDiscCodes = new StringBuilder();
+			  String priceType="";
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 	    Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
@@ -396,34 +401,56 @@ public class SunGraphixMapping {
 				case 20: //Elastic
 					break;
 				case 21: //Qty1
-					break;
 				case 22: //Qty2
-					break;
 				case 23: //Qty3
-					break;
 				case 24: //Qty4
-					break;
 				case 25: //Qty5
-					break;
 				case 26: //Qty6
+					 try{//listOfQuantity//=CommonUtility.getCellValueStrinOrDecimal(cell);
+						 String	quantity =CommonUtility.getCellValueStrinOrInt(cell);
+						 if(!StringUtils.isEmpty(quantity)&& !quantity.equals("0")){
+							 listOfQuantity.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						 }
+							
+					 }catch (Exception e) {
+						_LOGGER.info("Error in base price prices field "+e.getMessage());
+					}
 					break;
 				case 27: //Prc1
-					break;
 				case 28: //Prc2
-					break;
 				case 29: //Prc3
-					break;
 				case 30: //Prc4
-					break;
 				case 31: //Prc5
-					break;
 				case 32: //Prc6
+					try{//listOfQuantity//=CommonUtility.getCellValueStrinOrDecimal(cell);
+						 String	priceList =CommonUtility.getCellValueStrinOrInt(cell);
+						 if(!StringUtils.isEmpty(priceList)&& !priceList.equals("0")){
+							 listOfPrices.append(priceList).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						 }
+							
+					 }catch (Exception e) {
+						_LOGGER.info("Error in base price prices field "+e.getMessage());
+					}
 					break;
 				case 33: //Currency
 					break;
 				case 34: //List or Net
+					priceType=CommonUtility.getCellValueStrinOrInt(cell);
+					if(StringUtils.isEmpty(priceType)){
+						priceType="LIST";
+					}
 					break;
 				case 35: //Pricing Codes
+					String	discountCode=null;
+					discountCode=CommonUtility.getCellValueStrinOrDecimal(cell);
+					if(!StringUtils.isEmpty(discountCode) && !discountCode.toUpperCase().equals("NULL")){
+						listOfDiscCodes=PrimeLineConstants.DISCOUNTCODE_MAP.get(discountCode.trim());
+						if(StringUtils.isEmpty(listOfDiscCodes)){
+							listOfDiscCodes.append("Z___Z___Z___Z___Z___Z___Z___Z___Z___Z"); 
+						}
+						}else{
+			        	 listOfDiscCodes.append("Z___Z___Z___Z___Z___Z___Z___Z___Z___Z"); 
+			         }
 					break;
 				case 36: //Die Charge
 					break;
@@ -456,7 +483,7 @@ public class SunGraphixMapping {
 					 if(!StringUtils.isEmpty(shipOption)){
 					List<Option> optionList=sunGraphixAttributeParser.getOptions("Drop Shipping","Drop Shipments","First one is free. Drop ship charge per additional address.",false,false,"Shipping");
 					productConfigObj.setOptions(optionList);
-					//create pricegrid over here
+					//create pricegrid over here141
 					if(shipOption.contains("10.50(G)")){
 						priceGrids = sunGraphixPriceGridParser.getPriceGrids(
 								"10.50","1","G",
