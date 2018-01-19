@@ -91,6 +91,7 @@ public class InternationlMerchMapping implements IExcelParser{
 		List<String> supplierSizeValList  = new ArrayList<>();
 		String sizeValue = "";
 		String imprintSizeVal = "";
+		Set<String> failureXidList = new HashSet<>();
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
@@ -160,11 +161,16 @@ public class InternationlMerchMapping implements IExcelParser{
 						    	   List<Color> colorList = merchAttributeParser.getProductColor(colorsList);
 						    	   productConfigObj.setColors(colorList);
 						       }
-									List<ImprintSize> imprintSizeList = merchAttributeParser
+						       if(!CollectionUtils.isEmpty(supplierImprSizeList)){
+						    	   List<ImprintSize> imprintSizeList = merchAttributeParser
 											.getProductImprintSize(supplierImprSizeList);
 								productConfigObj.setImprintSize(imprintSizeList);
-								Size sizeVals = merchAttributeParser.getProductSize(supplierSizeValList);
-								productConfigObj.setSizes(sizeVals);
+						       }
+						       if(!CollectionUtils.isEmpty(supplierSizeValList)){
+						    	   Size sizeVals = merchAttributeParser.getProductSize(supplierSizeValList);
+									productConfigObj.setSizes(sizeVals);   
+						       }
+								
 								if(!merchAttributeParser.isSpecialBasePriceGrid(xid)){
 									if(!StringUtils.isEmpty(grid_1Prices.toString())){
 										// grid based on Debossed 
@@ -202,11 +208,14 @@ public class InternationlMerchMapping implements IExcelParser{
 							 		int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
-								 	}else if(num == 0){
+								 	}else if(num == 0 || num == 5){
 								 		numOfProductsFailure.add("0");
 								 	}else{
 								 		
-								 	}		
+								 	}	
+								 	if(num == 5){
+								 		failureXidList.add(productExcelObj.getExternalProductId());
+								 	}
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 							 	priceGrids = new ArrayList<PriceGrid>();
@@ -269,11 +278,14 @@ public class InternationlMerchMapping implements IExcelParser{
 					 break;
 				case 2:
 					 prdNumber = cell.getStringCellValue();
-					 productExcelObj.setAsiProdNo(prdNumber);
+					 productExcelObj.setAsiProdNo(CommonUtility.getStringLimitedChars(prdNumber, 14));
 					  break;
 				case 3:// name
 					String pName= cell.getStringCellValue();
-					productExcelObj.setName(pName);
+					if(pName.contains("é")){
+						pName = pName.replaceAll("é", "e");	
+					}
+					productExcelObj.setName(CommonUtility.getStringLimitedChars(pName, 60));
 				    break;
 				case 4:
 				case 5:	
@@ -375,7 +387,7 @@ public class InternationlMerchMapping implements IExcelParser{
 					if(!StringUtils.isEmpty(rushTime) && !rushTime.equals("N/A")){
 						productExcelObj.setProductConfigurations(productConfigObj);
 						productExcelObj.setPriceGrids(priceGrids);
-						productExcelObj = merchAttributeParser.getProductPackaging(rushTime, productExcelObj);
+						productExcelObj = merchAttributeParser.getProductRushTime(rushTime, productExcelObj);
 						productConfigObj = productExcelObj.getProductConfigurations();
 						priceGrids = productExcelObj.getPriceGrids();
 					}
@@ -461,7 +473,7 @@ public class InternationlMerchMapping implements IExcelParser{
 					if(!StringUtils.isEmpty(tapeCharge)){
 						productExcelObj.setProductConfigurations(productConfigObj);
 						productExcelObj.setPriceGrids(priceGrids);
-								productExcelObj = merchAttributeParser.getUpchargeBasedOnScreenReOrderSetup(tapeCharge,
+								productExcelObj = merchAttributeParser.getUpchargeBasedOnTapeCharge(tapeCharge,
 										productExcelObj);
 						productConfigObj = productExcelObj.getProductConfigurations();
 						priceGrids = productExcelObj.getPriceGrids();
@@ -522,6 +534,7 @@ public class InternationlMerchMapping implements IExcelParser{
 					//grid_1 qty
 					String priceQty = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(priceQty) && !priceQty.equals("0")){
+						priceQty = getQtyValue(priceQty);
 						grid_1Quantity.add(priceQty);
 					}
 					break;
@@ -629,6 +642,7 @@ public class InternationlMerchMapping implements IExcelParser{
 				case 165:
 					String priceQty1 = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(priceQty1) && !priceQty1.equals("0")){
+						priceQty1 = getQtyValue(priceQty1);
 						grid_2Quantity.add(priceQty1);
 					}
 					break;
@@ -923,11 +937,8 @@ public class InternationlMerchMapping implements IExcelParser{
 		}
 		}
 		workbook.close();
-		/* if(priceGrids.size() == 1){
-	    	 priceGrids = removeBasePriceConfig(priceGrids);
-	     }*/
-		if(!StringUtils.isEmpty(description.toString())){
-			 String finalDescription = removeSpecialCharDescription(description.toString());
+	       if(!StringUtils.isEmpty(description.toString())){
+	    	   String finalDescription = removeSpecialCharDescription(description.toString());
 	    	   if(finalDescription.length()> 800){
 	    		   String finalDesc = CommonUtility.getStringLimitedChars(finalDescription.toString(), 800);
 	    			   String additionalInfo = finalDescription.substring(801);   
@@ -953,7 +964,17 @@ public class InternationlMerchMapping implements IExcelParser{
 	    	   List<Color> colorList = merchAttributeParser.getProductColor(colorsList);
 	    	   productConfigObj.setColors(colorList);
 	       }
-	       if(!merchAttributeParser.isSpecialBasePriceGrid(xid)){
+	       if(!CollectionUtils.isEmpty(supplierImprSizeList)){
+	    	   List<ImprintSize> imprintSizeList = merchAttributeParser
+						.getProductImprintSize(supplierImprSizeList);
+			productConfigObj.setImprintSize(imprintSizeList);
+	       }
+	       if(!CollectionUtils.isEmpty(supplierSizeValList)){
+	    	   Size sizeVals = merchAttributeParser.getProductSize(supplierSizeValList);
+				productConfigObj.setSizes(sizeVals);   
+	       }
+			
+			if(!merchAttributeParser.isSpecialBasePriceGrid(xid)){
 				if(!StringUtils.isEmpty(grid_1Prices.toString())){
 					// grid based on Debossed 
 		    	   String imprintMethodType = "";
@@ -986,19 +1007,23 @@ public class InternationlMerchMapping implements IExcelParser{
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	productExcelObj.setProductRelationSkus(listProductSkus);
 		 	productExcelObj.setDeliveryOption("");// it is used for imprintmethod value reference,that's cause again reset value
-                                                    //because there is no deliveryoption values
+		 	                                          //because there is no deliveryoption values
 		 		int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 			 	if(num ==1){
 			 		numOfProductsSuccess.add("1");
-			 	}else if(num == 0){
+			 	}else if(num == 0 || num == 5){
 			 		numOfProductsFailure.add("0");
 			 	}else{
 			 		
-			 	}		
+			 	}	
+			 	if(num == 5){
+			 		failureXidList.add(productExcelObj.getExternalProductId());
+			 	}
 		 	ProductDataStore.clearProductColorSet();
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
+	       _LOGGER.info("Failure XID List >>>>>>"+failureXidList);
 	       productDaoObj.saveErrorLog(asiNumber,batchId);
 	       return finalResult;
 		}catch(Exception e){
@@ -1081,9 +1106,23 @@ public class InternationlMerchMapping implements IExcelParser{
 	private String removeSpecialCharDescription(String desc){
 		desc = desc.replaceAll("’", "'");
 		desc = desc.replaceAll("”", "\"");
+		desc = desc.replaceAll("“", "\"");
 		desc = desc.replaceAll("¼", "1/4");
 		desc = desc.replaceAll("½", "1/2");
+		desc = desc.replaceAll("¾", "3/4");
+		desc = desc.replaceAll("®", "");
+		desc = desc.replaceAll("…", "");
+		desc = desc.replaceAll("é", "e");	
+		desc = desc.replaceAll(". ,", ".");
 		return desc;
+	}
+	private String getQtyValue(String price){
+		if(price.contains("-")){
+			price = CommonUtility.getValuesOfArray(price, "-")[0];
+		} else if(price.contains("+")){
+			price = price.replaceAll("\\+", "");
+		}
+		return price;
 	}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
