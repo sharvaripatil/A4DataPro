@@ -1085,9 +1085,11 @@
      	<property name="postServiceImpl" 	ref="postService"/>
         <property name="productDaoObj" 	   ref="productDao"/>
         <property name="tekweldAttribute" 	   ref="tekweldAttributeId"/>
+        <property name="tekweldpricegrid" 	   ref="tekweldpricegridId"/>
         
      </bean>
         <bean id="tekweldAttributeId" class="parser.tekweld.TekweldProductAttributeParser"/>
+        <bean id="tekweldpricegridId" class="parser.tekweld.TekweldPriceGridParser"/>
        
      
      <!-- TekweldMapping Configuration End  --> 

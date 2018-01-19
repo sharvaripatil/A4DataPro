@@ -18,7 +18,7 @@ public class TekweldProductAttributeParser {
 	public Size getProductsize(String productSize) {
 		Size sizeObj=new Size();
 		String NewProductsize[]=productSize.split("U");
-		NewProductsize[0]=NewProductsize[0].replace("Assembled - ", "");
+		NewProductsize[0]=NewProductsize[0].replace("Assembled - ", "").replace("Assembled:", "");
 		
 		  Dimension dimensionObj=new Dimension();
  
@@ -67,15 +67,6 @@ public class TekweldProductAttributeParser {
 	}
 
 	
-
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
 				
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;

@@ -436,14 +436,14 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					break;
 				case 17: //size -- Unit
 					  String dimensionUnits1 = CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!dimensionUnits1.contains("0")){
+					 if(!dimensionUnits1.equals("0")){
 						 dimensionUnits.append(dimensionUnits1.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
 					  break;
 				
 				case 18: //size -- type
 					String dimensionType1 =CommonUtility.getCellValueStrinOrInt(cell);
-					if(!dimensionType1.contains("0")){
+					if(!dimensionType1.equals("0")){
 						dimensionType.append(dimensionType1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					  
@@ -461,7 +461,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 				case 20:  //size
 					String dimensionUnits2 =CommonUtility.getCellValueStrinOrInt(cell);
 					
-					if(!dimensionUnits2.contains("0")){
+					if(!dimensionUnits2.equals("0")){
 						dimensionUnits.append(dimensionUnits2.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					break;
@@ -469,7 +469,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 				case 21: //size
 					String  dimensionType2 = CommonUtility.getCellValueStrinOrInt(cell);
 
-					if(!dimensionType2.contains("0")){
+					if(!dimensionType2.equals("0")){
 						dimensionType.append(dimensionType2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					
@@ -487,7 +487,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					
 				case 23: //size
 					String dimensionUnits3 = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!dimensionUnits3.contains("0")){
+					if(!dimensionUnits3.equals("0")){
 						 dimensionUnits.append(dimensionUnits3.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else
 					{
@@ -497,7 +497,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					
 				case 24: //size
 					String dimensionType3 = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!dimensionType3.contains("0")){
+					if(!dimensionType3.equals("0")){
 						dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else
 					{
