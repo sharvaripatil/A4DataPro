@@ -252,6 +252,7 @@ while (iterator.hasNext()) {
 										+"@@@@@"+priceIncludesValue+"@@@@@"+quoteUponRequest+"@@@@@"+tempCriteria+""+pricesPerUnit.toString());
 								*/
 							 if(!CollectionUtils.isEmpty(productPricePriceMap) ){
+								 int mapSize=productPricePriceMap.size();
 							 Iterator mapItr = productPricePriceMap.entrySet().iterator();
 							    while (mapItr.hasNext()) {
 							    	
@@ -276,10 +277,25 @@ while (iterator.hasNext()) {
 							    	if(tempCRI.equals("BBBBB")){
 							    		tempCRI="";
 							    	}
+							    	///////////////jan 22 2018
+							    	if(mapSize==1){
+							    		priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPric,listOfQuan, 
+							    				priceCD,ApplicationConstants.CONST_STRING_CURRENCY_USD,
+												"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+												"","",priceUNI,priceGrids);
+							    		
+							    		/*(String listOfPrices,
+							    			    String listOfQuan, String discountCodes,
+							    				String currency, String priceInclude, boolean isBasePrice,
+							    				String qurFlag, String priceName, String criterias,String priceUnitArr,
+							    				List<PriceGrid> existingPriceGrid)*/
+							    		
+							    	}else{
 							    	priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPric, 
 							    			listOfQuan, priceCD, "USD",
 							    			priceINC, true, quR, basePRIC,tempCRI,priceUNI,priceGrids);
-							    	
+							    	}
+							    	//////////////
 							    }
 							 }
 								/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
@@ -287,6 +303,19 @@ while (iterator.hasNext()) {
 										         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/	
 							 
 							    productExcelObj.setPriceGrids(priceGrids);
+							    ////
+							    List<ImprintMethod> imprintMethods=productConfigObj.getImprintMethods();
+								if(CollectionUtils.isEmpty(imprintMethods)){
+									// i have to keep unimprinted over here
+									  List<ImprintMethod> imprintMethodList = new ArrayList<>();
+									  ImprintMethod imprintMethodObj = new ImprintMethod();
+									  imprintMethodObj.setAlias("Unimprinted");
+									  imprintMethodObj.setType("Unimprinted");
+									  imprintMethodList.add(imprintMethodObj);
+									  productConfigObj.setImprintMethods(imprintMethodList);
+								}
+							    ////
+							    
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 //	if(Prod_Status = false){
 							 	_LOGGER.info("Product Data : "
@@ -498,12 +527,18 @@ while (iterator.hasNext()) {
 						String tempStr=description.substring(0, postn);
 						if(tempStr.length()<=130){
 							productExcelObj.setSummary(tempStr);
+						}else{
+							tempStr=tempStr.substring(0, 130);
+							  productExcelObj.setSummary(tempStr);
+						}
 						}else if(!StringUtils.isEmpty(productExcelObj.getName())){
 							String tempSum=productExcelObj.getName();
 							if(tempSum.length()<=130){
 								productExcelObj.setSummary(tempSum);
+							}else{
+								tempSum=tempSum.substring(0, 130);
+								  productExcelObj.setSummary(tempSum);
 							}
-						}
 						
 					}
 					}else{
@@ -512,6 +547,9 @@ while (iterator.hasNext()) {
 								productExcelObj.setDescription(temp);
 								if(temp.length()<=130){
 									productExcelObj.setSummary(temp);
+								}else{
+									  temp=temp.substring(0, 130);
+									  productExcelObj.setSummary(temp);
 								}
 						 }
 					}			
@@ -537,11 +575,20 @@ while (iterator.hasNext()) {
 						if(colors.length>1){
 							for (String string : colors) {
 								colorSet.add(string.trim());
-								pnumMap.put(asiProdNo, string);
+								// done changes on 22nd JAn 2018 for revised colors
+								String tempNUmVal=string;
+								if(tempNUmVal.contains("/")){
+									tempNUmVal=tempNUmVal.replace("/", "-");
+								}
+								pnumMap.put(asiProdNo, tempNUmVal);
 							}
 						}else{
 						colorSet.add(colorValue);
-						pnumMap.put(asiProdNo, colorValue);
+						String tempNUmVal=colorValue;
+						if(tempNUmVal.contains("/")){
+							tempNUmVal=tempNUmVal.replace("/", "-");
+						}
+						pnumMap.put(asiProdNo, tempNUmVal);
 						}
 						//colorList=gillStudiosAttributeParser.getProductColors(colorValue);
 						//productConfigObj.setColors(colorList);
@@ -1379,36 +1426,52 @@ while (iterator.hasNext()) {
 		//productExcelObj.setPriceGrids(priceGrids);
 		
 		 if(!CollectionUtils.isEmpty(productPricePriceMap) ){
-			 Iterator mapItr = productPricePriceMap.entrySet().iterator();
-			    while (mapItr.hasNext()) {
-			    	
-			        Map.Entry values = (Map.Entry)mapItr.next();
-			        String basePRIC= values.getKey().toString();
-			        String mapValue	=values.getValue().toString();
-			    	String mapValueArr[]=mapValue.split("@@@@@");
-			    	
-			    	String listOfPric=mapValueArr[0];//listOfPrices
-			    	String listOfQuan=mapValueArr[1];//listOfQuantity
-			    	String priceCD=mapValueArr[2];//priceCode
-			    	String priceINC=mapValueArr[3];//priceIncludesValue
-			    	String quR=mapValueArr[4];//quoteUponRequest
-			    	String tempCRI=mapValueArr[5];//tempCriteria
-			    	String priceUNI=mapValueArr[6];//pricesPerUnit
-			    	
-			    	//basePriceName="AAAAA";
-			    	if(basePRIC.equals("AAAAA")){
-			    		basePRIC="";
-			    	}
-					//tempCriteria="BBBBB";
-			    	if(tempCRI.equals("BBBBB")){
-			    		tempCRI="";
-			    	}
-			    	priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPric, 
-			    			listOfQuan, priceCD, "USD",
-			    			priceINC, true, quR, basePRIC,tempCRI,priceUNI,priceGrids);
-			    	
-			    }
-			 }
+			 int mapSize=productPricePriceMap.size();
+		 Iterator mapItr = productPricePriceMap.entrySet().iterator();
+		    while (mapItr.hasNext()) {
+		    	
+		        Map.Entry values = (Map.Entry)mapItr.next();
+		        String basePRIC= values.getKey().toString();
+		        String mapValue	=values.getValue().toString();
+		    	String mapValueArr[]=mapValue.split("@@@@@");
+		    	
+		    	String listOfPric=mapValueArr[0];//listOfPrices
+		    	String listOfQuan=mapValueArr[1];//listOfQuantity
+		    	String priceCD=mapValueArr[2];//priceCode
+		    	String priceINC=mapValueArr[3];//priceIncludesValue
+		    	String quR=mapValueArr[4];//quoteUponRequest
+		    	String tempCRI=mapValueArr[5];//tempCriteria
+		    	String priceUNI=mapValueArr[6];//pricesPerUnit
+		    	
+		    	//basePriceName="AAAAA";
+		    	if(basePRIC.equals("AAAAA")){
+		    		basePRIC="";
+		    	}
+				//tempCriteria="BBBBB";
+		    	if(tempCRI.equals("BBBBB")){
+		    		tempCRI="";
+		    	}
+		    	///////////////jan 22 2018
+		    	if(mapSize==1){
+		    		priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPric,listOfQuan, 
+		    				priceCD,ApplicationConstants.CONST_STRING_CURRENCY_USD,
+							"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+							"","",priceUNI,priceGrids);
+		    		
+		    		/*(String listOfPrices,
+		    			    String listOfQuan, String discountCodes,
+		    				String currency, String priceInclude, boolean isBasePrice,
+		    				String qurFlag, String priceName, String criterias,String priceUnitArr,
+		    				List<PriceGrid> existingPriceGrid)*/
+		    		
+		    	}else{
+		    	priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPric, 
+		    			listOfQuan, priceCD, "USD",
+		    			priceINC, true, quR, basePRIC,tempCRI,priceUNI,priceGrids);
+		    	}
+		    	//////////////
+		    }
+		 }
 		 if(!CollectionUtils.isEmpty(pnumMap) && pnumMap.size()>1){
 				pnumberList=gillStudiosAttributeParser.getProductNumer(pnumMap);
 				productExcelObj.setProductNumbers(pnumberList);
@@ -1421,6 +1484,18 @@ while (iterator.hasNext()) {
 			 productConfigObj.setColors(colorList);
 		 }
 		productExcelObj.setPriceGrids(priceGrids);
+		 ////
+	    List<ImprintMethod> imprintMethods=productConfigObj.getImprintMethods();
+		if(CollectionUtils.isEmpty(imprintMethods)){
+			// i have to keep unimprinted over here
+			  List<ImprintMethod> imprintMethodList = new ArrayList<>();
+			  ImprintMethod imprintMethodObj = new ImprintMethod();
+			  imprintMethodObj.setAlias("Unimprinted");
+			  imprintMethodObj.setType("Unimprinted");
+			  imprintMethodList.add(imprintMethodObj);
+			  productConfigObj.setImprintMethods(imprintMethodList);
+		}
+	    ////
 		productExcelObj.setProductConfigurations(productConfigObj);
 	
 		 	_LOGGER.info("Product Data : "
@@ -1473,6 +1548,7 @@ while (iterator.hasNext()) {
 	         pnumMap=new HashMap<String, String>();
 	         colorSet=new HashSet<String>();
 	         firstValue="";
+	         productPricePriceMap=new HashMap<String, String>();
 	         repeatRows.clear();
 	       return finalResult;
 		}catch(Exception e){
@@ -1567,6 +1643,5 @@ while (iterator.hasNext()) {
 		   }
 		   return null;
 	   }
-	
-	
+
 }
