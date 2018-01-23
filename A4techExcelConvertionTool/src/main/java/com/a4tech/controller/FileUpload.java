@@ -71,8 +71,8 @@ public class FileUpload {
 		}
 		try  {
 			//if file upload for Production ,please change the environemnt Type "Sand" to "Prod"
-			accessToken = loginService.doLogin(fileBean.getAsiNumber(),
-					fileBean.getUserName(), fileBean.getPassword(), "Sand");//here change environment type
+			accessToken = loginService.doLogin(fileBean.getAsiNumber().trim(),
+					fileBean.getUserName().trim(), fileBean.getPassword().trim(), "Sand");//here change environment type
 			if (accessToken != null) {
 				if (ApplicationConstants.CONST_STRING_UN_AUTHORIZED.equals(accessToken)) {
 					accessToken = null;

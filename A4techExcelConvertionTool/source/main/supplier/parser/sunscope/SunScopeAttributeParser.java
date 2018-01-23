@@ -13,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.ImprintMethod;
@@ -32,6 +33,8 @@ import com.a4tech.product.model.Volume;
 import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
+
+import parser.headWear.HeadWearColorMapping;
 
 public class SunScopeAttributeParser {
 	private SunScopePriceGridParser sunScopePriceGridParser;
@@ -362,11 +365,62 @@ public Size getProductSize(String sizeVal){
      }
      public List<Color> getProductColor(String colorVal){
     	 List<Color> colorList = new ArrayList<>();
-    	 String[] colorVals = null;
-    	  //if()
-    	 
+    	 Color colorObj = null;
+    	 String[] colorVals = CommonUtility.getValuesOfArray(colorVal, ",");
+    	 for (String colorName : colorVals) {
+    		 colorName = colorName.trim();
+			colorObj = new Color();
+			String colorGroup = SunScopeColorAndImprintMethodMapping.getColorGroup(colorName);
+			if(colorGroup.contains("Combo")){
+				colorObj = getColorCombo(colorGroup,colorName);
+				colorList.add(colorObj);
+			} else if(colorGroup.equals("Other")){
+				 if(colorName.contains("and")){
+					 String[] colorValss = CommonUtility.getValuesOfArray(colorName, "and");
+					 for (String colorNamee : colorValss) {
+							colorObj = new Color();
+							colorNamee = colorNamee.trim();
+							String colorGrup = SunScopeColorAndImprintMethodMapping.getColorGroup(colorNamee);
+							if(colorGroup.contains("Combo")){
+								colorObj = getColorCombo(colorGroup,colorNamee);
+							}else {
+								 colorObj.setName(colorGrup); 
+								 colorObj.setAlias(colorNamee);
+							}
+							colorList.add(colorObj);
+					 }
+				 } else {
+					 colorObj.setName(colorGroup); 
+					 colorObj.setAlias(colorName);
+					 colorList.add(colorObj);
+				 }
+			} else {
+				 colorObj.setName(colorGroup); 
+				 colorObj.setAlias(colorName);
+				 colorList.add(colorObj);
+			}
+		}
     	 return colorList;
      }
+     private Color getColorCombo(String comboVal,String alias){
+ 		Color colorObj = new Color();
+ 		List<Combo> listOfComos = new ArrayList<>();
+ 		Combo comboObj1 = new Combo();
+ 		Combo comboObj2 = new Combo();
+ 		String[] comboColors = CommonUtility.getValuesOfArray(comboVal,":");
+ 		colorObj.setName(comboColors[0]);
+ 		comboObj1.setName(comboColors[2]);
+ 		comboObj1.setType(ApplicationConstants.CONST_STRING_SECONDARY);
+ 		colorObj.setAlias(alias);
+ 		if(comboColors.length == 5){
+ 			comboObj2.setName(comboColors[4]);
+ 			comboObj2.setType(ApplicationConstants.CONST_STRING_TRIM);
+ 			listOfComos.add(comboObj2);
+ 		} 
+ 		listOfComos.add(comboObj1);
+ 		colorObj.setCombos(listOfComos);
+ 		return colorObj;
+ 	}
 	public SunScopePriceGridParser getSunScopePriceGridParser() {
 		return sunScopePriceGridParser;
 	}

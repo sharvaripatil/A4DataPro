@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.Color;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
@@ -166,6 +167,11 @@ public class SunScopeMapping implements IExcelParser{
 					productExcelObj.setDescription(cell.getStringCellValue());
 					break;
 				case 10://colors
+					String colorVal = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(colorVal)){
+						List<Color> colorsList = sunScopeAttributeParser.getProductColor(colorVal);
+						productConfigObj.setColors(colorsList);
+					}
 					break;
 				case 11://Size
 					String sizeVal = cell.getStringCellValue();
@@ -175,7 +181,7 @@ public class SunScopeMapping implements IExcelParser{
 					}
 					break;
 				case 12: //item weight
-					String itemWeightVal = CommonUtility.getCellValueStrinOrInt(cell);
+					String itemWeightVal = CommonUtility.getCellValueDouble(cell);
 					if(!StringUtils.isEmpty(itemWeightVal)){
 					  Volume itemWeight = sunScopeAttributeParser.getItemWeightvolume(itemWeightVal);
 					  productConfigObj.setItemWeight(itemWeight);
