@@ -2,6 +2,7 @@ package parser.sunscope;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,7 +103,7 @@ public Size getProductSize(String sizeVal){
 		Value valObj1 = null;
 		Value valObj2 = null;
 		Value valObj3 = null;
-		List<Value> listOfValue = new ArrayList<>();
+		List<Value> listOfValue = new LinkedList<>();
 		if(values.length == ApplicationConstants.CONST_INT_VALUE_ONE){
 			valObj1 = getValueObj(values[0].trim(), "Length", "in"); 
 			  listOfValue.add(valObj1);

@@ -73,6 +73,7 @@ public class SunScopeMapping implements IExcelParser{
 		 columnIndex = 0;
 		StringBuilder productDescription = new StringBuilder();
 		StringBuilder shippingAdditionalInfo = new StringBuilder();
+		Set<String> processedXids = new HashSet<>();
 		while (iterator.hasNext()) {
 			
 			try{
@@ -83,6 +84,10 @@ public class SunScopeMapping implements IExcelParser{
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
 			if(xid != null){
 				productXids.add(xid);
+			}
+			if(processedXids.contains(xid)){//check xid processed or not if xid processed 
+				                            //skip those xid becasue supplier has provided duplicate xid
+				continue; 
 			}
 			boolean checkXid  = false;			
 			while (cellIterator.hasNext()) {
@@ -117,6 +122,7 @@ public class SunScopeMapping implements IExcelParser{
 							 		numOfProductsFailure.add("0");
 							 	}else{
 							 	}
+							 	processedXids.add(productExcelObj.getExternalProductId());
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 								priceGrids = new ArrayList<PriceGrid>();
