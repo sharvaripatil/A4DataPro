@@ -245,6 +245,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 	public List<ImprintSize> getimprintsize(StringBuilder firstImprintSize) {
 			String tempStr[]=firstImprintSize.toString().split("___");
 			 List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
+			 List<String> dupList =new ArrayList<String>();
 		for (String impValue : tempStr) {
 			String ImprintSizeValue=impValue.replace("null xnull","");
 			ImprintSizeValue=ImprintSizeValue.replace("null", "");
@@ -253,10 +254,12 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		    if(!StringUtils.isEmpty(ImprintSizeValue)){
 			String ImprintsizeArr[]=ImprintSizeValue.split(",");
 		   for (String Value : ImprintsizeArr) {
+			   if(!dupList.contains(Value)){
 			   impsizeobj=new ImprintSize();
 			   impsizeobj.setValue(Value);
-			   imprintSizeList.add(impsizeobj);
-		      }
+			   imprintSizeList.add(impsizeobj); 
+		   }
+		   dupList.add(Value);}
 		    }
 		}
 			return imprintSizeList;
