@@ -128,6 +128,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 									if(!StringUtils.isEmpty(productExcelObj.getAdditionalProductInfo())){
 										String additionalPrdInfo = productExcelObj.getAdditionalProductInfo();
 										additionalPrdInfo = CommonUtility.removeSpecificWord(additionalPrdInfo, "Velcro");
+										additionalPrdInfo = additionalPrdInfo.replaceAll("®", "");
 										productExcelObj.setAdditionalProductInfo(additionalPrdInfo);	
 									}
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
@@ -496,7 +497,8 @@ public class GoldBondExcelMapping implements IExcelParser{
 					break;
 				case 136:
 					String size = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(size)){
+							if (!StringUtils.isEmpty(size) && !size.equals("Various")
+									&& !size.equals("Adjustable to size") && !size.contains("One size fits most")) {
 						if(isSizeValue(size)){
 							Size sizeVals = gbAttributeParser.getProductSize(size);
 							productConfiguration.setSizes(sizeVals);
@@ -559,7 +561,15 @@ public class GoldBondExcelMapping implements IExcelParser{
 								List<Artwork> listOfArtwork = gbAttributeParser
 										.getProductArtwork("PRE-PRODUCTION PROOF");
 						   productConfiguration.setArtwork(listOfArtwork);
-								listOfPriceGrids = gbPriceGridParser.getUpchargePriceGrid("1", proofCharge, "Z", "Artwork & Proofs",
+						   String price = proofCharge;
+						   String disc = "Z";
+						   if(proofCharge.contains("(")){
+							   proofCharge = getPriceAndDiscountCodeValue(proofCharge);
+							   String[] vals = CommonUtility.getValuesOfArray(proofCharge, ":"); 
+							   price = vals[0];
+							   disc = vals[1];
+						   }
+								listOfPriceGrids = gbPriceGridParser.getUpchargePriceGrid("1", price, disc, "Artwork & Proofs",
 										false, "USD","","PRE-PRODUCTION PROOF", "Artwork Charge", "Other", 1,
 										listOfPriceGrids,"","");
 					   }
@@ -838,6 +848,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 		 if(!StringUtils.isEmpty(productExcelObj.getAdditionalProductInfo())){
 				String additionalPrdInfo = productExcelObj.getAdditionalProductInfo();
 				additionalPrdInfo = CommonUtility.removeSpecificWord(additionalPrdInfo, "Velcro");
+				additionalPrdInfo = additionalPrdInfo.replaceAll("®", "");
 				productExcelObj.setAdditionalProductInfo(additionalPrdInfo);	
 			}
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
@@ -930,6 +941,14 @@ public class GoldBondExcelMapping implements IExcelParser{
 			return false;
 		}
 		return true;
+	}
+	private String getPriceAndDiscountCodeValue(String val){
+		//$15.00 (G)
+		val = val.replaceAll("[^0-9A-Za-z.()]", "");
+		String discountCode = CommonUtility.extractValueSpecialCharacter("(", ")", val);
+		val = val.replaceAll("[^0-9.]", "");
+		val = val+":"+discountCode;
+		return val;
 	}
 	/*private List<ImprintMethod> productImprintMethods(String value){
 		List<ImprintMethod> imprintMethodList = new ArrayList<>();

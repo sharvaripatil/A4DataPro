@@ -197,7 +197,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 
 								shipping = attrtiParserObj.getShippingEstimateValues(cartonL, cartonW,
 					                    cartonH, weightPerCarton, unitsPerCarton);
-								if(!unitsPerCarton.contains("0")){
+								if(!unitsPerCarton.equals("0")){
 								productConfigObj.setShippingEstimates(shipping);
 								}
 								productConfigObj.setImprintMethods(listOfImprintMethods);
@@ -368,7 +368,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					  String dimensionUnits1 = CommonUtility.getCellValueStrinOrInt(cell);
 					  dimensionUnits1=dimensionUnits1.replace("\"", "");
 
-						 if(!dimensionUnits1.contains("0")){
+						 if(!dimensionUnits1.equals("0")){
 							 dimensionUnits.append(dimensionUnits1.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 						 }
 					  break;
@@ -377,7 +377,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					String dimensionType1 =CommonUtility.getCellValueStrinOrInt(cell);
 					dimensionType1=dimensionType1.replace("\"", "");
 
-					if(!dimensionType1.contains("0")){
+					if(!dimensionType1.equals("0")){
 						dimensionType.append(dimensionType1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					break;
@@ -395,7 +395,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
                     String dimensionUnits2 =CommonUtility.getCellValueStrinOrInt(cell);
                     dimensionUnits2=dimensionUnits2.replace("\"", "");
 
-					if(!dimensionUnits2.contains("0")){
+					if(!dimensionUnits2.equals("0")){
 						dimensionUnits.append(dimensionUnits2.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					break;
@@ -404,7 +404,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					String  dimensionType2 = CommonUtility.getCellValueStrinOrInt(cell);
 					dimensionType2=dimensionType2.replace("\"", "");
 
-					if(!dimensionType2.contains("0")){
+					if(!dimensionType2.equals("0")){
 						dimensionType.append(dimensionType2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					break;
@@ -425,7 +425,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					String dimensionUnits3 = CommonUtility.getCellValueStrinOrInt(cell);
 					dimensionUnits3=dimensionUnits3.replace("\"", "");
 
-					if(!dimensionUnits3.contains("0")){
+					if(!dimensionUnits3.equals("0")){
 						 dimensionUnits.append(dimensionUnits3.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else
 					{
@@ -437,7 +437,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					String dimensionType3 = CommonUtility.getCellValueStrinOrInt(cell);
 					dimensionType3=dimensionType3.replace("\"", "");
 
-					if(!dimensionType3.contains("0")){
+					if(!dimensionType3.equals("0")){
 						dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}else
 					{
@@ -913,7 +913,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 			
 			shipping = attrtiParserObj.getShippingEstimateValues(cartonL, cartonW,
                        cartonH, weightPerCarton, unitsPerCarton);
-			if(!unitsPerCarton.contains("0")){
+			if(!unitsPerCarton.equals("0")){
 			productConfigObj.setShippingEstimates(shipping);
 			}
 			

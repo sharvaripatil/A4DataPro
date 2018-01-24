@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import com.a4tech.core.errors.ErrorMessage;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.core.model.ExternalAPIResponse;
+import com.a4tech.product.dao.entity.ErrorEntity;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.service.PostService;
@@ -68,6 +69,14 @@ public class PostServiceImpl implements PostService {
 						ErrorMessageList.class);
 				productDao.save(apiResponse.getErrors(),
 						product.getExternalProductId(), asiNumber, batchId);
+				boolean isFailProduct = isFailProduct(apiResponse.getErrors());
+				if(isFailProduct){
+					return 5;
+				}
+				/*List<ErrorMessage> errors = apiResponse.getErrors();
+				if(errors.contains("Your product could not be saved")){
+					return 5;
+				}*/
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				_LOGGER.error("unable to connect External API System:"
@@ -247,7 +256,19 @@ public class PostServiceImpl implements PostService {
 		}
 
 	}
-
+ private boolean isFailProduct(List<ErrorMessage> errors){
+	 for (ErrorMessage errorMessage : errors) {
+			if(errorMessage.getReason() == null){
+				continue;
+			}
+				String tempMessage=errorMessage.getMessage();
+			if (tempMessage.contains("Your product could not be saved")
+					|| tempMessage.toLowerCase().contains("internal server error")) {
+					return true;
+				}
+		}
+	 return false;
+ }
 	public RestTemplate getRestTemplate() {
 		return restTemplate;
 	}

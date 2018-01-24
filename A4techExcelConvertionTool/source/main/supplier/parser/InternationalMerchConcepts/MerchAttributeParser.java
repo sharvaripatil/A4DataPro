@@ -171,7 +171,10 @@ public class MerchAttributeParser {
 						|| sizeVal.contains("D") || sizeVal.contains("SQ") || sizeVal.contains("DIA") 
 						|| sizeVal.contains("Dia") || sizeVal.contains("dia")) {
 					sizeVal = getFinalSizeValue(sizeVal);
-					sizeVal = sizeVal.substring(0, sizeVal.length() - 1);// trim last character i.e :
+					String lastChar = sizeVal.substring(sizeVal.length() - 1);
+					if(lastChar.equals(":")){
+						sizeVal = sizeVal.substring(0, sizeVal.length() - 1);// trim last character i.e :
+					}
 	                String[] sss = CommonUtility.getValuesOfArray(sizeVal, ":");
 	               if(sss.length == 2){
 	            	   String finalSize = sss[0];
@@ -210,10 +213,27 @@ public class MerchAttributeParser {
 		   for (String size : sizes) {
 			String sizeVal =  size.replaceAll("[^0-9/ ]", "").trim();
 			String sizeUnit = size.replaceAll("[^a-zA-Z]", "").trim();
+			String temp = sizeUnit; 
 			if(StringUtils.isEmpty(sizeUnit)){
 				sizeUnit = "L";// default value assign
 			}
+			if(sizeUnit.equalsIgnoreCase("aDia")){
+				sizeUnit = "Dia";
+			} else if(sizeUnit.equals("LL")){
+				sizeUnit = "L";
+			} else{
+				
+			}
 			sizeUnit = LookupData.getSizeUnit(sizeUnit);
+			if(sizeUnit == null){
+				if(!temp.equalsIgnoreCase("dia")){
+					temp = temp.replaceAll("[^LHWD]", "").trim();// HERE trim all unnecessary characters
+					if(StringUtils.isEmpty(temp)){
+						temp = "L";
+					}
+					sizeUnit = LookupData.getSizeUnit(temp);
+				}
+			}
 			String ss = sizeVal+":"+sizeUnit;
 			sizess.append(ss).append(":");
 		}   
@@ -249,11 +269,11 @@ public class MerchAttributeParser {
 		   }
 		   s1  = s1.replaceAll("[^0-9/ ]", "");
 		   squreVal  = squreVal.replaceAll("[^0-9/ ]", "");
-		   finlSize.append(squreVal).append(":").append(unit1).append(squreVal).append(":").append(unit2)
-			.append(s1).append(":").append(unit3);
+		   finlSize.append(squreVal).append(":").append(unit1).append(":").append(squreVal).append(":").append(unit2)
+			.append(":").append(s1).append(":").append(unit3);
 		} else{//7/8 SQ
 			sizeVal  = sizeVal.replaceAll("[^0-9/ ]", "");
-			finlSize.append(sizeVal).append(":").append("Length").append(sizeVal).append(":").append("Width");
+			finlSize.append(sizeVal).append(":").append("Length").append(":").append(sizeVal).append(":").append("Width");
 		}	   
 	   return finlSize;
    }
@@ -304,6 +324,7 @@ public class MerchAttributeParser {
 		  imprSize = imprSize.replaceAll(";", ",");
 		  String[] imprSizes = CommonUtility.getValuesOfArray(imprSize, ",");
 		  for (String imprSizeName : imprSizes) {
+			  imprSizeName = removeSpecialCharsImprintSize(imprSizeName);
 			  imprintSizeObj = new ImprintSize();
 			  imprintSizeObj.setValue(imprSizeName);
 			  imprintSizeList.add(imprintSizeObj);
@@ -506,13 +527,13 @@ public class MerchAttributeParser {
 	 if(packVal.equalsIgnoreCase("Bulk. Packaging Options: White Gift Box $0.70(G). Brown Mailer Box $1.20(G)")){
 		 packagingList = getPackageValues("Bulk,White Gift Box,Brown Mailer Box");
 		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "0.70", "G", "Packaging", false, "USD",
-					"", "White Gift Box", "Packaging Charge", "Other", 1, priceGrids, "", "");
+					"", "White Gift Box", "Packaging Charge", "Per Quantity", 1, priceGrids, "", "");
 		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "1.20", "G", "Packaging", false, "USD",
-					"", "Brown Mailer Box", "Packaging Charge", "Other", 1, priceGrids, "", "");
+					"", "Brown Mailer Box", "Packaging Charge", "Per Quantity", 1, priceGrids, "", "");
 	 } else if(packVal.equalsIgnoreCase("Bulk. Packaging Options: Brown Mailer Box $1.20(G)")){
 		 packagingList = getPackageValues("Bulk,Brown Mailer Box");
 		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "1.20", "G", "Packaging", false, "USD",
-					"", "Brown Mailer Box", "Packaging Charge", "Other", 1, priceGrids, "", "");
+					"", "Brown Mailer Box", "Packaging Charge", "Per Quantity", 1, priceGrids, "", "");
 	 } else {
 		 packagingList = getPackageValues(packVal);
 	 }
@@ -546,7 +567,7 @@ public class MerchAttributeParser {
 		String existingImprintMethods = imprintMethodList.stream().map(ImprintMethod::getAlias)
 				.collect(Collectors.joining(","));
 		if(prdTimeVal.equalsIgnoreCase("Blank: 2 business days; Embroidery: 7-10 business days")){
-			List<String> imprMethods = Arrays.asList("Embroidery,Unimprinted");
+			List<String> imprMethods = Arrays.asList("Embroidery","Unimprinted");
 			ImprintMethod imprMethObj = null;
 			for (String imprintMethodName : imprMethods) {
 				if(!existingImprintMethods.contains(imprintMethodName)){
@@ -565,7 +586,7 @@ public class MerchAttributeParser {
 			imprAndPrdTimeAvailMap.put("Embroidery", "7-10 business days");
 			List<Availability> availabilityList = getProductAvailablity(imprAndPrdTimeAvailMap);
 			existingProdcut.setAvailability(availabilityList);
-			prdTimeVal = "2 business days;7-10 business days";
+			prdTimeVal = "Blank: 2 business days; Embroidery: 7-10 business days";
 		}
 	  List<ProductionTime> productionTimeList = new ArrayList<>();
 	  ProductionTime prdTimeObj = null;
@@ -573,9 +594,13 @@ public class MerchAttributeParser {
 	  String[] prodTimes = CommonUtility.getValuesOfArray(prdTimeVal,",");
 	  for (String prdTime : prodTimes) {
 		  prdTimeObj = new ProductionTime();
+		  String details = "";
+		  if(prdTime.contains(":")){
+			   details = prdTime.split(":")[0].trim();
+		  }
 		  prdTime = prdTime.replaceAll("[^0-9-]", "").trim();
 		  prdTimeObj.setBusinessDays(prdTime);
-		  prdTimeObj.setDetails("");
+		  prdTimeObj.setDetails(details);
 		  productionTimeList.add(prdTimeObj);
 	}
 	  configuration.setProductionTime(productionTimeList);
@@ -638,7 +663,7 @@ public class MerchAttributeParser {
 				listOfRushTimeValue.add(rushTimeValueObj);
 				if(!StringUtils.isEmpty(priceVal)){
 				priceGrid = merchPriceGridParser.getUpchargePriceGrid("1", priceVal, "G", "Rush Service", false, "USD",
-						"", rushTime + " business days", "Rush Service Charge", "Other", 1, priceGrid, "", "");
+						"", rushTime + " business days", "Rush Service Charge", "Per Order", 1, priceGrid, "", "");
 				}
 		}
 			rushTimeObj.setRushTimeValues(listOfRushTimeValue);
@@ -791,8 +816,10 @@ public class MerchAttributeParser {
 	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
 	 existingProduct.setCanOrderLessThanMinimum(true);
 	 if(val.equalsIgnoreCase("$37.50 (G) + $5.25 (G) per unit")){
-		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1___1","37.50___5.25", "G___G", "Less than Minimum", false, "USD", "",
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1","37.50", "G", "Less than Minimum", false, "USD", "",
 				 "Can order less than minimum", "Less than Minimum Charge", "Per Order", 1, priceGrids, "", "");
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1","5.25", "G", "Less than Minimum", false, "USD", "Per unit",
+				 "Can order less than minimum", "Less than Minimum Charge", "Per Quantity", 1, priceGrids, "", "");
 	 } else{
 		 val = val.replaceAll("[^0-9.]", "").trim();
 		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", val, "G", "Less than Minimum", false, "USD", "",
@@ -824,10 +851,13 @@ public Product getUpchargeBasedOnTapeCharge(String val,Product existingProduct){
 	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
 	 List<ImprintMethod> imprintMethodList = existingProduct.getProductConfigurations().getImprintMethods();
 	 String imprMethodVals = imprintMethodList.stream().map(ImprintMethod::getAlias).collect(Collectors.joining(","));
+	 if(imprMethodVals.contains("Embroidery")){
+		 imprMethodVals = "Embroidery";
+	 }
 	 if(val.equalsIgnoreCase("$150.00(G) + $3.75(G) per unit 8K stitches, 6 colors")){
 		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "150.00", "G", "Imprint Method", false, "USD", "",
 				 imprMethodVals, "Tape Charge", "Per Order", 1, priceGrids, "", "");
-		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "37.50", "G", "Imprint Method", false, "USD", "Per unit 8K stitches, 6 colors",
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "3.75", "G", "Imprint Method", false, "USD", "Per unit 8K stitches, 6 colors",
 				 imprMethodVals, "Run Charge", "Other", 1, priceGrids, "", "");
 	 }
 	 existingProduct.setPriceGrids(priceGrids);
@@ -922,6 +952,27 @@ public List<ProductNumber> getProductNumbers(Map<String, String> prdNumbers){
 			productNumberList.add(productNumberObj);
 	}
 	return productNumberList;
+}
+private String removeSpecialCharsImprintSize(String imprSizeName){
+	if(imprSizeName.contains("•")){
+		  imprSizeName = imprSizeName.replaceAll("•", ".");
+	  }
+	  if(imprSizeName.contains("½")){
+		  imprSizeName = imprSizeName.replaceAll("½", "1/2");
+	  }
+	  if(imprSizeName.contains("¼")){
+		  imprSizeName = imprSizeName.replaceAll("¼", "1/4");
+	  }
+	  if(imprSizeName.contains("“")){
+		  imprSizeName = imprSizeName.replaceAll("“", "\"");
+	  }
+	  if(imprSizeName.contains("”")){
+		  imprSizeName = imprSizeName.replaceAll("”", "\"");
+	  }
+	  if(imprSizeName.contains("°")){
+		  imprSizeName = imprSizeName.replaceAll("°", "");
+	  }
+	return imprSizeName;
 }
 public List<Shape> getProductShape(String shapeVal){
 	List<Shape> shapeList = new ArrayList<>();

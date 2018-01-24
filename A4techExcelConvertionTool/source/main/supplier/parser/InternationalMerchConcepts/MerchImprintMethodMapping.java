@@ -60,6 +60,7 @@ public static Map<String, String> IMPRINT_METHOD_MAP =new HashMap<String, String
 		IMPRINT_METHOD_MAP.put("Laser on clip or engraving plate, screen on gift box. Setup & run charges apply.","Laser Engraved=Laser,Silkscreen=Screen");
 		IMPRINT_METHOD_MAP.put("Laser on Base included, Sandblast Etch on Globe (additional charges apply)","Laser Engraved=Laser,Etched=Sandblast Etch");
 		IMPRINT_METHOD_MAP.put("Screen (Sold Unimprinted)","Silkscreen=Screen");
+		IMPRINT_METHOD_MAP.put("Laser Polish (Add $.56(G) Per Unit)","Laser Engraved=Laser Polish");
 		       
 	}
 	public static String getImprintMethodGroup(String imprintMethodValue){
