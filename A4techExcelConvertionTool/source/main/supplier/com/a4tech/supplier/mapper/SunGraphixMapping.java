@@ -620,6 +620,12 @@ public class SunGraphixMapping {
 					break;
 				case 61: //Decorate
 					break;
+				case 62: //keyword
+					break;
+				case 63: //main product
+					break;
+				case 64: //Blank Image 1
+					break;
 				}  // end inner while loop					 
 			}		
 			}catch(Exception e){
@@ -723,9 +729,13 @@ public class SunGraphixMapping {
 	
 	public boolean isRepeateColumn(int columnIndex){
 		
-		if(columnIndex != 1&&columnIndex != 3&&columnIndex != 4 && columnIndex != 6 && columnIndex != 9 && columnIndex != 24){
+	/*	if(columnIndex != 4&&columnIndex != 5&&columnIndex != 6 && columnIndex != 7 && columnIndex != 8 && columnIndex != 9
+				columnIndex != 10 &&columnIndex != 11 &&columnIndex != 12 && columnIndex != 13 && columnIndex != 15 && columnIndex != 16
+				columnIndex != 17 &&columnIndex != 18 &&columnIndex != 19 && columnIndex != 20 && columnIndex != 21 && columnIndex != 22
+				columnIndex != 1 &&columnIndex != 3&&columnIndex != 4 && columnIndex != 6 && columnIndex != 9 && columnIndex != 24
+				columnIndex != 1 &&columnIndex != 3&&columnIndex != 4 && columnIndex != 6 && columnIndex != 9 && columnIndex != 24){
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
-		}
+		}*/
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
 	
