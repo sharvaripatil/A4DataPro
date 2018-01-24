@@ -334,12 +334,13 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 						String[] comboColors = CommonUtility.getValuesOfArray(colorGroup,
 								ApplicationConstants.CONST_DELIMITER_FSLASH);
 						String mainColorGroup = GillStudiosConstatnt.getColorGroup(comboColors[0].trim());
+						String alias = colorName.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH, "-");
 						if(mainColorGroup != null){
 							colorObj.setName(mainColorGroup);
-							colorObj.setAlias(colorName);
+							colorObj.setAlias(alias);
 						} else {
 							colorObj.setName(ApplicationConstants.CONST_VALUE_TYPE_OTHER);
-							colorObj.setAlias(colorName);
+							colorObj.setAlias(alias);
 						}
 					}
 				/*} else {
@@ -350,11 +351,12 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 					colorObj.setAlias(colorName);
 				}*/
 			} else {
+				String alias = colorName.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH, "-");
 				if (colorGroup == null) {
 					colorGroup = ApplicationConstants.CONST_VALUE_TYPE_OTHER;
 					}
 				colorObj.setName(colorGroup);
-				colorObj.setAlias(colorName);
+				colorObj.setAlias(alias);
 			}
 			listOfColors.add(colorObj);
 		}
