@@ -113,6 +113,7 @@ public class SunScopeMapping implements IExcelParser{
 											.getProductImprintMethod(imprintMethodValues);
 									productConfigObj.setImprintMethods(imprintMethodList);
 									priceGrids = sunScopeAttributeParser.getPriceAndUpcharges(pricesMap, priceGrids);
+									priceGrids = sunScopeAttributeParser.getFinalPricegrid(priceGrids);
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
@@ -167,10 +168,13 @@ public class SunScopeMapping implements IExcelParser{
 					//ignore as per feedback
 					break;
 				case 8://prdName
-					productExcelObj.setName(cell.getStringCellValue());
+					String name = cell.getStringCellValue();
+					name = name.replaceAll("™", "");
+					productExcelObj.setName(name);
 					break;
 				case 9:
-					productExcelObj.setDescription(cell.getStringCellValue());
+					String desc = cell.getStringCellValue();
+					productExcelObj.setDescription(getFinalDescription(desc));
 					break;
 				case 10://colors
 					String colorVal = cell.getStringCellValue();
@@ -251,6 +255,10 @@ public class SunScopeMapping implements IExcelParser{
 					String imprintSize = cell.getStringCellValue();
 							if (!StringUtils.isEmpty(imprintSize) && !imprintSize.equals("N.A.")
 									&& !imprintSize.equals("Blank")) {
+								imprintSize = imprintSize.trim();
+								if(imprintSize.contains("”")){
+									imprintSize = imprintSize.replaceAll("”","\"");
+								}
 								imprintSizes.add(imprintSize);
 							}
 					break;
@@ -399,6 +407,7 @@ public class SunScopeMapping implements IExcelParser{
 					.getProductImprintMethod(imprintMethodValues);
 			productConfigObj.setImprintMethods(imprintMethodList);
 			priceGrids = sunScopeAttributeParser.getPriceAndUpcharges(pricesMap, priceGrids);
+			priceGrids = sunScopeAttributeParser.getFinalPricegrid(priceGrids);
 	 	productExcelObj.setPriceGrids(priceGrids);
 	 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
@@ -412,6 +421,8 @@ public class SunScopeMapping implements IExcelParser{
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
+	       _LOGGER.info("Duplicate XID:: "+processedXids);
+	       processedXids = new HashSet<>();
 	       productDaoObj.saveErrorLog(asiNumber,batchId);
 	       return finalResult;
 		}catch(Exception e){
@@ -469,6 +480,16 @@ public class SunScopeMapping implements IExcelParser{
 		existingMap.put(imprintMethod, vals);
 		return existingMap;
 	}
+   private String getFinalDescription(String desc){
+	   desc = desc.replaceAll("’", "'");
+		desc = desc.replaceAll("”", "\"");
+		desc = desc.replaceAll("–", "-");
+		desc = desc.replaceAll("™", "");
+		 if(desc.contains("Velcro")){
+			 desc = desc.replaceAll("Velcro", "");
+		  }
+	   return desc;
+   }
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}

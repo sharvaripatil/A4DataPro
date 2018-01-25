@@ -54,7 +54,11 @@ public class SunScopeAttributeParser {
 		  newProduct.setProductKeywords(existingProduct.getProductKeywords());
 	  }
 	  if(!StringUtils.isEmpty(existingProduct.getSummary())){
-		  newProduct.setSummary(existingProduct.getSummary());
+		  String summary = existingProduct.getSummary();
+		  if(summary.contains("Velcro")){
+			  summary = summary.replaceAll("Velcro", "");
+		  }
+		  newProduct.setSummary(summary);
 	  }	  
 	  if(!CollectionUtils.isEmpty(oldConfig.getThemes())){
 			newConfig.setThemes(oldConfig.getThemes());
@@ -344,12 +348,19 @@ public Size getProductSize(String sizeVal){
     		 imprintMethodObj = new ImprintMethod();
     		 String group = SunScopeColorAndImprintMethodMapping.getImprintMethodGroup(imprintMethodName.trim());
     		 if(group.contains(",")){//Debossed,Foil Stamped,Pad Print
-				imprintMethodList = Arrays.stream(CommonUtility.getValuesOfArray(group, ",")).map(imprMethdName -> {
-					ImprintMethod imprintMethodObj1 = new ImprintMethod();
-					imprintMethodObj1.setType(imprMethdName);
-					imprintMethodObj1.setAlias(imprMethdName);
-					return imprintMethodObj1;
-				}).collect(Collectors.toList());
+    			 String[] imprVals = CommonUtility.getValuesOfArray(group, ",");
+    			 for (String imprMethodName : imprVals) {
+    				 imprintMethodObj = new ImprintMethod();
+    				 if(imprMethodName.contains("=")){
+    					 String[] vals = CommonUtility.getValuesOfArray(imprMethodName, "=");
+        				 imprintMethodObj.setType(vals[0]);
+        				 imprintMethodObj.setAlias(vals[1]);	 
+    				 } else {
+    					 imprintMethodObj.setType(imprMethodName);
+        				 imprintMethodObj.setAlias(imprMethodName);	
+    				 }
+    				 imprintMethodList.add(imprintMethodObj);
+				}
     		 } else {
     			 if(group.contains("=")){//Other=SpectaDomeTM
     				 String[] imprVals = CommonUtility.getValuesOfArray(group, "=");
@@ -422,6 +433,28 @@ public Size getProductSize(String sizeVal){
  		colorObj.setCombos(listOfComos);
  		return colorObj;
  	}
+     public List<PriceGrid> getFinalPricegrid(List<PriceGrid> oldPriceGrid){
+    	 List<PriceGrid> newPriceGrid = new ArrayList<>();
+    	 int basePriceCount = 0;
+    	 for (PriceGrid priceGrid : oldPriceGrid) {
+			    if(priceGrid.getIsBasePrice()){
+			    	basePriceCount++;
+			    }
+		}
+    	 if(basePriceCount == 1){
+    		 for (PriceGrid priceGrid : oldPriceGrid) {
+ 			    if(priceGrid.getIsBasePrice()){
+ 			    	priceGrid.setPriceConfigurations(new ArrayList<>());
+ 			    	newPriceGrid.add(priceGrid);
+ 			    } else {
+ 			    	newPriceGrid.add(priceGrid);
+ 			    }
+    	    }
+    		 return newPriceGrid;
+    	 } else {
+    		 return oldPriceGrid;
+    	 }
+     }
 	public SunScopePriceGridParser getSunScopePriceGridParser() {
 		return sunScopePriceGridParser;
 	}
