@@ -170,7 +170,7 @@ public class SunScopeMapping implements IExcelParser{
 				case 8://prdName
 					String name = cell.getStringCellValue();
 					name = name.replaceAll("™", "");
-					productExcelObj.setName(name);
+					productExcelObj.setName(CommonUtility.getStringLimitedChars(name, 60));
 					break;
 				case 9:
 					String desc = cell.getStringCellValue();
@@ -487,6 +487,9 @@ public class SunScopeMapping implements IExcelParser{
 		desc = desc.replaceAll("™", "");
 		 if(desc.contains("Velcro")){
 			 desc = desc.replaceAll("Velcro", "");
+		  }
+		 if(desc.contains("Shuffle")){
+			 desc = desc.replaceAll("Shuffle", "");
 		  }
 	   return desc;
    }
