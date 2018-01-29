@@ -2,6 +2,7 @@ package parser.sunscope;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +14,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.ImprintMethod;
@@ -33,6 +35,8 @@ import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
+import parser.headWear.HeadWearColorMapping;
+
 public class SunScopeAttributeParser {
 	private SunScopePriceGridParser sunScopePriceGridParser;
 	private static Logger _LOGGER = Logger.getLogger(SunScopePriceGridParser.class);
@@ -50,7 +54,11 @@ public class SunScopeAttributeParser {
 		  newProduct.setProductKeywords(existingProduct.getProductKeywords());
 	  }
 	  if(!StringUtils.isEmpty(existingProduct.getSummary())){
-		  newProduct.setSummary(existingProduct.getSummary());
+		  String summary = existingProduct.getSummary();
+		  if(summary.contains("Velcro")){
+			  summary = summary.replaceAll("Velcro", "");
+		  }
+		  newProduct.setSummary(summary);
 	  }	  
 	  if(!CollectionUtils.isEmpty(oldConfig.getThemes())){
 			newConfig.setThemes(oldConfig.getThemes());
@@ -99,7 +107,7 @@ public Size getProductSize(String sizeVal){
 		Value valObj1 = null;
 		Value valObj2 = null;
 		Value valObj3 = null;
-		List<Value> listOfValue = new ArrayList<>();
+		List<Value> listOfValue = new LinkedList<>();
 		if(values.length == ApplicationConstants.CONST_INT_VALUE_ONE){
 			valObj1 = getValueObj(values[0].trim(), "Length", "in"); 
 			  listOfValue.add(valObj1);
@@ -340,12 +348,19 @@ public Size getProductSize(String sizeVal){
     		 imprintMethodObj = new ImprintMethod();
     		 String group = SunScopeColorAndImprintMethodMapping.getImprintMethodGroup(imprintMethodName.trim());
     		 if(group.contains(",")){//Debossed,Foil Stamped,Pad Print
-				imprintMethodList = Arrays.stream(CommonUtility.getValuesOfArray(group, ",")).map(imprMethdName -> {
-					ImprintMethod imprintMethodObj1 = new ImprintMethod();
-					imprintMethodObj1.setType(imprMethdName);
-					imprintMethodObj1.setAlias(imprMethdName);
-					return imprintMethodObj1;
-				}).collect(Collectors.toList());
+    			 String[] imprVals = CommonUtility.getValuesOfArray(group, ",");
+    			 for (String imprMethodName : imprVals) {
+    				 imprintMethodObj = new ImprintMethod();
+    				 if(imprMethodName.contains("=")){
+    					 String[] vals = CommonUtility.getValuesOfArray(imprMethodName, "=");
+        				 imprintMethodObj.setType(vals[0]);
+        				 imprintMethodObj.setAlias(vals[1]);	 
+    				 } else {
+    					 imprintMethodObj.setType(imprMethodName);
+        				 imprintMethodObj.setAlias(imprMethodName);	
+    				 }
+    				 imprintMethodList.add(imprintMethodObj);
+				}
     		 } else {
     			 if(group.contains("=")){//Other=SpectaDomeTM
     				 String[] imprVals = CommonUtility.getValuesOfArray(group, "=");
@@ -362,10 +377,83 @@ public Size getProductSize(String sizeVal){
      }
      public List<Color> getProductColor(String colorVal){
     	 List<Color> colorList = new ArrayList<>();
-    	 String[] colorVals = null;
-    	  //if()
-    	 
+    	 Color colorObj = null;
+    	 String[] colorVals = CommonUtility.getValuesOfArray(colorVal, ",");
+    	 for (String colorName : colorVals) {
+    		 colorName = colorName.trim();
+			colorObj = new Color();
+			String colorGroup = SunScopeColorAndImprintMethodMapping.getColorGroup(colorName);
+			if(colorGroup.contains("Combo")){
+				colorObj = getColorCombo(colorGroup,colorName);
+				colorList.add(colorObj);
+			} else if(colorGroup.equals("Other")){
+				 if(colorName.contains("and")){
+					 String[] colorValss = CommonUtility.getValuesOfArray(colorName, "and");
+					 for (String colorNamee : colorValss) {
+							colorObj = new Color();
+							colorNamee = colorNamee.trim();
+							String colorGrup = SunScopeColorAndImprintMethodMapping.getColorGroup(colorNamee);
+							if(colorGroup.contains("Combo")){
+								colorObj = getColorCombo(colorGroup,colorNamee);
+							}else {
+								 colorObj.setName(colorGrup); 
+								 colorObj.setAlias(colorNamee);
+							}
+							colorList.add(colorObj);
+					 }
+				 } else {
+					 colorObj.setName(colorGroup); 
+					 colorObj.setAlias(colorName);
+					 colorList.add(colorObj);
+				 }
+			} else {
+				 colorObj.setName(colorGroup); 
+				 colorObj.setAlias(colorName);
+				 colorList.add(colorObj);
+			}
+		}
     	 return colorList;
+     }
+     private Color getColorCombo(String comboVal,String alias){
+ 		Color colorObj = new Color();
+ 		List<Combo> listOfComos = new ArrayList<>();
+ 		Combo comboObj1 = new Combo();
+ 		Combo comboObj2 = new Combo();
+ 		String[] comboColors = CommonUtility.getValuesOfArray(comboVal,":");
+ 		colorObj.setName(comboColors[0]);
+ 		comboObj1.setName(comboColors[2]);
+ 		comboObj1.setType(ApplicationConstants.CONST_STRING_SECONDARY);
+ 		colorObj.setAlias(alias);
+ 		if(comboColors.length == 5){
+ 			comboObj2.setName(comboColors[4]);
+ 			comboObj2.setType(ApplicationConstants.CONST_STRING_TRIM);
+ 			listOfComos.add(comboObj2);
+ 		} 
+ 		listOfComos.add(comboObj1);
+ 		colorObj.setCombos(listOfComos);
+ 		return colorObj;
+ 	}
+     public List<PriceGrid> getFinalPricegrid(List<PriceGrid> oldPriceGrid){
+    	 List<PriceGrid> newPriceGrid = new ArrayList<>();
+    	 int basePriceCount = 0;
+    	 for (PriceGrid priceGrid : oldPriceGrid) {
+			    if(priceGrid.getIsBasePrice()){
+			    	basePriceCount++;
+			    }
+		}
+    	 if(basePriceCount == 1){
+    		 for (PriceGrid priceGrid : oldPriceGrid) {
+ 			    if(priceGrid.getIsBasePrice()){
+ 			    	priceGrid.setPriceConfigurations(new ArrayList<>());
+ 			    	newPriceGrid.add(priceGrid);
+ 			    } else {
+ 			    	newPriceGrid.add(priceGrid);
+ 			    }
+    	    }
+    		 return newPriceGrid;
+    	 } else {
+    		 return oldPriceGrid;
+    	 }
      }
 	public SunScopePriceGridParser getSunScopePriceGridParser() {
 		return sunScopePriceGridParser;
