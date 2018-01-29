@@ -432,6 +432,8 @@
 		<property name="headWearMapping" ref="headWearMappingId"/>
 		<property name="sportMapping" ref="sportMappingId"/>
 		<property name="sunScopeMapping" ref="sunScopeMappingId"/>
+		<property name="sunGraphixMapping" ref="sunGraphixMappingId"/>
+		
 
      </bean>
      
@@ -1169,8 +1171,22 @@
      	<property name="sunScopePriceGridParser"  ref="sunScopePriceGridId"/>
      </bean>
      <bean id="sunScopePriceGridId" class="parser.sunscope.SunScopePriceGridParser"/>
-    <!-- Sun scope configuration End -->  
-   
+    <!-- Sun scope configuration End --> 
+     
+   <!-- supplier 90125 Sun graphix Inc configuration start -->
+     <bean id="sunGraphixMappingId" class="com.a4tech.supplier.mapper.SunGraphixMapping" autowire="byName">
+       <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj" ref="productDao"/>
+       <property name="sunGraphixAttributeParser" ref="sunGraphixAttributeParserId" /> 
+       <property name="sunGraphixPriceGridParser" ref="sunGraphixPriceGridParserId" />
+       </bean>
+       <bean id="sunGraphixAttributeParserId" name="sunGraphixAttributeParserObj"
+  		class="parser.sunGraphix.SunGraphixAttributeParser" autowire="byName">
+  		<property name="lookupServiceData" ref="lookupServiceData"/>
+  	</bean>
+  	<bean id="sunGraphixPriceGridParserId" name="sunGraphixPriceGridParserObj" class="parser.sunGraphix.SunGraphixPriceGridParser" autowire="byName">
+  	</bean>
+     <!-- supplier 90125 Sun graphix configuration end -->  
 
 </beans>
 

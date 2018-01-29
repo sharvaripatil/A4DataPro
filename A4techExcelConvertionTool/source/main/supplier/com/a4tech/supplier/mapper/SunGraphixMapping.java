@@ -20,9 +20,11 @@ import org.springframework.util.StringUtils;
 
 import parser.primeline.PrimeLineConstants;
 import parser.sunGraphix.SunGraphixAttributeParser;
+import parser.sunGraphix.SunGraphixConstants;
 import parser.sunGraphix.SunGraphixPriceGridParser;
 
 import com.a4tech.core.errors.ErrorMessageList;
+import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
@@ -57,7 +59,7 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class SunGraphixMapping {
+public class SunGraphixMapping implements IExcelParser{
 	private static final Logger _LOGGER = Logger.getLogger(SunGraphixMapping.class);
 	
 	private PostServiceImpl postServiceImpl;
@@ -87,10 +89,8 @@ public class SunGraphixMapping {
 		  String colorCustomerOderCode ="";
 		  List<String> repeatRows = new ArrayList<>();
 		  Map<String, String> colorIdMap = new HashMap<>();
-		 
 		  String sizeDsec=null;
 		  String sizeItemNo=null;
-		 
 		  String upc_no;
 		  Set<String> colorSet = new HashSet<String>(); 
 		  List<Color> colorList = new ArrayList<Color>();
@@ -101,91 +101,86 @@ public class SunGraphixMapping {
 		  HashSet<String> sizeValuesSet = new HashSet<>();
 		  HashSet<String> productOptionSet = new HashSet<String>(); // This Set used for product Availability
 		  List<Availability> listOfAvailablity=new ArrayList<Availability>();
-		//  String colorValue=null;
 		  String sizeValue=null;
-		 // String finalColorValue =null;
-		  String productRelationalSku =null;
-		  String MaterialValue1=null;
-		  String MaterialValue2=null;
 		  String Keyword1 =null;
-		  List<String> imagesList   = new ArrayList<String>();
+		
 		  String productName=null;
 		  ShippingEstimate shippingEstObj = new ShippingEstimate();
-		try{
-			  StringBuilder listOfQuantity = new StringBuilder();
-			  StringBuilder listOfPrices = new StringBuilder();
-			  StringBuilder priceIncludes = new StringBuilder();
-			  StringBuilder listOfDiscCodes = new StringBuilder();
-			  String priceType="";
-		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-	    Sheet sheet = workbook.getSheetAt(0);
-		Iterator<Row> iterator = sheet.iterator();
-		_LOGGER.info("Started Processing Product");
-		String currentValue=null;
-	    String lastValue=null;
-	    String productId = null;
-	    String xid = null;
-	    int columnIndex=0;
-		while (iterator.hasNext()) {
-			
-			try{
-			Row nextRow = iterator.next();
-			if(nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO){
-				continue;
-			}
-			Iterator<Cell> cellIterator = nextRow.cellIterator();
-			if(xid != null){
-				productXids.add(xid);
-				repeatRows.add(xid);
-			}
-			
-			 boolean checkXid  = false; //imp line
-			//boolean checkXid  = true; //imp line
-			//xid=getProductXid(nextRow);
-			while (cellIterator.hasNext()) {
-				Cell cell = cellIterator.next();
-				
-			     columnIndex = cell.getColumnIndex();
-				
-				if(columnIndex + 1 == 1){
-					xid = getProductXid(nextRow);//CommonUtility.getCellValueStrinOrInt(cell);//
-					checkXid = true;
-				}else{
-					checkXid = false;
-				}
-				
-				
-				if(checkXid){
-					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 1){
-							
-							
-								if(!CollectionUtils.isEmpty(priceGridMap)){
-								boolean flag=false;
-								productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_NET);
-								/*if(colorSet.size()>1){
-									flag=true;
-									priceGrids=riverEndPriceGridParser.getPriceGrids(priceGridMapTemp,flag);
-								}else{
-								priceGrids=riverEndPriceGridParser.getPriceGrids(priceGridMap,flag);
-								}*/
-								productExcelObj.setPriceGrids(priceGrids);
-								}
-							/*if(!CollectionUtils.isEmpty(sizeValuesSet)){
-							  productConfigObj.setSizes(riverEndAttributeParser.getProductSize(new ArrayList<String>(sizeValuesSet)));
-							}
-							  if(!CollectionUtils.isEmpty(imagesList)){
-								List<Image> listOfImages = riverEndAttributeParser.getImages(imagesList);
-								productExcelObj.setImages(listOfImages);
-								}*/
-							  productExcelObj.setLineNames(new ArrayList<String>());
+		  StringBuilder listOfQuantity = new StringBuilder();
+		  StringBuilder listOfPrices = new StringBuilder();
+		  StringBuilder priceIncludes = new StringBuilder();
+		  StringBuilder listOfDiscCodes = new StringBuilder();
+		  String priceType="";
+		  List<String> imagesList   = new ArrayList<String>();
+		  try{
+				 
+				_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
+			    Sheet sheet = workbook.getSheetAt(0);
+				Iterator<Row> iterator = sheet.iterator();
+				_LOGGER.info("Started Processing Product");
+				String currentValue=null;
+			    String lastValue=null;
+			    String productId = null;
+			    String xid = null;
+			    int columnIndex=0;
+				while (iterator.hasNext()) {
+					
+					try{
+					Row nextRow = iterator.next();
+					if(nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO || nextRow.getRowNum() == 1){
+						continue;
+					}
+					Iterator<Cell> cellIterator = nextRow.cellIterator();
+					if(xid != null){
+						productXids.add(xid);
+						repeatRows.add(xid);
+					}
+					
+					 boolean checkXid  = false; //imp line
+					//boolean checkXid  = true; //imp line
+					//xid=getProductXid(nextRow);
+					while (cellIterator.hasNext()) {
+						Cell cell = cellIterator.next();
+						
+					     columnIndex = cell.getColumnIndex();
+						
+						if(columnIndex + 1 == 1){
+							xid = getProductXid(nextRow);//CommonUtility.getCellValueStrinOrInt(cell);//
+							checkXid = true;
+						}else{
+							checkXid = false;
+						}
+						
+						
+						if(checkXid){
+							 if(!productXids.contains(xid)){
+								 if(nextRow.getRowNum() != 2){
+									 if(!CollectionUtils.isEmpty(imagesList)){
+			 								List<Image> listOfImages = sunGraphixAttributeParser.getImages(imagesList);
+			 								productExcelObj.setImages(listOfImages);
+											}
+							 priceGrids = sunGraphixPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), 
+									 listOfDiscCodes.toString(),ApplicationConstants.CONST_STRING_CURRENCY_USD,
+										"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+										"",null,1,null,null,null,productExcelObj.getPriceGrids());
+							     productExcelObj.setPriceGrids(priceGrids);
 								 productExcelObj.setProductConfigurations(productConfigObj);
+								 if(!StringUtils.isEmpty(priceType)){
+									 if(priceType.equalsIgnoreCase("LIST")){
+										 productExcelObj.setPriceType("L");
+									 }else{
+										 productExcelObj.setPriceType("N");
+									 }
+								
+								 }else{
+									 productExcelObj.setPriceType("L");
+								 }
 								 /*_LOGGER.info("Product Data : "
 											+ mapperObj.writeValueAsString(productExcelObj));*/
 								 	/*if(XIDS.contains(productExcelObj.getExternalProductId().trim())){
 								 		productExcelObj.setAvailability(new ArrayList<Availability>());
 								 	}*/
-							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
+							 int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -209,9 +204,11 @@ public class SunGraphixMapping {
 								
 								sizeValuesSet = new HashSet<>();
 								sizeValuesSet = new HashSet<>();
-								imagesList=new ArrayList<String>();
+								 imagesList   = new ArrayList<String>();
 								//ProductDataStore.clearSizesBrobery();
-
+								 listOfDiscCodes=new StringBuilder();
+							        listOfPrices=new StringBuilder();
+							        listOfQuantity=new StringBuilder();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -223,8 +220,11 @@ public class SunGraphixMapping {
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
-						    	    productExcelObj=existingApiProduct;
-									productConfigObj=productExcelObj.getProductConfigurations();
+						    	 
+						    	 productExcelObj = sunGraphixAttributeParser.getExistingProductData(existingApiProduct, existingApiProduct.getProductConfigurations());
+						    	 productConfigObj=productExcelObj.getProductConfigurations();
+						    	    //productExcelObj=existingApiProduct;
+									//productConfigObj=productExcelObj.getProductConfigurations();
 								   // priceGrids = productExcelObj.getPriceGrids();
 						     }
 							
@@ -239,10 +239,13 @@ public class SunGraphixMapping {
 		
 				switch (columnIndex + 1) {
 				case 1: //Existing Xids
+					productExcelObj.setExternalProductId(xid);
 					break;
 				case 2: //Item #
+					productExcelObj.setExternalProductId(xid);
 					break;
 				case 3: //Parent #
+					productExcelObj.setExternalProductId(xid);
 					break;
 				case 4: //Product Name
 					 productName=CommonUtility.getCellValueStrinOrInt(cell);
@@ -279,7 +282,7 @@ public class SunGraphixMapping {
 					break;
 				case 9: //Page Size"
 					String sizeVaalue=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(sizeValue)){
+					 if(!StringUtils.isEmpty(sizeVaalue)){
 						 Size size =sunGraphixAttributeParser.getSizes( sizeVaalue,new Size(),new Dimension(),new ArrayList<Values>());
 						 productConfigObj.setSizes(size);
 					 }
@@ -423,7 +426,7 @@ public class SunGraphixMapping {
 				case 31: //Prc5
 				case 32: //Prc6
 					try{//listOfQuantity//=CommonUtility.getCellValueStrinOrDecimal(cell);
-						 String	priceList =CommonUtility.getCellValueStrinOrInt(cell);
+						 String	priceList =CommonUtility.getCellValueStrinOrDecimal(cell);
 						 if(!StringUtils.isEmpty(priceList)&& !priceList.equals("0")){
 							 listOfPrices.append(priceList).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 						 }
@@ -444,7 +447,7 @@ public class SunGraphixMapping {
 					String	discountCode=null;
 					discountCode=CommonUtility.getCellValueStrinOrDecimal(cell);
 					if(!StringUtils.isEmpty(discountCode) && !discountCode.toUpperCase().equals("NULL")){
-						listOfDiscCodes=PrimeLineConstants.DISCOUNTCODE_MAP.get(discountCode.trim());
+						listOfDiscCodes=SunGraphixConstants.SUNDISCOUNTCODE_MAP.get(discountCode.trim());
 						if(StringUtils.isEmpty(listOfDiscCodes)){
 							listOfDiscCodes.append("Z___Z___Z___Z___Z___Z___Z___Z___Z___Z"); 
 						}
@@ -621,10 +624,33 @@ public class SunGraphixMapping {
 				case 61: //Decorate
 					break;
 				case 62: //keyword
+					//Keywords
+					String keywords = cell.getStringCellValue();
+					
+					 if(!StringUtils.isEmpty(keywords)){
+						 List<String> listOfKeywords = new ArrayList<String>();
+					String tempKeyWrd[]=keywords.split(ApplicationConstants.CONST_DELIMITER_COMMA);
+					for (String string : tempKeyWrd) {
+						listOfKeywords.add(string);
+					}
+					productExcelObj.setProductKeywords(listOfKeywords);
+					 }
+					//need to work on dis
 					break;
 				case 63: //main product
+					String largeImage = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(largeImage)){
+						imagesList.add(largeImage);
+					}
+					//need to work on dis
 					break;
 				case 64: //Blank Image 1
+					//need to work on dis
+					// Product images
+					String highImage = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(highImage)){
+						imagesList.add(highImage);
+					}
 					break;
 				}  // end inner while loop					 
 			}		
@@ -637,38 +663,27 @@ public class SunGraphixMapping {
 				}
 		}
 		workbook.close();
-		/*if(!CollectionUtils.isEmpty(colorSet)){
-		colorList=riverEndAttributeParser.getColorCriteria(colorSet);
-		productConfigObj.setColors(colorList);
-		}
-		if(!CollectionUtils.isEmpty(sizeValuesSet)){
-		productConfigObj.setSizes(riverEndAttributeParser.getProductSize(new ArrayList<String>(sizeValuesSet)));
-		}*/
-		if(!CollectionUtils.isEmpty(priceGridMap)){
-			boolean flag=false;
-			productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_NET);
-			/*if(colorSet.size()>1){
-				flag=true;
-				priceGrids=riverEndPriceGridParser.getPriceGrids(priceGridMapTemp,flag);
-			}else{
-			priceGrids=riverEndPriceGridParser.getPriceGrids(priceGridMap,flag);
-			}*/
-			productExcelObj.setPriceGrids(priceGrids);
-			}
-		
-		/*if(!CollectionUtils.isEmpty(imagesList)){
-			List<Image> listOfImages = riverEndAttributeParser.getImages(imagesList);
-			productExcelObj.setImages(listOfImages);
-			}*/
-		productExcelObj.setLineNames(new ArrayList<String>());
-		 productExcelObj.setProductConfigurations(productConfigObj);
-		 	/*_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(productExcelObj));*/
-		 	
-		 	/*if(XIDS.contains(productExcelObj.getExternalProductId().trim())){
-		 		productExcelObj.setAvailability(new ArrayList<Availability>());
-		 	}*/
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
+		 if(!CollectionUtils.isEmpty(imagesList)){
+				List<Image> listOfImages = sunGraphixAttributeParser.getImages(imagesList);
+				productExcelObj.setImages(listOfImages);
+				}
+		 priceGrids = sunGraphixPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), 
+				 listOfDiscCodes.toString(),ApplicationConstants.CONST_STRING_CURRENCY_USD,
+					"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+					"",null,1,null,null,null,productExcelObj.getPriceGrids());
+		     productExcelObj.setPriceGrids(priceGrids);
+			 productExcelObj.setProductConfigurations(productConfigObj);
+			 if(!StringUtils.isEmpty(priceType)){
+				 if(priceType.equalsIgnoreCase("LIST")){
+					 productExcelObj.setPriceType("L");
+				 }else{
+					 productExcelObj.setPriceType("N");
+				 }
+			
+			 }else{
+				 productExcelObj.setPriceType("L");
+			 }
+		 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
@@ -697,7 +712,10 @@ public class SunGraphixMapping {
 		//ProductDataStore.clearSizesBrobery();
        ProductSkusList = new ArrayList<ProductSkus>();
         AdditionalInfo= new StringBuilder();
-        imagesList=new ArrayList<String>();
+        imagesList   = new ArrayList<String>();
+        listOfDiscCodes=new StringBuilder();
+        listOfPrices=new StringBuilder();
+        listOfQuantity=new StringBuilder();
 		return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet " +e.getMessage());
@@ -720,22 +738,34 @@ public class SunGraphixMapping {
 	public String getProductXid(Row row){
 		Cell xidCell =  row.getCell(0);
 		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
-		if(StringUtils.isEmpty(productXid) || productXid.trim().equalsIgnoreCase("#N/A")){
-		     xidCell = row.getCell(3);
+		if(StringUtils.isEmpty(productXid) || productXid.trim().equalsIgnoreCase("n/a") || productXid.trim().equalsIgnoreCase("#N/A")){
+		     xidCell = row.getCell(2);
 		     productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		     if(StringUtils.isEmpty(productXid) || productXid.trim().equalsIgnoreCase("n/a") || productXid.trim().equalsIgnoreCase("#N/A")){
+		    	 xidCell = row.getCell(1);
+			     productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		     }
 		}
 		return productXid;
 	}
 	
 	public boolean isRepeateColumn(int columnIndex){
 		
-	/*	if(columnIndex != 4&&columnIndex != 5&&columnIndex != 6 && columnIndex != 7 && columnIndex != 8 && columnIndex != 9
-				columnIndex != 10 &&columnIndex != 11 &&columnIndex != 12 && columnIndex != 13 && columnIndex != 15 && columnIndex != 16
-				columnIndex != 17 &&columnIndex != 18 &&columnIndex != 19 && columnIndex != 20 && columnIndex != 21 && columnIndex != 22
-				columnIndex != 1 &&columnIndex != 3&&columnIndex != 4 && columnIndex != 6 && columnIndex != 9 && columnIndex != 24
-				columnIndex != 1 &&columnIndex != 3&&columnIndex != 4 && columnIndex != 6 && columnIndex != 9 && columnIndex != 24){
+	 /*if(columnIndex != 4&&columnIndex != 5&&columnIndex != 6 && columnIndex != 7 && columnIndex != 8 && columnIndex != 9 &&
+				columnIndex != 10 &&columnIndex != 11 &&columnIndex != 12 && columnIndex != 13 && columnIndex != 15 && columnIndex != 16 &&
+				columnIndex != 17 &&columnIndex != 18 &&columnIndex != 19 && columnIndex != 20 && columnIndex != 21 && columnIndex != 22 &&
+				columnIndex != 23&&columnIndex != 24 && columnIndex != 25 && columnIndex != 26 && columnIndex != 27 && columnIndex != 28 &&
+				columnIndex != 29 &&columnIndex != 30 &&columnIndex != 31 && columnIndex != 32 && columnIndex != 33 && columnIndex != 34 && 
+				columnIndex != 35 && columnIndex != 36 && columnIndex != 37 && columnIndex != 38 && columnIndex != 39 && columnIndex != 40 &&
+				columnIndex != 41 && columnIndex != 42 && columnIndex != 43 && columnIndex != 44 && columnIndex != 45 && columnIndex != 46 && columnIndex != 47 &&
+				columnIndex != 48 && columnIndex != 49 && columnIndex != 50 && columnIndex != 51 && columnIndex != 52 && columnIndex != 53 && columnIndex != 54 &&
+				columnIndex != 55 && columnIndex != 56 && columnIndex != 57 && columnIndex != 58 && columnIndex != 59 && columnIndex != 60 && columnIndex != 61 &&
+				columnIndex != 62 )
+	    {*/
+		 if(columnIndex != 1 && columnIndex != 2 && columnIndex != 3 && columnIndex != 14 && columnIndex != 63 && columnIndex != 64)
+		    {
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
-		}*/
+		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
 	

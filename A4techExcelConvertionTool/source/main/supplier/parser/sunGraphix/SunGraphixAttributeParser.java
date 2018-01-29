@@ -10,10 +10,12 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.BlendMaterial;
+import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Dimensions;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
@@ -22,10 +24,12 @@ import com.a4tech.product.model.Option;
 import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.Personalization;
+import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
+import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
@@ -37,6 +41,51 @@ import com.a4tech.util.CommonUtility;
 public class SunGraphixAttributeParser {
 	private static final Logger _LOGGER = Logger.getLogger(SunGraphixAttributeParser.class);
 	private LookupServiceData lookupServiceData;
+	
+public Product getExistingProductData(Product existingProduct , ProductConfigurations existingProductConfig){
+		
+		ProductConfigurations newProductConfigurations=new ProductConfigurations();
+		Product newProduct=new Product();
+		
+		try{
+			//categories
+			List<String> listCategories=new ArrayList<String>();
+			listCategories=existingProduct.getCategories();
+			if(!CollectionUtils.isEmpty(listCategories)){
+				newProduct.setCategories(listCategories);
+			}
+			//themes
+			List<Theme>	themes=existingProductConfig.getThemes();
+			if(!CollectionUtils.isEmpty(themes)){
+				List<Theme>	themesTemp=new ArrayList<Theme>();
+				for (Theme theme : themes) {
+					Theme themeObj=new Theme();
+					String tempValue=theme.getName();
+					tempValue=tempValue.trim();
+					if(tempValue.toUpperCase().contains("ECO") || tempValue.toUpperCase().contains("FRIENDLY")){
+					String	themeName="ECO & ENVIRONMENTALLY FRIENDLY";
+					themeObj.setName(themeName);
+					themesTemp.add(themeObj);
+					}else{
+						themeObj.setName(tempValue);
+						themesTemp.add(themeObj);
+					}
+				}
+				newProductConfigurations.setThemes(themesTemp);
+			}
+		String tempType=existingProduct.getProductType();
+		if(!StringUtils.isEmpty(tempType)){
+			newProduct.setProductType(tempType);
+		}
+		newProduct.setProductConfigurations(newProductConfigurations);
+		}catch(Exception e){
+			_LOGGER.error("Error while processing Existing Product Data " +e.getMessage());
+		}
+		 _LOGGER.info("Completed processing Existing Data");
+		return newProduct;
+		
+	}
+	
 	@SuppressWarnings("unused")
 	public List<Color> getProductColors(String color){
 		List<Color> listOfColors = new ArrayList<>();
@@ -339,7 +388,7 @@ public List<Personalization> getPersonalizationCriteria(String persValue){
 				 OptionValue optionValueObj=new OptionValue();
 					  optionValueObj.setValue(optionDataValue.trim());
 					  valuesList.add(optionValueObj);
-					  optionObj.setOptionType("optionType");
+					  optionObj.setOptionType(optionType);
 					  optionObj.setName(optionName);
 					  optionObj.setValues(valuesList); 
 					  optionObj.setAdditionalInformation(additionalInfo);
@@ -439,7 +488,31 @@ public List<Personalization> getPersonalizationCriteria(String persValue){
 		}
 		return listOfProTime;
 	}
-	
+public List<Image> getImages(List<String> imagesList){
+		
+		List<Image> imgList=new ArrayList<Image>();
+		int rank=1;
+		for (String imageStr : imagesList) {
+			Image ImgObj= new Image();
+			if(!imageStr.contains("http://")){//http://
+				imageStr="http://"+imageStr;
+			}
+			
+	        ImgObj.setImageURL(imageStr);
+	        if(rank==1){
+	        ImgObj.setRank(rank);
+	        ImgObj.setIsPrimary(ApplicationConstants.CONST_BOOLEAN_TRUE);
+	        }else{
+	        ImgObj.setRank(rank);
+	        ImgObj.setIsPrimary(ApplicationConstants.CONST_BOOLEAN_FALSE);
+	        }
+	        imgList.add(ImgObj);
+	        
+	        rank++;
+		}
+		
+		return imgList;
+	}
 public List<Material> getMaterialList(String originalMaterialvalue){
 		
 		Material materialObj = new Material();

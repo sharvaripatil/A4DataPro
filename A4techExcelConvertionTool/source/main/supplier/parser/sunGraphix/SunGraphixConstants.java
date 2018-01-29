@@ -12,19 +12,24 @@ public class SunGraphixConstants {
 	static StringBuilder dsic3 = new StringBuilder();
 	static StringBuilder dsic4 = new StringBuilder();
 	static StringBuilder dsic5 = new StringBuilder();
-	
+	static StringBuilder dsic6 = new StringBuilder();
+	static StringBuilder dsic7 = new StringBuilder();
+	//static StringBuilder dsic6 = new StringBuilder();
 	static {
-		dsic1.append("C___C___C___C___C");
+		dsic1.append("C___C___C___C___C___C___C___C___C___C");
 		dsic2.append("C___C___C___C___C");
 		dsic3.append("A___A___B___B___C");
 		dsic4.append("A___A___A___B___B___C");
-		dsic5.append("A___A___A___A___A___A");
-		
-		SUNDISCOUNTCODE_MAP.put("5C",dsic1);
-		SUNDISCOUNTCODE_MAP.put("4C",dsic2);
-		SUNDISCOUNTCODE_MAP.put("2A2BC",dsic3);
-		SUNDISCOUNTCODE_MAP.put("3A2BC",dsic4);
-		SUNDISCOUNTCODE_MAP.put("6A",dsic5);
+		dsic5.append("A___A___A___A___A___A___A___A___A___A");
+		dsic6.append("G___G___G___G___G___G___G___G___G___G");
+		SUNDISCOUNTCODE_MAP.put("CCCCC",dsic1);
+		SUNDISCOUNTCODE_MAP.put("CCCCCC",dsic2);
+		SUNDISCOUNTCODE_MAP.put("AABBC",dsic3);
+		SUNDISCOUNTCODE_MAP.put("AAABBC",dsic4);
+		SUNDISCOUNTCODE_MAP.put("AAAAAA",dsic5);
+		SUNDISCOUNTCODE_MAP.put("G",dsic6);
+		SUNDISCOUNTCODE_MAP.put("A",dsic5);
+		SUNDISCOUNTCODE_MAP.put("C",dsic1);
 		SUNCOLOR_MAP.put("NAME","COLOR GROUP");
 		SUNCOLOR_MAP.put("BLACK","MEDIUM BLACK");
 		SUNCOLOR_MAP.put("DARK BLACK","DARK BLACK");

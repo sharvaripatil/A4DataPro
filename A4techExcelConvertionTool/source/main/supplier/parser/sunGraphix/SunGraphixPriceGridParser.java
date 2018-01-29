@@ -73,7 +73,7 @@ public class SunGraphixPriceGridParser {
 			listOfPrice = new ArrayList<Price>();
 		}
 		priceGrid.setPrices(listOfPrice);
-		if (criterias != null && !criterias.isEmpty()) {
+		 if(!StringUtils.isEmpty(criterias)){
 			configuration = getConfigurations(criterias+":"+priceName);//because over here pricename & criteria value is same
 		}
 		priceGrid.setPriceConfigurations(configuration);
