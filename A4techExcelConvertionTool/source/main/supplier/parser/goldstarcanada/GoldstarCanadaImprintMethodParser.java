@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.ProductConfigurations;
 
 
 public class GoldstarCanadaImprintMethodParser {
@@ -56,6 +57,15 @@ public class GoldstarCanadaImprintMethodParser {
 				
 		return finalImprintValues;	
 	}
+	public  ProductConfigurations addImprintMethod(ProductConfigurations productConfigObj){
+        List<ImprintMethod> imprintMethodList = new ArrayList<>();
+        ImprintMethod imprintMethodObj = new ImprintMethod();
+        imprintMethodObj.setAlias("Unimprinted");
+        imprintMethodObj.setType("Unimprinted");
+        imprintMethodList.add(imprintMethodObj);
+        productConfigObj.setImprintMethods(imprintMethodList);
+       return productConfigObj;
+	} 
 
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;
