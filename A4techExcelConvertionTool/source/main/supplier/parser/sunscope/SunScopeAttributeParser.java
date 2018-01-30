@@ -283,6 +283,9 @@ public Size getProductSize(String sizeVal){
 					StringBuilder allValue = prices.getValue();
 					String[] allVals = CommonUtility.getValuesOfArray(allValue.toString(), "__");
 					for (String priceType : allVals) {
+						if(StringUtils.isEmpty(priceType)){
+							continue;
+						}
 						if (priceType.contains("runCharge") || priceType.contains("setUp")) {
 							existingPriceGrid = getupcharges(priceType, imprintMethodVal, existingPriceGrid);
 						} else {// it is base price

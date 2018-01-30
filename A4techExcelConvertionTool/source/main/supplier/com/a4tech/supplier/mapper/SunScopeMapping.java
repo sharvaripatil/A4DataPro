@@ -463,10 +463,12 @@ public class SunScopeMapping implements IExcelParser{
 			}
 			priceQtyVals.append(priceQty).append("_");
 		}
-			if(!StringUtils.isEmpty(priceInclude)){
+			if(!StringUtils.isEmpty(priceInclude) && priceQtyVals != null){
 			priceQtyVals.append("###").append(priceInclude);
 		}
-		existingMap.put(imprintMethod, priceQtyVals);
+			if(priceQtyVals != null){
+				existingMap.put(imprintMethod, priceQtyVals);		
+			}
 		return existingMap;
 	}
 
@@ -485,6 +487,9 @@ public class SunScopeMapping implements IExcelParser{
 		desc = desc.replaceAll("”", "\"");
 		desc = desc.replaceAll("–", "-");
 		desc = desc.replaceAll("™", "");
+		if(desc.contains("?")) {
+			desc = desc.replaceAll("\\?", "");	  
+		  }
 		 if(desc.contains("Velcro")){
 			 desc = desc.replaceAll("Velcro", "");
 		  }
