@@ -33,6 +33,9 @@ public class SunGraphixPriceGridParser {
 		try{
 			if(CollectionUtils.isEmpty(existingPriceGrid)){
 				existingPriceGrid=new ArrayList<PriceGrid>();
+				sequence=1;
+			}else{
+				sequence=existingPriceGrid.size()+1;
 			}
 			
 			

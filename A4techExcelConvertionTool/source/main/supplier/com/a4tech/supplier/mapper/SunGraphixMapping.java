@@ -75,7 +75,7 @@ public class SunGraphixMapping implements IExcelParser{
 		String AddionnalInfo1=null;
 		//List<Material> listOfMaterial =new ArrayList<Material>();
 		List<String> productKeywords = new ArrayList<String>();
-		List<String> listOfCategories = new ArrayList<String>();
+		//List<String> listOfCategories = new ArrayList<String>();
 		List<ProductSkus> ProductSkusList = new ArrayList<>();
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
@@ -180,7 +180,7 @@ public class SunGraphixMapping implements IExcelParser{
 								 	/*if(XIDS.contains(productExcelObj.getExternalProductId().trim())){
 								 		productExcelObj.setAvailability(new ArrayList<Availability>());
 								 	}*/
-							 int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
+							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -255,6 +255,11 @@ public class SunGraphixMapping implements IExcelParser{
 						}
 					break;
 				case 5: //Category
+					String category = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(category)){
+						List<String> listOfCategories = sunGraphixAttributeParser.getCategories(category);
+						productExcelObj.setCategories(listOfCategories);
+					}
 					break;
 				case 6: //Product Description
 					String descripton=CommonUtility.getCellValueStrinOrInt(cell);
@@ -273,7 +278,7 @@ public class SunGraphixMapping implements IExcelParser{
 							}
 					break;
 				case 7: //Summary Description
-					String summary = cell.getStringCellValue();
+					String summary = CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(summary)){
 						 productExcelObj.setSummary(CommonUtility.getStringLimitedChars(summary, 130));
 					 }
@@ -331,7 +336,7 @@ public class SunGraphixMapping implements IExcelParser{
 							}
 					break;
 				case 12: //Cover Material"
-					String material = cell.getStringCellValue();
+					String material = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(material)){
 						material = material.trim();
 						if(!StringUtils.isEmpty(material)){
@@ -384,7 +389,7 @@ public class SunGraphixMapping implements IExcelParser{
 				
 					break;
 				case 17: //Pers.
-					String personalizationVaue=cell.getStringCellValue();
+					String personalizationVaue=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(personalizationVaue)){
 						 personalizationVaue=personalizationVaue.toUpperCase().trim();
 						 if(personalizationVaue.equals("YES") || personalizationVaue.contains("PER")){
@@ -456,8 +461,94 @@ public class SunGraphixMapping implements IExcelParser{
 			         }
 					break;
 				case 36: //Die Charge
+					//bottom
+					//create option over here
+					try{
+					String dieCharge=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(dieCharge)){
+						 String dieDisc="";
+						 if(dieCharge.contains("(") && dieCharge.contains(")")){
+							 dieDisc=CommonUtility.extractValueSpecialCharacter("(", ")", dieCharge);
+							 dieDisc=dieDisc.trim();
+							 dieCharge=dieCharge.replaceAll("(", "");
+							 dieCharge=dieCharge.replaceAll(")", "");
+									 }
+						 dieCharge=dieCharge.trim();
+						 List<ImprintMethod> listOfImprintMethod = productConfigObj.getImprintMethods();
+						 if(!CollectionUtils.isEmpty(listOfImprintMethod)){
+							 if(StringUtils.isEmpty(dieDisc)){
+								 dieDisc="Z";
+							 }
+							 priceGrids=productExcelObj.getPriceGrids();
+							 for (ImprintMethod imprintMethod : listOfImprintMethod) {
+								 String chargeName=imprintMethod.getAlias();
+								 priceGrids = sunGraphixPriceGridParser.getPriceGrids(
+										 dieCharge,"1",dieDisc,
+											ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+											"false",chargeName,"Imprint Method",new Integer(1),"Die Charge", "Per Order","Required",
+											priceGrids);
+							}
+							 
+								/*String listOfPrices, String listOfQuan, String discountCodes,
+								String currency, String priceInclude, boolean isBasePrice,
+								String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,String serviceCharge
+								List<PriceGrid> existingPriceGrid)*/					
+								
+							 
+						 }
+						
+					 }
+					}catch (Exception e) {
+						_LOGGER.info("Error in upcharge price prices field "+e.getMessage() +"case no:"+columnIndex+1);
+					}
 					break;
 				case 37: //Personalization
+					//bottom
+					//create option over here
+					try{
+					String personalizationCharge=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(personalizationCharge)){
+						 String persDisc="";
+						 if(personalizationCharge.contains("(") && personalizationCharge.contains(")")){
+							 persDisc=CommonUtility.extractValueSpecialCharacter("(", ")", personalizationCharge);
+							 persDisc=persDisc.trim();
+							 personalizationCharge=personalizationCharge.replaceAll("(", "");
+							 personalizationCharge=personalizationCharge.replaceAll(")", "");
+									 }
+						 personalizationCharge=personalizationCharge.trim();
+						 List<Personalization> listPersonalz = productConfigObj.getPersonalization();
+						 if(CollectionUtils.isEmpty(listPersonalz)){
+							 ///////////////////
+							 //listPers = new ArrayList<Personalization>();
+							 listPersonalz = sunGraphixAttributeParser.getPersonalizationCriteria(ApplicationConstants.CONST_STRING_PERSONALIZATION);
+							 productConfigObj.setPersonalization(listPersonalz);
+							 //////////////
+						 }
+							 if(StringUtils.isEmpty(persDisc)){
+								 persDisc="Z";
+							 }
+							 priceGrids=productExcelObj.getPriceGrids();
+							 for (Personalization personalizationObj : listPersonalz) {
+								 String chargeName=personalizationObj.getAlias();
+								 priceGrids = sunGraphixPriceGridParser.getPriceGrids(
+										 personalizationCharge,"1",persDisc,
+											ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+											"false",chargeName,"Personalization",new Integer(1),"Personalization", "Per Quantity","Required",
+											priceGrids);
+							}
+							 
+								/*String listOfPrices, String listOfQuan, String discountCodes,
+								String currency, String priceInclude, boolean isBasePrice,
+								String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,String serviceCharge
+								List<PriceGrid> existingPriceGrid)*/					
+								
+							 
+						// }
+						
+					 }
+					}catch (Exception e) {
+						_LOGGER.info("Error in upcharge price prices field "+e.getMessage() +"case no:"+columnIndex+1);
+					}
 					break;
 				case 38: //Pen Loop
 					break;
@@ -474,25 +565,175 @@ public class SunGraphixMapping implements IExcelParser{
 				case 44: //Filofax Insert Pages 8 pgs
 					break;
 				case 45: //Gift Box
+					try{
+					String giftBoxPackCharge=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(giftBoxPackCharge)){
+						 String gftDisc="";
+						 if(giftBoxPackCharge.contains("(") && giftBoxPackCharge.contains(")")){
+							 gftDisc=CommonUtility.extractValueSpecialCharacter("(", ")", giftBoxPackCharge);
+							 gftDisc=gftDisc.trim();
+							 giftBoxPackCharge=giftBoxPackCharge.replaceAll("(", "");
+							 giftBoxPackCharge=giftBoxPackCharge.replaceAll(")", "");
+									 }
+						 giftBoxPackCharge=giftBoxPackCharge.trim();
+						 List<Packaging>  listPackg = productConfigObj.getPackaging();
+						 if(CollectionUtils.isEmpty(listPackg)){
+							 ///////////////////
+							 //listPers = new ArrayList<Personalization>();
+							 listPackg=sunGraphixAttributeParser.getPackaging("GIFT BOXES");
+							 productConfigObj.setPackaging(listPackg);
+							 //////////////
+						 }else{
+							 listPackg = productConfigObj.getPackaging();
+							 boolean flag=false;
+							 for (Packaging packaging : listPackg) {
+								if(packaging.getName().equalsIgnoreCase("GIFT BOXES")){
+									flag=true;
+									break;
+								}
+							}
+							 if(!flag){
+								 listPackg=sunGraphixAttributeParser.getPackaging("GIFT BOXES");
+								 productConfigObj.setPackaging(listPackg);
+							 }
+						 }
+							 if(StringUtils.isEmpty(gftDisc)){
+								 gftDisc="Z";
+							 }
+							 priceGrids=productExcelObj.getPriceGrids();
+							 
+								 priceGrids = sunGraphixPriceGridParser.getPriceGrids(
+										 giftBoxPackCharge,"1",gftDisc,
+											ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+											"false","GIFT BOXES","Packaging",new Integer(1),"Packaging Charge", "Per Quantity","Required",
+											priceGrids);
+								/*String listOfPrices, String listOfQuan, String discountCodes,
+								String currency, String priceInclude, boolean isBasePrice,
+								String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,String serviceCharge
+								List<PriceGrid> existingPriceGrid)*/
+					 }
+					}catch (Exception e) {
+						_LOGGER.info("Error in upcharge price prices field "+e.getMessage() +"case no:"+columnIndex+1);
+					}
 					break;
 				case 46: //Mailer
+					try{
+					String mailerPackCharge=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(mailerPackCharge)){
+						 String mailDisc="";
+						 if(mailerPackCharge.contains("(") && mailerPackCharge.contains(")")){
+							 mailDisc=CommonUtility.extractValueSpecialCharacter("(", ")", mailerPackCharge);
+							 mailDisc=mailDisc.trim();
+							 mailerPackCharge=mailerPackCharge.replaceAll("(", "");
+							 mailerPackCharge=mailerPackCharge.replaceAll(")", "");
+									 }
+						 mailerPackCharge=mailerPackCharge.trim();
+						 List<Packaging>  listPackg = productConfigObj.getPackaging();
+						 if(CollectionUtils.isEmpty(listPackg)){
+							 ///////////////////
+							 //listPers = new ArrayList<Personalization>();
+							 listPackg=sunGraphixAttributeParser.getPackaging("MAILER");
+							 productConfigObj.setPackaging(listPackg);
+							 //////////////
+						 }else{
+							 listPackg = productConfigObj.getPackaging();
+							 boolean flag=false;
+							 for (Packaging packaging : listPackg) {
+								if(packaging.getName().equalsIgnoreCase("MAILER")){
+									flag=true;
+									break;
+								}
+							}
+							 if(!flag){
+								 listPackg=sunGraphixAttributeParser.getPackaging("MAILER");
+								 productConfigObj.setPackaging(listPackg);
+							 }
+						 }
+							 if(StringUtils.isEmpty(mailDisc)){
+								 mailDisc="Z";
+							 }
+							 priceGrids=productExcelObj.getPriceGrids();
+								 priceGrids = sunGraphixPriceGridParser.getPriceGrids(
+										 mailerPackCharge,"1",mailDisc,
+											ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+											"false","MAILER","Packaging",new Integer(1),"Packaging Charge", "Per Quantity","Required",
+											priceGrids);
+								/*String listOfPrices, String listOfQuan, String discountCodes,
+								String currency, String priceInclude, boolean isBasePrice,
+								String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,String serviceCharge
+								List<PriceGrid> existingPriceGrid)*/
+					 }
+					}catch (Exception e) {
+						_LOGGER.info("Error in upcharge price prices field "+e.getMessage() +"case no:"+columnIndex+1);
+					}
 					break;
 				case 47: //Insert Fee
+					try{
+					String insertChrh=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(insertChrh)){
+						 String insertDisc="";
+						 if(insertChrh.contains("(") && insertChrh.contains(")")){
+							 insertDisc=CommonUtility.extractValueSpecialCharacter("(", ")", insertChrh);
+							 insertDisc=insertDisc.trim();
+							 insertChrh=insertChrh.replaceAll("(", "");
+							 insertChrh=insertChrh.replaceAll(")", "");
+									 }
+						 insertChrh=insertChrh.trim();
+						 List<Packaging>  listPackg = productConfigObj.getPackaging();
+						 if(CollectionUtils.isEmpty(listPackg)){
+							 ///////////////////
+							 //listPers = new ArrayList<Personalization>();
+							 listPackg=sunGraphixAttributeParser.getPackaging("Insert");
+							 productConfigObj.setPackaging(listPackg);
+							 //////////////
+						 }else{
+							 listPackg = productConfigObj.getPackaging();
+							 boolean flag=false;
+							 for (Packaging packaging : listPackg) {
+								if(packaging.getName().equalsIgnoreCase("Insert")){
+									flag=true;
+									break;
+								}
+							}
+							 if(!flag){
+								 listPackg=sunGraphixAttributeParser.getPackaging("Insert");
+								 productConfigObj.setPackaging(listPackg);
+							 }
+						 }
+							 if(StringUtils.isEmpty(insertDisc)){
+								 insertDisc="Z";
+							 }
+							 priceGrids=productExcelObj.getPriceGrids();
+								 priceGrids = sunGraphixPriceGridParser.getPriceGrids(
+										 insertChrh,"1",insertDisc,
+											ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+											"false","Insert","Packaging",new Integer(1),"Packaging Charge", "Per Quantity","Required",
+											priceGrids);
+								/*String listOfPrices, String listOfQuan, String discountCodes,
+								String currency, String priceInclude, boolean isBasePrice,
+								String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,String serviceCharge
+								List<PriceGrid> existingPriceGrid)*/
+					 }
+					}catch (Exception e) {
+						_LOGGER.info("Error in upcharge price prices field "+e.getMessage() +"case no:"+columnIndex+1);
+					}
 					break;
 				case 48: //Drop Shipments
 					//bottom
 					//create option over here
-					String shipOption=cell.getStringCellValue();
+					try{
+					String shipOption=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(shipOption)){
 					List<Option> optionList=sunGraphixAttributeParser.getOptions("Drop Shipping","Drop Shipments","First one is free. Drop ship charge per additional address.",false,false,"Shipping");
 					productConfigObj.setOptions(optionList);
 					//create pricegrid over here141
+					priceGrids=productExcelObj.getPriceGrids();
 					if(shipOption.contains("10.50(G)")){
 						priceGrids = sunGraphixPriceGridParser.getPriceGrids(
 								"10.50","1","G",
 								ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
 								"false","Drop Shipments","Shipping Option",new Integer(1),"Shipping Charge", "Per Order","Optional",
-								new ArrayList<PriceGrid>());
+								priceGrids);
 						/*String listOfPrices, String listOfQuan, String discountCodes,
 						String currency, String priceInclude, boolean isBasePrice,
 						String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,String serviceCharge
@@ -500,10 +741,12 @@ public class SunGraphixMapping implements IExcelParser{
 						
 						}
 					 }
-				
+					}catch (Exception e) {
+						_LOGGER.info("Error in upcharge price prices field "+e.getMessage() +"case no:"+columnIndex+1);
+					}
 					break;
 				case 49: //Distributor Comments Only
-					String Distributorcomment = cell.getStringCellValue();
+					String Distributorcomment =CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(Distributorcomment)){
 					//Distributorcomment=removeSpecialChar(Distributorcomment);
 					productExcelObj.setDistributorOnlyComments(Distributorcomment);
@@ -513,7 +756,7 @@ public class SunGraphixMapping implements IExcelParser{
 					
 					break;
 				case 50: //FOB
-					String fobPoint=cell.getStringCellValue();
+					String fobPoint=CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(fobPoint)){
 						fobPoint=fobPoint.toUpperCase().trim();
 						 if(fobPoint.equals("tx") || fobPoint.equals("ny")){
@@ -584,26 +827,34 @@ public class SunGraphixMapping implements IExcelParser{
 					break;
 				case 57: //Gift Box
 					String packGTValue=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(packGTValue)){
+					 if(!StringUtils.isEmpty(packGTValue) && packGTValue.equalsIgnoreCase("n/a")){
+						 packGTValue=packGTValue.toUpperCase().trim();
+						 if(packGTValue.equals("YES"))
+						 {
 						 List<Packaging>          listPackaging               = new ArrayList<Packaging>();
-						 listPackaging=sunGraphixAttributeParser.getPackaging("MAILER");
+						 listPackaging=sunGraphixAttributeParser.getPackaging("GIFT BOXES");
 						 productConfigObj.setPackaging(listPackaging);
+					     }
 					 }
 					break;
 				case 58: //Mailer
 					String mailPackValue=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(mailPackValue)){
+					 if(!StringUtils.isEmpty(mailPackValue) && mailPackValue.equalsIgnoreCase("n/a")){
+						 
+						 mailPackValue=mailPackValue.toUpperCase().trim();
+						 if(mailPackValue.equals("YES"))
+						{
 						 List<Packaging>          listPackagingM               = new ArrayList<Packaging>();
 						 if(!CollectionUtils.isEmpty(productConfigObj.getPackaging())){
 							 listPackagingM.addAll(productConfigObj.getPackaging());
-							}
-						 
-						 listPackagingM=sunGraphixAttributeParser.getPackaging(mailPackValue);
+						}
+						 listPackagingM=sunGraphixAttributeParser.getPackaging("MAILER");
 						 productConfigObj.setPackaging(listPackagingM);
+					     }
 					 }
 					break;
 				case 59: //Made
-					String origin = cell.getStringCellValue();
+					String origin = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(origin)){
 						if(origin.toUpperCase().equals("MX")){
 							origin="Mexico";
@@ -625,7 +876,7 @@ public class SunGraphixMapping implements IExcelParser{
 					break;
 				case 62: //keyword
 					//Keywords
-					String keywords = cell.getStringCellValue();
+					String keywords = CommonUtility.getCellValueStrinOrInt(cell);
 					
 					 if(!StringUtils.isEmpty(keywords)){
 						 List<String> listOfKeywords = new ArrayList<String>();
@@ -638,7 +889,7 @@ public class SunGraphixMapping implements IExcelParser{
 					//need to work on dis
 					break;
 				case 63: //main product
-					String largeImage = cell.getStringCellValue();
+					String largeImage = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(largeImage)){
 						imagesList.add(largeImage);
 					}
@@ -647,7 +898,7 @@ public class SunGraphixMapping implements IExcelParser{
 				case 64: //Blank Image 1
 					//need to work on dis
 					// Product images
-					String highImage = cell.getStringCellValue();
+					String highImage = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(highImage)){
 						imagesList.add(highImage);
 					}
@@ -683,7 +934,7 @@ public class SunGraphixMapping implements IExcelParser{
 			 }else{
 				 productExcelObj.setPriceType("L");
 			 }
-		 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
@@ -707,7 +958,7 @@ public class SunGraphixMapping implements IExcelParser{
 		sizeValuesSet = new HashSet<>();
 		listOfAvailablity=new ArrayList<Availability>();
 		productOptionSet=new HashSet<String>();
-		listOfCategories=new ArrayList<String>();
+		//listOfCategories=new ArrayList<String>();
 		FinalKeyword=new StringBuilder();
 		//ProductDataStore.clearSizesBrobery();
        ProductSkusList = new ArrayList<ProductSkus>();

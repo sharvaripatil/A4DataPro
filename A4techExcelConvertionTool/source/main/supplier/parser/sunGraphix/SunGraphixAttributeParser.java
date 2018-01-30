@@ -85,7 +85,16 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		return newProduct;
 		
 	}
-	
+public List<String> getCategories(String category){
+	   List<String> listOfCategories = new ArrayList<>();
+	   String[] categories = CommonUtility.getValuesOfArray(category, ApplicationConstants.CONST_STRING_COMMA_SEP);
+	   for (String categoryName : categories) {
+		   if(lookupServiceData.isCategory(categoryName.toUpperCase().trim())){
+			   listOfCategories.add(categoryName);
+		   }
+	}
+	   return listOfCategories;
+}
 	@SuppressWarnings("unused")
 	public List<Color> getProductColors(String color){
 		List<Color> listOfColors = new ArrayList<>();
