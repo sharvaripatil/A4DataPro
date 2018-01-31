@@ -137,6 +137,10 @@ public class BlueGenerationMapping implements IExcelParser{
 						    	 List<ImprintMethod> imprintMethodList = addImprintMethod();
 						    	 productConfigObj.setImprintMethods(imprintMethodList);
 						     }
+						     if(CollectionUtils.isEmpty(priceGrids)){
+						    	 sizesMap = new TreeMap<>(sizesMap);
+								   priceGrids = parseSizesPriceGrids(priceGrids, sizesMap);// sequences based on sizes
+						     }
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	productExcelObj.setProductRelationSkus(listProductSkus);
@@ -365,6 +369,10 @@ public class BlueGenerationMapping implements IExcelParser{
 		 if(CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
 	    	 List<ImprintMethod> imprintMethodList = addImprintMethod();
 	    	 productConfigObj.setImprintMethods(imprintMethodList);
+	     }
+		 if(CollectionUtils.isEmpty(priceGrids)){
+	    	 sizesMap = new TreeMap<>(sizesMap);
+			   priceGrids = parseSizesPriceGrids(priceGrids, sizesMap);// sequences based on sizes
 	     }
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
