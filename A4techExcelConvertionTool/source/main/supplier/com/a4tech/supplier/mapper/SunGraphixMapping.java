@@ -551,14 +551,226 @@ public class SunGraphixMapping implements IExcelParser{
 					}
 					break;
 				case 38: //Pen Loop
+					
+					//create option over here
+					try{
+					String penLoop=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(penLoop) && !penLoop.equals("n/a")){
+						 List<Option> istOPtionsM = new ArrayList<Option>();
+						 if(!CollectionUtils.isEmpty(productConfigObj.getOptions())){
+							 istOPtionsM.addAll(productConfigObj.getOptions());
+						 }
+						 istOPtionsM=sunGraphixAttributeParser.getOptions("Pen Loop Option","Pen Loop","",false,false,"Product");
+					//String optionName,String  optionDataValue,String additionalInfo,boolean canOrder,boolean reqOrder,String optionType)
+					
+					productConfigObj.setOptions(istOPtionsM);
+					//create pricegrid over here141
+					priceGrids=productExcelObj.getPriceGrids();
+					
+					 String penLoopDisc="";
+					 if(penLoop.contains("(") && penLoop.contains(")")){
+						 penLoopDisc=CommonUtility.extractValueSpecialCharacter("(", ")", penLoop);
+						 penLoopDisc=penLoopDisc.trim();
+						 penLoop=penLoop.replaceAll("(", "");
+						 penLoop=penLoop.replaceAll(")", "");
+								 }else{
+									 penLoopDisc="Z";
+								 }
+					
+					
+					 penLoop=penLoop.trim();
+					//if(shipOption.contains("10.50(G)")){
+						priceGrids = sunGraphixPriceGridParser.getPriceGrids(
+								penLoop,"1",penLoopDisc,
+								ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+								"false","Pen Loop@@@@@Pen Loop Option","Product Option",new Integer(1),"Product Option Charge", "Per Order","Required",
+								priceGrids);
+						/*String listOfPrices, String listOfQuan, String discountCodes,
+						String currency, String priceInclude, boolean isBasePrice,
+						String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,String serviceCharge
+						List<PriceGrid> existingPriceGrid)*/					
+						
+						//}
+					 }
+					}catch (Exception e) {
+						_LOGGER.info("Error in upcharge price prices field "+e.getMessage() +"case no:"+columnIndex+1);
+					}
 					break;
 				case 39: //Ruler
+					//create option over here
+					try{
+					String RulerChrg=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(RulerChrg) && !RulerChrg.equals("n/a")){
+						 List<Option> istOPtionsM = new ArrayList<Option>();
+						 if(!CollectionUtils.isEmpty(productConfigObj.getOptions())){
+							 istOPtionsM.addAll(productConfigObj.getOptions());
+						 }
+						 istOPtionsM=sunGraphixAttributeParser.getOptions("Ruler Option","Ruler","",false,false,"Product");
+					//String optionName,String  optionDataValue,String additionalInfo,boolean canOrder,boolean reqOrder,String optionType)
+					
+					productConfigObj.setOptions(istOPtionsM);
+					//create pricegrid over here141
+					priceGrids=productExcelObj.getPriceGrids();
+					
+					 String rulerDisc="";
+					 if(RulerChrg.contains("(") && RulerChrg.contains(")")){
+						 rulerDisc=CommonUtility.extractValueSpecialCharacter("(", ")", RulerChrg);
+						 rulerDisc=rulerDisc.trim();
+						 RulerChrg=RulerChrg.replaceAll("(", "");
+						 RulerChrg=RulerChrg.replaceAll(")", "");
+								 }else{
+									 rulerDisc="Z";
+								 }
+					
+					
+					 RulerChrg=RulerChrg.trim();
+					//if(shipOption.contains("10.50(G)")){
+						priceGrids = sunGraphixPriceGridParser.getPriceGrids(
+								RulerChrg,"1",rulerDisc,
+								ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+								"false","Ruler@@@@@Ruler Option","Product Option",new Integer(1),"Product Option Charge", "Per Order","Required",
+								priceGrids);
+						/*String listOfPrices, String listOfQuan, String discountCodes,
+						String currency, String priceInclude, boolean isBasePrice,
+						String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,String serviceCharge
+						List<PriceGrid> existingPriceGrid)*/					
+						
+						//}
+					 }
+					}catch (Exception e) {
+						_LOGGER.info("Error in upcharge price prices field "+e.getMessage() +"case no:"+columnIndex+1);
+					}
+					
 					break;
 				case 40: //Dividers
+					//create option over here
+					try{
+					String dividersChrg=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(dividersChrg) && !dividersChrg.equals("n/a")){
+						 List<Option> istOPtionsM = new ArrayList<Option>();
+						 if(!CollectionUtils.isEmpty(productConfigObj.getOptions())){
+							 istOPtionsM.addAll(productConfigObj.getOptions());
+						 }
+						 istOPtionsM=sunGraphixAttributeParser.getOptions("Dividers Option","Dividers","",false,false,"Product");
+					//String optionName,String  optionDataValue,String additionalInfo,boolean canOrder,boolean reqOrder,String optionType)
+					
+					productConfigObj.setOptions(istOPtionsM);
+					//create pricegrid over here141
+					priceGrids=productExcelObj.getPriceGrids();
+					
+					 String dividersDisc="";
+					 if(dividersChrg.contains("(") && dividersChrg.contains(")")){
+						 dividersDisc=CommonUtility.extractValueSpecialCharacter("(", ")", dividersChrg);
+						 dividersDisc=dividersDisc.trim();
+						 dividersChrg=dividersChrg.replaceAll("(", "");
+						 dividersChrg=dividersChrg.replaceAll(")", "");
+								 }else{
+									 dividersDisc="Z";
+								 }
+					
+					
+					 dividersChrg=dividersChrg.trim();
+					//if(shipOption.contains("10.50(G)")){
+						priceGrids = sunGraphixPriceGridParser.getPriceGrids(
+								dividersChrg,"1",dividersDisc,
+								ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+								"false","Dividers@@@@@Dividers Option","Product Option",new Integer(1),"Product Option Charge", "Per Order","Required",
+								priceGrids);
+						/*String listOfPrices, String listOfQuan, String discountCodes,
+						String currency, String priceInclude, boolean isBasePrice,
+						String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,String serviceCharge
+						List<PriceGrid> existingPriceGrid)*/					
+						
+						//}
+					 }
+					}catch (Exception e) {
+						_LOGGER.info("Error in upcharge price prices field "+e.getMessage() +"case no:"+columnIndex+1);
+					}
+					
+					
 					break;
-				case 41: //Filofax Insert Pages 2pgs
+				case 41: //Filofax Insert Pages 2pgs    // Filofax Insert Pages
+					//create option over here
+					try{
+					String filofaxChrg=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(filofaxChrg) && !filofaxChrg.equals("n/a")){
+						 List<Option> istOPtionsM = new ArrayList<Option>();
+						 if(!CollectionUtils.isEmpty(productConfigObj.getOptions())){
+							 istOPtionsM.addAll(productConfigObj.getOptions());
+						 }
+						 istOPtionsM=sunGraphixAttributeParser.getOptions("Filofax Insert Pages","2 pgs","",false,false,"Product");
+					//String optionName,String  optionDataValue,String additionalInfo,boolean canOrder,boolean reqOrder,String optionType)
+					
+					productConfigObj.setOptions(istOPtionsM);
+					//create pricegrid over here141
+					priceGrids=productExcelObj.getPriceGrids();
+					 String filofaxDisc="";
+					 if(filofaxChrg.contains("(") && filofaxChrg.contains(")")){
+						 filofaxDisc=CommonUtility.extractValueSpecialCharacter("(", ")", filofaxChrg);
+						 filofaxDisc=filofaxDisc.trim();
+						 filofaxChrg=filofaxChrg.replaceAll("(", "");
+						 filofaxChrg=filofaxChrg.replaceAll(")", "");
+								 }else{
+									 filofaxDisc="Z";
+								 }
+					 filofaxChrg=filofaxChrg.trim();
+					//if(shipOption.contains("10.50(G)")){
+						priceGrids = sunGraphixPriceGridParser.getPriceGrids(
+								filofaxChrg,"1",filofaxDisc,
+								ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+								"false","2 pgs@@@@@Filofax Insert Pages","Product Option",new Integer(1),"Product Option Charge", "Per Order","Required",
+								priceGrids);
+						/*String listOfPrices, String listOfQuan, String discountCodes,
+						String currency, String priceInclude, boolean isBasePrice,
+						String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,String serviceCharge
+						List<PriceGrid> existingPriceGrid)*/					
+						
+						//}
+					 }
+					}catch (Exception e) {
+						_LOGGER.info("Error in upcharge price prices field "+e.getMessage() +"case no:"+columnIndex+1);
+					}
 					break;
 				case 42: //Filofax Insert Pages 4 pgs
+					try{
+						String filofaxChrg=CommonUtility.getCellValueStrinOrInt(cell);
+						 if(!StringUtils.isEmpty(dividersChrg) && !dividersChrg.equals("n/a")){
+							 List<Option> istOPtionsM = new ArrayList<Option>();
+							 if(!CollectionUtils.isEmpty(productConfigObj.getOptions())){
+								 istOPtionsM.addAll(productConfigObj.getOptions());
+							 }
+							 istOPtionsM=sunGraphixAttributeParser.getOptions("Dividers Option","Dividers","",false,false,"Product");
+						//String optionName,String  optionDataValue,String additionalInfo,boolean canOrder,boolean reqOrder,String optionType)
+						
+						productConfigObj.setOptions(istOPtionsM);
+						//create pricegrid over here141
+						priceGrids=productExcelObj.getPriceGrids();
+						 String dividersDisc="";
+						 if(dividersChrg.contains("(") && dividersChrg.contains(")")){
+							 dividersDisc=CommonUtility.extractValueSpecialCharacter("(", ")", dividersChrg);
+							 dividersDisc=dividersDisc.trim();
+							 dividersChrg=dividersChrg.replaceAll("(", "");
+							 dividersChrg=dividersChrg.replaceAll(")", "");
+									 }else{
+										 dividersDisc="Z";
+									 }
+						 dividersChrg=dividersChrg.trim();
+						//if(shipOption.contains("10.50(G)")){
+							priceGrids = sunGraphixPriceGridParser.getPriceGrids(
+									dividersChrg,"1",dividersDisc,
+									ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
+									"false","Dividers@@@@@Dividers Option","Product Option",new Integer(1),"Product Option Charge", "Per Order","Required",
+									priceGrids);
+							/*String listOfPrices, String listOfQuan, String discountCodes,
+							String currency, String priceInclude, boolean isBasePrice,
+							String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,String serviceCharge
+							List<PriceGrid> existingPriceGrid)*/					
+							
+							//}
+						 }
+						}catch (Exception e) {
+							_LOGGER.info("Error in upcharge price prices field "+e.getMessage() +"case no:"+columnIndex+1);
+						}
 					break;
 				case 43: //Filofax Insert Pages 6 pgs
 					break;
