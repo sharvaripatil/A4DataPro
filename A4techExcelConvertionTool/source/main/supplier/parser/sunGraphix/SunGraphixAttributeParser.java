@@ -1,7 +1,11 @@
 package parser.sunGraphix;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -13,6 +17,7 @@ import com.a4tech.product.model.BlendMaterial;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.Image;
@@ -26,6 +31,7 @@ import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.Personalization;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
@@ -96,11 +102,16 @@ public List<String> getCategories(String category){
 	   return listOfCategories;
 }
 	@SuppressWarnings("unused")
-	public List<Color> getProductColors(String color){
+	public List<Color> getProductColors(Set <String> colorSet,String xid){
 		List<Color> listOfColors = new ArrayList<>();
-		try{
+		
 		Color colorObj = null;
-		color=color.replaceAll("\\|",",");
+		Iterator<String> colorIterator=colorSet.iterator();
+		try {
+			List<Combo> comboList = null;
+		while (colorIterator.hasNext()) {
+			String color = (String) colorIterator.next();
+			color=color.replaceAll("\\|",",");
 		String[] colors =getValuesOfArray(color, ",");
 		for (String colorName : colors) {
 			if(StringUtils.isEmpty(colorName)){
@@ -113,13 +124,14 @@ public List<String> getCategories(String category){
 			
 			colorObj = new Color();
 			String colorGroup = SunGraphixConstants.getColorGroup(colorName.trim());
+			
 			//if (colorGroup == null) {
 				//if (colorGroup!=null && colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
-			if (colorName.contains("/") || colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
+			if (colorGroup!=null && (colorName.contains("/") || colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH))) {
 				
-				if(colorGroup==null){
+				/*if(colorGroup==null){
 					colorGroup=colorName;
-				}
+				}*/
 				colorGroup=colorGroup.replaceAll("&","/");
 				colorGroup=colorGroup.replaceAll(" w/","/");
 				colorGroup=colorGroup.replaceAll(" W/","/");
@@ -175,12 +187,14 @@ public List<String> getCategories(String category){
 				colorObj.setAlias(colorName);
 			}
 			listOfColors.add(colorObj);
-		}
+		}//for end
+		}//while end
 		}catch(Exception e){
-			_LOGGER.error("Error while processing color: "+e.getMessage());
+			_LOGGER.error("Error while processing color: "+e.getMessage() +"Color Error For xid:"+xid);
 		}
 		return listOfColors;
-	}
+		}
+		
 	private List<Combo> getColorsCombo(String firstValue,String secondVal,int comboLength){
 		List<Combo> listOfCombo = new ArrayList<>();
 		Combo comboObj1 = new Combo();
@@ -228,12 +242,14 @@ public List<String> getCategories(String category){
 		   }
 		   return null;
 	   }
-	public ProductConfigurations getImprintMethod(String data,ProductConfigurations productConfigObj){
-		//List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
+	public List<ImprintMethod> getImprintMethod(String data,List<ImprintMethod> existingListOfImprintMethod){
 		List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
-		if(!CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
-			List<ImprintMethod> listOfImprintMethodTemp = productConfigObj.getImprintMethods();
-			listOfImprintMethod.addAll(listOfImprintMethodTemp);
+		try{
+		//List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
+		
+		if(!CollectionUtils.isEmpty(existingListOfImprintMethod)){
+			//List<ImprintMethod> listOfImprintMethodTemp = productConfigObj.getImprintMethods();
+			listOfImprintMethod.addAll(existingListOfImprintMethod);
 		}
 		
 		ImprintMethod	imprintMethodObj = null;
@@ -270,9 +286,13 @@ public List<String> getCategories(String category){
 				  imprintMethodObj.setAlias(imprintMethodName);
 			  }
 			  listOfImprintMethod.add(imprintMethodObj);
-			  productConfigObj.setImprintMethods(listOfImprintMethod);
+			  //productConfigObj.setImprintMethods(listOfImprintMethod);
 		}
-		return productConfigObj;
+		}catch(Exception e){
+			_LOGGER.error("Error while processing Size :"+e.getMessage());
+			return null;
+		}
+		return listOfImprintMethod;
 	}
 public List<Personalization> getPersonalizationCriteria(String persValue){
 		
@@ -379,10 +399,12 @@ public List<Personalization> getPersonalizationCriteria(String persValue){
 	}
 	return result;
 	}
-	public List<Packaging> getPackaging(String packValue){
-		List<Packaging> listOfPackaging = null;
+	public List<Packaging> getPackaging(String packValue,List<Packaging> listOfPackaging){
+		if(CollectionUtils.isEmpty(listOfPackaging)){
+			listOfPackaging=new ArrayList<Packaging>();
+		}
 		if(!StringUtils.isEmpty(packValue)){
-			listOfPackaging = new ArrayList<Packaging>();
+			//listOfPackaging = new ArrayList<Packaging>();
 			Packaging packObj = new Packaging();
 			packObj.setName(packValue);
 			listOfPackaging.add(packObj);
@@ -413,59 +435,97 @@ public List<Personalization> getPersonalizationCriteria(String persValue){
 		  return optionList;
 		  
 		 }
-	public ShippingEstimate getShippingEstimates( String shippingValue,ShippingEstimate shippingEstObj,String str) {
+	
+	public  List<OptionValue> getOptionDataValueList(List<OptionValue> opValuesList,String optionDataValue) {
+		 if(CollectionUtils.isEmpty(opValuesList)){
+			 opValuesList=new ArrayList<OptionValue>();
+		 }
+		try{
+				 OptionValue optionValueObj=new OptionValue();
+					  optionValueObj.setValue(optionDataValue.trim());
+					  opValuesList.add(optionValueObj);
+				  
+		   }catch(Exception e){
+			   _LOGGER.error("Error while processing Options :"+e.getMessage());
+			   return opValuesList;
+		      
+		     }
+		  return opValuesList;
+		 }
+	
+	
+	public ShippingEstimate getShippingEstimates( String shippingValue,String sdimVAl,ShippingEstimate shippingEstObj,String str,String sdimType) {
 		//ShippingEstimate shipingObj = new ShippingEstimate();
 		if(str.equals("NOI")){
+			if(shippingValue.contains("/")){
+				String tempVal[]=shippingValue.split("/");
+			String strUnit=tempVal[0];
+			String strWt=tempVal[1];
+			strUnit=strUnit.replaceAll("ctn", "");
+			strUnit=strUnit.replaceAll("\\.", "");
+			
+			strWt=strWt.replaceAll("lbs", "");
+			strWt=strWt.replaceAll("\\.", "");
 		List<NumberOfItems> listOfNumberOfItems = new ArrayList<NumberOfItems>();
 		NumberOfItems itemObj = new NumberOfItems();
-		itemObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_NUMBER_UNIT_CASE);
-		itemObj.setValue(shippingValue);
+		itemObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_NUMBER_UNIT_CARTON);
+		itemObj.setValue(strUnit.trim());
 		listOfNumberOfItems.add(itemObj);
 		shippingEstObj.setNumberOfItems(listOfNumberOfItems);
+		
+		List<Weight> listOfWeight = new ArrayList<Weight>();
+		Weight weightObj = new Weight();
+		weightObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_WEIGHT);
+		weightObj.setValue(strWt.trim());
+		listOfWeight.add(weightObj);
+		shippingEstObj.setWeight(listOfWeight);
+	
+			}else{
+				shippingValue=shippingValue.replaceAll("ctn", "");
+				shippingValue=shippingValue.replaceAll("\\.", "");
+				
+			List<NumberOfItems> listOfNumberOfItems = new ArrayList<NumberOfItems>();
+			NumberOfItems itemObj = new NumberOfItems();
+			itemObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_NUMBER_UNIT_CARTON);
+			itemObj.setValue(shippingValue.trim());
+			listOfNumberOfItems.add(itemObj);
+			shippingEstObj.setNumberOfItems(listOfNumberOfItems);
+			}
+		
+		
 		}
 		
-		if (str.equals("WT")) {
+		/*if (str.equals("WT")) {
 			List<Weight> listOfWeight = new ArrayList<Weight>();
 			Weight weightObj = new Weight();
 			weightObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_WEIGHT);
 			weightObj.setValue(shippingValue);
 			listOfWeight.add(weightObj);
 			shippingEstObj.setWeight(listOfWeight);
-		}
+		}*/
 		
 		if (str.equals("SDIM")) {
+			Dimensions dimensionObj=shippingEstObj.getDimensions();
+			Dimensions tempObj=new Dimensions();
+			if(dimensionObj== null || dimensionObj.equals(tempObj)){
+				dimensionObj=new Dimensions();
+			}
 			String unit="in";
-			shippingValue=shippingValue.toUpperCase();
-			shippingValue=shippingValue.replaceAll("”","\"");
-			shippingValue=shippingValue.replaceAll("\"","");
-			shippingValue=shippingValue.replaceAll(";",",");
-			shippingValue=shippingValue.replaceAll(":","");
-			//sizeValue=sizeValue.replaceAll(".","");
-			String valuesArr[]=shippingValue.split(",");
-			if(valuesArr.length>1){
-				//shippingValue=valuesArr[0];
-			}else{
-			//shippingValue=removeSpecialChar(shippingValue,1);
-			String shipDimenArr[] = shippingValue.split("X");
-			List<Dimensions> dimenlist = new ArrayList<Dimensions>();
-			Dimensions dimensionObj = new Dimensions();
-			for (int i = 0; i <= shipDimenArr.length - 1; i++) {
-			//	String[] shipDimenArr1 = shipDimenArr[i].split(ApplicationConstants.CONST_DELIMITER_COLON);
-				if (i == 0) {
-					dimensionObj.setLength(shipDimenArr[0]);
+					//Dimensions dimensionObj = new Dimensions();
+			if (sdimType.equals("L")){
+					dimensionObj.setLength(sdimVAl.trim());
 					dimensionObj.setLengthUnit(unit);
-				} else if (i == 1) {
-					dimensionObj.setWidth(shipDimenArr[1]);
+			}
+			if (sdimType.equals("W")){
+					dimensionObj.setWidth(sdimVAl.trim());
 					dimensionObj.setWidthUnit(unit);
-				} else if (i == 2) {
-					dimensionObj.setHeight(shipDimenArr[2]);
+			}
+			if (sdimType.equals("H")){
+					dimensionObj.setHeight(sdimVAl.trim());
 					dimensionObj.setHeightUnit(unit);
-				}
-				dimenlist.add(dimensionObj);
 			}
 			shippingEstObj.setDimensions(dimensionObj);
-			}
-		}
+					}
 		return shippingEstObj;
 	}
 	public Volume getItemWeightvolume(String itemWeightValue){
@@ -477,7 +537,7 @@ public List<Personalization> getPersonalizationCriteria(String persValue){
 		if(!itemWeightValue.equals(ApplicationConstants.CONST_STRING_ZERO)){
 			listOfValue = new ArrayList<>();
 			listOfValues = new ArrayList<>();
-			valueObj.setValue(itemWeightValue);
+			valueObj.setValue(itemWeightValue.trim());
 			valueObj.setUnit(ApplicationConstants.CONST_STRING_SHIPPING_WEIGHT);
 			listOfValue.add(valueObj);
 			values.setValue(listOfValue);
@@ -643,6 +703,38 @@ public boolean isBlendMaterial(String data){
 	}
 	return false;
 }
+
+	public  List<ProductNumber> getProductNumer(HashMap<String, String> productNumberMap){//productNumberMap
+	List<ProductNumber> pnumberList=new ArrayList<ProductNumber>();
+	ProductNumber pnumberObj=new ProductNumber();
+	try{
+	List<Configurations> configList=new ArrayList<Configurations>();
+	List<Object> valueObj;
+	Configurations configObj;
+	 Iterator mapItr = productNumberMap.entrySet().iterator();
+	    while (mapItr.hasNext()) {
+	    	pnumberObj=new ProductNumber();
+	    	configList=new ArrayList<Configurations>();
+	        Map.Entry values = (Map.Entry)mapItr.next();
+	        pnumberObj.setProductNumber(values.getKey().toString());
+	    	configObj=new Configurations();
+			valueObj= new ArrayList<Object>();
+			configObj.setCriteria("Product Color");
+			valueObj.add(values.getValue());
+			configObj.setValue(valueObj);
+			configList.add(configObj);
+			pnumberObj.setConfigurations(configList);
+			pnumberList.add(pnumberObj);
+	    	}
+		}catch(Exception e){
+			_LOGGER.error("Error while processing Product Number :"+e.getMessage());             
+	   		return new ArrayList<ProductNumber>();
+	   	}
+		_LOGGER.info("ProductNumbers Processed");
+		return pnumberList;		
+	}
+
+
 	public LookupServiceData getLookupServiceData() {
 		return lookupServiceData;
 	}

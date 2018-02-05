@@ -51,7 +51,11 @@ public class SunGraphixPriceGridParser {
 		String tempDesc=priceName;
 		if(tempDesc.contains("@@@@@")){
 			String strTempp[]=tempDesc.split("@@@@@");
+			if(tempDesc.contains("pgs")){
+				priceGrid.setDescription(strTempp[1]+"- "+strTempp[0]);
+			}else{
 			priceGrid.setDescription(strTempp[1]);
+			}
 		}else{
 			priceGrid.setDescription(priceName);
 		}
@@ -150,10 +154,11 @@ public class SunGraphixPriceGridParser {
 							valList.add(valObj);
 							configs.setValue(valList);
 							//configs.setValue(Arrays.asList((Object) Value));
-						}else if(criteriaNameValue.toUpperCase().contains("OPTION")){
-							if(criteriaNameValue.contains("@@@@@")){
-							String tempName[]=criteriaNameValue.split("@@@@@");
+						}else if(criteriaValue.toUpperCase().contains("OPTION") || criteriaValue.toUpperCase().contains("INSERT PAGES") || criteriaValue.toUpperCase().contains("SHIPMENTS")){
+							if(criteriaValue.contains("@@@@@")){
+							String tempName[]=criteriaValue.split("@@@@@");
 							configs.setOptionName(tempName[1]);
+							criteriaValue=tempName[0];
 							}else {
 								configs.setOptionName(criteriaNameValue.trim());
 							}
