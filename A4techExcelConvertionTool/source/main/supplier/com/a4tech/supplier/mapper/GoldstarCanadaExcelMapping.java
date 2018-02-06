@@ -400,6 +400,15 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 						summary[0]=summary[0].substring(0, 130);
 					}
 					productExcelObj.setSummary(summary[0]);
+					
+					if(StringUtils.isEmpty(description)){
+						
+						productExcelObj.setDescription(productName);
+						productExcelObj.setSummary(productName);
+					
+					}
+										
+					
 					break;
 				
 				case 13:  // keywords
