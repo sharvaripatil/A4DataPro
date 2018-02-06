@@ -2,10 +2,13 @@ package com.a4tech.supplier.mapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -76,6 +79,8 @@ public class BlueGenerationMapping implements IExcelParser{
 		 String basepriceVal = "";
 		 int firstsize = 1;
 		 List<String> basePriceSpecial = new ArrayList<>();
+		 Map<String, String> sizesMap = new HashMap<>();
+		 Set<String> sizesSet = new HashSet<>();
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
@@ -132,6 +137,10 @@ public class BlueGenerationMapping implements IExcelParser{
 						    	 List<ImprintMethod> imprintMethodList = addImprintMethod();
 						    	 productConfigObj.setImprintMethods(imprintMethodList);
 						     }
+						     if(CollectionUtils.isEmpty(priceGrids)){
+						    	 sizesMap = new TreeMap<>(sizesMap);
+								   priceGrids = parseSizesPriceGrids(priceGrids, sizesMap);// sequences based on sizes
+						     }
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	productExcelObj.setProductRelationSkus(listProductSkus);
@@ -157,6 +166,8 @@ public class BlueGenerationMapping implements IExcelParser{
 								firstsize = 1;
 								basePriceSpecial = new ArrayList<>();
 								priceSizeVals = new StringBuilder();
+								sizesMap = new HashMap<>();
+								sizesSet = new HashSet<>();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -263,6 +274,7 @@ public class BlueGenerationMapping implements IExcelParser{
 		}
 				productExcelObj.setPriceType("L");
 				String finalCriteria = "";
+				String tempSize = size;
 				if(size.equals("wi")){
 					 finalCriteria = "PRCL:"+color;
 				} else {
@@ -290,12 +302,47 @@ public class BlueGenerationMapping implements IExcelParser{
 						   }
 					   }
 				   } else {
-					   priceGrids = blueGenerationpriceGridParser.getBasePriceGrid(priceVal, "1", "P", "USD", "", true,
-								false, priceDescription, finalCriteria, priceGrids, "", "", itemNumber);   
-				   }
+					   if(size.equals("wi")){
+						   priceGrids = blueGenerationpriceGridParser.getBasePriceGrid(priceVal, "1", "P", "USD", "", true,
+							false, priceDescription, finalCriteria, priceGrids, "", "", itemNumber);
+					   } else {
+						   if(sizesSet.contains(color) ||  sizesSet.size() == 0){
+							   StringBuilder pricePrdNumbers = new StringBuilder();
+							   size = convertSizeValuesIntoDecode(size);
+							   finalCriteria = "Size:"+size+ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID+"PRCL:"+color;
+								pricePrdNumbers.append(priceDescription).append("@@@").append(finalCriteria).append("@@@")
+										.append(priceVal).append("@@@").append(itemNumber);
+							   sizesMap.put(size, pricePrdNumbers.toString());
+							   sizesSet.add(color);
+						   } else if(sizesSet.contains(color)) {
+							   
+							   StringBuilder pricePrdNumbers = new StringBuilder();
+							   sizesMap = new HashMap<>();
+							   size = convertSizeValuesIntoDecode(size);
+							   finalCriteria = "Size:"+size+ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID+"PRCL:"+color;
+								pricePrdNumbers.append(priceDescription).append("@@@").append(finalCriteria).append("@@@")
+										.append(priceVal).append("@@@").append(itemNumber);
+							   sizesMap.put(size, pricePrdNumbers.toString());
+							   sizesSet.add(color);
+						   } else {
+							   StringBuilder pricePrdNumbers = new StringBuilder();
+							   sizesMap = new TreeMap<>(sizesMap);
+							   priceGrids = parseSizesPriceGrids(priceGrids, sizesMap);// sequences based on sizes
+							   size = convertSizeValuesIntoDecode(size);//
+							   finalCriteria = "Size:"+size+ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID+"PRCL:"+color;
+								pricePrdNumbers.append(priceDescription).append("@@@").append(finalCriteria).append("@@@")
+										.append(priceVal).append("@@@").append(itemNumber);
+								sizesMap = new HashMap<>();
+							   sizesMap.put(size, pricePrdNumbers.toString());
+							   sizesSet.add(color);
+						   }
+						         
+					   }   
+					   }
+					  
 					
 					if(!StringUtils.isEmpty(upcCode)){
-						listProductSkus = blueGenerationattributeParser.getProductSkus(color, size, 
+						listProductSkus = blueGenerationattributeParser.getProductSkus(color, tempSize, 
 		                        upcCode, listProductSkus);
 					}
 				
@@ -322,6 +369,10 @@ public class BlueGenerationMapping implements IExcelParser{
 		 if(CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
 	    	 List<ImprintMethod> imprintMethodList = addImprintMethod();
 	    	 productConfigObj.setImprintMethods(imprintMethodList);
+	     }
+		 if(CollectionUtils.isEmpty(priceGrids)){
+	    	 sizesMap = new TreeMap<>(sizesMap);
+			   priceGrids = parseSizesPriceGrids(priceGrids, sizesMap);// sequences based on sizes
 	     }
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
@@ -472,6 +523,85 @@ public class BlueGenerationMapping implements IExcelParser{
 			imprintMethodList.add(imprintMethodObj);
 		return imprintMethodList;
 	}
+	private List<PriceGrid> parseSizesPriceGrids(List<PriceGrid> priceGrid,Map<String, String> sizesMap){
+		/*	finalCriteria = "Size:"+size+ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID+"PRCL:"+color;
+			pricePrdNumbers.append(priceDescription).append(":").append(finalCriteria).append(":")	
+								0									1
+					.append(priceVal).append(":").append(itemNumber);*/
+							//2							3
+			for (Map.Entry<String, String> sizes : sizesMap.entrySet()) {
+				String[] vals = CommonUtility.getValuesOfArray(sizes.getValue(), "@@@");
+				String finalCriteria = vals[1];
+				String[] sizeAndColor = finalCriteria.split("___");
+				String[] size = sizeAndColor[0].split(":");
+				String finalSize = convertSizeValuesIntoEncode(size[1]); 
+				String finalCriteriaVal = "Size:"+finalSize+"___"+sizeAndColor[1];
+				priceGrid = blueGenerationpriceGridParser.getBasePriceGrid(vals[2], "1", "P", "USD", "", true,
+						false, vals[0], finalCriteriaVal, priceGrid, "", "", vals[3]);
+			}
+			return priceGrid;
+		}
+		
+		private static String convertSizeValuesIntoDecode123(String sizeVal){
+			if(sizeVal.equals("S")){
+				return "-2XL";
+			} else if(sizeVal.equals("M")){
+				return "-3XL";
+			} else if(sizeVal.equals("L")){
+				return "-XL";
+			} else if(sizeVal.equals("XL")){
+				return "1XL";
+			} else {
+				return sizeVal;
+			}
+			
+		}
+		private static String convertSizeValuesIntoEncode123(String sizeVal){
+			if(sizeVal.equals("-2XL")){
+				return "S";
+			} else if(sizeVal.equals("-3XL")){
+				return "M";
+			} else if(sizeVal.equals("-XL")){
+				return "L";
+			} else if(sizeVal.equals("1XL")){
+				return "XL";
+			}  else {
+				return sizeVal;
+			}
+			
+		}
+		private static String convertSizeValuesIntoEncode(String sizeVal){
+			if(sizeVal.equals("-2XL")){
+				return "XS";
+			}else if(sizeVal.equals("-3XL")){
+				return "S";
+			}  
+			else if(sizeVal.equals("-4XL")){
+				return "M";
+			} else if(sizeVal.equals("-5XL")){
+				return "L";
+			} else if(sizeVal.equals("-XL")){
+				return "XL";
+			}  else {
+				return sizeVal;
+			}
+		}
+		private static String convertSizeValuesIntoDecode(String sizeVal){
+			if(sizeVal.equals("XS")){
+				return "-2XL";
+			} else if(sizeVal.equals("S")){
+				return "-3XL";
+			} else if(sizeVal.equals("M")){
+				return "-4XL";
+			} else if(sizeVal.equals("L")){
+				return "-5XL";
+			} else if(sizeVal.equals("XL")){
+				return "-XL";
+			} else {
+				return sizeVal;
+			}
+			
+		}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}

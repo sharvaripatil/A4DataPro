@@ -170,7 +170,7 @@ public class SunScopeMapping implements IExcelParser{
 				case 8://prdName
 					String name = cell.getStringCellValue();
 					name = name.replaceAll("™", "");
-					productExcelObj.setName(name);
+					productExcelObj.setName(CommonUtility.getStringLimitedChars(name, 60));
 					break;
 				case 9:
 					String desc = cell.getStringCellValue();
@@ -463,10 +463,12 @@ public class SunScopeMapping implements IExcelParser{
 			}
 			priceQtyVals.append(priceQty).append("_");
 		}
-			if(!StringUtils.isEmpty(priceInclude)){
+			if(!StringUtils.isEmpty(priceInclude) && priceQtyVals != null){
 			priceQtyVals.append("###").append(priceInclude);
 		}
-		existingMap.put(imprintMethod, priceQtyVals);
+			if(priceQtyVals != null){
+				existingMap.put(imprintMethod, priceQtyVals);		
+			}
 		return existingMap;
 	}
 
@@ -485,8 +487,14 @@ public class SunScopeMapping implements IExcelParser{
 		desc = desc.replaceAll("”", "\"");
 		desc = desc.replaceAll("–", "-");
 		desc = desc.replaceAll("™", "");
+		if(desc.contains("?")) {
+			desc = desc.replaceAll("\\?", "");	  
+		  }
 		 if(desc.contains("Velcro")){
 			 desc = desc.replaceAll("Velcro", "");
+		  }
+		 if(desc.contains("Shuffle")){
+			 desc = desc.replaceAll("Shuffle", "");
 		  }
 	   return desc;
    }

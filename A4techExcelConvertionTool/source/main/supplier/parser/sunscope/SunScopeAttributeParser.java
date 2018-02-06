@@ -283,6 +283,9 @@ public Size getProductSize(String sizeVal){
 					StringBuilder allValue = prices.getValue();
 					String[] allVals = CommonUtility.getValuesOfArray(allValue.toString(), "__");
 					for (String priceType : allVals) {
+						if(StringUtils.isEmpty(priceType)){
+							continue;
+						}
 						if (priceType.contains("runCharge") || priceType.contains("setUp")) {
 							existingPriceGrid = getupcharges(priceType, imprintMethodVal, existingPriceGrid);
 						} else {// it is base price
@@ -309,9 +312,16 @@ public Size getProductSize(String sizeVal){
     	 return existingPriceGrid;
      }
      private List<PriceGrid> getBasePrices(String val,String imprintMethodVals,List<PriceGrid> existingPriceGrid){
-    	String[] priceIncludeAndPrices = CommonUtility.getValuesOfArray(val, "###");
-    	String priceInclude = priceIncludeAndPrices[1];
-    	String price = priceIncludeAndPrices[0];
+    	String[] priceIncludeAndPrices = null;
+    	String priceInclude = "";
+    	String price = null;
+    	if(val.contains("###")){
+    		priceIncludeAndPrices = CommonUtility.getValuesOfArray(val, "###");
+    		priceInclude = priceIncludeAndPrices[1];
+        	 price = priceIncludeAndPrices[0];
+    	} else {
+    		 price = val;	
+    	}
     	String[] prices = CommonUtility.getValuesOfArray(price, ApplicationConstants.CONST_DELIMITER_UNDER_SCORE);
     	StringBuilder pricess = new StringBuilder();
     	StringBuilder quantity =new StringBuilder();
