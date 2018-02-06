@@ -335,7 +335,7 @@ public class SunGraphixMapping implements IExcelParser{
 					break;
 				case 12: //Cover Material"
 					String material = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(material)){
+					if(!StringUtils.isEmpty(material) && !material.equals("n/a")){
 						material = material.trim();
 						if(!StringUtils.isEmpty(material)){
 							List<Material> listOfMaterial = sunGraphixAttributeParser.getMaterialList(material);
@@ -376,7 +376,7 @@ public class SunGraphixMapping implements IExcelParser{
 					break;
 				case 15: //ImprintMethod"
 					String impmtdValue=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(impmtdValue)){
+					 if(!StringUtils.isEmpty(impmtdValue) && !impmtdValue.equals("0") && !impmtdValue.equals("n/a")){
 						 List<ImprintMethod> listOfImprintMethod= sunGraphixAttributeParser.getImprintMethod(impmtdValue,productConfigObj.getImprintMethods());
 						 productConfigObj.setImprintMethods(listOfImprintMethod);
 						productExcelObj.setProductConfigurations(productConfigObj);
@@ -384,7 +384,7 @@ public class SunGraphixMapping implements IExcelParser{
 					break;
 				case 16: //Imprint Area
 					String impSize=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(impSize)){
+					 if(!StringUtils.isEmpty(impSize) && !impSize.equals("0") && !impSize.equals("n/a")){
                         
 						 List<ImprintSize> listOfImpSize=new ArrayList<ImprintSize>();
 						 
@@ -397,7 +397,7 @@ public class SunGraphixMapping implements IExcelParser{
 					String personalizationVaue=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(personalizationVaue)){
 						 personalizationVaue=personalizationVaue.toUpperCase().trim();
-						 if(personalizationVaue.equals("YES") || personalizationVaue.contains("PER")){
+						 if(personalizationVaue.equals("Y") || personalizationVaue.equals("YES") || personalizationVaue.contains("PER")){
 							 List<Personalization> listPers = new ArrayList<Personalization>();
 							 listPers = sunGraphixAttributeParser.getPersonalizationCriteria(ApplicationConstants.CONST_STRING_PERSONALIZATION);
 							 productConfigObj.setPersonalization(listPers);
@@ -421,10 +421,11 @@ public class SunGraphixMapping implements IExcelParser{
 				case 26: //Qty6
 					 try{//listOfQuantity//=CommonUtility.getCellValueStrinOrDecimal(cell);
 						 String	quantity =CommonUtility.getCellValueStrinOrInt(cell);
-						 if(!StringUtils.isEmpty(quantity)&& !quantity.equals("0")){
+						 if(!StringUtils.isEmpty(quantity)){
+							 if(!quantity.toUpperCase().equals("NULL") && !quantity.equals("0")){
 							 listOfQuantity.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 						 }
-							
+					 }
 					 }catch (Exception e) {
 						_LOGGER.info("Error in base price prices field "+e.getMessage());
 					}
@@ -437,10 +438,12 @@ public class SunGraphixMapping implements IExcelParser{
 				case 32: //Prc6
 					try{//listOfQuantity//=CommonUtility.getCellValueStrinOrDecimal(cell);
 						 String	priceList =CommonUtility.getCellValueStrinOrDecimal(cell);
-						 if(!StringUtils.isEmpty(priceList)&& !priceList.equals("0")){
+						 if(!StringUtils.isEmpty(priceList)){
+								if(!priceList.toUpperCase().equals("NULL") && !priceList.equals("0")){
+						 //if(!StringUtils.isEmpty(priceList)&& !priceList.equals("0")){
 							 listOfPrices.append(priceList).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 						 }
-							
+					}
 					 }catch (Exception e) {
 						_LOGGER.info("Error in base price prices field "+e.getMessage());
 					}
@@ -454,9 +457,11 @@ public class SunGraphixMapping implements IExcelParser{
 					}
 					break;
 				case 35: //Pricing Codes
+					try{
 					String	discountCode=null;
 					discountCode=CommonUtility.getCellValueStrinOrDecimal(cell);
-					if(!StringUtils.isEmpty(discountCode) && !discountCode.toUpperCase().equals("NULL")){
+					if(!StringUtils.isEmpty(discountCode)){
+					if(!discountCode.toUpperCase().equals("NULL") && !discountCode.equals("0")){
 						listOfDiscCodes=SunGraphixConstants.SUNDISCOUNTCODE_MAP.get(discountCode.trim());
 						if(StringUtils.isEmpty(listOfDiscCodes)){
 							listOfDiscCodes.append("Z___Z___Z___Z___Z___Z___Z___Z___Z___Z"); 
@@ -464,13 +469,17 @@ public class SunGraphixMapping implements IExcelParser{
 						}else{
 			        	 listOfDiscCodes.append("Z___Z___Z___Z___Z___Z___Z___Z___Z___Z"); 
 			         }
+					}
+					}catch(Exception e){
+						_LOGGER.error("Error while processing  discount code"+e.getLocalizedMessage());
+					}
 					break;
 				case 36: //Die Charge
 					//bottom
 					//create option over here
 					try{
 					String dieCharge=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(dieCharge)){
+					 if(!StringUtils.isEmpty(dieCharge) && !dieCharge.equals("n/a")){
 						 String dieDisc="";
 						 if(dieCharge.contains("(") && dieCharge.contains(")")){
 							 dieDisc=CommonUtility.extractValueSpecialCharacter("(", ")", dieCharge);
@@ -513,7 +522,7 @@ public class SunGraphixMapping implements IExcelParser{
 					//create option over here
 					try{
 					String personalizationCharge=CommonUtility.getCellValueStrinOrInt(cell);
-					 if(!StringUtils.isEmpty(personalizationCharge)){
+					 if(!StringUtils.isEmpty(personalizationCharge) && !personalizationCharge.equals("n/a")){
 						 String persDisc="";
 						 if(personalizationCharge.contains("(") && personalizationCharge.contains(")")){
 							 persDisc=CommonUtility.extractValueSpecialCharacter("(", ")", personalizationCharge);
@@ -1266,7 +1275,7 @@ public class SunGraphixMapping implements IExcelParser{
 					String packGTValue=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(packGTValue) && packGTValue.equalsIgnoreCase("n/a")){
 						 packGTValue=packGTValue.toUpperCase().trim();
-						 if(packGTValue.equals("YES"))
+						 if(packGTValue.equalsIgnoreCase("YES"))
 						 {
 						 List<Packaging>          listPackaging               = new ArrayList<Packaging>();
 						 listPackaging=sunGraphixAttributeParser.getPackaging("GIFT BOXES",productConfigObj.getPackaging());
@@ -1279,7 +1288,7 @@ public class SunGraphixMapping implements IExcelParser{
 					 if(!StringUtils.isEmpty(mailPackValue) && mailPackValue.equalsIgnoreCase("n/a")){
 						 
 						 mailPackValue=mailPackValue.toUpperCase().trim();
-						 if(mailPackValue.equals("YES"))
+						 if(mailPackValue.equalsIgnoreCase("YES"))
 						{
 						 List<Packaging>          listPackagingM               = new ArrayList<Packaging>();
 						 if(!CollectionUtils.isEmpty(productConfigObj.getPackaging())){
@@ -1295,12 +1304,16 @@ public class SunGraphixMapping implements IExcelParser{
 					if(!StringUtils.isEmpty(origin)){
 						if(origin.toUpperCase().equals("MX")){
 							origin="Mexico";
-						}else if(origin.toUpperCase().equals("CA") || origin.toUpperCase().equals("CN")){
+						}else if(origin.toUpperCase().equals("CA")){
 							origin="Canada";
 						}else if(origin.toUpperCase().equals("UK")){
 							origin="United Kingdom";
 						}else if(origin.toUpperCase().equals("SE")){
-							origin="Senegal";
+							origin="Sweden";
+						}else if(origin.toUpperCase().equals("CN")){
+							origin="China";
+						}else if(origin.toUpperCase().equals("GB")){
+							origin="United Kingdom";
 						}
 					List<Origin> listOfOrigins = new ArrayList<Origin>();
 					Origin origins = new Origin();

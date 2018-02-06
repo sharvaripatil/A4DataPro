@@ -24,6 +24,7 @@ public class SunGraphixConstants {
 		dsic6.append("G___G___G___G___G___G___G___G___G___G");
 		SUNDISCOUNTCODE_MAP.put("CCCCC",dsic1);
 		SUNDISCOUNTCODE_MAP.put("CCCCCC",dsic2);
+		SUNDISCOUNTCODE_MAP.put("CCCC",dsic1);
 		SUNDISCOUNTCODE_MAP.put("AABBC",dsic3);
 		SUNDISCOUNTCODE_MAP.put("AAABBC",dsic4);
 		SUNDISCOUNTCODE_MAP.put("AAAAAA",dsic5);
