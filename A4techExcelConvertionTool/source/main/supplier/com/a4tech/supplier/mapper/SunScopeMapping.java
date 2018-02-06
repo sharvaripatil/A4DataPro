@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.Color;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
@@ -72,6 +73,7 @@ public class SunScopeMapping implements IExcelParser{
 		 columnIndex = 0;
 		StringBuilder productDescription = new StringBuilder();
 		StringBuilder shippingAdditionalInfo = new StringBuilder();
+		Set<String> processedXids = new HashSet<>();
 		while (iterator.hasNext()) {
 			
 			try{
@@ -82,6 +84,10 @@ public class SunScopeMapping implements IExcelParser{
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
 			if(xid != null){
 				productXids.add(xid);
+			}
+			if(processedXids.contains(xid)){//check xid processed or not if xid processed 
+				                            //skip those xid becasue supplier has provided duplicate xid
+				continue; 
 			}
 			boolean checkXid  = false;			
 			while (cellIterator.hasNext()) {
@@ -107,6 +113,7 @@ public class SunScopeMapping implements IExcelParser{
 											.getProductImprintMethod(imprintMethodValues);
 									productConfigObj.setImprintMethods(imprintMethodList);
 									priceGrids = sunScopeAttributeParser.getPriceAndUpcharges(pricesMap, priceGrids);
+									priceGrids = sunScopeAttributeParser.getFinalPricegrid(priceGrids);
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
@@ -116,6 +123,7 @@ public class SunScopeMapping implements IExcelParser{
 							 		numOfProductsFailure.add("0");
 							 	}else{
 							 	}
+							 	processedXids.add(productExcelObj.getExternalProductId());
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 								priceGrids = new ArrayList<PriceGrid>();
@@ -160,12 +168,20 @@ public class SunScopeMapping implements IExcelParser{
 					//ignore as per feedback
 					break;
 				case 8://prdName
-					productExcelObj.setName(cell.getStringCellValue());
+					String name = cell.getStringCellValue();
+					name = name.replaceAll("™", "");
+					productExcelObj.setName(CommonUtility.getStringLimitedChars(name, 60));
 					break;
 				case 9:
-					productExcelObj.setDescription(cell.getStringCellValue());
+					String desc = cell.getStringCellValue();
+					productExcelObj.setDescription(getFinalDescription(desc));
 					break;
 				case 10://colors
+					String colorVal = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(colorVal)){
+						List<Color> colorsList = sunScopeAttributeParser.getProductColor(colorVal);
+						productConfigObj.setColors(colorsList);
+					}
 					break;
 				case 11://Size
 					String sizeVal = cell.getStringCellValue();
@@ -175,7 +191,7 @@ public class SunScopeMapping implements IExcelParser{
 					}
 					break;
 				case 12: //item weight
-					String itemWeightVal = CommonUtility.getCellValueStrinOrInt(cell);
+					String itemWeightVal = CommonUtility.getCellValueDouble(cell);
 					if(!StringUtils.isEmpty(itemWeightVal)){
 					  Volume itemWeight = sunScopeAttributeParser.getItemWeightvolume(itemWeightVal);
 					  productConfigObj.setItemWeight(itemWeight);
@@ -239,6 +255,10 @@ public class SunScopeMapping implements IExcelParser{
 					String imprintSize = cell.getStringCellValue();
 							if (!StringUtils.isEmpty(imprintSize) && !imprintSize.equals("N.A.")
 									&& !imprintSize.equals("Blank")) {
+								imprintSize = imprintSize.trim();
+								if(imprintSize.contains("”")){
+									imprintSize = imprintSize.replaceAll("”","\"");
+								}
 								imprintSizes.add(imprintSize);
 							}
 					break;
@@ -387,6 +407,7 @@ public class SunScopeMapping implements IExcelParser{
 					.getProductImprintMethod(imprintMethodValues);
 			productConfigObj.setImprintMethods(imprintMethodList);
 			priceGrids = sunScopeAttributeParser.getPriceAndUpcharges(pricesMap, priceGrids);
+			priceGrids = sunScopeAttributeParser.getFinalPricegrid(priceGrids);
 	 	productExcelObj.setPriceGrids(priceGrids);
 	 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
@@ -400,6 +421,8 @@ public class SunScopeMapping implements IExcelParser{
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
+	       _LOGGER.info("Duplicate XID:: "+processedXids);
+	       processedXids = new HashSet<>();
 	       productDaoObj.saveErrorLog(asiNumber,batchId);
 	       return finalResult;
 		}catch(Exception e){
@@ -440,10 +463,12 @@ public class SunScopeMapping implements IExcelParser{
 			}
 			priceQtyVals.append(priceQty).append("_");
 		}
-			if(!StringUtils.isEmpty(priceInclude)){
+			if(!StringUtils.isEmpty(priceInclude) && priceQtyVals != null){
 			priceQtyVals.append("###").append(priceInclude);
 		}
-		existingMap.put(imprintMethod, priceQtyVals);
+			if(priceQtyVals != null){
+				existingMap.put(imprintMethod, priceQtyVals);		
+			}
 		return existingMap;
 	}
 
@@ -457,6 +482,22 @@ public class SunScopeMapping implements IExcelParser{
 		existingMap.put(imprintMethod, vals);
 		return existingMap;
 	}
+   private String getFinalDescription(String desc){
+	   desc = desc.replaceAll("’", "'");
+		desc = desc.replaceAll("”", "\"");
+		desc = desc.replaceAll("–", "-");
+		desc = desc.replaceAll("™", "");
+		if(desc.contains("?")) {
+			desc = desc.replaceAll("\\?", "");	  
+		  }
+		 if(desc.contains("Velcro")){
+			 desc = desc.replaceAll("Velcro", "");
+		  }
+		 if(desc.contains("Shuffle")){
+			 desc = desc.replaceAll("Shuffle", "");
+		  }
+	   return desc;
+   }
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}

@@ -9,22 +9,23 @@ public static Map<String,String> IMPRINT_METHOD_MAP = new HashMap<>();
 	static{
 		
 		IMPRINT_METHOD_MAP.put("Blank","Unimprinted");
-		IMPRINT_METHOD_MAP.put("Deboss/Foil/Pad","Debossed,Foil Stamped,Pad Print");
+		IMPRINT_METHOD_MAP.put("Deboss/Foil/Pad","Debossed=Deboss,Foil Stamped=Foil,Pad Print=Pad");
 		IMPRINT_METHOD_MAP.put("Pad Print","Pad Print");
 		IMPRINT_METHOD_MAP.put("Silkscreen","Silkscreen");
+		IMPRINT_METHOD_MAP.put("SilkScreen","Silkscreen");
 		IMPRINT_METHOD_MAP.put("RotaWrap™","Other=RotaWrap");
 		IMPRINT_METHOD_MAP.put("SpectraPrint","Other=SpectraPrint");
 		IMPRINT_METHOD_MAP.put("SpectraDome™","Other=SpectraDome");
-		IMPRINT_METHOD_MAP.put("Laser-Engraving","Laser Engraved");
-		IMPRINT_METHOD_MAP.put("Pad Imprint","Pad Print");
+		IMPRINT_METHOD_MAP.put("Laser-Engraving","Laser Engraved=Laser-Engraving");
+		IMPRINT_METHOD_MAP.put("Pad Imprint","Pad Print=Pad Imprint");
 		IMPRINT_METHOD_MAP.put("SpectaDomeTM","Other=SpectaDomeTM");
 		IMPRINT_METHOD_MAP.put("Foil & Deboss Combo","Debossed=Foil & Deboss Combo");
 		IMPRINT_METHOD_MAP.put("ThermaPrint™","Other=ThermaPrint");
 		IMPRINT_METHOD_MAP.put("SpectraCal™","Other=SpectraCal");
-		IMPRINT_METHOD_MAP.put("SpectraPrint+™","Other=SpectraPrint+");
+		IMPRINT_METHOD_MAP.put("SpectraPrint+™","Other=SpectraPrint");
 		IMPRINT_METHOD_MAP.put("Deboss/Foil","Debossed=Deboss/Foil");
 		IMPRINT_METHOD_MAP.put("SpectraPrint™","Other=SpectraPrint");
-		IMPRINT_METHOD_MAP.put("ThermaPrint TM","Other=ThermaPrint");
+		IMPRINT_METHOD_MAP.put("ThermaPrint TM","Other=ThermaPrint TM");
        
 		COLOR_MAP.put("Yellow","Medium Yellow");  
 		COLOR_MAP.put("Supplier Value","Color Group"); 
