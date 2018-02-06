@@ -379,7 +379,7 @@ public class BestDealAttributeParser {
 	}
 	
 	private List<ImprintSize> getProductImprintSize(String imprSize){
-		String imprintSizeValue = imprSize.split("IMPRINT SIZE ")[1].trim();
+		String imprintSizeValue = imprSize.split("IMPRINT SIZE:")[1].trim();
 		List<ImprintSize> listOfImprintSize = new ArrayList<>();
 		ImprintSize imprSizeObj = new ImprintSize();
 		imprSizeObj.setValue(imprintSizeValue);
