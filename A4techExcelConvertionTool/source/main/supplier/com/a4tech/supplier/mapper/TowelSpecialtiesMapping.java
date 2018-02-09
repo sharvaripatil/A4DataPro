@@ -7,12 +7,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -227,7 +225,7 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 					  break;
 				case 3:// desc
 					String desc = cell.getStringCellValue();
-					desc = desc.replaceAll("ô", "");
+					desc = desc.replaceAll("‚Ñ¢", "");
 					if(desc.contains(asiPrdNo)){
 						desc = desc.replaceAll(asiPrdNo, "");
 					}
@@ -281,9 +279,14 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 					if(!StringUtils.isEmpty(imprintMethodName)){
 								 listOfImprintMethod = towelSpecAttributeParser
 										.getImprintMethods(imprintMethodName,listOfImprintMethod);
-								if(imprintMethodName.contains("(")){
-									// no need to replace character
-								} else if(imprintMethodName.contains("/")){
+								 if(imprintMethodName.contains("(") || imprintMethodName.equalsIgnoreCase("Screenprinted/2 colors") 
+											|| imprintMethodName.equalsIgnoreCase("Screenprinted/1 color")
+											|| imprintMethodName.equalsIgnoreCase("Screenprinted Towel/Blank Mesh Bag") 
+											|| imprintMethodName.equalsIgnoreCase("Screenprinted Towel/ColorFusion Bag")
+											|| imprintMethodName.equalsIgnoreCase("Screenprinted/multi- color")
+											|| imprintMethodName.equalsIgnoreCase("ColorFusion front/1-color screenprint on back")){
+										// no need to replace character
+									} else if(imprintMethodName.contains("/")){
 									imprintMethodName = imprintMethodName.replaceAll("/", ",");
 								} else {
 									
@@ -333,7 +336,7 @@ public class TowelSpecialtiesMapping implements IExcelParser{
             	  String additionalInfo = cell.getStringCellValue();
             	  if(!StringUtils.isEmpty(additionalInfo)){
             		  additionalInfo = additionalInfo.replaceAll("\\<.*?\\> ?", "");
-                	  additionalInfo = additionalInfo.replaceAll("î", "\"");
+                	  additionalInfo = additionalInfo.replaceAll("‚Äù", "\"");
                 	  productExcelObj.setAdditionalProductInfo(additionalInfo);  
             	  }
 					break;
@@ -381,6 +384,7 @@ public class TowelSpecialtiesMapping implements IExcelParser{
               case 41://name
             	  String prdName = cell.getStringCellValue();
             	  if(!StringUtils.isEmpty(prdName)){
+            		  prdName = prdName.replaceAll("‚Ñ¢", "");
             		  prdName = getProductName(prdName,asiPrdNo);
                 	  productExcelObj.setName(prdName);  
             	  }
@@ -557,16 +561,16 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
 		private String getProductName(String prdName,String asiPrdNo){
-			prdName = prdName.replaceAll("‚Ñ","a,");//Ä
-			prdName = prdName.replaceAll("Ä","");
-			prdName = prdName.replaceAll("‚","");//¬
-			prdName = prdName.replaceAll("¬","");
+			prdName = prdName.replaceAll("√¢‚Äû","a,");//‚Ç¨
+			prdName = prdName.replaceAll("‚Ç¨","");
+			prdName = prdName.replaceAll("√¢","");//√Ç
+			prdName = prdName.replaceAll("√Ç","");
 			prdName = prdName.replaceAll("\\?","");
-      	  prdName = prdName.replaceAll("Æ","");//Æ
-      	  if(prdName.contains("¢,")){
-      		  prdName = prdName.replaceAll("¢,","");
+      	  prdName = prdName.replaceAll("¬Æ","");//¬Æ
+      	  if(prdName.contains("¬¢,")){
+      		  prdName = prdName.replaceAll("¬¢,","");
       	  } else{
-      		  prdName = prdName.replaceAll("¢","");
+      		  prdName = prdName.replaceAll("¬¢","");
       	  }
       	  if((prdName.substring(0, 1).matches("[^A-Za-z0-9]"))){
       		  prdName = prdName.substring(1).trim();
@@ -626,11 +630,22 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 	   return price;
    }
    private String finalDescriptionValue(String desc){
-	   desc = desc.replaceAll("\\<.*?\\> ?", "");
-	   desc = desc.replaceAll("\\ï", ".");
-	   desc = desc.replaceAll("î", "\"");
-	   desc = desc.replaceAll("í", "\'");
+	   desc = desc.replaceAll("velcro", "");
+	   desc = desc.replaceAll("\\<.*?\\>?", "");
+	   desc = desc.replaceAll(">", "");
+	   desc = desc.replaceAll("\\‚Ä¢", ".");
+	   desc = desc.replaceAll("‚Äù", "\"");//Àù
+	   desc = desc.replaceAll("‚Äô", "\'");
 	   desc = desc.replaceAll("\\..", ".");
+	   desc = desc.replaceAll(">", "");
+	   desc = desc.replaceAll("\\?", "");//
+	   desc = desc.replaceAll("‚Äì", "-");
+	   desc = desc.replaceAll("‚Äò", "'");
+	   desc = desc.replaceAll("Àù", "\"");
+	   desc = desc.replaceAll(",", ",");
+	   desc = desc.replace(".", ". ");
+	   desc = org.apache.commons.lang3.StringUtils.normalizeSpace(desc);
+	   desc = desc.replace(". . ", ". ");
 	   desc = CommonUtility.getStringLimitedChars(desc, 800);	   
 	   return desc;
    }

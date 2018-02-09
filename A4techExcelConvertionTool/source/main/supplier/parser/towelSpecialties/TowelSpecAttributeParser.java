@@ -1,7 +1,11 @@
 package parser.towelSpecialties;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -23,6 +27,7 @@ import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
@@ -46,6 +51,14 @@ public class TowelSpecAttributeParser {
 		}
 		if(!CollectionUtils.isEmpty(existingConfig.getThemes())){
 			newConfig.setThemes(existingConfig.getThemes());
+			List<Theme> themeList = existingConfig.getThemes().stream().map(themeVal ->{
+				themeVal.setName(themeVal.getName());
+				if(themeVal.getName().equals("ECO FRIENDLY")){
+					themeVal.setName("Eco & Environmentally Friendly");
+				}
+				return themeVal;
+			}).collect(Collectors.toList()); 
+			newConfig.setThemes(themeList);
 		}
 		if(!CollectionUtils.isEmpty(existingProduct.getProductKeywords())){
 			newProduct.setProductKeywords(existingProduct.getProductKeywords());
@@ -77,7 +90,9 @@ public class TowelSpecAttributeParser {
 		if(colorVal.contains("and")){
 			colorVal = colorVal.replaceAll("and", ",");
 		}
-		String[] colorVals = CommonUtility.getValuesOfArray(colorVal, ",");
+		//grey, lime, black, red, turquoise, yellow, royal blue, fucshia, grey, orange, and purple.
+		//String[] colorVals = CommonUtility.getValuesOfArray(colorVal, ",");
+		Set<String> colorVals = new HashSet<>(Arrays.asList(CommonUtility.getValuesOfArray(colorVal, ",")));
 		for (String colorName : colorVals) {
 			colorName = colorName.trim();
 			if(StringUtils.isEmpty(colorName)){
@@ -96,7 +111,7 @@ public class TowelSpecAttributeParser {
 			} else if(colorGroup.contains("Combo")){
 				listOfColors = getColorCombo(colorName,colorGroup,listOfColors);
 			} else {
-				colorObj.setAlias(colorName);
+				colorObj.setAlias(CommonUtility.getStringLimitedChars(colorName, 60));
 				colorObj.setName(colorGroup);
 				listOfColors.add(colorObj);
 			}
@@ -111,6 +126,9 @@ public class TowelSpecAttributeParser {
         String[] comboColors = null;
         String[] combos = CommonUtility.getValuesOfArray(comboVals, ",");
         for (String comboVal : combos) {
+        	colorObj = new Color();
+        	comboObj1 = new Combo();
+        	listOfComos = new ArrayList<>();
         	if(comboVal.contains("/")){
             	comboColors = CommonUtility.getValuesOfArray(comboVal,
                         ApplicationConstants.CONST_DELIMITER_FSLASH);
@@ -138,6 +156,7 @@ public class TowelSpecAttributeParser {
          		comboObj1.setType(ApplicationConstants.CONST_STRING_SECONDARY);
          		colorObj.setAlias(alias);
          		if(comboColorss.length == 5){
+         			comboObj2 = new Combo();
          			comboObj2.setName(comboColorss[4]);
          			comboObj2.setType(ApplicationConstants.CONST_STRING_TRIM);
          			listOfComos.add(comboObj2);
@@ -193,7 +212,12 @@ public class TowelSpecAttributeParser {
 		//List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
 		ImprintMethod imprintMethodObj = null;
 		String alias = null; String groupName = null;
-		if(value.contains("(")){
+		if(value.contains("(") || value.equalsIgnoreCase("Screenprinted/2 colors") 
+				|| value.equalsIgnoreCase("Screenprinted/1 color")
+				|| value.equalsIgnoreCase("Screenprinted Towel/Blank Mesh Bag") 
+				|| value.equalsIgnoreCase("Screenprinted Towel/ColorFusion Bag")
+				|| value.equalsIgnoreCase("Screenprinted/multi- color")
+				|| value.equalsIgnoreCase("ColorFusion front/1-color screenprint on back")){
 			// no need to replace character
 		} else if(value.contains("/")){
 			value = value.replaceAll("/", ",");
@@ -203,7 +227,10 @@ public class TowelSpecAttributeParser {
 		if(value.equalsIgnoreCase("Screenprinted (1 color) on chair, tote and towel")){
 			imprMethodVals=	new String[] {value};
 		} else if(value.equalsIgnoreCase("Screenprinted, Colors") || value.equalsIgnoreCase("Screenprinted, White") ||
-				value.equalsIgnoreCase("Screenprint (white, 1 color)") || value.equalsIgnoreCase("Screenprint (white, multicolor)")){
+				value.equalsIgnoreCase("Screenprint (white, 1 color)") || value.equalsIgnoreCase("Screenprint (white, multicolor)")
+				|| value.equalsIgnoreCase("LSSFHM - Decorated (1 color on towel, ColorFusion on bag)")
+				|| value.equalsIgnoreCase("Screenprinted (1 color, White)")
+				|| value.equalsIgnoreCase("Screenprinted (multi-color, White)")){
 			imprMethodVals=	new String[] {value};
 		}
 		else {
@@ -240,6 +267,8 @@ public class TowelSpecAttributeParser {
 			} else if(imprMethodName.equalsIgnoreCase("Embroidery digitization charge up to 8000 stitches") 
 					|| imprMethodName.equalsIgnoreCase("Embroidery digitization charge over 8000 stitches")){
 				alias = imprMethodName; groupName = "Embroidered";
+			} else if(imprMethodName.equals("GCRIB")){
+				alias = imprMethodName; groupName = "Other";
 			}
 			/*boolean isImprMethodAvailable = false;
 			for (ImprintMethod methodVal : imprintMethodList) {
