@@ -286,7 +286,7 @@ public class CommonUtility {
 		//value=value.replaceAll("`", "single quote");
 		//value=value.replaceAll("‘", "single quote");
 		//value=value.replaceAll("“", "double quote");
-		//value=value.replaceAll("”", "double quote");
+		value=value.replaceAll("”", "\"");
 		value=value.replaceAll("–", "dash");
 		value=value.replaceAll("®", "(R)");
 		value=value.replaceAll("™", "(TM)");

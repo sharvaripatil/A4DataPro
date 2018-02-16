@@ -249,6 +249,7 @@ public class SunGraphixMapping implements IExcelParser{
 					 productName=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(productName)){
 							productName=CommonUtility.getStringLimitedChars(productName, 60);
+							productName=CommonUtility.removeRestrictSymbols(productName);
 							productExcelObj.setName(productName);
 						}
 					break;
@@ -1205,10 +1206,10 @@ public class SunGraphixMapping implements IExcelParser{
 					String fobPoint=CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(fobPoint)){
 						fobPoint=fobPoint.toUpperCase().trim();
-						 if(fobPoint.equals("tx") || fobPoint.equals("ny")){
+						 if(fobPoint.contains("75019") || fobPoint.contains("12919")){
 						FOBPoint fobPointObj=new FOBPoint();
 						List<FOBPoint> listfobPoints = new ArrayList<FOBPoint>();
-						if(fobPoint.equals("tx")){
+						if(fobPoint.equals("75019")){
 							fobPointObj.setName("Dallas, TX 75019 USA");
 						}else {
 							fobPointObj.setName("Champlain, NY 12919 USA");
