@@ -281,7 +281,7 @@ while (iterator.hasNext()) {
 							    	if(mapSize==1){
 							    		priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPric,listOfQuan, 
 							    				priceCD,ApplicationConstants.CONST_STRING_CURRENCY_USD,
-												"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+							    				priceINC,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 												"","",priceUNI,priceGrids);
 							    		
 							    		/*(String listOfPrices,
@@ -355,7 +355,7 @@ while (iterator.hasNext()) {
 								 dimensionType = new StringBuilder();
 								 priceIncludes = new StringBuilder();
 								 imprintMethodUpchargeMap = new LinkedHashMap<>();
-								 priceIncludesValue=null;
+								 priceIncludesValue=new String();
 								 priceIncludes = new StringBuilder();
 								 imprintMethodUpchargeMap = new LinkedHashMap<>();
 								 additionalClrRunChrgPrice = new StringBuilder();
@@ -1455,7 +1455,7 @@ while (iterator.hasNext()) {
 		    	if(mapSize==1){
 		    		priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPric,listOfQuan, 
 		    				priceCD,ApplicationConstants.CONST_STRING_CURRENCY_USD,
-							"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+		    				priceINC,ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 							"","",priceUNI,priceGrids);
 		    		
 		    		/*(String listOfPrices,
@@ -1537,7 +1537,7 @@ while (iterator.hasNext()) {
 			 dimensionValue = new StringBuilder();
 			 dimensionUnits = new StringBuilder();
 			 dimensionType = new StringBuilder();
-			 priceIncludesValue=null;
+			 priceIncludesValue=new String();
 			 priceIncludes = new StringBuilder();
 			 imprintMethodUpchargeMap = new LinkedHashMap<>();
 			 additionalClrRunChrgPrice = new StringBuilder();
