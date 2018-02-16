@@ -122,12 +122,18 @@ public class GoldBondExcelMapping implements IExcelParser{
 										//}
 									}
 									if(StringUtils.isEmpty(productExcelObj.getSummary())){
+										descriptionForSummary = CommonUtility.removeSpecificWord(descriptionForSummary, asiPrdNo);
 										productExcelObj.setSummary(
-												CommonUtility.getStringLimitedChars(descriptionForSummary, 130));
+												CommonUtility.getStringLimitedChars(descriptionForSummary.trim(), 130));
 									}
 									if(!StringUtils.isEmpty(productExcelObj.getAdditionalProductInfo())){
 										String additionalPrdInfo = productExcelObj.getAdditionalProductInfo();
-										additionalPrdInfo = CommonUtility.removeSpecificWord(additionalPrdInfo, "Velcro");
+										//additionalPrdInfo = CommonUtility.removeSpecificWord(additionalPrdInfo, "Velcro");
+										if(additionalPrdInfo.contains("Velcro")){
+											additionalPrdInfo = additionalPrdInfo.replaceAll("Velcro", "Hook & Loop");
+										} else {
+											additionalPrdInfo = additionalPrdInfo.replaceAll("velcro", "Hook & Loop");	
+										}
 										additionalPrdInfo = additionalPrdInfo.replaceAll("®", "");
 										productExcelObj.setAdditionalProductInfo(additionalPrdInfo);	
 									}
@@ -189,7 +195,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 				    break;
 				case 4:// description
 					String prdName = cell.getStringCellValue();
-					prdName = prdName.replaceAll("[^a-zA-Z0-9%/?!\"\\- ]", "");
+					prdName = prdName.replaceAll("[^a-zA-Z0-9%/?!\"\\-. ]", "");
 					if(prdName.toUpperCase().contains(asiPrdNo)){
 						prdName = CommonUtility.removeSpecificWord(prdName, asiPrdNo);
 						prdName = prdName.replaceAll(asiPrdNo, "");
@@ -842,12 +848,18 @@ public class GoldBondExcelMapping implements IExcelParser{
 				//}
 			}
 		 if(StringUtils.isEmpty(productExcelObj.getSummary())){
+			 descriptionForSummary = CommonUtility.removeSpecificWord(descriptionForSummary, asiPrdNo);
 			 productExcelObj.setSummary(
-						CommonUtility.getStringLimitedChars(descriptionForSummary, 130));
+						CommonUtility.getStringLimitedChars(descriptionForSummary.trim(), 130));
 			}
 		 if(!StringUtils.isEmpty(productExcelObj.getAdditionalProductInfo())){
 				String additionalPrdInfo = productExcelObj.getAdditionalProductInfo();
-				additionalPrdInfo = CommonUtility.removeSpecificWord(additionalPrdInfo, "Velcro");
+				//additionalPrdInfo = CommonUtility.removeSpecificWord(additionalPrdInfo, "Velcro");
+				if(additionalPrdInfo.contains("Velcro")){
+					additionalPrdInfo = additionalPrdInfo.replaceAll("Velcro", "Hook & Loop");
+				} else {
+					additionalPrdInfo = additionalPrdInfo.replaceAll("velcro", "Hook & Loop");	
+				}
 				additionalPrdInfo = additionalPrdInfo.replaceAll("®", "");
 				productExcelObj.setAdditionalProductInfo(additionalPrdInfo);	
 			}
@@ -891,7 +903,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 	}
 	private String finalDescriptionValue(String newDesc,String productNum){
 		if(!StringUtils.isEmpty(newDesc)){
-			newDesc = newDesc.replaceAll("velcro", "");
+			newDesc = newDesc.replaceAll("velcro", "Hook & Loop");
 			if(newDesc.toUpperCase().contains(productNum)){
 				newDesc = CommonUtility.removeSpecificWord(newDesc, productNum);
 				newDesc = newDesc.replaceAll(productNum, "");

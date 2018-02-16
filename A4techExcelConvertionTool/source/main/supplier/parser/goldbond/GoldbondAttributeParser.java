@@ -91,7 +91,10 @@ public class GoldbondAttributeParser {
 		    } else if(value.equalsIgnoreCase("$15.00 (A) per color")){
 		    	priceVal = "15";
 		    	discountCode = "A";
-		    } else if(value.equalsIgnoreCase("$50.00 (G) per color, 2-color only (CANNOT BE CLOSE REGISTRATION)")){
+		    }else if(value.equalsIgnoreCase("$75.00 (G) per color")){
+		    	priceVal = "75";
+		    	discountCode = "G";
+		    }else if(value.equalsIgnoreCase("$50.00 (G) per color, 2-color only (CANNOT BE CLOSE REGISTRATION)")){
 		    	priceVal = "50";
 		    	discountCode = "G";
 		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (close registration not available)")){
@@ -101,6 +104,9 @@ public class GoldbondAttributeParser {
 		    	priceVal = "50";
 		    	discountCode = "G";
 		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (up to 2 colors), applies to repeat orders")){
+		    	priceVal = "50";
+		    	discountCode = "G";
+		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (CANNOT BE CLOSE REGISTRATION)")) {
 		    	priceVal = "50";
 		    	discountCode = "G";
 		    } else {
@@ -414,8 +420,10 @@ public class GoldbondAttributeParser {
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Additional Location", false,
 					"USD","", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
 		} else if(value.contains("$50.00 (G) plus $0.30 (G)")){
-			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1___1", "50.0___0.30", "G___G", "Additional Location", false,
+			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "50.0", "G", "Additional Location", false,
 					"USD","", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
+			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Additional Location", false,
+					"USD","", "Reverse Side Imprint", "Run Charge", "Other", 1, existingPriceGrid,"","");
 		} else if(value.equalsIgnoreCase("$0.30 (G) per cube location, ea.")){
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Additional Location", false,
 					"USD", "","Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
@@ -428,8 +436,10 @@ public class GoldbondAttributeParser {
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.80", "G", "Additional Location", false,
 					"USD","", "Reverse Side Imprint", "Run Charge", "Other", 1, existingPriceGrid,"","");
 		}else if(value.equalsIgnoreCase("$50.00 (G) per location plus add $0.30 (G) ea./location")){
-			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1___1", "50.0___0.30", "G___G", "Additional Location", false,
+			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "50.0", "G", "Additional Location", false,
 					"USD","", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
+			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Additional Location", false,
+					"USD","", "Reverse Side Imprint", "Run Charge", "Other", 1, existingPriceGrid,"","");
 		} else {
 			
 		}

@@ -37,9 +37,12 @@ public class GoldbondPriceGridParser {
 		
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(priceName);
-		priceGrid.setPriceIncludes(priceInclude);
+		priceGrid.setPriceIncludes(CommonUtility.getStringLimitedChars(priceInclude, 100));
 		priceGrid.setIsQUR(isQurFlag);
-		if (!priceGrid.getIsQUR() && !CommonUtility.isdescending(prices) && StringUtils.isEmpty(listOfPrices)) {
+		if(StringUtils.isEmpty(listOfPrices)){
+			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
+		}
+		if (!priceGrid.getIsQUR() && !CommonUtility.isdescending(prices)) {
 			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
 		}
 		priceGrid.setIsBasePrice(isBasePrice);
@@ -156,7 +159,7 @@ public class GoldbondPriceGridParser {
 		priceGrid.setUpchargeType(upChargeType);
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		priceGrid.setServiceCharge("Required");
-		priceGrid.setPriceIncludes(priceInclude);
+		priceGrid.setPriceIncludes(CommonUtility.getStringLimitedChars(priceInclude, 100));
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR() && !CommonUtility.isdescending(upChargePrices)) {
 			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);

@@ -429,8 +429,11 @@ public class TowelSpecAttributeParser {
 					"USD", imprintMethodInclude, upchargeName, "Screen charge",
 					"Other", 1, priceGrid, "", "");
 		  } else if(value.contains("8000 stitches")){
-			  priceGrid = towelPriceGridParser.getUpchargePriceGrid("1___1", "75.00___45.00", "v_v", "Imprint Method", false,
-						"USD", imprintMethodInclude, upchargeName, "Screen charge",
+			  priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "75.00", "v", "Imprint Method", false,
+						"USD", "For up to 8000 stitches", upchargeName, "Imprint Method charge",
+						"Other", 1, priceGrid, "", "");
+			  priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "45.00", "v", "Imprint Method", false,
+						"USD", "", upchargeName, "Screen charge",
 						"Other", 1, priceGrid, "", "");
 		  } else if(value.contains("Over 8,000 stitches")){
 			  priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", "75", "v", "Imprint Method", false,
@@ -640,6 +643,43 @@ public class TowelSpecAttributeParser {
 			 listOfAvailabli.add(AvailableVariObj);
     	 return listOfAvailabli;
      }
+     public Availability getProductAvailiability(Set<StringBuilder> availabilityVals){
+    	 Availability availabilityObj = new Availability();
+		 List<AvailableVariations> availableVariationsList = new ArrayList<>();
+		 AvailableVariations availableVariationsObj = null;
+		 List<Object> listOfParent = null;
+			List<Object> listOfChild = null;
+    	 for (StringBuilder availVal : availabilityVals) {
+    		 availableVariationsObj = new AvailableVariations();
+    		 listOfParent = new ArrayList<>();
+			 listOfChild = new ArrayList<>();
+			 String[] availVals = CommonUtility.getValuesOfArray(availVal.toString(), "##");
+			 String parentVal = availVals[0];
+			 String childVal = availVals[1];
+			 listOfParent.add(parentVal);
+			 if(childVal.contains(",")){
+				 String[] childVals = CommonUtility.getValuesOfArray(childVal, ",");
+				 for (String childVall : childVals) {
+					 availableVariationsObj = new AvailableVariations();
+					 listOfChild = new ArrayList<>();
+					 listOfChild.add(childVall);
+					 availableVariationsObj.setChildValue(listOfChild);
+					 availableVariationsObj.setParentValue(listOfParent);
+					 availableVariationsList.add(availableVariationsObj);
+				}
+			 } else {
+				 listOfChild.add(childVal);
+				 availableVariationsObj.setChildValue(listOfChild);
+				 availableVariationsObj.setParentValue(listOfParent);
+				 availableVariationsList.add(availableVariationsObj);
+			 }
+		}
+    	 availabilityObj.setParentCriteria("Imprint Method");
+		 availabilityObj.setChildCriteria("Imprint Size");
+    	 availabilityObj.setAvailableVariations(availableVariationsList);
+    	 return availabilityObj;
+     }
+ 
 	 public TowelSpecPriceGridParser getTowelPriceGridParser() {
 			return towelPriceGridParser;
 		}
