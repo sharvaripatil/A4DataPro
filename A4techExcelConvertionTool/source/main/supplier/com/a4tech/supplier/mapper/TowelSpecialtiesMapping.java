@@ -245,6 +245,7 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 					}
 					if(StringUtils.isEmpty(productExcelObj.getName())){
 						productExcelObj.setName(CommonUtility.getStringLimitedChars(desc, 60));// if product name is not provided ,it is used as prdName
+						productExcelObj.setSummary(CommonUtility.getStringLimitedChars(desc, 130));
 					}
 					if(!StringUtils.isEmpty(desc)){
 						desc = finalDescriptionValue(desc);
@@ -411,6 +412,7 @@ public class TowelSpecialtiesMapping implements IExcelParser{
             		  prdName = prdName.replaceAll("™", "");
             		  prdName = getProductName(prdName,asiPrdNo);
                 	  productExcelObj.setName(prdName);  
+                	  productExcelObj.setSummary(prdName);
             	  }
             	  break;
               case 42:// ignore
