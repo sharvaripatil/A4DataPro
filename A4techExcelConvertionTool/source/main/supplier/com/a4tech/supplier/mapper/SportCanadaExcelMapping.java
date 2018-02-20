@@ -215,7 +215,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 								size.setDimension(finalDimensionObj);
 								productConfigObj.setSizes(size);
 								}
-								imprintSizeList=gcImprintSizeParser.getimprintsize(ImprintSizevalue);
+								imprintSizeList=gcImprintSizeParser.getimprintsize(ImprintSizevalue,imprintLocation);
 								if(imprintSizeList!=null){
 								productConfigObj.setImprintSize(imprintSizeList);}
 								productConfigObj.setColors(colorList);
@@ -800,11 +800,12 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				case 83: //ImprintLoc
 
 					 imprintLocation = cell.getStringCellValue();
-						if(!imprintLocation.isEmpty()){
+						if(imprintLocation.contains("Full Bleed")){
 							ImprintLocation locationObj = new ImprintLocation();
-							locationObj.setValue(imprintLocation);
+							locationObj.setValue("Background: Full Bleed");
 							listImprintLocation.add(locationObj);
 						}
+					
 					
 					break;
 					  	
@@ -1022,17 +1023,17 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					
 				case 108: //RushProdTimeLo
 				    rushProdTimeLo  = cell.getStringCellValue();
-					if(!rushProdTimeLo.equals(ApplicationConstants.CONST_STRING_ZERO)){
-						rushTime = gcRushTimeParser.getRushTimeValues(rushProdTimeLo, rushTime);
-					}
-					
 				
 					break;
 				case 109: //RushProdTimeHi
 					String rushProdTimeH  = cell.getStringCellValue();
-					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO) && !rushProdTimeLo.equalsIgnoreCase(rushProdTimeH) ){
-						rushTime = gcRushTimeParser.getRushTimeValues(rushProdTimeH, rushTime);
+					if (!rushProdTimeLo
+							.equals(ApplicationConstants.CONST_STRING_ZERO)) {
+						rushTime = gcRushTimeParser
+								.getRushTimeValues(rushProdTimeLo,
+										rushProdTimeH);
 					}
+
 					
 					
 					break;
@@ -1072,40 +1073,25 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				
 					break;
 				case 117: //ShipPointZip
+				  	 FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
+						
+							 if(!StringUtils.isEmpty(FOBValue))
+							 {
+								if(FOBValue.contains("L7L 0J8"))
+								{
+									fobPintObj=new FOBPoint();
+									fobPintObj.setName("Burlington, ON L7L 5J8 CAN");
+									FobPointsList.add(fobPintObj);
 
+								}
+								 
+								 productExcelObj.setAdditionalProductInfo(FOBValue);
+							 }
 					
 					break;
 					
 				case 118: //Comment
-			     	 FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
-			
-					 if(!StringUtils.isEmpty(FOBValue))
-					 {
-						if(FOBValue.contains("NY"))
-						{
-							fobPintObj=new FOBPoint();
-							fobPintObj.setName("Buffalo, NY 14150 USA");
-							FobPointsList.add(fobPintObj);
-
-						}
-						 if(FOBValue.contains("CA"))
-						{
-							fobPintObj=new FOBPoint();
-							fobPintObj.setName("San Diego, CA 92126 USA");
-							FobPointsList.add(fobPintObj);
-
-						}
-						 if(FOBValue.contains("TN"))
-						{
-							fobPintObj=new FOBPoint();
-							fobPintObj.setName("Shelbyville, TN 37160 USA");
-							FobPointsList.add(fobPintObj);
-
-							
-						}
-						 
-						 productExcelObj.setAdditionalProductInfo(FOBValue);
-					 }
+		
 					 
 					break;
 					
@@ -1234,8 +1220,11 @@ public class SportCanadaExcelMapping implements IExcelParser{
 		}
 		productConfigObj.setImprintMethods(listOfImprintMethods);
 
-		imprintSizeList=gcImprintSizeParser.getimprintsize(ImprintSizevalue);
+		
+		imprintSizeList=gcImprintSizeParser.getimprintsize(ImprintSizevalue,imprintLocation);
 		 imprintSizeList.removeAll(Collections.singleton(null));
+		 
+		 
 		 if(!StringUtils.isEmpty(FirstImprintsize1) || FirstImprintsize1 !=  "0" ){
 		productConfigObj.setImprintSize(imprintSizeList);
 		}

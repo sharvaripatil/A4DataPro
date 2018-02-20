@@ -226,7 +226,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 								size.setDimension(finalDimensionObj);
 								productConfigObj.setSizes(size);
 								}
-								imprintSizeList=gcImprintSizeParser.getimprintsize(ImprintSizevalue);
+								imprintSizeList=gcImprintSizeParser.getimprintsize(ImprintSizevalue,imprintLocation);
 								if(!StringUtils.isEmpty(ImprintSizevalue)){
 								productConfigObj.setImprintSize(imprintSizeList);}
 							//	productExcelObj.setImages(listOfImages);
@@ -997,16 +997,16 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 					break;
 				case 108://RushProdTimeLo
 					String rushProdTimeLo  = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!rushProdTimeLo.equals(ApplicationConstants.CONST_STRING_ZERO)){
+				/*	if(!rushProdTimeLo.equals(ApplicationConstants.CONST_STRING_ZERO)){
 						rushTime = gcRushTimeParser.getRushTimeValues(rushProdTimeLo, rushTime);
-					}
+					}*/
 					
 					 break; 	 
 				case 109://RushProdTimeH
 					String rushProdTimeH  = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO)){
+				/*	if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO)){
 						rushTime = gcRushTimeParser.getRushTimeValues(rushProdTimeH, rushTime);
-					}
+					}*/
 					break;
 					
 				case 110://Packaging
@@ -1168,7 +1168,7 @@ public class GoldstarCanadaExcelMapping implements IExcelParser{
 		productConfigObj.setSizes(size);
 		}
 		
-		imprintSizeList=gcImprintSizeParser.getimprintsize(ImprintSizevalue);
+		imprintSizeList=gcImprintSizeParser.getimprintsize(ImprintSizevalue,imprintLocation);
 		 imprintSizeList.removeAll(Collections.singleton(null));
 		if(!StringUtils.isEmpty(ImprintSizevalue)){
 		productConfigObj.setImprintSize(imprintSizeList);
