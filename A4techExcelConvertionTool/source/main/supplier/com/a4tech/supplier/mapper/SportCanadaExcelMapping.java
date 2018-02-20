@@ -70,7 +70,6 @@ public class SportCanadaExcelMapping implements IExcelParser{
 	private GoldstarCanadaImprintsizeParser gcImprintSizeParser;
 	private GoldstarCanadaColorParser gccolorparser;
 
-	@SuppressWarnings("deprecation")
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId,String environmentType){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
@@ -216,7 +215,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 								size.setDimension(finalDimensionObj);
 								productConfigObj.setSizes(size);
 								}
-								imprintSizeList=gcImprintSizeParser.getimprintsize(ImprintSizevalue);
+								imprintSizeList=gcImprintSizeParser.getimprintsize(ImprintSizevalue,imprintLocation);
 								if(imprintSizeList!=null){
 								productConfigObj.setImprintSize(imprintSizeList);}
 								productConfigObj.setColors(colorList);
@@ -296,7 +295,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					   productExcelObj.setExternalProductId(xid.trim());
 					
 					 break;
-				
+					 
 				case 2://ItemNum
 					 String asiProdNo=CommonUtility.getCellValueStrinOrInt(cell);
 					int Nolength=asiProdNo.length();
@@ -306,7 +305,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					 }else{
 				     productExcelObj.setAsiProdNo(asiProdNo);		
 					 }
-					
+
 					 break;
 				case 3://Name
 
@@ -343,7 +342,18 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					}
 					break;
 					
-				case 9: // Description
+					
+				case 9: //page1
+					Category1=cell.getStringCellValue();
+				
+					 break;
+					 
+				case 10: //page2
+					Category1=cell.getStringCellValue();
+				
+					 break;
+					
+				case 11: // Description
 					String description =CommonUtility.getCellValueStrinOrInt(cell);
 					description=description.replaceAll("™", "");
 					description=description.replaceAll("®", "");
@@ -359,7 +369,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 
 					break;
 					
-				case 10: //Keywords
+				case 12: //Keywords
 					String productKeyword = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(productKeyword)){
 					String productKeywordArr[] = productKeyword.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
@@ -370,7 +380,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					}
 					break;
 					
-				case 11:  //Colors
+				case 13:  //Colors
 					String colorValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(colorValue)){
 						colorList=gccolorparser.getColorCriteria(colorValue);
@@ -380,7 +390,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					
 					break;
 					
-				case 12:  //Themes
+				case 14:  //Themes
 
 					 themeValue=cell.getStringCellValue();
 					 themeList = new ArrayList<Theme>();
@@ -399,7 +409,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 									
 					break;
 				
-				case 13:  // Dimension1
+				case 15:  // Dimension1
 
 					String dimensionValue1=CommonUtility.getCellValueStrinOrInt(cell);
 					   if(dimensionValue1 != null && !dimensionValue1.isEmpty()){
@@ -409,7 +419,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					}
 					break;
 
-				case 14: //Dimension1Units
+				case 16: //Dimension1Units
 
 					String dimensionUnits1 = CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!dimensionUnits1.equals("0")){
@@ -417,7 +427,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					 }
 					break;
 					
-				case 15: // Dimension1Type
+				case 17: // Dimension1Type
 
 					String dimensionType1 =CommonUtility.getCellValueStrinOrInt(cell);
 					if(!dimensionType1.equals("0")){
@@ -426,7 +436,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					  
 					break;
 					
-				case 16://Dimension2
+				case 18://Dimension2
 
 					String dimensionValue2 =CommonUtility.getCellValueStrinOrInt(cell);
 					 if(dimensionValue2 != null && !dimensionValue2.isEmpty()){
@@ -434,7 +444,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					 }
 					
 					break;
-				case 17: //Dimension2Units
+				case 19: //Dimension2Units
 
 					  String dimensionUnits2 = CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!dimensionUnits2.equals("0")){
@@ -442,7 +452,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					 }
 					  break;
 				
-				case 18: //Dimension2Type
+				case 20: //Dimension2Type
 					String  dimensionType2 = CommonUtility.getCellValueStrinOrInt(cell);
 
 					if(!dimensionType2.equals("0")){
@@ -452,7 +462,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					 
 					break;
 				
-				 case 19: //Dimension3
+				 case 21: //Dimension3
 					 String dimensionValue3  =CommonUtility.getCellValueStrinOrInt(cell);
 						if(dimensionValue3 != null && !dimensionValue3.isEmpty()){
 							dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
@@ -462,7 +472,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				
 					break;
 					
-				case 20:  //Dimension3Units
+				case 22:  //Dimension3Units
 
 					String dimensionUnits3 = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!dimensionUnits3.equals("0")){
@@ -473,7 +483,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					}
 					break;
 					
-				case 21: //Dimension3Type
+				case 23: //Dimension3Type
 
 					String dimensionType3 = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!dimensionType3.equals("0")){
@@ -484,12 +494,12 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					}
 					break;
 					
-				case 22: //Qty1
-				case 23: //Qty2
-				case 24: //Qty3
-				case 25: //Qty4
-				case 26: //Qty5
-				case 27: //Qty6
+				case 24: //Qty1
+				case 25: //Qty2
+				case 26: //Qty3
+				case 27: //Qty4
+				case 28: //Qty5
+				case 29: //Qty6
 					try{
 						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 							quantity = cell.getStringCellValue();
@@ -507,12 +517,12 @@ public class SportCanadaExcelMapping implements IExcelParser{
 						_LOGGER.info("Error in base price Quantity field "+e.getMessage());
 					}
 					break;
-				case 28://Prc1
-				case 29://Prc2
-				case 30://Prc3
-				case 31://Prc4
-				case 32://Prc5
-				case 33://Prc6
+				case 30://Prc1
+				case 31://Prc2
+				case 32://Prc3
+				case 33://Prc4
+				case 34://Prc5
+				case 35://Prc6
 					try{
 						 if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 							 price = cell.getStringCellValue();
@@ -531,16 +541,16 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					}
 						
 						    break; 
-				case 34://PrCode
+				case 36://PrCode
 					priceCode = cell.getStringCellValue();	
 				    break; 
 
-				case 35://PiecesPerUnit1
-				case 36://PiecesPerUnit2
-				case 37: // PiecesPerUnit3
-				case 38: // PiecesPerUnit4
-				case 39://PiecesPerUnit5
-				case 40://PiecesPerUnit6
+				case 37://PiecesPerUnit1
+				case 38://PiecesPerUnit2
+				case 39: // PiecesPerUnit3
+				case 40: // PiecesPerUnit4
+				case 41://PiecesPerUnit5
+				case 42://PiecesPerUnit6
 					try{
 					
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
@@ -559,18 +569,18 @@ public class SportCanadaExcelMapping implements IExcelParser{
 						_LOGGER.info("Error in pricePerUnit field "+e.getMessage());
 					}
 					break;
-				case 41://QuoteUponRequest
+				case 43://QuoteUponRequest
 				     quoteUponRequest = cell.getStringCellValue();
 
 				     break;
-				case 42://PriceIncludeClr
+				case 44://PriceIncludeClr
 				      priceIncludes.append(cell.getStringCellValue()).append(" ");
 				      break;
 
-				case 43://PriceIncludeSide
+				case 45://PriceIncludeSide
 					priceIncludes.append(cell.getStringCellValue()).append(" ");
 					break;
-				case 44://PriceIncludeLoc
+				case 46://PriceIncludeLoc
 					priceIncludes.append(cell.getStringCellValue());
 					int PriceIncludeLength=priceIncludes.length();
 					if(PriceIncludeLength>100){
@@ -582,28 +592,79 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					}
 					
 					      break;
-				case 45:  //SetupChg
+				case 47:  //SetupChg
 					Setupcharge=cell.getStringCellValue();
 					
 					     break;
-				case 46: // SetupChgCode
+				case 48: // SetupChgCode
 					Setupcode=cell.getStringCellValue();	
 						break;
 			
 				
-				case 57://AddClrChg
+				case 49://ScreenChg
+		
+					break;
+						
+				case 50://ScreenChgCode
+
+					
+					break;
+								
+				case 51://PlateChg
+
+					
+					break;	
+					
+            	case 52://PlateChgCode
+
+					
+					break;			
+						
+            	case 53://DieChg
+
+					
+					break;			
+					
+					
+            	case 54://DieChgCode
+
+
+					
+					break;		
+					
+               case 55://ToolingChg
+
+			
+					break;		
+					
+               case 56://ToolingChgCode
+
+       			
+					break;	
+					
+               case 57://RepeatChg
+
+          			
+					break;
+					
+               case 58://RepeatChgCode
+
+
+					break;
+					
+				case 59://AddClrChg
 					Addcolorcharge=cell.getStringCellValue();
 
 							break;
-				case 58://AddClrChgCode
+				case 60://AddClrChgCode
 	
 							break; 
-				case 59://AddClrRunChg1
-				case 60://AddClrRunChg2
-				case 61://AddClrRunChg3
-				case 62://AddClrRunChg4
-				case 63://AddClrRunChg5
-				case 64://AddClrRunChg6
+				case 61://AddClrRunChg1
+				case 62://AddClrRunChg2
+				case 63://AddClrRunChg3
+				case 64://AddClrRunChg4
+				case 65://AddClrRunChg5
+				case 66://AddClrRunChg6
 					try{
 						
 						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
@@ -622,7 +683,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 							_LOGGER.info("Error in pricePerUnit field "+e.getMessage());
 						}
 							break;
-				case 65://AddClrRunChgCode
+				case 67://AddClrRunChgCode
 					 Addclearcode=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(Addclearcode))
 					 {
@@ -637,10 +698,10 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					}
 			     	}
 							break;
-				case 66://IsRecyclable
+				case 68://IsRecyclable
 
 							break;
-				case 67://IsEnvironmentallyFriendly
+				case 69://IsEnvironmentallyFriendly
 					 String IsEnvironmentallyFriendly ="";
 					  if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 					   IsEnvironmentallyFriendly = cell.getStringCellValue();
@@ -659,28 +720,28 @@ public class SportCanadaExcelMapping implements IExcelParser{
 						}
 
 							break;
-				case 68://IsNewProd
+				case 70://IsNewProd
 
 			          		break; 
-				case 69://NotSuitable
+				case 71://NotSuitable
 
 					       break;
-				case 70://Exclusive
+				case 72://Exclusive
 
 					break;
-				case 71://Hazardous
+				case 73://Hazardous
 
 					break;
-				case 72://OfficiallyLicensed
+				case 74://OfficiallyLicensed
 
 					break;
-				case 73://IsFood
+				case 75://IsFood
 
 					break;
-				case 74://IsClothing
+				case 76://IsClothing
 
 					break;
-				case 75://ImprintSize1
+				case 77://ImprintSize1
 
 					 FirstImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FirstImprintsize1) || FirstImprintsize1 !=  "0" ){
@@ -688,7 +749,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					
 					 }
 					    break;
-				case 76: //ImprintSize1Units
+				case 78: //ImprintSize1Units
 					FirstImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 					 if(!StringUtils.isEmpty(FirstImprintunit1) || FirstImprintunit1 !=  "0" ){
@@ -698,7 +759,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					   	break;
 					   	
 					    
-				case 77: //ImprintSize1Type
+				case 79: //ImprintSize1Type
 					FirstImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 					   if(!StringUtils.isEmpty(FirstImprinttype1) || FirstImprinttype1 !=  "0" ){
@@ -707,7 +768,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					   }
 							break;
 		
-				case 78:   //ImprintSize2
+				case 80:   //ImprintSize2
 					FirstImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 					
 					 if(!StringUtils.isEmpty(FirstImprintsize2) || FirstImprinttype1 != "0" ){
@@ -715,7 +776,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					 }
 				
 				  
-				case 79: // ImprintSize2Units
+				case 81: // ImprintSize2Units
 
 			      FirstImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(FirstImprintunit2) || FirstImprintunit2 !=  "0" ){
@@ -726,7 +787,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 
 					  	break;
 					  	
-				case 80:	// ImprintSize2Type
+				case 82:	// ImprintSize2Type
 		     	FirstImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(FirstImprinttype2) || FirstImprinttype2 !=  "0" ){
 
@@ -736,18 +797,19 @@ public class SportCanadaExcelMapping implements IExcelParser{
 
 					    break;
 					    
-				case 81: //ImprintLoc
+				case 83: //ImprintLoc
 
 					 imprintLocation = cell.getStringCellValue();
-						if(!imprintLocation.isEmpty()){
+						if(imprintLocation.contains("Full Bleed")){
 							ImprintLocation locationObj = new ImprintLocation();
-							locationObj.setValue(imprintLocation);
+							locationObj.setValue("Background: Full Bleed");
 							listImprintLocation.add(locationObj);
 						}
 					
+					
 					break;
 					  	
-				case 82:  // SecondImprintSize1
+				case 84:  // SecondImprintSize1
 
                 	SecondImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 					
@@ -758,7 +820,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					 break;
 					 
 					 
-				case 83:  //SecondImprintSize1Units
+				case 85:  //SecondImprintSize1Units
 
 	              SecondImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 					
@@ -770,7 +832,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				
 					   	break;
 					   	
-				case 84:  //SecondImprintSize1Type
+				case 86:  //SecondImprintSize1Type
 					SecondImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 				    if(!StringUtils.isEmpty(SecondImprinttype1) || SecondImprinttype1 !=  "0" ){
@@ -782,7 +844,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					
 						break;
 						
-				case 85:  // SecondImprintSize2
+				case 87:  // SecondImprintSize2
 					SecondImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 					
 				    if(!StringUtils.isEmpty(SecondImprintsize2) || SecondImprintsize2 !=  "0" ){
@@ -794,7 +856,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				
 					  break;
 					  
-				case 86: // SecondImprintSize2Units
+				case 88: // SecondImprintSize2Units
 
 					SecondImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintunit2) || SecondImprintunit2 !=  "0" ){
@@ -805,7 +867,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					
 					break;
 					
-				case 87: //SecondImprintSize2Type
+				case 89: //SecondImprintSize2Type
 
 					SecondImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprinttype2) || SecondImprinttype2 != "0" ){
@@ -817,7 +879,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 
 					break;
 					
-				case 88: //SecondImprintLoc
+				case 90: //SecondImprintLoc
 	
 					String imprintLocation2 = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintLocation2)){
@@ -827,13 +889,13 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					}
 					  break;
 					  
-				case 89: //DecorationMethod
+				case 91: //DecorationMethod
 
 					 decorationMethod = cell.getStringCellValue();
 						listOfImprintMethods = gcimprintMethodParser.getImprintMethodValues(decorationMethod,listOfImprintMethods);
 						
 					break;
-				case 90: // NoDecoration
+				case 92: // NoDecoration
 					String noDecoration = cell.getStringCellValue();
 					if(noDecoration.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
 						listOfImprintMethods = gcimprintMethodParser.getImprintMethodValues(noDecoration,
@@ -841,7 +903,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					}
 					 break; 
 					 
-				case 91: //NoDecorationOffered
+				case 93: //NoDecorationOffered
 					String noDecorationOffered = cell.getStringCellValue();
 					if(noDecorationOffered.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
 						listOfImprintMethods = gcimprintMethodParser.getImprintMethodValues(noDecorationOffered,
@@ -852,14 +914,56 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					 break;
 			
 					 
-				case 99: //MadeInCountry
+					 
+				case 94://NewPictureURL
+
+					
+					break;
+					
+				case 95://NewPictureFile
+
+					
+					break;
+					
+				case 96://ErasePicture
+
+					
+					break;
+					
+				case 97://NewBlankPictureURL
+
+					
+			
+					break;
+					
+				case 98://NewBlankPictureFile
+
+
+					
+					break;
+				
+					
+				case 99://EraseBlankPicture
+
+			
+					break;
+					
+					
+	            case 100://NotPictured
+	            	
+
+					
+					break;
+					
+					
+				case 101: //MadeInCountry
 					String madeInCountry = cell.getStringCellValue();
 					if(!madeInCountry.isEmpty()){
 						List<Origin> listOfOrigin = gcOriginParser.getOriginValues(madeInCountry);
 						productConfigObj.setOrigins(listOfOrigin);
 					}
 					break;
-				case 100: //AssembledInCountry
+				case 102: //AssembledInCountry
 
 				     String additionalProductInfo = cell.getStringCellValue();
 				     if(!StringUtils.isEmpty(additionalProductInfo))
@@ -867,7 +971,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				    	productExcelObj.setAdditionalProductInfo(additionalProductInfo); 
 				       }
 					break;
-				case 101: //DecoratedInCountry
+				case 103: //DecoratedInCountry
 
 					String additionalImprintInfo = cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(additionalImprintInfo))
@@ -878,7 +982,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 				
 					break;
 					
-				case 102:// ComplianceList
+				case 104:// ComplianceList
 					String complnceValuet=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(complnceValuet))
 					   {
@@ -887,15 +991,15 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					   }
 				
 					break;
-				case 103: //ComplianceMemo
+				case 105: //ComplianceMemo
 
 					break;
-				case 104: //ProdTimeLo
+				case 106: //ProdTimeLo
 					   prodTimeLo = CommonUtility.getCellValueStrinOrInt(cell);
 				
 					break;
 					
-				case 105://ProdTimeHi
+				case 107://ProdTimeHi
 					String prodTimeHi = CommonUtility.getCellValueStrinOrInt(cell);
 					ProductionTime productionTime = new ProductionTime();
 				
@@ -917,23 +1021,23 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					}
 					break;
 					
-				case 106: //RushProdTimeLo
+				case 108: //RushProdTimeLo
 				    rushProdTimeLo  = cell.getStringCellValue();
-					if(!rushProdTimeLo.equals(ApplicationConstants.CONST_STRING_ZERO)){
-						rushTime = gcRushTimeParser.getRushTimeValues(rushProdTimeLo, rushTime);
-					}
-					
 				
 					break;
-				case 107: //RushProdTimeHi
+				case 109: //RushProdTimeHi
 					String rushProdTimeH  = cell.getStringCellValue();
-					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO) && !rushProdTimeLo.equalsIgnoreCase(rushProdTimeH) ){
-						rushTime = gcRushTimeParser.getRushTimeValues(rushProdTimeH, rushTime);
+					if (!rushProdTimeLo
+							.equals(ApplicationConstants.CONST_STRING_ZERO)) {
+						rushTime = gcRushTimeParser
+								.getRushTimeValues(rushProdTimeLo,
+										rushProdTimeH);
 					}
+
 					
 					
 					break;
-				case 108://Packaging
+				case 110://Packaging
 
 					String pack  = cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(pack))
@@ -941,72 +1045,57 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					productExcelObj.setAdditionalShippingInfo(pack);
 					 }
 					 break; 	 
-				case 109://CartonL
+				case 111://CartonL
 
 					 cartonL  = CommonUtility.getCellValueStrinOrInt(cell);
 
 					break;
 					
-				case 110://CartonW
+				case 112://CartonW
 					cartonW  = CommonUtility.getCellValueStrinOrInt(cell);
 				
 					break;
 					
-				case 111: //CartonH
+				case 113: //CartonH
 					cartonH  = CommonUtility.getCellValueStrinOrInt(cell);
 
 					
 					break;
-				case 112://WeightPerCarton
+				case 114://WeightPerCarton
 					weightPerCarton  =CommonUtility.getCellValueStrinOrInt(cell);
 					break;
 	
-				case 113://UnitsPerCarton
+				case 115://UnitsPerCarton
 					unitsPerCarton  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 114: //ShipPointCountry
+				case 116: //ShipPointCountry
 
 				
 					break;
-				case 115: //ShipPointZip
+				case 117: //ShipPointZip
+				  	 FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
+						
+							 if(!StringUtils.isEmpty(FOBValue))
+							 {
+								if(FOBValue.contains("L7L 0J8"))
+								{
+									fobPintObj=new FOBPoint();
+									fobPintObj.setName("Burlington, ON L7L 5J8 CAN");
+									FobPointsList.add(fobPintObj);
 
+								}
+								 
+								 productExcelObj.setAdditionalProductInfo(FOBValue);
+							 }
 					
 					break;
 					
-				case 116: //Comment
-			     	 FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
-			
-					 if(!StringUtils.isEmpty(FOBValue))
-					 {
-						if(FOBValue.contains("NY"))
-						{
-							fobPintObj=new FOBPoint();
-							fobPintObj.setName("Buffalo, NY 14150 USA");
-							FobPointsList.add(fobPintObj);
-
-						}
-						 if(FOBValue.contains("CA"))
-						{
-							fobPintObj=new FOBPoint();
-							fobPintObj.setName("San Diego, CA 92126 USA");
-							FobPointsList.add(fobPintObj);
-
-						}
-						 if(FOBValue.contains("TN"))
-						{
-							fobPintObj=new FOBPoint();
-							fobPintObj.setName("Shelbyville, TN 37160 USA");
-							FobPointsList.add(fobPintObj);
-
-							
-						}
-						 
-						 productExcelObj.setAdditionalProductInfo(FOBValue);
-					 }
+				case 118: //Comment
+		
 					 
 					break;
 					
-				case 117: //Verified
+				case 119: //Verified
 					String verified=cell.getStringCellValue();
 					if(verified.equalsIgnoreCase("True")){
 					String priceConfimedThruString="2018-12-31T00:00:00";
@@ -1016,6 +1105,27 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					
 					break;
 					
+					
+				case 120://UpdateInventory
+
+					
+					break;
+					
+				case 121://InventoryOnHand
+
+
+					break;
+					
+				case 122://InventoryOnHandAdd
+
+
+					break;
+					
+				case 123://InventoryMemo
+
+					
+					break;
+				
 				
 			}  // end inner while loop
 					 
@@ -1110,8 +1220,11 @@ public class SportCanadaExcelMapping implements IExcelParser{
 		}
 		productConfigObj.setImprintMethods(listOfImprintMethods);
 
-		imprintSizeList=gcImprintSizeParser.getimprintsize(ImprintSizevalue);
+		
+		imprintSizeList=gcImprintSizeParser.getimprintsize(ImprintSizevalue,imprintLocation);
 		 imprintSizeList.removeAll(Collections.singleton(null));
+		 
+		 
 		 if(!StringUtils.isEmpty(FirstImprintsize1) || FirstImprintsize1 !=  "0" ){
 		productConfigObj.setImprintSize(imprintSizeList);
 		}
