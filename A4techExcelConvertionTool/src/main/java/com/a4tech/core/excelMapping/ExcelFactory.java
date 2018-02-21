@@ -39,6 +39,7 @@ import com.a4tech.supplier.mapper.HighCaliberLineMappingRevised;
 import com.a4tech.supplier.mapper.InternationlMerchMapping;
 import com.a4tech.supplier.mapper.MaxplusMapping;
 import com.a4tech.supplier.mapper.PSLcadMapping;
+import com.a4tech.supplier.mapper.PelicanGraphicMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
@@ -98,14 +99,15 @@ public class ExcelFactory {
 	private BayStateMapping                 baysStateMapping;
     private MaxplusMapping                  maxplusmapping;
 	private GempirepromotionsMapping        gempiresMapping;
-	private EdwardsGarmentMapping edwardsGarmentMapping;
-	private TekweldMapping tekweldMapping;
+	private EdwardsGarmentMapping 			edwardsGarmentMapping;
+	private TekweldMapping 					tekweldMapping;
     private InternationlMerchMapping        merchMapping;	
     private HeadWearMapping                 headWearMapping;
     private SportCanadaExcelMapping         sportMapping;
     private SunScopeMapping                 sunScopeMapping;
     private SunGraphixMapping 				sunGraphixMapping;
-
+    private PelicanGraphicMapping           pelicanGraphicMapping;
+	
 	public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -215,6 +217,8 @@ public class ExcelFactory {
 		  }  else if(name.equalsIgnoreCase("sunScope") || name.equals("90075")){
 			  return sunScopeMapping;
 		  }  else if(name.equalsIgnoreCase("sunGraphixMapping") || name.equals("90125")){
+			  return sunGraphixMapping;
+		  } else if(name.equalsIgnoreCase("pelicanGraphics") || name.equals("76797")){
 			  return sunGraphixMapping;
 		  }
 		return null;
@@ -602,7 +606,14 @@ public class ExcelFactory {
 	public void setSunGraphixMapping(SunGraphixMapping sunGraphixMapping) {
 		this.sunGraphixMapping = sunGraphixMapping;
 	}
-	
+	public PelicanGraphicMapping getPelicanGraphicMapping() {
+		return pelicanGraphicMapping;
+	}
+
+	public void setPelicanGraphicMapping(PelicanGraphicMapping pelicanGraphicMapping) {
+		this.pelicanGraphicMapping = pelicanGraphicMapping;
+	}
+
 
 	
 }

@@ -433,8 +433,7 @@
 		<property name="sportMapping" ref="sportMappingId"/>
 		<property name="sunScopeMapping" ref="sunScopeMappingId"/>
 		<property name="sunGraphixMapping" ref="sunGraphixMappingId"/>
-		
-
+		<property name="pelicanGraphicMapping" ref="pelicanGraphicMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1189,6 +1188,18 @@
   	<bean id="sunGraphixPriceGridParserId" name="sunGraphixPriceGridParserObj" class="parser.sunGraphix.SunGraphixPriceGridParser" autowire="byName">
   	</bean>
      <!-- supplier 90125 Sun graphix configuration end -->  
-
+ <!-- PelicanGraphics 76797 configuration start-->
+     <bean id="pelicanGraphicMappingId" class="com.a4tech.supplier.mapper.PelicanGraphicMapping">
+     	 <property name="postServiceImpl" ref="postService"/>
+     	 <property name="productDaoObj" ref="productDao"/>
+     	 <property name="pelicanGraphicAttributeParser" ref="pelicanGraphicAttributeParserId"/>
+     	 <property name="pelicanGraphicpriceGridParser" ref="pelicanGraphicpriceGridParserId"/>
+     </bean>
+     <bean id="pelicanGraphicAttributeParserId" class="parser.PelicanGraphics.PelicanGraphicAttributeParser">
+     	<property name="pelicanGraphicPriceGridParser" ref="pelicanGraphicpriceGridParserId"/>
+     	<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     </bean>
+     <bean id="pelicanGraphicpriceGridParserId" class="parser.PelicanGraphics.PelicanGraphicPriceGridParser"/>
+      <!-- PelicanGraphics 76797 configuration end-->
 </beans>
 
