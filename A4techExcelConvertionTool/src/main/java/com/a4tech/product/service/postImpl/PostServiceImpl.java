@@ -177,9 +177,14 @@ public class PostServiceImpl implements PostService {
 	return null;
   }
 	
-	public int deleteProduct(String authTokens, String productId,int asiNumber ,int batchId) throws IOException {
+	public int deleteProduct(String authTokens, String productId,int asiNumber ,int batchId,String environmentType) throws IOException {
 
-		try {String deleteProductUrl="https://sandbox-productservice.asicentral.com/api/v4/product/";
+		try {
+			String deleteProductUrl="https://sandbox-productservice.asicentral.com/api/v4/product/";
+			
+			if(environmentType.equals("Prod")){
+				deleteProductUrl="https://productservice.asicentral.com/api/v4/product/";
+			}
 			//productId="3558-55093AWDD";
 			 HttpHeaders headers = new HttpHeaders();
 			 headers.add("Accept",  "application/json");
