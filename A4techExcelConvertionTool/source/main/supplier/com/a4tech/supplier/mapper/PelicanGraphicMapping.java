@@ -161,6 +161,7 @@ public class PelicanGraphicMapping implements IExcelParser{
 								   listOfImprintMethods = pelicanGraphicAttributeParser.getImprintMethodValues(listOfImprintMethods, "Printed");
 							   }
 							   productExcelObj.setAdditionalProductInfo(additionalPrdInfo.toString());
+							   productConfigObj.setImprintLocation(listImprintLocation);
 							   productConfigObj.setImprintMethods(listOfImprintMethods);
 								productExcelObj.setProductConfigurations(productConfigObj);
 								productExcelObj.setPriceGrids(priceGrids);
@@ -208,11 +209,12 @@ public class PelicanGraphicMapping implements IExcelParser{
 						    	 productExcelObj.setExternalProductId(xid);
 						     }else{
 						  	//   productExcelObj=existingApiProduct;
-								productConfigObj=existingApiProduct.getProductConfigurations();
+								//productConfigObj=existingApiProduct.getProductConfigurations();
 						    	 productExcelObj = pelicanGraphicAttributeParser.keepExistingProductData(existingApiProduct);
+						    	 productConfigObj=productExcelObj.getProductConfigurations();
 						    	 productExcelObj.setExternalProductId(xid);
-						        String confthruDate=existingApiProduct.getPriceConfirmedThru();
-						        productExcelObj.setPriceConfirmedThru(confthruDate);
+						        /*String confthruDate=existingApiProduct.getPriceConfirmedThru();
+						        productExcelObj.setPriceConfirmedThru(confthruDate);*/
 						     }
 							//productExcelObj = new Product();
 					 }
@@ -883,6 +885,7 @@ public class PelicanGraphicMapping implements IExcelParser{
 			   listOfImprintMethods = pelicanGraphicAttributeParser.getImprintMethodValues(listOfImprintMethods, "Printed");
 		   }
 		 productExcelObj.setAdditionalProductInfo(additionalPrdInfo.toString());
+		 productConfigObj.setImprintLocation(listImprintLocation);
 		   productConfigObj.setImprintMethods(listOfImprintMethods);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	productExcelObj.setPriceGrids(priceGrids);

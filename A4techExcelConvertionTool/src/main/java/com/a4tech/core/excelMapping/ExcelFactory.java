@@ -219,7 +219,7 @@ public class ExcelFactory {
 		  }  else if(name.equalsIgnoreCase("sunGraphixMapping") || name.equals("90125")){
 			  return sunGraphixMapping;
 		  } else if(name.equalsIgnoreCase("pelicanGraphics") || name.equals("76797")){
-			  return sunGraphixMapping;
+			  return pelicanGraphicMapping;
 		  }
 		return null;
 	}

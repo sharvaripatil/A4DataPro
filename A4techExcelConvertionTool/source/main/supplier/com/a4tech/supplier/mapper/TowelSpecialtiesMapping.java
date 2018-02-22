@@ -588,7 +588,7 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 	}
 		public boolean isRepeateColumn(int columnIndex){
 		if (!(columnIndex >= 5 && columnIndex <= 20) && columnIndex != 21 && columnIndex != 22 && columnIndex != 23
-				&& columnIndex != 24 && columnIndex != 25 && columnIndex != 26 && columnIndex != 28) {
+				&& columnIndex != 24 && columnIndex != 25 && columnIndex != 26 && columnIndex != 27) {
 				return ApplicationConstants.CONST_BOOLEAN_TRUE;
 			}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;

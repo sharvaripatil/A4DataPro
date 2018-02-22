@@ -526,6 +526,10 @@ public class TowelSpecAttributeParser {
   				String price2 = upchargeValues[1];
   				  price1 = price1.replaceAll("[^0-9\\.]", "");
   				 price2 = price2.replaceAll("[^0-9\\.]", "");
+  				String pricelast = price2.substring(price2.length()-1);
+  				if(pricelast.equals(".")) {
+  					price2 = price2.substring(0, price2.length()-1);
+  				}
   				priceGrid = towelPriceGridParser.getUpchargePriceGrid("1", price2, "v", "Imprint Method", false, "USD",
   						imprintMethodInclude, upchargeName, "Re-Order Charge", "Other", 1, priceGrid, "", "");
 				} else {
