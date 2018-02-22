@@ -170,18 +170,28 @@ public class TomaxUsaAttributeParser {
 			
 			colorObj = new Color();
 			String colorGroup = TomaxConstants.getColorGroup(colorName.trim());
-			//if (colorGroup == null) {
-				//if (colorGroup!=null && colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
-			if (colorName.contains("/") || colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
+			if(colorGroup==null){
+				_LOGGER.error("Not found in given mapping "+colorName);
+			}
+			
+			boolean comboFlag=false;
+			if (colorGroup == null) {
+				if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
+				comboFlag=true;
+				}
+			}else if(colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
+				comboFlag=true;
+			}
 				
+			if (comboFlag) {
 				if(colorGroup==null){
 					colorGroup=colorName;
 				}
 				colorGroup=colorGroup.replaceAll("&","/");
 				colorGroup=colorGroup.replaceAll(" w/","/");
 				colorGroup=colorGroup.replaceAll(" W/","/");
+				colorGroup=colorGroup.replaceAll(" ","");
 				
-				//if (colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
 					if(isComboColor(colorGroup)){
 						List<Combo> listOfCombo = null;
 						String[] comboColors = CommonUtility.getValuesOfArray(colorGroup,
