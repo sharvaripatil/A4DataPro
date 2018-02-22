@@ -44,6 +44,7 @@ public class TomaxSizeParser {
 		sizeUnits.put("CM", "cm");
 		sizeUnits.put("FEET", "ft");
 		sizeUnits.put("FEE", "ft");
+		sizeUnits.put("FT", "ft");
 		sizeUnits.put("INC", "in");
 		sizeUnits.put("MTR", "meter");
 		sizeUnits.put("ML", "mil");
@@ -74,6 +75,7 @@ public class TomaxSizeParser {
 		unitList.add("ST");
 		unitList.add("SI");
 		unitList.add("YD");
+		unitList.add("FT");
 		//dimList.add("");
 		
 	}
@@ -93,10 +95,11 @@ public class TomaxSizeParser {
 				ImprintSize imprSizeObj = new ImprintSize();
 				ImprintLocation imprintLocationObj = new ImprintLocation();
 				sizeValue=sizeValue.toUpperCase();
-				sizeValue=sizeValue.replaceAll("î","\"");
+				sizeValue=sizeValue.replaceAll("‚Äù","\"");
 				sizeValue=sizeValue.replaceAll(";",",");
+				sizeValue=sizeValue.replaceAll("Œ¶","");
 				//sizeValue=sizeValue.replaceAll(":","");
-				
+				//Œ¶
 				String tempArr[]=sizeValue.split(",");
 				for (String imprintValue : tempArr) {
 					if(imprintValue.contains(":")){
@@ -135,26 +138,55 @@ public class TomaxSizeParser {
 				List<Value> valuelist = null;
 				Values valuesObj = new Values();
 					Value valObj;
-					sizeValue=sizeValue.replaceAll("î","\"");
+					sizeValue=sizeValue.replaceAll("‚Äù","\"");
 					sizeValue=sizeValue.replaceAll("\"","INC");
 					sizeValue=sizeValue.replaceAll(";",",");
 					sizeValue=sizeValue.replaceAll(":","");
 					sizeValue = sizeValue.replace(".", "");
+					sizeValue=sizeValue.replaceAll("Œ¶","");
 					String valuesArr[]=sizeValue.split(",");
 					
 					for (String tempValue : valuesArr) {
 						valuesObj = new Values();
 						tempValue=tempValue.toUpperCase();
+						if(tempValue.contains("FT LONG") || tempValue.contains("FEET LONG")){
+							
+							tempValue=tempValue.substring(0, (tempValue.indexOf("F")));
+							tempValue=tempValue.trim();
+							
+							tempValue=tempValue+" FEE";
+							//tempValue=tempValue.replace("FEET IN LENGTH", "FEE");
+						}
 					if(tempValue.contains("FEET IN")){
 						tempValue=tempValue.replace("FEET IN LENGTH", "FEE");
+					}
+					if(tempValue.contains("IN LENGTH")){
+						tempValue=tempValue.replace("IN LENGTH", "L");
+					}
+					if(tempValue.contains("FT")){
+						tempValue=tempValue.replace("FT", "FEE");
 					}
 					tempValue=removeSpecialChar(tempValue,1);
 					String DimenArr[]=tempValue.split("X");
 				valuelist = new ArrayList<Value>(); 
+				int tempCount=0;
 				for (String value : DimenArr) {
 					value=value.toUpperCase();
 					valObj = new Value();
-					String tempAttri=getAttriTypeValue(value);
+					String tempAttri="";
+					if(tempCount==1){
+						tempAttri="W";
+						tempCount++;
+					}else if(tempCount==2){
+						tempAttri="H";
+					}else{
+						 tempAttri=getAttriTypeValue(value);
+					}
+					
+					if(tempAttri.contains("-DEFAULT")){
+						tempAttri=tempAttri.replace("-DEFAULT", "");
+						tempCount++;
+					}
 					attriValue=getAttriValue(tempAttri);
 					value=removeSpecialChar(value, 2);
 					String tempUnitValue=getUNitTypeValue(value);
@@ -189,7 +221,7 @@ public class TomaxSizeParser {
 	
 	public static String removeSpecialChar(String tempValue,int number){
 		if(number==1){
-		tempValue=tempValue.replaceAll("(CABLE|LENGTH|CLEAR|CASE|ONE|SIDE|EARPHONE|INCLUDE|HOOK|WHITE|BOX|DELUXE|BULK)", "");
+		tempValue=tempValue.replaceAll("(CABLE|LENGTH|CLEAR|CASE|ONE|SIDE|EARPHONE|INCLUDE|HOOK|WHITE|BOX|DELUXE|BULK|MEASURE|WITH|CARABINER|ITEM|SINGLE|EAR|INCLUDE)", "");
 		tempValue=tempValue.replaceAll("\\(","");
 		tempValue=tempValue.replaceAll("\\)","");
 		}
@@ -201,7 +233,7 @@ public class TomaxSizeParser {
 			}
 		
 		if(number==3){
-			tempValue=tempValue.replaceAll("(CM|FEET|FEE|INC|MTR|ML|MM|ST|SI|YD)", "");
+			tempValue=tempValue.replaceAll("(CM|FEET|FEE|FT|INC|MTR|ML|MM|ST|SI|YD)", "");
 			tempValue=tempValue.replaceAll("\\(","");
 			tempValue=tempValue.replaceAll("\\)","");
 			}
@@ -219,7 +251,7 @@ public class TomaxSizeParser {
 					    }
 				}
 		    }
-		return "LENGTH";
+		return "LENGTH-DEFAULT";
 	}
 	
 	public static String getAttriValue(String attriVal){
@@ -261,8 +293,8 @@ public class TomaxSizeParser {
 				tempValue=tempValue.replace("FEET IN LENGTH", "FEE");
 			}*/
 			sizeValue=removeSpecialChar(sizeValue,1);
-			sizeValue=sizeValue.replaceAll("î","");
-			//sizeValue=sizeValue.replaceAll("î","\"");
+			sizeValue=sizeValue.replaceAll("‚Äù","");
+			//sizeValue=sizeValue.replaceAll("‚Äù","\"");
 			//sizeValue=sizeValue.replaceAll("\"","INC");
 			sizeValue=sizeValue.replaceAll("\"","");
 			sizeValue=sizeValue.replaceAll(";",",");

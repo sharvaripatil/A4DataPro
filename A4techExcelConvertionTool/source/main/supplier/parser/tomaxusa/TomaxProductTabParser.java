@@ -20,6 +20,7 @@ import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.Price;
@@ -75,7 +76,7 @@ public class TomaxProductTabParser {
 		
 	    String xid = null;
 	    int columnIndex=0;
-	    String q1 = null,q2= null,q3= null,q4= null,q5= null;
+	    String q1 = null,q2= null,q3= null,q4= null,q5= null,q6= null;
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
@@ -85,28 +86,47 @@ public class TomaxProductTabParser {
 			
 			if (getRowType(nextRow)){
 				Cell cell1=nextRow.getCell(4);
-				q1=cell1.getStringCellValue();
+				q1=CommonUtility.getCellValueStrinOrInt(cell1);
 				q1=q1.toUpperCase().replace("LIST", "");
+				q1=q1.toUpperCase().replace("EQP", "");
+				q1=q1.toUpperCase().replace("(", "");
+				q1=q1.toUpperCase().replace(")", "");
 				q1=q1.trim();
 				cell1=nextRow.getCell(5);
-				q2=cell1.getStringCellValue();
+				q2=CommonUtility.getCellValueStrinOrInt(cell1);
 				q2=q2.toUpperCase().replace("LIST", "");
+				q2=q2.toUpperCase().replace("EQP", "");
+				q2=q2.toUpperCase().replace("(", "");
+				q2=q2.toUpperCase().replace(")", "");
 				q2=q2.trim();
 				cell1=nextRow.getCell(6);
-				q3=cell1.getStringCellValue();
+				q3=CommonUtility.getCellValueStrinOrInt(cell1);
 				q3=q3.toUpperCase().replace("LIST", "");
+				q3=q3.toUpperCase().replace("EQP", "");
+				q3=q3.toUpperCase().replace("(", "");
+				q3=q3.toUpperCase().replace(")", "");
 				q3=q3.trim();
 				cell1=nextRow.getCell(7);
-				q4=cell1.getStringCellValue();
+				q4=CommonUtility.getCellValueStrinOrInt(cell1);
 				q4=q4.toUpperCase().replace("LIST", "");
 				q4=q4.toUpperCase().replace("EQP", "");
 				q4=q4.toUpperCase().replace("(", "");
 				q4=q4.toUpperCase().replace(")", "");
 				q4=q4.trim();
 				cell1=nextRow.getCell(8);
-				q5=cell1.getStringCellValue();
+				q5=CommonUtility.getCellValueStrinOrInt(cell1);
 				q5=q5.toUpperCase().replace("LIST", "");
+				q5=q5.toUpperCase().replace("EQP", "");
+				q5=q5.toUpperCase().replace("(", "");
+				q5=q5.toUpperCase().replace(")", "");
 				q5=q5.trim();
+				cell1=nextRow.getCell(9);
+				q6=CommonUtility.getCellValueStrinOrInt(cell1);
+				q6=q6.toUpperCase().replace("LIST", "");
+				q6=q6.toUpperCase().replace("EQP", "");
+				q6=q6.toUpperCase().replace("(", "");
+				q6=q6.toUpperCase().replace(")", "");
+				q6=q6.trim();
 				continue;
 			}
 			if(getRowData(nextRow)){
@@ -147,11 +167,20 @@ public class TomaxProductTabParser {
 							 if(CollectionUtils.isEmpty(priceGrids)){
 									priceGrids = tomaxPriceGridParser.getPriceGridsQur();	
 								}
+							 if(CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
+								 List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+								 ImprintMethod	imprintMethodObj = new ImprintMethod();	
+								imprintMethodObj.setType("UNIMPRINTED");
+								imprintMethodObj.setAlias("UNIMPRINTED");
+								listOfImprintMethod.add(imprintMethodObj);
+								productConfigObj.setImprintMethods(listOfImprintMethod);
+							}
 							 	productExcelObj.setPriceType("L");
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 /*_LOGGER.info("Product Data : "
 										+ mapperObj.writeValueAsString(productExcelObj));*/
+							 	
 							 
 						if(!StringUtils.isEmpty(productExcelObj.getExternalProductId())){
 							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
@@ -179,7 +208,7 @@ public class TomaxProductTabParser {
 						    	repeatRows.add(xid);
 						    }
 						    productExcelObj = new Product();
-						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid, null); 
+						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid,environmentType); 
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
@@ -218,7 +247,8 @@ public class TomaxProductTabParser {
 						String	listPrice1=null;
 						listPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
 						listPrice1=listPrice1.replaceAll(" ","");
-						if(!StringUtils.isEmpty(listPrice1)){
+						listPrice1 = listPrice1.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(listPrice1) && !StringUtils.isEmpty(q1)){
 							listOfPrices.append(listPrice1.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							listOfQuantity.append(q1.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							
@@ -228,7 +258,8 @@ public class TomaxProductTabParser {
 						String	listPrice2=null;
 						listPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
 						listPrice2=listPrice2.replaceAll(" ","");
-						if(!StringUtils.isEmpty(listPrice2)){
+						listPrice2 = listPrice2.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(listPrice2) && !StringUtils.isEmpty(q2)){
 							listOfPrices.append(listPrice2.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							listOfQuantity.append(q2.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							
@@ -238,7 +269,8 @@ public class TomaxProductTabParser {
 						String	listPrice3=null;
 						listPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
 						listPrice3=listPrice3.replaceAll(" ","");
-						if(!StringUtils.isEmpty(listPrice3)){
+						listPrice3 = listPrice3.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(listPrice3) && !StringUtils.isEmpty(q3)){
 							listOfPrices.append(listPrice3.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							listOfQuantity.append(q3.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							
@@ -248,7 +280,8 @@ public class TomaxProductTabParser {
 						String	listPrice4=null;
 						listPrice4=CommonUtility.getCellValueStrinOrDecimal(cell);
 						listPrice4=listPrice4.replaceAll(" ","");
-						if(!StringUtils.isEmpty(listPrice4)){
+						listPrice4 = listPrice4.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(listPrice4) && !StringUtils.isEmpty(q4)){
 							listOfPrices.append(listPrice4.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							listOfQuantity.append(q4.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							
@@ -258,12 +291,23 @@ public class TomaxProductTabParser {
 						String	listPrice5=null;
 						listPrice5=CommonUtility.getCellValueStrinOrDecimal(cell);
 						listPrice5=listPrice5.replaceAll(" ","");
-						if(!StringUtils.isEmpty(listPrice5)){
+						listPrice5 = listPrice5.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(listPrice5) && !StringUtils.isEmpty(q5)){
 							listOfPrices.append(listPrice5.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							listOfQuantity.append(q5.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 				         }
 						break;
-					case 10:// Product name 
+					case 10://Price 6
+						String	listPrice6=null;
+						listPrice6=CommonUtility.getCellValueStrinOrDecimal(cell);
+						listPrice6=listPrice6.replaceAll(" ","");
+						listPrice6 = listPrice6.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(listPrice6) && !StringUtils.isEmpty(q6)){
+							listOfPrices.append(listPrice6.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							listOfQuantity.append(q6.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				         }
+						break;
+					case 11:// Product name 
 						 productName=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(productName)){
 								productName=CommonUtility.getStringLimitedChars(productName, 60);
@@ -271,7 +315,7 @@ public class TomaxProductTabParser {
 							}
 						
 						break;
-					case 11://Description
+					case 12://Description
 						 String descripton=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(descripton)){
 							 descripton=CommonUtility.getStringLimitedChars(descripton, 800);
@@ -287,21 +331,21 @@ public class TomaxProductTabParser {
 									productExcelObj.setDescription(productName);
 								}
 						break;
-					case 12://pc
+					case 13://pc
 						String shippingItem=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(shippingItem)){
 							 shippingEstObj=tomaxUsaAttributeParser.getShippingEstimates(shippingItem,shippingEstObj,"NOI");
 							 productConfigObj.setShippingEstimates(shippingEstObj);
 						 }
 						break;
-					case 13://wt.
+					case 14://wt.
 						String shippingWt=CommonUtility.getCellValueDouble(cell);
 						 if(!StringUtils.isEmpty(shippingWt)){
 							 shippingEstObj=tomaxUsaAttributeParser.getShippingEstimates(shippingWt,shippingEstObj,"WT");
 							 productConfigObj.setShippingEstimates(shippingEstObj);
 						 }
 						break;
-					case 14://Optional upgrade packaging
+					case 15://Optional upgrade packaging
 						String packageValue=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(packageValue)){
 							 List<Packaging> listOfPackage=tomaxUsaAttributeParser.getPackageValues(packageValue);
@@ -309,7 +353,7 @@ public class TomaxProductTabParser {
 						 }
 						
 						break;
-					case 15://color
+					case 16://color
 						
 						String colorValue=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(colorValue)){
@@ -317,14 +361,14 @@ public class TomaxProductTabParser {
 							 productConfigObj.setColors(colors);
 						 }
 						break;
-					case 16://item size
+					case 17://item size
 						String sizeValue=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(sizeValue)){
 							 productConfigObj =tomaxUsaSizeParser.getSizes(sizeValue, productConfigObj);
 							 //productConfigObj.setColors(colors);
 						 }
 						break;
-					case 17://imprint size
+					case 18://imprint size
 						String impSize=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(impSize)){
                              impSize=impSize.replaceAll("                                                 ", "");
@@ -337,7 +381,7 @@ public class TomaxProductTabParser {
 							 productConfigObj.setImprintSize(listOfImpSize);
 						 }
 						break;
-					case 18://carton size
+					case 19://carton size
 						//String cartonSizeValue=CommonUtility.getCellValueStrinOrInt(cell);
 						 /*if(!StringUtils.isEmpty(cartonSizeValue)){//
 							 Size existingSizeObj=productConfigObj.getSizes();
@@ -379,6 +423,14 @@ public class TomaxProductTabParser {
 			 if(CollectionUtils.isEmpty(priceGrids)){
 					priceGrids = tomaxPriceGridParser.getPriceGridsQur();	
 				}
+			 if(CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
+				 List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+				 ImprintMethod	imprintMethodObj = new ImprintMethod();	
+				imprintMethodObj.setType("UNIMPRINTED");
+				imprintMethodObj.setAlias("UNIMPRINTED");
+				listOfImprintMethod.add(imprintMethodObj);
+				productConfigObj.setImprintMethods(listOfImprintMethod);
+			}
 			 	productExcelObj.setPriceType("L");
 			 	productExcelObj.setPriceGrids(priceGrids);
 			 	productExcelObj.setProductConfigurations(productConfigObj);
@@ -458,6 +510,13 @@ public class TomaxProductTabParser {
 		if(str.contains("SPECIAL") || str.contains("CABLE") || str.contains("ITEM") || str.contains("POWER")
 				|| str.contains("AUDIO") || str.contains("PATENTED") || str.contains("MOUSE")
 				|| str.contains("SPEAKER") || str.contains("GIFT") || str.contains("PACKAGE") || str.contains("USB")
+				|| str.contains("ADAPTER") || str.contains("SMART") || str.contains("PLUG") || str.contains("INTERNATIONAL")
+				|| str.contains("WALL") || str.contains("CHARGER") || str.contains("CAR") || str.contains("MFI")
+				|| str.contains("MULTI-FUNCTION") || str.contains("RETRACTABLE") || str.contains("MULTI-ADAPTER") || str.contains("MOUSE")
+				|| str.contains("QI") || str.contains("POWER BANKS") || str.contains("POWER") || str.contains("BLUETOOTH")
+				|| str.contains("3.5MM JACK") || str.contains("EARPHONE") || str.contains("GIFT") || str.contains("SETS")
+				|| str.contains("POUCH/BOX") || str.contains("TECH GIFT") || str.contains("ADAPTOR") || str.contains("AUDIO")
+				|| str.contains("SETS") || str.contains("INDEX") || str.contains("GENERAL")
 				){
 			flag=true;
 		}
