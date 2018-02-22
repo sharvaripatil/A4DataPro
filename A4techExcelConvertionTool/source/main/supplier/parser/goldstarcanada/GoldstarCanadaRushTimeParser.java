@@ -9,18 +9,20 @@ import com.a4tech.util.ApplicationConstants;
 
 public class GoldstarCanadaRushTimeParser {
 	
-	public RushTime getRushTimeValues(String rushTime ,RushTime existingRushTime){
-		existingRushTime.setAvailable(ApplicationConstants.CONST_BOOLEAN_TRUE);
-		List<RushTimeValue> existingRushTimeValues = existingRushTime.getRushTimeValues();
-		if(existingRushTimeValues == null){
-			existingRushTimeValues = new ArrayList<RushTimeValue>();
-		}
-		RushTimeValue newRushTimeValue = new RushTimeValue();
-		newRushTimeValue.setBusinessDays(rushTime);
-		newRushTimeValue.setDetails(ApplicationConstants.CONST_STRING_EMPTY);
-		existingRushTimeValues.add(newRushTimeValue);
-		existingRushTime.setRushTimeValues(existingRushTimeValues);
-		return existingRushTime;
+	public RushTime getRushTimeValues(String rushProdTimeLo, String rushProdTimeH) {
+
+		RushTime rushtimeObj=new RushTime();
+		rushtimeObj.setAvailable(ApplicationConstants.CONST_BOOLEAN_TRUE);
+		String FinalrushTime=rushProdTimeLo.concat("-").concat(rushProdTimeH);
+		RushTimeValue RushTimeValue = new RushTimeValue();
+		List<RushTimeValue> rushTimeList = new ArrayList<RushTimeValue>();
+
+		RushTimeValue.setBusinessDays(FinalrushTime);
+		RushTimeValue.setDetails(ApplicationConstants.CONST_STRING_EMPTY);
+		rushTimeList.add(RushTimeValue);
+		rushtimeObj.setRushTimeValues(rushTimeList);		
+		return rushtimeObj;
 	}
+	
 
 }

@@ -199,7 +199,7 @@ public class BestDealAttributeParser {
 		if(priceVaue != null){
 			 List<PriceGrid> priceGrid = priceGridParser.getUpchargePriceGrid("1", priceVaue, ApplicationConstants.CONST_STRING_DISCOUNT_CODE_Z, 
 					  "Rush Service", "n", ApplicationConstants.CONST_STRING_CURRENCY_USD, 
-					  finalRushTime, "Rush Service Charge", "Other",1, existingPriceGrid);
+					  finalRushTime, "Rush Service Charge", "Per order",1, existingPriceGrid,"");
 			 return priceGrid;
 		}
 		return null;
@@ -379,7 +379,7 @@ public class BestDealAttributeParser {
 	}
 	
 	private List<ImprintSize> getProductImprintSize(String imprSize){
-		String imprintSizeValue = imprSize.split("IMPRINT SIZE ")[1].trim();
+		String imprintSizeValue = imprSize.split("IMPRINT SIZE:")[1].trim();
 		List<ImprintSize> listOfImprintSize = new ArrayList<>();
 		ImprintSize imprSizeObj = new ImprintSize();
 		imprSizeObj.setValue(imprintSizeValue);
@@ -405,7 +405,7 @@ public class BestDealAttributeParser {
 			}
 			existingPriceGrid = priceGridParser.getUpchargePriceGrid("1", "10", "V",
 					 "Additional Location", "n", "USD", "Additional Engraving Location", "Add. Location Charge",
-					 upChargeUseageType, 1, existingPriceGrid);
+					 "Other", 1, existingPriceGrid,"Per piece, per location");
 		} 
 		return existingPriceGrid;
 	}
@@ -416,7 +416,7 @@ public class BestDealAttributeParser {
 		name = name.replaceAll("[^0-9]", "");
 		existingPriceGrid = priceGridParser.getUpchargePriceGrid("1", name.trim(), "Z",
 				 "Less than Minimum", "n", "USD", "Can order less than minimum", "Less than Minimum Charge",
-				 "Other", 1, existingPriceGrid);
+				 "Per order", 1, existingPriceGrid,"");
 		return existingPriceGrid;
 	}
 	/*author : venkat
