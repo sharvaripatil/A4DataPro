@@ -935,72 +935,17 @@ public class PelicanGraphicMapping implements IExcelParser{
 		return productXid.trim();
 	}
 	private String getFinalDescription(String description, String asiProdNo){
-		description = CommonUtility.removeRestrictSymbols(description);
-		if(description.contains("·")){
-			description = description.replaceAll("·", "");
-		}
-		if(description.contains("Porsche")){
-			description = description.replaceAll("Porsche", "");
-		}
 		if(description.toUpperCase().contains(asiProdNo)){
 			description = CommonUtility.removeSpecificWord(description, asiProdNo);
 			description = description.replaceAll(asiProdNo, "");
-		}
-		if(description.contains("m&m")){
-			description = description.replaceAll("m&m", "");
-		}
-		if(description.contains("iPAD") || description.contains("iPad") || description.contains("Ipad")){
-			description = description.replaceAll("iPAD", "");
-			description = description.replaceAll("iPad", "");
-			description = description.replaceAll("Ipad", "");
-		}
-		if(description.contains("nano")){
-			description = description.replaceAll("nano", "");
-		}
-		if(description.contains("shuffle")){
-			description = description.replaceAll("shuffle", "");
-		}
-		if(description.contains("²")){
-			description = description.replaceAll("²", "");
-		}
-		if(description.contains("at a glance")){
-			description = description.replaceAll("at a glance", "");
-		}
-		if(description.contains("—")){
-			description = description.replaceAll("—", "");
-		}
-		if(description.contains("|")){
-			description = description.replaceAll("\\|", "");
 		}
 		description = CommonUtility.getStringLimitedChars(description, 800);
 	 return description;
 	}
 	private String getFinalProductName(String productName,String asiProdNo){
-		 if(productName.contains("Porsche")){
-			 productName = productName.replaceAll("Porsche", "");
-			}
-		 if(productName.contains("®")){
-			 productName = productName.replaceAll("®", "");
-		 }
 		 if(productName.toUpperCase().contains(asiProdNo)){
 			 productName = CommonUtility.removeSpecificWord(productName, asiProdNo);
 			 productName = productName.replaceAll(asiProdNo, "");
-			}
-		 if(productName.contains("M&M's")){
-			 productName = productName.replaceAll("M&M's", "");
-		 }
-		 if(productName.contains("™")){
-			 productName = productName.replaceAll("™", "");
-		 }
-		 if(productName.contains("NANO")){
-			 productName = productName.replaceAll("NANO", "");
-		 }
-		 if(productName.contains("iPAD") || productName.contains("iPad")){
-			 productName = productName.replaceAll("iPAD", "");
-			 productName = productName.replaceAll("iPad", "");
-			}
-		 if(productName.contains("|")){
-			 productName = productName.replaceAll("\\|", "");
 			}
 		 productName = CommonUtility.getStringLimitedChars(productName, 60);
 		 return productName;
