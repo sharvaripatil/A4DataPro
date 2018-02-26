@@ -23,8 +23,9 @@ import com.a4tech.supplier.mapper.BayStateMapping;
 import com.a4tech.supplier.mapper.BellaCanvas;
 import com.a4tech.supplier.mapper.BlueGenerationMapping;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
+import com.a4tech.supplier.mapper.CbMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
-import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
+//import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.EdwardsGarmentMapping;
 import com.a4tech.supplier.mapper.FITSAccessoriesMapping;
@@ -69,7 +70,7 @@ public class ExcelFactory {
 	private BestDealProductsExcelMapping 	bdProdcutsMapping;
 	private RiversEndExcelMapping 			riversEndExcelMapping;
 	private BambamProductExcelMapping 		bamExcelMapping;
-    private CutterBuckExcelMapping 			cbExcelMapping;
+ //   private CutterBuckExcelMapping 			cbExcelMapping;
     private CrystalDExcelMapping 			cdExcelMapping;
     private GoldstarCanadaExcelMapping 		goldcanadaExcelMapping;
     private MilestoneExcelMapping 			milestoneExcelMapping;
@@ -105,6 +106,7 @@ public class ExcelFactory {
     private SportCanadaExcelMapping         sportMapping;
     private SunScopeMapping                 sunScopeMapping;
     private SunGraphixMapping 				sunGraphixMapping;
+    private CbMapping                       cbExeMapping;
 
 	public  IExcelParser getExcelParserObject(String name){
 
@@ -133,7 +135,7 @@ public class ExcelFactory {
 		   }else if(name.equalsIgnoreCase("riversend") || name.equals("82588")){
 			   return riversEndExcelMapping;
 		   }else if(name.equalsIgnoreCase("cbExcel") || name.equals("47965")){
-			   return cbExcelMapping;
+			   return cbExeMapping/*cbExcelMapping*/;//old file
 		   }
 		   else if(name.equalsIgnoreCase("cdExcel") || name.equals("47759")){
 			   return cdExcelMapping;
@@ -341,13 +343,13 @@ public class ExcelFactory {
 		this.bamExcelMapping = bamExcelMapping;
 	}
 
-	public CutterBuckExcelMapping getCbExcelMapping() {
+/*	public CutterBuckExcelMapping getCbExcelMapping() {
 		return cbExcelMapping;
 	}
 
 	public void setCbExcelMapping(CutterBuckExcelMapping cbExcelMapping) {
 		this.cbExcelMapping = cbExcelMapping;
-	}
+	}*/
 	
 	public CrystalDExcelMapping getCdExcelMapping() {
 		return cdExcelMapping;
@@ -601,6 +603,14 @@ public class ExcelFactory {
 
 	public void setSunGraphixMapping(SunGraphixMapping sunGraphixMapping) {
 		this.sunGraphixMapping = sunGraphixMapping;
+	}
+
+	public CbMapping getCbExeMapping() {
+		return cbExeMapping;
+	}
+
+	public void setCbExeMapping(CbMapping cbExeMapping) {
+		this.cbExeMapping = cbExeMapping;
 	}
 	
 

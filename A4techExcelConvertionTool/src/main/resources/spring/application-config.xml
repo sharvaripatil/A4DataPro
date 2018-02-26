@@ -398,7 +398,7 @@
 		<property name="bdProdcutsMapping" ref="bestDealMappingId"/>
 		<property name="riversEndExcelMapping" ref="riversEndExcelMappingId"/>
 		<property name="bamExcelMapping" ref="bambamProductExcelMappingId"/>
-		<property name="cbExcelMapping" ref="cbExcelMappingId"/>
+		<property name="cbExeMapping" ref="cbExcelMappingId"/>
 		<property name="cdExcelMapping" ref="cdExcelMappingId"/>
 		<property name="goldcanadaExcelMapping" ref="goldcanadaExcelMappingId"/>
  		<property name="hcLineExcelMapping" ref="highCaliberLineExcelMappingId"/>
@@ -490,13 +490,13 @@
       <!--supplier 82588 configuration end  -->  
     
       <!--supplier 47965 configuration start  -->  
-      <bean id="cbExcelMappingId" class="com.a4tech.supplier.mapper.CutterBuckExcelMapping">
+      <bean id="cbExcelMappingId" class="com.a4tech.supplier.mapper.CbMapping">
       <property name="postServiceImpl" ref="postService"/>
       <property name="productDaoObj"   ref="productDao"/>
       <property name="cutterBuckSizeParserObj" ref="cutterBuckSizeParserObjId"/>
       <property name="cutterBuckMaterialParserObj" ref="cutterBuckMaterialParserObjId"/>
       <property name="cutterBuckPriceObj" ref="CutterBuckPriceObjId"/>
-      <property name="cutterBuckSheetObj" ref="cutterBuckSheetObjId"/>
+     <property name="cutterBuckSheetObj" ref="cutterBuckSheetObjId"/> 
       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
 	  <property name="lookupRestServiceObj" ref="lookupRestService"/>
       </bean>
@@ -508,11 +508,11 @@
        
       <bean id="cutterBuckSizeParserObjId" class="parser.cutter.CutterBuckSizeParser"/> 
       <bean id="CutterBuckPriceObjId" class="parser.cutter.CutterBuckPriceGridParser"/> 
-      <bean id="cutterBuckSheetObjId" class="parser.cutter.CutterBuckSheetParser">
+       <bean id="cutterBuckSheetObjId" class="parser.cutter.CutterBuckSheetParser">
       <property name="postServiceImpl" ref="postService"/>
       <property name="productDaoObj"   ref="productDao"/>
       <property name="cbColorProductNumberObj"   ref="cbColorProductNumberObjId"/>
-      </bean>
+      </bean> 
      
       <bean id="cbColorProductNumberObjId" class="parser.cutter.CBColorProductNumberParser"/>
        <!--supplier 47965 configuration end  -->  

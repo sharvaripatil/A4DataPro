@@ -301,15 +301,7 @@ public class CutterBuckSheetParser /* implements IExcelParser */{
 
 }
 			
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
   public boolean isRepeateColumn(int columnIndex){
 		
