@@ -56,7 +56,7 @@ public class TomaxUsaMapping implements IExcelParser{
 		try{
 			 for(int tabNo=0;tabNo<2;tabNo++){
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-			if(tabNo==10){
+			if(tabNo==0){
 			Sheet sheet = workbook.getSheetAt(0);
 			Iterator<Row> iterator = sheet.iterator();
 			_LOGGER.info("Started Processing Product");
@@ -129,14 +129,14 @@ public class TomaxUsaMapping implements IExcelParser{
 			}
 			//tempSet=new HashSet<String>(xidSet);
 			// do deletion thing over here
-			_LOGGER.info("Set size:"+xidSet.size());
-			for (String string : xidSet) {
-				try{
-				postServiceImpl.getProduct(accessToken, string, environmentType);
+			_LOGGER.info("Number of products to be deleted ,Set size:"+xidSet.size());
+			for (String delXID : xidSet) {
+				/*try{
+				postServiceImpl.getProduct(accessToken, delXID, environmentType);
 				}catch(Exception e){
 					_LOGGER.error(e.getMessage());
-				}
-				int num=postServiceImpl.deleteProduct(accessToken, string, asiNumber, batchId);
+				}*/
+				int num = postServiceImpl.deleteProduct(accessToken, delXID, asiNumber, batchId,environmentType);
 				if(num ==1){
 					numOfProductsSuccess.add("1");
 				}else if(num == 0){
@@ -147,14 +147,14 @@ public class TomaxUsaMapping implements IExcelParser{
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 		 	_LOGGER.info("Total number of products for deletion process >>>>>>"+xidSet.size());
-	       //finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
-	       productDaoObj.saveErrorLog(asiNumber,batchId);
+	        finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
+	        productDaoObj.saveErrorLog(asiNumber,batchId);
 				
 			//postServiceImpl.deleteProduct(accessToken, productId, asiNumber, batchId);
 			}else if(tabNo==1){
-				finalResult=tomaxProductTabParser.readExcel(accessToken, workbook, asiNumber, batchId,environmentType);
+				 finalResult=tomaxProductTabParser.readExcel(accessToken, workbook, asiNumber, batchId,environmentType);
 			}
-				}
+		 }
 			//return finalResult;
 		}catch(Exception e){
 			_LOGGER.error("Error while Processing excel sheet " +e.getMessage());
