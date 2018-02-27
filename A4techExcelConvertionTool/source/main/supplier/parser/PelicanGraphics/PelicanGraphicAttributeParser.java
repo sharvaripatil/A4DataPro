@@ -16,6 +16,7 @@ import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Dimensions;
+import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.NumberOfItems;
@@ -42,7 +43,7 @@ import com.a4tech.util.CommonUtility;
 public class PelicanGraphicAttributeParser {
 	private LookupServiceData lookupServiceDataObj;
 	private PelicanGraphicPriceGridParser pelicanGraphicPriceGridParser;
-
+	private static List<String> lookupFobPoints = null;
 	public Product keepExistingProductData(Product existingProduct){
 		ProductConfigurations oldProductConfig = existingProduct.getProductConfigurations();
 		Product newProduct = new Product();
@@ -363,7 +364,7 @@ public class PelicanGraphicAttributeParser {
 			 } else if(upchargeType.equalsIgnoreCase("toolingCharge")){
 				 upChargeTypeVal = "Tooling Charge";
 			 } else if(upchargeType.equalsIgnoreCase("repeateCharge")){
-				 
+				 upChargeTypeVal = "Re-order Charge";
 			 }
 			existingPriceGrid = pelicanGraphicPriceGridParser.getUpchargePriceGrid("1", priceVal, disCount, "Imprint method", "n",
 					"USD", imprintMethods, upChargeTypeVal, "Other", 1, existingPriceGrid);
@@ -403,6 +404,20 @@ public class PelicanGraphicAttributeParser {
 		   productKeyWords.add(keywordName);	
 		}
 		return productKeyWords;
+	}
+	public List<FOBPoint> getFobPoint(final String  value,String authToken,String environment){
+		List<FOBPoint> listOfFobPoint = new ArrayList<>();
+		if(lookupFobPoints == null){
+			lookupFobPoints = lookupServiceDataObj.getFobPoints(authToken,environment);
+		}
+		String finalFobValue = lookupFobPoints.stream().filter(fobValue -> fobValue.contains(value))
+				                              .collect(Collectors.joining());
+		if(!StringUtils.isEmpty(finalFobValue)){
+			FOBPoint fobPointObj = new FOBPoint();
+			fobPointObj.setName(finalFobValue);
+			listOfFobPoint.add(fobPointObj);
+		}
+		return listOfFobPoint;
 	}
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;

@@ -21,6 +21,7 @@ import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
@@ -495,19 +496,19 @@ public class PelicanGraphicMapping implements IExcelParser{
 					}
 							break;
 				case 57://repeate charge
-					/*String repeateChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
+					String repeateChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!repeateChargePrice.equals("0")){
 						imprintMethodUpchargeMap.put("repeateCharge", repeateChargePrice);
-					}*/
+					}
 					// no need to process this column since there is no vaild data
 							break; 
 				case 58://repeate charge code
-							/*String repeateChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
+							String repeateChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
 							if(!repeateChargeCode.equals("0")){
 								String priceVal = imprintMethodUpchargeMap.get("repeateCharge");
 								priceVal = priceVal+"_"+repeateChargeCode;
 								imprintMethodUpchargeMap.put("repeateCharge", priceVal);
-							}*/
+							}
 					// no need to process this column since there is no vaild data
 						break;
 				case 59: // additioNal color
@@ -802,6 +803,11 @@ public class PelicanGraphicMapping implements IExcelParser{
 				case 115: //ShipPointCountry
 					break;
 				case 116: //ShipPointZip
+					String fobVal = cell.getStringCellValue();
+					List<FOBPoint> listOfFobPoint = pelicanGraphicAttributeParser.getFobPoint(fobVal, accessToken, environmentType);
+					if(!CollectionUtils.isEmpty(listOfFobPoint)){
+						productExcelObj.setFobPoints(listOfFobPoint);
+					}
 					break;
 				case 117: //Comment
 					String comment = cell.getStringCellValue();
