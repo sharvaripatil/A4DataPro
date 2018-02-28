@@ -436,6 +436,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 						shippinglen=CommonUtility.getCellValueStrinOrInt(cell);
 						if(!StringUtils.isEmpty(shippinglen.trim())){
 						shippinglen=shippinglen.toUpperCase();
+						shippinglen=shippinglen.replace("\"","");
 						shippinglen=shippinglen.replace("L","");
 						shippinglen=shippinglen.replace("W","");
 						shippinglen=shippinglen.replace("H","");
