@@ -144,7 +144,7 @@ public class PelicanGraphicPriceGridParser {
 	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
 			String discounts, String upChargeCriterias, String qurFlag,
 			String currency, String upChargeName, String upChargeType,
-			String upchargeUsageType, Integer upChargeSequence,
+			String upchargeUsageType,String serviceCharge, Integer upChargeSequence,
 			List<PriceGrid> existingPriceGrid) {
 		try{
 		List<PriceConfiguration> configuration = null;
@@ -163,7 +163,7 @@ public class PelicanGraphicPriceGridParser {
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);
 		priceGrid.setUpchargeType(upChargeType);
-		priceGrid.setServiceCharge("Required");
+		priceGrid.setServiceCharge(serviceCharge);
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {

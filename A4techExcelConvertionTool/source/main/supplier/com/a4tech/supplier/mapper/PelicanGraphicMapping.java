@@ -497,14 +497,14 @@ public class PelicanGraphicMapping implements IExcelParser{
 							break;
 				case 57://repeate charge
 					String repeateChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!repeateChargePrice.equals("0")){
+					if(!StringUtils.isEmpty(repeateChargePrice) && !repeateChargePrice.equals("0")){
 						imprintMethodUpchargeMap.put("repeateCharge", repeateChargePrice);
 					}
 					// no need to process this column since there is no vaild data
 							break; 
 				case 58://repeate charge code
 							String repeateChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
-							if(!repeateChargeCode.equals("0")){
+							if(!StringUtils.isEmpty(repeateChargeCode) && !repeateChargeCode.equals("0")){
 								String priceVal = imprintMethodUpchargeMap.get("repeateCharge");
 								priceVal = priceVal+"_"+repeateChargeCode;
 								imprintMethodUpchargeMap.put("repeateCharge", priceVal);
@@ -945,6 +945,7 @@ public class PelicanGraphicMapping implements IExcelParser{
 			description = CommonUtility.removeSpecificWord(description, asiProdNo);
 			description = description.replaceAll(asiProdNo, "");
 		}
+		description = description.replaceAll("Velcro", "");
 		description = CommonUtility.getStringLimitedChars(description, 800);
 	 return description;
 	}
@@ -953,6 +954,7 @@ public class PelicanGraphicMapping implements IExcelParser{
 			 productName = CommonUtility.removeSpecificWord(productName, asiProdNo);
 			 productName = productName.replaceAll(asiProdNo, "");
 			}
+		 productName = productName.replaceAll("Velcro", "");
 		 productName = CommonUtility.getStringLimitedChars(productName, 60);
 		 return productName;
 	}

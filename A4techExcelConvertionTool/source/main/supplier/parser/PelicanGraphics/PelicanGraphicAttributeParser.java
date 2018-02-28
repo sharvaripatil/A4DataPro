@@ -61,11 +61,23 @@ public class PelicanGraphicAttributeParser {
 			newProduct.setCatalogs(existingProduct.getCatalogs());
 		}
 		if(!StringUtils.isEmpty(existingProduct.getSummary())){
-			newProduct.setSummary(existingProduct.getSummary());
+			String summary = existingProduct.getSummary();
+			if(summary.contains("Velcro")){
+				summary = summary.replaceAll("Velcro", "");
+			}
+			newProduct.setSummary(summary);
 		}
-		if(!CollectionUtils.isEmpty(oldProductConfig.getThemes())){
-			newProductConfig.setThemes(oldProductConfig.getThemes());
-		}
+		 if(!CollectionUtils.isEmpty(oldProductConfig.getThemes())){
+			 newProductConfig.setThemes(oldProductConfig.getThemes());
+				List<Theme> themeList = oldProductConfig.getThemes().stream().map(themeVal ->{
+					themeVal.setName(themeVal.getName());
+					if(themeVal.getName().equals("ECO FRIENDLY")){
+						themeVal.setName("Eco & Environmentally Friendly");
+					}
+					return themeVal;
+				}).collect(Collectors.toList()); 
+				newProductConfig.setThemes(themeList);
+			}
 		newProduct.setProductConfigurations(newProductConfig);
 		return newProduct;
 	}
@@ -353,8 +365,10 @@ public class PelicanGraphicAttributeParser {
 			 String priceVal = upchareVal[0];
 			 String disCount = upchareVal[1];
 			 String upChargeTypeVal = "";
+			 String upchargeUsageType = "Other";
+			 String serviceCharge = "Required";
 			 if(upchargeType.equalsIgnoreCase("setupCharge")){
-				 upChargeTypeVal = "Set-up Charge";
+				 upChargeTypeVal = "Set-up Charge";upchargeUsageType="Per Order";
 			 } else if(upchargeType.equalsIgnoreCase("screenCharge")){
 				 upChargeTypeVal = "Screen Charge";
 			 } else if(upchargeType.equalsIgnoreCase("plateCharge")){
@@ -364,17 +378,18 @@ public class PelicanGraphicAttributeParser {
 			 } else if(upchargeType.equalsIgnoreCase("toolingCharge")){
 				 upChargeTypeVal = "Tooling Charge";
 			 } else if(upchargeType.equalsIgnoreCase("repeateCharge")){
-				 upChargeTypeVal = "Re-order Charge";
+				 upChargeTypeVal = "Re-order Charge";upchargeUsageType="Per Order";
+				 serviceCharge = "Optional";
 			 }
 			existingPriceGrid = pelicanGraphicPriceGridParser.getUpchargePriceGrid("1", priceVal, disCount, "Imprint method", "n",
-					"USD", imprintMethods, upChargeTypeVal, "Other", 1, existingPriceGrid);
+					"USD", imprintMethods, upChargeTypeVal, upchargeUsageType,serviceCharge, 1, existingPriceGrid);
 		}
 		return existingPriceGrid;
 	}
 	public List<PriceGrid> getAdditionalColorUpcharge(String discountCode,String prices,List<PriceGrid> existingPriceGrid,String upchargeType){
 	   String disCountCode = getAdditionalColorDiscountCode(discountCode);
 	   existingPriceGrid = pelicanGraphicPriceGridParser.getUpchargePriceGrid("1", prices, disCountCode, "Additional Colors", "n",
-				"USD", "Additional Color",upchargeType, "Other", 1, existingPriceGrid);
+				"USD", "Additional Color",upchargeType, "Other","Required", 1, existingPriceGrid);
 		return existingPriceGrid;
 	}
 	private String getAdditionalColorDiscountCode(String value){
