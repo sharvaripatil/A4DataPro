@@ -281,12 +281,14 @@ public class CommonUtility {
 	 * chars are replace as per feedback provided by michael
 	 */
 	public static String removeRestrictSymbols(String value){
+		try{
 		value=value.replaceAll("±", "");
 		//value=value.replaceAll("’", "single quote");
 		//value=value.replaceAll("`", "single quote");
 		//value=value.replaceAll("‘", "single quote");
 		//value=value.replaceAll("“", "double quote");
 		value=value.replaceAll("”", "\"");
+		value=value.replaceAll("„", "");
 		value=value.replaceAll("–", "dash");
 		value=value.replaceAll("®", "(R)");
 		value=value.replaceAll("™", "(TM)");
@@ -302,14 +304,21 @@ public class CommonUtility {
 		value=value.replaceAll("¼", "1/4");
 		value = value.replaceAll("\\[", "");
 		value = value.replaceAll("\\]", "");
-		value=value.replaceAll("<", "");
-		value=value.replaceAll(">", "");
+		//value=value.replaceAll("<", "");
+		//value=value.replaceAll(">", "");
 		value=value.replaceAll("", "");
 		value=value.replaceAll("—", "");
 		value=value.replaceAll("¡", "");
 		value=value.replaceAll("ñ", "");
 		value=value.replaceAll("~", "");
 		value=value.replaceAll("†", "");
+		value=value.replaceAll("\\?", "");
+		value=value.replaceAll("¢", "");
+		value=value.replaceAll("â", "");
+		//â
+		}catch(Exception e){
+			_LOGGER.error("Error while removing symbol"+e.getLocalizedMessage());
+		}
 		return value;
 	}
   

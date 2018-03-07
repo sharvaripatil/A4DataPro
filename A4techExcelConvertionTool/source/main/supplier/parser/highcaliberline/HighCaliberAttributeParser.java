@@ -124,30 +124,54 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 							i++;
 						}
 					}
-			 }else{//this is for imprint methods
-				 //here i have to check the imprint method name for the value
-				 List<ImprintMethod> listOfImprintMethod=productConfigObj.getImprintMethods();
+			 }else{ //this is for imprint methods
+				    //here i have to check the imprint method name for the value
+				    List<ImprintMethod> listOfImprintMethod=productConfigObj.getImprintMethods();
+				 	//List<String> tempImpListAlias=new ArrayList<String>();
+				 	List<String> tempValList=new ArrayList<String>();
+				 	List<String> finalImprintValues =new ArrayList<String>();
+				 	 if(!CollectionUtils.isEmpty(listOfImprintMethod)){
+				 		 
+				 		 for (ImprintMethod impObj : listOfImprintMethod) {
+				 			tempValList.add(impObj.getAlias());
+				 			
+						}
+				      //public List<String> getImprintValue(String value){
+					  //List<String> imprintLookUpValue = lookupServiceDataObj.getImprintMethods();
+				 		 String tempCheckVal=setUpchrgesVal;
+				 		 if(tempCheckVal.contains("engrave")){
+				 		 tempCheckVal=tempCheckVal.replace("engrave", "engraved");	 
+				 		 }
+				 		if(tempCheckVal.contains("digital direct printing")){
+					 		 tempCheckVal=tempCheckVal.replace("digital direct printing", "direct digital printing");	 
+					 		 }
+				 		 final String checkListVal=tempCheckVal;
+					  finalImprintValues = tempValList.stream()
+					                                      .filter(impntName -> checkListVal.toUpperCase().contains(impntName))
+					                                      .collect(Collectors.toList());
+					 // return finalImprintValues; 
+					 //}
+				 //tempImpListAlias=getImprintAliasList(listOfImprintMethod);
+			 }
 				 
-				 if(!CollectionUtils.isEmpty(listOfImprintMethod)){
+				 if(!CollectionUtils.isEmpty(finalImprintValues)){
 					 /*(String listOfPrices, String listOfQuan, String discountCodes,
 								String currency, String priceInclude, boolean isBasePrice,
 								String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,
 								List<PriceGrid> existingPriceGrid) */
-					 List<String> tempImpListAlias=new ArrayList<String>();
-					 tempImpListAlias=getImprintAliasList(listOfImprintMethod);
-					 if(!CollectionUtils.isEmpty(tempImpListAlias)){ 
-						for (String finalAlias : tempImpListAlias) {
-							priceGrids=highCalPriceGridParser.getPriceGrids(tempSetupCharge,"1","V",
-									"USD",tempPriceIncludeSetUp,false,"False", finalAlias,"Imprint Method", i+1,"Set-up Charge", "Other",priceGrids);
-							i++;
+					//tempImpListAlias=getImprintAliasList(listOfImprintMethod);
+					for (String finalAlias : finalImprintValues) {
+						priceGrids=highCalPriceGridParser.getPriceGrids(tempSetupCharge,"1","V",
+								"USD",tempPriceIncludeSetUp,false,"False", finalAlias,"Imprint Method", i+1,"Set-up Charge", "Other",priceGrids);
+						i++;
 						}
-					 }
+					 
 					}
-			 }
+			 	 }
 		 }
 		 
 		//Repeat-Up charges upcharges
-		 if(!StringUtils.isEmpty(repeatUpchrgesValOrignl)){
+		 /*if(!StringUtils.isEmpty(repeatUpchrgesValOrignl)){
 			 String valueArry[]=repeatUpchrgesValOrignl.split(",");
 			 /////////
 			 /////////
@@ -174,10 +198,10 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 					 tempClrListAlias.add(objColor.getAlias());
 				}
 				 if(!CollectionUtils.isEmpty(colorList)){
-					 /*(String listOfPrices, String listOfQuan, String discountCodes,
+					 (String listOfPrices, String listOfQuan, String discountCodes,
 								String currency, String priceInclude, boolean isBasePrice,
 								String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,
-								List<PriceGrid> existingPriceGrid) */
+								List<PriceGrid> existingPriceGrid) 
 						for (String finalAlias : tempClrListAlias) {
 							priceGrids=highCalPriceGridParser.getPriceGrids(tempReSetupCharge,"1","V",
 									"USD",tempPriceIncludeRepeat,false,"False", finalAlias,"Product Color", i+1,"Re-order Charge", "Other",priceGrids);
@@ -187,7 +211,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			 }else{ //this is for imprint methods
 				    //here i have to check the imprint method name for the value
 				    List<ImprintMethod> listOfImprintMethod=productConfigObj.getImprintMethods();
-				 	List<String> tempImpListAlias=new ArrayList<String>();
+				 	//List<String> tempImpListAlias=new ArrayList<String>();
 				 	List<String> tempValList=new ArrayList<String>();
 				 	List<String> finalImprintValues =new ArrayList<String>();
 				 	 if(!CollectionUtils.isEmpty(listOfImprintMethod)){
@@ -202,42 +226,34 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 				 		 if(tempCheckVal.contains("engrave")){
 				 		 tempCheckVal=tempCheckVal.replace("engrave", "engraved");	 
 				 		 }
+				 		if(tempCheckVal.contains("digital direct printing")){
+					 		 tempCheckVal=tempCheckVal.replace("digital direct printing", "direct digital printing");	 
+					 		 }
 				 		 final String checkListVal=tempCheckVal;
 					  finalImprintValues = tempValList.stream()
 					                                      .filter(impntName -> checkListVal.toUpperCase().contains(impntName))
 					                                      .collect(Collectors.toList());
-					                                                 
-					    
 					 // return finalImprintValues; 
 					 //}
-					  
-					  
-				 tempImpListAlias=getImprintAliasList(listOfImprintMethod);
+				 //tempImpListAlias=getImprintAliasList(listOfImprintMethod);
 			 }
 				 
 				 if(!CollectionUtils.isEmpty(finalImprintValues)){
-					 /*(String listOfPrices, String listOfQuan, String discountCodes,
+					 (String listOfPrices, String listOfQuan, String discountCodes,
 								String currency, String priceInclude, boolean isBasePrice,
 								String qurFlag, String priceName, String criterias,Integer sequence,String upChargeType,String upchargeUsageType,
-								List<PriceGrid> existingPriceGrid) */
-					//////
-					/////
-					 		//tempImpListAlias=getImprintAliasList(listOfImprintMethod);
-					 //////
-					 //////
-					 if(!CollectionUtils.isEmpty(finalImprintValues)){ 
-						for (String finalAlias : finalImprintValues) {
+								List<PriceGrid> existingPriceGrid) 
+					//tempImpListAlias=getImprintAliasList(listOfImprintMethod);
+					for (String finalAlias : finalImprintValues) {
 							priceGrids=highCalPriceGridParser.getPriceGrids(tempReSetupCharge,"1","V",
 									"USD",tempPriceIncludeRepeat,false,"False", finalAlias,"Imprint Method", i+1,"Re-order Charge", "Other",priceGrids);
 							i++;
 						}
-					 }
+					 
 					}
+			 	 }
 			 }
-			 }
-			 ////////////
-			 ///////////////////////
-		 }
+		 }*/
 		}catch(Exception e){
 			_LOGGER.error("Error while processing upcharge data "+e.getMessage());
 		}
