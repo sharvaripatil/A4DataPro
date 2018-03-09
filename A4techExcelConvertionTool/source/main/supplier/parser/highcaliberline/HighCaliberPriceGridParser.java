@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
@@ -31,6 +32,11 @@ public class HighCaliberPriceGridParser {
 		
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(priceName);
+		 if(!StringUtils.isEmpty(priceInclude)){
+			 if(priceInclude.length()>100){
+		priceInclude=priceInclude.substring(0, 100);
+			 }
+		 }
 		priceGrid.setPriceIncludes(priceInclude);
 		priceGrid
 				.setIsQUR(qurFlag.equalsIgnoreCase(ApplicationConstants.CONST_STRING_FALSE) ? ApplicationConstants.CONST_BOOLEAN_FALSE
@@ -145,9 +151,9 @@ public class HighCaliberPriceGridParser {
 	}
 
 	
-	public List<PriceGrid> getPriceGridsQur( ) 
+	public List<PriceGrid> getPriceGridsQur(List<PriceGrid> newPriceGrid) 
 	{
-		List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
+		//List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
 		try{
 			Integer sequence = 1;
 			//List<PriceConfiguration> configuration = null;

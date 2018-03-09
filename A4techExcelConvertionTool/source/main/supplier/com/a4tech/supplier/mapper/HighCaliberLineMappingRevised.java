@@ -216,7 +216,21 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 								 //color & location
 								 // same goes here as well
 								 if(CollectionUtils.isEmpty(priceGrids)){
-										priceGrids = highCalPriceGridParser.getPriceGridsQur();	
+										priceGrids = highCalPriceGridParser.getPriceGridsQur(new ArrayList<PriceGrid>());	
+									}else{
+										boolean basePriceFLag=false;
+										for (PriceGrid pricegrid : priceGrids) {
+											if(pricegrid.getIsBasePrice()){
+												basePriceFLag=true;
+												break;
+											}
+											
+										}
+										
+										if(!basePriceFLag){
+											priceGrids = highCalPriceGridParser.getPriceGridsQur(priceGrids);	
+										}
+										
 									}
 								 
 								   // Add repeatable sets here
@@ -229,6 +243,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 								 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 								 		productExcelObj.setAvailability(new ArrayList<Availability>());
 								 	}*/
+								 	productExcelObj.setAdditionalProductInfo("Re-Order Fee waived for 2 years");
 								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
@@ -308,8 +323,9 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 					
 					case 2://HCL Item#
 						String asiProductNo=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(asiProductNo)){
 						productExcelObj.setAsiProdNo(asiProductNo);
-						
+						}
 						break;
 					case 3://Item Status
 						//Ignore this column
@@ -318,20 +334,29 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 						
 						String productName = CommonUtility.getCellValueStrinOrInt(cell);
 						//productName = CommonUtility.removeSpecialSymbols(productName,specialCharacters);
-						int len=productName.length();
+						if(!StringUtils.isEmpty(productName)){
+							productName=CommonUtility.removeRestrictSymbols(productName);
+						 int len=productName.length();
 						 if(len>60){
 							String strTemp=productName.substring(0, 60);
 							int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
 							productName=(String) strTemp.subSequence(0, lenTemp);
 						}
 						productExcelObj.setName(productName);
-						 
+						}
 		
 						 
 						break;
 					case 5://Description
 						String description =CommonUtility.getCellValueStrinOrInt(cell);
 						//description = CommonUtility.removeSpecialSymbols(description,specialCharacters);
+						if(!StringUtils.isEmpty(description)){
+							description=CommonUtility.removeRestrictSymbols(description);
+							description=description.replaceAll("(</p>|<p>| <ul>|&rdquo;|&nbsp;|&ldquo;|<span style=color: #ff0000; font-size: small;>| <ul> |<li>|"
+									+ "<span style=color: #ff0000;>|</span style=color: #ff0000;>|<em>|</em>|</strong>|<strong>|</span>|<span>|</li>|</ul>|"
+									+ "<p class=p1>|<hr>|<STRONG>|</STRONG>|<font color=\"b5b8b9\">|</font>|</strong>|<strong>|<i>|</i>|</a>|</a>|"
+									+ "<font color=\"b31b34\">|<BR>|</BR>|<br>|</br>| ¡|ñ|!|<font color=\"ffffff\">|<FONT>|</FONT>|<hr>|</em>|<em>|â|€|<br >|<br />|&bull;|<span style=\"color: #ff0000;\">)", "");
+							
 						int length=description.length();
 						 if(length>800){
 							String strTemp=description.substring(0, 800);
@@ -339,7 +364,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 							description=(String) strTemp.subSequence(0, lenTemp);
 						}
 						productExcelObj.setDescription(description);
-						
+						}
 						break;
 					case 6://Web Link
 						String productDataSheet=CommonUtility.getCellValueStrinOrInt(cell);
@@ -436,6 +461,8 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 						shippinglen=CommonUtility.getCellValueStrinOrInt(cell);
 						if(!StringUtils.isEmpty(shippinglen.trim())){
 						shippinglen=shippinglen.toUpperCase();
+						if(!shippinglen.contains("NO")){
+						shippinglen=shippinglen.replace("\"","");
 						shippinglen=shippinglen.replace("L","");
 						shippinglen=shippinglen.replace("W","");
 						shippinglen=shippinglen.replace("H","");
@@ -447,14 +474,18 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 						ShipingObj =highCaliberAttributeParser.getShippingEstimates(shippinglen, shippingWid, shippingH, "", "",ShipingObj);
 						productConfigObj.setShippingEstimates(ShipingObj);
 						}
+						}
 						break;
 						
 					case 21://Carton Weight
 						 shippingWeightValue=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(shippingWeightValue.trim())){
+							 shippingWeightValue=shippingWeightValue.toUpperCase();
+							 if(!shippingWeightValue.contains("NO")){
 						 shippingWeightValue=shippingWeightValue.toUpperCase();
 						 ShipingObj =highCaliberAttributeParser.getShippingEstimates("", "", "", shippingWeightValue, "",ShipingObj);
 						 productConfigObj.setShippingEstimates(ShipingObj);
+							 }
 						 }
 						break;
 					case 22://Carton Qty
@@ -462,8 +493,11 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 						 //noOfitem=noOfitem.toUpperCase();
 						 noOfitem=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(noOfitem.trim())){
+							 noOfitem=noOfitem.toUpperCase();
+							 if(!noOfitem.contains("NO")){
 						 ShipingObj =highCaliberAttributeParser.getShippingEstimates("", "", "", "", noOfitem,ShipingObj);
 						 productConfigObj.setShippingEstimates(ShipingObj);
+							 }
 						}
 						break;
 					case 23://Production TimeStandard Production Time
@@ -474,7 +508,11 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 						//boolean weekFlag=false;
 						if(!StringUtils.isEmpty(prodTime.trim())){
 						String tempVal=prodTime;
-							if(prodTime.contains("Week") || prodTime.contains("Weeks")){
+						prodTime=prodTime.toUpperCase();
+						if(prodTime.contains("AIR") || prodTime.contains("OCEAN") || prodTime.contains("DHL")){
+							prodTime=removeSpecialCharNew(prodTime);
+						}
+							if(prodTime.contains("WEEK") || prodTime.contains("WEEKS")){
 								prodTime=removeSpecialChar(prodTime);
 								prodTime=prodTime.trim();
 								if(prodTime.contains("-")){
@@ -490,10 +528,10 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 									prodTime=Integer.toString(inWeekVal);
 								}
 							}
-							if(prodTime.contains("Hour")|| prodTime.contains("Hours")){
+							if(prodTime.contains("HOUR")|| prodTime.contains("HOURS")){
 								prodTime="1";
 							}
-							if(prodTime.contains("Day") || prodTime.contains("Days")){
+							if(prodTime.contains("DAY") || prodTime.contains("DAYS")){
 								prodTime=removeSpecialChar(prodTime);
 								prodTime=prodTime.trim();
 							}
@@ -584,7 +622,11 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 						rushTime =CommonUtility.getCellValueStrinOrInt(cell);
 						if(!StringUtils.isEmpty(rushTime)){
 						String tempRushVal=rushTime;
-							if(rushTime.contains("Week") || rushTime.contains("Weeks")){
+						rushTime=rushTime.toUpperCase();
+						if(rushTime.contains("AIR") || rushTime.contains("OCEAN") || rushTime.contains("DHL")){
+							rushTime=removeSpecialCharNew(rushTime);
+						}
+							if(rushTime.contains("WEEK") || rushTime.contains("WEEKS")){
 								rushTime=removeSpecialChar(rushTime);
 								rushTime=rushTime.trim();
 								if(rushTime.contains("-")){
@@ -600,10 +642,10 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 									rushTime=Integer.toString(inWeekVal);
 								}
 							}
-							if(rushTime.contains("Hour")|| rushTime.contains("Hours")){
+							if(rushTime.contains("HOUR")|| rushTime.contains("HOURS")){
 								rushTime="1";
 							}
-							if(rushTime.contains("Day") || rushTime.contains("Days")){
+							if(rushTime.contains("DAY") || rushTime.contains("DAYS")){
 								rushTime=removeSpecialChar(rushTime);
 								rushTime=rushTime.trim();
 							}
@@ -696,7 +738,11 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 						//boolean weekFlag=false;
 						if(!StringUtils.isEmpty(prodTimeVal2)){
 						String tempValue=prodTimeVal2;
-							if(prodTimeVal2.contains("Week")||prodTimeVal2.contains("Weeks")){
+						prodTimeVal2=prodTimeVal2.toUpperCase();
+						if(prodTimeVal2.contains("AIR") || prodTimeVal2.contains("OCEAN") || prodTimeVal2.contains("DHL")){
+							prodTimeVal2=removeSpecialCharNew(prodTimeVal2);
+						}
+							if(prodTimeVal2.contains("WEEK")||prodTimeVal2.contains("WEEKS")){
 								prodTimeVal2=removeSpecialChar(prodTimeVal2);
 								prodTimeVal2=prodTimeVal2.trim();
 								if(prodTimeVal2.contains("-")){
@@ -712,10 +758,10 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 									prodTimeVal2=Integer.toString(inWeekVal);
 								}
 							}
-							if(prodTimeVal2.contains("Hour") || prodTimeVal2.contains("Hours")){
+							if(prodTimeVal2.contains("HOUR") || prodTimeVal2.contains("HOURS")){
 								prodTimeVal2="1";
 							}
-							if(prodTimeVal2.contains("Day") || prodTimeVal2.contains("Days")){
+							if(prodTimeVal2.contains("DAY") || prodTimeVal2.contains("DAYS")){
 								prodTimeVal2=removeSpecialChar(prodTimeVal2);
 								prodTimeVal2=prodTimeVal2.trim();
 							}
@@ -900,9 +946,22 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 	 //color & location
 	 // same goes here as well
 	 if(CollectionUtils.isEmpty(priceGrids)){
-			priceGrids = highCalPriceGridParser.getPriceGridsQur();	
+			priceGrids = highCalPriceGridParser.getPriceGridsQur(new ArrayList<PriceGrid>());	
+		}else{
+			boolean basePriceFLag=false;
+			for (PriceGrid pricegrid : priceGrids) {
+				if(pricegrid.getIsBasePrice()){
+					basePriceFLag=true;
+					break;
+				}
+				
+			}
+			
+			if(!basePriceFLag){
+				priceGrids = highCalPriceGridParser.getPriceGridsQur(priceGrids);	
+			}
+			
 		}
-	 
 	 productExcelObj.setPriceType("L");//need to cofirm
 	 	productExcelObj.setPriceGrids(priceGrids);
 	 	productExcelObj.setProductConfigurations(productConfigObj);
@@ -911,6 +970,7 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 	 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 	 		productExcelObj.setAvailability(new ArrayList<Availability>());
 	 	}*/
+	 	productExcelObj.setAdditionalProductInfo("Re-Order Fee waived for 2 years");
 	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 	 	if(num ==1){
 	 		numOfProductsSuccess.add("1");
@@ -981,12 +1041,17 @@ public class HighCaliberLineMappingRevised implements IExcelParser{
 	
 	
 	public static String removeSpecialChar(String tempValue){
-		tempValue=tempValue.replaceAll("(Day|Service|Days|Hour|Hours|Week|Weeks|Rush|R|u|s|h)", "");
+		tempValue=tempValue.replaceAll("(DAY|SERVICE|DAYS|HOUR|HOURS|WEEK|WEEKS|RUSH|DHL|AIR|OCEAN|R|U|S|H)", "");
 		tempValue=tempValue.replaceAll("\\(","");
 		tempValue=tempValue.replaceAll("\\)","");
 	return tempValue;
 	}
-	
+	public static String removeSpecialCharNew(String tempValue){
+		tempValue=tempValue.replaceAll("(DHL|AIR|OCEAN)", "");
+		tempValue=tempValue.replaceAll("\\(","");
+		tempValue=tempValue.replaceAll("\\)","");
+	return tempValue;
+	}
 	public static List<String> getImprintAliasList(List<ImprintMethod> listOfImprintMethod){
 		ArrayList<String> tempList=new ArrayList<String>();
 		
