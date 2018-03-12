@@ -213,7 +213,21 @@ public class HighCaliberLineExcelMapping implements IExcelParser{
 								 
 								 
 								 if(CollectionUtils.isEmpty(priceGrids)){
-										priceGrids = highCalPriceGridParser.getPriceGridsQur();	
+										priceGrids = highCalPriceGridParser.getPriceGridsQur(new ArrayList<PriceGrid>());	
+									}else{
+										boolean basePriceFLag=false;
+										for (PriceGrid pricegrid : priceGrids) {
+											if(pricegrid.getIsBasePrice()){
+												basePriceFLag=true;
+												break;
+											}
+											
+										}
+										
+										if(!basePriceFLag){
+											priceGrids = highCalPriceGridParser.getPriceGridsQur(priceGrids);	
+										}
+										
 									}
 								 
 								   // Add repeatable sets here
@@ -801,7 +815,21 @@ public class HighCaliberLineExcelMapping implements IExcelParser{
 	 }
 	 
 	 if(CollectionUtils.isEmpty(priceGrids)){
-			priceGrids = highCalPriceGridParser.getPriceGridsQur();	
+			priceGrids = highCalPriceGridParser.getPriceGridsQur(new ArrayList<PriceGrid>());	
+		}else{
+			boolean basePriceFLag=false;
+			for (PriceGrid pricegrid : priceGrids) {
+				if(pricegrid.getIsBasePrice()){
+					basePriceFLag=true;
+					break;
+				}
+				
+			}
+			
+			if(!basePriceFLag){
+				priceGrids = highCalPriceGridParser.getPriceGridsQur(priceGrids);	
+			}
+			
 		}
 	 
 	 productExcelObj.setPriceType("L");//need to cofirm
