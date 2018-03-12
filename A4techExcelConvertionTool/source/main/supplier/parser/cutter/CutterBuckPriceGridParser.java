@@ -9,7 +9,7 @@ import com.a4tech.product.model.PriceGrid;
 
 public class CutterBuckPriceGridParser {
 
-	public List<PriceGrid> getPriceGrids(String listPrice, /*String netCost,*/
+	public List<PriceGrid> getPriceGrids(String listPrice, String netCost,
 			Integer listOfQuan, String currency, String priceInclude, boolean isBasePrice,
 			String isQur, String priceName, String criterias,
 			List<PriceGrid> existingPriceGrid) {
@@ -29,7 +29,7 @@ public class CutterBuckPriceGridParser {
 			price.setSequence(sequence);
 			price.setQty(listOfQuan);
 			price.setPrice(listPrice);
-			//price.setNetCost(netCost);
+			price.setNetCost(netCost);
 			listOfPrices.add(price);
 		
 

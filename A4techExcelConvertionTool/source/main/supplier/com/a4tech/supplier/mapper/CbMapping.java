@@ -35,6 +35,7 @@ import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 public class CbMapping implements IExcelParser{
@@ -50,6 +51,7 @@ public class CbMapping implements IExcelParser{
 	private CBColorProductNumberParser cbColorProductNumberObj;
 	private CutterBuckSizeParser cutterBuckSizeParserObj;
 	private CutterBuckPriceGridParser cutterBuckPriceObj;
+	private CutterBuckSheetParser cutterBuckSheetObj;
 
 	
     private HashMap<String, String> ProductNoMap =new HashMap<String, String>();
@@ -70,6 +72,7 @@ public class CbMapping implements IExcelParser{
 		List<Material> listOfMaterial = new ArrayList<>();
 	    List<Color> colorList = new ArrayList<Color>();
 	    Set<String> colorSet = new HashSet<String>(); 
+	    List<String> repeatRows = new ArrayList<>();
 
 		Origin origin = new Origin();
 		StringBuilder Description = new StringBuilder();
@@ -105,6 +108,8 @@ public class CbMapping implements IExcelParser{
 					Iterator<Cell> cellIterator = nextRow.cellIterator();
 					if (productId != null) {
 						productXids.add(productId);
+						repeatRows.add(productId);
+
 					}
 					boolean checkXid = false;
 
@@ -162,14 +167,15 @@ public class CbMapping implements IExcelParser{
 									_LOGGER.info("Failure list size>>>>>>>"
 											+ numOfProductsFailure.size());
 
-							
+								 	repeatRows.clear();
 									priceGrids = new ArrayList<PriceGrid>();
-	
 									productConfigObj = new ProductConfigurations();
 								
 								}
 								if (!productXids.contains(xid)) {
-									productXids.add(xid.trim());
+									productXids.add(productId);
+									repeatRows.add(productId);
+
 								}
 							
 								existingApiProduct = postServiceImpl
@@ -199,6 +205,13 @@ public class CbMapping implements IExcelParser{
 							}
 						}
 
+						else{
+							if(productXids.contains(xid) && repeatRows.size() != 1){
+								 if(isRepeateColumn(columnIndex+1)){
+									 continue;
+								 }
+							}
+						}
 
 						switch (columnIndex + 1) {
 						
@@ -220,13 +233,16 @@ public class CbMapping implements IExcelParser{
 							break;
 						case 4://UPC
 							
+						//	productExcelObj.setProductRelationSkus(productRelationSkus);
+							
 							break;
 						case 5:// Material Number
 
+							
 							break;
 						case 6: // WHSL
-							 
-							
+							ListPrice=cell.getStringCellValue();
+
 							break;
 						 case 7://Color Name
 							 String colorValue = CommonUtility.getCellValueStrinOrInt(cell);
@@ -280,14 +296,15 @@ public class CbMapping implements IExcelParser{
 							break;
 							
 	                    	case 15://Style Number
-
+	                       String PoductlevelNo=cell.getStringCellValue();
+	                       productExcelObj.setAsiProdNo(PoductlevelNo);
 								
 							break;
 							
 	                    	case 16://MSRP
+							ListPrice1=cell.getStringCellValue();
 
-								
-							break;
+     						break;
 							
 	                    	case 17://Material Content
 	                    	String MaterialValue=cell.getStringCellValue();
@@ -360,10 +377,8 @@ public class CbMapping implements IExcelParser{
 			}
 			workbook.close();
 
-			priceGrids = cutterBuckPriceObj.getPriceGrids(ListPrice, 
-			         1, "USD", "", true, "N", Description1,"",priceGrids);	
-			
-			priceGrids = cutterBuckPriceObj.getPriceGrids(ListPrice,
+			 
+			priceGrids = cutterBuckPriceObj.getPriceGrids(ListPrice,ListPrice1, 
 			         1, "USD", "", true, "N", Description1,"",priceGrids);	
 			
 			
@@ -467,7 +482,49 @@ public class CbMapping implements IExcelParser{
 		this.lookupRestServiceObj = lookupRestServiceObj;
 	}
 
+	public CBColorProductNumberParser getCbColorProductNumberObj() {
+		return cbColorProductNumberObj;
+	}
 
+	public void setCbColorProductNumberObj(
+			CBColorProductNumberParser cbColorProductNumberObj) {
+		this.cbColorProductNumberObj = cbColorProductNumberObj;
+	}
+
+	public CutterBuckSizeParser getCutterBuckSizeParserObj() {
+		return cutterBuckSizeParserObj;
+	}
+
+	public void setCutterBuckSizeParserObj(
+			CutterBuckSizeParser cutterBuckSizeParserObj) {
+		this.cutterBuckSizeParserObj = cutterBuckSizeParserObj;
+	}
+
+	public CutterBuckPriceGridParser getCutterBuckPriceObj() {
+		return cutterBuckPriceObj;
+	}
+
+	public void setCutterBuckPriceObj(CutterBuckPriceGridParser cutterBuckPriceObj) {
+		this.cutterBuckPriceObj = cutterBuckPriceObj;
+	}
+
+	public CutterBuckSheetParser getCutterBuckSheetObj() {
+		return cutterBuckSheetObj;
+	}
+
+	public void setCutterBuckSheetObj(CutterBuckSheetParser cutterBuckSheetObj) {
+		this.cutterBuckSheetObj = cutterBuckSheetObj;
+	}
+
+
+	public boolean isRepeateColumn(int columnIndex){
+		
+		if(columnIndex != 1 && columnIndex != 3 && columnIndex != 4 && columnIndex != 7 && columnIndex != 11 
+				){
+			return ApplicationConstants.CONST_BOOLEAN_TRUE;
+		}
+		return ApplicationConstants.CONST_BOOLEAN_FALSE;
+	}
 	
 			}
 
