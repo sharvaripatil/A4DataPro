@@ -25,6 +25,8 @@ public class GoldstarCanadaImprintMethodParser {
 		imprintMethod=imprintMethod.replace("Full-color digital", "Full Color");
 
 		ImprintMethod imprMethod = new ImprintMethod();
+		ImprintMethod imprMethod1 = new ImprintMethod();
+
 		
 		if(imprintMethod.contains("Laser"))
 		{
@@ -35,7 +37,6 @@ public class GoldstarCanadaImprintMethodParser {
 		}
 
 		else{
-		
 		List<String> finalImprintValues = getImprintValue(imprintMethod.toUpperCase().trim());	
 		for (String innerValue : finalImprintValues) {
 		    	 imprMethod = new ImprintMethod();
@@ -43,6 +44,11 @@ public class GoldstarCanadaImprintMethodParser {
 				 imprMethod.setType(innerValue);
 				 imprintMethodsList.add(imprMethod);  
 		}
+	   if(imprintMethodsList.isEmpty()){
+		 imprMethod1.setAlias("Printed");
+		 imprMethod1.setType("Printed");
+		 imprintMethodsList.add(imprMethod1);
+	   }
 		}
 		return imprintMethodsList;
 	}

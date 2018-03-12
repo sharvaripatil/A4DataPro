@@ -233,16 +233,16 @@ public class CbMapping implements IExcelParser{
 							break;
 						case 4://UPC
 							
-							
 						//	productExcelObj.setProductRelationSkus(productRelationSkus);
 							
 							break;
 						case 5:// Material Number
 
+							
 							break;
 						case 6: // WHSL
-							 
-							
+							ListPrice=cell.getStringCellValue();
+
 							break;
 						 case 7://Color Name
 							 String colorValue = CommonUtility.getCellValueStrinOrInt(cell);

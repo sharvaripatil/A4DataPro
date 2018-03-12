@@ -44,6 +44,7 @@ import com.a4tech.supplier.mapper.PelicanGraphicMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
+import com.a4tech.supplier.mapper.SimplifiedsourcingMapping;
 import com.a4tech.supplier.mapper.SportCanadaExcelMapping;
 import com.a4tech.supplier.mapper.SunGraphixMapping;
 import com.a4tech.supplier.mapper.TekweldMapping;
@@ -109,6 +110,7 @@ public class ExcelFactory {
     private SunGraphixMapping 				sunGraphixMapping;
     private CbMapping                       cbExeMapping;
     private PelicanGraphicMapping           pelicanGraphicMapping;
+    private SimplifiedsourcingMapping       simplifiedMapping;
 	
 	public  IExcelParser getExcelParserObject(String name){
 
@@ -222,6 +224,9 @@ public class ExcelFactory {
 			  return sunGraphixMapping;
 		  } else if(name.equalsIgnoreCase("pelicanGraphics") || name.equals("76797")){
 			  return pelicanGraphicMapping;
+		  }
+		  else if(name.equalsIgnoreCase("simplified") || name.equals("87326")|| name.equals("91597") ){
+			  return simplifiedMapping;
 		  }
 		return null;
 	}
@@ -624,6 +629,14 @@ public class ExcelFactory {
 
 	public void setPelicanGraphicMapping(PelicanGraphicMapping pelicanGraphicMapping) {
 		this.pelicanGraphicMapping = pelicanGraphicMapping;
+	}
+
+	public SimplifiedsourcingMapping getSimplifiedMapping() {
+		return simplifiedMapping;
+	}
+
+	public void setSimplifiedMapping(SimplifiedsourcingMapping simplifiedMapping) {
+		this.simplifiedMapping = simplifiedMapping;
 	}
 
 

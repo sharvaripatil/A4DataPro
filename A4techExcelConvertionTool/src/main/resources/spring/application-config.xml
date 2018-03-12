@@ -434,6 +434,8 @@
 		<property name="sunScopeMapping" ref="sunScopeMappingId"/>
 		<property name="sunGraphixMapping" ref="sunGraphixMappingId"/>
 		<property name="pelicanGraphicMapping" ref="pelicanGraphicMappingId"/>
+		<property name="simplifiedMapping" ref="simplifiedMappingId"/>
+		
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1201,5 +1203,47 @@
      </bean>
      <bean id="pelicanGraphicpriceGridParserId" class="parser.PelicanGraphics.PelicanGraphicPriceGridParser"/>
       <!-- PelicanGraphics 76797 configuration end-->
+      
+      
+     <!-- simplifiedMappingId 87326 configuration start-->
+      
+      
+        <bean id="simplifiedMappingId" class="com.a4tech.supplier.mapper.SimplifiedsourcingMapping">
+       <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj"   ref="productDao"/>
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+	   <property name="lookupRestServiceObj" ref="lookupRestService"/>
+       <property name="gcdimensionObj"   ref="gcdimensionObjId2"/>
+       <property name="gcimprintMethodParser"   ref="gcimprintMethodParserId2"/>
+       <property name="gcOriginParser"   ref="gcOriginParserId2"/>
+       <property name="gcRushTimeParser"   ref="gcRushTimeParserId2"/>
+       <property name="gcPackagingParser"   ref="gcPackagingParserId2"/>
+       <property name="gcShippingParser"   ref="gcShippingParserId2"/>
+       <property name="gcPricegridParser"   ref="gcPricegridParserId2"/>
+       <property name="gcImprintSizeParser"   ref="gcImprintSizeParserId2"/>
+       <property name="gccolorparser"   ref="gccolorparserId2"/>
+      
+       
+       
+       </bean>
+
+
+     <bean id="gcdimensionObjId2" class="parser.goldstarcanada.GoldstarCanadaDimensionParser"/> 
+     <bean id="gcimprintMethodParserId2" class="parser.goldstarcanada.GoldstarCanadaImprintMethodParser"> 
+     <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     <property name="lookupRestServiceObj" ref="lookupRestService"/>
+     </bean>
+     <bean id="gcOriginParserId2" class="parser.goldstarcanada.GoldstarCanadaOriginParser"/> 
+     <bean id="gcRushTimeParserId2" class="parser.goldstarcanada.GoldstarCanadaRushTimeParser"/> 
+     <bean id="gcPackagingParserId2" class="parser.goldstarcanada.GoldstarCanadaPackagingParser"/>    
+     <bean id="gcPricegridParserId2" class="parser.goldstarcanada.GoldstarCanadaPriceGridParser"/> 
+     <bean id="gcShippingParserId2" class="parser.goldstarcanada.GoldstarCanadaShippingEstimateParser"/> 
+     <bean id="gcImprintSizeParserId2" class="parser.goldstarcanada.GoldstarCanadaImprintsizeParser"/> 
+     <bean id="gccolorparserId2" class="parser.goldstarcanada.GoldstarCanadaColorParser"/> 
+      
+      
+      
+     <!-- simplifiedMappingId 87326 configuration end-->
+      
 </beans>
 
