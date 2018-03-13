@@ -44,6 +44,7 @@ import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
 import com.a4tech.supplier.mapper.SportCanadaExcelMapping;
+import com.a4tech.supplier.mapper.SportsManBagMapping;
 import com.a4tech.supplier.mapper.SunGraphixMapping;
 import com.a4tech.supplier.mapper.TekweldMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
@@ -107,6 +108,7 @@ public class ExcelFactory {
     private SunScopeMapping                 sunScopeMapping;
     private SunGraphixMapping 				sunGraphixMapping;
     private PelicanGraphicMapping           pelicanGraphicMapping;
+    private SportsManBagMapping             sportsManBagMapping;
 	
 	public  IExcelParser getExcelParserObject(String name){
 
@@ -220,6 +222,8 @@ public class ExcelFactory {
 			  return sunGraphixMapping;
 		  } else if(name.equalsIgnoreCase("pelicanGraphics") || name.equals("76797")){
 			  return pelicanGraphicMapping;
+		  } else if(name.equalsIgnoreCase("sportsManBag") || name.equals("88877")){
+			  return sportsManBagMapping;
 		  }
 		return null;
 	}
@@ -612,6 +616,13 @@ public class ExcelFactory {
 
 	public void setPelicanGraphicMapping(PelicanGraphicMapping pelicanGraphicMapping) {
 		this.pelicanGraphicMapping = pelicanGraphicMapping;
+	}
+	public SportsManBagMapping getSportsManBagMapping() {
+		return sportsManBagMapping;
+	}
+
+	public void setSportsManBagMapping(SportsManBagMapping sportsManBagMapping) {
+		this.sportsManBagMapping = sportsManBagMapping;
 	}
 
 
