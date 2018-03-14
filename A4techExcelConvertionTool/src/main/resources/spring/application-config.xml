@@ -435,7 +435,7 @@
 		<property name="sunGraphixMapping" ref="sunGraphixMappingId"/>
 		<property name="pelicanGraphicMapping" ref="pelicanGraphicMappingId"/>
 		<property name="simplifiedMapping" ref="simplifiedMappingId"/>
-		
+		<property name="solidDimensionMapping" ref="solidDimensionMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1240,10 +1240,29 @@
      <bean id="gcShippingParserId2" class="parser.goldstarcanada.GoldstarCanadaShippingEstimateParser"/> 
      <bean id="gcImprintSizeParserId2" class="parser.goldstarcanada.GoldstarCanadaImprintsizeParser"/> 
      <bean id="gccolorparserId2" class="parser.goldstarcanada.GoldstarCanadaColorParser"/> 
-      
-      
-      
      <!-- simplifiedMappingId 87326 configuration end-->
+     
+     <!-- supplier 88156 Solid Dimensions Inc configuration start -->
+     <bean id="solidDimensionMappingId" class="com.a4tech.supplier.mapper.SolidDimensionMapping" autowire="byName">
+       <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj" ref="productDao"/>
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+         <property name="lookupRestServiceObj" ref="lookupRestService"/>
+       <property name="solidAttributeParser" ref="solidAttributeParserId" /> 
+       <property name="solidDimensionPriceGridParser" ref="solidDimensionPriceGridParserId" /> 
+       <property name="solidDimensionColorParser" ref="solidDimensionColorParserId" /> 
+       </bean>
+       <bean id="solidAttributeParserId" name="solidAttributeParserObj"
+  		class="parser.solidDimension.SolidDimesionAttributeParser" autowire="byName">
+  		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+  		<property name="solidDimensionPriceGridParser" ref="solidDimensionPriceGridParserObj"/>
+  	</bean>
+  	<bean id="solidDimensionPriceGridParserId" name="solidDimensionPriceGridParserObj" class="parser.solidDimension.SolidDimensionPriceGridParser" autowire="byName"/>
+  	<bean id="solidDimensionColorParserId" name="solidDimensionColorParserObj" class="parser.solidDimension.SolidDimensionColorParser" autowire="byName">
+  	<!-- <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+    <property name="lookupRestServiceObj" ref="lookupRestService"/> -->
+  	</bean>
+     <!-- supplier 56950 Gill Studios Inc configuration end -->  
       
 </beans>
 

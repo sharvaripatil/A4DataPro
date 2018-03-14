@@ -156,12 +156,12 @@ public class SolidDimensionMapping implements IExcelParser{
 		String Addcolorcharge=null;
 		String Upchargecode="";
 		String Addclearcode=null;
-		
+		int columnIndex=0;
 		while (iterator.hasNext()) {
 			
 			try{
 			Row nextRow = iterator.next();
-			if (nextRow.getRowNum() < 1)
+			if (nextRow.getRowNum() <= 6)
 				continue;
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
 			if(productId != null){
@@ -173,7 +173,7 @@ public class SolidDimensionMapping implements IExcelParser{
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
 				String xid = null;
-				int columnIndex = cell.getColumnIndex();
+				 columnIndex = cell.getColumnIndex();
 				  cell2Data =  nextRow.getCell(1);
 				if(columnIndex + 1 == 1){
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
@@ -191,7 +191,7 @@ public class SolidDimensionMapping implements IExcelParser{
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 1){
+						 if(nextRow.getRowNum() != 7){
 							 System.out.println("Java object converted to JSON String, written to file");
 								//ImprintSize	
 								if(!StringUtils.isEmpty(ImprintSizevalue2.toString())){
@@ -433,7 +433,7 @@ public class SolidDimensionMapping implements IExcelParser{
 				case 13:  //Colors
 					String colorValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(colorValue)){
-						colorList=solidDimensionColorParser.getColorCriteria(colorValue.trim());
+						colorList=solidAttributeParser.getProductColors(colorValue, productExcelObj.getExternalProductId());
 						productConfigObj.setColors(colorList);
 					}	
 						
@@ -1292,7 +1292,7 @@ public class SolidDimensionMapping implements IExcelParser{
 		  
 			    
 			}catch(Exception e){
-			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
+			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"column index "+columnIndex );		 
 		}
 		}
 		workbook.close();

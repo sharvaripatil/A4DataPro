@@ -45,6 +45,7 @@ import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
 import com.a4tech.supplier.mapper.SimplifiedsourcingMapping;
+import com.a4tech.supplier.mapper.SolidDimensionMapping;
 import com.a4tech.supplier.mapper.SportCanadaExcelMapping;
 import com.a4tech.supplier.mapper.SunGraphixMapping;
 import com.a4tech.supplier.mapper.TekweldMapping;
@@ -111,7 +112,9 @@ public class ExcelFactory {
     private CbMapping                       cbExeMapping;
     private PelicanGraphicMapping           pelicanGraphicMapping;
     private SimplifiedsourcingMapping       simplifiedMapping;
-	
+	private SolidDimensionMapping 			solidDimensionMapping;
+    
+    
 	public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -224,9 +227,10 @@ public class ExcelFactory {
 			  return sunGraphixMapping;
 		  } else if(name.equalsIgnoreCase("pelicanGraphics") || name.equals("76797")){
 			  return pelicanGraphicMapping;
-		  }
-		  else if(name.equalsIgnoreCase("simplified") || name.equals("87326")|| name.equals("91597") ){
+		  }else if(name.equalsIgnoreCase("simplified") || name.equals("87326")|| name.equals("91597") ){
 			  return simplifiedMapping;
+		  } else if(name.equalsIgnoreCase("solidDimension") || name.equals("88156")){
+			  return solidDimensionMapping;
 		  }
 		return null;
 	}
@@ -639,6 +643,14 @@ public class ExcelFactory {
 		this.simplifiedMapping = simplifiedMapping;
 	}
 
+	public SolidDimensionMapping getSolidDimensionMapping() {
+		return solidDimensionMapping;
+	}
+
+	public void setSolidDimensionMapping(SolidDimensionMapping solidDimensionMapping) {
+		this.solidDimensionMapping = solidDimensionMapping;
+	}
+	
 
 	
 }
