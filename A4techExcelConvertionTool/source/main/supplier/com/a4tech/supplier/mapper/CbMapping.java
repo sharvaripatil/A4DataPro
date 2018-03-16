@@ -1,7 +1,6 @@
 package com.a4tech.supplier.mapper;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -53,10 +52,7 @@ public class CbMapping implements IExcelParser{
 	private CutterBuckPriceGridParser cutterBuckPriceObj;
 	private CutterBuckSheetParser cutterBuckSheetObj;
 
-	
-    private HashMap<String, String> ProductNoMap =new HashMap<String, String>();
- 
-	@Override
+
 	public String readExcel(String accessToken, Workbook workbook,
 			Integer asiNumber, int batchId, String environmentType) {
 		int columnIndex = 0;
@@ -96,20 +92,18 @@ public class CbMapping implements IExcelParser{
 		
 			String xid = null;
 			Cell cell2Data = null;
-
-		
-
-			while (iterator.hasNext()) {
+			
+    		while (iterator.hasNext()) {
 
 				try {
 					Row nextRow = iterator.next();
-					if (nextRow.getRowNum() < 1)
+					if(nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO){
 						continue;
+					}
 					Iterator<Cell> cellIterator = nextRow.cellIterator();
-					if (productId != null) {
-						productXids.add(productId);
-						repeatRows.add(productId);
-
+					if(xid != null){
+						productXids.add(xid);
+						repeatRows.add(xid);
 					}
 					boolean checkXid = false;
 
@@ -117,8 +111,8 @@ public class CbMapping implements IExcelParser{
 						Cell cell = cellIterator.next();
 					    xid = null;
 					    columnIndex = cell.getColumnIndex();
-					    cell2Data = nextRow.getCell(1);
-						if (columnIndex + 1 == 2) {
+					    cell2Data = nextRow.getCell(0);
+						if (columnIndex + 1 == 1) {
 							if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 								xid = cell.getStringCellValue();
 							} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
@@ -140,6 +134,8 @@ public class CbMapping implements IExcelParser{
 							checkXid = false;
 						}
 						if (checkXid) {
+							try{
+							
 							if (!productXids.contains(xid)) {
 							//	if (nextRow.getRowNum() != 7) {
 									if (nextRow.getRowNum() != 1) {
@@ -173,11 +169,12 @@ public class CbMapping implements IExcelParser{
 								
 								}
 								if (!productXids.contains(xid)) {
-									productXids.add(productId);
-									repeatRows.add(productId);
+									productXids.add(xid);
+									repeatRows.add(xid);
 
 								}
-							
+							  
+								productExcelObj=new Product();
 								existingApiProduct = postServiceImpl
 										.getProduct(accessToken,
 												xid, environmentType);
@@ -203,6 +200,9 @@ public class CbMapping implements IExcelParser{
 								}
 								// productExcelObj = new Product();
 							}
+						}catch(Exception e){
+							_LOGGER.error("error in first block -1"+e.getMessage());
+						}
 						}
 
 						else{
@@ -241,40 +241,40 @@ public class CbMapping implements IExcelParser{
 							
 							break;
 						case 6: // WHSL
-							ListPrice=cell.getStringCellValue();
+						//	ListPrice=cell.getStringCellValue();
 
 							break;
 						 case 7://Color Name
-							 String colorValue = CommonUtility.getCellValueStrinOrInt(cell);
-							 if(!StringUtils.isEmpty(colorValue)){
-								colorSet.add(colorValue);
-							}
-							colorList=cbColorProductNumberObj.getColorCriteria(colorSet);
-	                        productConfigObj.setColors(colorList);
+//							 String colorValue = CommonUtility.getCellValueStrinOrInt(cell);
+//							 if(!StringUtils.isEmpty(colorValue)){
+//								colorSet.add(colorValue);
+//							}
+//							colorList=cbColorProductNumberObj.getColorCriteria(colorSet);
+//	                        productConfigObj.setColors(colorList);
 							break;
 						 case 8://Label
 							break;
 						  case 9://Low Res Image
-		                    Image1=cell.getCellFormula();
+		                //    Image1=cell.getCellFormula();
 							
 							break;
 						   case 10://High Res Image
-						    String Image2=cell.getStringCellValue();
-						    imgObj.setImageURL(Image1);
-						    listOfImage.add(imgObj);
-						    imgObj.setImageURL(Image2);
-						    listOfImage.add(imgObj);
-						    productExcelObj.setImages(listOfImage);
-						
+//						    String Image2=cell.getStringCellValue();
+//						    imgObj.setImageURL(Image1);
+//						    listOfImage.add(imgObj);
+//						    imgObj.setImageURL(Image2);
+//						    listOfImage.add(imgObj);
+//						    productExcelObj.setImages(listOfImage);
+//						
 							break;
 							
 					       case 11://Sizes Available
 
-								 String sizeValue=cell.getStringCellValue();
-								 Size sizeObj = new Size();
-								 sizeObj=cutterBuckSizeParserObj.getSizes(sizeValue);
-							     productConfigObj.setSizes(sizeObj);
-								
+//								 String sizeValue=cell.getStringCellValue();
+//								 Size sizeObj = new Size();
+//								 sizeObj=cutterBuckSizeParserObj.getSizes(sizeValue);
+//							     productConfigObj.setSizes(sizeObj);
+//								
 							
 							break;
 					        case 12://Season
@@ -302,14 +302,14 @@ public class CbMapping implements IExcelParser{
 							break;
 							
 	                    	case 16://MSRP
-							ListPrice1=cell.getStringCellValue();
+						//	ListPrice1=cell.getStringCellValue();
 
      						break;
 							
 	                    	case 17://Material Content
-	                    	String MaterialValue=cell.getStringCellValue();
-	                    	listOfMaterial = cutterBuckMaterialParserObj.getMaterialList(MaterialValue);
-							productConfigObj.setMaterials(listOfMaterial);	
+//	                    	String MaterialValue=cell.getStringCellValue();
+//	                    	listOfMaterial = cutterBuckMaterialParserObj.getMaterialList(MaterialValue);
+//							productConfigObj.setMaterials(listOfMaterial);	
 
 								
 							break;
@@ -349,11 +349,11 @@ public class CbMapping implements IExcelParser{
 							break;
 							
 	                    	case 22://Country Of Origin
-	                    		String originValue=cell.getStringCellValue();
+	                    	/*	String originValue=cell.getStringCellValue();
 	                    		originValue.replace("Vietnam", "VIET NAM");
 	                    		origin.setName(originValue);
 	                    		listOfOrigin.add(origin);
-	                    		productConfigObj.setOrigins(listOfOrigin);
+	                    		productConfigObj.setOrigins(listOfOrigin);*/
 								
 							break;
 
@@ -448,17 +448,6 @@ public class CbMapping implements IExcelParser{
 	public void setPostServiceImpl(PostServiceImpl postServiceImpl) {
 		this.postServiceImpl = postServiceImpl;
 	}
-
-	public HashMap<String, String> getProductNoMap() {
-		return ProductNoMap;
-	}
-
-
-	public void setProductNoMap(HashMap<String, String> productNoMap) {
-		ProductNoMap = productNoMap;
-	}
-
-
 
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;
