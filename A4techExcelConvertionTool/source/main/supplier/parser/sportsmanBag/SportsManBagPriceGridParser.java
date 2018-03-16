@@ -1,4 +1,4 @@
-package parser.PelicanGraphics;
+package parser.sportsmanBag;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
-public class PelicanGraphicPriceGridParser {
+public class SportsManBagPriceGridParser {
 
 	private Logger              _LOGGER              = Logger.getLogger(getClass());
 	public List<PriceGrid> getBasePriceGrids(String listOfPrices,

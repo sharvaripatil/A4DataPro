@@ -41,8 +41,15 @@ public class PostServiceImpl implements PostService {
 	private Environment environment;*/
 	@Override
 	public int postProduct(String authTokens, Product product,int asiNumber ,int batchId, String environmentType) throws IOException {
-
+        String sheetName = "";
+        String xid = product.getExternalProductId();
 		try {
+			if(environmentType.contains(":")){
+				String[] sheetNameAndEnvType = CommonUtility.getValuesOfArray(environmentType, ":");
+				environmentType = sheetNameAndEnvType[0];
+				sheetName = sheetNameAndEnvType[1];	
+				xid = xid+":"+sheetName;
+			}
 			if(environmentType.equals("Sand")){
 				postApiURL = "https://sandbox-productservice.asicentral.com/api/v4/product/";
 			} else{
@@ -67,8 +74,8 @@ public class PostServiceImpl implements PostService {
 				_LOGGER.info("ASI Error Response Msg :" + response);
 				ErrorMessageList apiResponse = mapperObj.readValue(response,
 						ErrorMessageList.class);
-				productDao.save(apiResponse.getErrors(),
-						product.getExternalProductId(), asiNumber, batchId);
+				
+				productDao.save(apiResponse.getErrors(),xid, asiNumber, batchId);
 				boolean isFailProduct = isFailProduct(apiResponse.getErrors());
 				if(isFailProduct){
 					return 5;
@@ -110,8 +117,7 @@ public class PostServiceImpl implements PostService {
 						ErrorMessageList.class);
 				}
 				
-				productDao.save(apiResponse.getErrors(),
-						product.getExternalProductId(), asiNumber, batchId);
+				productDao.save(apiResponse.getErrors(),xid, asiNumber, batchId);
 				_LOGGER.info("Error JSON:" + apiResponse);
 
 			} catch (JsonParseException | JsonMappingException e) {
@@ -129,8 +135,7 @@ public class PostServiceImpl implements PostService {
 				_LOGGER.info("internal server msg received from ExternalAPI ");
 				ErrorMessageList errorMsgList = CommonUtility
 						.responseconvertErrorMessageList(serverErrorMsg);
-				productDao.save(errorMsgList.getErrors(),
-						product.getExternalProductId(), asiNumber, batchId);
+				productDao.save(errorMsgList.getErrors(),xid, asiNumber, batchId);
 				return 0;
 			} else if (hce.getCause() != null) {
 				String errorMsg = hce.getCause().toString();
@@ -139,8 +144,7 @@ public class PostServiceImpl implements PostService {
 						|| errorMsg.contains("java.net.SocketTimeoutException")) {
 					ErrorMessageList errorMsgList = CommonUtility
 							.responseconvertErrorMessageList(errorMsg);
-					productDao.save(errorMsgList.getErrors(),
-							product.getExternalProductId(), asiNumber, batchId);
+					productDao.save(errorMsgList.getErrors(),xid, asiNumber, batchId);
 					return 0;
 				}
 			} else {
