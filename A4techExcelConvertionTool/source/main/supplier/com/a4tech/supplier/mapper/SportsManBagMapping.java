@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
@@ -105,10 +106,10 @@ public class SportsManBagMapping implements IExcelParser{
 									productConfigObj.setImprintMethods(imprintMethodList);
 									productExcelObj.setProductConfigurations(productConfigObj);
 									productExcelObj.setPriceGrids(priceGrids);
-									String descri = description.toString();
-									descri = descri.replaceAll("Velcro®", "");
-									productExcelObj.setDescription(descri);
-									int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
+									productExcelObj.setDescription(
+												getFinalDescription(description.toString(), productExcelObj));
+									String envTypeAndSheetName = environmentType+":"+sheetName;
+									int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, envTypeAndSheetName);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
 								 	}else if(num == 0){
@@ -119,6 +120,7 @@ public class SportsManBagMapping implements IExcelParser{
 								 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 									priceGrids = new ArrayList<PriceGrid>();
 									productConfigObj = new ProductConfigurations();
+									description = new StringBuilder();
 								}
 								productConfigObj = new ProductConfigurations();
 								productExcelObj = new Product();
@@ -155,6 +157,7 @@ public class SportsManBagMapping implements IExcelParser{
 							break;
 						case "DESCRIPTION":// product Name
 							String name = cell.getStringCellValue();
+							name = name.replaceAll("®", "");
 							productExcelObj.setName(name);
 							break;
 						case "Web Description":// Description
@@ -172,7 +175,7 @@ public class SportsManBagMapping implements IExcelParser{
 						case "CLOSURE (Bulled #4)":	
 						case "NOTE":
 							String desc = cell.getStringCellValue();
-							description.append(desc).append(" ");
+							description.append(desc.trim()).append(" ");
 							break;
 						case "FABRIC":
 						case "FABRIC (Bullet #1)":
@@ -200,8 +203,10 @@ public class SportsManBagMapping implements IExcelParser{
 						case "CASE PACK":
 							String shippingEsti = CommonUtility.getCellValueStrinOrInt(cell);
 							if(!StringUtils.isEmpty(shippingEsti)){
-								ShippingEstimate shippingEstObj = sportsManAttributeParser.getShippingEstimateValues(shippingEsti);
-								productConfigObj.setShippingEstimates(shippingEstObj);	
+								 if(!shippingEsti.contains("natural") && !shippingEsti.contains("Natural")){
+									 ShippingEstimate shippingEstObj = sportsManAttributeParser.getShippingEstimateValues(shippingEsti);
+										productConfigObj.setShippingEstimates(shippingEstObj);	 
+								 }
 							}
 							break;
 						case "#SKUS":
@@ -214,9 +219,11 @@ public class SportsManBagMapping implements IExcelParser{
 							"true", "", "", priceGrids);				
 					productExcelObj.setPriceType("L");
 				} catch (Exception e) {
-					_LOGGER.error(
-							"Error while Processing Product  sheet  and cause :" + productExcelObj.getExternalProductId()
-									+ " " + e.getMessage() + "at column number(increament by 1):" + headerName);
+					_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"at column number(increament by 1):"+columnIndex);		 
+					ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet: "
+					+e.getMessage()+" at column number(increament by 1)"+columnIndex);
+					productDaoObj.save(apiResponse.getErrors(),
+							productExcelObj.getExternalProductId()+"-Failed", asiNumber, batchId);
 				}
 				/*productConfigObj.setOptions(listOfOptions);
 				productExcelObj.setProductConfigurations(productConfigObj);
@@ -230,10 +237,10 @@ public class SportsManBagMapping implements IExcelParser{
 			productConfigObj.setImprintMethods(imprintMethodList);
 			productExcelObj.setProductConfigurations(productConfigObj);
 			productExcelObj.setPriceGrids(priceGrids);
-			String descri = description.toString();
-			descri = descri.replaceAll("Velcro®", "");
-			productExcelObj.setDescription(descri);
-			int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
+			productExcelObj.setDescription(
+					getFinalDescription(description.toString(), productExcelObj));
+			String envTypeAndSheetName = environmentType+":"+sheetName;
+			int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, envTypeAndSheetName);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
@@ -242,8 +249,7 @@ public class SportsManBagMapping implements IExcelParser{
 		 	}
 			priceGrids = new ArrayList<PriceGrid>();
 			productConfigObj = new ProductConfigurations();
-			
-			//return "";
+			description = new StringBuilder();
 		} catch (Exception e) {
 
 			//return "";
@@ -258,6 +264,7 @@ public class SportsManBagMapping implements IExcelParser{
 		}
 		// finally result
 		finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
+		productDaoObj.saveErrorLog(asiNumber,batchId);
 		return finalResult;
 	}
 	private String getHeaderName(int columnIndex, Row headerRow) {
@@ -331,6 +338,22 @@ public class SportsManBagMapping implements IExcelParser{
 		}
 		return true;
 	}
+	private String getFinalDescription(String descri ,Product product){
+		if(StringUtils.isEmpty(descri)){
+			descri = product.getName();
+		} else {
+			descri = descri.replaceAll("Velcro", "");
+			descri = descri.replaceAll("®", "");
+			descri = descri.replaceAll("  ", " ");
+			if(descri.contains("”")){
+				descri = descri.replaceAll("”", "");	
+			}
+			if(descri.contains("™")){
+				descri = descri.replaceAll("™", "");	
+			}
+		}
+		return descri;
+	}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}
@@ -360,12 +383,5 @@ public class SportsManBagMapping implements IExcelParser{
 	public void setSportsManPriceGridParser(SportsManBagPriceGridParser sportsManPriceGridParser) {
 		this.sportsManPriceGridParser = sportsManPriceGridParser;
 	}
-
-	/*@Override
-	public String readExcel(String accessToken, Workbook workbook, Integer asiNumber, int batchId,
-			String environmentType) {
-		// TODO Auto-generated method stub
-		return null;
-	}*/
 
 	}

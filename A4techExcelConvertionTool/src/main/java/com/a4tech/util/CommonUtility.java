@@ -88,8 +88,8 @@ public class CommonUtility {
 			}
 			
 		} catch (Exception e) {
-			_LOGGER.error("Cell value convert into String/Int format: "
-					+ e.getMessage());
+			/*_LOGGER.error("Cell value convert into String/Int format: "
+					+ e.getMessage());*/
 		}
 
 		return value;

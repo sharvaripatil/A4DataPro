@@ -76,6 +76,12 @@ public class SportsManBagAttributeParser {
 		String[] colors = CommonUtility.getValuesOfArray(color, ",");
 		for (String colorName : colors) {
 			colorName = colorName.trim();
+			if(StringUtils.isEmpty(colorName)){
+				continue;
+			}
+			if(colorName.contains("®")){
+				colorName = colorName.replaceAll("®", "");
+			}
 			colorObj = new Color();
 			if(colorName.contains("/")){
 				colorObj = getColorCombo(colorName, "/");
@@ -130,7 +136,7 @@ public class SportsManBagAttributeParser {
  public List<Material> getProductMaterial(String material){
 	 List<Material> materialList = new ArrayList<>();
 	 String[] materials = null;
-	 if(material.equalsIgnoreCase(" 50% Polyester (6 1/4% Recycled),46% Cotton (6 1/4% Organic), 4% Rayon, Fabric Washed")){
+	 if(material.equalsIgnoreCase("50% Polyester (6 1/4% Recycled),46% Cotton (6 1/4% Organic), 4% Rayon, Fabric Washed")){
 		 materials = new String[]{material};
 	 } else {
 		  materials = CommonUtility.getValuesOfArray(material, ",");	 
@@ -139,8 +145,13 @@ public class SportsManBagAttributeParser {
 	 Material materialObj = null;
 		for (String mtrlName : materials) {
 			try {
+				mtrlName = mtrlName.trim();
 				materialObj = new Material();
-				if (isBlendMaterial(mtrlName)) {
+				if(isSpecialMaterial(mtrlName)){
+					_LOGGER.info("Unable to parser material Value,we have set materia Name as Other: "+mtrlName);
+					materialObj.setName("Other");
+					materialObj.setAlias(mtrlName);
+				}else if (isBlendMaterial(mtrlName)) {
                    materialObj = getBlendMaterial(mtrlName);
 				} else if (isComboMaterial(mtrlName)) {
 					// materialObj.setCombo(combos);
@@ -151,7 +162,7 @@ public class SportsManBagAttributeParser {
 				}
 				materialList.add(materialObj);
 			} catch (Exception exce) {
-				_LOGGER.error("Unable to parser material Value,we have set materia Name as Other: "+mtrlName);
+				_LOGGER.info("Unable to parser material Value,we have set materia Name as Other: "+mtrlName);
 				materialObj.setName("Other");
 				materialObj.setAlias(mtrlName);
 			}
@@ -167,6 +178,7 @@ public class SportsManBagAttributeParser {
 			materialObj.setName(getMaterialType(materialCombos[0]).toUpperCase());
 			combo.setName(getMaterialType(materialCombos[1]).toUpperCase());
 			materialObj.setCombo(combo);
+			materialObj.setAlias(val);
 		} catch (Exception exce) {
 			_LOGGER.error("Unable to parser combo material Value,we have set materia Name as Other: " + val);
 			materialObj.setName("Other");
@@ -186,7 +198,7 @@ public class SportsManBagAttributeParser {
 			String m1 = "";
 			String m2 = "";
 			String firstPercent = "";String secondPer = "";
-			if (noOfPercentages == 2 && noOfSlash == 1) {// 65% polyetser/ cotton 35%
+			if ((noOfPercentages == 2 && noOfSlash == 1) ||(noOfPercentages == 1 && noOfSlash == 1)) {// 65% polyetser/ cotton 35%
 				m1 = allMaterials[0];
 				m2 = allMaterials[1];
 				firstPercent = m1.replaceAll("[^0-9]", "").trim();
@@ -201,7 +213,7 @@ public class SportsManBagAttributeParser {
 				m2 = allMaterials[1];
 				firstPercent = m1.replaceAll("[^0-9]", "").trim();
 				secondPer = m2.replaceAll("[^0-9]", "").trim();
-				int secondVal = Integer.parseInt(firstPercent)-100;
+				int secondVal = 100-Integer.parseInt(firstPercent);
 				//materialObj.setb
 				blendMaterialList = getBlendMaterialsList(firstPercent, m1, blendMaterialList);
 				blendMaterialList = getBlendMaterialsList(String.valueOf(secondVal), m2, blendMaterialList);
@@ -244,6 +256,15 @@ public class SportsManBagAttributeParser {
 	 }
 	 return false;
  }
+ private boolean isSpecialMaterial(String mtrlVal){
+	 if(mtrlVal.equalsIgnoreCase("Brushed cotton/polyester blend 65% cotton/35% polyester") || 
+	    mtrlVal.equalsIgnoreCase("50% Polyester (6 1/4% Recycled),46% Cotton (6 1/4% Organic), 4% Rayon, Fabric Washed") ||
+	    mtrlVal.equalsIgnoreCase("Brushed cotton/polyester blend 100% cotton brushed twill crown")){
+		 return true;
+	 }
+	 
+	 return false;
+ }
  public String getMaterialType(String value){
 	 if(listOfLookupMaterials == null){
 		 listOfLookupMaterials = lookupServiceData.getMaterialValues();;
@@ -266,19 +287,15 @@ public class SportsManBagAttributeParser {
 	 String[] sizeVals = CommonUtility.getValuesOfArray(sizeVal, ",");
 	 for (String sizeName : sizeVals) {
 		 if(sheetName.equals("Bags") || sheetName.equals("Aprons and Towels")){
-			 valuesObj = new Values();
-			Value valueObj =  getValueObj(sizeName);
-			listOfValue.add(valueObj);
-		 } else {
-			 if (sizeVal.contains("L") || sizeVal.contains("H") || sizeVal.contains("W")
-	 					|| sizeVal.contains("D") || sizeVal.contains("SQ") || sizeVal.contains("DIA") 
-	 					|| sizeVal.contains("Dia") || sizeVal.contains("dia")) {
-				 sizeVal = getFinalSizeValue(sizeVal);
-					String lastChar = sizeVal.substring(sizeVal.length() - 1);
+			 if (sizeName.contains("L") || sizeName.contains("H") || sizeName.contains("W")
+	 					|| sizeName.contains("D") || sizeName.contains("SQ") || sizeName.contains("DIA") 
+	 					|| sizeName.contains("Dia") || sizeName.contains("dia")) {
+				 sizeName = getFinalSizeValue(sizeName);
+					String lastChar = sizeName.substring(sizeName.length() - 1);
 					if(lastChar.equals(":")){
-						sizeVal = sizeVal.substring(0, sizeVal.length() - 1);// trim last character i.e :
+						sizeName = sizeName.substring(0, sizeName.length() - 1);// trim last character i.e :
 					}
-	             String[] sss = CommonUtility.getValuesOfArray(sizeVal, ":");
+	             String[] sss = CommonUtility.getValuesOfArray(sizeName, ":");
 	            if(sss.length == 2){
 	         	   String finalSize = sss[0];
 	         	   valuesObj = getOverAllSizeValObj(finalSize, sss[1], "", "");
@@ -292,17 +309,20 @@ public class SportsManBagAttributeParser {
 			 } else {
 				 valuesObj = getOverAllSizeValObj(sizeName, "Length", "Width", "Height");
 			 }
-			
+			 listOfValues.add(valuesObj);
+		 } else {
+			 valuesObj = new Values();
+				Value valueObj =  getValueObj(sizeName);
+				listOfValue.add(valueObj);
 			}
-			listOfValues.add(valuesObj);
 		 }
 	 if(sheetName.equals("Bags") || sheetName.equals("Aprons and Towels")){
+		 dimentionObj.setValues(listOfValues);
+		 sizeObj.setDimension(dimentionObj);
+	 } else {
 		 OtherSize otherSize = new OtherSize();
 		 otherSize.setValues(listOfValue);
 		 sizeObj.setOther(otherSize);
-	 } else {
-		 dimentionObj.setValues(listOfValues);
-		 sizeObj.setDimension(dimentionObj);
 	 }
 	 return sizeObj;
 	}	 
@@ -313,7 +333,7 @@ public class SportsManBagAttributeParser {
 }
  private String getFinalSizeValue(String val){
 	 //  val = removeWordsFromSize(val);
-	   val = val.replaceAll("[^0-9/,DWLHSQDiadiaxXDIA ]", "");
+	   val = val.replaceAll("[^0-9/,DWLHSQDiadiaxXDIA. ]", "");
 	   String[] sizes = null;
 	   StringBuilder sizess = new StringBuilder();
 	   if(val.contains("SQ")){
