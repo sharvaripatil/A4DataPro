@@ -23,8 +23,9 @@ import com.a4tech.supplier.mapper.BayStateMapping;
 import com.a4tech.supplier.mapper.BellaCanvas;
 import com.a4tech.supplier.mapper.BlueGenerationMapping;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
+import com.a4tech.supplier.mapper.CbMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
-import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
+//import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.EdwardsGarmentMapping;
 import com.a4tech.supplier.mapper.FITSAccessoriesMapping;
@@ -43,6 +44,7 @@ import com.a4tech.supplier.mapper.PelicanGraphicMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
+import com.a4tech.supplier.mapper.SimplifiedsourcingMapping;
 import com.a4tech.supplier.mapper.SportCanadaExcelMapping;
 import com.a4tech.supplier.mapper.SportsManBagMapping;
 import com.a4tech.supplier.mapper.SunGraphixMapping;
@@ -71,7 +73,7 @@ public class ExcelFactory {
 	private BestDealProductsExcelMapping 	bdProdcutsMapping;
 	private RiversEndExcelMapping 			riversEndExcelMapping;
 	private BambamProductExcelMapping 		bamExcelMapping;
-    private CutterBuckExcelMapping 			cbExcelMapping;
+ //   private CutterBuckExcelMapping 			cbExcelMapping;
     private CrystalDExcelMapping 			cdExcelMapping;
     private GoldstarCanadaExcelMapping 		goldcanadaExcelMapping;
     private MilestoneExcelMapping 			milestoneExcelMapping;
@@ -107,8 +109,10 @@ public class ExcelFactory {
     private SportCanadaExcelMapping         sportMapping;
     private SunScopeMapping                 sunScopeMapping;
     private SunGraphixMapping 				sunGraphixMapping;
+    private CbMapping                       cbExeMapping;
     private PelicanGraphicMapping           pelicanGraphicMapping;
     private SportsManBagMapping             sportsManBagMapping;
+    private SimplifiedsourcingMapping       simplifiedMapping;
 	
 	public  IExcelParser getExcelParserObject(String name){
 
@@ -137,7 +141,7 @@ public class ExcelFactory {
 		   }else if(name.equalsIgnoreCase("riversend") || name.equals("82588")){
 			   return riversEndExcelMapping;
 		   }else if(name.equalsIgnoreCase("cbExcel") || name.equals("47965")){
-			   return cbExcelMapping;
+			   return cbExeMapping/*cbExcelMapping*/;//old file
 		   }
 		   else if(name.equalsIgnoreCase("cdExcel") || name.equals("47759")){
 			   return cdExcelMapping;
@@ -224,6 +228,9 @@ public class ExcelFactory {
 			  return pelicanGraphicMapping;
 		  } else if(name.equalsIgnoreCase("sportsManBag") || name.equals("88877")){
 			  return sportsManBagMapping;
+		  }
+		  else if(name.equalsIgnoreCase("simplified") || name.equals("87326")|| name.equals("91597") ){
+			  return simplifiedMapping;
 		  }
 		return null;
 	}
@@ -349,13 +356,13 @@ public class ExcelFactory {
 		this.bamExcelMapping = bamExcelMapping;
 	}
 
-	public CutterBuckExcelMapping getCbExcelMapping() {
+/*	public CutterBuckExcelMapping getCbExcelMapping() {
 		return cbExcelMapping;
 	}
 
 	public void setCbExcelMapping(CutterBuckExcelMapping cbExcelMapping) {
 		this.cbExcelMapping = cbExcelMapping;
-	}
+	}*/
 	
 	public CrystalDExcelMapping getCdExcelMapping() {
 		return cdExcelMapping;
@@ -610,6 +617,16 @@ public class ExcelFactory {
 	public void setSunGraphixMapping(SunGraphixMapping sunGraphixMapping) {
 		this.sunGraphixMapping = sunGraphixMapping;
 	}
+
+
+	public CbMapping getCbExeMapping() {
+		return cbExeMapping;
+	}
+
+	public void setCbExeMapping(CbMapping cbExeMapping) {
+		this.cbExeMapping = cbExeMapping;
+	}
+	
 	public PelicanGraphicMapping getPelicanGraphicMapping() {
 		return pelicanGraphicMapping;
 	}
@@ -623,6 +640,14 @@ public class ExcelFactory {
 
 	public void setSportsManBagMapping(SportsManBagMapping sportsManBagMapping) {
 		this.sportsManBagMapping = sportsManBagMapping;
+	}
+
+	public SimplifiedsourcingMapping getSimplifiedMapping() {
+		return simplifiedMapping;
+	}
+
+	public void setSimplifiedMapping(SimplifiedsourcingMapping simplifiedMapping) {
+		this.simplifiedMapping = simplifiedMapping;
 	}
 
 
