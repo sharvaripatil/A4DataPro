@@ -259,7 +259,9 @@ public class SportsManBagAttributeParser {
  private boolean isSpecialMaterial(String mtrlVal){
 	 if(mtrlVal.equalsIgnoreCase("Brushed cotton/polyester blend 65% cotton/35% polyester") || 
 	    mtrlVal.equalsIgnoreCase("50% Polyester (6 1/4% Recycled),46% Cotton (6 1/4% Organic), 4% Rayon, Fabric Washed") ||
-	    mtrlVal.equalsIgnoreCase("Brushed cotton/polyester blend 100% cotton brushed twill crown")){
+	    mtrlVal.equalsIgnoreCase("Brushed cotton/polyester blend 100% cotton brushed twill crown") ||
+	    mtrlVal.equalsIgnoreCase("100% polyester 600D shell/ 420D ripstop trim Double gauge polypropylene webbing") ||
+	    mtrlVal.equalsIgnoreCase("100% polyester 600D shell/ 420D ripstop trim, double-gauge polypropylene webbing")){
 		 return true;
 	 }
 	 
@@ -284,6 +286,14 @@ public class SportsManBagAttributeParser {
 	 Dimension dimentionObj = new Dimension();
 	 List<Values> listOfValues = new ArrayList<>();
 	 List<Value> listOfValue = new ArrayList<>();
+	 sizeVal = sizeVal.replaceAll("\"", "");
+	 if(sizeVal.contains("”")){
+		 sizeVal = sizeVal.replaceAll("”", "");
+	 }
+	 if(sizeVal.contains("½")){
+		 sizeVal = sizeVal.replaceAll("½", "1/2");
+	 }
+	 sizeVal= sizeVal.replaceAll("-", " ");
 	 String[] sizeVals = CommonUtility.getValuesOfArray(sizeVal, ",");
 	 for (String sizeName : sizeVals) {
 		 if(sheetName.equals("Bags") || sheetName.equals("Aprons and Towels")){
@@ -333,6 +343,9 @@ public class SportsManBagAttributeParser {
 }
  private String getFinalSizeValue(String val){
 	 //  val = removeWordsFromSize(val);
+	 if(val.contains("natural")){
+		 val = val.replaceAll("natural", "");
+	 }
 	   val = val.replaceAll("[^0-9/,DWLHSQDiadiaxXDIA. ]", "");
 	   String[] sizes = null;
 	   StringBuilder sizess = new StringBuilder();
@@ -400,6 +413,12 @@ public class SportsManBagAttributeParser {
  }
  private Values getOverAllSizeValObj(String val,String unit1,String unit2,String unit3){
 		//Overall Size: 23.5" x 23.5"
+	 if( val.contains("(colorss)")){
+		val= val.replaceAll("[(colorss)]", "");
+	 }
+	 if(val.contains("long")){
+		 val = val.replaceAll("long", "");
+	 }
 		String[] values = null;
 		if(val.contains("X")){
 			values = val.split("X");

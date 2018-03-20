@@ -158,7 +158,7 @@ public class SportsManBagMapping implements IExcelParser{
 						case "DESCRIPTION":// product Name
 							String name = cell.getStringCellValue();
 							name = name.replaceAll("®", "");
-							productExcelObj.setName(name);
+							productExcelObj.setName(CommonUtility.getStringLimitedChars(name, 60));
 							break;
 						case "Web Description":// Description
 						case "Web Extended Description":
