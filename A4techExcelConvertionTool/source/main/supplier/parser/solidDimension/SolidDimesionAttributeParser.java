@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
 import parser.goldstarcanada.GoldstarCanadaLookupData;
+
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.model.AdditionalColor;
@@ -256,7 +258,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		return rushtimeObj;
 	}
 
-	public List<Packaging> getPackageValues(String packageValues) {
+	/*public List<Packaging> getPackageValues(String packageValues) {
 		List<Packaging> listOfPackage = new ArrayList<Packaging>();
 		Packaging packaging = null;
 		if (packageValues.contains(ApplicationConstants.CONST_DELIMITER_COMMA)) {
@@ -274,7 +276,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		}
 		return listOfPackage;
 
-	}
+	}*/
 
 	public ShippingEstimate getShippingEstimateValues(String length,
 			String width, String height, String weight, String numberOfItems) {
@@ -360,14 +362,21 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		ImprintSizeValue=ImprintSizeValue.trim();
 	    ImprintSize impsizeobj;
 	    if(!StringUtils.isEmpty(ImprintSizeValue)){
+	    	if(ImprintSizeValue.endsWith("x")){
+	    		ImprintSizeValue = ImprintSizeValue.substring(0, ImprintSizeValue.length() - 1);
+	    	}
 		String ImprintsizeArr[]=ImprintSizeValue.split(",");
 	   for (String Value : ImprintsizeArr) {
 		   if(!dupList.contains(Value)){
+			   if(Value.endsWith("x")){
+				   Value = Value.substring(0, Value.length() - 1);
+		    	}
 		   impsizeobj=new ImprintSize();
 		   impsizeobj.setValue(Value);
 		   imprintSizeList.add(impsizeobj); 
 		   }
-		   dupList.add(Value);}
+		   dupList.add(Value);
+		   		}
 	    	}
 		}
 	return imprintSizeList;
@@ -421,8 +430,12 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 				if(qantyLen>1){
 					qaunitity=String.join("", Collections.nCopies(qantyLen, qaunitity));
 				}*/
+			 String upUsageType="Other";
+			 if( upChargeTypeVal.equals("Set-up Charge")){
+				 upUsageType="Per Order";
+			 }
 			existingPriceGrid = solidDimensionPriceGridParser.getUpchargePriceGrid("1", priceVal, disCount, "Imprint method", "n",
-					"USD", imprintMethods, upChargeTypeVal, "Other",1, "1___1___1___1___1___1___1___1___1___1", existingPriceGrid);
+					"USD", imprintMethods, upChargeTypeVal, upUsageType,1, "1___1___1___1___1___1___1___1___1___1", existingPriceGrid);
 		}
 		return existingPriceGrid;
 	}
@@ -593,6 +606,19 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
     	}
     	return false;
     }
+	
+	public List<Packaging> getPackageValues(String packageValues){
+		List<Packaging> listOfPackage = new ArrayList<Packaging>();
+		Packaging packaging = null;
+		String[] packValues = packageValues.split(ApplicationConstants.CONST_DELIMITER_COMMA);
+			for (String pack : packValues) {
+				packaging = new Packaging();
+			   packaging.setName(pack);
+			   listOfPackage.add(packaging);
+			}
+		return listOfPackage;
+		
+	}
 	
 	public static String[] getValuesOfArray(String data,String delimiter){
 		   if(!StringUtils.isEmpty(data)){

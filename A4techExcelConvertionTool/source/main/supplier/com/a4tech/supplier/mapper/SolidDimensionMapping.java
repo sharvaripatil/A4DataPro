@@ -20,7 +20,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import parser.gillstudios.GillStudiosLookupData;
-import parser.goldstarcanada.GoldstarCanadaLookupData;
 import parser.solidDimension.SolidDimensionColorParser;
 import parser.solidDimension.SolidDimensionPriceGridParser;
 import parser.solidDimension.SolidDimesionAttributeParser;
@@ -38,6 +37,7 @@ import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Origin;
+import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -65,7 +65,7 @@ public class SolidDimensionMapping implements IExcelParser{
 	private SolidDimensionColorParser solidDimensionColorParser;
 
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId,String environmentType){
-		
+		List<String>  ProductProcessedList   = new ArrayList<>();
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		String finalResult = null;
@@ -85,7 +85,7 @@ public class SolidDimensionMapping implements IExcelParser{
 		  StringBuilder pricesPerUnit = new StringBuilder();
 		  StringBuilder ImprintSizevalue = new StringBuilder();
 		  StringBuilder ImprintSizevalue2 = new StringBuilder();
-		  StringBuilder listofUpcharges = new StringBuilder();
+		  //StringBuilder listofUpcharges = new StringBuilder();
 		  
 			List<Color> colorList = new ArrayList<Color>();
 			List<ImprintLocation> listImprintLocation = new ArrayList<ImprintLocation>();
@@ -101,7 +101,7 @@ public class SolidDimensionMapping implements IExcelParser{
 			List<FOBPoint> FobPointsList = new ArrayList<FOBPoint>();
 			FOBPoint fobPintObj=new FOBPoint();
 			 List<String>categoriesList= new ArrayList<String>();
-			 List<AdditionalColor>additionalcolorList= new ArrayList<>();
+			 //List<AdditionalColor>additionalcolorList= new ArrayList<>();
 			 Map<String, String>  imprintMethodUpchargeMap = new LinkedHashMap<>();
 			 StringBuilder additionalClrRunChrgPrice = new StringBuilder();
 				String        additionalClrRunChrgCode = "";
@@ -157,37 +157,40 @@ public class SolidDimensionMapping implements IExcelParser{
 		String Upchargecode="";
 		String Addclearcode=null;
 		int columnIndex=0;
+		String xid = null;
 		while (iterator.hasNext()) {
-			
 			try{
 			Row nextRow = iterator.next();
-			if (nextRow.getRowNum() <= 6)
+			if (nextRow.getRowNum() < 7)
 				continue;
+			// this value is check first column or not becuase first column is skipped if value is not present
+			boolean isFirstColum = true;
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
 			if(productId != null){
 				productXids.add(productId);
 			}
-			 boolean checkXid  = false;
-		
-			
+			boolean checkXid  = false;
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
-				String xid = null;
+				//String xid = null;
 				 columnIndex = cell.getColumnIndex();
-				  cell2Data =  nextRow.getCell(1);
 				if(columnIndex + 1 == 1){
-					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
-						xid = cell.getStringCellValue();
-					}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
-						xid = String.valueOf((int)cell.getNumericCellValue());
-					}else {
-						  String ProdNo=CommonUtility.getCellValueStrinOrInt(cell2Data);
-						  xid=ProdNo;
-
-						}
+					xid = getProductXid(nextRow,false);
+					if(ProductProcessedList.contains(xid)){
+						xid = getProductXid(nextRow,true);
+					}
 					checkXid = true;
+					isFirstColum = false;
 				}else{
 					checkXid = false;
+					if(isFirstColum){
+						xid = getProductXid(nextRow,false);
+						if(ProductProcessedList.contains(xid)){
+							xid = getProductXid(nextRow,true);
+						}
+						checkXid = true;
+						isFirstColum = false;
+					}
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
@@ -212,7 +215,7 @@ public class SolidDimensionMapping implements IExcelParser{
 								
 								// additional colors & upcgrg
 								List<AdditionalColor> additionalColorList = null;
-								if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
+								if(!StringUtils.isEmpty(additionalClrRunChrgCode) && !StringUtils.isEmpty(additionalClrRunChrgPrice.toString())){
 									 additionalColorList = solidAttributeParser.getAdditionalColor("Additional Color");
 										priceGrids = solidAttributeParser.getAdditionalColorRunUpcharge(additionalClrRunChrgCode,listOfQuantity.toString(),
 												   additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge");
@@ -292,8 +295,8 @@ public class SolidDimensionMapping implements IExcelParser{
 								 dimensionType = new StringBuilder();
 								 priceIncludes = new StringBuilder();
 								 priceIncludesValue=null;
-								 additionalcolorList= new ArrayList<>();
-								 listofUpcharges = new StringBuilder();
+								 //additionalcolorList= new ArrayList<>();
+								 //listofUpcharges = new StringBuilder();
 								 imprintMethodUpchargeMap = new LinkedHashMap<>();
 								 additionalClrRunChrgPrice = new StringBuilder();
 							     additionalClrRunChrgCode = "";
@@ -321,14 +324,30 @@ public class SolidDimensionMapping implements IExcelParser{
 				
 
 				switch (columnIndex + 1) {
-			
+				
 				case 1://xid
-					   productExcelObj.setExternalProductId(xid.trim());
+					 if(!StringUtils.isEmpty(xid)){
+						   productExcelObj.setExternalProductId(xid);
+					   /*productExcelObj.setExternalProductId(xid.trim());
+					}else{
+						xid = getProductXid(nextRow);
+						  productExcelObj.setExternalProductId(xid.trim());*/
+					}
+					 break;
+			
+				case 2://ProductID
+					 /*if(!StringUtils.isEmpty(xid)){
+						   productExcelObj.setExternalProductId(xid.trim());
+						}else{
+							xid = getProductXid(nextRow);
+							  productExcelObj.setExternalProductId(xid.trim());
+						}*/
 					
 					 break;
 					 
-				case 2://ItemNum
+				case 3://ItemNum
 					 String asiProdNo=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(asiProdNo)){
 					int Nolength=asiProdNo.length();
 					 if(Nolength>14){
 							String strTemp=asiProdNo.substring(0, 14);
@@ -336,11 +355,19 @@ public class SolidDimensionMapping implements IExcelParser{
 					 }else{
 				     productExcelObj.setAsiProdNo(asiProdNo);		
 					 }
+					 if(!StringUtils.isEmpty(xid)){
+						   productExcelObj.setExternalProductId(xid.trim());
+						}else{
+							xid = getProductXid(nextRow,true);
+							  productExcelObj.setExternalProductId(xid.trim());
+						}
+					 }
 
 					 break;
-				case 3://Name
-
+				case 4://Name
+					
 					 productName = cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(productName)){
 						int len=productName.length();
 						 if(len>60){
 							String strTemp=productName.substring(0, 60);
@@ -348,17 +375,18 @@ public class SolidDimensionMapping implements IExcelParser{
 							productName=(String) strTemp.subSequence(0, lenTemp);
 						}
 						productExcelObj.setName(productName);	
+					 }
 					  break;
-				case 4://CatYear
+				case 5://CatYear
 
 					break;
-				case 5://ExpirationDate
+				case 6://ExpirationDate
 
 				    break;
-				case 6://Discontinued
+				case 7://Discontinued
 		
 					break;
-				case 7: //Cat1Name
+				case 8: //Cat1Name
 					
 					String category=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(category)){
@@ -370,7 +398,7 @@ public class SolidDimensionMapping implements IExcelParser{
 						 }
 						 }
 					 break;
-				case 8://Cat2Name
+				case 9://Cat2Name
 					String category2=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(category2)){
 						 List<String> listOfCategories = new ArrayList<String>();
@@ -386,17 +414,17 @@ public class SolidDimensionMapping implements IExcelParser{
 					break;
 					
 					
-				case 9: //page1
+				case 10: //page1
 					//Category1=cell.getStringCellValue();
 				
 					 break;
 					 
-				case 10: //page2
+				case 11: //page2
 					//Category1=cell.getStringCellValue();
 				
 					 break;
 					
-				case 11: // Description
+				case 12: // Description
 					String description =CommonUtility.getCellValueStrinOrInt(cell);
 					//description=description.replaceAll("™", "");
 					///description=description.replaceAll("®", "");
@@ -419,7 +447,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					}
 					break;
 					
-				case 12: //Keywords
+				case 13: //Keywords
 					String productKeyword = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(productKeyword)){
 					String productKeywordArr[] = productKeyword.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
@@ -430,7 +458,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					}
 					break;
 					
-				case 13:  //Colors
+				case 14:  //Colors
 					String colorValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(colorValue)){
 						colorList=solidAttributeParser.getProductColors(colorValue, productExcelObj.getExternalProductId());
@@ -440,7 +468,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					
 					break;
 					
-				case 14:  //Themes
+				case 15:  //Themes
 
 					 themeValue=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(themeValue)){
@@ -461,7 +489,7 @@ public class SolidDimensionMapping implements IExcelParser{
 									
 					break;
 				
-				case 15:  // Dimension1
+				case 16:  // Dimension1
 
 					String dimensionValue1=CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(dimensionValue1) && !dimensionValue1.equals("0")){
@@ -471,7 +499,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					}
 					break;
 
-				case 16: //Dimension1Units
+				case 17: //Dimension1Units
 
 					String dimensionUnits1 = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(dimensionUnits1) && !dimensionUnits1.equals("0")){
@@ -479,7 +507,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					 }
 					break;
 					
-				case 17: // Dimension1Type
+				case 18: // Dimension1Type
 
 					String dimensionType1 =CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(dimensionType1) && !dimensionType1.equals("0")){
@@ -488,7 +516,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					  
 					break;
 					
-				case 18://Dimension2
+				case 19://Dimension2
 
 					String dimensionValue2 =CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(dimensionValue2) && !dimensionValue2.equals("0")){
@@ -496,7 +524,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					 }
 					
 					break;
-				case 19: //Dimension2Units
+				case 20: //Dimension2Units
 
 					  String dimensionUnits2 = CommonUtility.getCellValueStrinOrInt(cell);
 					  if(!StringUtils.isEmpty(dimensionUnits2) && !dimensionUnits2.equals("0")){
@@ -504,7 +532,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					 }
 					  break;
 				
-				case 20: //Dimension2Type
+				case 21: //Dimension2Type
 					String  dimensionType2 = CommonUtility.getCellValueStrinOrInt(cell);
 
 					if(!StringUtils.isEmpty(dimensionType2) && !dimensionType2.equals("0")){
@@ -514,7 +542,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					 
 					break;
 				
-				 case 21: //Dimension3
+				 case 22: //Dimension3
 					 String dimensionValue3  =CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(dimensionValue3) && !dimensionValue3.equals("0")){
 							dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
@@ -524,7 +552,7 @@ public class SolidDimensionMapping implements IExcelParser{
 				
 					break;
 					
-				case 22:  //Dimension3Units
+				case 23:  //Dimension3Units
 
 					String dimensionUnits3 = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(dimensionUnits3) && !dimensionUnits3.equals("0")){
@@ -535,7 +563,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					}
 					break;
 					
-				case 23: //Dimension3Type
+				case 24: //Dimension3Type
 
 					String dimensionType3 = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(dimensionType3) && !dimensionType3.equals("0")){
@@ -546,12 +574,12 @@ public class SolidDimensionMapping implements IExcelParser{
 					}
 					break;
 					
-				case 24: //Qty1
-				case 25: //Qty2
-				case 26: //Qty3
-				case 27: //Qty4
-				case 28: //Qty5
-				case 29: //Qty6
+				case 25: //Qty1
+				case 26: //Qty2
+				case 27: //Qty3
+				case 28: //Qty4
+				case 29: //Qty5
+				case 30: //Qty6
 					try{
 						if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 							quantity = cell.getStringCellValue();
@@ -569,12 +597,12 @@ public class SolidDimensionMapping implements IExcelParser{
 						_LOGGER.info("Error in base price Quantity field "+e.getMessage());
 					}
 					break;
-				case 30://Prc1
-				case 31://Prc2
-				case 32://Prc3
-				case 33://Prc4
-				case 34://Prc5
-				case 35://Prc6
+				case 31://Prc1
+				case 32://Prc2
+				case 33://Prc3
+				case 34://Prc4
+				case 35://Prc5
+				case 36://Prc6
 					try{
 						 if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 							 price = cell.getStringCellValue();
@@ -593,7 +621,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					}
 						
 						    break; 
-				case 36://PrCode
+				case 37://PrCode
 					priceCode = cell.getStringCellValue();	
 					
 					 if(!StringUtils.isEmpty(priceCode))
@@ -616,12 +644,12 @@ public class SolidDimensionMapping implements IExcelParser{
 			     	}
 				    break; 
 
-				case 37://PiecesPerUnit1
-				case 38://PiecesPerUnit2
-				case 39: // PiecesPerUnit3
-				case 40: // PiecesPerUnit4
-				case 41://PiecesPerUnit5
-				case 42://PiecesPerUnit6
+				case 38://PiecesPerUnit1
+				case 39://PiecesPerUnit2
+				case 40: // PiecesPerUnit3
+				case 41: // PiecesPerUnit4
+				case 42://PiecesPerUnit5
+				case 43://PiecesPerUnit6
 					try{
 					
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
@@ -640,18 +668,18 @@ public class SolidDimensionMapping implements IExcelParser{
 						_LOGGER.info("Error in pricePerUnit field "+e.getMessage());
 					}
 					break;
-				case 43://QuoteUponRequest
+				case 44://QuoteUponRequest
 				     quoteUponRequest = cell.getStringCellValue();
 
 				     break;
-				case 44://PriceIncludeClr
+				case 45://PriceIncludeClr
 				      priceIncludes.append(cell.getStringCellValue()).append(" ");
 				      break;
 
-				case 45://PriceIncludeSide
+				case 46://PriceIncludeSide
 					priceIncludes.append(cell.getStringCellValue()).append(" ");
 					break;
-				case 46://PriceIncludeLoc
+				case 47://PriceIncludeLoc
 					priceIncludes.append(cell.getStringCellValue());
 					int PriceIncludeLength=priceIncludes.length();
 					if(PriceIncludeLength>100){
@@ -663,14 +691,14 @@ public class SolidDimensionMapping implements IExcelParser{
 					}
 					
 					      break;
-				case 47:  //SetupChg
+				case 48:  //SetupChg
 					String setupChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(setupChargePrice) && !setupChargePrice.equals("0")){
 						imprintMethodUpchargeMap.put("setupCharge", setupChargePrice);
 					}
 					
 					     break;
-				case 48: // SetupChgCode
+				case 49: // SetupChgCode
 					String setUpchargeCode = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(setUpchargeCode) && !setUpchargeCode.equals("0")){
 						String priceVal = imprintMethodUpchargeMap.get("setupCharge");
@@ -680,14 +708,14 @@ public class SolidDimensionMapping implements IExcelParser{
 						break;
 			
 				
-				case 49://ScreenChg
+				case 50://ScreenChg
 					String screenChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(screenChargePrice) && !screenChargePrice.equals("0")){
 						imprintMethodUpchargeMap.put("screenCharge", screenChargePrice);
 					}
 					break;
 						
-				case 50://ScreenChgCode
+				case 51://ScreenChgCode
 					String screenchargeCode = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(screenchargeCode) && !screenchargeCode.equals("0")){
 						String priceVal = imprintMethodUpchargeMap.get("screenCharge");
@@ -697,7 +725,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					
 					break;
 								
-				case 51://PlateChg
+				case 52://PlateChg
 					String plateChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(plateChargePrice) && !plateChargePrice.equals("0")){
 						imprintMethodUpchargeMap.put("plateCharge", plateChargePrice);
@@ -705,7 +733,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					
 					break;	
 					
-            	case 52://PlateChgCode
+            	case 53://PlateChgCode
             		String plateChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(plateChargeCode) && !plateChargeCode.equals("0")){
 						String priceVal = imprintMethodUpchargeMap.get("plateCharge");
@@ -715,7 +743,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					
 					break;			
 						
-            	case 53://DieChg
+            	case 54://DieChg
             		String dieChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(dieChargePrice) && !dieChargePrice.equals("0")){
 						imprintMethodUpchargeMap.put("dieCharge", dieChargePrice);
@@ -724,7 +752,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					break;			
 					
 					
-            	case 54://DieChgCode
+            	case 55://DieChgCode
             		String diaChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(diaChargeCode) && !diaChargeCode.equals("0")){
 						String priceVal = imprintMethodUpchargeMap.get("dieCharge");
@@ -735,7 +763,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					
 					break;		
 					
-               case 55://ToolingChg
+               case 56://ToolingChg
             	   String toolingChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(toolingChargePrice) && !toolingChargePrice.equals("0")){
 						imprintMethodUpchargeMap.put("toolingCharge", toolingChargePrice);
@@ -743,7 +771,7 @@ public class SolidDimensionMapping implements IExcelParser{
             	   
 					break;		
 					
-               case 56://ToolingChgCode
+               case 57://ToolingChgCode
             	   String toolingChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(toolingChargeCode) && !toolingChargeCode.equals("0")){
 						String priceVal = imprintMethodUpchargeMap.get("toolingCharge");
@@ -753,44 +781,44 @@ public class SolidDimensionMapping implements IExcelParser{
        			
 					break;	
 					
-               case 57://RepeatChg
+               case 58://RepeatChg
 
           			
 					break;
 					
-               case 58://RepeatChgCode
+               case 59://RepeatChgCode
 
 
 					break;
 					
-				case 59://AddClrChg
+				case 60://AddClrChg
 					 additionalColorPriceVal = CommonUtility.getCellValueStrinOrInt(cell);
 
 							break;
-				case 60://AddClrChgCode
+				case 61://AddClrChgCode
 					additionalColorCode =  CommonUtility.getCellValueStrinOrInt(cell);
 							break; 
-				case 61://AddClrRunChg1
-				case 62://AddClrRunChg2
-				case 63://AddClrRunChg3
-				case 64://AddClrRunChg4
-				case 65://AddClrRunChg5
-				case 66://AddClrRunChg6
-					 String colorCharge = CommonUtility.getCellValueDouble(cell);
-					  if(!colorCharge.equalsIgnoreCase("0.00") || !colorCharge.equalsIgnoreCase("0.0") ||
-							  !colorCharge.equalsIgnoreCase("0"))
-					  additionalClrRunChrgPrice.append(colorCharge).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+				case 62://AddClrRunChg1
+				case 63://AddClrRunChg2
+				case 64://AddClrRunChg3
+				case 65://AddClrRunChg4
+				case 66://AddClrRunChg5
+				case 67://AddClrRunChg6
+					 String colorChargePrice = CommonUtility.getCellValueDouble(cell);
+					 if(!StringUtils.isEmpty(colorChargePrice) && !colorChargePrice.equals("0")){
+					  additionalClrRunChrgPrice.append(colorChargePrice).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					  }
 							break;
-				case 67://AddClrRunChgCode
+				case 68://AddClrRunChgCode
 					 String additionalClrRunCode =  CommonUtility.getCellValueStrinOrInt(cell);
 				      if(!StringUtils.isEmpty(additionalClrRunCode)){
 					       additionalClrRunChrgCode = additionalClrRunCode;
 				      }  
 							break;
-				case 68://IsRecyclable
+				case 69://IsRecyclable
 
 							break;
-				case 69://IsEnvironmentallyFriendly
+				case 70://IsEnvironmentallyFriendly
 					String IsEnvironmentallyFriendly =  CommonUtility.getCellValueStrinOrInt(cell);
 					boolean flag=true;
 						if(IsEnvironmentallyFriendly.equalsIgnoreCase("true"))			
@@ -818,16 +846,16 @@ public class SolidDimensionMapping implements IExcelParser{
 						}
 
 							break;
-				case 70://IsNewProd
+				case 71://IsNewProd
 
 			          		break; 
-				case 71://NotSuitable
+				case 72://NotSuitable
 
 					       break;
-				case 72://Exclusive
+				case 73://Exclusive
 
 					break;
-				case 73://Hazardous
+				case 74://Hazardous
 					String hazardous =  CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(hazardous)){
 					if(hazardous.equalsIgnoreCase("true"))			
@@ -836,16 +864,16 @@ public class SolidDimensionMapping implements IExcelParser{
 					}
 					}
 					break;
-				case 74://OfficiallyLicensed
+				case 75://OfficiallyLicensed
 
 					break;
-				case 75://IsFood
+				case 76://IsFood
 
 					break;
-				case 76://IsClothing
+				case 77://IsClothing
 
 					break;
-				case 77: // Imprint size1
+				case 78: // Imprint size1
 					 FirstImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FirstImprintsize1.trim()) && !FirstImprintsize1.equals("0")){
 					 ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize1).append(" ");
@@ -853,7 +881,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					 }
 					    break;
 					    
-				case 78: //// Imprint size1 unit
+				case 79: //// Imprint size1 unit
 					FirstImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FirstImprintunit1.trim()) && !FirstImprintunit1.equals("0")){
 					FirstImprintunit1=GillStudiosLookupData.Dimension1Units.get(FirstImprintunit1);
@@ -861,7 +889,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					 }	 
 					   	break;
 					   	
-				case 79:   // Imprint size1 Type
+				case 80:   // Imprint size1 Type
 					FirstImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 				   if(!StringUtils.isEmpty(FirstImprinttype1.trim()) && !FirstImprinttype1.equals("0")){
 					FirstImprinttype1=GillStudiosLookupData.Dimension1Type.get(FirstImprinttype1);
@@ -870,7 +898,7 @@ public class SolidDimensionMapping implements IExcelParser{
 						break;
 						
 				  
-				case 80: // // Imprint size2
+				case 81: // // Imprint size2
 					FirstImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FirstImprintsize2.trim()) && !FirstImprintsize2.equals("0")){
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize2).append(" ");
@@ -878,7 +906,7 @@ public class SolidDimensionMapping implements IExcelParser{
 
 					  	break;
 					  	
-				case 81:	// Imprint size2 Unit
+				case 82:	// Imprint size2 Unit
 					FirstImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(FirstImprintunit2.trim()) && !FirstImprintunit2.equals("0")){
 					FirstImprintunit2=GillStudiosLookupData.Dimension1Units.get(FirstImprintunit2);
@@ -886,7 +914,7 @@ public class SolidDimensionMapping implements IExcelParser{
 				    }
 					    break;
 					    
-				case 82: // Imprint size2 Type
+				case 83: // Imprint size2 Type
 					FirstImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(FirstImprinttype2.trim()) && !FirstImprinttype2.equals("0")){
 					FirstImprinttype2=GillStudiosLookupData.Dimension1Type.get(FirstImprinttype2);
@@ -895,19 +923,24 @@ public class SolidDimensionMapping implements IExcelParser{
 					break;
 
 					    
-				case 83: //ImprintLoc
+				case 84: //ImprintLoc
 
 					String imprintLocation2 =  CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(imprintLocation2) && !imprintLocation.equals("0")){
+					try{//////testing values
+					if(!StringUtils.isEmpty(imprintLocation2) && !imprintLocation2.equals("0")){
 						ImprintLocation locationObj2 = new ImprintLocation();
 						locationObj2.setValue(imprintLocation2);
 						listImprintLocation.add(locationObj2);
 					}
-					
+					}catch (Exception e) {
+						_LOGGER.error(e.getMessage());
+						_LOGGER.error(e.getClass());
+						_LOGGER.error(e.getCause());
+					}
 					
 					break;
 					  	
-				case 84:  // Second Imprintsize1
+				case 85:  // Second Imprintsize1
 					
 					SecondImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintsize1.trim()) && !SecondImprintsize1.equals("0")){
@@ -915,7 +948,7 @@ public class SolidDimensionMapping implements IExcelParser{
 				    }
 					   	break;
 					   	
-				case 85:  // Second Imprintsize1 unit
+				case 86:  // Second Imprintsize1 unit
 					SecondImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintunit1.trim()) && !SecondImprintunit1.equals("0")){
 					SecondImprintunit1=GillStudiosLookupData.Dimension1Units.get(SecondImprintunit1);
@@ -925,7 +958,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					
 						break;
 						
-				case 86:  // Second Imprintsize1 type
+				case 87:  // Second Imprintsize1 type
 					SecondImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprinttype1.trim())  && !SecondImprinttype1.equals("0")){
 					SecondImprinttype1=GillStudiosLookupData.Dimension1Type.get(SecondImprinttype1);
@@ -935,7 +968,7 @@ public class SolidDimensionMapping implements IExcelParser{
 				
 					  break;
 					  
-				case 87: // Second Imprintsize2
+				case 88: // Second Imprintsize2
 					SecondImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintsize2.trim())  && !SecondImprintsize2.equals("0")){
 				    ImprintSizevalue2=ImprintSizevalue2.append(SecondImprintsize2).append(" ");
@@ -945,7 +978,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					
 					break;
 					
-				case 88: //Second Imprintsize2 Unit
+				case 89: //Second Imprintsize2 Unit
 					SecondImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintunit2.trim()) && !SecondImprintunit2.equals("0")){
 					SecondImprintunit2=GillStudiosLookupData.Dimension1Units.get(SecondImprintunit2);
@@ -955,12 +988,12 @@ public class SolidDimensionMapping implements IExcelParser{
 
 					break;
 					
-				case 89: // Second Imprintsize2 type	
+				case 90: // Second Imprintsize2 type	
 					SecondImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprinttype2.trim()) && !SecondImprinttype2.equals("0")){
 					SecondImprinttype2=GillStudiosLookupData.Dimension1Type.get(SecondImprinttype2);
 					ImprintSizevalue2=ImprintSizevalue2.append(SecondImprinttype2).append(" ");
-
+					
 					}
 					
 				/*	  ImprintSizevalue=append(FirstImprintunit1).
@@ -972,23 +1005,23 @@ public class SolidDimensionMapping implements IExcelParser{
 					*/
 					  break;
 					
-				case 90: //SecondImprintLoc
+				case 91: //SecondImprintLoc
 	
 					String imprintLocation3 =  CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(imprintLocation3) && !imprintLocation.equals("0")){
+					if(!StringUtils.isEmpty(imprintLocation3) && !imprintLocation3.equals("0")){
 						ImprintLocation locationObj2 = new ImprintLocation();
 						locationObj2.setValue(imprintLocation3);
 						listImprintLocation.add(locationObj2);
 					}
 					  break;
 					  
-				case 91: //DecorationMethod
+				case 92: //DecorationMethod
 
 					 decorationMethod = cell.getStringCellValue();
 						listOfImprintMethods = solidAttributeParser.getImprintMethodValues(decorationMethod,listOfImprintMethods);
 						
 					break;
-				case 92: // NoDecoration
+				case 93: // NoDecoration
 					String noDecoration = cell.getStringCellValue();
 					if(noDecoration.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
 						listOfImprintMethods = solidAttributeParser.getImprintMethodValues(noDecoration,
@@ -996,7 +1029,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					}
 					 break; 
 					 
-				case 93: //NoDecorationOffered
+				case 94: //NoDecorationOffered
 					String noDecorationOffered = cell.getStringCellValue();
 					if(noDecorationOffered.equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE)){
 						listOfImprintMethods = solidAttributeParser.getImprintMethodValues(noDecorationOffered,
@@ -1008,63 +1041,62 @@ public class SolidDimensionMapping implements IExcelParser{
 			
 					 
 					 
-				case 94://NewPictureURL
+				case 95://NewPictureURL
 
 					
 					break;
 					
-				case 95://NewPictureFile
+				case 96://NewPictureFile
 
 					
 					break;
 					
-				case 96://ErasePicture
+				case 97://ErasePicture
 
 					
 					break;
 					
-				case 97://NewBlankPictureURL
+				case 98://NewBlankPictureURL
 
 					
 			
 					break;
 					
-				case 98://NewBlankPictureFile
+				case 99://NewBlankPictureFile
 
 
 					
 					break;
 				
 					
-				case 99://EraseBlankPicture
+				case 100://EraseBlankPicture
 
 			
 					break;
 					
 					
-	            case 100://NotPictured
+	            case 101://NotPictured
 	            	
 
 					
 					break;
 					
 					
-				case 101: //MadeInCountry
+				case 102: //MadeInCountry
 					String madeInCountry = cell.getStringCellValue();
 					if(!madeInCountry.isEmpty()){
 						List<Origin> listOfOrigin = solidAttributeParser.getOriginValues(madeInCountry);
 						productConfigObj.setOrigins(listOfOrigin);
 					}
 					break;
-				case 102: //AssembledInCountry
-
+				case 103: //AssembledInCountry
 				     String additionalProductInfo = cell.getStringCellValue();
 				     if(!StringUtils.isEmpty(additionalProductInfo))
 				       {
 				    	productExcelObj.setAdditionalProductInfo(additionalProductInfo); 
 				       }
 					break;
-				case 103: //DecoratedInCountry
+				case 104: //DecoratedInCountry
 
 					String additionalImprintInfo = cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(additionalImprintInfo))
@@ -1075,7 +1107,7 @@ public class SolidDimensionMapping implements IExcelParser{
 				
 					break;
 					
-				case 104:// ComplianceList
+				case 105:// ComplianceList
 					String complnceValuet=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(complnceValuet))
 					   {
@@ -1084,15 +1116,15 @@ public class SolidDimensionMapping implements IExcelParser{
 					   }
 				
 					break;
-				case 105: //ComplianceMemo
+				case 106: //ComplianceMemo
 
 					break;
-				case 106: //ProdTimeLo
+				case 107: //ProdTimeLo
 					   prodTimeLo = CommonUtility.getCellValueStrinOrInt(cell);
 				
 					break;
 					
-				case 107://ProdTimeHi
+				case 108://ProdTimeHi
 					String prodTimeHi = CommonUtility.getCellValueStrinOrInt(cell);
 					ProductionTime productionTime = new ProductionTime();
 					if (!prodTimeHi
@@ -1116,11 +1148,11 @@ public class SolidDimensionMapping implements IExcelParser{
 					}
 					break;
 					
-				case 108: //RushProdTimeLo
+				case 109: //RushProdTimeLo
 				    rushProdTimeLo  = cell.getStringCellValue();
 				
 					break;
-				case 109: //RushProdTimeHi
+				case 110: //RushProdTimeHi
 					String rushProdTimeH  = cell.getStringCellValue();
 					if (!rushProdTimeLo
 							.equals(ApplicationConstants.CONST_STRING_ZERO)) {
@@ -1131,38 +1163,40 @@ public class SolidDimensionMapping implements IExcelParser{
 					
 					
 					break;
-				case 110://Packaging
-
-					String pack  = cell.getStringCellValue();
-					 if(!StringUtils.isEmpty(pack))
-					 {
-					productExcelObj.setAdditionalShippingInfo(pack);
+				case 111://Packaging
+					String packageValue=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(packageValue)){
+						 if(packageValue.toUpperCase().contains("GIFT")){
+							 packageValue="Gift Box";
+						 }
+						 List<Packaging> listOfPackage=solidAttributeParser.getPackageValues(packageValue);
+						 productConfigObj.setPackaging(listOfPackage);
 					 }
 					 break; 	 
-				case 111://CartonL
+				case 112://CartonL
 
 					 cartonL  = CommonUtility.getCellValueStrinOrInt(cell);
 
 					break;
 					
-				case 112://CartonW
+				case 113://CartonW
 					cartonW  = CommonUtility.getCellValueStrinOrInt(cell);
 				
 					break;
 					
-				case 113: //CartonH
+				case 114: //CartonH
 					cartonH  = CommonUtility.getCellValueStrinOrInt(cell);
 
 					
 					break;
-				case 114://WeightPerCarton
+				case 115://WeightPerCarton
 					weightPerCarton  =CommonUtility.getCellValueStrinOrInt(cell);
 					break;
 	
-				case 115://UnitsPerCarton
+				case 116://UnitsPerCarton
 					unitsPerCarton  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 116: //ShipPointCountry
+				case 117: //ShipPointCountry
 					String shipInCountry  = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(shipInCountry))
 					 {
@@ -1170,7 +1204,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					 }
 				
 					break;
-				case 117: //ShipPointZip
+				case 118: //ShipPointZip
 				  	 FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
 						
 							 if(!StringUtils.isEmpty(FOBValue))
@@ -1188,38 +1222,37 @@ public class SolidDimensionMapping implements IExcelParser{
 					
 					break;
 					
-				case 118: //Comment
+				case 119: //Comment
 		
 					 
 					break;
 					
-				case 119: //Verified
+				case 120: //Verified
 					String verified=cell.getStringCellValue();
 					if(verified.equalsIgnoreCase("True")){
 					String priceConfimedThruString="2018-12-31T00:00:00";
 					productExcelObj.setPriceConfirmedThru(priceConfimedThruString);
 					}
 					
-					
 					break;
 					
 					
-				case 120://UpdateInventory
+				case 121://UpdateInventory
 
 					
 					break;
 					
-				case 121://InventoryOnHand
-
-
-					break;
-					
-				case 122://InventoryOnHandAdd
+				case 122://InventoryOnHand
 
 
 					break;
 					
-				case 123://InventoryMemo
+				case 123://InventoryOnHandAdd
+
+
+					break;
+					
+				case 124://InventoryMemo
 
 					
 					break;
@@ -1292,7 +1325,7 @@ public class SolidDimensionMapping implements IExcelParser{
 		  
 			    
 			}catch(Exception e){
-			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"column index "+columnIndex );		 
+			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+" "+e.getClass()+"column index "+columnIndex);// 		 
 		}
 		}
 		workbook.close();
@@ -1304,7 +1337,7 @@ public class SolidDimensionMapping implements IExcelParser{
 		
 		// additional colors & upcgrg
 					List<AdditionalColor> additionalColorList = null;
-					if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
+					if(!StringUtils.isEmpty(additionalClrRunChrgCode) && !StringUtils.isEmpty(additionalClrRunChrgPrice.toString())){
 						 additionalColorList = solidAttributeParser.getAdditionalColor("Additional Color");
 							priceGrids = solidAttributeParser.getAdditionalColorRunUpcharge(additionalClrRunChrgCode,listOfQuantity.toString(),
 									   additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge");
@@ -1406,8 +1439,8 @@ public class SolidDimensionMapping implements IExcelParser{
 		 dimensionType = new StringBuilder();
 		 priceIncludes = new StringBuilder();
 		 priceIncludesValue=null;
-		 additionalcolorList= new ArrayList<>();
-		 listofUpcharges = new StringBuilder();
+		 //additionalcolorList= new ArrayList<>();
+		 //listofUpcharges = new StringBuilder();
 		 imprintMethodUpchargeMap = new LinkedHashMap<>();
 		 additionalClrRunChrgPrice = new StringBuilder();
 	     additionalClrRunChrgCode = "";
@@ -1504,7 +1537,32 @@ public class SolidDimensionMapping implements IExcelParser{
 	public void setLookupRestServiceObj(LookupRestService lookupRestServiceObj) {
 		this.lookupRestServiceObj = lookupRestServiceObj;
 	}
-
-
+	
+	/*public String getProductXid(Row row){
+		Cell xidCell =  row.getCell(0);
+		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		if(StringUtils.isEmpty(productXid) || productXid.trim().equalsIgnoreCase("#N/A")){
+		     xidCell = row.getCell(2);
+		     productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		}
+		return productXid;
+	}*/
+	private String getProductXid(Row row,boolean isRepeatProduct){
+		Cell xidCell = null;
+		String productXid = "";
+		if(isRepeatProduct){
+			xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_TWO);
+			productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		} else {
+			xidCell = row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
+			productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+			if (StringUtils.isEmpty(productXid)) {
+				xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_TWO);
+				productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+			}
+		}
+		
+		return productXid.trim();
+	}
 }
 

@@ -2,6 +2,7 @@ package parser.solidDimension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -37,6 +38,7 @@ public class SolidDimensionPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] priceUnit= priceUnitArr
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		String[] discArr= {};
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(priceName);
 		priceGrid.setPriceIncludes(priceInclude);
@@ -46,8 +48,19 @@ public class SolidDimensionPriceGridParser {
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
-		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(prices, quantity, discountCodes,priceUnit);
+		if (!priceGrid.getIsQUR()) {//breaking here
+			//String qaunitity="1___";
+			int priceLen=listOfPrices.split("___").length;
+			//int discCodeLen=discountCodes.length();
+			if(priceLen>1 ){
+				String tempDiscCode=discountCodes.concat("___");
+				discountCodes=String.join("", Collections.nCopies(priceLen, tempDiscCode));
+				discArr=discountCodes.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+			}else{
+				discArr=discountCodes.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+			}
+			//listOfPrice = getPrices(prices, quantity, String.join(",", discArr),priceUnit); //discArr
+			listOfPrice = getPrices(prices, quantity, discArr,priceUnit);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
@@ -65,12 +78,12 @@ public class SolidDimensionPriceGridParser {
 
 	}
 
-	public List<Price> getPrices(String[] prices, String[] quantity, String discount,String[] priceUnitArr) {
+	public List<Price> getPrices(String[] prices, String[] quantity, String discount[],String[] priceUnitArr) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
 		try{
 		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length && PriceNumber < quantity.length
-				      && PriceNumber < discount.length(); PriceNumber++, sequenceNum++) {
+				      && PriceNumber < discount.length; PriceNumber++, sequenceNum++) {
 
 			Price price = new Price();
 			PriceUnit priceUnit = new PriceUnit();
@@ -81,7 +94,8 @@ public class SolidDimensionPriceGridParser {
 				price.setQty(ApplicationConstants.CONST_NUMBER_ZERO);
 			}
 			price.setPrice(prices[PriceNumber]);
-			price.setDiscountCode(Character.toString(discount.charAt(PriceNumber)));
+			//price.setDiscountCode(Character.toString(discount.charAt(PriceNumber)));
+			price.setDiscountCode(discount[PriceNumber]);
 			/*priceUnit
 					.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);*/
 			if(priceUnitArr[PriceNumber].equals("1000")){
@@ -161,7 +175,7 @@ public class SolidDimensionPriceGridParser {
 		String[] upPriceunit = priceUnitArr
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String upChargeDiscount = discounts;
-
+		String[] upDiscArr ={};
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(upChargeName);
 		priceGrid
@@ -174,8 +188,34 @@ public class SolidDimensionPriceGridParser {
 		priceGrid.setServiceCharge("Required");
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
+			
+			/*//breaking here
+			//String qaunitity="1___";
+			int priceLen=prices.split("___").length;
+			//int discCodeLen=discountCodes.length();
+			if(priceLen>1 ){
+				String tempDiscCode=discounts.concat("___");
+				discounts=String.join("", Collections.nCopies(priceLen, tempDiscCode));
+				upDiscArr=discounts.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+			}else{
+				upDiscArr[0]=discounts;
+			}*/
+			
+			int priceLen=prices.split("___").length;
+			//int discCodeLen=discountCodes.length();
+			if(priceLen>1 ){
+				String tempDiscCode=discounts.concat("___");
+				discounts=String.join("", Collections.nCopies(priceLen, tempDiscCode));
+				upDiscArr=discounts.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+			}else{
+				upDiscArr=discounts.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+			}
+			
+		
+			
 			 listOfPrice =
-			 getPrices(upChargePrices,upChargeQuantity,upChargeDiscount,upPriceunit);
+			 //getPrices(upChargePrices,upChargeQuantity,String.join(",", upDiscArr),upPriceunit);
+					 getPrices(upChargePrices,upChargeQuantity,upDiscArr,upPriceunit);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
