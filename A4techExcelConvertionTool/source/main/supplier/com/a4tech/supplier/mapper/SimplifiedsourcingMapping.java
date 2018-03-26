@@ -61,14 +61,14 @@ public class SimplifiedsourcingMapping implements IExcelParser{
 	private ProductDao productDaoObj;
 	private LookupServiceData lookupServiceDataObj;
 	private LookupRestService lookupRestServiceObj;
-	private GoldstarCanadaDimensionParser gcdimensionObj;
-	private GoldstarCanadaImprintMethodParser gcimprintMethodParser;
-	private GoldstarCanadaOriginParser gcOriginParser;
-	private GoldstarCanadaRushTimeParser gcRushTimeParser;
-	private GoldstarCanadaPackagingParser gcPackagingParser;
-	private GoldstarCanadaShippingEstimateParser gcShippingParser;
-	private GoldstarCanadaPriceGridParser gcPricegridParser;
-	private GoldstarCanadaImprintsizeParser gcImprintSizeParser;
+	private GoldstarCanadaDimensionParser gcdimensionObj;//done
+	private GoldstarCanadaImprintMethodParser gcimprintMethodParser;//done
+	private GoldstarCanadaOriginParser gcOriginParser;//done
+	private GoldstarCanadaRushTimeParser gcRushTimeParser;//done
+	private GoldstarCanadaPackagingParser gcPackagingParser;//done
+	private GoldstarCanadaShippingEstimateParser gcShippingParser;//done
+	private GoldstarCanadaPriceGridParser gcPricegridParser;//done
+	private GoldstarCanadaImprintsizeParser gcImprintSizeParser;//done
 	private GoldstarCanadaColorParser gccolorparser;
 
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId,String environmentType){

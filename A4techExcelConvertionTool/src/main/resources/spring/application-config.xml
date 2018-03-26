@@ -426,8 +426,9 @@
 		<property name="sunScopeMapping" ref="sunScopeMappingId"/>
 		<property name="sunGraphixMapping" ref="sunGraphixMappingId"/>
 		<property name="pelicanGraphicMapping" ref="pelicanGraphicMappingId"/>
-		<property name="sportsManBagMapping" ref="sportsManBagMappingId"/>
 		<property name="simplifiedMapping" ref="simplifiedMappingId"/>
+		<property name="sportsManBagMapping" ref="sportsManBagMappingId"/>
+		<property name="solidDimensionMapping" ref="solidDimensionMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1126,19 +1127,8 @@
      <bean id="pelicanGraphicpriceGridParserId" class="parser.PelicanGraphics.PelicanGraphicPriceGridParser"/>
       <!-- PelicanGraphics 76797 configuration end-->
       
- <!-- SportsManBag 88877 configuration start-->
-     <bean id="sportsManBagMappingId" class="com.a4tech.supplier.mapper.SportsManBagMapping">
-     	 <property name="postServiceImpl" ref="postService"/>
-     	 <property name="productDaoObj" ref="productDao"/>
-     	 <property name="sportsManAttributeParser" ref="sportsManBagAttributeParserId"/>
-     	 <property name="sportsManPriceGridParser" ref="sportsManBagGridParserId"/>
-     </bean>
-     <bean id="sportsManBagAttributeParserId" class="parser.sportsmanBag.SportsManBagAttributeParser">
-     	<property name="lookupServiceData" ref="lookupServiceData"/>
-     </bean>
-     <bean id="sportsManBagGridParserId" class="parser.sportsmanBag.SportsManBagPriceGridParser"/>
-      <!-- SportsManBag 88877 configuration end-->
-   <!-- simplifiedMappingId 87326 configuration start-->
+      
+     <!-- simplifiedMappingId 87326 configuration start-->
       
       
         <bean id="simplifiedMappingId" class="com.a4tech.supplier.mapper.SimplifiedsourcingMapping">
@@ -1173,10 +1163,42 @@
      <bean id="gcShippingParserId2" class="parser.goldstarcanada.GoldstarCanadaShippingEstimateParser"/> 
      <bean id="gcImprintSizeParserId2" class="parser.goldstarcanada.GoldstarCanadaImprintsizeParser"/> 
      <bean id="gccolorparserId2" class="parser.goldstarcanada.GoldstarCanadaColorParser"/> 
-      
-      
-      
      <!-- simplifiedMappingId 87326 configuration end-->
-   
+     
+      <!-- SportsManBag 88877 configuration start-->
+     <bean id="sportsManBagMappingId" class="com.a4tech.supplier.mapper.SportsManBagMapping">
+     	 <property name="postServiceImpl" ref="postService"/>
+     	 <property name="productDaoObj" ref="productDao"/>
+     	 <property name="sportsManAttributeParser" ref="sportsManBagAttributeParserId"/>
+     	 <property name="sportsManPriceGridParser" ref="sportsManBagGridParserId"/>
+     </bean>
+     <bean id="sportsManBagAttributeParserId" class="parser.sportsmanBag.SportsManBagAttributeParser">
+     	<property name="lookupServiceData" ref="lookupServiceData"/>
+     </bean>
+     <bean id="sportsManBagGridParserId" class="parser.sportsmanBag.SportsManBagPriceGridParser"/>
+      <!-- SportsManBag 88877 configuration end-->
+     
+     <!-- supplier 88156 Solid Dimensions Inc configuration start -->
+     <bean id="solidDimensionMappingId" class="com.a4tech.supplier.mapper.SolidDimensionMapping" autowire="byName">
+       <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj" ref="productDao"/>
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+         <property name="lookupRestServiceObj" ref="lookupRestService"/>
+       <property name="solidAttributeParser" ref="solidAttributeParserId" /> 
+       <property name="solidDimensionPriceGridParser" ref="solidDimensionPriceGridParserId" /> 
+       <property name="solidDimensionColorParser" ref="solidDimensionColorParserId" /> 
+       </bean>
+       <bean id="solidAttributeParserId" name="solidAttributeParserObj"
+  		class="parser.solidDimension.SolidDimesionAttributeParser" autowire="byName">
+  		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+  		<property name="solidDimensionPriceGridParser" ref="solidDimensionPriceGridParserObj"/>
+  	</bean>
+  	<bean id="solidDimensionPriceGridParserId" name="solidDimensionPriceGridParserObj" class="parser.solidDimension.SolidDimensionPriceGridParser" autowire="byName"/>
+  	<bean id="solidDimensionColorParserId" name="solidDimensionColorParserObj" class="parser.solidDimension.SolidDimensionColorParser" autowire="byName">
+  	<!-- <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+    <property name="lookupRestServiceObj" ref="lookupRestService"/> -->
+  	</bean>
+     <!-- supplier 56950 Gill Studios Inc configuration end -->  
+      
 </beans>
 
