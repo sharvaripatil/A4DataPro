@@ -20,4 +20,5 @@ public interface IProductDao {
 	public boolean 		isASINumberAvailable(String asiNumber,String environmentType);
 	public BaseSupplierLoginDetails getSupplierLoginDetailsBase(String asiNumber,String type);
 	public int         getSupplierColumnsCount(String asiNumber);
+	
 }

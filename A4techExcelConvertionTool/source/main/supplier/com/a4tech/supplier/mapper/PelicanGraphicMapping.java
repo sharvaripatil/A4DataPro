@@ -21,6 +21,7 @@ import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
@@ -495,19 +496,19 @@ public class PelicanGraphicMapping implements IExcelParser{
 					}
 							break;
 				case 57://repeate charge
-					/*String repeateChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!repeateChargePrice.equals("0")){
+					String repeateChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(repeateChargePrice) && !repeateChargePrice.equals("0")){
 						imprintMethodUpchargeMap.put("repeateCharge", repeateChargePrice);
-					}*/
+					}
 					// no need to process this column since there is no vaild data
 							break; 
 				case 58://repeate charge code
-							/*String repeateChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
-							if(!repeateChargeCode.equals("0")){
+							String repeateChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
+							if(!StringUtils.isEmpty(repeateChargeCode) && !repeateChargeCode.equals("0")){
 								String priceVal = imprintMethodUpchargeMap.get("repeateCharge");
 								priceVal = priceVal+"_"+repeateChargeCode;
 								imprintMethodUpchargeMap.put("repeateCharge", priceVal);
-							}*/
+							}
 					// no need to process this column since there is no vaild data
 						break;
 				case 59: // additioNal color
@@ -802,6 +803,11 @@ public class PelicanGraphicMapping implements IExcelParser{
 				case 115: //ShipPointCountry
 					break;
 				case 116: //ShipPointZip
+					String fobVal = cell.getStringCellValue();
+					List<FOBPoint> listOfFobPoint = pelicanGraphicAttributeParser.getFobPoint(fobVal, accessToken, environmentType);
+					if(!CollectionUtils.isEmpty(listOfFobPoint)){
+						productExcelObj.setFobPoints(listOfFobPoint);
+					}
 					break;
 				case 117: //Comment
 					String comment = cell.getStringCellValue();
@@ -935,73 +941,20 @@ public class PelicanGraphicMapping implements IExcelParser{
 		return productXid.trim();
 	}
 	private String getFinalDescription(String description, String asiProdNo){
-		description = CommonUtility.removeRestrictSymbols(description);
-		if(description.contains("·")){
-			description = description.replaceAll("·", "");
-		}
-		if(description.contains("Porsche")){
-			description = description.replaceAll("Porsche", "");
-		}
 		if(description.toUpperCase().contains(asiProdNo)){
 			description = CommonUtility.removeSpecificWord(description, asiProdNo);
 			description = description.replaceAll(asiProdNo, "");
 		}
-		if(description.contains("m&m")){
-			description = description.replaceAll("m&m", "");
-		}
-		if(description.contains("iPAD") || description.contains("iPad") || description.contains("Ipad")){
-			description = description.replaceAll("iPAD", "");
-			description = description.replaceAll("iPad", "");
-			description = description.replaceAll("Ipad", "");
-		}
-		if(description.contains("nano")){
-			description = description.replaceAll("nano", "");
-		}
-		if(description.contains("shuffle")){
-			description = description.replaceAll("shuffle", "");
-		}
-		if(description.contains("²")){
-			description = description.replaceAll("²", "");
-		}
-		if(description.contains("at a glance")){
-			description = description.replaceAll("at a glance", "");
-		}
-		if(description.contains("—")){
-			description = description.replaceAll("—", "");
-		}
-		if(description.contains("|")){
-			description = description.replaceAll("\\|", "");
-		}
+		description = description.replaceAll("Velcro", "");
 		description = CommonUtility.getStringLimitedChars(description, 800);
 	 return description;
 	}
 	private String getFinalProductName(String productName,String asiProdNo){
-		 if(productName.contains("Porsche")){
-			 productName = productName.replaceAll("Porsche", "");
-			}
-		 if(productName.contains("®")){
-			 productName = productName.replaceAll("®", "");
-		 }
 		 if(productName.toUpperCase().contains(asiProdNo)){
 			 productName = CommonUtility.removeSpecificWord(productName, asiProdNo);
 			 productName = productName.replaceAll(asiProdNo, "");
 			}
-		 if(productName.contains("M&M's")){
-			 productName = productName.replaceAll("M&M's", "");
-		 }
-		 if(productName.contains("™")){
-			 productName = productName.replaceAll("™", "");
-		 }
-		 if(productName.contains("NANO")){
-			 productName = productName.replaceAll("NANO", "");
-		 }
-		 if(productName.contains("iPAD") || productName.contains("iPad")){
-			 productName = productName.replaceAll("iPAD", "");
-			 productName = productName.replaceAll("iPad", "");
-			}
-		 if(productName.contains("|")){
-			 productName = productName.replaceAll("\\|", "");
-			}
+		 productName = productName.replaceAll("Velcro", "");
 		 productName = CommonUtility.getStringLimitedChars(productName, 60);
 		 return productName;
 	}
