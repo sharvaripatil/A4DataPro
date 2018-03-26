@@ -17,6 +17,9 @@ public class HarvestColorParser {
 		Color colorObj = new Color();
 		Combo comboObj=new Combo();
 		
+		colorValue=colorValue.replace("Box - ", "").replace("Bow - ", "").replace(ApplicationConstants.CONST_DELIMITER_FSLASH,ApplicationConstants.CONST_DELIMITER_COMMA)
+				.replace("Clear Cubes.", "").replace("Box.", "").replace("Bows.", "");
+		
 		String[] colorValues = CommonUtility.getValuesOfArray(colorValue,
 				ApplicationConstants.CONST_DELIMITER_COMMA);
 		for (String colorName : colorValues) {

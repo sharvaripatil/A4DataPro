@@ -488,7 +488,9 @@
       <property name="cutterBuckSizeParserObj" ref="cutterBuckSizeParserObjId"/>
       <property name="cutterBuckMaterialParserObj" ref="cutterBuckMaterialParserObjId"/>
       <property name="cutterBuckPriceObj" ref="CutterBuckPriceObjId"/>
-     <property name="cutterBuckSheetObj" ref="cutterBuckSheetObjId"/> 
+      <property name="cutterBuckSheetObj" ref="cutterBuckSheetObjId"/> 
+       <property name="cbAttribute" ref="cbAttributeId"/> 
+      
       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
 	  <property name="lookupRestServiceObj" ref="lookupRestService"/>
       </bean>
@@ -506,6 +508,8 @@
       </bean>
      
       <bean id="cbColorProductNumberObjId" class="parser.cutter.CBColorProductNumberParser"/>
+       <bean id="cbAttributeId" class="parser.cb.CBAttributeParser"/>
+      
        <!--supplier 47965 configuration end  -->  
     
      <!--supplier 47759 configuration Start  -->  

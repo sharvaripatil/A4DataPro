@@ -28,6 +28,57 @@ public  class HarvestLookupData {
 		Dimension1Type.put("6", "Thickness");
 		
 
+		
+		COLOR_MAP.put("Light Brown","Light Brown");
+		COLOR_MAP.put("Clear","Clear");
+		COLOR_MAP.put("Gold","Gold Metal");
+		COLOR_MAP.put("Silver","Silver Metal");
+		COLOR_MAP.put("Platinum","Medium Gray");
+		COLOR_MAP.put("Black","Medium Black");
+		COLOR_MAP.put("Burgundy","Dark Red");
+		COLOR_MAP.put("Snokeflake","Medium Blue");
+		COLOR_MAP.put("Snowflake","Medium Blue");
+		COLOR_MAP.put("White","Medium White");
+		COLOR_MAP.put("Assorted","Assorted");
+		COLOR_MAP.put("Red","Medium Red");
+		COLOR_MAP.put("Dark Red","Dark Red");
+		COLOR_MAP.put("Dark Blue","Dark Blue");
+		COLOR_MAP.put("Blue","Medium Blue");
+		COLOR_MAP.put("Dark Blue","Dark Blue");
+		COLOR_MAP.put("Dark Green","Dark Green");
+		COLOR_MAP.put("Multi color","Multi Color");
+		COLOR_MAP.put("Pink","Medium Pink");
+		COLOR_MAP.put("Light Pink","Light Pink");
+		COLOR_MAP.put("Orange","Medium Orange");
+		COLOR_MAP.put("Yellow","Medium Yellow");
+		COLOR_MAP.put("Lime Green","Bright Green");
+		COLOR_MAP.put("Green","Medium Green");
+		COLOR_MAP.put("Dark Green","Dark Green");
+		COLOR_MAP.put("Navy","Dark Blue");
+		COLOR_MAP.put("Purple","Medium Purple");
+		COLOR_MAP.put("Brown","Medium Brown");
+		COLOR_MAP.put("Light Brown","Light Brown");
+		COLOR_MAP.put("Charcoal Black","Medium Black");
+		COLOR_MAP.put("Light Pink","Light Pink");
+		COLOR_MAP.put("Lime","Bright Green");
+		COLOR_MAP.put("Light Blue","Light Blue");
+		COLOR_MAP.put("Sage","Medium Green");
+		COLOR_MAP.put("Platinum.","Medium Gray");
+		COLOR_MAP.put("Hot Pink","Bright Pink");
+		COLOR_MAP.put("Chocolate","Medium Brown");
+		COLOR_MAP.put("Gray","Medium Gray");
+		COLOR_MAP.put("Clear Frosted","Clear");
+		COLOR_MAP.put("Clear/Frosted","Clear");
+		COLOR_MAP.put("Royal Blue","Bright Blue");
+		COLOR_MAP.put("Clear-Frosted","Clear");
+		COLOR_MAP.put("Navy Blue","Dark Blue");
+		COLOR_MAP.put("Translucent Purple","Clear Purple");
+		COLOR_MAP.put("Translucent Blue","Clear Blue");
+		COLOR_MAP.put("Translucent Red","Clear Red");
+		COLOR_MAP.put("Translucent Green","Clear Green");
+		COLOR_MAP.put("Kraft","Light Brown");
+		COLOR_MAP.put("Ivory","Medium White");
+
 		COLOR_MAP.put("Name","Color Group");
 		COLOR_MAP.put("Gold","Dark Yellow");
 		COLOR_MAP.put("Red","Medium Red");
