@@ -218,13 +218,20 @@ public class EveanManufactureProductInformationMapping {
 							priceGrids = productExcelObj.getPriceGrids();
 							break;
 						case 21:// setup charge
-							String imprintSize = cell.getStringCellValue();
-							
+							String setupCharge = cell.getStringCellValue();
+							productExcelObj.setProductConfigurations(productConfigObj);
+							productExcelObj.setPriceGrids(priceGrids);
+							productExcelObj = eveanAttributeParser.getSetUpcharge(productExcelObj, setupCharge,"setupCharge");
+							productConfigObj = productExcelObj.getProductConfigurations();
+							priceGrids = productExcelObj.getPriceGrids();
 							break;
-						case 22:
-							// it is related option
-							String optionValue = cell.getStringCellValue();
-							
+						case 22://Exact Reorder Set-up
+							String exactReorderSetup = cell.getStringCellValue();
+							productExcelObj.setProductConfigurations(productConfigObj);
+							productExcelObj.setPriceGrids(priceGrids);
+							productExcelObj = eveanAttributeParser.getSetUpcharge(productExcelObj, exactReorderSetup,"reorderSetup");
+							productConfigObj = productExcelObj.getProductConfigurations();
+							priceGrids = productExcelObj.getPriceGrids();
 							break;
 						case 23:
 							String golfBallModel = cell.getStringCellValue();

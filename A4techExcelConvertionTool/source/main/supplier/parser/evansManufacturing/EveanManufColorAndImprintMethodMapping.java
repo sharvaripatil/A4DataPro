@@ -3,10 +3,38 @@ package parser.evansManufacturing;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EveanManufactureColorMapping {
+public class EveanManufColorAndImprintMethodMapping {
 public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
-	
+public static Map<String,String>   IMPRINT_METHOD_GROUP = new HashMap<>();	
 	static{
+		IMPRINT_METHOD_GROUP.put("Imprint Method","Group Name");
+		IMPRINT_METHOD_GROUP.put("Screen printed","Silkscreen=Screen printed");
+		IMPRINT_METHOD_GROUP.put("Pad Printed","Pad Print=Pad Printed");
+		IMPRINT_METHOD_GROUP.put("Laser engraved","Laser Engraved=Laser engraved");
+		IMPRINT_METHOD_GROUP.put("Standard 1 Color Imprint- Heat Transfer","Heat Transfer=Heat Transfer");
+		IMPRINT_METHOD_GROUP.put("Dome printed","Printed=Dome printed");
+		IMPRINT_METHOD_GROUP.put("Clear Wrap Printed","Printed=Clear Wrap Printed");
+		IMPRINT_METHOD_GROUP.put("Laser Engraved or Pad Printed","Laser Engraved=Laser engraved, Silkscreen=Pad Printed");
+		IMPRINT_METHOD_GROUP.put("Digital direct printed","Printed=Digital direct printed");
+		IMPRINT_METHOD_GROUP.put("Digital Direct","Printed=Digital Direct");
+		IMPRINT_METHOD_GROUP.put("Heat Transfer","Heat Transfer=Heat Transfer");
+		IMPRINT_METHOD_GROUP.put("Dura-panel","Printed=Dura-Panel");
+		IMPRINT_METHOD_GROUP.put("Full color wrap insert","Full Color=Full color wrap insert");
+		IMPRINT_METHOD_GROUP.put("Embroidered patch","Embroidered=Embroidered patch");
+		IMPRINT_METHOD_GROUP.put("Laser Engraved or Screen Printed","Laser Engraved=Laser engraved, Silkscreen=Screen Printed");
+		IMPRINT_METHOD_GROUP.put("Screen Printed Barrel","Silkscreen=Screen Printed Barrel");
+		IMPRINT_METHOD_GROUP.put("Heat Transfer - 2 color","Heat Transfer=Heat Transfer");
+		IMPRINT_METHOD_GROUP.put("Pad Printed Sandwich Keeper","Pad Print=Pad Printed,ImprintLocation=Sandwich Keeper");
+		IMPRINT_METHOD_GROUP.put("Screen Printed Reuseable Sandwich & Snack Bag","Silkscreen=screen printed,ImprintLocation=Reuseable Sandwich & Snack Bag");
+		IMPRINT_METHOD_GROUP.put("Pad Printed Clip","Pad Print=Pad Printed Clip");
+		IMPRINT_METHOD_GROUP.put("Screen Printed. 8275 Cinch Up Bag","Silkscreen=Screen Printed,ImprintLocation=8275 Cinch Up Bag");
+		IMPRINT_METHOD_GROUP.put("Screen Printed Clutch Lunch Bag","Silkscreen=Screen Printed,ImprintLocation=Clutch Lunch Bag");
+		IMPRINT_METHOD_GROUP.put("Screen Printed - Pen","Silkscreen=Screen Printed,ImprintLocation=Pen");
+		IMPRINT_METHOD_GROUP.put("Pad printed eraser","Pad Print=Pad Printed,ImprintLocation=eraser");
+		IMPRINT_METHOD_GROUP.put("Laser Engraved","Laser Engraved=Laser Engraved");
+		IMPRINT_METHOD_GROUP.put("Laser or Pad Printed Clip","Laser Engraved=Laser Clip,Pad Print=Pad Printed Clip");
+		IMPRINT_METHOD_GROUP.put("Pad printed","Pad Print=Pad Printed");
+
 		COLOR_MAP.put("Name","Color Group");
 		COLOR_MAP.put("Yellow","Medium Yellow");
 		COLOR_MAP.put("Neon Pink","Bright Pink");
