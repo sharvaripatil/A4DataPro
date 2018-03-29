@@ -1,7 +1,6 @@
 package parser.cutter;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
@@ -18,12 +17,15 @@ public class CutterBuckSizeParser {
 		Value valObj;
 		
 		for (String value : sizeArr) {
+			
+			if(!valuelist.contains(value)){
 		 value=value.replaceAll("\n", "");
 		 valObj = new Value();
 	     sizeObj.setApparel(appObj);
 		 appObj.setType("Standard & Numbered");
 		 valObj.setValue(value);
 		 valuelist.add(valObj);
+			}
 
 		}
 		 appObj.setValues(valuelist);

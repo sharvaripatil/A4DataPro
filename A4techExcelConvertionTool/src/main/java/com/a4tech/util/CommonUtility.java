@@ -95,6 +95,23 @@ public class CommonUtility {
 		return value;
 	}
 	
+	public static String getCellValueStrinOrLong(Cell cell) {
+		String value = ApplicationConstants.CONST_STRING_EMPTY;
+		try {
+			if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+				value = cell.getStringCellValue().trim();
+			} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+				long numericValue = (long) cell.getNumericCellValue();
+				value = String.valueOf(numericValue).trim();
+			}
+		} catch (Exception e) {
+			/*_LOGGER.error("Cell value convert into String/Int format: "
+					+ e.getMessage());*/
+		}
+
+		return value;
+	}
+	
 	public static String getCellValueStrinOrDecimal(Cell cell){
 		String value = ApplicationConstants.CONST_STRING_EMPTY;
 		try{

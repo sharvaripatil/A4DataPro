@@ -10,7 +10,7 @@ import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductSKUConfiguration;
 import com.a4tech.product.model.ProductSkus;
 import com.a4tech.product.model.Value;
-import com.a4tech.product.model.Values;
+
 
 public class CBAttributeParser {
 
@@ -86,30 +86,48 @@ public class CBAttributeParser {
 	}
 
 	public List<ProductSkus> getSKU(List<String> sKUList,
-			List<String> productNOList, List<String> colorsList) {
+			List<String> sizelist, List<String> colorsList) {
 
 		ProductSkus productSku = new ProductSkus();
 		List<ProductSkus> listProductSKU = new ArrayList<>();
 		List<ProductSKUConfiguration> listSkuConfigs = new ArrayList<>();
 		List<Object> listOfValue= new ArrayList<>();
-		ProductSKUConfiguration confgObjColor = new ProductSKUConfiguration();
+
+		ProductSKUConfiguration confgObj = new ProductSKUConfiguration();
+        Value valObj=new Value();
 		
 	    String skuArr[]=sKUList.toString().replace("[", "").replace("]", "").split(",");
-	    String prodNoArr[]=productNOList.toString().replace("[", "").replace("]", "").split(",");
+	    String prodNoArr[]=sizelist.toString().replace("[", "").replace("]", "").split(",");
 	    String colorArr[]=colorsList.toString().replace("[", "").replace("]", "").split(",");
 
 	    for(int i=0;i<skuArr.length;i++){
+	    	productSku = new ProductSkus();
 	    	Inventory inventory = getInventory();
 	    	listOfValue= new ArrayList<>();
-
+	    	listSkuConfigs = new ArrayList<>();
 	    	productSku.setSKU(skuArr[i]);
 	    	productSku.setHazmat("UNSPECIFIED");
 	    	
-	    	confgObjColor.setCriteria("Product Color");
+	    	if(!colorArr[i].isEmpty()){
+	    		listOfValue= new ArrayList<>();
+	    		confgObj = new ProductSKUConfiguration();
+	    	confgObj.setCriteria("Product Color");	
 	    	listOfValue.add(colorArr[i]);
-	    	confgObjColor.setValue(listOfValue);
-	    
-	    	listSkuConfigs.add(confgObjColor);
+	    	confgObj.setValue(listOfValue);
+	    	listSkuConfigs.add(confgObj);
+	    	}
+	    	if(!prodNoArr[i].isEmpty())
+	    	{
+	    	valObj=new Value();
+	    	listOfValue= new ArrayList<>();
+	    	confgObj = new ProductSKUConfiguration();
+	    	confgObj.setCriteria("Standard & Numbered");
+	    	valObj.setValue(prodNoArr[i]);
+		    listOfValue.add(valObj);
+		    confgObj.setValue(listOfValue);
+		    listSkuConfigs.add(confgObj);
+
+	    	}
 	    	
 	    	productSku.setConfigurations(listSkuConfigs);
 			productSku.setInventory(inventory);

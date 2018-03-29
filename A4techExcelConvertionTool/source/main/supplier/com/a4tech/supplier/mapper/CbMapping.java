@@ -76,10 +76,15 @@ public class CbMapping implements IExcelParser{
 		List<String> ProductNOList = new ArrayList<>();
 		List<String> SKUList = new ArrayList<>();
 		List<ProductSkus> ProductRelationalSKU = new ArrayList<>();
+		List<String> colorsListSKU = new ArrayList<>();
+		List<String> sizeListSKU = new ArrayList<>();
 
 		
+		Size sizeObj = new Size();
 		Origin origin = new Origin();	
 		StringBuilder Description = new StringBuilder();
+		StringBuilder Sizes = new StringBuilder();
+
 		
 		Product existingApiProduct = null;
 		Product productExcelObj = new Product();
@@ -90,6 +95,7 @@ public class CbMapping implements IExcelParser{
 		String ListPrice=null;
 		String ListPrice1=null;
 		String colorValue =null;
+		String sizeValue=null;
 		try {
 
 			_LOGGER.info("Total sheets in excel::"
@@ -120,7 +126,8 @@ public class CbMapping implements IExcelParser{
 						Cell cell = cellIterator.next();
 					 //   xid = null;
 					    columnIndex = cell.getColumnIndex();
-					    cell2Data = nextRow.getCell(0);
+					    cell2Data = nextRow.getCell(3);
+					    String newXID=CommonUtility.getCellValueStrinOrLong(cell2Data);
 						if (columnIndex + 1 == 1) {
 							if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 								xid = cell.getStringCellValue().trim();
@@ -128,7 +135,7 @@ public class CbMapping implements IExcelParser{
 								xid = String.valueOf((int) cell
 										.getNumericCellValue());
 							} else {
-								String newXID=cell2Data.toString();
+							//	String newXID=cell2Data.toString();
 								if(newXID.contains(","))
 								{
 									String newXIDArr[]=newXID.split(",");
@@ -153,14 +160,17 @@ public class CbMapping implements IExcelParser{
 											.println("Java object converted to JSON String, written to file");
 			
 									
-								//	productExcelObj.setPriceGrids(priceGrids);
+									productExcelObj.setPriceGrids(priceGrids);
+									 sizeObj=cutterBuckSizeParserObj.getSizes(Sizes.toString());
+								     productConfigObj.setSizes(sizeObj);
+								     
 									colorList=cbAttribute.getColorValue(colorsList);
 									productConfigObj.setColors(colorList);
 									
 									listOfProductNo=cbAttribute.getProductNO(ProductNOList,colorsList);
 									productExcelObj.setProductNumbers(listOfProductNo);
 									
-									ProductRelationalSKU=cbAttribute.getSKU(SKUList,ProductNOList,colorsList);
+									ProductRelationalSKU=cbAttribute.getSKU(SKUList,sizeListSKU,colorsListSKU);
 									productExcelObj.setProductRelationSkus(ProductRelationalSKU);
 									
 									productExcelObj.setDescription(Description.toString());
@@ -192,6 +202,10 @@ public class CbMapping implements IExcelParser{
 									listOfProductNo = new ArrayList<>();
 								    ProductNOList = new ArrayList<>();
 								    SKUList = new ArrayList<>();
+								    Sizes = new StringBuilder();
+								    colorsListSKU = new ArrayList<>();
+								    sizeListSKU = new ArrayList<>();
+								    listOfImage   = new ArrayList<Image>();
 									productConfigObj = new ProductConfigurations();
 								
 								}
@@ -256,11 +270,15 @@ public class CbMapping implements IExcelParser{
 
 							break;
 						case 3://Size
-
+							  sizeValue=  CommonUtility.getCellValueStrinOrInt(cell);
+								 if(!StringUtils.isEmpty(sizeValue)){
+									Sizes.append(sizeValue).append(",");
+								 }
+								 sizeListSKU.add(sizeValue);
 							break;
 						case 4://UPC
 							
-							String SKUValue=CommonUtility.getCellValueStrinOrInt(cell);
+							String SKUValue=CommonUtility.getCellValueStrinOrLong(cell);
 							 if(!StringUtils.isEmpty(SKUValue)){
 							SKUList.add(SKUValue);
 							}
@@ -273,7 +291,7 @@ public class CbMapping implements IExcelParser{
 							
 							break;
 						case 6: // WHSL
-						//	ListPrice=cell.getStringCellValue();
+							ListPrice=CommonUtility.getCellValueStrinOrInt(cell);
 
 							break;
 						 case 7://Color Name
@@ -281,32 +299,27 @@ public class CbMapping implements IExcelParser{
 							   if(!colorsList.contains(colorValue)){
 						       colorsList.add(colorValue);
 							   }
+							   colorsListSKU.add(colorValue);
 							 
 							break;
 						 case 8://Label
 							break;
 						  case 9://Low Res Image
-		                //    Image1=cell.getCellFormula();
+		                  //  Image1=cell.getStringCellValue();
 							
 							break;
 						   case 10://High Res Image
-						    String Image2=cell.getStringCellValue();
+						   String Image2=cell.getStringCellValue();
 						    imgObj.setImageURL(Image1);
 						    listOfImage.add(imgObj);
 						    imgObj.setImageURL(Image2);
 						    listOfImage.add(imgObj);
 						    productExcelObj.setImages(listOfImage);
-						
+					
 							break;
 							
 					       case 11://Sizes Available
 
-								 String sizeValue=cell.getStringCellValue();
-								 Size sizeObj = new Size();
-								 sizeObj=cutterBuckSizeParserObj.getSizes(sizeValue);
-							     productConfigObj.setSizes(sizeObj);
-								
-							
 							break;
 					        case 12://Season
 
@@ -333,7 +346,7 @@ public class CbMapping implements IExcelParser{
 							break;
 							
 	                    	case 16://MSRP
-						//	ListPrice1=cell.getStringCellValue();
+							ListPrice1=CommonUtility.getCellValueStrinOrInt(cell);
 
      						break;
 							
@@ -400,7 +413,10 @@ public class CbMapping implements IExcelParser{
 
 					// end inner while loop
 
-					
+					productExcelObj.setPriceType("B");
+					priceGrids = cutterBuckPriceObj.getPriceGrids(ListPrice1,ListPrice, 
+					         1, "USD", "", true, "N", Description1,"",priceGrids);	
+		
 					
 				} catch (Exception e) {
 					_LOGGER.error("Error while Processing ProductId and cause :"
@@ -411,10 +427,12 @@ public class CbMapping implements IExcelParser{
 			}
 			workbook.close();
 
-			/* 
-			priceGrids = cutterBuckPriceObj.getPriceGrids(ListPrice,ListPrice1, 
-			         1, "USD", "", true, "N", Description1,"",priceGrids);	
-			*/
+	
+		
+			
+			
+			 sizeObj=cutterBuckSizeParserObj.getSizes(Sizes.toString());
+		     productConfigObj.setSizes(sizeObj);
 			
 			colorList=cbAttribute.getColorValue(colorsList);
 			productConfigObj.setColors(colorList);
@@ -422,7 +440,7 @@ public class CbMapping implements IExcelParser{
 			listOfProductNo=cbAttribute.getProductNO(ProductNOList,colorsList);
 			productExcelObj.setProductNumbers(listOfProductNo);
 			
-			ProductRelationalSKU=cbAttribute.getSKU(SKUList,ProductNOList,colorsList);
+			ProductRelationalSKU=cbAttribute.getSKU(SKUList,sizeListSKU,colorsListSKU);
 			productExcelObj.setProductRelationSkus(ProductRelationalSKU);
 
 			productExcelObj.setPriceGrids(priceGrids);
@@ -452,6 +470,9 @@ public class CbMapping implements IExcelParser{
 			listOfProductNo = new ArrayList<>();
 		    ProductNOList = new ArrayList<>();
 		    SKUList = new ArrayList<>();
+		    Sizes = new StringBuilder();
+		    sizeListSKU = new ArrayList<>();
+		    listOfImage   = new ArrayList<Image>();
 			productConfigObj = new ProductConfigurations();
 
 
