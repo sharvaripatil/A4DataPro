@@ -5,28 +5,24 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
-
 import parser.cb.CBAttributeParser;
 import parser.cutter.CBColorProductNumberParser;
 import parser.cutter.CutterBuckMaterialParser;
 import parser.cutter.CutterBuckPriceGridParser;
 import parser.cutter.CutterBuckSheetParser;
 import parser.cutter.CutterBuckSizeParser;
-
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.FOBPoint;
-import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Origin;
@@ -66,9 +62,9 @@ public class CbMapping implements IExcelParser{
 		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
 		List<Origin> listOfOrigin   = new ArrayList<Origin>();
-		List<Image> listOfImage   = new ArrayList<Image>();
-		Image imgObj=new Image();
 		List<Material> listOfMaterial = new ArrayList<>();
+		List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+
 	    List<Color> colorList = new ArrayList<Color>();
 	    List<String> repeatRows = new ArrayList<>();
 		List<String> colorsList = new ArrayList<>(); 
@@ -90,7 +86,6 @@ public class CbMapping implements IExcelParser{
 		Product productExcelObj = new Product();
 		String finalResult = null;
 		String productId = null;
-		String Image1=null;
 		String Description1=null;
 		String ListPrice=null;
 		String ListPrice1=null;
@@ -161,6 +156,10 @@ public class CbMapping implements IExcelParser{
 			
 									
 									productExcelObj.setPriceGrids(priceGrids);
+									
+									listOfImprintMethod=cbAttribute.getImprintMethod("Unimprinted");
+									productConfigObj.setImprintMethods(listOfImprintMethod);
+									
 									 sizeObj=cutterBuckSizeParserObj.getSizes(Sizes.toString());
 								     productConfigObj.setSizes(sizeObj);
 								     
@@ -173,11 +172,9 @@ public class CbMapping implements IExcelParser{
 									ProductRelationalSKU=cbAttribute.getSKU(SKUList,sizeListSKU,colorsListSKU);
 									productExcelObj.setProductRelationSkus(ProductRelationalSKU);
 									
-									productExcelObj.setDescription(Description.toString());
+									productExcelObj.setDescription(Description.toString().replace("~",". "));
 									productExcelObj.setProductConfigurations(productConfigObj);
-									
-									
-						
+															
 
 									int num = postServiceImpl.postProduct(
 											accessToken, productExcelObj,
@@ -205,7 +202,7 @@ public class CbMapping implements IExcelParser{
 								    Sizes = new StringBuilder();
 								    colorsListSKU = new ArrayList<>();
 								    sizeListSKU = new ArrayList<>();
-								    listOfImage   = new ArrayList<Image>();
+								    listOfImprintMethod = new ArrayList<>();
 									productConfigObj = new ProductConfigurations();
 								
 								}
@@ -309,12 +306,6 @@ public class CbMapping implements IExcelParser{
 							
 							break;
 						   case 10://High Res Image
-						   String Image2=cell.getStringCellValue();
-						    imgObj.setImageURL(Image1);
-						    listOfImage.add(imgObj);
-						    imgObj.setImageURL(Image2);
-						    listOfImage.add(imgObj);
-						    productExcelObj.setImages(listOfImage);
 					
 							break;
 							
@@ -472,7 +463,6 @@ public class CbMapping implements IExcelParser{
 		    SKUList = new ArrayList<>();
 		    Sizes = new StringBuilder();
 		    sizeListSKU = new ArrayList<>();
-		    listOfImage   = new ArrayList<Image>();
 			productConfigObj = new ProductConfigurations();
 
 

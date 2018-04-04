@@ -5,6 +5,7 @@ import java.util.List;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Configurations;
+import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Inventory;
 import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductSKUConfiguration;
@@ -32,8 +33,17 @@ public class CBAttributeParser {
 	    	List<Combo> combolist = new ArrayList<Combo>();
 	    	String ComboColorArr[]=	colorsValue.split("/");
 	    	colorObj.setAlias(colorsValue.trim());
-	    	colorObj.setName(CBlookup.COLOR_MAP.get(ComboColorArr[0].trim()));
+	    	if(CBlookup.COLOR_MAP.containsKey(ComboColorArr[0])){
+	    		combovalue.setName(CBlookup.COLOR_MAP.get(ComboColorArr[0].trim()));
+	    	}else{
+	    		combovalue.setName("Other");	
+	    	}
+	    	if(CBlookup.COLOR_MAP.containsKey(ComboColorArr[1])){
 	    	combovalue.setName(CBlookup.COLOR_MAP.get(ComboColorArr[1].trim()));
+	    	}else{
+	    		combovalue.setName("Other");	
+
+	    	}
 	    	combolist.add(combovalue);
 	    	colorObj.setCombos(combolist);
 	    	colorList.add(colorObj);
@@ -97,7 +107,7 @@ public class CBAttributeParser {
         Value valObj=new Value();
 		
 	    String skuArr[]=sKUList.toString().replace("[", "").replace("]", "").split(",");
-	    String prodNoArr[]=sizelist.toString().replace("[", "").replace("]", "").split(",");
+	    String sizeNoArr[]=sizelist.toString().replace("[", "").replace("]", "").split(",");
 	    String colorArr[]=colorsList.toString().replace("[", "").replace("]", "").split(",");
 
 	    for(int i=0;i<skuArr.length;i++){
@@ -116,13 +126,22 @@ public class CBAttributeParser {
 	    	confgObj.setValue(listOfValue);
 	    	listSkuConfigs.add(confgObj);
 	    	}
-	    	if(!prodNoArr[i].isEmpty())
+	    	sizeNoArr[i]=sizeNoArr[i].trim().replace("XXXL","3XL");
+	    	if(!sizeNoArr[i].isEmpty())
 	    	{
 	    	valObj=new Value();
 	    	listOfValue= new ArrayList<>();
 	    	confgObj = new ProductSKUConfiguration();
+	    	if(sizeNoArr[i].trim().length()==4)
+	    	{
+	    		sizeNoArr[i]=sizeNoArr[i].trim();
+	    		sizeNoArr[i]=sizeNoArr[i].substring(0, 2)+"x"+ sizeNoArr[i].substring(2, sizeNoArr[i].length()) ;
+
+		    	confgObj.setCriteria("Apparel-Waist/Inseam");
+	    	}else{
 	    	confgObj.setCriteria("Standard & Numbered");
-	    	valObj.setValue(prodNoArr[i]);
+	    	}
+	    	valObj.setValue(sizeNoArr[i]);
 		    listOfValue.add(valObj);
 		    confgObj.setValue(listOfValue);
 		    listSkuConfigs.add(confgObj);
@@ -146,5 +165,18 @@ public class CBAttributeParser {
 		inventory.setInventoryQuantity("");
 		inventory.setInventoryStatus("");
 		return inventory;
+	}
+
+	public List<ImprintMethod> getImprintMethod(String ImprintMethod) {
+
+		List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+		ImprintMethod imprintMethdObj=new ImprintMethod();
+
+		imprintMethdObj.setAlias("Unimprinted");
+		imprintMethdObj.setType("Unimprinted");
+		
+		listOfImprintMethod.add(imprintMethdObj);
+		
+		return listOfImprintMethod;
 	}
 }
