@@ -129,39 +129,48 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 
 	public List<ImprintMethod> getImprintMethodValues(String imprintMethod,
 			List<ImprintMethod> imprintMethodList) {
-		List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
-		imprintMethod = imprintMethod.replace("4-color process", "Full Color");
-		imprintMethod = imprintMethod.replace("Pad printed", "Pad Print");
-		imprintMethod = imprintMethod.replace("Screen printed", "Silkscreen");
-		imprintMethod = imprintMethod.replace("Full-color digital",
-				"Full Color");
-
+		//String tempAlias=imprintMethod;
+		String tempStr[]=imprintMethod.split(",");
 		ImprintMethod imprMethod = new ImprintMethod();
-		ImprintMethod imprMethod1 = new ImprintMethod();
-
-		if (imprintMethod.contains("Laser")) {
-			imprMethod = new ImprintMethod();
-			imprMethod.setAlias("Laser Engraved");
-			imprMethod.setType("Laser Engraved");
-			imprintMethodsList.add(imprMethod);
+		//List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
+		//////////////
+		if(CollectionUtils.isEmpty(imprintMethodList)){
+			imprintMethodList = new ArrayList<>();
 		}
-
-		else {
-			List<String> finalImprintValues = getImprintValue(imprintMethod
+		for (String impValue : tempStr) {
+			String tempAlias=impValue.trim();
+			impValue=impValue.toUpperCase().trim();
+			impValue = impValue.replace("4-COLOR PROCESS", "Full Color");
+			impValue = impValue.replace("PAD PRINTED", "Pad Print");
+			impValue = impValue.replace("SCREEN PRINTED", "Silkscreen");
+			impValue = impValue.replace("FULL-COLOR DIGITAL","Full Color");
+			if (impValue.contains("LASER")){
+				impValue="Laser Engraved";
+			}
+			List<String> finalImprintValues = getImprintValue(impValue
 					.toUpperCase().trim());
-			for (String innerValue : finalImprintValues) {
+			if(!CollectionUtils.isEmpty(finalImprintValues)){
+				 String value =  finalImprintValues.get(finalImprintValues.size() -1);
+			//for (String innerValue : finalImprintValues) {
 				imprMethod = new ImprintMethod();
-				imprMethod.setAlias(innerValue);
-				imprMethod.setType(innerValue);
-				imprintMethodsList.add(imprMethod);
-			}
-			if (imprintMethodsList.isEmpty()) {
-				imprMethod1.setAlias("Printed");
-				imprMethod1.setType("Printed");
-				imprintMethodsList.add(imprMethod1);
+				imprMethod.setAlias(tempAlias);
+				imprMethod.setType(value);
+				imprintMethodList.add(imprMethod);
+			//}
+			}else{
+				imprMethod = new ImprintMethod();
+				imprMethod.setAlias(tempAlias);
+				imprMethod.setType("Other");
+				imprintMethodList.add(imprMethod);
 			}
 		}
-		return imprintMethodsList;
+		///////////////////
+		if (imprintMethodList.isEmpty()) {
+			imprMethod.setAlias("Unimprinted");
+			imprMethod.setType("Unimprinted");
+			imprintMethodList.add(imprMethod);
+		}
+		return imprintMethodList;
 	}
 
 	public List<String> getImprintValue(String value) {
@@ -174,15 +183,18 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		return finalImprintValues;
 	}
 
-	public ProductConfigurations addImprintMethod(
-			ProductConfigurations productConfigObj) {
-		List<ImprintMethod> imprintMethodList = new ArrayList<>();
+	public List<ImprintMethod> addUNImprintMethod(
+			List<ImprintMethod> imprintMethodList) {
+	//	List<ImprintMethod> imprintMethodList = new ArrayList<>();
+		if(CollectionUtils.isEmpty(imprintMethodList)){
+			imprintMethodList = new ArrayList<>();
+		}
 		ImprintMethod imprintMethodObj = new ImprintMethod();
 		imprintMethodObj.setAlias("Unimprinted");
 		imprintMethodObj.setType("Unimprinted");
 		imprintMethodList.add(imprintMethodObj);
-		productConfigObj.setImprintMethods(imprintMethodList);
-		return productConfigObj;
+		//productConfigObj.setImprintMethods(imprintMethodList);
+		return imprintMethodList;
 	}
 
 	public LookupServiceData getLookupServiceDataObj() {
@@ -406,6 +418,9 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 	public List<PriceGrid> getImprintMethodUpcharges(Map<String, String> upchargeValues,List<ImprintMethod> imprintMethodList,List<PriceGrid> existingPriceGrid){
 		String imprintMethods = imprintMethodList.stream().map(ImprintMethod::getAlias)
 															.collect(Collectors.joining(","));
+		String strImpArr[]=imprintMethods.split(",");
+		for (String impMtdValue : strImpArr) {
+		
 		for (Map.Entry<String, String>  values: upchargeValues.entrySet()) {
 			 String upchargeType =  values.getKey();
 			 String[] upchareVal = values.getValue().split("_");
@@ -435,8 +450,10 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 				 upUsageType="Per Order";
 			 }
 			existingPriceGrid = solidDimensionPriceGridParser.getUpchargePriceGrid("1", priceVal, disCount, "Imprint method", "n",
-					"USD", imprintMethods, upChargeTypeVal, upUsageType,1, "1___1___1___1___1___1___1___1___1___1", existingPriceGrid);
+					"USD", impMtdValue, upChargeTypeVal, upUsageType,1, "1___1___1___1___1___1___1___1___1___1", existingPriceGrid);
 		}
+	}
+		
 		return existingPriceGrid;
 	}
 	public List<PriceGrid> getAdditionalColorRunUpcharge(String discountCode,String quantity,String prices,List<PriceGrid> existingPriceGrid,String upchargeType){
