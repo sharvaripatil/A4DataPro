@@ -12,6 +12,9 @@ import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
+import com.a4tech.product.model.Size;
+import com.a4tech.product.model.Value;
+import com.a4tech.product.model.Values;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.LookupData;
 
@@ -22,7 +25,7 @@ public class SolidDimensionPriceGridParser {
 		    String listOfQuan, String discountCodes,
 			String currency, String priceInclude, boolean isBasePrice,
 			String qurFlag, String priceName, String criterias,String priceUnitArr,
-			List<PriceGrid> existingPriceGrid) {
+			List<PriceGrid> existingPriceGrid,String sizeValues){
 		_LOGGER.info("Enter Price Grid Parser class");
 		try{
 		Integer sequence = 1;
@@ -66,7 +69,7 @@ public class SolidDimensionPriceGridParser {
 		}
 		priceGrid.setPrices(listOfPrice);
 		if (criterias != null && !criterias.isEmpty()) {
-			configuration = getConfigurations(criterias,priceName);
+			configuration = getConfigurations(criterias,priceName,sizeValues);
 			priceGrid.setPriceConfigurations(configuration);
 		}
 		
@@ -112,7 +115,7 @@ public class SolidDimensionPriceGridParser {
 		return listOfPrices;
 	}
 
-	public List<PriceConfiguration> getConfigurations(String criterias,String UpchargeName) {
+	public List<PriceConfiguration> getConfigurations(String criterias,String UpchargeName,String sizeValues) {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
 		String[] config = null;
 		PriceConfiguration configs = null;
@@ -145,6 +148,14 @@ public class SolidDimensionPriceGridParser {
 				}
 			}
 
+		}else if(criterias.toUpperCase().equals("SIZE")){
+			String arr[]=sizeValues.split("#####");
+			List<Object> objList=new ArrayList<>();
+			objList =SolidDimesionAttributeParser.getValuesObj(arr[0], arr[1], arr[2],objList);
+			configs = new PriceConfiguration();
+			configs.setCriteria(criterias);
+			configs.setValue(objList);
+			priceConfiguration.add(configs);
 		} else {
 			
 			configs = new PriceConfiguration();
@@ -222,7 +233,7 @@ public class SolidDimensionPriceGridParser {
 
 		priceGrid.setPrices(listOfPrice);
 		if (upChargeCriterias != null && !upChargeCriterias.isEmpty()) {
-			configuration = getConfigurations(upChargeCriterias,upChargeName);
+			configuration = getConfigurations(upChargeCriterias,upChargeName,null);
 		}
 		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
@@ -231,5 +242,28 @@ public class SolidDimensionPriceGridParser {
 		}
 		return existingPriceGrid;
 	}
+	public List<PriceGrid> getPriceGridsQur( ) 
+	{
+		List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
+		try{
+			Integer sequence = 1;
+			//List<PriceConfiguration> configuration = null;
+			PriceGrid priceGrid = new PriceGrid();
+			priceGrid.setIsBasePrice(true);
+			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
+			priceGrid.setDescription(ApplicationConstants.CONST_STRING_EMPTY);
+			priceGrid.setPriceIncludes(ApplicationConstants.CONST_STRING_EMPTY);
+			priceGrid.setSequence(sequence);
+			priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
+			List<Price>	listOfPrice = new ArrayList<Price>();
+			priceGrid.setPrices(listOfPrice);
+			//priceGrid.setPriceConfigurations(configuration);
+			newPriceGrid.add(priceGrid);
+	}catch(Exception e){
+		_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
+	}
+		_LOGGER.info("PriceGrid Processed");
+		return newPriceGrid;
+}
 
 }

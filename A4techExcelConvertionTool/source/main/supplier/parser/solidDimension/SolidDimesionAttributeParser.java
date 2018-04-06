@@ -96,8 +96,10 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		
 	}
 	public List<Values> getValues(String dimensionValue, String dimensionUnits,
-			String dimensionType) {
-
+			String dimensionType, List<Values> valuesList) {
+		if(CollectionUtils.isEmpty(valuesList)){
+			valuesList=new ArrayList<>();
+		}
 		String dimensionValueArr[] = dimensionValue
 				.split(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 		String dimensionUnitsArr[] = dimensionUnits
@@ -106,7 +108,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 				.split(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 
 		ArrayList<Value> valueList = new ArrayList<Value>();
-		List<Values> valueslist = new ArrayList<Values>();
+		//List<Values> valueslist = new ArrayList<Values>();
 
 		Values valuesObj = new Values();
 		Value valueObj = null;
@@ -122,9 +124,9 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		}
 
 		valuesObj.setValue(valueList);
-		valueslist.add(valuesObj);
+		valuesList.add(valuesObj);
 
-		return valueslist;
+		return valuesList;
 	}
 
 	public List<ImprintMethod> getImprintMethodValues(String imprintMethod,
@@ -458,8 +460,14 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 	}
 	public List<PriceGrid> getAdditionalColorRunUpcharge(String discountCode,String quantity,String prices,List<PriceGrid> existingPriceGrid,String upchargeType){
 	  
-		
-		existingPriceGrid = solidDimensionPriceGridParser.getUpchargePriceGrid(quantity, prices, discountCode, "Additional Colors", "n",
+		int qantyLen=prices.split("___").length;
+		String quantityTemp = "1";
+		if(qantyLen>1){
+		for (int i = 2; i <=qantyLen; i++) {
+			quantityTemp=quantityTemp.concat("___")+Integer.toString(i);
+		}
+		}
+		existingPriceGrid = solidDimensionPriceGridParser.getUpchargePriceGrid(quantityTemp, prices, discountCode, "Additional Colors", "n",
 				"USD", "Additional Color",upchargeType, "Other", 1, "1___1___1___1___1___1___1___1___1___1",  existingPriceGrid);
 	   
 		return existingPriceGrid;
@@ -651,5 +659,36 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		this.solidDimensionPriceGridParser = solidDimensionPriceGridParser;
 	}
    
-	
+	public static List<Object> getValuesObj(String dimensionValue, String dimensionUnits,
+			String dimensionType, List<Object> valuesList) {
+		if(CollectionUtils.isEmpty(valuesList)){
+			valuesList=new ArrayList<>();
+		}
+		String dimensionValueArr[] = dimensionValue
+				.split(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+		String dimensionUnitsArr[] = dimensionUnits
+				.split(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+		String dimensionTypeArr[] = dimensionType
+				.split(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+
+		//ArrayList<Value> valueList = new ArrayList<Value>();
+		//List<Values> valueslist = new ArrayList<Values>();
+
+		Value valueObj = null;
+
+		for (int i = 0; i < dimensionValueArr.length; i++) {
+			valueObj = new Value();
+			valueObj.setValue(dimensionValueArr[i]);
+			valueObj.setUnit(GoldstarCanadaLookupData.Dimension1Units
+					.get(dimensionUnitsArr[i]));
+			valueObj.setAttribute(GoldstarCanadaLookupData.Dimension1Type
+					.get(dimensionTypeArr[i]));
+			valuesList.add(valueObj);
+		}
+
+		//valuesList.setValue(valueList);
+		//aluesList.add(valuesObj);
+
+		return valuesList;
+	}
 }
