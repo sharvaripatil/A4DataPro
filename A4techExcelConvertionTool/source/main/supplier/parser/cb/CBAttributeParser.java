@@ -75,19 +75,19 @@ public class CBAttributeParser {
 
 	    String colorArr[]=colorsList.toString().replace("[", "").replace("]", "").split(",");
 
-	    for(int i=0;i<prodNoArr.length;i++)
+	    for(int prodValue=0;prodValue<prodNoArr.length;prodValue++)
 	    {
 	    	listOfConf= new ArrayList<>();
 			ProdNoObj=new ProductNumber();
 	    	listOfValue= new ArrayList<>();
 			confObj=new Configurations(); 
 			
-	   		listOfValue.add(colorArr[i]);
+	   		listOfValue.add(colorArr[prodValue]);
 			confObj.setCriteria("Product Color");
 			confObj.setValue(listOfValue);
 			listOfConf.add(confObj);
 			
-			ProdNoObj.setProductNumber(prodNoArr[i]);
+			ProdNoObj.setProductNumber(prodNoArr[prodValue]);
 			ProdNoObj.setConfigurations(listOfConf);
 
 			listOfProductNo.add(ProdNoObj);
@@ -111,38 +111,38 @@ public class CBAttributeParser {
 	    String sizeNoArr[]=sizelist.toString().replace("[", "").replace("]", "").split(",");
 	    String colorArr[]=colorsList.toString().replace("[", "").replace("]", "").split(",");
 
-	    for(int i=0;i<skuArr.length;i++){
+	    for(int skuValue=0;skuValue<skuArr.length;skuValue++){
 	    	productSku = new ProductSkus();
 	    	Inventory inventory = getInventory();
 	    	listOfValue= new ArrayList<>();
 	    	listSkuConfigs = new ArrayList<>();
-	    	productSku.setSKU(skuArr[i]);
+	    	productSku.setSKU(skuArr[skuValue]);
 	    	productSku.setHazmat("UNSPECIFIED");
 	    	
-	    	if(!colorArr[i].isEmpty()){
+	    	if(!colorArr[skuValue].isEmpty()){
 	    		listOfValue= new ArrayList<>();
 	    		confgObj = new ProductSKUConfiguration();
 	    	confgObj.setCriteria("Product Color");	
-	    	listOfValue.add(colorArr[i]);
+	    	listOfValue.add(colorArr[skuValue]);
 	    	confgObj.setValue(listOfValue);
 	    	listSkuConfigs.add(confgObj);
 	    	}
-	    	sizeNoArr[i]=sizeNoArr[i].trim().replace("XXXL","3XL");
-	    	if(!sizeNoArr[i].isEmpty())
+	    	sizeNoArr[skuValue]=sizeNoArr[skuValue].trim().replace("XXXL","3XL");
+	    	if(!sizeNoArr[skuValue].isEmpty())
 	    	{
 	    	valObj=new Value();
 	    	listOfValue= new ArrayList<>();
 	    	confgObj = new ProductSKUConfiguration();
-	    	if(sizeNoArr[i].trim().length()==4)
+	    	if(sizeNoArr[skuValue].trim().length()==4)
 	    	{
-	    		sizeNoArr[i]=sizeNoArr[i].trim();
-	    		sizeNoArr[i]=sizeNoArr[i].substring(0, 2)+"x"+ sizeNoArr[i].substring(2, sizeNoArr[i].length()) ;
+	    		sizeNoArr[skuValue]=sizeNoArr[skuValue].trim();
+	    		sizeNoArr[skuValue]=sizeNoArr[skuValue].substring(0, 2)+"x"+ sizeNoArr[skuValue].substring(2, sizeNoArr[skuValue].length()) ;
 
 		    	confgObj.setCriteria("Apparel-Waist/Inseam");
 	    	}else{
 	    	confgObj.setCriteria("Standard & Numbered");
 	    	}
-	    	valObj.setValue(sizeNoArr[i]);
+	    	valObj.setValue(sizeNoArr[skuValue]);
 		    listOfValue.add(valObj);
 		    confgObj.setValue(listOfValue);
 		    listSkuConfigs.add(confgObj);
