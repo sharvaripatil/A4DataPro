@@ -34,9 +34,9 @@ public class CBAttributeParser {
 	    	String ComboColorArr[]=	colorsValue.split("/");
 	    	colorObj.setAlias(colorsValue.trim());
 	    	if(CBlookup.COLOR_MAP.containsKey(ComboColorArr[0])){
-	    		combovalue.setName(CBlookup.COLOR_MAP.get(ComboColorArr[0].trim()));
+	    		colorObj.setName(CBlookup.COLOR_MAP.get(ComboColorArr[0].trim()));
 	    	}else{
-	    		combovalue.setName("Other");	
+	    		colorObj.setName("Other");	
 	    	}
 	    	if(CBlookup.COLOR_MAP.containsKey(ComboColorArr[1])){
 	    	combovalue.setName(CBlookup.COLOR_MAP.get(ComboColorArr[1].trim()));
@@ -44,6 +44,7 @@ public class CBAttributeParser {
 	    		combovalue.setName("Other");	
 
 	    	}
+	    	combovalue.setType("secondary");
 	    	combolist.add(combovalue);
 	    	colorObj.setCombos(combolist);
 	    	colorList.add(colorObj);

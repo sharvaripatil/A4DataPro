@@ -121,8 +121,8 @@ public class CbMapping implements IExcelParser{
 						Cell cell = cellIterator.next();
 					 //   xid = null;
 					    columnIndex = cell.getColumnIndex();
-					    cell2Data = nextRow.getCell(3);
-					    String newXID=CommonUtility.getCellValueStrinOrLong(cell2Data);
+					    cell2Data = nextRow.getCell(14);
+					    String newXID=CommonUtility.getCellValueStrinOrInt(cell2Data);
 						if (columnIndex + 1 == 1) {
 							if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 								xid = cell.getStringCellValue().trim();
@@ -435,7 +435,9 @@ public class CbMapping implements IExcelParser{
 			productExcelObj.setProductRelationSkus(ProductRelationalSKU);
 
 			productExcelObj.setPriceGrids(priceGrids);
-			productExcelObj.setDescription(Description.toString());
+			
+			productExcelObj.setDescription(Description.toString().replace("~",". "));
+			
 			productExcelObj.setProductConfigurations(productConfigObj);
 
 			int num = postServiceImpl.postProduct(accessToken, productExcelObj,
