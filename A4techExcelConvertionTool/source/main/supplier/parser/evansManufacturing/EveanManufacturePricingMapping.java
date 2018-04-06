@@ -1,15 +1,12 @@
 package parser.evansManufacturing;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -17,42 +14,28 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.product.model.Apparel;
-import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
-import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.model.Size;
-import com.a4tech.product.model.Value;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 public class EveanManufacturePricingMapping{
 	private static final Logger _LOGGER = Logger.getLogger(EveanManufacturePricingMapping.class);
-    private EveansManufacturePriceGridParser proGolfPriceGridParser;
+    private EveansManufacturePriceGridParser eveanManufacturePriceGridParser;
 	public Map<String, Product> readMapper(Map<String, Product> productMaps, Sheet sheet) {
 
 		int columnIndex = 0;
 
 		Set<String> productXids = new HashSet<String>();
 		List<String> repeatRows = new ArrayList<>();
-		//Product productExcelObj = new Product();
-		ProductConfigurations productConfig = null;
 		String productId = null;
-		//String xid = null;
-	   //String prdXid = null;
 		StringJoiner listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		StringJoiner listOfPrices   = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		StringJoiner listOfDiscount = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		String priceType    = "";
-		String  type  = "";
 		String headerName ="";
 		List<String> productIds = new ArrayList<>();
 		List<PriceGrid> priceGrids = null;
-		//String skuId = "";
 		boolean isFirstProduct = true;
-		//List<String> basePriceGrids = new ArrayList<>();
-		String priceUnitName = "";
 		try {
 			Row  headerRow = null;
 			Iterator<Row> iterator = sheet.iterator();
@@ -65,21 +48,8 @@ public class EveanManufacturePricingMapping{
 						continue;
 					}
 					productId = getSkuValue(nextRow);
-					/*if (nextRow.getRowNum() == ApplicationConstants.CONST_INT_VALUE_ONE) {
-						productId = getProductXid(nextRow);
-						Cell cell1 = nextRow.getCell(1);
-						skuId = CommonUtility.getCellValueStrinOrInt(cell1);
-					}*/	
-					//prdXid = CommonUtility.getCellValueStrinOrInt(cell1);
-					// this condition used to check xid is present list or not ,
-					// if xid present in Map means already fetch product from
-					// Map
-					/*if (!productIds.contains(productId)) {
-						existingProduct = productMaps.get(productId);
-					}*/
 					if(isFirstProduct){
 						existingProduct = productMaps.get(productId);
-						productConfig = existingProduct.getProductConfigurations();
 						priceGrids = existingProduct.getPriceGrids();
 						isFirstProduct = false;
 					}
@@ -107,22 +77,16 @@ public class EveanManufacturePricingMapping{
 									if (!StringUtils.isEmpty(existingProduct.getExternalProductId())) {
 									}
 									existingProduct.setPriceType("L");
-									if(countNoOfBasePriceGrids(priceGrids) == ApplicationConstants.CONST_INT_VALUE_ONE){
-										priceGrids = removeConfiguration(priceGrids);
-									}
 									existingProduct.setPriceGrids(priceGrids);
-									existingProduct.setProductConfigurations(productConfig);
 									productMaps.put(existingProduct.getProductLevelSku(), existingProduct);
 									repeatRows.clear();
 									existingProduct = productMaps.get(productId);
-									productConfig = existingProduct.getProductConfigurations();
 									priceGrids = existingProduct.getPriceGrids();
 									//priceGrids = new ArrayList<>();
 									//basePriceGrids = new ArrayList<>();
 									 listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 									 listOfPrices   = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 									 listOfDiscount = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-									 priceUnitName = "";
 								}
 								if (!productXids.contains(productId)) {
 									productXids.add(productId);
@@ -132,7 +96,6 @@ public class EveanManufacturePricingMapping{
 							 listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							 listOfPrices   = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 							 listOfDiscount = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-							 priceUnitName = "";
 						} else {
 							if (productXids.contains(productId) && repeatRows.size() != 1) {
 								if (isRepeateColumn(columnIndex + 1)) {
@@ -141,110 +104,57 @@ public class EveanManufacturePricingMapping{
 							}
 						}
 						headerName = getHeaderName(columnIndex, headerRow);
-						switch (headerName) {
-						case "Price_Type":
-                         priceType = cell.getStringCellValue();
+						switch (columnIndex+1) {
+						case 1:
 							break;
-						case "type":
-							type = cell.getStringCellValue();
+						case 2:
 							break;
-						case "price_unit":
-							priceUnitName = cell.getStringCellValue();
+						case 3:
 							break;
-						case "Price_1": //price
-						case "Price_2":
-						case "Price_3":
-						case "Price_4":
-						case "Price_5":
-							String listPrice = CommonUtility.getCellValueDouble(cell);
-							if(!StringUtils.isEmpty(listPrice) && !type.equalsIgnoreCase("special")){
-								listOfPrices.add(listPrice);
+						case 4: //
+							break;
+						case 5://quantity
+						case 8:
+						case 11:
+						case 14:
+						case 17:
+						case 20:
+							String priceQty = CommonUtility.getCellValueDouble(cell);
+							if(!StringUtils.isEmpty(priceQty)){
+								
+								listOfQuantity.add(priceQty);
 							}
 							break;
-						case "Qty_1_Min": //quantity
-						case "Qty_2_Min":
-						case "Qty_3_Min":
-						case "Qty_4_Min": 
-						case "Qty_5_Min": 
-							String priceQty = CommonUtility.getCellValueStrinOrInt(cell);
-							if(!StringUtils.isEmpty(priceQty)&& !type.equalsIgnoreCase("special")){
-								listOfQuantity.add(priceQty);
+						case 6: //price
+						case 9:
+						case 12: 
+						case 15:
+						case 18:
+						case 21:
+							String listPrice = CommonUtility.getCellValueStrinOrInt(cell);
+							if(!StringUtils.isEmpty(listPrice)){
+								listOfPrices.add(listPrice);
 							}
 						break;
 						
-						case "Code_1": //discount code
-						case "Code_2":
-						case "Code_3":
-						case "Code_4": 
-						case "Code_5": 
+						case 7: //discount code
+						case 10:
+						case 13:
+						case 16: 
+						case 19: 
+						case 22:
 							String discountCode = CommonUtility.getCellValueStrinOrInt(cell);
-							if(!StringUtils.isEmpty(discountCode) && !type.equalsIgnoreCase("special")){
+							if(!StringUtils.isEmpty(discountCode)){
 								listOfDiscount.add(discountCode);
 							}
 						break;
 						} // end inner while loop
 
-					}
-					boolean isQurFlag = false;
-					String basePriceName = "";
-					String basePriceCriteria = "";
-					String imprintMethodVal = "";
-					if("call_for_price".equalsIgnoreCase(priceType)){
-						isQurFlag = true;
-					}//decorative
-					if("decorative".equalsIgnoreCase(type)){
-						basePriceName = "decorative";
-						basePriceCriteria = "decorative";
-						imprintMethodVal = "decorative";
-					} else if(type.equalsIgnoreCase("blank")) {
-						basePriceCriteria = "UNIMPRINTED";
-						imprintMethodVal = "UNIMPRINTED";
-					}
-					if(StringUtils.isEmpty(priceUnitName)){
-						priceUnitName = "";
-					}
-					    if(!type.equalsIgnoreCase("special") && !"special_blank".equalsIgnoreCase(type)){
-					    //	String imprintMethodvals = "";
-					    	/*if(basePriceCriteria.equals("decorative")){
-					    		// caller method used to collecting existing imprint methods values if type is decorative
-					    		 imprintMethodvals = getImprintMethodValues(productConfig.getImprintMethods());
-					    		if(StringUtils.isEmpty(imprintMethodvals)){
-					    			List<ImprintMethod> imprintMethods =proGolfAttributeParser.
-							    			getProductImprintMethods(CommonUtility.getValuesOfArray("Imprint", ","), 
-							    					productConfig.getImprintMethods());
-					    			productConfig.setImprintMethods(imprintMethods);
-					    			basePriceCriteria = "Imprint";
-					    		} else {
-					    			basePriceCriteria = imprintMethodvals;
-					    		}
-					    	}*/
-					    	basePriceCriteria = "IMMD"+":"+basePriceCriteria;
-					    	if(existingProduct.getProductDataSheet().equals("isSizePrices")){
-					    		List<String> sizeAttributeVals = getAllSizeValues(productConfig.getSizes());
-					    		List<String> sizeList1 = new LinkedList<String>(Arrays.asList("XS","S","M","L","XL"));
-					    	    String priceName1 = getSizeCommonValues(sizeAttributeVals, sizeList1);
-					    		basePriceCriteria = "Size"+":"+priceName1;
-					    		priceGrids = proGolfPriceGridParser.getBasePriceGrid(listOfPrices.toString(), 
-										listOfQuantity.toString(), listOfDiscount.toString(), "USD",
-										         "", true, isQurFlag, priceName1,basePriceCriteria,priceGrids,priceUnitName,"");
-						    	//basePriceGrids.add("1");
-						    	List<String> sizeList2 =  new LinkedList<String>(Arrays.asList("2XL","3XL","4XL"));
-						    	String priceName2 = getSizeCommonValues(sizeAttributeVals, sizeList2);
-						    	basePriceCriteria = "Size"+":"+priceName2;//as per feedback qur flag is true
-					    		priceGrids = proGolfPriceGridParser.getBasePriceGrid(listOfPrices.toString(), 
-										listOfQuantity.toString(), listOfDiscount.toString(), "USD",
-										         "", true, true, priceName2,basePriceCriteria,priceGrids,priceUnitName,"");
-						    	//basePriceGrids.add("1");
-					    		existingProduct.setProductDataSheet("");
-					    	} else{
-					    		priceGrids = proGolfPriceGridParser.getBasePriceGrid(listOfPrices.toString(), 
-										listOfQuantity.toString(), listOfDiscount.toString(), "USD",
-										         "", true, isQurFlag, basePriceName,basePriceCriteria,priceGrids,priceUnitName,"");
-						    //	basePriceGrids.add("1");
-					    	}
-					    	
-					    
-					    }					
+					}	
+					priceGrids = eveanManufacturePriceGridParser.getBasePriceGrid(listOfPrices.toString(), listOfQuantity.toString(),
+							listOfDiscount.toString(), "USD", existingProduct.getDistributorOnlyComments(), true, false,
+							"", "", priceGrids, "", "");
+					existingProduct.setDistributorOnlyComments("");
 				} catch (Exception e) {
 					_LOGGER.error(
 							"Error while Processing ProductId and cause :" + existingProduct.getExternalProductId()
@@ -256,11 +166,7 @@ public class EveanManufacturePricingMapping{
 			}
 			repeatRows.clear();
 			existingProduct.setPriceType("L");
-			if(countNoOfBasePriceGrids(priceGrids) == ApplicationConstants.CONST_INT_VALUE_ONE){
-				priceGrids = removeConfiguration(priceGrids);
-			}
 			existingProduct.setPriceGrids(priceGrids);
-			existingProduct.setProductConfigurations(productConfig);
 			productMaps.put(existingProduct.getProductLevelSku(), existingProduct);
 			return productMaps;
 		} catch (Exception e) {
@@ -291,56 +197,18 @@ public class EveanManufacturePricingMapping{
 		}
 		return productXid;
 	}*/
-	private List<PriceGrid> removeConfiguration(List<PriceGrid> oldPriceGrid){
-		List<PriceGrid> newPriceGrid = new ArrayList<>();
-		 for (PriceGrid priceGrid : oldPriceGrid) {
-			   if(priceGrid.getIsBasePrice()){
-				   priceGrid.setPriceConfigurations(new ArrayList<>());
-				   newPriceGrid.add(priceGrid);
-			   } else {
-				   newPriceGrid.add(priceGrid);
-			   }
-			  
-		}
-		return newPriceGrid;
-	}
+	
 	private String getSkuValue(Row row){
 		Cell xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
 		String skuVal = CommonUtility.getCellValueStrinOrInt(xidCell);
 		return skuVal;
 	}
-  /*private String getImprintMethodValues(List<ImprintMethod> imprintMethods){
-	  if(CollectionUtils.isEmpty(imprintMethods)){
-		  return "";
-	  }
-		String imprintMethodValues = imprintMethods.stream().map(ImprintMethod::getAlias)
-				.collect(Collectors.joining(","));
-		return imprintMethodValues;
-  }*/
-   private List<String> getAllSizeValues(Size sizeObj){
-	 Apparel apparealObj = sizeObj.getApparel();
-	List<Value> listOfValues = apparealObj.getValues();
-	List<String> sizeAttributeVals = listOfValues.stream().map(Value::getValue).collect(Collectors.toList());
-	   return sizeAttributeVals;
-   }
-   private String getSizeCommonValues(List<String> supplierSizes,List<String> standrdSizes){
-	   standrdSizes.retainAll(supplierSizes);
-	   String finalSizeValues = standrdSizes.stream().collect(Collectors.joining(","));
-	   return finalSizeValues;
-   }
-   private int countNoOfBasePriceGrids(List<PriceGrid> priceGrid){
-   	int basePriceCount = 0;
-   	for (PriceGrid priceGrid2 : priceGrid) {
-			if(priceGrid2.getIsBasePrice() == true){
-				basePriceCount++;
-			}
-		}
-   	return basePriceCount;
-   }
-	public EveansManufacturePriceGridParser getProGolfPriceGridParser() {
-		return proGolfPriceGridParser;
-	}
-	public void setProGolfPriceGridParser(EveansManufacturePriceGridParser proGolfPriceGridParser) {
-		this.proGolfPriceGridParser = proGolfPriceGridParser;
-	}
+ 
+public EveansManufacturePriceGridParser getEveanManufacturePriceGridParser() {
+	return eveanManufacturePriceGridParser;
+}
+public void setEveanManufacturePriceGridParser(EveansManufacturePriceGridParser eveanManufacturePriceGridParser) {
+	this.eveanManufacturePriceGridParser = eveanManufacturePriceGridParser;
+}
+	
 }

@@ -6,16 +6,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringJoiner;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.product.model.PriceGrid;
+import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.util.ApplicationConstants;
@@ -24,6 +23,7 @@ import com.a4tech.util.CommonUtility;
 public class EveanManufactureVariationMapping{
 	private static final Logger _LOGGER = Logger.getLogger(EveanManufactureVariationMapping.class);
     private EveansManufacturePriceGridParser proGolfPriceGridParser;
+    private EveanManufactureAttributeParser eveanManufacturAttriParser;
 	
 	public Map<String, Product> readMapper(Map<String, Product> productMaps, Sheet sheet) {
 
@@ -31,19 +31,15 @@ public class EveanManufactureVariationMapping{
 
 		Set<String> productXids = new HashSet<String>();
 		List<String> repeatRows = new ArrayList<>();
-		ProductConfigurations productConfigObj = new ProductConfigurations();
+		ProductConfigurations productConfigObj = null;
 		Product productExcelObj = new Product();
 		//String productId = null;
 		String xid = null;
 		String prdXid = null;
-		List<String> productIds = new ArrayList<>();
-		String headerName =  "";
-		StringJoiner listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		StringJoiner listOfPrices   = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		StringJoiner listOfDiscount = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		String priceType = "";
-		List<PriceGrid> priceGrids = null;
-		boolean isSinglePriceGrid = true;// this sheet has contain single price grid only 
+		List<String> productIds = new ArrayList<>(); 
+		List<String> colorsList = new ArrayList<>();
+		List<String> imageList = new ArrayList<>();
+		StringBuilder colorImage = new StringBuilder();
 		try {
 			Iterator<Row> iterator = sheet.iterator();
 			Product existingProduct = null;
@@ -64,6 +60,7 @@ public class EveanManufactureVariationMapping{
 					// Map
 					if (!productIds.contains(prdXid)) {
 						existingProduct = productMaps.get(prdXid);
+						productConfigObj = existingProduct.getProductConfigurations();
 					}
 					productIds.add(prdXid);
 					Iterator<Cell> cellIterator = nextRow.cellIterator();
@@ -87,22 +84,21 @@ public class EveanManufactureVariationMapping{
 						if (checkXid) {
 							if (!productXids.contains(xid)) {
 								if (nextRow.getRowNum() != 1) {
+									List<Color> colorList = eveanManufacturAttriParser.getProductColor(colorsList);
+									productConfigObj.setColors(colorList);
 									productExcelObj.setProductConfigurations(productConfigObj);
-									if (!StringUtils.isEmpty(productExcelObj.getExternalProductId())) {
-									}
+									List<Image>  imagesList = eveanManufacturAttriParser.getImages(imageList);
+									productExcelObj.setImages(imagesList);
 									productMaps.put(prdXid, existingProduct);
 									repeatRows.clear();
-
+									colorsList = new ArrayList<>();
+									imageList = new ArrayList<>();
 								}
 								if (!productXids.contains(xid)) {
 									productXids.add(xid);
 									repeatRows.add(xid);
 								}
-								priceGrids = existingProduct.getPriceGrids();
-								if(CollectionUtils.isEmpty(priceGrids)){
-									priceGrids = new ArrayList<>();
-								}
-
+								
 							}
 						} else {
 
@@ -112,69 +108,35 @@ public class EveanManufactureVariationMapping{
 								}
 							}
 						}
-						headerName = getHeaderName(columnIndex, headerRow);
-						switch (headerName) {
-						case "ATTR_Golf Ball Model":// XID
-							// ignore this filed since same data present in productionInformation sheet for same product
+						switch (columnIndex+1 ) {
+						case 1:// XID
+						case 2:// MaterialNumber
+						case 3: //price
+						case 4:
 							break;
-
-						case "type":// MaterialNumber
+						case 5:// COLOR
+							String color = cell.getStringCellValue();
+							 colorImage.append(color).append(",");
+							 colorsList.add(color);
 							break;
-						case "Price_1": //price
-						case "Price_2":
-						case "Price_3":
-							String listPrice = CommonUtility.getCellValueDouble(cell);
-							if(!StringUtils.isEmpty(listPrice)){
-								listOfPrices.add(listPrice);
-							}
-							break;
-						case "Qty_1_Min": //quantity
-						case "Qty_2_Min":
-						case "Qty_3_Min":
-						
-							String priceQty = CommonUtility.getCellValueStrinOrInt(cell);
-							if(!StringUtils.isEmpty(priceQty)){
-								listOfQuantity.add(priceQty);
-							}
+						case 6: //Images
+							String image = cell.getStringCellValue();
+							colorImage.append(image);
 						break;
-						
-						case "Code_1": //discount code
-						case "Code_2":
-						case "Code_3":
-						
-							String discountCode = CommonUtility.getCellValueStrinOrInt(cell);
-							if(!StringUtils.isEmpty(discountCode)){
-								listOfDiscount.add(discountCode);
-							} 	
-
-						} // end inner while loop
-
+					} // end inner while loop
 					}
-					if(!priceType.equalsIgnoreCase("special")){
-						if(isSinglePriceGrid){
-							priceGrids = proGolfPriceGridParser.getBasePriceGrid(listOfPrices.toString(), 
-									listOfQuantity.toString(), listOfDiscount.toString(), "USD",
-									         "", true, false, priceType,"",priceGrids,"","");	
-							isSinglePriceGrid = false;
-						}
-				    	
-				    }	
+					imageList.add(colorImage.toString());
+					
 				} catch (Exception e) {
 					_LOGGER.error(
 							"Error while Processing ProductId and cause :" + productExcelObj.getExternalProductId()
 									+ " " + e.getMessage() + "at column number(increament by 1):" + columnIndex);
 				}
 			}
-			 if(!priceType.equalsIgnoreCase("special")){
-			    	priceGrids = proGolfPriceGridParser.getBasePriceGrid(listOfPrices.toString(), 
-							listOfQuantity.toString(), listOfDiscount.toString(), "USD",
-							         "", true, false, priceType,"",priceGrids,"","");	
-			    }	
-			if (!StringUtils.isEmpty(productExcelObj.getExternalProductId())) {
+						if (!StringUtils.isEmpty(productExcelObj.getExternalProductId())) {
 
 			}
 			repeatRows.clear();
-			existingProduct.setPriceGrids(priceGrids);
 			productMaps.put(prdXid, existingProduct);
 			return productMaps;
 		} catch (Exception e) {
@@ -193,8 +155,7 @@ public class EveanManufactureVariationMapping{
 	}
 
 	public boolean isRepeateColumn(int columnIndex) {
-
-		if (columnIndex != 1) {
+		if (columnIndex != 5 && columnIndex !=6) {
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
@@ -204,5 +165,8 @@ public class EveanManufactureVariationMapping{
 	}
 	public void setProGolfPriceGridParser(EveansManufacturePriceGridParser proGolfPriceGridParser) {
 		this.proGolfPriceGridParser = proGolfPriceGridParser;
+	}
+	public void setEveanManufacturAttriParser(EveanManufactureAttributeParser eveanManufacturAttriParser) {
+		this.eveanManufacturAttriParser = eveanManufacturAttriParser;
 	}
 }

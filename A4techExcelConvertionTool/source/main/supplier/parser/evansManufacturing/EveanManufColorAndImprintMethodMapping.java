@@ -205,6 +205,10 @@ public static Map<String,String>   IMPRINT_METHOD_GROUP = new HashMap<>();
 		String colorGroup = COLOR_MAP.get(colorName);
 		return colorGroup == null ?"Other": colorGroup;
 	}
+	public static String getImprintMethodGroup(String imprintMethodVal){
+		String imprintMethodGroup = IMPRINT_METHOD_GROUP.get(imprintMethodVal);
+		return imprintMethodGroup == null ?"Other": imprintMethodGroup;
+	}
 	
 	
 }

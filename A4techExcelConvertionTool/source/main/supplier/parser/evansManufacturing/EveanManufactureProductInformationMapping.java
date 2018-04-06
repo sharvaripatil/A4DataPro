@@ -1,7 +1,6 @@
 package parser.evansManufacturing;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -16,16 +15,15 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Color;
+import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.Option;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
-import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
-import com.a4tech.product.model.TradeName;
+import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -47,11 +45,10 @@ public class EveanManufactureProductInformationMapping {
 		Product productExcelObj = new Product();
 		String productId = null;
 		String headerName = "";
-		List<Option> listOfOptions = new ArrayList<>();
-		String features = "";
-		boolean isRushValue = false;
 		StringBuilder shippingInfo = new StringBuilder();
 		StringBuilder shippingDimension = new StringBuilder();
+		StringBuilder imprintSizeAndLoc = new StringBuilder();
+		StringBuilder packageValues = new StringBuilder();
 		try {
 			Iterator<Row> iterator = sheet.iterator();
 			Row headerRow = null;
@@ -99,8 +96,19 @@ public class EveanManufactureProductInformationMapping {
 									ShippingEstimate shippingEstimation = eveanAttributeParser.getShippingEstimation(
 											shippingInfo.toString(), shippingDimension.toString());
 									productConfigObj.setShippingEstimates(shippingEstimation);
-									productExcelObj.setProductConfigurations(productConfigObj);
-									productExcelObj.setPriceGrids(priceGrids);
+									if(!imprintSizeAndLoc.toString().isEmpty()){
+										productConfigObj = eveanAttributeParser.getImprintLocationAndImprintSize(
+												imprintSizeAndLoc.toString(), productConfigObj);
+									}
+									if(!packageValues.toString().isEmpty()){
+									   productExcelObj.setProductConfigurations(productConfigObj);
+									   productExcelObj.setPriceGrids(priceGrids);
+										productExcelObj = eveanAttributeParser
+												.getProductPackaging(packageValues.toString(), productExcelObj);
+									} else {
+										productExcelObj.setProductConfigurations(productConfigObj);
+										productExcelObj.setPriceGrids(priceGrids);	
+									}
 									productsMap.put(productExcelObj.getProductLevelSku(), productExcelObj);
 
 								}
@@ -154,7 +162,6 @@ public class EveanManufactureProductInformationMapping {
 							// ignore as per client feedback
 							break;
 						case 9:// keywords
-							// done
 							String keyword = cell.getStringCellValue();
 							if(!StringUtils.isEmpty(keyword)){
 								List<String> keyList = eveanAttributeParser.getProductKeywords(keyword);
@@ -234,54 +241,61 @@ public class EveanManufactureProductInformationMapping {
 							priceGrids = productExcelObj.getPriceGrids();
 							break;
 						case 23:
-							String golfBallModel = cell.getStringCellValue();
-							
+						case 24://Imprint methods
+							String imprintMethodVal = cell.getStringCellValue();
+							productConfigObj = eveanAttributeParser.getProductImprintMethods(imprintMethodVal, productConfigObj);
 							break;
-						case 24:
-							break;
-						case 25:// option
-							String style = cell.getStringCellValue();
-							
-							break;
-						case 26:// option
-							String hand = cell.getStringCellValue();
-							
+						case 25:// size
+						case 26:
+							String size = cell.getStringCellValue();
+							//5 1/4" H x 4" W (flat) -- special case for testing for same column
+							//4 1/4" H x 3 3/8" Diameter (on can)
+							Size sizeObj =eveanAttributeParser.getProductSize(size);
+							productConfigObj.setSizes(sizeObj);
 							break;
 						case 27:
-							String priceConfirmThroDate = cell.getStringCellValue();
-							if (CommonUtility.isPriceConfirmThroughDate(priceConfirmThroDate)) {
-								productExcelObj.setPriceConfirmedThru(priceConfirmThroDate);
+						case 28:
+						case 29:
+						case 30:
+							String imprintSizeAndLocVal = cell.getStringCellValue();
+							if(!StringUtils.isEmpty(imprintSizeAndLocVal)){
+								imprintSizeAndLoc.append(imprintSizeAndLocVal).append(",");
 							}
 							break;
-						case 28: // ignore
-							break;
-						case 29:// ignore
-							break;
-						case 30:// ignore
-							break;
-						case 31:// ignore
+						case 31:// Additional Product Info
 							break;
 						case 32:
-							break;
-						case 33:
-							break;
+						case 33://options
 						case 34:
+							//Ignore as per client feedback
 							break;
-						case 35:// ignore
+						case 35://additional ProductIfo
+							String additionalPrdInfo = cell.getStringCellValue();
+							if(!StringUtils.isEmpty(additionalPrdInfo)){
+								productExcelObj.setAdditionalProductInfo(additionalPrdInfo);
+							}
 							break;
-						case 36:// ignore
+						case 36:
+						case 37://packaging
+							String packVal = cell.getStringCellValue();
+							if(!StringUtils.isEmpty(packVal)){
+								packageValues.append(packVal).append(";");
+							}
 							break;
-						case 37:// ignore
+						case 38:// item weight
+							String itemWeightVal = CommonUtility.getCellValueDouble(cell);
+							Volume volumn =eveanAttributeParser.getProductItemWeightvolume(itemWeightVal);
+							productConfigObj.setItemWeight(volumn);
 							break;
-						case 38:
+						case 39:// fob
+							String fobVal = cell.getStringCellValue();
+							List<FOBPoint> fobPointList = eveanAttributeParser.getFobPoint(fobVal, accessToken, environmentType);
+							productExcelObj.setFobPoints(fobPointList);
 							break;
-						case 39:
-							break;
-											}
+						}
 					}
 					
 					productExcelObj.setPriceType("L");
-					isRushValue = false;
 				} catch (Exception e) {
 					_LOGGER.error(
 							"Error while Processing Product Information sheet  and cause :" + productExcelObj.getExternalProductId()
@@ -305,20 +319,6 @@ public class EveanManufactureProductInformationMapping {
 		} finally {
 		}
 
-	}
-
-	private boolean isLineNameOrTradeName(String value) {
-		if (value.equalsIgnoreCase("Pro Golf Premiums Line")) {
-			return true;
-		} else
-			return false;
-	}
-
-	private String getHeaderName(int columnIndex, Row headerRow) {
-		Cell cell2 = headerRow.getCell(columnIndex);
-		String headerName = CommonUtility.getCellValueStrinOrInt(cell2);
-		// columnIndex = ProGolfHeaderMapping.getHeaderIndex(headerName);
-		return headerName;
 	}
 
 	private String getProductXid(Row row) {
