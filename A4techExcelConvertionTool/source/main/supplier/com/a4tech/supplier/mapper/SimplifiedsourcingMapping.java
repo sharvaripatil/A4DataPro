@@ -691,7 +691,7 @@ public class SimplifiedsourcingMapping implements IExcelParser{
 				case 67://AddClrRunChgCode
 					 Addclearcode=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(Addclearcode))
-					 {
+					 {//PPPPR
 					if(Addclearcode.contains("P"))
 					{
 						Upchargecode="P";
