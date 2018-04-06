@@ -429,6 +429,7 @@
 		<property name="simplifiedMapping" ref="simplifiedMappingId"/>
 		<property name="sportsManBagMapping" ref="sportsManBagMappingId"/>
 		<property name="solidDimensionMapping" ref="solidDimensionMappingId"/>
+		<property name="eveanManufactureMapping" ref="eveanManufactureMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1196,5 +1197,27 @@
   	</bean>
      <!-- supplier 56950 Gill Studios Inc configuration end -->  
       
+      <!-- supplier 52841 Evans Manufacturing Canada  configuration start -->
+      <bean id="eveanManufactureMappingId" class="com.a4tech.supplier.mapper.EveanManufacturingCanadaMapping">
+      </bean>
+      <bean id="eveanManufctProductInfoMappingId" class="parser.evansManufacturing.EveanManufactureProductInformationMapping">
+         <property name="postServiceImpl" ref="postService"></property>
+         <property name="productDaoObj" ref="productDao"></property>
+         <property name="eveanAttributeParser" ref="eveanManufctAttributeParserId"/>
+      </bean>
+      <bean id="eveanManufctVariationMappingId" class="parser.evansManufacturing.EveanManufactureVariationMapping">
+         <property name="eveanManufacturAttriParser" ref="eveanManufctAttributeParserId"> </property>
+      </bean>
+      <bean id="eveanManufctPriceMappingId" class="parser.evansManufacturing.EveanManufacturePricingMapping">
+      	   <property name="eveanManufacturePriceGridParser" ref="eveanManufactPriceingParserId"/>
+      	   <property name="postServiceImpl" ref="postService"/>
+      	   <property name="productDaoObj" ref="productDao"/>
+      </bean>      
+      <bean id="eveanManufctAttributeParserId" class="parser.evansManufacturing.EveanManufactureAttributeParser">
+         <property name="eveanPriceGridParser" ref="eveanManufactPriceingParserId"/>
+         <property name="lookupServiceData" ref="lookupServiceData"/>
+      </bean>
+      <bean id="eveanManufactPriceingParserId" class="parser.evansManufacturing.EveansManufacturePriceGridParser"></bean>
+      <!-- supplier 52841 Evans Manufacturing Canada  configuration end -->
 </beans>
 

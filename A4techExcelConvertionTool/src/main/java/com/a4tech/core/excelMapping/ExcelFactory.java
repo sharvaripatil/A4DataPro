@@ -10,7 +10,7 @@ import com.a4tech.bambam.product.mapping.BambamProductExcelMapping;
 import com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping;
 import com.a4tech.dc.product.mapping.DCProductsExcelMapping;
 import com.a4tech.excel.service.IExcelParser;
-import com.a4tech.kl.product.mapping.KlProductsExcelMapping; 
+import com.a4tech.kl.product.mapping.KlProductsExcelMapping;
 import com.a4tech.product.bbi.mapping.BBIProductsExcelMapping;
 import com.a4tech.product.broberry.mapping.BroberryExcelMapping;
 import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
@@ -18,6 +18,7 @@ import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.AlfaMapping;
+import com.a4tech.supplier.mapper.BagMakersMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
 import com.a4tech.supplier.mapper.BayStateMapping;
 import com.a4tech.supplier.mapper.BellaCanvas;
@@ -28,6 +29,7 @@ import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 //import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.EdwardsGarmentMapping;
+import com.a4tech.supplier.mapper.EveanManufacturingCanadaMapping;
 import com.a4tech.supplier.mapper.FITSAccessoriesMapping;
 import com.a4tech.supplier.mapper.GempirepromotionsMapping;
 import com.a4tech.supplier.mapper.GillStudiosMapping;
@@ -35,29 +37,27 @@ import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping;
 import com.a4tech.supplier.mapper.HeadWearMapping;
-import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineMappingRevised;
 import com.a4tech.supplier.mapper.InternationlMerchMapping;
 import com.a4tech.supplier.mapper.MaxplusMapping;
+import com.a4tech.supplier.mapper.MilestoneExcelMapping;
+import com.a4tech.supplier.mapper.PSLMapping;
 import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PelicanGraphicMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
-import com.a4tech.supplier.mapper.MilestoneExcelMapping;
-import com.a4tech.supplier.mapper.PSLMapping;
+import com.a4tech.supplier.mapper.ProGolfMapping;
+import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
 import com.a4tech.supplier.mapper.SimplifiedsourcingMapping;
 import com.a4tech.supplier.mapper.SolidDimensionMapping;
 import com.a4tech.supplier.mapper.SportCanadaExcelMapping;
 import com.a4tech.supplier.mapper.SportsManBagMapping;
 import com.a4tech.supplier.mapper.SunGraphixMapping;
+import com.a4tech.supplier.mapper.SunScopeMapping;
 import com.a4tech.supplier.mapper.TekweldMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.TowelSpecialtiesMapping;
-import com.a4tech.supplier.mapper.ProGolfMapping;
-import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
-import com.a4tech.supplier.mapper.SunScopeMapping;
 import com.a4tech.supplier.mapper.TwintechMapping;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
-import com.a4tech.supplier.mapper.BagMakersMapping;
 
 public class ExcelFactory {
 	private AdspecProductsExcelMapping 		adspecMapping;
@@ -115,7 +115,7 @@ public class ExcelFactory {
     private SportsManBagMapping             sportsManBagMapping;
     private SimplifiedsourcingMapping       simplifiedMapping;
 	private SolidDimensionMapping 			solidDimensionMapping;
-    
+    private EveanManufacturingCanadaMapping eveanManufactureMapping;
     
 	public  IExcelParser getExcelParserObject(String name){
 
@@ -235,6 +235,8 @@ public class ExcelFactory {
 			  return simplifiedMapping;
 		  } else if(name.equalsIgnoreCase("solidDimension") || name.equals("88156")){
 			  return solidDimensionMapping;
+		  } else if(name.equals("52841")){
+			  return eveanManufactureMapping;
 		  }
 		return null;
 	}
@@ -661,6 +663,8 @@ public class ExcelFactory {
 	public void setSportsManBagMapping(SportsManBagMapping sportsManBagMapping) {
 		this.sportsManBagMapping = sportsManBagMapping;
 	}
+	public void setEveanManufactureMapping(EveanManufacturingCanadaMapping eveanManufactureMapping) {
+		this.eveanManufactureMapping = eveanManufactureMapping;
+	}
 
-	
 }

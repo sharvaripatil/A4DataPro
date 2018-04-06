@@ -14,18 +14,25 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.core.errors.ErrorMessageList;
+import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
+import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 public class EveanManufacturePricingMapping{
 	private static final Logger _LOGGER = Logger.getLogger(EveanManufacturePricingMapping.class);
     private EveansManufacturePriceGridParser eveanManufacturePriceGridParser;
-	public Map<String, Product> readMapper(Map<String, Product> productMaps, Sheet sheet) {
+    private PostServiceImpl 				postServiceImpl;
+	private ProductDao 						productDaoObj;
+	
+	public Map<String, Product> readMapper(Map<String, Product> productMaps, Sheet sheet,String accessToken,int asiNumber,int batchId,String environmentType) {
 
 		int columnIndex = 0;
-
+		List<String> numOfProductsSuccess = new ArrayList<String>();
+		List<String> numOfProductsFailure = new ArrayList<String>();
 		Set<String> productXids = new HashSet<String>();
 		List<String> repeatRows = new ArrayList<>();
 		String productId = null;
@@ -78,7 +85,18 @@ public class EveanManufacturePricingMapping{
 									}
 									existingProduct.setPriceType("L");
 									existingProduct.setPriceGrids(priceGrids);
-									productMaps.put(existingProduct.getProductLevelSku(), existingProduct);
+									int num = postServiceImpl.postProduct(accessToken, existingProduct, asiNumber,
+											batchId, environmentType);
+								 	if(num ==1){
+								 		numOfProductsSuccess.add("1");
+								 	}else if(num == 0){
+								 		numOfProductsFailure.add("0");
+								 	}else{
+								 		
+								 	}		
+							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
+							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
+								//	productMaps.put(existingProduct.getProductLevelSku(), existingProduct);
 									repeatRows.clear();
 									existingProduct = productMaps.get(productId);
 									priceGrids = existingProduct.getPriceGrids();
@@ -159,6 +177,10 @@ public class EveanManufacturePricingMapping{
 					_LOGGER.error(
 							"Error while Processing ProductId and cause :" + existingProduct.getExternalProductId()
 									+ " " + e.getMessage() + "at column number(increament by 1):" + headerName);
+					ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet: "
+							+e.getMessage()+" at column number(increament by 1)"+columnIndex);
+					productDaoObj.save(apiResponse.getErrors(),
+							existingProduct.getExternalProductId()+"-Failed", asiNumber, batchId);
 				}
 			}
 			if (!StringUtils.isEmpty(existingProduct.getExternalProductId())) {
@@ -167,7 +189,19 @@ public class EveanManufacturePricingMapping{
 			repeatRows.clear();
 			existingProduct.setPriceType("L");
 			existingProduct.setPriceGrids(priceGrids);
-			productMaps.put(existingProduct.getProductLevelSku(), existingProduct);
+			int num = postServiceImpl.postProduct(accessToken, existingProduct, asiNumber,
+					batchId, environmentType);
+		 	if(num ==1){
+		 		numOfProductsSuccess.add("1");
+		 	}else if(num == 0){
+		 		numOfProductsFailure.add("0");
+		 	}else{
+		 		
+		 	}		
+	 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
+	 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
+			//productMaps.put(existingProduct.getProductLevelSku(), existingProduct);
+	 	 productDaoObj.saveErrorLog(asiNumber,batchId);
 			return productMaps;
 		} catch (Exception e) {
 			_LOGGER.error(
@@ -210,5 +244,10 @@ public EveansManufacturePriceGridParser getEveanManufacturePriceGridParser() {
 public void setEveanManufacturePriceGridParser(EveansManufacturePriceGridParser eveanManufacturePriceGridParser) {
 	this.eveanManufacturePriceGridParser = eveanManufacturePriceGridParser;
 }
-	
+public void setPostServiceImpl(PostServiceImpl postServiceImpl) {
+	this.postServiceImpl = postServiceImpl;
+}
+public void setProductDaoObj(ProductDao productDaoObj) {
+	this.productDaoObj = productDaoObj;
+}
 }

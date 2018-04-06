@@ -17,9 +17,6 @@ import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
 public class EveansManufacturePriceGridParser {
-	enum options{
-		Shipping,Product,Impirnt
-	}
 
 	private Logger              _LOGGER              = Logger.getLogger(getClass());
 	public List<PriceGrid> getBasePriceGrid(String listOfNetCost,

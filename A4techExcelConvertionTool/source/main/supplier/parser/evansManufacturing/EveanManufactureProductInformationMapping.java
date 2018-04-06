@@ -16,7 +16,6 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.FOBPoint;
-import com.a4tech.product.model.Option;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -354,5 +353,7 @@ public class EveanManufactureProductInformationMapping {
 	public void setProductDaoObj(ProductDao productDaoObj) {
 		this.productDaoObj = productDaoObj;
 	}
-
+	public void setEveanAttributeParser(EveanManufactureAttributeParser eveanAttributeParser) {
+		this.eveanAttributeParser = eveanAttributeParser;
+	}
 	}

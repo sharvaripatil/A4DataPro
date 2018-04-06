@@ -22,7 +22,6 @@ import com.a4tech.util.CommonUtility;
 
 public class EveanManufactureVariationMapping{
 	private static final Logger _LOGGER = Logger.getLogger(EveanManufactureVariationMapping.class);
-    private EveansManufacturePriceGridParser proGolfPriceGridParser;
     private EveanManufactureAttributeParser eveanManufacturAttriParser;
 	
 	public Map<String, Product> readMapper(Map<String, Product> productMaps, Sheet sheet) {
@@ -159,12 +158,6 @@ public class EveanManufactureVariationMapping{
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
-	}
-	public EveansManufacturePriceGridParser getProGolfPriceGridParser() {
-		return proGolfPriceGridParser;
-	}
-	public void setProGolfPriceGridParser(EveansManufacturePriceGridParser proGolfPriceGridParser) {
-		this.proGolfPriceGridParser = proGolfPriceGridParser;
 	}
 	public void setEveanManufacturAttriParser(EveanManufactureAttributeParser eveanManufacturAttriParser) {
 		this.eveanManufacturAttriParser = eveanManufacturAttriParser;
