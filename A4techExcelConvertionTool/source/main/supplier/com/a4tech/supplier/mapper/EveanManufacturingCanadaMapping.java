@@ -13,7 +13,9 @@ import com.a4tech.product.model.Product;
 import parser.evansManufacturing.EveanManufacturePricingMapping;
 import parser.evansManufacturing.EveanManufactureProductInformationMapping;
 import parser.evansManufacturing.EveanManufactureVariationMapping;
-
+/*
+ * EXCIT-700
+ */
 public class EveanManufacturingCanadaMapping implements IExcelParser{
 	
 	private EveanManufactureProductInformationMapping eveanProductInfoMapping;
