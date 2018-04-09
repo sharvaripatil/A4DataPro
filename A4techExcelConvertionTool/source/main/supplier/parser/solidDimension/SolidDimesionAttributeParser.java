@@ -366,9 +366,12 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		return imprintSizeList;
 	}*/
 	
-	public List<ImprintSize> getimprintsize(StringBuilder firstImprintSize) {
+	public List<ImprintSize> getimprintsize(String firstImprintSize,List<ImprintSize> imprintSizeList) {
+		 if(CollectionUtils.isEmpty(imprintSizeList)){
+			 imprintSizeList=new ArrayList<ImprintSize>();
+		 }
 		String tempStr[]=firstImprintSize.toString().split("___");
-		 List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
+		// List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
 		 List<String> dupList =new ArrayList<String>();
 	for (String impValue : tempStr) {
 		String ImprintSizeValue=impValue.replace("null xnull","");
@@ -519,23 +522,23 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			//colorName = colorName.trim();
 			
 			colorObj = new Color();
-			String colorGroup = SolidDimApplicationConstatnt.getColorGroup(colorName.trim());
+			//String colorGroup = SolidDimApplicationConstatnt.getColorGroup(colorName.trim());
 			
 			//if (colorGroup == null) {
 				//if (colorGroup!=null && colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
-			if (colorGroup!=null && (colorName.contains("/") || colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH))) {
+			if (colorName!=null && (colorName.contains("/") || colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH))) {
 				
 				/*if(colorGroup==null){
 					colorGroup=colorName;
 				}*/
-				colorGroup=colorGroup.replaceAll("&","/");
-				colorGroup=colorGroup.replaceAll(" w/","/");
-				colorGroup=colorGroup.replaceAll(" W/","/");
+				colorName=colorName.replaceAll("&","/");
+				colorName=colorName.replaceAll(" w/","/");
+				colorName=colorName.replaceAll(" W/","/");
 				
 				//if (colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
-					if(isComboColor(colorGroup)){
+					if(isComboColor(colorName)){
 						List<Combo> listOfCombo = null;
-						String[] comboColors = CommonUtility.getValuesOfArray(colorGroup,
+						String[] comboColors = CommonUtility.getValuesOfArray(colorName,
 								ApplicationConstants.CONST_DELIMITER_FSLASH);
 						String colorFirstName = SolidDimApplicationConstatnt.getColorGroup(comboColors[0].trim());
 						colorObj.setName(colorFirstName == null?"Other":colorFirstName);
@@ -553,11 +556,11 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 							colorComboSecondName = colorComboSecondName == null?"Other":colorComboSecondName;
 							listOfCombo = getColorsCombo(colorComboFirstName,colorComboSecondName, combosSize);
 						}
-						String alias = colorGroup.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH, "-");
+						String alias = colorName.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH, "-");
 						colorObj.setAlias(alias);
 						colorObj.setCombos(listOfCombo);
 					} else {
-						String[] comboColors = CommonUtility.getValuesOfArray(colorGroup,
+						String[] comboColors = CommonUtility.getValuesOfArray(colorName,
 								ApplicationConstants.CONST_DELIMITER_FSLASH);
 						String mainColorGroup = SolidDimApplicationConstatnt.getColorGroup(comboColors[0].trim());
 						if(mainColorGroup != null){
@@ -576,6 +579,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 					colorObj.setAlias(colorName);
 				}*/
 			} else {
+				String colorGroup = SolidDimApplicationConstatnt.getColorGroup(colorName.trim());
 				if (colorGroup == null) {
 					colorGroup = ApplicationConstants.CONST_VALUE_TYPE_OTHER;
 					}

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
@@ -119,6 +120,7 @@ public class SolidDimensionPriceGridParser {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
 		String[] config = null;
 		PriceConfiguration configs = null;
+		PriceConfiguration configsImp = null;
 		try{
 		if (criterias
 				.contains(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID)) {
@@ -149,7 +151,16 @@ public class SolidDimensionPriceGridParser {
 			}
 
 		}else if(criterias.toUpperCase().equals("SIZE")){
-			String arr[]=sizeValues.split("#####");
+			
+			String arrSize[]=sizeValues.split(":");
+			if(!StringUtils.isEmpty(arrSize[1]) ){
+				configsImp=new PriceConfiguration();
+				configsImp.setCriteria("Imprint Size");
+				configsImp.setValue(Arrays.asList((Object) arrSize[1]));
+				priceConfiguration.add(configsImp);
+			}
+			
+			String arr[]=arrSize[0].split("#####");
 			List<Object> objList=new ArrayList<>();
 			objList =SolidDimesionAttributeParser.getValuesObj(arr[0], arr[1], arr[2],objList);
 			configs = new PriceConfiguration();
