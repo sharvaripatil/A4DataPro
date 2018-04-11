@@ -26,11 +26,14 @@ public class EveanManufacturingCanadaMapping implements IExcelParser{
 	
 	@Override
 	public String readExcel(String accessToken, Workbook workbook, Integer asiNumber, int batchId, String environmentType) {
-		_LOGGER.info("mapping process start Evans Manufacturing Canada supplier File");
+		_LOGGER.info("Mapping process start Evans Manufacturing Canada supplier File");
 		Map<String, Product> productsMap = new LinkedHashMap<>();
 		String finalResult = "";
 		for (Sheet sheet : workbook) {
 			 String sheetName = sheet.getSheetName().trim();
+			 if(!isVaildSheet(sheetName)){
+				 continue;
+			 }
 			  _LOGGER.info("Sheet Name::"+sheetName);
 			  if("Products Information".equalsIgnoreCase(sheetName)){
 				  productsMap=  eveanProductInfoMapping.readMapper(accessToken,sheet,productsMap,environmentType);
@@ -40,7 +43,7 @@ public class EveanManufacturingCanadaMapping implements IExcelParser{
 				productsMap = eveanPriceMapping.readMapper(productsMap, sheet, accessToken, asiNumber, batchId,
 						environmentType); 
 			  } else{
-				  _LOGGER.info("sheet is not processed: "+sheetName);
+				  _LOGGER.info(sheetName+": "+"sheet is not processed");
 			  }
 		}
 		
@@ -57,6 +60,12 @@ public class EveanManufacturingCanadaMapping implements IExcelParser{
 	public void setEveanPriceMapping(EveanManufacturePricingMapping eveanPriceMapping) {
 		this.eveanPriceMapping = eveanPriceMapping;
 	}
-
+   private boolean isVaildSheet(String sheetName){
+		if (sheetName.equals("Products Information") || sheetName.equals("Variations")
+				|| sheetName.equals("Product Pricing")) {
+		   return true;
+	   }
+	   return false;
+   }
 
 }

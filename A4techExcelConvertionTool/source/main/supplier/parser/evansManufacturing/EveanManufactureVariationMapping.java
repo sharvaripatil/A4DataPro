@@ -42,14 +42,10 @@ public class EveanManufactureVariationMapping{
 		try {
 			Iterator<Row> iterator = sheet.iterator();
 			Product existingProduct = null;
-			Row  headerRow = null;
 			while (iterator.hasNext()) {
-
 				try {
 					Row nextRow = iterator.next();
-
 					if (nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO) {
-						headerRow = nextRow;
 						continue;
 					}
 					Cell cell1 = nextRow.getCell(1);
@@ -67,11 +63,9 @@ public class EveanManufactureVariationMapping{
 						productXids.add(xid);
 					}
 					boolean checkXid = false;
-
 					while (cellIterator.hasNext()) {
 						Cell cell = cellIterator.next();
 						columnIndex = cell.getColumnIndex();
-
 						if (columnIndex + 1 == 1) {
 							Cell cell2 = nextRow.getCell(1);
 							prdXid = CommonUtility.getCellValueStrinOrInt(cell2);
@@ -79,7 +73,6 @@ public class EveanManufactureVariationMapping{
 						} else {
 							checkXid = false;
 						}
-
 						if (checkXid) {
 							if (!productXids.contains(xid)) {
 								if (nextRow.getRowNum() != 1) {
@@ -97,10 +90,8 @@ public class EveanManufactureVariationMapping{
 									productXids.add(xid);
 									repeatRows.add(xid);
 								}
-								
 							}
 						} else {
-
 							if (productXids.contains(xid) && repeatRows.size() != 1) {
 								if (isRepeateColumn(columnIndex + 1)) {
 									continue;
@@ -125,7 +116,6 @@ public class EveanManufactureVariationMapping{
 					} // end inner while loop
 					}
 					imageList.add(colorImage.toString());
-					
 				} catch (Exception e) {
 					_LOGGER.error(
 							"Error while Processing ProductId and cause :" + productExcelObj.getExternalProductId()
@@ -133,7 +123,6 @@ public class EveanManufactureVariationMapping{
 				}
 			}
 						if (!StringUtils.isEmpty(productExcelObj.getExternalProductId())) {
-
 			}
 			repeatRows.clear();
 			productMaps.put(prdXid, existingProduct);
@@ -144,15 +133,7 @@ public class EveanManufactureVariationMapping{
 			return productMaps;
 		} finally {
 		}
-
 	}
-	private String getHeaderName(int columnIndex,Row headerRow){
-		 Cell cell2 =  headerRow.getCell(columnIndex);  
-		 String headerName=CommonUtility.getCellValueStrinOrInt(cell2);
-		//columnIndex = ProGolfHeaderMapping.getHeaderIndex(headerName);
-		return headerName;
-	}
-
 	public boolean isRepeateColumn(int columnIndex) {
 		if (columnIndex != 5 && columnIndex !=6) {
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;

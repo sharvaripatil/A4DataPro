@@ -50,22 +50,16 @@ public class EveanManufactureProductInformationMapping {
 		StringBuilder packageValues = new StringBuilder();
 		try {
 			Iterator<Row> iterator = sheet.iterator();
-			Row headerRow = null;
 			while (iterator.hasNext()) {
 				try {
 					Row nextRow = iterator.next();
-
 					if (nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO) {
-						headerRow = nextRow;
 						continue;
 					}
 					Iterator<Cell> cellIterator = nextRow.cellIterator();
 					if (productId != null) {
 						if(StringUtils.isEmpty(productId)){
 							break;
-						}
-						if(!"10210032".equals(productId.trim())){
-							productXids.add(productId);
 						}
 					}
 					boolean checkXid = false;
@@ -108,7 +102,7 @@ public class EveanManufactureProductInformationMapping {
 										productExcelObj.setProductConfigurations(productConfigObj);
 										productExcelObj.setPriceGrids(priceGrids);	
 									}
-									productsMap.put(productExcelObj.getProductLevelSku(), productExcelObj);
+									productsMap.put(productExcelObj.getExternalProductId(), productExcelObj);
 
 								}
 								productConfigObj = new ProductConfigurations();
