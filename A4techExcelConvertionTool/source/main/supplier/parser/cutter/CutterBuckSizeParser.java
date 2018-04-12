@@ -17,7 +17,7 @@ public class CutterBuckSizeParser {
 	
 		
 		for (String value : sizeArr) {
-			value=value.replaceAll("\n", "").replace("XXXL","3XL");
+			value=value.replaceAll("\n", "").replace("XXXL","3XL").replace("XXL","2XL");
 
 			if(value.length()==4){
 			valObj = new Value();	
