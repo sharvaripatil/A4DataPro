@@ -154,10 +154,15 @@ public class SolidDimensionPriceGridParser {
 			
 			String arrSize[]=sizeValues.split(":");
 			if(!StringUtils.isEmpty(arrSize[1]) ){
-				configsImp=new PriceConfiguration();
-				configsImp.setCriteria("Imprint Size");
-				configsImp.setValue(Arrays.asList((Object) arrSize[1]));
-				priceConfiguration.add(configsImp);
+				String impSizeArr[]=arrSize[1].split("_____");
+			for (String impSizeValue : impSizeArr) {
+				if(!StringUtils.isEmpty(impSizeValue)){
+					configsImp=new PriceConfiguration();
+					configsImp.setCriteria("Imprint Size");
+					configsImp.setValue(Arrays.asList((Object) impSizeValue));
+					priceConfiguration.add(configsImp);
+				}
+			}	
 			}
 			
 			String arr[]=arrSize[0].split("#####");

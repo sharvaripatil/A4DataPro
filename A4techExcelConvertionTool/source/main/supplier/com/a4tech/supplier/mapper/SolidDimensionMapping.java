@@ -215,9 +215,14 @@ public class SolidDimensionMapping implements IExcelParser{
 									       String pName=sizeImpArry[5];
 									       String pPerUnit=sizeImpArry[6];
 									       // i have to work on this multiple pricing for sizing
+									       String gridName=  pName+","+priceArry[1] ;
+									       if(gridName.contains("_____")){
+									    	   gridName=gridName.replace("_____", "");
+									       }
+									       
 									       priceGrids = solidDimensionPriceGridParser.getPriceGrids(lPrices, 
 									    		   lQuantity, pCode, "USD",pIncludesVa, true,
-									    		   qUponReq, pName+","+priceArry[1]   ,"Size",pPerUnit,priceGrids,sizeValue+":"+priceArry[1]);
+									    		   qUponReq, gridName,"Size",pPerUnit,priceGrids,sizeValue+":"+priceArry[1]);
 									      /* (String listOfPrices,
 									   		    String listOfQuan, String discountCodes,
 									   			String currency, String priceInclude, boolean isBasePrice,
@@ -962,7 +967,7 @@ public class SolidDimensionMapping implements IExcelParser{
 				case 81: // // Imprint size2
 					FirstImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FirstImprintsize2.trim()) && !FirstImprintsize2.equals("0")){
-						 ImprintSizevalue2=ImprintSizevalue2.append(FirstImprintsize2).append(" ");
+						 ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize2).append(" ");
 					 }
 
 					  	break;
@@ -971,7 +976,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					FirstImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(FirstImprintunit2.trim()) && !FirstImprintunit2.equals("0")){
 					FirstImprintunit2=GillStudiosLookupData.Dimension1Units.get(FirstImprintunit2);
-					ImprintSizevalue2=ImprintSizevalue2.append(FirstImprintunit2).append(" ");
+					ImprintSizevalue=ImprintSizevalue.append(FirstImprintunit2).append(" ");
 				    }
 					    break;
 					    
@@ -979,7 +984,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					FirstImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(FirstImprinttype2.trim()) && !FirstImprinttype2.equals("0")){
 					FirstImprinttype2=GillStudiosLookupData.Dimension1Type.get(FirstImprinttype2);
-					ImprintSizevalue2=ImprintSizevalue2.append(FirstImprinttype2).append(" ");
+					ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype2).append(" ");
 				    }
 					break;
 
@@ -1334,10 +1339,17 @@ public class SolidDimensionMapping implements IExcelParser{
 			if(!StringUtils.isEmpty(tempDimension)){
 				/*imprintSize.add(ImprintSizevalue.toString());
 				imprintSize.add(ImprintSizevalue2.toString());*/
-				if(!StringUtils.isEmpty(ImprintSizevalue2.toString())){
+				/*if(!StringUtils.isEmpty(ImprintSizevalue2.toString())){
 					//ImprintSizevalue=ImprintSizevalue.append("___").append(ImprintSizevalue2);
 					ImprintSizevalue=ImprintSizevalue.append(ImprintSizevalue2);
+				}*/
+				if(!StringUtils.isEmpty(ImprintSizevalue)){
+					imprintSize.add(ImprintSizevalue.toString());
 				}
+				if(!StringUtils.isEmpty(ImprintSizevalue2)){
+					imprintSize.add(ImprintSizevalue2.toString());
+				}
+					
 					imprintSize.add(ImprintSizevalue.toString());
 					sizeSet.add(tempDimension+"#####"+dimensionUnits.toString()+"#####"+dimensionType.toString());
 					//}
@@ -1349,7 +1361,7 @@ public class SolidDimensionMapping implements IExcelParser{
 					if(!StringUtils.isEmpty(listOfPrices)){
 						priceMap.put(tempDimension+"#####"+dimensionUnits.toString()+"#####"+dimensionType.toString(), listOfPrices+"@@@@@"+listOfQuantity+"@@@@@"+priceCode+"@@@@@"
 				 				 +priceIncludesValue+"@@@@@"+quoteUponRequest+"@@@@@"+tempName+"@@@@@"+pricesPerUnit.toString()
-				 				+"#@#@#"+ImprintSizevalue);
+				 				+"#@#@#"+ImprintSizevalue+"_____"+ImprintSizevalue2);
 					}
 			listOfPrices=new StringBuilder();
 			listOfQuantity=new StringBuilder();
@@ -1399,11 +1411,16 @@ public class SolidDimensionMapping implements IExcelParser{
 					Iterator mapItr = priceMap.entrySet().iterator();
 				    while (mapItr.hasNext()) {
 				       Map.Entry values = (Map.Entry)mapItr.next();
+				        /*priceMap.put(dimensionValue.toString(), listOfPrices+"@@@@@"+listOfQuantity+"@@@@@"+priceCode+"@@@@@"
+				 				 +priceIncludesValue+"@@@@@"+quoteUponRequest+"@@@@@"+productName+"@@@@@"+pricesPerUnit.toString());*/
+				       /*  priceMap.put(tempDimension+"#####"+dimensionUnits.toString()+"#####"+dimensionType.toString(), listOfPrices+"@@@@@"+listOfQuantity+"@@@@@"+priceCode+"@@@@@"
+				 				 +priceIncludesValue+"@@@@@"+quoteUponRequest+"@@@@@"+tempName+"@@@@@"+pricesPerUnit.toString()
+				 				+"#@#@#"+ImprintSizevalue);*/
 				       String pricingValue= (String) values.getValue();
 				       String priceArry[]=pricingValue.split("#@#@#");//#@#@#
 				       
 				       String sizeImpArry[]=priceArry[0].split("@@@@@");
-				      // Size sizeValue=(Size) values.getKey();
+				     
 				       String sizeValue=(String) values.getKey();
 				       String lPrices=sizeImpArry[0];
 				       String lQuantity=sizeImpArry[1];
@@ -1413,9 +1430,14 @@ public class SolidDimensionMapping implements IExcelParser{
 				       String pName=sizeImpArry[5];
 				       String pPerUnit=sizeImpArry[6];
 				       // i have to work on this multiple pricing for sizing
+				       String gridName=  pName+","+priceArry[1] ;
+				       if(gridName.contains("_____")){
+				    	   gridName=gridName.replace("_____", "");
+				       }
+				       
 				       priceGrids = solidDimensionPriceGridParser.getPriceGrids(lPrices, 
 				    		   lQuantity, pCode, "USD",pIncludesVa, true,
-				    		   qUponReq, pName+","+priceArry[1]   ,"Size",pPerUnit,priceGrids,sizeValue+":"+priceArry[1]);
+				    		   qUponReq, gridName,"Size",pPerUnit,priceGrids,sizeValue+":"+priceArry[1]);
 				      /* (String listOfPrices,
 				   		    String listOfQuan, String discountCodes,
 				   			String currency, String priceInclude, boolean isBasePrice,
@@ -1425,12 +1447,9 @@ public class SolidDimensionMapping implements IExcelParser{
 				}else{		
 					Map.Entry<String, String> entry = priceMap.entrySet().iterator().next();
 					 String pricingValue= entry.getValue();
-				      // String priceArry[]=pricingValue.split("@@@@@");
-					// String pricingValue= (String) values.getValue();
-				       String priceArry[]=pricingValue.split("#@#@#");//#@#@#
-				       
+				       String priceArry[]=pricingValue.split("#@#@#");
 				       String sizeImpArry[]=priceArry[0].split("@@@@@");
-					   String lPrices=sizeImpArry[0];
+				      String lPrices=sizeImpArry[0];
 				       String lQuantity=sizeImpArry[1];
 				       String pCode=sizeImpArry[2];
 				       String pIncludesVa=sizeImpArry[3];
@@ -1441,8 +1460,6 @@ public class SolidDimensionMapping implements IExcelParser{
 				       priceGrids = solidDimensionPriceGridParser.getPriceGrids(lPrices, 
 				    		   lQuantity, pCode, "USD",pIncludesVa, true,
 				    		   qUponReq, "","",pPerUnit,priceGrids,null);
-				      
-					
 						/*priceGrids = solidDimensionPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 					                 listOfQuantity.toString(), priceCode, "USD",priceIncludesValue, true,
 					                 quoteUponRequest, productName,"",pricesPerUnit.toString(),priceGrids,null);*/
@@ -1450,13 +1467,13 @@ public class SolidDimensionMapping implements IExcelParser{
 									
 				}					
 			
-		 //imprintSize = new HashSet<String>();
 		 if(!CollectionUtils.isEmpty(imprintSize)){
 			 for (String impsizeValue : imprintSize) {
 				 imprintSizeList=solidAttributeParser.getimprintsize(impsizeValue,imprintSizeList);
 			}
 			 productConfigObj.setImprintSize(imprintSizeList);
 		 }
+			
 		//impmtd upchrg
 			if(!imprintMethodUpchargeMap.isEmpty()){// here i ahve to check for imprint methods
 		    	priceGrids = solidAttributeParser.getImprintMethodUpcharges(imprintMethodUpchargeMap,
@@ -1492,6 +1509,7 @@ public class SolidDimensionMapping implements IExcelParser{
 			productConfigObj.setRushTime(rushTime);
 			productConfigObj.setShippingEstimates(shipping);
 			productConfigObj.setProductionTime(listOfProductionTime);
+			
 			if(!CollectionUtils.isEmpty(sizeSet)){
 			for (String sizeValue : sizeSet) {
 				String sizeValueArr[]=sizeValue.split("#####");
@@ -1505,6 +1523,7 @@ public class SolidDimensionMapping implements IExcelParser{
 				productConfigObj.setSizes(size);
 			
 			}
+			
 			productConfigObj.setColors(colorList);
 			if(!StringUtils.isEmpty(FobPointsList)){
 			productExcelObj.setFobPoints(FobPointsList);
@@ -1514,7 +1533,7 @@ public class SolidDimensionMapping implements IExcelParser{
 				}
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
-
+		 	
 			int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -1573,7 +1592,7 @@ public class SolidDimensionMapping implements IExcelParser{
 				workbook.close();
 			} catch (IOException e) {
 				_LOGGER.error("Error while Processing excel sheet "+e.getMessage());
-	
+				
 			}
 				_LOGGER.info("Complted processing of excel sheet ");
 				_LOGGER.info("Total no of product:"+numOfProductsSuccess.size() );
@@ -1685,7 +1704,8 @@ public boolean isRepeateColumn(int columnIndex){
 		if(columnIndex != 16 &&columnIndex != 17 &&columnIndex != 18 && columnIndex != 19 && columnIndex != 20 && columnIndex != 21 &&  columnIndex != 22 &&  columnIndex != 23 &&  columnIndex != 24 &&   columnIndex != 25 &&  columnIndex != 26 &&  columnIndex != 27 &&
 		   columnIndex != 28 && columnIndex != 29 &&columnIndex != 30 && columnIndex != 31 && columnIndex != 32 && columnIndex != 33 &&  columnIndex != 34 &&  columnIndex != 35 &&  columnIndex != 36 &&   columnIndex != 37 &&  columnIndex != 38 &&  columnIndex != 39 && columnIndex != 40 &&
 		   columnIndex != 41 && columnIndex != 42 &&columnIndex != 43 && columnIndex != 44 && columnIndex != 45 && columnIndex != 46 &&
-		   columnIndex != 78 && columnIndex != 79 &&columnIndex != 80 && columnIndex != 81 && columnIndex != 82 && columnIndex != 83){//&&  columnIndex != 47
+		   columnIndex != 78 && columnIndex != 79 &&columnIndex != 80 && columnIndex != 81 && columnIndex != 82 && columnIndex != 83 &&
+		   columnIndex != 85 && columnIndex != 86 &&columnIndex != 87 && columnIndex != 88 && columnIndex != 89 && columnIndex != 90){//&&  columnIndex != 47
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
