@@ -162,7 +162,7 @@ public class BrandwearExcelMapping implements IExcelParser {
 						}
  						if (checkXid) {
 							if (!productXids.contains(xid)) {
-								if (nextRow.getRowNum() != 1) {
+								if (nextRow.getRowNum() != 5) {
 									System.out
 											.println("Java object converted to JSON String, written to file");
 

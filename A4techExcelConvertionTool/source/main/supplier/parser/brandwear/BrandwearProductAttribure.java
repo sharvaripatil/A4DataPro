@@ -101,10 +101,13 @@ public class BrandwearProductAttribure {
 	
 	public List<ImprintMethod> getImprintMethod(String imprintMethod) {
  		ImprintMethod imprMethod = new ImprintMethod();
+ 		imprintMethod=imprintMethod.replace("®","").replace("3M Hi-Visibility Reflective","");
 		List<ImprintMethod> imprintMethodList = new ArrayList<ImprintMethod>();
 		String imprintMethodValueArr[]=imprintMethod.split(",");
 		
 		for (String imprintMethodValue : imprintMethodValueArr) {
+			
+			if(!imprintMethodValue.equalsIgnoreCase("")){	
 			
 			imprMethod = new ImprintMethod();
 	  if(imprintMethodValue.contains("print"))
@@ -130,6 +133,7 @@ public class BrandwearProductAttribure {
 	  imprMethod.setAlias(imprintMethodValue);	
 	  imprintMethodList.add(imprMethod);
 
+		}
 		}
 		return imprintMethodList;
 	}
