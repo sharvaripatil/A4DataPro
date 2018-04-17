@@ -96,8 +96,10 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		
 	}
 	public List<Values> getValues(String dimensionValue, String dimensionUnits,
-			String dimensionType) {
-
+			String dimensionType, List<Values> valuesList) {
+		if(CollectionUtils.isEmpty(valuesList)){
+			valuesList=new ArrayList<>();
+		}
 		String dimensionValueArr[] = dimensionValue
 				.split(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 		String dimensionUnitsArr[] = dimensionUnits
@@ -106,7 +108,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 				.split(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 
 		ArrayList<Value> valueList = new ArrayList<Value>();
-		List<Values> valueslist = new ArrayList<Values>();
+		//List<Values> valueslist = new ArrayList<Values>();
 
 		Values valuesObj = new Values();
 		Value valueObj = null;
@@ -122,46 +124,55 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		}
 
 		valuesObj.setValue(valueList);
-		valueslist.add(valuesObj);
+		valuesList.add(valuesObj);
 
-		return valueslist;
+		return valuesList;
 	}
 
 	public List<ImprintMethod> getImprintMethodValues(String imprintMethod,
 			List<ImprintMethod> imprintMethodList) {
-		List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
-		imprintMethod = imprintMethod.replace("4-color process", "Full Color");
-		imprintMethod = imprintMethod.replace("Pad printed", "Pad Print");
-		imprintMethod = imprintMethod.replace("Screen printed", "Silkscreen");
-		imprintMethod = imprintMethod.replace("Full-color digital",
-				"Full Color");
-
+		//String tempAlias=imprintMethod;
+		String tempStr[]=imprintMethod.split(",");
 		ImprintMethod imprMethod = new ImprintMethod();
-		ImprintMethod imprMethod1 = new ImprintMethod();
-
-		if (imprintMethod.contains("Laser")) {
-			imprMethod = new ImprintMethod();
-			imprMethod.setAlias("Laser Engraved");
-			imprMethod.setType("Laser Engraved");
-			imprintMethodsList.add(imprMethod);
+		//List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
+		//////////////
+		if(CollectionUtils.isEmpty(imprintMethodList)){
+			imprintMethodList = new ArrayList<>();
 		}
-
-		else {
-			List<String> finalImprintValues = getImprintValue(imprintMethod
+		for (String impValue : tempStr) {
+			String tempAlias=impValue.trim();
+			impValue=impValue.toUpperCase().trim();
+			impValue = impValue.replace("4-COLOR PROCESS", "Full Color");
+			impValue = impValue.replace("PAD PRINTED", "Pad Print");
+			impValue = impValue.replace("SCREEN PRINTED", "Silkscreen");
+			impValue = impValue.replace("FULL-COLOR DIGITAL","Full Color");
+			if (impValue.contains("LASER")){
+				impValue="Laser Engraved";
+			}
+			List<String> finalImprintValues = getImprintValue(impValue
 					.toUpperCase().trim());
-			for (String innerValue : finalImprintValues) {
+			if(!CollectionUtils.isEmpty(finalImprintValues)){
+				 String value =  finalImprintValues.get(finalImprintValues.size() -1);
+			//for (String innerValue : finalImprintValues) {
 				imprMethod = new ImprintMethod();
-				imprMethod.setAlias(innerValue);
-				imprMethod.setType(innerValue);
-				imprintMethodsList.add(imprMethod);
-			}
-			if (imprintMethodsList.isEmpty()) {
-				imprMethod1.setAlias("Printed");
-				imprMethod1.setType("Printed");
-				imprintMethodsList.add(imprMethod1);
+				imprMethod.setAlias(tempAlias);
+				imprMethod.setType(value);
+				imprintMethodList.add(imprMethod);
+			//}
+			}else{
+				imprMethod = new ImprintMethod();
+				imprMethod.setAlias(tempAlias);
+				imprMethod.setType("Other");
+				imprintMethodList.add(imprMethod);
 			}
 		}
-		return imprintMethodsList;
+		///////////////////
+		if (imprintMethodList.isEmpty()) {
+			imprMethod.setAlias("Unimprinted");
+			imprMethod.setType("Unimprinted");
+			imprintMethodList.add(imprMethod);
+		}
+		return imprintMethodList;
 	}
 
 	public List<String> getImprintValue(String value) {
@@ -174,15 +185,18 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		return finalImprintValues;
 	}
 
-	public ProductConfigurations addImprintMethod(
-			ProductConfigurations productConfigObj) {
-		List<ImprintMethod> imprintMethodList = new ArrayList<>();
+	public List<ImprintMethod> addUNImprintMethod(
+			List<ImprintMethod> imprintMethodList) {
+	//	List<ImprintMethod> imprintMethodList = new ArrayList<>();
+		if(CollectionUtils.isEmpty(imprintMethodList)){
+			imprintMethodList = new ArrayList<>();
+		}
 		ImprintMethod imprintMethodObj = new ImprintMethod();
 		imprintMethodObj.setAlias("Unimprinted");
 		imprintMethodObj.setType("Unimprinted");
 		imprintMethodList.add(imprintMethodObj);
-		productConfigObj.setImprintMethods(imprintMethodList);
-		return productConfigObj;
+		//productConfigObj.setImprintMethods(imprintMethodList);
+		return imprintMethodList;
 	}
 
 	public LookupServiceData getLookupServiceDataObj() {
@@ -352,9 +366,12 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		return imprintSizeList;
 	}*/
 	
-	public List<ImprintSize> getimprintsize(StringBuilder firstImprintSize) {
+	public List<ImprintSize> getimprintsize(String firstImprintSize,List<ImprintSize> imprintSizeList) {
+		 if(CollectionUtils.isEmpty(imprintSizeList)){
+			 imprintSizeList=new ArrayList<ImprintSize>();
+		 }
 		String tempStr[]=firstImprintSize.toString().split("___");
-		 List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
+		// List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
 		 List<String> dupList =new ArrayList<String>();
 	for (String impValue : tempStr) {
 		String ImprintSizeValue=impValue.replace("null xnull","");
@@ -406,6 +423,9 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 	public List<PriceGrid> getImprintMethodUpcharges(Map<String, String> upchargeValues,List<ImprintMethod> imprintMethodList,List<PriceGrid> existingPriceGrid){
 		String imprintMethods = imprintMethodList.stream().map(ImprintMethod::getAlias)
 															.collect(Collectors.joining(","));
+		String strImpArr[]=imprintMethods.split(",");
+		for (String impMtdValue : strImpArr) {
+		
 		for (Map.Entry<String, String>  values: upchargeValues.entrySet()) {
 			 String upchargeType =  values.getKey();
 			 String[] upchareVal = values.getValue().split("_");
@@ -435,14 +455,22 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 				 upUsageType="Per Order";
 			 }
 			existingPriceGrid = solidDimensionPriceGridParser.getUpchargePriceGrid("1", priceVal, disCount, "Imprint method", "n",
-					"USD", imprintMethods, upChargeTypeVal, upUsageType,1, "1___1___1___1___1___1___1___1___1___1", existingPriceGrid);
+					"USD", impMtdValue, upChargeTypeVal, upUsageType,1, "1___1___1___1___1___1___1___1___1___1", existingPriceGrid);
 		}
+	}
+		
 		return existingPriceGrid;
 	}
 	public List<PriceGrid> getAdditionalColorRunUpcharge(String discountCode,String quantity,String prices,List<PriceGrid> existingPriceGrid,String upchargeType){
 	  
-		
-		existingPriceGrid = solidDimensionPriceGridParser.getUpchargePriceGrid(quantity, prices, discountCode, "Additional Colors", "n",
+		int qantyLen=prices.split("___").length;
+		String quantityTemp = "1";
+		if(qantyLen>1){
+		for (int i = 2; i <=qantyLen; i++) {
+			quantityTemp=quantityTemp.concat("___")+Integer.toString(i);
+		}
+		}
+		existingPriceGrid = solidDimensionPriceGridParser.getUpchargePriceGrid(quantityTemp, prices, discountCode, "Additional Colors", "n",
 				"USD", "Additional Color",upchargeType, "Other", 1, "1___1___1___1___1___1___1___1___1___1",  existingPriceGrid);
 	   
 		return existingPriceGrid;
@@ -494,23 +522,23 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			//colorName = colorName.trim();
 			
 			colorObj = new Color();
-			String colorGroup = SolidDimApplicationConstatnt.getColorGroup(colorName.trim());
+			//String colorGroup = SolidDimApplicationConstatnt.getColorGroup(colorName.trim());
 			
 			//if (colorGroup == null) {
 				//if (colorGroup!=null && colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
-			if (colorGroup!=null && (colorName.contains("/") || colorGroup.contains(ApplicationConstants.CONST_DELIMITER_FSLASH))) {
+			if (colorName!=null && (colorName.contains("/") || colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH))) {
 				
 				/*if(colorGroup==null){
 					colorGroup=colorName;
 				}*/
-				colorGroup=colorGroup.replaceAll("&","/");
-				colorGroup=colorGroup.replaceAll(" w/","/");
-				colorGroup=colorGroup.replaceAll(" W/","/");
+				colorName=colorName.replaceAll("&","/");
+				colorName=colorName.replaceAll(" w/","/");
+				colorName=colorName.replaceAll(" W/","/");
 				
 				//if (colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
-					if(isComboColor(colorGroup)){
+					if(isComboColor(colorName)){
 						List<Combo> listOfCombo = null;
-						String[] comboColors = CommonUtility.getValuesOfArray(colorGroup,
+						String[] comboColors = CommonUtility.getValuesOfArray(colorName,
 								ApplicationConstants.CONST_DELIMITER_FSLASH);
 						String colorFirstName = SolidDimApplicationConstatnt.getColorGroup(comboColors[0].trim());
 						colorObj.setName(colorFirstName == null?"Other":colorFirstName);
@@ -528,11 +556,11 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 							colorComboSecondName = colorComboSecondName == null?"Other":colorComboSecondName;
 							listOfCombo = getColorsCombo(colorComboFirstName,colorComboSecondName, combosSize);
 						}
-						String alias = colorGroup.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH, "-");
+						String alias = colorName.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH, "-");
 						colorObj.setAlias(alias);
 						colorObj.setCombos(listOfCombo);
 					} else {
-						String[] comboColors = CommonUtility.getValuesOfArray(colorGroup,
+						String[] comboColors = CommonUtility.getValuesOfArray(colorName,
 								ApplicationConstants.CONST_DELIMITER_FSLASH);
 						String mainColorGroup = SolidDimApplicationConstatnt.getColorGroup(comboColors[0].trim());
 						if(mainColorGroup != null){
@@ -551,6 +579,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 					colorObj.setAlias(colorName);
 				}*/
 			} else {
+				String colorGroup = SolidDimApplicationConstatnt.getColorGroup(colorName.trim());
 				if (colorGroup == null) {
 					colorGroup = ApplicationConstants.CONST_VALUE_TYPE_OTHER;
 					}
@@ -634,5 +663,36 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		this.solidDimensionPriceGridParser = solidDimensionPriceGridParser;
 	}
    
-	
+	public static List<Object> getValuesObj(String dimensionValue, String dimensionUnits,
+			String dimensionType, List<Object> valuesList) {
+		if(CollectionUtils.isEmpty(valuesList)){
+			valuesList=new ArrayList<>();
+		}
+		String dimensionValueArr[] = dimensionValue
+				.split(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+		String dimensionUnitsArr[] = dimensionUnits
+				.split(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+		String dimensionTypeArr[] = dimensionType
+				.split(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+
+		//ArrayList<Value> valueList = new ArrayList<Value>();
+		//List<Values> valueslist = new ArrayList<Values>();
+
+		Value valueObj = null;
+
+		for (int i = 0; i < dimensionValueArr.length; i++) {
+			valueObj = new Value();
+			valueObj.setValue(dimensionValueArr[i]);
+			valueObj.setUnit(GoldstarCanadaLookupData.Dimension1Units
+					.get(dimensionUnitsArr[i]));
+			valueObj.setAttribute(GoldstarCanadaLookupData.Dimension1Type
+					.get(dimensionTypeArr[i]));
+			valuesList.add(valueObj);
+		}
+
+		//valuesList.setValue(valueList);
+		//aluesList.add(valuesObj);
+
+		return valuesList;
+	}
 }
