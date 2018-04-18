@@ -72,7 +72,7 @@ public class FileUpload {
 		try  {
 			//if file upload for Production ,please change the environemnt Type "Sand" to "Prod"
 			accessToken = loginService.doLogin(fileBean.getAsiNumber().trim(),
-					fileBean.getUserName().trim(), fileBean.getPassword().trim(), "Prod");//here change environment type
+					fileBean.getUserName().trim(), fileBean.getPassword().trim(), "Sand");//here change environment type
 			if (accessToken != null) {
 				if (ApplicationConstants.CONST_STRING_UN_AUTHORIZED.equals(accessToken)) {
 					accessToken = null;
@@ -96,7 +96,7 @@ public class FileUpload {
 			if(parserObject != null){ // new implemention
 				//if file upload for Production ,please change the environemnt Type "Sand" to "Prod"
 				finalResult = parserObject.readExcel(accessToken, workbook, 
-                        Integer.valueOf(asiNumber), batchId,"Prod");//here change environment type
+                        Integer.valueOf(asiNumber), batchId,"Sand");//here change environment type
 		    	if (finalResult != null) {
 					parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 				}
