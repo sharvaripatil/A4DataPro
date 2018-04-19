@@ -491,7 +491,7 @@ public class SunGraphixRevisedMapping implements IExcelParser{
 								 priceGrids = sunGraphixPriceGridParser.getPriceGrids(
 										 dieCharge,"1",dieDisc,
 											ApplicationConstants.CONST_STRING_CURRENCY_USD,"",false,
-											"false",chargeName,"Imprint Method",new Integer(1),"Die Charge", "Per Order","Optional",
+											"false",chargeName,"Imprint Method",new Integer(1),"Die Charge", "Per Order","Required",
 											priceGrids);
 							}
 							 productExcelObj.setPriceGrids(priceGrids);
