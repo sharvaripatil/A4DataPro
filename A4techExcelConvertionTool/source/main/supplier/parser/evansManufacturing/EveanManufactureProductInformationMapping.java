@@ -68,17 +68,17 @@ public class EveanManufactureProductInformationMapping {
 						Cell cell = cellIterator.next();
 						// String xid = null;
 						columnIndex = cell.getColumnIndex();
-						if (columnIndex == 1) {
+						if (columnIndex == 0) {
 							productId = getProductXid(nextRow);
 							checkXid = true;
 						} else {
 							checkXid = false;
 						}
 
-						if (columnIndex + 1 == 1) {
+						/*if (columnIndex + 1 == 1) {
 							productId = getProductXid(nextRow);
 							checkXid = true;
-						} /*
+						}*/ /*
 							 * else { checkXid = false; }
 							 */
 						if (checkXid) {
@@ -109,6 +109,8 @@ public class EveanManufactureProductInformationMapping {
 								productExcelObj = new Product();
 								shippingInfo = new StringBuilder();
 								shippingDimension = new StringBuilder();
+								imprintSizeAndLoc = new StringBuilder();
+								packageValues = new StringBuilder();
 								existingApiProduct = postServiceImpl.getProduct(accessToken, productId, environmentType);
 								if (existingApiProduct == null) {
 									_LOGGER.info("Existing Xid is not available,product treated as new product");
@@ -116,7 +118,7 @@ public class EveanManufactureProductInformationMapping {
 								
 								} else {
 									productExcelObj = existingApiProduct;
-									//productExcelObj = proInfoAttributeParser.keepExistingProductData(productExcelObj);
+									productExcelObj = eveanAttributeParser.keepExistingProductData(productExcelObj);
 									productConfigObj = productExcelObj.getProductConfigurations();
 									priceGrids = productExcelObj.getPriceGrids();
 									if(CollectionUtils.isEmpty(priceGrids)){
@@ -127,11 +129,11 @@ public class EveanManufactureProductInformationMapping {
 								}
 							}
 						}
-						if (columnIndex == ApplicationConstants.CONST_NUMBER_ZERO) {
+						/*if (columnIndex == ApplicationConstants.CONST_NUMBER_ZERO) {
 							continue;
-						}
+						}*/
 						//headerName = getHeaderName(columnIndex, headerRow);
-						switch (columnIndex) {
+						switch (columnIndex+1) {
 						case 1:
 							productExcelObj.setExternalProductId(productId);
 							break;
@@ -144,10 +146,12 @@ public class EveanManufactureProductInformationMapping {
 							// as per client feedback , no need process this field
 							break;
 						case 4:// product name
-                      productExcelObj.setName(CommonUtility.getStringLimitedChars(cell.getStringCellValue(), 60));
+							String name = cell.getStringCellValue();
+                            productExcelObj.setName(getFinalProductName(name));
 							break;
 						case 5://description
-							productExcelObj.setDescription(cell.getStringCellValue());
+							String desc = cell.getStringCellValue();
+							productExcelObj.setDescription(getFinalDescription(desc));
 							break;
 						case 6:
 						case 7:
@@ -282,6 +286,7 @@ public class EveanManufactureProductInformationMapping {
 							break;
 						case 39:// fob
 							String fobVal = cell.getStringCellValue();
+							fobVal = fobVal.replaceAll("[^0-9]", "").trim();
 							List<FOBPoint> fobPointList = eveanAttributeParser.getFobPoint(fobVal, accessToken, environmentType);
 							productExcelObj.setFobPoints(fobPointList);
 							break;
@@ -330,6 +335,24 @@ public class EveanManufactureProductInformationMapping {
 			}
 		}
 		return productXid;
+	}
+	private String getFinalProductName(String name){
+		if(name.contains("™")){
+			name = name.replaceAll("™", "");
+		}
+		name = CommonUtility.getStringLimitedChars(name,60);
+		return name;
+	}
+	private String getFinalDescription(String desc){
+		String fristChar = desc.substring(0,1);
+		fristChar = fristChar.replaceAll("[^a-zA-Z0-9]", "");
+		if(StringUtils.isEmpty(fristChar)){
+			desc = desc.substring(1);	
+		} 
+		if(desc.contains("•")){
+			desc = desc.replaceAll("•", ".").trim();
+		}
+		return desc;
 	}
 		
 	public PostServiceImpl getPostServiceImpl() {

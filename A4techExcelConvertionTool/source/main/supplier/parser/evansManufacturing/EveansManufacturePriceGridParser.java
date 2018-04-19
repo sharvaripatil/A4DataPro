@@ -14,7 +14,6 @@ import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
-import com.a4tech.util.LookupData;
 
 public class EveansManufacturePriceGridParser {
 
@@ -124,7 +123,7 @@ public class EveansManufacturePriceGridParser {
 				String[] configValues = criterias.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 				for (String Value : configValues) {
 					configs = new PriceConfiguration();
-					String[] configValue = criterias.split(":");
+					String[] configValue = Value.split(":");
 					configs.setCriteria(configValue[0]);
 					configs.setValue(Arrays.asList((Object) configValue[1]));
 					if(!StringUtils.isEmpty(optionName)){

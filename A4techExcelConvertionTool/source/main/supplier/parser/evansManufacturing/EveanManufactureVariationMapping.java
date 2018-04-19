@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.util.StringUtil;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Color;
@@ -31,14 +32,15 @@ public class EveanManufactureVariationMapping{
 		Set<String> productXids = new HashSet<String>();
 		List<String> repeatRows = new ArrayList<>();
 		ProductConfigurations productConfigObj = null;
-		Product productExcelObj = new Product();
+		//Product productExcelObj = new Product();
 		//String productId = null;
-		String xid = null;
+		//String xid = null;
 		String prdXid = null;
-		List<String> productIds = new ArrayList<>(); 
+		List<String> productIds = new ArrayList<>(); // this list used to identify product fetched from map or not
 		List<String> colorsList = new ArrayList<>();
 		List<String> imageList = new ArrayList<>();
 		StringBuilder colorImage = new StringBuilder();
+		int firstRowNo = 0 ;
 		try {
 			Iterator<Row> iterator = sheet.iterator();
 			Product existingProduct = null;
@@ -48,51 +50,63 @@ public class EveanManufactureVariationMapping{
 					if (nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO) {
 						continue;
 					}
-					Cell cell1 = nextRow.getCell(1);
+					Cell cell1 = nextRow.getCell(0);
+					if (prdXid != null) {
+						productXids.add(prdXid);
+					}
 					prdXid = CommonUtility.getCellValueStrinOrInt(cell1);
+					if(StringUtils.isEmpty(prdXid)){
+						continue;
+					}
 					// this condition used to check xid is present list or not ,
 					// if xid present in Map means already fetch product from
 					// Map
 					if (!productIds.contains(prdXid)) {
 						existingProduct = productMaps.get(prdXid);
+						if(existingProduct == null){
+							continue;
+						}
 						productConfigObj = existingProduct.getProductConfigurations();
+						firstRowNo = nextRow.getRowNum();
 					}
 					productIds.add(prdXid);
 					Iterator<Cell> cellIterator = nextRow.cellIterator();
-					if (xid != null) {
-						productXids.add(xid);
-					}
 					boolean checkXid = false;
 					while (cellIterator.hasNext()) {
 						Cell cell = cellIterator.next();
 						columnIndex = cell.getColumnIndex();
-						if (columnIndex + 1 == 1) {
-							Cell cell2 = nextRow.getCell(1);
-							prdXid = CommonUtility.getCellValueStrinOrInt(cell2);
+						if (columnIndex == 0) {
+							/*Cell cell2 = nextRow.getCell(1);
+							prdXid = CommonUtility.getCellValueStrinOrInt(cell2);*/
 							checkXid = true;
 						} else {
 							checkXid = false;
 						}
+						if (columnIndex == 0){
+							if(repeatRows.contains(prdXid)){
+								checkXid = false;
+							}
+						}
 						if (checkXid) {
-							if (!productXids.contains(xid)) {
+							if (!productXids.contains(prdXid)) {
 								if (nextRow.getRowNum() != 1) {
 									List<Color> colorList = eveanManufacturAttriParser.getProductColor(colorsList);
 									productConfigObj.setColors(colorList);
-									productExcelObj.setProductConfigurations(productConfigObj);
+									existingProduct.setProductConfigurations(productConfigObj);
 									List<Image>  imagesList = eveanManufacturAttriParser.getImages(imageList);
-									productExcelObj.setImages(imagesList);
+									existingProduct.setImages(imagesList);
 									productMaps.put(prdXid, existingProduct);
 									repeatRows.clear();
 									colorsList = new ArrayList<>();
 									imageList = new ArrayList<>();
 								}
-								if (!productXids.contains(xid)) {
-									productXids.add(xid);
-									repeatRows.add(xid);
+								if (!productXids.contains(prdXid)) {
+									productXids.add(prdXid);
+									//repeatRows.add(prdXid);
 								}
 							}
 						} else {
-							if (productXids.contains(xid) && repeatRows.size() != 1) {
+							if (productXids.contains(prdXid) && repeatRows.size() != 0) {
 								if (isRepeateColumn(columnIndex + 1)) {
 									continue;
 								}
@@ -106,7 +120,7 @@ public class EveanManufactureVariationMapping{
 							break;
 						case 5:// COLOR
 							String color = cell.getStringCellValue();
-							 colorImage.append(color).append(",");
+							 colorImage.append(color).append("##");
 							 colorsList.add(color);
 							break;
 						case 6: //Images
@@ -116,13 +130,13 @@ public class EveanManufactureVariationMapping{
 					} // end inner while loop
 					}
 					imageList.add(colorImage.toString());
+					colorImage = new StringBuilder();
+					repeatRows.add(prdXid);
 				} catch (Exception e) {
 					_LOGGER.error(
-							"Error while Processing ProductId and cause :" + productExcelObj.getExternalProductId()
+							"Error while Processing ProductId and cause :" + existingProduct.getExternalProductId()
 									+ " " + e.getMessage() + "at column number(increament by 1):" + columnIndex);
 				}
-			}
-						if (!StringUtils.isEmpty(productExcelObj.getExternalProductId())) {
 			}
 			repeatRows.clear();
 			productMaps.put(prdXid, existingProduct);

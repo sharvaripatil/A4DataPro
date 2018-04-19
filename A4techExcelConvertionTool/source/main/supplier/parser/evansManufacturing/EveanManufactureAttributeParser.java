@@ -179,10 +179,10 @@ public class EveanManufactureAttributeParser {
 		  }
 		  ProductConfigurations configuration = product.getProductConfigurations();
 		  String priceVal = "";
-		  List<AdditionalLocation> listOfAdditionalLocation = null;
-		  List<AdditionalColor> listOfAdditionalColor = null;
-		  List<ImprintLocation> listOfImprintLocation = null;
-		  List<ImprintMethod>   listOfImprintMethod = null;
+		  List<AdditionalLocation> listOfAdditionalLocation = new ArrayList<>();
+		  List<AdditionalColor> listOfAdditionalColor = new ArrayList<>();
+		  List<ImprintLocation> listOfImprintLocation = new ArrayList<>();
+		  List<ImprintMethod>   listOfImprintMethod = new ArrayList<>();
 		  List<PriceGrid> prieGridList = new ArrayList<>();
 		  priceVal = runChargeVal.replaceAll("[^0-9.]", "");
 		  String priceInclude = runChargeVal.split("\\)")[1].trim();
@@ -271,7 +271,7 @@ public class EveanManufactureAttributeParser {
           List<AdditionalColor> listOfAdditionalColor = configuration.getAdditionalColors();
           List<AdditionalLocation> listOfAdditionalLocation = configuration.getAdditionalLocations();
           List<ImprintLocation>  listOfImprintLocation = configuration.getImprintLocation();
-          List<PriceGrid> prieGridList = product.getPriceGrids();
+          List<PriceGrid> priceGridList = product.getPriceGrids();
 		  if(isSpecialWordsSetupcharge(setupChargeVal)){
 			  return product;
 		  }
@@ -279,6 +279,16 @@ public class EveanManufactureAttributeParser {
 		  if(CollectionUtils.isEmpty(priceGrid)){
 			  priceGrid = new ArrayList<>();
 		  }
+		  if(CollectionUtils.isEmpty(listOfAdditionalColor)){
+			  listOfAdditionalColor = new ArrayList<>();
+		  }
+          if(CollectionUtils.isEmpty(listOfAdditionalLocation)){
+        	  listOfAdditionalLocation = new ArrayList<>();
+		  }
+          if(CollectionUtils.isEmpty(listOfImprintLocation)){
+        	  listOfImprintLocation = new ArrayList<>();
+		  }
+          
 		  String[] setupChargeVals = null;
 		  if(setupChargeVal.contains(";")){
 			   setupChargeVals = CommonUtility.getValuesOfArray(setupChargeVal, ";");  
@@ -295,14 +305,20 @@ public class EveanManufactureAttributeParser {
 				  setupChargeVals = new String[]{setupChargeVal};  
 			  }
 		  }
-		  for (String upchargeVal : setupChargeVals) {
+ 		  for (String upchargeVal : setupChargeVals) {
 			  if(StringUtils.isEmpty(upchargeVal)){
 				  continue;
 			  }
 			  String priceVal = upchargeVal.replaceAll("[^0-9.]", "").trim();
 			 String upchargeType= "";
 			  String upchargeName = "";String criteriaType = "";
-			  String priceInclude = upchargeVal.split("\\)")[1].trim();
+			  String priceInclude = "";
+			  if(upchargeVal.contains(")")){
+				  String[] priceIncludes = CommonUtility.getValuesOfArray(upchargeVal, "\\)");
+				  if(priceIncludes.length ==2){
+					  priceInclude = priceIncludes[1].trim();  
+				  }
+			  }
 			 if(upchargeVal.contains("imprint")){
 				 if(columnName.equals("setupCharge")){
 					 upchargeType = "Set-up Charge"; 
@@ -314,7 +330,7 @@ public class EveanManufactureAttributeParser {
 				  listOfImprintLocation = getImprintLocation(upchargeName, listOfImprintLocation);
 			 } else if(upchargeVal.contains("color/position")){
 				 if(columnName.equals("setupCharge")){
-					 upchargeType = "Add. Color Charge";  
+					 upchargeType = "Set-up Charge";  
 				 } else {
 					 upchargeType = "Re-order Charge";
 				 }
@@ -324,17 +340,17 @@ public class EveanManufactureAttributeParser {
 				 listOfAdditionalColor = getAdditinalColor("Additional Color", listOfAdditionalColor);
 			 } else if(upchargeVal.contains(" per position")){
 				 if(columnName.equals("setupCharge")){
-					 upchargeType = "Imprint Location Charge";   
+					 upchargeType = "Set-up Charge";   
 				 } else {
 					 upchargeType = "Re-order Charge";
 				 }
 				  listOfAdditionalLocation = getAdditinalLocation("Additional Position",listOfAdditionalLocation);
-				  criteriaType = "Imprint Location";
+				  criteriaType = "Additional Location";
 				  upchargeName = "Additional Position";
 						 
 			 } else if(upchargeVal.contains("per color") || upchargeVal.contains("additional color")){
 				 if(columnName.equals("setupCharge")){
-					 upchargeType = "Add. Color Charge";   
+					 upchargeType = "Set-up Charge";   
 				 } else {
 					 upchargeType = "Re-order Charge";
 				 }
@@ -343,27 +359,36 @@ public class EveanManufactureAttributeParser {
 				  upchargeName = "Additional Color";
 			 } else if(upchargeVal.contains("second color")){
 				 if(columnName.equals("setupCharge")){
-					 upchargeType = "Add. Color Charge";   
+					 upchargeType = "Set-up Charge";   
 				 } else {
 					 upchargeType = "Re-order Charge";
 				 }
 				 listOfAdditionalColor    = getAdditinalColor("Second color",listOfAdditionalColor);
 				  criteriaType = "Additional Colors";
 				  upchargeName = "Second color";
+			 } else {
+				 if(columnName.equals("setupCharge")){
+					 upchargeType = "Set-up Charge";   
+				 } else {
+					 upchargeType = "Re-order Charge";
+				 }
+				 listOfAdditionalColor = getAdditinalColor("Additional Color",listOfAdditionalColor);
+				  criteriaType = "Additional Colors";
+				  upchargeName = "Additional Color";
 			 }
-			 prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", criteriaType, false, "USD",
-					 upchargeName, upchargeType, "Other", 1, prieGridList, "", priceInclude);
+			 priceGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", criteriaType, false, "USD",
+					 upchargeName, upchargeType, "Other", 1, priceGridList, "", priceInclude);
 		}
 		  configuration.setAdditionalColors(listOfAdditionalColor);
 		  configuration.setAdditionalLocations(listOfAdditionalLocation);
 		  configuration.setImprintLocation(listOfImprintLocation);
-		  product.setPriceGrids(prieGridList);
+		  product.setPriceGrids(priceGridList);
 		  return product;
 	  }
 	public ProductConfigurations getProductImprintMethods(String val,ProductConfigurations configuration){
 		List<ImprintLocation> imprintLocationList = configuration.getImprintLocation();
 		List<ImprintMethod> imprintMethodList = configuration.getImprintMethods();
-		ImprintMethod imprintMethodObj = null;
+		ImprintMethod imprintMethodObj = null;  
 		if(CollectionUtils.isEmpty(imprintMethodList)){
 			imprintMethodList = new ArrayList<>();
 		}
@@ -372,7 +397,7 @@ public class EveanManufactureAttributeParser {
 		for (String imprVal : imprMethodVals) {
 			imprintMethodObj = new ImprintMethod();
 			  if(imprVal.contains("ImprintLocation")){
-				  imprintLocationList = getImprintLocation(imprVal.split("=")[1], imprintLocationList);
+				  imprintLocationList = getImprintLocation(imprVal.split("=")[1].trim(), imprintLocationList);
 				  continue;
 			  } else if(imprVal.equals("Other")){
 				  imprintMethodObj.setType("Other");
@@ -438,16 +463,15 @@ public class EveanManufactureAttributeParser {
 	     return additionalLocationList;
 	 }
 	 public List<AdditionalColor> getAdditinalColor(String addColorVal,List<AdditionalColor> additionalColorList){
-		 List<AdditionalColor> listOfAdditionalColor = new ArrayList<>();
 		 AdditionalColor additionalColorObj = null;
 		 String allAdditionalColor = additionalColorList.stream().map(addColor -> addColor.getName())
 					.collect(Collectors.joining(","));
 		 if(!allAdditionalColor.contains(addColorVal)){
 			 additionalColorObj = new AdditionalColor();
 			 additionalColorObj.setName(addColorVal);
-			 listOfAdditionalColor.add(additionalColorObj);
+			 additionalColorList.add(additionalColorObj);
 		 }
-	     return listOfAdditionalColor;
+	     return additionalColorList;
 	 }
 	 private List<ImprintLocation> getImprintLocation(String imprLocVal,List<ImprintLocation> imprintLocationList){
 		 ImprintLocation imprintLocationObj = new ImprintLocation();
@@ -473,11 +497,16 @@ public class EveanManufactureAttributeParser {
 	 public ProductConfigurations getImprintLocationAndImprintSize(String imprVal,ProductConfigurations configuration){
 		 List<ImprintLocation> imprintLocationList = configuration.getImprintLocation();
 		 List<ImprintSize>     imprintSizeList = new ArrayList<>();
+		 if(CollectionUtils.isEmpty(imprintLocationList)){
+			 imprintLocationList = new ArrayList<>();
+		 }
 		 ImprintSize imprintSizeObj = null;
 		 ImprintLocation  imprintLocationObj = null;
 		 String[] imprLocAndSizes = CommonUtility.getValuesOfArray(imprVal, ",");
 		 String allImrintLocations = imprintLocationList.stream().map(location -> location.getValue())
 					.collect(Collectors.joining(","));
+		 List<String> tempImprLoc = new ArrayList<>();
+		 List<String> tempImprSize = new ArrayList<>();
 		 for (String imprName : imprLocAndSizes) {
 			 imprintSizeObj = new ImprintSize();
 			 imprintLocationObj = new ImprintLocation();
@@ -487,16 +516,27 @@ public class EveanManufactureAttributeParser {
 			 } else if(imprName.contains("-")){
 				 imprVals = CommonUtility.getValuesOfArray(imprName, "-");
 			 } else {
-				 imprintSizeObj.setValue(imprName);
-				 imprintSizeList.add(imprintSizeObj);
+				 
+				 if(!tempImprSize.contains(imprName)){
+					 imprintSizeObj.setValue(imprName);
+					 imprintSizeList.add(imprintSizeObj);	
+					 tempImprSize.add(imprName);
+				 } 
+				 
 			 }
 			 if(imprVals !=null){
-				 imprintSizeObj.setValue(imprVals[1].trim());
-				 imprintSizeList.add(imprintSizeObj);
+				 String imprSize = imprVals[1].trim();
+				 if(!tempImprSize.contains(imprName)){
+					 imprintSizeObj.setValue(imprSize);
+					 imprintSizeList.add(imprintSizeObj);
+					 tempImprSize.add(imprName);
+				 } 
+				
 				String imprLocVal =  imprVals[0].trim();
-				 if(!allImrintLocations.contains(imprLocVal)){
+				 if(!allImrintLocations.contains(imprLocVal) && !tempImprLoc.contains(imprLocVal)){
 					 imprintLocationObj.setValue(imprLocVal);
-					 imprintLocationList.add(imprintLocationObj);	 
+					 imprintLocationList.add(imprintLocationObj);	
+					 tempImprLoc.add(imprLocVal);
 				 }
 			 }
 		}
@@ -748,7 +788,7 @@ public class EveanManufactureAttributeParser {
 		Image imageObj = null;
 		int imageRank = 1;
 		for (String colorImgVal : colorImgVals) {
-			String[] vals = CommonUtility.getValuesOfArray(colorImgVal,",");
+			String[] vals = CommonUtility.getValuesOfArray(colorImgVal,"##");
 			imageObj = new Image();
 			String color = vals[0];
 			String imgUrl = vals[1];
@@ -820,6 +860,7 @@ public class EveanManufactureAttributeParser {
 		colorObj.setCombos(listOfComos);
 		return colorObj;
 	}
+	
   private boolean isSpecialWordsRuncharge(String val){
 		if (val.equalsIgnoreCase("For two or more colors see vibrant color option below")
 				|| val.equalsIgnoreCase("For two or more colors, see vibrant color option below") ||

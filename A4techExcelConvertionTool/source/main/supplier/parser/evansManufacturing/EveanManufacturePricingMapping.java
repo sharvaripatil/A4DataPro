@@ -16,8 +16,10 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
+import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -28,9 +30,11 @@ public class EveanManufacturePricingMapping{
     private PostServiceImpl 				postServiceImpl;
 	private ProductDao 						productDaoObj;
 	
-	public Map<String, Product> readMapper(Map<String, Product> productMaps, Sheet sheet,String accessToken,int asiNumber,int batchId,String environmentType) {
+	public String readMapper(Map<String, Product> productMaps, Sheet sheet,String accessToken,int asiNumber,int batchId,String environmentType) {
 
 		int columnIndex = 0;
+		String finalResult = null;
+		ProductConfigurations configuration = null;
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
 		Set<String> productXids = new HashSet<String>();
@@ -57,7 +61,11 @@ public class EveanManufacturePricingMapping{
 					productId = getSkuValue(nextRow);
 					if(isFirstProduct){
 						existingProduct = productMaps.get(productId);
+						if(existingProduct == null){
+							continue;
+						}
 						priceGrids = existingProduct.getPriceGrids();
+						 configuration = existingProduct.getProductConfigurations();
 						isFirstProduct = false;
 					}
 					productIds.add(productId);
@@ -85,6 +93,11 @@ public class EveanManufacturePricingMapping{
 									}
 									existingProduct.setPriceType("L");
 									existingProduct.setPriceGrids(priceGrids);
+									 if(StringUtils.isEmpty(configuration.getImprintMethods())){
+										 List<ImprintMethod> imprintMethodList = getImprintMethod("Unimprinted");
+										 configuration.setImprintMethods(imprintMethodList);
+										 existingProduct.setProductConfigurations(configuration);
+									 }
 									int num = postServiceImpl.postProduct(accessToken, existingProduct, asiNumber,
 											batchId, environmentType);
 								 	if(num ==1){
@@ -137,7 +150,7 @@ public class EveanManufacturePricingMapping{
 						case 14:
 						case 17:
 						case 20:
-							String priceQty = CommonUtility.getCellValueDouble(cell);
+							String priceQty = CommonUtility.getCellValueStrinOrInt(cell);
 							if(!StringUtils.isEmpty(priceQty)){
 								
 								listOfQuantity.add(priceQty);
@@ -149,7 +162,7 @@ public class EveanManufacturePricingMapping{
 						case 15:
 						case 18:
 						case 21:
-							String listPrice = CommonUtility.getCellValueStrinOrInt(cell);
+							String listPrice = CommonUtility.getCellValueDouble(cell);
 							if(!StringUtils.isEmpty(listPrice)){
 								listOfPrices.add(listPrice);
 							}
@@ -189,6 +202,11 @@ public class EveanManufacturePricingMapping{
 			repeatRows.clear();
 			existingProduct.setPriceType("L");
 			existingProduct.setPriceGrids(priceGrids);
+			if(StringUtils.isEmpty(configuration.getImprintMethods())){
+				 List<ImprintMethod> imprintMethodList = getImprintMethod("Unimprinted");
+				 configuration.setImprintMethods(imprintMethodList);
+				 existingProduct.setProductConfigurations(configuration);
+			 }
 			int num = postServiceImpl.postProduct(accessToken, existingProduct, asiNumber,
 					batchId, environmentType);
 		 	if(num ==1){
@@ -201,12 +219,13 @@ public class EveanManufacturePricingMapping{
 	 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 	 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 			//productMaps.put(existingProduct.getProductLevelSku(), existingProduct);
+	 	finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
 	 	 productDaoObj.saveErrorLog(asiNumber,batchId);
-			return productMaps;
+			return finalResult;
 		} catch (Exception e) {
 			_LOGGER.error(
 					"Error while Processing " + sheet.getSheetName() + "+ sheet ,Error message: " + e.getMessage());
-			return productMaps;
+			return finalResult;
 		} finally {
 		}
 	}
@@ -222,6 +241,14 @@ public class EveanManufacturePricingMapping{
 		//columnIndex = ProGolfHeaderMapping.getHeaderIndex(headerName);
 		return headerName;
 	}
+	public List<ImprintMethod> getImprintMethod(String imprMethodVal){
+		 List<ImprintMethod> imprintMethodList = new ArrayList<>();
+		 ImprintMethod imprintMethodObj = new ImprintMethod();
+		 imprintMethodObj.setType(imprMethodVal);
+		 imprintMethodObj.setAlias(imprMethodVal);
+		 imprintMethodList.add(imprintMethodObj);
+		 return imprintMethodList;
+	 }
 	/*private String getProductXid(Row row) {
 		Cell xidCell = row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
 		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);

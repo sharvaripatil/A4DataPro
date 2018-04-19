@@ -40,13 +40,12 @@ public class EveanManufacturingCanadaMapping implements IExcelParser{
 			  } else if("Variations".equalsIgnoreCase(sheetName)){
 				 productsMap = eveanVariationMapping.readMapper(productsMap, sheet);
 			  } else if("Product Pricing".equalsIgnoreCase(sheetName)){
-				productsMap = eveanPriceMapping.readMapper(productsMap, sheet, accessToken, asiNumber, batchId,
+				  finalResult = eveanPriceMapping.readMapper(productsMap, sheet, accessToken, asiNumber, batchId,
 						environmentType); 
 			  } else{
 				  _LOGGER.info(sheetName+": "+"sheet is not processed");
 			  }
 		}
-		
 		return finalResult;
 	}
 	public void setEveanProductInfoMapping(EveanManufactureProductInformationMapping eveanProductInfoMapping) {
