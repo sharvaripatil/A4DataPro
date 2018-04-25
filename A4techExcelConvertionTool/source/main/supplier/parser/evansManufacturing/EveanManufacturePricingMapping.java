@@ -1,6 +1,7 @@
 package parser.evansManufacturing;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -47,6 +48,7 @@ public class EveanManufacturePricingMapping{
 		List<String> productIds = new ArrayList<>();
 		List<PriceGrid> priceGrids = null;
 		boolean isFirstProduct = true;
+		String currencyType = "";
 		try {
 			Row  headerRow = null;
 			Iterator<Row> iterator = sheet.iterator();
@@ -58,7 +60,7 @@ public class EveanManufacturePricingMapping{
 						headerRow = nextRow;
 						continue;
 					}
-					productId = getSkuValue(nextRow);
+					productId = getProductXid(nextRow);
 					if(isFirstProduct){
 						existingProduct = productMaps.get(productId);
 						if(existingProduct == null){
@@ -89,29 +91,31 @@ public class EveanManufacturePricingMapping{
 						if (checkXid) {
 							if (!productXids.contains(productId)) {
 								if (nextRow.getRowNum() != 1) {
-									if (!StringUtils.isEmpty(existingProduct.getExternalProductId())) {
+									if (existingProduct != null) {
+										existingProduct.setPriceType("L");
+										existingProduct.setPriceGrids(priceGrids);
+										if (StringUtils.isEmpty(configuration.getImprintMethods())) {
+											List<ImprintMethod> imprintMethodList = getImprintMethod("Unimprinted");
+											configuration.setImprintMethods(imprintMethodList);
+											existingProduct.setProductConfigurations(configuration);
+										}
+										int num = postServiceImpl.postProduct(accessToken, existingProduct, asiNumber,
+												batchId, environmentType);
+										if (num == 1) {
+											numOfProductsSuccess.add("1");
+										} else if (num == 0) {
+											numOfProductsFailure.add("0");
+										} else {
+
+										}
+										_LOGGER.info("list size>>>>>>>" + numOfProductsSuccess.size());
+										_LOGGER.info("Failure list size>>>>>>>" + numOfProductsFailure.size());
 									}
-									existingProduct.setPriceType("L");
-									existingProduct.setPriceGrids(priceGrids);
-									 if(StringUtils.isEmpty(configuration.getImprintMethods())){
-										 List<ImprintMethod> imprintMethodList = getImprintMethod("Unimprinted");
-										 configuration.setImprintMethods(imprintMethodList);
-										 existingProduct.setProductConfigurations(configuration);
-									 }
-									int num = postServiceImpl.postProduct(accessToken, existingProduct, asiNumber,
-											batchId, environmentType);
-								 	if(num ==1){
-								 		numOfProductsSuccess.add("1");
-								 	}else if(num == 0){
-								 		numOfProductsFailure.add("0");
-								 	}else{
-								 		
-								 	}		
-							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
-							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
-								//	productMaps.put(existingProduct.getProductLevelSku(), existingProduct);
 									repeatRows.clear();
 									existingProduct = productMaps.get(productId);
+									if(existingProduct == null){
+										break;
+									}
 									priceGrids = existingProduct.getPriceGrids();
 									//priceGrids = new ArrayList<>();
 									//basePriceGrids = new ArrayList<>();
@@ -142,7 +146,8 @@ public class EveanManufacturePricingMapping{
 							break;
 						case 3:
 							break;
-						case 4: //
+						case 4: // Currency Type
+							 currencyType = cell.getStringCellValue();
 							break;
 						case 5://quantity
 						case 8:
@@ -182,10 +187,12 @@ public class EveanManufacturePricingMapping{
 						} // end inner while loop
 
 					}	
-					priceGrids = eveanManufacturePriceGridParser.getBasePriceGrid(listOfPrices.toString(), listOfQuantity.toString(),
-							listOfDiscount.toString(), "USD", existingProduct.getDistributorOnlyComments(), true, false,
-							"", "", priceGrids, "", "");
-					existingProduct.setDistributorOnlyComments("");
+					if(existingProduct != null){
+						priceGrids = eveanManufacturePriceGridParser.getBasePriceGrid(listOfPrices.toString(), listOfQuantity.toString(),
+								listOfDiscount.toString(),currencyType, existingProduct.getDistributorOnlyComments(), true, false,
+								"", "", priceGrids, "", "");
+						existingProduct.setDistributorOnlyComments("");	
+					}
 				} catch (Exception e) {
 					_LOGGER.error(
 							"Error while Processing ProductId and cause :" + existingProduct.getExternalProductId()
@@ -196,29 +203,27 @@ public class EveanManufacturePricingMapping{
 							existingProduct.getExternalProductId()+"-Failed", asiNumber, batchId);
 				}
 			}
-			if (!StringUtils.isEmpty(existingProduct.getExternalProductId())) {
-
-			}
 			repeatRows.clear();
-			existingProduct.setPriceType("L");
-			existingProduct.setPriceGrids(priceGrids);
-			if(StringUtils.isEmpty(configuration.getImprintMethods())){
-				 List<ImprintMethod> imprintMethodList = getImprintMethod("Unimprinted");
-				 configuration.setImprintMethods(imprintMethodList);
-				 existingProduct.setProductConfigurations(configuration);
-			 }
-			int num = postServiceImpl.postProduct(accessToken, existingProduct, asiNumber,
-					batchId, environmentType);
-		 	if(num ==1){
-		 		numOfProductsSuccess.add("1");
-		 	}else if(num == 0){
-		 		numOfProductsFailure.add("0");
-		 	}else{
-		 		
-		 	}		
-	 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
-	 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
-			//productMaps.put(existingProduct.getProductLevelSku(), existingProduct);
+			if(existingProduct != null){
+				existingProduct.setPriceType("L");
+				existingProduct.setPriceGrids(priceGrids);
+				if(StringUtils.isEmpty(configuration.getImprintMethods())){
+					 List<ImprintMethod> imprintMethodList = getImprintMethod("Unimprinted");
+					 configuration.setImprintMethods(imprintMethodList);
+					 existingProduct.setProductConfigurations(configuration);
+				 }
+				int num = postServiceImpl.postProduct(accessToken, existingProduct, asiNumber,
+						batchId, environmentType);
+			 	if(num ==1){
+			 		numOfProductsSuccess.add("1");
+			 	}else if(num == 0){
+			 		numOfProductsFailure.add("0");
+			 	}else{
+			 		
+			 	}		
+		 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
+		 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());	
+			}
 	 	finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
 	 	 productDaoObj.saveErrorLog(asiNumber,batchId);
 			return finalResult;
@@ -249,15 +254,15 @@ public class EveanManufacturePricingMapping{
 		 imprintMethodList.add(imprintMethodObj);
 		 return imprintMethodList;
 	 }
-	/*private String getProductXid(Row row) {
+	private String getProductXid(Row row) {
 		Cell xidCell = row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
 		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
-		if (StringUtils.isEmpty(productXid)) {
+		if (StringUtils.isEmpty(productXid) || productXid.equals("#N/A")) {
 			xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
 			productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
 		}
 		return productXid;
-	}*/
+	}
 	
 	private String getSkuValue(Row row){
 		Cell xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);

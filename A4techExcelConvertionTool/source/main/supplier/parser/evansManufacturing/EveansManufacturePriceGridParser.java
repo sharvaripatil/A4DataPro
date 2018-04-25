@@ -99,7 +99,11 @@ public class EveansManufacturePriceGridParser {
 			}
 			price.setPrice(listPrice);
 			try {
-				price.setDiscountCode(disCodes[PriceNumber]);
+				if(StringUtils.isEmpty(disCodes[PriceNumber])){
+					price.setDiscountCode("R");
+				} else {
+					price.setDiscountCode(disCodes[PriceNumber]);
+				}
 			}catch(ArrayIndexOutOfBoundsException exce){
 				price.setDiscountCode("R");
 				_LOGGER.error("Invalid Discount code,Set default discount code:R");
@@ -132,13 +136,33 @@ public class EveansManufacturePriceGridParser {
 					priceConfiguration.add(configs);
 				}
 			}else{
-				configs = new PriceConfiguration();
-				configs.setCriteria(criterias);
-				configs.setValue(Arrays.asList((Object) value));
-				if(!StringUtils.isEmpty(optionName)){
-					configs.setOptionName(optionName);
+				if(value.contains(",")){
+					 if(value.contains("&")){
+						 value = value.replaceAll("&", ",");
+					 } else if(value.contains("and")){
+						 value = value.replaceAll("and", ",");
+					 }
+					 String[] configVals = CommonUtility.getValuesOfArray(value, ",");
+					 for (String configValue : configVals) {
+						 configValue = configValue.trim();
+						 configs = new PriceConfiguration();
+							configs.setCriteria(criterias);
+							configs.setValue(Arrays.asList((Object) configValue));
+							if(!StringUtils.isEmpty(optionName)){
+								configs.setOptionName(optionName);
+							}
+							priceConfiguration.add(configs);
+					}
+				} else {
+					configs = new PriceConfiguration();
+					configs.setCriteria(criterias);
+					configs.setValue(Arrays.asList((Object) value));
+					if(!StringUtils.isEmpty(optionName)){
+						configs.setOptionName(optionName);
+					}
+					priceConfiguration.add(configs);	
 				}
-				priceConfiguration.add(configs);
+				
 			}
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Upcharge PriceGrid: "+e.getMessage());

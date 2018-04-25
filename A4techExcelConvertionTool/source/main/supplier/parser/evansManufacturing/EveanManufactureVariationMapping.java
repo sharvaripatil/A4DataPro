@@ -40,6 +40,7 @@ public class EveanManufactureVariationMapping{
 		List<String> colorsList = new ArrayList<>();
 		List<String> imageList = new ArrayList<>();
 		StringBuilder colorImage = new StringBuilder();
+		Set<String> invalidProductIds = new HashSet<>();
 		int firstRowNo = 0 ;
 		try {
 			Iterator<Row> iterator = sheet.iterator();
@@ -50,18 +51,21 @@ public class EveanManufactureVariationMapping{
 					if (nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO) {
 						continue;
 					}
-					Cell cell1 = nextRow.getCell(0);
+					//Cell cell1 = nextRow.getCell(0);
 					if (prdXid != null) {
 						productXids.add(prdXid);
 					}
-					prdXid = CommonUtility.getCellValueStrinOrInt(cell1);
+					prdXid = getProductXid(nextRow);
 					if(StringUtils.isEmpty(prdXid)){
+						continue;
+					}
+					if(invalidProductIds.contains(prdXid)){// this products are not available in product Information Tab
 						continue;
 					}
 					// this condition used to check xid is present list or not ,
 					// if xid present in Map means already fetch product from
 					// Map
-					if (!productIds.contains(prdXid)) {
+					/*if (!productIds.contains(prdXid)) {
 						existingProduct = productMaps.get(prdXid);
 						if(existingProduct == null){
 							continue;
@@ -69,7 +73,7 @@ public class EveanManufactureVariationMapping{
 						productConfigObj = existingProduct.getProductConfigurations();
 						firstRowNo = nextRow.getRowNum();
 					}
-					productIds.add(prdXid);
+					productIds.add(prdXid);*/
 					Iterator<Cell> cellIterator = nextRow.cellIterator();
 					boolean checkXid = false;
 					while (cellIterator.hasNext()) {
@@ -90,16 +94,28 @@ public class EveanManufactureVariationMapping{
 						if (checkXid) {
 							if (!productXids.contains(prdXid)) {
 								if (nextRow.getRowNum() != 1) {
-									List<Color> colorList = eveanManufacturAttriParser.getProductColor(colorsList);
-									productConfigObj.setColors(colorList);
-									existingProduct.setProductConfigurations(productConfigObj);
-									List<Image>  imagesList = eveanManufacturAttriParser.getImages(imageList);
-									existingProduct.setImages(imagesList);
-									productMaps.put(prdXid, existingProduct);
+									if(existingProduct != null){
+										List<Color> colorList = eveanManufacturAttriParser.getProductColor(colorsList);
+										productConfigObj.setColors(colorList);
+										existingProduct.setProductConfigurations(productConfigObj);
+										List<Image>  imagesList = eveanManufacturAttriParser.getImages(imageList);
+										existingProduct.setImages(imagesList);
+										productMaps.put(existingProduct.getExternalProductId(), existingProduct);	
+									}
 									repeatRows.clear();
 									colorsList = new ArrayList<>();
 									imageList = new ArrayList<>();
 								}
+								if (!productIds.contains(prdXid)) {
+									existingProduct = productMaps.get(prdXid);
+									if(existingProduct == null){
+										invalidProductIds.add(prdXid);
+										break;
+									}
+									productConfigObj = existingProduct.getProductConfigurations();
+									firstRowNo = nextRow.getRowNum();
+								}
+								productIds.add(prdXid);
 								if (!productXids.contains(prdXid)) {
 									productXids.add(prdXid);
 									//repeatRows.add(prdXid);
@@ -138,6 +154,14 @@ public class EveanManufactureVariationMapping{
 									+ " " + e.getMessage() + "at column number(increament by 1):" + columnIndex);
 				}
 			}
+			if(existingProduct != null){
+				List<Color> colorList = eveanManufacturAttriParser.getProductColor(colorsList);
+				productConfigObj.setColors(colorList);
+				existingProduct.setProductConfigurations(productConfigObj);
+				List<Image>  imagesList = eveanManufacturAttriParser.getImages(imageList);
+				existingProduct.setImages(imagesList);
+				productMaps.put(existingProduct.getExternalProductId(), existingProduct);	
+			}
 			repeatRows.clear();
 			productMaps.put(prdXid, existingProduct);
 			return productMaps;
@@ -147,6 +171,15 @@ public class EveanManufactureVariationMapping{
 			return productMaps;
 		} finally {
 		}
+	}
+	private String getProductXid(Row row) {
+		Cell xidCell = row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
+		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		if (StringUtils.isEmpty(productXid) || productXid.equals("#N/A")) {
+			xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
+			productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		}
+		return productXid;
 	}
 	public boolean isRepeateColumn(int columnIndex) {
 		if (columnIndex != 5 && columnIndex !=6) {
