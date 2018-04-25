@@ -1101,7 +1101,8 @@
     <!-- Sun scope configuration End --> 
      
    <!-- supplier 90125 Sun graphix Inc configuration start -->
-     <bean id="sunGraphixMappingId" class="com.a4tech.supplier.mapper.SunGraphixMapping" autowire="byName">
+     <!-- <bean id="sunGraphixMappingId" class="com.a4tech.supplier.mapper.SunGraphixMapping" autowire="byName"> -->
+     <bean id="sunGraphixMappingId" class="com.a4tech.supplier.mapper.SunGraphixRevisedMapping" autowire="byName">
        <property name="postServiceImpl" ref="postService"/>
        <property name="productDaoObj" ref="productDao"/>
        <property name="sunGraphixAttributeParser" ref="sunGraphixAttributeParserId" /> 

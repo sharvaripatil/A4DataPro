@@ -52,6 +52,7 @@ import com.a4tech.supplier.mapper.SolidDimensionMapping;
 import com.a4tech.supplier.mapper.SportCanadaExcelMapping;
 import com.a4tech.supplier.mapper.SportsManBagMapping;
 import com.a4tech.supplier.mapper.SunGraphixMapping;
+import com.a4tech.supplier.mapper.SunGraphixRevisedMapping;
 import com.a4tech.supplier.mapper.SunScopeMapping;
 import com.a4tech.supplier.mapper.TekweldMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
@@ -109,7 +110,8 @@ public class ExcelFactory {
     private HeadWearMapping                 headWearMapping;
     private SportCanadaExcelMapping         sportMapping;
     private SunScopeMapping                 sunScopeMapping;
-    private SunGraphixMapping 				sunGraphixMapping;
+    //private SunGraphixMapping 				sunGraphixMapping;
+    private SunGraphixRevisedMapping        sunGraphixMapping;
     private CbMapping                       cbExeMapping;
     private PelicanGraphicMapping           pelicanGraphicMapping;
     private SportsManBagMapping             sportsManBagMapping;
@@ -616,14 +618,15 @@ public class ExcelFactory {
 		this.sunScopeMapping = sunScopeMapping;
 	}
 
-	public SunGraphixMapping getSunGraphixMapping() {
+	
+
+	public SunGraphixRevisedMapping getSunGraphixMapping() {
 		return sunGraphixMapping;
 	}
 
-	public void setSunGraphixMapping(SunGraphixMapping sunGraphixMapping) {
+	public void setSunGraphixMapping(SunGraphixRevisedMapping sunGraphixMapping) {
 		this.sunGraphixMapping = sunGraphixMapping;
 	}
-
 
 	public CbMapping getCbExeMapping() {
 		return cbExeMapping;
