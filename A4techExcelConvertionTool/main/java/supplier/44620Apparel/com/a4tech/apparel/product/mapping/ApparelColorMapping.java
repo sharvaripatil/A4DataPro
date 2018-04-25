@@ -6,7 +6,7 @@ import java.util.Map;
 public class ApparelColorMapping {
 	public static Map<String, String> COLOR_MAP =new HashMap<String, String>();
 	static{
-		/*COLOR_MAP.put("True Navy-Gray 264","Medium Gray");
+		COLOR_MAP.put("True Navy-Gray 264","Medium Gray");
 		COLOR_MAP.put("True Navy 260","Dark Blue");
 		COLOR_MAP.put("Gray 115","Medium Gray");
 		COLOR_MAP.put("Navy 040","Dark Blue");
@@ -118,8 +118,8 @@ public class ApparelColorMapping {
 		COLOR_MAP.put("Graphite Navy 290","Dark Blue");
 		COLOR_MAP.put("Khaki 130","Medium Brown");
 		COLOR_MAP.put("Gray","Medium Gray");
-		COLOR_MAP.put("Forest Green 020","Medium Green"); */
-		COLOR_MAP.put("Aqua","Light Blue");
+		COLOR_MAP.put("Forest Green 020","Medium Green"); 
+		/*COLOR_MAP.put("Aqua","Light Blue");
 		COLOR_MAP.put("Aqua 228","Light Blue");
 		COLOR_MAP.put("Ash Grey","Medium Gray");
 		COLOR_MAP.put("Bay Blue","Medium Blue");
@@ -234,7 +234,7 @@ public class ApparelColorMapping {
 		COLOR_MAP.put("Wave","Light Blue");
 		COLOR_MAP.put("White","Medium White");
 		COLOR_MAP.put("White Sand","Medium White");
-		COLOR_MAP.put("Yellow","Medium Yellow");
+		COLOR_MAP.put("Yellow","Medium Yellow");*/
 	}
 	
 	public static String getColorGroup(String colorName){
