@@ -14,7 +14,6 @@ import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
-import com.a4tech.util.LookupData;
 
 public class EveansManufacturePriceGridParser {
 
@@ -100,7 +99,11 @@ public class EveansManufacturePriceGridParser {
 			}
 			price.setPrice(listPrice);
 			try {
-				price.setDiscountCode(disCodes[PriceNumber]);
+				if(StringUtils.isEmpty(disCodes[PriceNumber])){
+					price.setDiscountCode("R");
+				} else {
+					price.setDiscountCode(disCodes[PriceNumber]);
+				}
 			}catch(ArrayIndexOutOfBoundsException exce){
 				price.setDiscountCode("R");
 				_LOGGER.error("Invalid Discount code,Set default discount code:R");
@@ -124,7 +127,7 @@ public class EveansManufacturePriceGridParser {
 				String[] configValues = criterias.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 				for (String Value : configValues) {
 					configs = new PriceConfiguration();
-					String[] configValue = criterias.split(":");
+					String[] configValue = Value.split(":");
 					configs.setCriteria(configValue[0]);
 					configs.setValue(Arrays.asList((Object) configValue[1]));
 					if(!StringUtils.isEmpty(optionName)){
@@ -133,13 +136,33 @@ public class EveansManufacturePriceGridParser {
 					priceConfiguration.add(configs);
 				}
 			}else{
-				configs = new PriceConfiguration();
-				configs.setCriteria(criterias);
-				configs.setValue(Arrays.asList((Object) value));
-				if(!StringUtils.isEmpty(optionName)){
-					configs.setOptionName(optionName);
+				if(value.contains(",")){
+					 if(value.contains("&")){
+						 value = value.replaceAll("&", ",");
+					 } else if(value.contains("and")){
+						 value = value.replaceAll("and", ",");
+					 }
+					 String[] configVals = CommonUtility.getValuesOfArray(value, ",");
+					 for (String configValue : configVals) {
+						 configValue = configValue.trim();
+						 configs = new PriceConfiguration();
+							configs.setCriteria(criterias);
+							configs.setValue(Arrays.asList((Object) configValue));
+							if(!StringUtils.isEmpty(optionName)){
+								configs.setOptionName(optionName);
+							}
+							priceConfiguration.add(configs);
+					}
+				} else {
+					configs = new PriceConfiguration();
+					configs.setCriteria(criterias);
+					configs.setValue(Arrays.asList((Object) value));
+					if(!StringUtils.isEmpty(optionName)){
+						configs.setOptionName(optionName);
+					}
+					priceConfiguration.add(configs);	
 				}
-				priceConfiguration.add(configs);
+				
 			}
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Upcharge PriceGrid: "+e.getMessage());
