@@ -41,9 +41,9 @@ import parser.headWear.HeadWearColorMapping;
 
 public class EveanManufactureAttributeParser {
 	private EveansManufacturePriceGridParser eveanPriceGridParser;
-	private LookupServiceData lookupServiceData;
-	private static List<String> lookupFobPoints = null;
-	
+	private LookupServiceData                lookupServiceData;
+	private static List<String>              lookupFobPoints = null;
+	String currencyType = "CAD";
 	public Product keepExistingProductData(Product existingProduct){
 		  Product newProduct = new Product();
 		  ProductConfigurations oldConfig = existingProduct.getProductConfigurations();
@@ -72,12 +72,34 @@ public class EveanManufactureAttributeParser {
 		  newProduct.setProductConfigurations(newConfig);
 		  return newProduct;
 	  }
-	public List<String> getProductKeywords(String key) {
+	public List<String> getProductKeywords(String key,String prdName) {
 		List<String> keyList = new ArrayList<>();
 		String[] keys = CommonUtility.getValuesOfArray(key, "\\|");
+		List<String> processedKeyWords = new ArrayList<>();
 		for (String keyName : keys) {
+			keyName = keyName.trim();
 			keyName = keyName.replaceAll("™", "");
-			keyList.add(keyName);
+			if(!processedKeyWords.contains(keyName.toUpperCase())){
+				if(keyName.length()>30){
+					if(keyName.contains("Jo Bee")){
+						keyName = keyName.replaceAll("Jo Bee", "Jo-Bee");
+					}
+						if(prdName.equalsIgnoreCase(keyName)){
+							continue;
+						}
+						if(keyName.contains("W/")){
+							keyName = keyName.replaceAll("W/", "");
+						}
+						String [] keyNames = CommonUtility.getValuesOfArray(keyName, " ");
+						for (String keyss : keyNames) {
+							keyList.add(keyss);
+						}
+					
+				} else {
+					keyList.add(keyName);	
+				}
+				processedKeyWords.add(keyName.toUpperCase());
+			}
 		}
 		return keyList;
 	}
@@ -178,76 +200,93 @@ public class EveanManufactureAttributeParser {
 			  return product;
 		  }
 		  ProductConfigurations configuration = product.getProductConfigurations();
+		  
+          List<AdditionalColor> listOfAdditionalColor = configuration.getAdditionalColors();
+          List<AdditionalLocation> listOfAdditionalLocation = configuration.getAdditionalLocations();
+          List<ImprintLocation>  listOfImprintLocation = configuration.getImprintLocation();
+		  List<PriceGrid> prieGridList = product.getPriceGrids();
+		  List<ImprintMethod>   listOfImprintMethod = configuration.getImprintMethods();
+		  if(CollectionUtils.isEmpty(prieGridList)){
+			  prieGridList = new ArrayList<>();
+		  }
+		  if(CollectionUtils.isEmpty(listOfAdditionalColor)){
+			  listOfAdditionalColor = new ArrayList<>();
+		  }
+          if(CollectionUtils.isEmpty(listOfAdditionalLocation)){
+        	  listOfAdditionalLocation = new ArrayList<>();
+		  }
+          if(CollectionUtils.isEmpty(listOfImprintLocation)){
+        	  listOfImprintLocation = new ArrayList<>();
+		  }
+          if(CollectionUtils.isEmpty(listOfImprintMethod)){
+        	  listOfImprintMethod = new ArrayList<>();
+		  }
 		  String priceVal = "";
-		  List<AdditionalLocation> listOfAdditionalLocation = null;
-		  List<AdditionalColor> listOfAdditionalColor = null;
-		  List<ImprintLocation> listOfImprintLocation = null;
-		  List<ImprintMethod>   listOfImprintMethod = null;
-		  List<PriceGrid> prieGridList = new ArrayList<>();
+		  
 		  priceVal = runChargeVal.replaceAll("[^0-9.]", "");
 		  String priceInclude = runChargeVal.split("\\)")[1].trim();
 		  if(runChargeVal.contains("additional color/position")){//additional color & additional location
 			  listOfAdditionalColor = getAdditinalColor("Additional Color",listOfAdditionalColor);
 			  listOfAdditionalLocation = getAdditinalLocation("Additional Position",listOfAdditionalLocation);
-			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, "USD",
+			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, currencyType,
 					"Additional Color", "Add. Color Charge", "Other", 1, prieGridList, "", "per unit, per additional color");
-			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, "USD",
+			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, currencyType,
 					"Additional Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position");
 		  } else if(runChargeVal.contains("second color/position")){//additional color & additional location
 			  listOfAdditionalColor = getAdditinalColor("Second color",listOfAdditionalColor);
 			  listOfAdditionalLocation = getAdditinalLocation("Additional Position",listOfAdditionalLocation);
-			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, "USD",
+			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, currencyType,
 					"Second color", "Add. Color Charge", "Other", 1, prieGridList, "", "per unit, per additional color");
-			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, "USD",
+			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, currencyType,
 					"Additional Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position");
 		  } else if(runChargeVal.contains("second laser engraved position")){// imprint method & additional location
 			  listOfImprintMethod = getImprintMethod("Laser Engraved");
 			  listOfAdditionalLocation = getAdditinalLocation("Second Position",listOfAdditionalLocation);
 			  priceVal = runChargeVal.replaceAll("[^0-9.]", "");
 			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V",
-					"Imprint Method:Laser Engraved,Additional Location:Second Position", false, "USD",
+					"Imprint Method:Laser Engraved,Additional Location:Second Position", false, currencyType,
 					"Laser Engraved,Second Position", "Add. Location Charge", "Per Quantity", 1, prieGridList, "", "");
 		  } else if(runChargeVal.contains("laser imprint")){//imprint method
 			  listOfImprintMethod = getImprintMethod("laser imprint");
-			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Imprint Method", false, "USD",
+			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Imprint Method", false, currencyType,
 						"laser imprint", "Run Charge", "Per Quantity", 1, prieGridList, "", "per unit, per additional color");
 		  } else if(runChargeVal.contains("additional color")){ // additional color
 			  listOfAdditionalColor = getAdditinalColor("Additional Color",listOfAdditionalColor);
-				prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, "USD",
+				prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, currencyType,
 						"Additional Color", "Add. Color Charge", "Other", 1, prieGridList, "", "per unit, per additional color");
 		  } else if(runChargeVal.contains("second position")){// additional location
 			  listOfAdditionalLocation = getAdditinalLocation("Second Position",listOfAdditionalLocation);
-			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, "USD",
-						"Additional Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position");
+			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, currencyType,
+						"Second Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position");
 		} else if(runChargeVal.contains("metallic thread color")){
 			 listOfAdditionalColor = getAdditinalColor("Metallic thread color",listOfAdditionalColor);
-			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, "USD",
+			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, currencyType,
 					"Metallic thread color", "Add. Color Charge", "Other", 1, prieGridList, "", priceInclude);
 		} else if (runChargeVal.contains("additional position")
 				|| runChargeVal.contains("additional lasered position")) {// additional
 																			// location
-			 listOfAdditionalLocation = getAdditinalLocation("additional position",listOfAdditionalLocation);
-			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, "USD",
+			 listOfAdditionalLocation = getAdditinalLocation("Additional Position",listOfAdditionalLocation);
+			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, currencyType,
 						"Additional Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position");
 		  } else if(runChargeVal.contains("second color")){ // additional color
 			  listOfAdditionalColor    = getAdditinalColor("Second color",listOfAdditionalColor);
-			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, "USD",
+			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, currencyType,
 					"Second color", "Add. Color Charge", "Other", 1, prieGridList, "", "");
 		  } else if(runChargeVal.contains("position")){
 			  listOfAdditionalLocation = getAdditinalLocation("Position",listOfAdditionalLocation);
-				prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, "USD",
+				prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, currencyType,
 						"Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position");
 		  } else if(runChargeVal.contains("laser engraving")){//imprint method
 			  listOfImprintMethod = getImprintMethod("laser engraving");
-			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Imprint Method", false, "USD",
+			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Imprint Method", false, currencyType,
 						"laser engraving", "Imprint Method Charge", "Other", 1, prieGridList, "", priceInclude);
 		  } else if(runChargeVal.contains("second imprint")){// additional location
 			  listOfAdditionalLocation = getAdditinalLocation("second imprint",listOfAdditionalLocation);
-			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, "USD",
+			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, currencyType,
 						"second imprint", "Add. Location Charge", "Other", 1, prieGridList, "", priceInclude);
 		} else if(runChargeVal.contains("laser imprint on clip")){
 			 listOfImprintMethod = getImprintMethod("laser imprint");
-			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Imprint Method", false, "USD",
+			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Imprint Method", false, currencyType,
 						"laser imprint", "Imprint Method Charge", "Other", 1, prieGridList, "", priceInclude);
 		} else if (runChargeVal.contains("imprint on pen") || runChargeVal.contains("imprint on ball marker")
 				|| runChargeVal.contains("imprint on eraser") || runChargeVal.contains("imprint on cup")
@@ -255,7 +294,7 @@ public class EveanManufactureAttributeParser {
 				|| runChargeVal.contains("second imprint on snack bag")) { // imprint location
 			String runChareValue = runChargeVal.split("imprint")[1].trim();
 			listOfImprintLocation = getImprintLocation(runChareValue,listOfImprintLocation);
-			 prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Imprint Location", false, "USD",
+			 prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Imprint Location", false, currencyType,
 					 runChareValue, "Imprint Location Charge", "Other", 1, prieGridList, "", priceInclude);
 		  } 
 		  configuration.setAdditionalColors(listOfAdditionalColor);
@@ -271,7 +310,7 @@ public class EveanManufactureAttributeParser {
           List<AdditionalColor> listOfAdditionalColor = configuration.getAdditionalColors();
           List<AdditionalLocation> listOfAdditionalLocation = configuration.getAdditionalLocations();
           List<ImprintLocation>  listOfImprintLocation = configuration.getImprintLocation();
-          List<PriceGrid> prieGridList = product.getPriceGrids();
+          List<PriceGrid> priceGridList = product.getPriceGrids();
 		  if(isSpecialWordsSetupcharge(setupChargeVal)){
 			  return product;
 		  }
@@ -279,7 +318,23 @@ public class EveanManufactureAttributeParser {
 		  if(CollectionUtils.isEmpty(priceGrid)){
 			  priceGrid = new ArrayList<>();
 		  }
+		  if(CollectionUtils.isEmpty(listOfAdditionalColor)){
+			  listOfAdditionalColor = new ArrayList<>();
+		  }
+          if(CollectionUtils.isEmpty(listOfAdditionalLocation)){
+        	  listOfAdditionalLocation = new ArrayList<>();
+		  }
+          if(CollectionUtils.isEmpty(listOfImprintLocation)){
+        	  listOfImprintLocation = new ArrayList<>();
+		  }
+          
 		  String[] setupChargeVals = null;
+		  List<ImprintMethod> imprintMethodList = configuration.getImprintMethods();
+		  String imprintMethodVal  = "";
+		  if(imprintMethodList != null){
+			   imprintMethodVal = imprintMethodList.stream().map(imprObj->imprObj.getAlias()).collect(Collectors.joining(","));  
+		  }
+		  
 		  if(setupChargeVal.contains(";")){
 			   setupChargeVals = CommonUtility.getValuesOfArray(setupChargeVal, ";");  
 		  } else if(setupChargeVal.contains(".")){
@@ -290,51 +345,69 @@ public class EveanManufactureAttributeParser {
 					 if(pricesCount > 1){//$55(V) for imprint on pouch, pencils & ruler $55(V) for imprint on eraser or second imprint on pouch
 						// this is used for there is delimiter for splitting above values 
 						 setupChargeVals = CommonUtility.getValuesOfArray(setupChargeVal, "\\$");
-					 }  
+					 }  else {
+						 setupChargeVals = new String[]{setupChargeVal}; 
+					 }
 			  } else {
 				  setupChargeVals = new String[]{setupChargeVal};  
 			  }
 		  }
-		  for (String upchargeVal : setupChargeVals) {
+ 		  for (String upchargeVal : setupChargeVals) {
 			  if(StringUtils.isEmpty(upchargeVal)){
 				  continue;
 			  }
 			  String priceVal = upchargeVal.replaceAll("[^0-9.]", "").trim();
 			 String upchargeType= "";
 			  String upchargeName = "";String criteriaType = "";
-			  String priceInclude = upchargeVal.split("\\)")[1].trim();
+			  String priceInclude = "";
+			  if(upchargeVal.contains(")")){
+				  String[] priceIncludes = CommonUtility.getValuesOfArray(upchargeVal, "\\)");
+				  if(priceIncludes.length ==2){
+					  priceInclude = priceIncludes[1].trim();  
+				  }
+			  }
 			 if(upchargeVal.contains("imprint")){
 				 if(columnName.equals("setupCharge")){
 					 upchargeType = "Set-up Charge"; 
 				 } else {
 					 upchargeType = "Re-order Charge";
+					 if(!upchargeVal.contains("imprint")){
+						 priceGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Imprint Method", false, currencyType,
+								 imprintMethodVal, "Re-order Charge", "Other", 1, priceGridList, "", priceInclude); 
+					 }
 				 }
 				  criteriaType = "Imprint Location";
 				  upchargeName = upchargeVal.split("imprint")[1].trim();
 				  listOfImprintLocation = getImprintLocation(upchargeName, listOfImprintLocation);
-			 } else if(upchargeVal.contains("color/position")){
+			} else if (upchargeVal.contains("color/position") || upchargeVal.contains("per position")
+					|| upchargeVal.contains("per color")) {
 				 if(columnName.equals("setupCharge")){
-					 upchargeType = "Add. Color Charge";  
+					 upchargeType = "Set-up Charge";  
 				 } else {
 					 upchargeType = "Re-order Charge";
+				 }				 
+				 if(upchargeVal.contains("color/position")){
+					 priceInclude = "per color/position";
+				 } else if(upchargeVal.contains("per position")){
+					 priceInclude = "per position";
+				 } else if(upchargeVal.contains("per color")){
+					 priceInclude = "per color";
 				 }
-				 criteriaType = "Additional Colors:Additional Color,Additional Location:Additional Position";
-				 upchargeName ="Additional Color,Additional Position";
-				 listOfImprintLocation = getImprintLocation("Additional Position", listOfImprintLocation);
-				 listOfAdditionalColor = getAdditinalColor("Additional Color", listOfAdditionalColor);
-			 } else if(upchargeVal.contains(" per position")){
+				 criteriaType = "Imprint Method";
+				 upchargeName =imprintMethodVal;
+			 } /*else if(upchargeVal.contains(" per position")){
 				 if(columnName.equals("setupCharge")){
-					 upchargeType = "Imprint Location Charge";   
+					 upchargeType = "Set-up Charge";   
 				 } else {
 					 upchargeType = "Re-order Charge";
 				 }
 				  listOfAdditionalLocation = getAdditinalLocation("Additional Position",listOfAdditionalLocation);
-				  criteriaType = "Imprint Location";
+				  criteriaType = "Additional Location";
 				  upchargeName = "Additional Position";
 						 
-			 } else if(upchargeVal.contains("per color") || upchargeVal.contains("additional color")){
+			 } */else if(upchargeVal.contains("additional color")){
 				 if(columnName.equals("setupCharge")){
-					 upchargeType = "Add. Color Charge";   
+					 upchargeType = "Set-up Charge";   
 				 } else {
 					 upchargeType = "Re-order Charge";
 				 }
@@ -343,27 +416,36 @@ public class EveanManufactureAttributeParser {
 				  upchargeName = "Additional Color";
 			 } else if(upchargeVal.contains("second color")){
 				 if(columnName.equals("setupCharge")){
-					 upchargeType = "Add. Color Charge";   
+					 upchargeType = "Set-up Charge";   
 				 } else {
 					 upchargeType = "Re-order Charge";
 				 }
 				 listOfAdditionalColor    = getAdditinalColor("Second color",listOfAdditionalColor);
 				  criteriaType = "Additional Colors";
 				  upchargeName = "Second color";
+			 } else {
+				 if(columnName.equals("setupCharge")){
+					 upchargeType = "Set-up Charge";   
+				 } else {
+					 upchargeType = "Re-order Charge";
+				 }
+				 //listOfAdditionalColor = getAdditinalColor("Additional Color",listOfAdditionalColor);
+				  criteriaType = "Imprint Method";
+				  upchargeName = imprintMethodVal;
 			 }
-			 prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", criteriaType, false, "USD",
-					 upchargeName, upchargeType, "Other", 1, prieGridList, "", priceInclude);
+			 priceGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", criteriaType, false, currencyType,
+					 upchargeName, upchargeType, "Other", 1, priceGridList, "", priceInclude);
 		}
 		  configuration.setAdditionalColors(listOfAdditionalColor);
 		  configuration.setAdditionalLocations(listOfAdditionalLocation);
 		  configuration.setImprintLocation(listOfImprintLocation);
-		  product.setPriceGrids(prieGridList);
+		  product.setPriceGrids(priceGridList);
 		  return product;
 	  }
 	public ProductConfigurations getProductImprintMethods(String val,ProductConfigurations configuration){
 		List<ImprintLocation> imprintLocationList = configuration.getImprintLocation();
 		List<ImprintMethod> imprintMethodList = configuration.getImprintMethods();
-		ImprintMethod imprintMethodObj = null;
+		ImprintMethod imprintMethodObj = null;  
 		if(CollectionUtils.isEmpty(imprintMethodList)){
 			imprintMethodList = new ArrayList<>();
 		}
@@ -372,7 +454,7 @@ public class EveanManufactureAttributeParser {
 		for (String imprVal : imprMethodVals) {
 			imprintMethodObj = new ImprintMethod();
 			  if(imprVal.contains("ImprintLocation")){
-				  imprintLocationList = getImprintLocation(imprVal.split("=")[1], imprintLocationList);
+				  imprintLocationList = getImprintLocation(imprVal.split("=")[1].trim(), imprintLocationList);
 				  continue;
 			  } else if(imprVal.equals("Other")){
 				  imprintMethodObj.setType("Other");
@@ -438,16 +520,15 @@ public class EveanManufactureAttributeParser {
 	     return additionalLocationList;
 	 }
 	 public List<AdditionalColor> getAdditinalColor(String addColorVal,List<AdditionalColor> additionalColorList){
-		 List<AdditionalColor> listOfAdditionalColor = new ArrayList<>();
 		 AdditionalColor additionalColorObj = null;
 		 String allAdditionalColor = additionalColorList.stream().map(addColor -> addColor.getName())
 					.collect(Collectors.joining(","));
 		 if(!allAdditionalColor.contains(addColorVal)){
 			 additionalColorObj = new AdditionalColor();
 			 additionalColorObj.setName(addColorVal);
-			 listOfAdditionalColor.add(additionalColorObj);
+			 additionalColorList.add(additionalColorObj);
 		 }
-	     return listOfAdditionalColor;
+	     return additionalColorList;
 	 }
 	 private List<ImprintLocation> getImprintLocation(String imprLocVal,List<ImprintLocation> imprintLocationList){
 		 ImprintLocation imprintLocationObj = new ImprintLocation();
@@ -473,11 +554,16 @@ public class EveanManufactureAttributeParser {
 	 public ProductConfigurations getImprintLocationAndImprintSize(String imprVal,ProductConfigurations configuration){
 		 List<ImprintLocation> imprintLocationList = configuration.getImprintLocation();
 		 List<ImprintSize>     imprintSizeList = new ArrayList<>();
+		 if(CollectionUtils.isEmpty(imprintLocationList)){
+			 imprintLocationList = new ArrayList<>();
+		 }
 		 ImprintSize imprintSizeObj = null;
 		 ImprintLocation  imprintLocationObj = null;
 		 String[] imprLocAndSizes = CommonUtility.getValuesOfArray(imprVal, ",");
 		 String allImrintLocations = imprintLocationList.stream().map(location -> location.getValue())
 					.collect(Collectors.joining(","));
+		 List<String> tempImprLoc = new ArrayList<>();
+		 List<String> tempImprSize = new ArrayList<>();
 		 for (String imprName : imprLocAndSizes) {
 			 imprintSizeObj = new ImprintSize();
 			 imprintLocationObj = new ImprintLocation();
@@ -487,16 +573,27 @@ public class EveanManufactureAttributeParser {
 			 } else if(imprName.contains("-")){
 				 imprVals = CommonUtility.getValuesOfArray(imprName, "-");
 			 } else {
-				 imprintSizeObj.setValue(imprName);
-				 imprintSizeList.add(imprintSizeObj);
+				 
+				 if(!tempImprSize.contains(imprName)){
+					 imprintSizeObj.setValue(imprName);
+					 imprintSizeList.add(imprintSizeObj);	
+					 tempImprSize.add(imprName);
+				 } 
+				 
 			 }
 			 if(imprVals !=null){
-				 imprintSizeObj.setValue(imprVals[1].trim());
-				 imprintSizeList.add(imprintSizeObj);
+				 String imprSize = imprVals[1].trim();
+				 if(!tempImprSize.contains(imprSize)){
+					 imprintSizeObj.setValue(imprSize);
+					 imprintSizeList.add(imprintSizeObj);
+					 tempImprSize.add(imprSize);
+				 } 
+				
 				String imprLocVal =  imprVals[0].trim();
-				 if(!allImrintLocations.contains(imprLocVal)){
+				 if(!allImrintLocations.contains(imprLocVal) && !tempImprLoc.contains(imprLocVal)){
 					 imprintLocationObj.setValue(imprLocVal);
-					 imprintLocationList.add(imprintLocationObj);	 
+					 imprintLocationList.add(imprintLocationObj);	
+					 tempImprLoc.add(imprLocVal);
 				 }
 			 }
 		}
@@ -664,11 +761,11 @@ public class EveanManufactureAttributeParser {
 		packagingObj1 = new Packaging();
 		if(packName.equalsIgnoreCase("For individual polybagging, add $.10(V) each")){
 			packagingObj.setName("Individual Poly Bag");
-			priceGrids = eveanPriceGridParser.getUpchargePriceGrid("1", ".10", "v", "Packaging", false, "USD",
+			priceGrids = eveanPriceGridParser.getUpchargePriceGrid("1", ".10", "v", "Packaging", false, currencyType,
 						"Individual Poly Bag", "Packaging Charge", "Per Quantity", 1, priceGrids, "", "");
 		} else if(packName.equalsIgnoreCase("For individual shrink wrapping, add $.10(V) each")){
 			packagingObj.setName("Shrink Wrap");
-			priceGrids = eveanPriceGridParser.getUpchargePriceGrid("1", ".10", "v", "Packaging", false, "USD",
+			priceGrids = eveanPriceGridParser.getUpchargePriceGrid("1", ".10", "v", "Packaging", false, currencyType,
 						"Shrink Wrap", "Packaging Charge", "Per Quantity", 1, priceGrids, "", "");
 		} else if(packName.equalsIgnoreCase("12 pieces per box, 30-40 dozen per case")){
 			packagingObj.setName("12:per box");
@@ -748,7 +845,7 @@ public class EveanManufactureAttributeParser {
 		Image imageObj = null;
 		int imageRank = 1;
 		for (String colorImgVal : colorImgVals) {
-			String[] vals = CommonUtility.getValuesOfArray(colorImgVal,",");
+			String[] vals = CommonUtility.getValuesOfArray(colorImgVal,"##");
 			imageObj = new Image();
 			String color = vals[0];
 			String imgUrl = vals[1];
@@ -782,17 +879,22 @@ public class EveanManufactureAttributeParser {
   public List<Color> getProductColor(List<String> colors){
 		List<Color> listOfProductColor = new ArrayList<>();
 		Color colorObj = null;
+		List<String> processedColorList = new ArrayList<>();
 		for (String colorName : colors) {
 			colorName = colorName.trim();
-			colorObj = new Color();
-			if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
-				colorObj = getColorCombo(colorName);
-			} else {
-				String colorGroup = EveanManufColorAndImprintMethodMapping.getColorGroup(colorName);
-				colorObj.setName(colorGroup);
-				colorObj.setAlias(colorName);
+			if(!processedColorList.contains(colorName)){
+				colorObj = new Color();
+				if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
+					colorObj = getColorCombo(colorName);
+				} else {
+					String colorGroup = EveanManufColorAndImprintMethodMapping.getColorGroup(colorName);
+					colorObj.setName(colorGroup);
+					colorObj.setAlias(colorName);
+				}
+			   listOfProductColor.add(colorObj);	
+			   processedColorList.add(colorName);
 			}
-		   listOfProductColor.add(colorObj);
+			
 		}
 		return listOfProductColor;
 	}
@@ -820,6 +922,7 @@ public class EveanManufactureAttributeParser {
 		colorObj.setCombos(listOfComos);
 		return colorObj;
 	}
+	
   private boolean isSpecialWordsRuncharge(String val){
 		if (val.equalsIgnoreCase("For two or more colors see vibrant color option below")
 				|| val.equalsIgnoreCase("For two or more colors, see vibrant color option below") ||

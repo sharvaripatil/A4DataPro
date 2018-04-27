@@ -129,7 +129,7 @@ while (iterator.hasNext()) {
 				Cell cell = cellIterator.next();
 				
 				 columnIndex = cell.getColumnIndex();
-				 cell2Data =  nextRow.getCell(2);
+				 cell2Data =  nextRow.getCell(6);
 				if(columnIndex + 1 == 1){
 					//xid = CommonUtility.getCellValueStrinOrInt(cell);//getProductXid(nextRow);
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
@@ -351,7 +351,7 @@ while (iterator.hasNext()) {
 				    		listPrice="AAAAA";
 				    	}
 				    	size2 =getProductCellData(nextRow,9);
-				    	String colorValueTemp=getProductCellData(nextRow,20);
+				    	String colorValueTemp=getProductCellData(nextRow,21);
 				    	if(StringUtils.isEmpty(colorValueTemp)){
 				    		colorValueTemp="AAAAA";
 				    	}
@@ -436,7 +436,11 @@ while (iterator.hasNext()) {
 				    case  14://CustomerPricing
 
 				    	break;
-				    case  15://Weight
+				    	
+				    case  15://MapPricing
+
+				    	break;
+				    case  16://Weight
 				    	
 				    	
 				    	String  shippingWeightValue=CommonUtility.getCellValueStrinOrInt(cell);
@@ -447,13 +451,13 @@ while (iterator.hasNext()) {
 				    	 }
 						 
 				    	break;
-				    case  16://Height
+				    case  17://Height
 
 				    	break;
-				    case  17://Length
+				    case  18://Length
 
 				    	break;
-				    case  18://KeyWords
+				    case  19://KeyWords
 				    	String keywords = CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(keywords)){
 							 keywords=keywords.replace(" ", ",");
@@ -463,7 +467,7 @@ while (iterator.hasNext()) {
 						productExcelObj.setProductKeywords(listOfKeywords);
 						 }
 				    	break;
-				    case  19://StyleDescription1 // i need to work more on this field
+				    case  20://StyleDescription1 // i need to work more on this field
 				    	String description =CommonUtility.getCellValueStrinOrInt(cell);
 						//description = CommonUtility.removeSpecialSymbols(description,specialCharacters);
 				    	//description=CommonUtility.removeRestrictSymbols(description);
@@ -477,27 +481,30 @@ while (iterator.hasNext()) {
 						}
 						productExcelObj.setDescription(description);
 				    	break;
-				    case  20://StyleDescription2
+				    case  21://StyleDescription2
 				    	String summary = CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(summary)){
 						productExcelObj.setSummary(summary);
 						 }
 				    	break;
-				    case  21://ColorDescription
+				    case  22://ColorDescription
 						 String colorValue=CommonUtility.getCellValueStrinOrInt(cell);
 							if(!StringUtils.isEmpty(colorValue)){
+								if(colorValue.contains("-")){
+									String colrArr[]=colorValue.split("-");
+								}
 								colorSet.add(colorValue);
 							}
 						 
 				    	break;
-				    case  22://ComponentContent
+				    case  23://ComponentContent
 				    	String Material=cell.getStringCellValue();
 						if (!StringUtils.isEmpty(Material)&& !Material.equalsIgnoreCase("")) {
 							materiallist=edwardsGarmentAttributeParser.getMaterialValue(Material);						
 							productConfigObj.setMaterials(materiallist);
 						}
 				    	break;
-				    case  23://ShortDescription
+				    case  24://ShortDescription
 				    	productName = CommonUtility.getCellValueStrinOrInt(cell);
 				    	if(!StringUtils.isEmpty(productName)){
 				    		String temp="";
@@ -521,49 +528,62 @@ while (iterator.hasNext()) {
 				    		}
 				    	}
 				    	break;
-				    case  24://HTML
+				    case  25://HTML
 
 				    	break;
-				    case  25://ThumbName
+				    case  26://ThumbName
 
 				    	break;
-				    case  26://ThumbPath
+				    case  27://ThumbPath
 
 				    	break;
-				    case  27://ThumbAlternateName
+				    case  28://ThumbAlternateName
 
 				    	break;
-				    case  28://ImageName
+				    case  29://ImageName
 
 				    	break;
-				    case  29://ImagePath
+				    case  30://ImagePath
 				    	String largeImage = CommonUtility.getCellValueStrinOrInt(cell);
 						if(!StringUtils.isEmpty(largeImage)){
 							setImages.add(largeImage);
 						}
 				    	break;
-				    case  30://ImageAlternateName
+				    case  31://ImageAlternateName
 
 				    	break;
-				    case  31://SwatchPath
+				    case  32://SwatchPath
 
 				    	break;
-				    case  32://Status
+				    case  33://Status
 				    	break;
-				    case  33://UserDefined1
+				    case  34://PantoneColor
+				    break;
+				    case  35:	//HexColor
+				    break;
+				    case  36:	//Fit
+				    break;
+				    case  37:	//SizeScale
+				    break;
+				    case  38:	//Manufacturer
+				    break;
+				    case  39:	//CloseOutProduct
+				    break;
+				    case  40:	//Comments
+				    	break;
+				    case  41://UserDefined1
+				    	break;
+				    case  42://UserDefined2
+				    	break;
+				    case  43://UserDefined3
+				    	break;
+				    case  44://UserDefined4
 
 				    	break;
-				    case  34://UserDefined2
-
+				    case  45://UserDefined5
 				    	break;
-				    case  35://UserDefined3
-
-				    	break;
-				    case  36://UserDefined4
-
-				    	break;
-				    case  37://UserDefined5
-
+				    	
+				    case 46://Width
 				    	break;
 				}  // end inner while loop
 				
@@ -764,17 +784,17 @@ while (iterator.hasNext()) {
 		
 	}
 
-	public boolean isRepeateColumn(int columnIndex){
-		
+public boolean isRepeateColumn(int columnIndex){		
 		if(columnIndex != 1 && columnIndex != 3 && columnIndex != 4 && 
 				columnIndex != 9 && columnIndex != 10 
-				&&columnIndex != 13 && columnIndex !=15 && 
-				columnIndex != 21
+				&&columnIndex != 13 && columnIndex !=16 && 
+				columnIndex != 22 && columnIndex != 30
 				){
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
+
 	public static String[] getValuesOfArray(String data,String delimiter){
 		   if(!StringUtils.isEmpty(data)){
 			   return data.split(delimiter);

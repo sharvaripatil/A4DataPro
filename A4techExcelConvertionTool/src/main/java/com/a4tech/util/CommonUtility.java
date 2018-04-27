@@ -373,6 +373,7 @@ public class CommonUtility {
      * 
      */
 	public static String convertProductionTimeWeekIntoDays(String productionTime) {
+		productionTime = productionTime.replaceAll("[^0-9- ]", "").trim();
 		if (productionTime.contains("-")) {
 			String[] productionTimes = productionTime.split("-");
 			int productionStartTime = Integer.parseInt(productionTimes[0]) * ApplicationConstants.CONST_INT_VALUE_FIVE;
