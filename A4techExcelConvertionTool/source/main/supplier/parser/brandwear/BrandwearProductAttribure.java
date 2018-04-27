@@ -22,34 +22,43 @@ import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
+import com.a4tech.product.model.Volume;
 import com.a4tech.product.model.Weight;
 
 public class BrandwearProductAttribure {
 	private LookupServiceData lookupServiceDataObj;
 	private LookupRestService lookupRestServiceObj;
 
-	public ShippingEstimate getshippingWeight(String shippingWeight) {
+	public Volume getitemWeight(String itemWeight) {
 
-		String ShippingUnit=shippingWeight;
-		ShippingEstimate shippingObj = new ShippingEstimate();
+		String ShippingUnit=itemWeight;
+		Volume ItemWeightObj = new Volume();
+		 List<Values> listOfValues = new ArrayList<Values>();
+		 Values valuesObj=new Values();
+		 List<Value> listOfValue = new ArrayList<Value>();
+		 Value valueObj=new Value();
 
-		List<Weight> WeightList = new ArrayList<Weight>();
-		Weight objWeight = new Weight();
-		shippingWeight=shippingWeight.replaceAll("[^0-9/ ]", "").replace("/", "");
+
+		 itemWeight=itemWeight.replaceAll("[^0-9./ ]", "").replace("/", "").replace(" .", "");
 		//shippingWeight = shippingWeight.replaceAll("oz. / Item", "").replaceAll("1 lb. / Item", "").replaceAll("oz /Item", "").replaceAll("oz/ Item", "");
-		objWeight.setValue(shippingWeight);
+		 valueObj.setValue(itemWeight);
 		if(ShippingUnit.contains("oz"))
 		{
-			objWeight.setUnit("oz");
+			valueObj.setUnit("oz");
 
 		}else
 		{
-			objWeight.setUnit("lbs");
+			valueObj.setUnit("lbs");
 
 		}
-		WeightList.add(objWeight);
-		shippingObj.setWeight(WeightList);
-		return shippingObj;
+		
+		listOfValue.add(valueObj);
+		valuesObj.setValue(listOfValue);
+		
+		listOfValues.add(valuesObj);
+		
+		ItemWeightObj.setValues(listOfValues);
+		return ItemWeightObj;
 	}
 
 	
@@ -101,7 +110,8 @@ public class BrandwearProductAttribure {
 	
 	public List<ImprintMethod> getImprintMethod(String imprintMethod) {
  		ImprintMethod imprMethod = new ImprintMethod();
- 		imprintMethod=imprintMethod.replace("®","").replace("3M Hi-Visibility Reflective","");
+ 		imprintMethod=imprintMethod.replace("®","").replace("3M Hi-Visibility Reflective,","").
+ 				replace("Call for details. ", "");
 		List<ImprintMethod> imprintMethodList = new ArrayList<ImprintMethod>();
 		String imprintMethodValueArr[]=imprintMethod.split(",");
 		
@@ -194,18 +204,45 @@ public class BrandwearProductAttribure {
 
 	
 	public Size getSizeValue(String sizeValue, String genderName) {
-		sizeValue=sizeValue.replace("XXL", "2XL").replace("&", "-");
       Size sizeObj=new Size();
     Apparel appObj=new Apparel();
-    List<Value> otherList = new ArrayList<Value>();
-    Value valueObj=new Value();
+    List<Value> listOfValue = new ArrayList<Value>();
     Value ValueObj=new Value();
+    
+    if(sizeValue.contains("XS"))
+    {
+    	sizeValue="";
+    	sizeValue=sizeValue.concat("XS").concat(",").concat("S").concat(",").concat("M").concat(",").concat("L").concat(",")
+    			.concat("XL");
+    }
+    else if(sizeValue.contains("S"))
+    {
+    	sizeValue="";
+    	sizeValue=sizeValue.concat("S").concat(",").concat("M").concat(",").concat("L").concat(",").concat("XL");
+    }
+    
+    sizeValue=sizeValue.concat(",").concat("2XL").concat(",").concat("3XL").concat(",").concat("4XL").
+    		concat(",").concat("5XL");
   
-    OtherSize otherSize=new OtherSize(); 
-    ValueObj.setValue(sizeValue);
-    otherList.add(ValueObj);
-    otherSize.setValues(otherList);
-    sizeObj.setOther(otherSize);
+   String sizearr []=sizeValue.split(",");
+    
+	for (String value : sizearr) {
+		 ValueObj = new Value();
+	     sizeObj.setApparel(appObj);
+		 appObj.setType("Standard & Numbered");
+		ValueObj.setValue(value);
+		listOfValue.add(ValueObj);
+		}
+		 appObj.setValues(listOfValue);
+	     sizeObj.setApparel(appObj);
+    
+    
+    
+    
+    
+    
+    
+    
     
 /*    if(genderName.equalsIgnoreCase("Unisex"))
     {

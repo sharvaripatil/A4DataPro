@@ -34,6 +34,7 @@ import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
+import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -76,7 +77,7 @@ public class BrandwearExcelMapping implements IExcelParser {
 		List<ImprintSize> ImprintSizeList = new ArrayList<ImprintSize>();
 		ImprintSize imprintSizeObj = new ImprintSize();
 
-		ShippingEstimate shippingObj = new ShippingEstimate();
+		Volume ItemWeightObj = new Volume();
 
 		List<Material> MaterialList = new ArrayList<Material>();
 
@@ -89,7 +90,6 @@ public class BrandwearExcelMapping implements IExcelParser {
 		
 		Size sizeObj=new Size();
 		StringBuilder listOfPrices = new StringBuilder();
-		StringBuilder listOfPrices2X = new StringBuilder();
 
 		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 
@@ -104,14 +104,24 @@ public class BrandwearExcelMapping implements IExcelParser {
 		String ProdNo = null;
 		String MaterialAliceName = "";
 		String sizeValue = null;
+		
 		String ListPrice1=null;
 		String ListPrice2=null;
 		String ListPrice3=null;
-		String ListPrice2X1=null;
-		String ListPrice2X2=null;
-		String ListPrice2X3=null;
+	
+		StringBuilder listOfPrices1 = new StringBuilder();
+		StringBuilder listOfPrices2 = new StringBuilder();
+		StringBuilder listOfPrices3 = new StringBuilder();
+		StringBuilder listOfPrices4 = new StringBuilder();
+		StringBuilder listOfPrices5 = new StringBuilder();
+
+
 		CellValue c=null;
 		FormulaEvaluator formulaEval = workbook.getCreationHelper().createFormulaEvaluator();
+		
+		List<String> listcomplianceCerts = new ArrayList<String>();
+
+		
 
 		try {
 
@@ -196,15 +206,21 @@ public class BrandwearExcelMapping implements IExcelParser {
 								    keywordList = new ArrayList<String>();
 								    ImprintSizeList = new ArrayList<ImprintSize>();
 									imprintSizeObj = new ImprintSize();
-									shippingObj = new ShippingEstimate();
+									ItemWeightObj = new Volume();
 									MaterialList = new ArrayList<Material>();
 									PersonalizationList = new ArrayList<Personalization>();
 									personalizeObj = new Personalization();
 									ImprintMethodList = new ArrayList<ImprintMethod>();
 									colorList = new ArrayList<Color>();
 									sizeObj=new Size();
-									listOfPrices = new StringBuilder();
-									listOfPrices2X = new StringBuilder();
+									listcomplianceCerts = new ArrayList<String>();
+									
+									 listOfPrices1 = new StringBuilder();
+									 listOfPrices2 = new StringBuilder();
+									 listOfPrices3 = new StringBuilder();
+									 listOfPrices4 = new StringBuilder();
+									 listOfPrices5 = new StringBuilder();
+									 
 									priceGrids = new ArrayList<PriceGrid>();
 
 								}
@@ -323,62 +339,96 @@ public class BrandwearExcelMapping implements IExcelParser {
 							 c=formulaEval.evaluate(cell);
 							 ListPrice3=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
 
-							 listOfPrices=listOfPrices.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
+							 listOfPrices1=listOfPrices1.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
 									 append(ListPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice3);
 							
 							break;
 
 						case 25: // 1 - 2XL
 							 c=formulaEval.evaluate(cell);
-	 						 ListPrice2X1=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 ListPrice1=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
 
 							break;
 
 						case 26: // 50 - 2XL
 							 c=formulaEval.evaluate(cell);
-							 ListPrice2X2=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 ListPrice2=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
  						
 
 							break;
 
 						case 27: // 100 - 2XL
 							 c=formulaEval.evaluate(cell);
-							 ListPrice2X3=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
- 							listOfPrices2X=listOfPrices2X.append(ListPrice2X1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
-									 append(ListPrice2X2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice2X3);
-					
+							 ListPrice3=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
 
+							 listOfPrices2=listOfPrices2.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
+									 append(ListPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice3);
+							
 							break;
 
 						case 28: // 1 - 3XL
+							 c=formulaEval.evaluate(cell);
+							 ListPrice1=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+
 
 							break;
 
 						case 29: // 50 - 3XL
+							 c=formulaEval.evaluate(cell);
+							 ListPrice2=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+ 						
+
 
 							break;
 
 						case 30: // 100 - 3XL
-
+							 c=formulaEval.evaluate(cell);
+							 ListPrice3=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 listOfPrices3=listOfPrices3.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
+									 append(ListPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice3);
+							
 							break;
 
 						case 31: // 1 - 4XL
+							 c=formulaEval.evaluate(cell);
+							 ListPrice1=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+
 
 							break;
 						case 32: // 50 - 4XL
+							 c=formulaEval.evaluate(cell);
+							 ListPrice2=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+ 						
 
 							break;
 						case 33: // 100 - 4XL
+							 c=formulaEval.evaluate(cell);
+							 ListPrice3=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 listOfPrices4=listOfPrices4.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
+									 append(ListPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice3);
+							
+
 
 							break;
 						case 34:// 1 - 5XL
+							 c=formulaEval.evaluate(cell);
+							 ListPrice1=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+
+
 
 							break;
 						case 35:// 50 - 5XL
+							 c=formulaEval.evaluate(cell);
+							 ListPrice2=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+ 						
 
 							break;
 						case 36:// 100 - 5XL
-
+							 c=formulaEval.evaluate(cell);
+							 ListPrice3=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 listOfPrices5=listOfPrices5.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
+									 append(ListPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice3);
+							
 							break;
 						case 37: // Catalog Item Description
 							String Description = cell.getStringCellValue();
@@ -507,13 +557,13 @@ public class BrandwearExcelMapping implements IExcelParser {
 										.setPersonalization(PersonalizationList);
 							}
 							break;
-						case 54:// Shipping Weight
-							String shippingWeight = CommonUtility.getCellValueStrinOrDecimal(cell);
-							if (!StringUtils.isEmpty(shippingWeight)) {
-								shippingObj = productAttributeObj
-										.getshippingWeight(shippingWeight);
-								productConfigObj
-										.setShippingEstimates(shippingObj);
+						case 54:// Item Weight
+							String Productweight = CommonUtility.getCellValueStrinOrDecimal(cell);
+							if (!StringUtils.isEmpty(Productweight)) {
+								ItemWeightObj = productAttributeObj
+										.getitemWeight(Productweight);
+								productConfigObj.setItemWeight(ItemWeightObj);
+										
 							}
 							break;
 						case 55:// Made in the USA
@@ -522,6 +572,11 @@ public class BrandwearExcelMapping implements IExcelParser {
 								originObj.setName("CANADA");
 								originList.add(originObj);
 								productConfigObj.setOrigins(originList);
+							}
+							if(Origin.contains("TPL"))
+							{
+							 listcomplianceCerts.add("TPL Compliant");
+							 productExcelObj.setComplianceCerts(listcomplianceCerts);
 							}
 
 							break;
@@ -555,27 +610,30 @@ public class BrandwearExcelMapping implements IExcelParser {
 					// end inner while loop
 					productExcelObj.setPriceType("L");
 					
-					priceGrids = brandwearpriceObj.getPriceGrids(listOfPrices.toString(),
+					priceGrids = brandwearpriceObj.getRepeatablePriceGrids(listOfPrices1.toString(),
 					         "1___50___100", "A___B___C", "USD",
-					         "", true, "N",productName /*,"Size",sizeValue,priceGrids*/);
+					         "", true, "N",productName ,"Size","@".concat(sizeValue),priceGrids);
 					
 					
-				/*	priceGrids = brandwearpriceObj.getRepeatablePriceGrids(listOfPrices.toString(),
+					priceGrids = brandwearpriceObj.getRepeatablePriceGrids(listOfPrices2.toString(),
 					         "1___50___100", "A___B___C", "USD",
-					         "", true, "N",productName ,"Size",sizeValue,priceGrids);
+					         "", true, "N",productName ,"Size","2XL",priceGrids);
 					
-				       if(sizeValue.contains("XXL"))
-					{
-						
-				    	sizeValue = "2XL";
-						priceGrids = brandwearpriceObj.getRepeatablePriceGrids(listOfPrices2X.toString(),
-						         "1___50___100", "A___B___C", "USD",
-						         "", true, "N",productName ,"Size",sizeValue,priceGrids);
-						
-					}
 				
-				*/
+					priceGrids = brandwearpriceObj.getRepeatablePriceGrids(listOfPrices3.toString(),
+					         "1___50___100", "A___B___C", "USD",
+					         "", true, "N",productName ,"Size","3XL",priceGrids);
+					
 
+					priceGrids = brandwearpriceObj.getRepeatablePriceGrids(listOfPrices4.toString(),
+					         "1___50___100", "A___B___C", "USD",
+					         "", true, "N",productName ,"Size","4XL",priceGrids);
+					
+					priceGrids = brandwearpriceObj.getRepeatablePriceGrids(listOfPrices5.toString(),
+					         "1___50___100", "A___B___C", "USD",
+					         "", true, "N",productName ,"Size","5XL",priceGrids);
+						
+				
 				} catch (Exception e) {
 					_LOGGER.error("Error while Processing ProductId and cause :"
 							+ productExcelObj.getExternalProductId()
@@ -614,15 +672,20 @@ public class BrandwearExcelMapping implements IExcelParser {
 		    keywordList = new ArrayList<String>();
 		    ImprintSizeList = new ArrayList<ImprintSize>();
 			imprintSizeObj = new ImprintSize();
-			shippingObj = new ShippingEstimate();
+			ItemWeightObj = new Volume();
 			MaterialList = new ArrayList<Material>();
 			PersonalizationList = new ArrayList<Personalization>();
 			personalizeObj = new Personalization();
 			ImprintMethodList = new ArrayList<ImprintMethod>();
 			colorList = new ArrayList<Color>();
 			sizeObj=new Size();
-			listOfPrices = new StringBuilder();
-			listOfPrices2X = new StringBuilder();
+			
+			 listOfPrices1 = new StringBuilder();
+			 listOfPrices2 = new StringBuilder();
+			 listOfPrices3 = new StringBuilder();
+			 listOfPrices4 = new StringBuilder();
+			 listOfPrices5 = new StringBuilder();
+			 listcomplianceCerts = new ArrayList<String>();
 			priceGrids = new ArrayList<PriceGrid>();
 
 
