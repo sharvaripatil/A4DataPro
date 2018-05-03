@@ -24,6 +24,7 @@ import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
 import com.a4tech.product.model.Weight;
+import com.a4tech.util.CommonUtility;
 
 public class BrandwearProductAttribure {
 	private LookupServiceData lookupServiceDataObj;
@@ -152,12 +153,12 @@ public class BrandwearProductAttribure {
 	public List<Material> getMaterial(String materialValues) {
 		List<Material> MaterialList = new ArrayList<Material>();
  		Material materialObj = new Material();
-		String materialValueArr[] = materialValues.split("--");
-		if(materialValueArr[1].contains("Bamboo"))
+		String materialValueArr[] = materialValues.split(",");
+		if(materialValueArr[0].contains("Bamboo"))
 		{
-			materialValueArr[1]=materialValueArr[1].replace("Rayon Bamboo", "Other Fabric");
+			materialValueArr[0]=materialValueArr[0].replace("Rayon Bamboo", "Other Fabric");
 
-			materialValueArr[1]=materialValueArr[1].replace("Bamboo", "Other Fabric");
+			materialValueArr[0]=materialValueArr[0].replace("Bamboo", "Other Fabric");
 			
 		}
 		List<String> listOfLookupMaterial = getMaterialType(materialValueArr[1]
@@ -178,9 +179,9 @@ public class BrandwearProductAttribure {
 
 			materialObj.setName("Blend");
 		    List<BlendMaterial> listOfBlend= new ArrayList<>();
-		    blendObj.setPercentage("87");
+		    blendObj.setPercentage("70");
 		    blendObj.setName(listOfLookupMaterial.get(0));
-		    blendObj1.setPercentage("13");
+		    blendObj1.setPercentage("30");
 		    blendObj1.setName(listOfLookupMaterial.get(1));
 		    listOfBlend.add(blendObj);
 		    listOfBlend.add(blendObj1);
@@ -202,6 +203,7 @@ public class BrandwearProductAttribure {
 		return finalMaterialValues;
 	}
 
+	
 	
 	public Size getSizeValue(String sizeValue, String genderName) {
       Size sizeObj=new Size();

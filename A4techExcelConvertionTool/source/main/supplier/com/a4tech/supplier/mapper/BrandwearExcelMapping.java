@@ -508,7 +508,7 @@ public class BrandwearExcelMapping implements IExcelParser {
 							break;
 						case 45:// Fabric Content
 							String MaterialValues = cell.getStringCellValue();
-							MaterialAliceName=MaterialValues.replace(",", " ").concat("--");
+						//	MaterialAliceName=MaterialValues.replace(",", " ").concat("--");
 							if (!StringUtils.isEmpty(MaterialValues)) {
 								MaterialValues = MaterialAliceName
 										.concat(MaterialValues);
