@@ -288,7 +288,7 @@ public class CbMapping implements IExcelParser{
 							
 							break;
 						case 6: // WHSL
-							ListPrice=CommonUtility.getCellValueStrinOrInt(cell);
+							ListPrice=CommonUtility.getCellValueStrinOrDecimal(cell);
 
 							break;
 						 case 7://Color Name
@@ -337,16 +337,16 @@ public class CbMapping implements IExcelParser{
 							break;
 							
 	                    	case 16://MSRP
-							ListPrice1=CommonUtility.getCellValueStrinOrInt(cell);
+							ListPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
 
      						break;
 							
 	                    	case 17://Material Content
 	                    	String MaterialValue=cell.getStringCellValue();
+		                     if(!StringUtils.isEmpty(MaterialValue)){
 	                    	listOfMaterial = cutterBuckMaterialParserObj.getMaterialList(MaterialValue);
 							productConfigObj.setMaterials(listOfMaterial);	
-
-								
+		                     }
 							break;
 							
 	                    	case 18://Attribute Description

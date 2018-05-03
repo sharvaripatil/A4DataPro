@@ -51,7 +51,7 @@ public class CBAttributeParser {
 	    	}else
 	    	{
 	    		colorObj.setAlias(colorsValue);
-	    		if(CBlookup.COLOR_MAP.containsKey(colorsValue)){
+	    		if(CBlookup.COLOR_MAP.containsKey(colorsValue.trim())){
 	    		colorObj.setName(CBlookup.COLOR_MAP.get(colorsValue.trim()));
 	    		}else
 	    		{
@@ -127,7 +127,7 @@ public class CBAttributeParser {
 	    	confgObj.setValue(listOfValue);
 	    	listSkuConfigs.add(confgObj);
 	    	}
-	    	sizeNoArr[skuValue]=sizeNoArr[skuValue].trim().replace("XXXL","3XL");
+	    	sizeNoArr[skuValue]=sizeNoArr[skuValue].trim().replace("XXXL","3XL").replace("XXL","2XL");;
 	    	if(!sizeNoArr[skuValue].isEmpty())
 	    	{
 	    	valObj=new Value();
