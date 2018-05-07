@@ -1,6 +1,7 @@
 package parser.SportsAzxUsa;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class SportsUsaAttributeParser {
     private SportsUsaPriceGridParser sportsUsaPriceGridParser;
 	private static final Logger _LOGGER = Logger
 			.getLogger(SportsUsaAttributeParser.class);
-public Product getExistingProductData(Product existingProduct , ProductConfigurations existingProductConfig){
+public Product getExistingProductData(Product existingProduct , ProductConfigurations existingProductConfig,String authToken,String envType){
 		
 		ProductConfigurations newProductConfigurations=new ProductConfigurations();
 		Product newProduct=new Product();
@@ -84,7 +85,17 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		//Linename (if present)
 		List<String>  lineList=existingProduct.getLineNames();
 		if(!CollectionUtils.isEmpty(lineList)){
-			newProduct.setLineNames(lineList);
+			List<String>	listOfLookupLinenames = lookupServiceDataObj.getLineNames(authToken,envType);
+			List<String> listOfLineNames=new ArrayList<String>();
+			for (String lineName : lineList) {
+				if(listOfLookupLinenames.contains(lineName))
+			    {
+					listOfLineNames.add(lineName);
+			    }
+			}
+			if(!CollectionUtils.isEmpty(listOfLineNames)){
+			newProduct.setLineNames(listOfLineNames);
+			}
 		}
 		
 		newProduct.setProductConfigurations(newProductConfigurations);
@@ -261,7 +272,13 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 
 		RushTime rushtimeObj = new RushTime();
 		rushtimeObj.setAvailable(ApplicationConstants.CONST_BOOLEAN_TRUE);
-		String FinalrushTime = rushProdTimeLo.concat("-").concat(rushProdTimeH);
+		
+		String FinalrushTime =""; //rushProdTimeLo.concat("-").concat(rushProdTimeH);
+		if(!rushProdTimeLo.equals(rushProdTimeH)){
+			FinalrushTime=	rushProdTimeLo.concat("-").concat(rushProdTimeH);
+		}else{
+			FinalrushTime=	rushProdTimeLo;
+		}
 		RushTimeValue RushTimeValue = new RushTimeValue();
 		List<RushTimeValue> rushTimeList = new ArrayList<RushTimeValue>();
 
@@ -512,7 +529,11 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			String color =colorValuee; //(String) colorIterator.next();
 			color=color.replaceAll("\\|",",");
 		String[] colors =getValuesOfArray(color, ",");
-		for (String colorName : colors) {
+		HashSet<String> colorSet=new HashSet<String>();
+		for (String clrValue : colors) {
+			colorSet.add(clrValue.trim());
+		}
+		for (String colorName : colorSet) {
 			if(StringUtils.isEmpty(colorName)){
 				continue;
 			}

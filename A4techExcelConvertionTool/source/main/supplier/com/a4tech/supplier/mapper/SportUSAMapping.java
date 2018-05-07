@@ -23,6 +23,7 @@ import parser.SportsAzxUsa.SportsUsaAttributeParser;
 import parser.SportsAzxUsa.SportsUsaColorParser;
 import parser.SportsAzxUsa.SportsUsaPriceGridParser;
 import parser.gillstudios.GillStudiosLookupData;
+
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
@@ -73,7 +74,7 @@ public class SportUSAMapping implements IExcelParser{
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  String productId = null;
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
-		  
+		  int columnIndex=0;
 		  StringBuilder dimensionValue = new StringBuilder();
 		  StringBuilder dimensionUnits = new StringBuilder();
 		  StringBuilder dimensionType = new StringBuilder();
@@ -90,7 +91,7 @@ public class SportUSAMapping implements IExcelParser{
 			List<ImprintLocation> listImprintLocation = new ArrayList<ImprintLocation>();
 			List<ImprintMethod> listOfImprintMethods = new ArrayList<ImprintMethod>();
 			List<ProductionTime> listOfProductionTime = new ArrayList<ProductionTime>();
-			List<String> productKeywords = new ArrayList<String>();
+			//List<String> productKeywords = new ArrayList<String>();
 			List<Theme> themeList = new ArrayList<Theme>();
 			List<String> complianceList = new ArrayList<String>();
 		    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
@@ -113,11 +114,11 @@ public class SportUSAMapping implements IExcelParser{
 	    Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
+			
+			
+			
 		
-		
-		
-		
-	
+			
 		String priceCode = null;
 		String productName = null;
 		String quoteUponRequest  = null;
@@ -156,7 +157,7 @@ public class SportUSAMapping implements IExcelParser{
 		String Addcolorcharge=null;
 		String Upchargecode="";
 		String Addclearcode=null;
-		int columnIndex=0;
+		
 		String xid = null;
 		List<String> repeatRows = new ArrayList<>();
 		while (iterator.hasNext()) {
@@ -212,6 +213,7 @@ public class SportUSAMapping implements IExcelParser{
 									       String pCode=sizeImpArry[2];
 									       String pIncludesVa=sizeImpArry[3];
 									       String qUponReq=sizeImpArry[4];
+									       if(!qUponReq.equalsIgnoreCase("true")){
 									       String pName=sizeImpArry[5];
 									       String pPerUnit=sizeImpArry[6];
 									       // i have to work on this multiple pricing for sizing
@@ -223,6 +225,9 @@ public class SportUSAMapping implements IExcelParser{
 									       priceGrids = sportsUsaPriceGridParser.getPriceGrids(lPrices, 
 									    		   lQuantity, pCode, "USD",pIncludesVa, true,
 									    		   qUponReq, gridName,"Size",pPerUnit,priceGrids,sizeValue+":"+priceArry[1]);
+									       }else{
+									    	   priceGrids = sportsUsaPriceGridParser.getPriceGridsQur();	
+									       }
 									      /* (String listOfPrices,
 									   		    String listOfQuan, String discountCodes,
 									   			String currency, String priceInclude, boolean isBasePrice,
@@ -239,6 +244,8 @@ public class SportUSAMapping implements IExcelParser{
 									       String pCode=sizeImpArry[2];
 									       String pIncludesVa=sizeImpArry[3];
 									       String qUponReq=sizeImpArry[4];
+									       ///////////////////////////////
+									       if(!qUponReq.equalsIgnoreCase("true")){
 									       String pName=sizeImpArry[5];
 									       String pPerUnit=sizeImpArry[6];
 									       // i have to work on this multiple pricing for sizing
@@ -248,6 +255,10 @@ public class SportUSAMapping implements IExcelParser{
 											/*priceGrids = sportsUsaPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 										                 listOfQuantity.toString(), priceCode, "USD",priceIncludesValue, true,
 										                 quoteUponRequest, productName,"",pricesPerUnit.toString(),priceGrids,null);*/
+									       }else{
+									    	   priceGrids = sportsUsaPriceGridParser.getPriceGridsQur();	
+									       }
+									       ///////////////////////////////
 									}				
 														
 									}					
@@ -336,7 +347,7 @@ public class SportUSAMapping implements IExcelParser{
 								themeList = new ArrayList<Theme>();
 								finalDimensionObj = new Dimension();
 								 valuesList = new ArrayList<>();
-								productKeywords = new ArrayList<String>();
+								//productKeywords = new ArrayList<String>();
 								listOfProductionTime = new ArrayList<ProductionTime>();
 								rushTime = new RushTime();
 								listImprintLocation = new ArrayList<ImprintLocation>();
@@ -365,6 +376,7 @@ public class SportUSAMapping implements IExcelParser{
 								 sizeSet=new HashSet<String>();
 								 priceIncludesValue=new String();
 								 imprintSizeSet = new HashSet<String>();
+								 complianceList = new ArrayList<String>();
 								 repeatRows.clear();
 							        
 						 }
@@ -376,7 +388,7 @@ public class SportUSAMapping implements IExcelParser{
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
-						    	 productExcelObj = sportsUsaAttributeParser.getExistingProductData(existingApiProduct, existingApiProduct.getProductConfigurations());
+						    	 productExcelObj = sportsUsaAttributeParser.getExistingProductData(existingApiProduct, existingApiProduct.getProductConfigurations(),accessToken,environmentType);
 						    	 productConfigObj=productExcelObj.getProductConfigurations();
 						     }
 					 }
@@ -399,6 +411,7 @@ public class SportUSAMapping implements IExcelParser{
 						xid = getProductXid(nextRow);
 						  productExcelObj.setExternalProductId(xid.trim());*/
 					}
+					 //System.out.println("case 1");
 					 break;
 			
 					 
@@ -419,7 +432,7 @@ public class SportUSAMapping implements IExcelParser{
 							  productExcelObj.setExternalProductId(xid.trim());
 						}
 					 }
-
+					// System.out.println("case 2");
 					 break;
 				case 3://Name
 					
@@ -433,6 +446,7 @@ public class SportUSAMapping implements IExcelParser{
 						}
 						productExcelObj.setName(productName);	
 					 }
+					// System.out.println("case 3");
 					  break;
 				case 4://CatYear
 
@@ -454,6 +468,7 @@ public class SportUSAMapping implements IExcelParser{
 						 productExcelObj.setCategories(categoriesList);
 						 }
 						 }
+					 //System.out.println("case 7");
 					 break;
 				case 8://Cat2Name
 					String category2=CommonUtility.getCellValueStrinOrInt(cell);
@@ -507,11 +522,19 @@ public class SportUSAMapping implements IExcelParser{
 				case 12: //Keywords
 					String productKeyword = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(productKeyword)){
-					String productKeywordArr[] = productKeyword.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-					for (String string : productKeywordArr) {
+					//String productKeywordArr[] = productKeyword.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+					/*for (String string : productKeywordArr) {
 						productKeywords.add(string);
+					}*/
+					HashSet<String> keyWDSet=new HashSet<String>();
+					List<String> listOfValues=new ArrayList<>();
+					listOfValues=CommonUtility.getStringAsList(productKeyword);
+					for (String string : listOfValues) {
+						keyWDSet.add(string.toUpperCase().trim());
 					}
-					productExcelObj.setProductKeywords(productKeywords);
+					//
+					listOfValues=new ArrayList<String>(keyWDSet);
+					productExcelObj.setProductKeywords(listOfValues);
 					}
 					break;
 					
@@ -746,7 +769,7 @@ public class SportUSAMapping implements IExcelParser{
 					{
 						priceIncludesValue=priceIncludes.toString();
 					}
-					
+					System.out.println("case 46");
 					      break;
 				case 47:  //SetupChg
 					String setupChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
@@ -901,16 +924,16 @@ public class SportUSAMapping implements IExcelParser{
 							 }
 							 }
 						}
-
+						System.out.println("case 69");
 							break;
 				case 70://IsNewProd
 
 			          		break; 
 				case 71://NotSuitable
-
+					
 					       break;
 				case 72://Exclusive
-
+					
 					break;
 				case 73://Hazardous
 					String hazardous =  CommonUtility.getCellValueStrinOrInt(cell);
@@ -922,13 +945,13 @@ public class SportUSAMapping implements IExcelParser{
 					}
 					break;
 				case 74://OfficiallyLicensed
-
+					
 					break;
 				case 75://IsFood
-
+					
 					break;
 				case 76://IsClothing
-
+					
 					break;
 				case 77: // Imprint size1
 					 FirstImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
@@ -960,7 +983,7 @@ public class SportUSAMapping implements IExcelParser{
 					 if(!StringUtils.isEmpty(FirstImprintsize2.trim()) && !FirstImprintsize2.equals("0")){
 						 ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize2).append(" ");
 					 }
-
+					 
 					  	break;
 					  	
 				case 81:	// Imprint size2 Unit
@@ -978,10 +1001,10 @@ public class SportUSAMapping implements IExcelParser{
 					ImprintSizevalue=ImprintSizevalue.append(FirstImprinttype2).append(" ");
 				    }
 					break;
-
+					
 					    
 				case 83: //ImprintLoc
-
+					
 					String imprintLocation2 =  CommonUtility.getCellValueStrinOrInt(cell);
 					try{//////testing values
 					if(!StringUtils.isEmpty(imprintLocation2) && !imprintLocation2.equals("0")){
@@ -1010,7 +1033,7 @@ public class SportUSAMapping implements IExcelParser{
 				    if(!StringUtils.isEmpty(SecondImprintunit1.trim()) && !SecondImprintunit1.equals("0")){
 					SecondImprintunit1=GillStudiosLookupData.Dimension1Units.get(SecondImprintunit1);
 					ImprintSizevalue2=ImprintSizevalue2.append(SecondImprintunit1).append(" ");
-
+					
 					}
 					
 						break;
@@ -1020,9 +1043,9 @@ public class SportUSAMapping implements IExcelParser{
 				    if(!StringUtils.isEmpty(SecondImprinttype1.trim())  && !SecondImprinttype1.equals("0")){
 					SecondImprinttype1=GillStudiosLookupData.Dimension1Type.get(SecondImprinttype1);
 					ImprintSizevalue2=ImprintSizevalue2.append(SecondImprinttype1).append(" ").append("x");
-
+					
 					}
-				
+				    
 					  break;
 					  
 				case 87: // Second Imprintsize2
@@ -1031,7 +1054,7 @@ public class SportUSAMapping implements IExcelParser{
 				    ImprintSizevalue2=ImprintSizevalue2.append(SecondImprintsize2).append(" ");
 				    
 				    }
-
+				    
 					
 					break;
 					
@@ -1040,9 +1063,9 @@ public class SportUSAMapping implements IExcelParser{
 				    if(!StringUtils.isEmpty(SecondImprintunit2.trim()) && !SecondImprintunit2.equals("0")){
 					SecondImprintunit2=GillStudiosLookupData.Dimension1Units.get(SecondImprintunit2);
 					ImprintSizevalue2=ImprintSizevalue2.append(SecondImprintunit2).append(" ");
-
+					
 					}
-
+				    
 					break;
 					
 				case 89: // Second Imprintsize2 type	
@@ -1063,7 +1086,7 @@ public class SportUSAMapping implements IExcelParser{
 					  break;
 					
 				case 90: //SecondImprintLoc
-	
+					
 					String imprintLocation3 =  CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(imprintLocation3) && !imprintLocation3.equals("0")){
 						ImprintLocation locationObj2 = new ImprintLocation();
@@ -1097,16 +1120,16 @@ public class SportUSAMapping implements IExcelParser{
 					
 					
 					 break;
-			
+					 
 					 
 					 
 				case 94://NewPictureURL
-
+					
 					
 					break;
 					
 				case 95://NewPictureFile
-
+					
 					
 					break;
 					
@@ -1231,6 +1254,7 @@ public class SportUSAMapping implements IExcelParser{
 						 List<Packaging> listOfPackage=sportsUsaAttributeParser.getPackageValues(packageValue);
 						 productConfigObj.setPackaging(listOfPackage);
 					 }
+					 System.out.println("case 110");
 					 break; 	 
 				case 111://CartonL
 
@@ -1268,10 +1292,10 @@ public class SportUSAMapping implements IExcelParser{
 						
 							 if(!StringUtils.isEmpty(FOBValue))
 							 {
-								if(FOBValue.contains("44857"))
+								if(FOBValue.contains("14150"))
 								{
 									fobPintObj=new FOBPoint();
-									fobPintObj.setName("Norwalk, OH 44857 USA");
+									fobPintObj.setName("Tonawanda, NY 14150 USA");
 									FobPointsList.add(fobPintObj);
 
 								}
@@ -1424,6 +1448,7 @@ public class SportUSAMapping implements IExcelParser{
 				       String pCode=sizeImpArry[2];
 				       String pIncludesVa=sizeImpArry[3];
 				       String qUponReq=sizeImpArry[4];
+				       if(!qUponReq.equalsIgnoreCase("true")){
 				       String pName=sizeImpArry[5];
 				       String pPerUnit=sizeImpArry[6];
 				       // i have to work on this multiple pricing for sizing
@@ -1435,6 +1460,9 @@ public class SportUSAMapping implements IExcelParser{
 				       priceGrids = sportsUsaPriceGridParser.getPriceGrids(lPrices, 
 				    		   lQuantity, pCode, "USD",pIncludesVa, true,
 				    		   qUponReq, gridName,"Size",pPerUnit,priceGrids,sizeValue+":"+priceArry[1]);
+				       }else{
+				    	   priceGrids = sportsUsaPriceGridParser.getPriceGridsQur();	
+				       }
 				      /* (String listOfPrices,
 				   		    String listOfQuan, String discountCodes,
 				   			String currency, String priceInclude, boolean isBasePrice,
@@ -1451,6 +1479,8 @@ public class SportUSAMapping implements IExcelParser{
 				       String pCode=sizeImpArry[2];
 				       String pIncludesVa=sizeImpArry[3];
 				       String qUponReq=sizeImpArry[4];
+				       ///////////////////////////////
+				       if(!qUponReq.equalsIgnoreCase("true")){
 				       String pName=sizeImpArry[5];
 				       String pPerUnit=sizeImpArry[6];
 				       // i have to work on this multiple pricing for sizing
@@ -1460,6 +1490,10 @@ public class SportUSAMapping implements IExcelParser{
 						/*priceGrids = sportsUsaPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 					                 listOfQuantity.toString(), priceCode, "USD",priceIncludesValue, true,
 					                 quoteUponRequest, productName,"",pricesPerUnit.toString(),priceGrids,null);*/
+				       }else{
+				    	   priceGrids = sportsUsaPriceGridParser.getPriceGridsQur();	
+				       }
+				       ///////////////////////////////
 				}				
 									
 				}					
@@ -1552,7 +1586,7 @@ public class SportUSAMapping implements IExcelParser{
 		themeList = new ArrayList<Theme>();
 		finalDimensionObj = new Dimension();
 		 valuesList = new ArrayList<>();
-		productKeywords = new ArrayList<String>();
+		//productKeywords = new ArrayList<String>();
 		listOfProductionTime = new ArrayList<ProductionTime>();
 		rushTime = new RushTime();
 		listImprintLocation = new ArrayList<ImprintLocation>();
@@ -1579,16 +1613,17 @@ public class SportUSAMapping implements IExcelParser{
          sizeSet=new HashSet<String>();
          priceIncludesValue=new String();
          imprintSizeSet = new HashSet<String>();
+         complianceList = new ArrayList<String>();
          repeatRows.clear();
 	       return finalResult;
 		}catch(Exception e){
-			_LOGGER.error("Error while Processing excel sheet "+e.getMessage());
+			_LOGGER.error("Error while Processing excel sheet "+e.getLocalizedMessage() +"for case +1="+columnIndex);
 			return finalResult;
 		}finally{
 			try {
 				workbook.close();
 			} catch (IOException e) {
-				_LOGGER.error("Error while Processing excel sheet "+e.getMessage());
+				_LOGGER.error("Error while Processing excel sheet "+e.getLocalizedMessage() +"for case +1="+columnIndex);
 				
 			}
 				_LOGGER.info("Complted processing of excel sheet ");
