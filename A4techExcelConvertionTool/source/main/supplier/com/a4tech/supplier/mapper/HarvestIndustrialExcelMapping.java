@@ -136,7 +136,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 
 				try {
 					Row nextRow = iterator.next();
-					if (nextRow.getRowNum() < 1)
+					if (nextRow.getRowNum() < 7)//Totes Factory
 						continue;
 					Iterator<Cell> cellIterator = nextRow.cellIterator();
 					if (productId != null) {
@@ -167,7 +167,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 						}
 						if (checkXid) {
 							if (!productXids.contains(xid)) {
-								if (nextRow.getRowNum() != 1) {
+								if (nextRow.getRowNum() != 7) { //totes factory
 									System.out
 											.println("Java object converted to JSON String, written to file");
 

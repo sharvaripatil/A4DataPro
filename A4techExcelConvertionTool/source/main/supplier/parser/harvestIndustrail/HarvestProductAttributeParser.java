@@ -128,7 +128,16 @@ public class HarvestProductAttributeParser {
 			originValue = ApplicationConstants.CONST_STRING_COUNTRY_NAME_USA;
 		}else if(originValue.equalsIgnoreCase("CN")){
 			originValue = ApplicationConstants.CONST_STRING_COUNTRY_NAME_CHINA;
-		}else{
+		}else if(originValue.equalsIgnoreCase("in")){
+			originValue = "INDIA";
+
+		}
+		else if(originValue.equalsIgnoreCase("PK")){
+			originValue = "PAKISTAN";
+
+		}else
+		{
+			
 		}
 		origin.setName(originValue);
 		listOfOrigin.add(origin);
