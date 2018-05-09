@@ -50,6 +50,7 @@ import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
 import com.a4tech.supplier.mapper.SimplifiedsourcingMapping;
 import com.a4tech.supplier.mapper.SolidDimensionMapping;
 import com.a4tech.supplier.mapper.SportCanadaExcelMapping;
+import com.a4tech.supplier.mapper.SportUSAMapping;
 import com.a4tech.supplier.mapper.SportsManBagMapping;
 import com.a4tech.supplier.mapper.SunGraphixMapping;
 import com.a4tech.supplier.mapper.SunGraphixRevisedMapping;
@@ -118,7 +119,7 @@ public class ExcelFactory {
     private SimplifiedsourcingMapping       simplifiedMapping;
 	private SolidDimensionMapping 			solidDimensionMapping;
     private EveanManufacturingCanadaMapping eveanManufactureMapping;
-    
+    private SportUSAMapping					sportUSAMapping;
 	public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -239,6 +240,8 @@ public class ExcelFactory {
 			  return solidDimensionMapping;
 		  } else if(name.equals("52841")){
 			  return eveanManufactureMapping;
+		  }else if(name.equals("30250")){
+			  return sportUSAMapping;
 		  }
 		return null;
 	}
@@ -668,6 +671,14 @@ public class ExcelFactory {
 	}
 	public void setEveanManufactureMapping(EveanManufacturingCanadaMapping eveanManufactureMapping) {
 		this.eveanManufactureMapping = eveanManufactureMapping;
+	}
+
+	public SportUSAMapping getSportUSAMapping() {
+		return sportUSAMapping;
+	}
+
+	public void setSportUSAMapping(SportUSAMapping sportUSAMapping) {
+		this.sportUSAMapping = sportUSAMapping;
 	}
 
 }
