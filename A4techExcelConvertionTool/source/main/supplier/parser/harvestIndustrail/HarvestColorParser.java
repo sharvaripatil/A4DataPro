@@ -16,19 +16,24 @@ public class HarvestColorParser {
 
 		Color colorObj = new Color();
 		Combo comboObj=new Combo();
-		
-		colorValue=colorValue.replace("Box - ", "").replace("Bow - ", "").replace(ApplicationConstants.CONST_DELIMITER_FSLASH,ApplicationConstants.CONST_DELIMITER_COMMA)
-				.replace("Clear Cubes.", "").replace("Box.", "").replace("Bows.", "");
-		
+
+		colorValue=colorValue.replace("Natural/Natural", "Natural");
 		String[] colorValues = CommonUtility.getValuesOfArray(colorValue,
 				ApplicationConstants.CONST_DELIMITER_COMMA);
 		for (String colorName : colorValues) {
 			colorObj = new Color();
 			 comboObj=new Combo();
+			 String colorLookUpName="";
 			String OriginalcolorName = colorName.trim();
-			String colorLookUpName=HarvestLookupData.COLOR_MAP.get(colorName.trim()).trim();
-			if(colorLookUpName.contains("Secondary"))
+			if(HarvestLookupData.COLOR_MAP.containsKey(OriginalcolorName)) {
+			 colorLookUpName=HarvestLookupData.COLOR_MAP.get(colorName.trim()).trim();
+			}else
 			{
+				 colorLookUpName="Other";
+			}
+			if(colorLookUpName.contains("Trim"))
+			{
+				 combolist = new ArrayList<>();
 				Combo comboObj1=new Combo();
 				String comboArr[]=colorLookUpName.split(":");
 				colorObj.setAlias(OriginalcolorName);
@@ -49,7 +54,8 @@ public class HarvestColorParser {
 				
 			}
 			else if(colorLookUpName.contains("Combo"))
-			{ String comboArr[]=colorLookUpName.split(":");
+			{  combolist = new ArrayList<>();
+				String comboArr[]=colorLookUpName.split(":");
 			colorObj.setAlias(OriginalcolorName);
 			colorObj.setName(comboArr[0]);
 			
