@@ -23,6 +23,7 @@ import parser.harvestIndustrail.HarvestProductAttributeParser;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.FOBPoint;
@@ -76,8 +77,9 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 		List<FOBPoint> FobPointsList = new ArrayList<FOBPoint>();
 		List<Color> color = new ArrayList<Color>();		
 		List<Shape> shapelist = new ArrayList<Shape>();		
+		 List<AdditionalColor>additionalcolorList= new ArrayList<>();
 
-
+		
 		Product productExcelObj = new Product();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
 		Dimension finalDimensionObj = new Dimension();
@@ -131,12 +133,21 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 			String imprintLocation = null;
 			String Summary=null;
 			String asiProdNo =null;
+			String Setupcharge="";
+			String Screencharge="";
+			String Repeatcharge="";
+			String Additionalcolor="";
+			String Setupchargecode="";
+			String Screenchargecode="";
+			String Repeatchargecode="";
+			String Additionalcolorcode="";
+
 
 			while (iterator.hasNext()) {
 
 				try {
 					Row nextRow = iterator.next();
-					if (nextRow.getRowNum() < 1)
+					if (nextRow.getRowNum() < 7)//Totes Factory
 						continue;
 					Iterator<Cell> cellIterator = nextRow.cellIterator();
 					if (productId != null) {
@@ -167,7 +178,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 						}
 						if (checkXid) {
 							if (!productXids.contains(xid)) {
-								if (nextRow.getRowNum() != 1) {
+								if (nextRow.getRowNum() != 7) { //totes factory
 									System.out
 											.println("Java object converted to JSON String, written to file");
 
@@ -192,11 +203,11 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 									}
 								
 								
-									if(!FirstImprintsize1.contains("")){
+									//if(!FirstImprintsize1.contains("")){
 										imprintSizeList=harvestProductAttributeObj.getimprintsize(ImprintSizevalue);
 										 imprintSizeList.removeAll(Collections.singleton(null));
 									productConfigObj.setImprintSize(imprintSizeList);
-									}
+									//}
 									productConfigObj
 											.setProductionTime(listOfProductionTime);
 									productConfigObj.setRushTime(rushTime);
@@ -257,6 +268,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 									shapelist = new ArrayList<Shape>();	
 									shipping = new ShippingEstimate();
 									ImprintSizevalue = new StringBuilder();
+									additionalcolorList = new ArrayList<>();
 									productConfigObj = new ProductConfigurations();
 									
 																	}
@@ -344,6 +356,10 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 
 				case 6: // ExpirationDate
+					String ConfDate=cell.getStringCellValue();
+					productExcelObj.setPriceConfirmedThru(ConfDate);
+					
+					
 					break;
 
 				case 7:// Discontinued
@@ -423,9 +439,9 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 				case 15:// Themes
 
 					themeValue = cell.getStringCellValue();
-					if(exstlist == null){
-					themeValue=themeValue.replace("Outdoor,", "").replace("Summer", "");
-					if (StringUtils.isEmpty(themeList) || themeList.contains("null")) {
+					//if(exstlist == null){
+					//themeValue=themeValue.replace("Outdoor,", "").replace("Summer", "");
+				//	if (StringUtils.isEmpty(themeList) || themeList.contains("null")) {
 					themeList = new ArrayList<Theme>();
 			    	Theme themeObj = new Theme();;
 					String Value = "";
@@ -436,16 +452,16 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 							.getTheme(Value);
 
 					for (String themeName : themes) {
-						themeName=themeName.toUpperCase();
-						if (themeLookupList.contains(themeName) && themeList.size() <5 ) {
+						themeName=themeName.toUpperCase().trim();
+						if (themeLookupList.contains( themeName) && themeList.size() <5 ) {
 							themeObj = new Theme();
 							themeObj.setName(themeName);
 							themeList.add(themeObj);
 						}
 
 					}
-					}
-					}
+				//	}
+				//	}
 					break;
 				case 16: // Dimension1
 
@@ -645,15 +661,22 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 				case 47: // PriceIncludeLoc
 					break;
 				case 48:// SetupChg
+					 Setupcharge=cell.getStringCellValue();
 					break;
 
 				case 49:// SetupChgCode
+					 Setupchargecode=cell.getStringCellValue();
+
 
 					break;
 				case 50:// ScreenChg
+					 Screencharge=cell.getStringCellValue();
+
 
 					break;
 				case 51:// ScreenChgCode
+					 Screenchargecode=cell.getStringCellValue();
+
 
 					break;
 				case 52:// PlateChg
@@ -675,15 +698,19 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 
 					break;
 				case 58:// RepeatChg
-
+					Repeatcharge=cell.getStringCellValue();
 					break;
 				case 59:// RepeatChgCode
+					Repeatchargecode=cell.getStringCellValue();
 
 					break;
 				case 60:// AddClrChg
+					Additionalcolor=cell.getStringCellValue();
 
 					break;
 				case 61:// AddClrChgCode
+					Additionalcolorcode=cell.getStringCellValue();
+
 
 					break;
 				case 62:// AddClrRunChg1
@@ -713,17 +740,17 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 				case 70:// IsEnvironmentallyFriendly
 					String IsEnvironmentallyFriendly = cell
 							.getStringCellValue();
-					if(exstlist == null){
+					//if(exstlist == null){
 					if (IsEnvironmentallyFriendly
 							.equalsIgnoreCase("true") && themeList.size() <5 ) {
 						Theme themeObj1 = new Theme();
 
-						themeObj1.setName("Eco Friendly");
+						themeObj1.setName("ECO & ENVIRONMENTALLY FRIENDLY");
 
 						themeList.add(themeObj1);
 					}
 					productConfigObj.setThemes(themeList);
-					}
+					//}
 		
 					break;
 				case 71:// IsNewProd
@@ -824,37 +851,34 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 				
 
 				case 85: // SecondImprintSize1
-				
+
 					break;
 
 				case 86: // SecondImprintSize1Units
-			
 
 					break;
 
 				case 87: // SecondImprintSize1Type
-					
 
 					break;
 
 				case 88: // SecondImprintSize2
-				
+
 					break;
 
 				case 89: // SecondImprintSize2Units
-				
-					break;
+  
 
 				case 90: // SecondImprintSize2Type
-				
+	    
 					break;
 				case 91: // SecondImprintLoc
-				/*	String imprintLocation2 = cell.getStringCellValue();
+					String imprintLocation2 = cell.getStringCellValue();
 					if (!imprintLocation2.isEmpty()) {
 						ImprintLocation locationObj2 = new ImprintLocation();
 						locationObj2.setValue(imprintLocation2.trim());
 						listImprintLocation.add(locationObj2);
-					}*/
+					}
 
 					break;
 
@@ -938,6 +962,10 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 				
 					break;
 				case 105:// ComplianceList
+				 List<String> compliance  = new ArrayList<>();
+				 compliance.add("Prop 65");
+				 compliance.add("CPSIA");
+	             productExcelObj.setComplianceCerts(compliance);	
 
 					break;
 				case 106: // ComplianceMemo
@@ -982,11 +1010,11 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 
 				case 111: // Packaging
-					String pack = cell.getStringCellValue();
+				/*	String pack = cell.getStringCellValue();
 					List<Packaging> listOfPackaging = harvestProductAttributeObj
 							.getPackageValues(pack);
 					productConfigObj.setPackaging(listOfPackaging);
-
+*/
 					break;
 				case 112:// CartonL
 					cartonL = CommonUtility
@@ -1024,9 +1052,9 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 							.getCellValueStrinOrInt(cell);
 					// List<String>fobLookupList =
 					// lookupServiceDataObj.getFobPoints(FOBLooup);
-					if (FOBValue.contains("90802")) {
+					if (FOBValue.contains("30340")) {
 						fobPintObj
-								.setName("Los Angeles, CA 90802 USA");
+								.setName("Atlanta, GA 30340");
 						FobPointsList.add(fobPintObj);
 						productExcelObj.setFobPoints(FobPointsList);
 					}
@@ -1069,6 +1097,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 			 // end inner while loop
 			
 			//String QuoteRequest=Boolean.toString(quoteUponRequest);
+					 priceIncludesValue="1 color 1 side 1 location";
 					productExcelObj.setPriceType("L");
 					if (listOfPrices != null
 							&& !listOfPrices.toString().isEmpty()) {
@@ -1090,6 +1119,54 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 						
 					}
 					productConfigObj.setImprintMethods(listOfImprintMethods);
+
+					
+					priceGrids =  harvestPriceGridObj.getUpchargePriceGrid("1", Setupcharge,
+							Setupchargecode,
+									"Imprint Method", "false", "USD",
+									"Screen printed",
+									"Set-up Charge", "Per Order",
+									new Integer(1), "Required","",priceGrids);	//setupcharge
+					
+					priceGrids =  harvestPriceGridObj.getUpchargePriceGrid("1", Screencharge,
+							Screenchargecode,
+									"Imprint Method", "false", "USD",
+									"Screen printed",
+									"Run Charge", "Per Order",
+									new Integer(1),"Required","", priceGrids);	//screen charge
+					
+					 priceGrids =  harvestPriceGridObj.getUpchargePriceGrid("1", Repeatcharge,
+							 Repeatchargecode,
+							"Imprint Method", "false", "USD",
+							"Screen printed",
+							"Run Charge", "Per Order",
+							new Integer(1), "Optional","",priceGrids);	//repeat charge
+			
+			
+					 if(!Additionalcolor.equalsIgnoreCase("0"))
+						{
+							AdditionalColor addcolor=new AdditionalColor();
+							addcolor.setName("Additional Colors");
+							additionalcolorList.add(addcolor);
+							productConfigObj.setAdditionalColors(additionalcolorList);
+							priceGrids = harvestPriceGridObj.getUpchargePriceGrid("1", Additionalcolor,
+											Additionalcolorcode,
+											"Additional Colors", "false", "USD",
+											"Additional Colors",
+											"Add. Color Charge", "Other",
+											new Integer(1),"Optional","", priceGrids);	
+						
+						
+							priceGrids = harvestPriceGridObj.getUpchargePriceGrid("1___2___3___4___5___6",
+									"0.85___0.8___0.7___0.65___0.6___0.55",
+									"RRRRRR",
+									"Additional Colors", "false", "USD",
+									"Additional Colors",
+									"Add. Color Charge", "Other",
+									new Integer(1),"Optional","Per piece, per additional color", priceGrids);	
+						}
+					 
+					 
 
 					
 
@@ -1117,11 +1194,11 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 				productConfigObj.setSizes(size);
 			}
 			
-			 if(!FirstImprintsize1.contains("")){
+		//	 if(!FirstImprintsize1.contains("")){
 				 imprintSizeList=harvestProductAttributeObj.getimprintsize(ImprintSizevalue);
 				 imprintSizeList.removeAll(Collections.singleton(null));
 			productConfigObj.setImprintSize(imprintSizeList);
-			}
+		//	}
 			productConfigObj.setProductionTime(listOfProductionTime);
 			productConfigObj.setRushTime(rushTime);
 
@@ -1174,6 +1251,8 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 			productConfigObj = new ProductConfigurations();
 			rushTime = new RushTime();
 			ImprintSizevalue = new StringBuilder();
+			additionalcolorList = new ArrayList<>();
+
 			exstlist = new ArrayList<Theme>();
 
 			return finalResult;

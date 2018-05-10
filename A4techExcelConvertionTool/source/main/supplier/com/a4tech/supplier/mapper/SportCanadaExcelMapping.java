@@ -38,6 +38,7 @@ import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Origin;
+import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -106,6 +107,8 @@ public class SportCanadaExcelMapping implements IExcelParser{
 			List<FOBPoint> FobPointsList = new ArrayList<FOBPoint>();
 			FOBPoint fobPintObj=new FOBPoint();
 			 List<String>categoriesList= new ArrayList<String>();
+			 List<Packaging>PackagingList= new ArrayList<Packaging>();
+
 			 List<AdditionalColor>additionalcolorList= new ArrayList<>();
 
 		try{
@@ -259,6 +262,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 								 priceIncludesValue=null;
 								 additionalcolorList= new ArrayList<>();
 								 listofUpcharges = new StringBuilder();
+								 PackagingList= new ArrayList<Packaging>();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid.trim());
@@ -1042,7 +1046,8 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					String pack  = cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(pack))
 					 {
-					productExcelObj.setAdditionalShippingInfo(pack);
+					PackagingList=gcShippingParser.getpackging(pack); 						 
+					productConfigObj.setPackaging(PackagingList);
 					 }
 					 break; 	 
 				case 111://CartonL
@@ -1080,7 +1085,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 								if(FOBValue.contains("L7L 0J8"))
 								{
 									fobPintObj=new FOBPoint();
-									fobPintObj.setName("Burlington, ON L7L 5J8 CAN");
+									fobPintObj.setName("Burlington, ON L7L 0J8 Canada");
 									FobPointsList.add(fobPintObj);
 
 								}
@@ -1092,6 +1097,9 @@ public class SportCanadaExcelMapping implements IExcelParser{
 					
 				case 118: //Comment
 		
+					
+					
+					
 					 
 					break;
 					
@@ -1152,7 +1160,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 									Setupcode,
 									"Imprint Method", "false", "USD",
 									ImprintMethodValue,
-									"Set-up Charge", "Other",
+									"Set-up Charge", "Per Order",
 									new Integer(1), priceGrids);
 
 				}
@@ -1170,7 +1178,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 								"V",
 								"Additional Colors", "false", "USD",
 								"Additional Colors",
-								"Set-up Charge", "Other",
+								"Set-up Charge", "Per Order",
 								new Integer(1), priceGrids);	
 			}
 			
@@ -1181,7 +1189,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 								Upchargecode,
 								"Additional Colors", "false", "USD",
 								"Additional Colors",
-								"Run Charge", "Other",
+								"Run Charge", "Per Order",
 								new Integer(1), priceGrids);	
 				
 			}
@@ -1234,7 +1242,7 @@ public class SportCanadaExcelMapping implements IExcelParser{
 		productExcelObj.setFobPoints(FobPointsList);
 		}
 	   
-
+		PackagingList= new ArrayList<Packaging>();
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 	
 		 	

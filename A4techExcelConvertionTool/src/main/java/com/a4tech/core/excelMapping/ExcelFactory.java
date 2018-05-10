@@ -196,8 +196,8 @@ public class ExcelFactory {
 	      } else if(name.equalsIgnoreCase("bellaCanvas") || name.equals("39590")){
 		      return bellaCanvasMapping;
 
-	      }  else if(name.equalsIgnoreCase("harvest") || name.equals("61670") || name.equals("71685")){
-		      return harvestMapping;
+	      }  else if(name.equalsIgnoreCase("harvest") || name.equals("61670") || name.equals("71685") || name.equals("91584")){
+		      return harvestMapping;//TotesFactory
 
 	      } else if(name.equalsIgnoreCase("towelSpe") || name.equals("91605")){
 	    	  return towelSpecialties;
