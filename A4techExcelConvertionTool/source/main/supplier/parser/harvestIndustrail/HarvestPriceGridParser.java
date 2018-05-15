@@ -144,6 +144,7 @@ public class HarvestPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String upChargeDiscount = discounts;
 
+		
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(upChargeName);
 		priceGrid

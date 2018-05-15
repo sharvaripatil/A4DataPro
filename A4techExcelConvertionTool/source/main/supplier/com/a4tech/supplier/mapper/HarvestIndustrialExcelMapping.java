@@ -939,14 +939,14 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 				case 103: // AssembledInCountry
 					
-					String AssembledCountry = cell
+			/*		String AssembledCountry = cell
 					.getStringCellValue();
 			   if (!AssembledCountry.isEmpty()) {
 				   AssembledCountry = harvestProductAttributeObj
 						.getCountryCodeConvertName(AssembledCountry);
 				productExcelObj.setAdditionalProductInfo("Assembled country is: "
 								+ AssembledCountry);
-		        	}
+		        	}*/
 
 					break;
 				case 104: // DecoratedInCountry
@@ -1062,7 +1062,12 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 
 				case 119: // Comment
-
+					String Comment=cell.getStringCellValue();
+					 if(!StringUtils.isEmpty(Comment))
+					 {
+						 productExcelObj.setDistributorOnlyComments(Comment);
+						
+					 }
 					break;
 
 				case 120: // Verified
@@ -1132,14 +1137,14 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 							Screenchargecode,
 									"Imprint Method", "false", "USD",
 									"Screen printed",
-									"Run Charge", "Per Order",
+									"Screen Charge", "Other",
 									new Integer(1),"Required","", priceGrids);	//screen charge
 					
 					 priceGrids =  harvestPriceGridObj.getUpchargePriceGrid("1", Repeatcharge,
 							 Repeatchargecode,
 							"Imprint Method", "false", "USD",
 							"Screen printed",
-							"Run Charge", "Per Order",
+							"Re-Order Charge", "Per Order",
 							new Integer(1), "Optional","",priceGrids);	//repeat charge
 			
 			
@@ -1154,7 +1159,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 											"Additional Colors", "false", "USD",
 											"Additional Colors",
 											"Add. Color Charge", "Other",
-											new Integer(1),"Optional","", priceGrids);	
+											new Integer(1),"Optional","per Additional color", priceGrids);	
 						
 						
 							priceGrids = harvestPriceGridObj.getUpchargePriceGrid("1___2___3___4___5___6",
