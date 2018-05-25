@@ -66,7 +66,7 @@ public class BrandwearProductAttribure {
 	public List<Color> getColorValue(String colorValue) {
 		//if(colorValue.contains("&"))
 		//{
- 			colorValue=colorValue.replace("&", ",").replace("/", ",");	
+ 			colorValue=colorValue.replace("&", ",").replace("/", ",").replace("CUSTOM COLORS AVAILABLE","");	
 		//}
 		
 		List<Color> colorList = new ArrayList<Color>();
@@ -111,7 +111,7 @@ public class BrandwearProductAttribure {
 	
 	public List<ImprintMethod> getImprintMethod(String imprintMethod) {
  		ImprintMethod imprMethod = new ImprintMethod();
- 		imprintMethod=imprintMethod.replace("®","").replace("3M Hi-Visibility Reflective,","").
+ 		imprintMethod=imprintMethod/*.replace("®","").replace("3M Hi-Visibility Reflective,","")*/.
  				replace("Call for details. ", "");
 		List<ImprintMethod> imprintMethodList = new ArrayList<ImprintMethod>();
 		String imprintMethodValueArr[]=imprintMethod.split(",");
@@ -141,6 +141,9 @@ public class BrandwearProductAttribure {
 	  {
 		  imprMethod.setType("Other");
 	  }
+	  if(imprintMethodValue.length() > 60) {
+	  imprintMethodValue=imprintMethodValue.substring(0, 60);
+	  }
 	  imprMethod.setAlias(imprintMethodValue);	
 	  imprintMethodList.add(imprMethod);
 
@@ -166,7 +169,7 @@ public class BrandwearProductAttribure {
 		//listOfLookupMaterial.remove(0);
 		//listOfLookupMaterial.remove(2);
 
-		if (StringUtils.isEmpty(materialValueArr[0])) {
+    	if (StringUtils.isEmpty(materialValueArr[0])) {
 			materialObj.setAlias(materialValueArr[1]);
 		} else {
 			materialObj.setAlias(materialValueArr[0]);
@@ -179,15 +182,15 @@ public class BrandwearProductAttribure {
 
 			materialObj.setName("Blend");
 		    List<BlendMaterial> listOfBlend= new ArrayList<>();
-		    blendObj.setPercentage("70");
-		    blendObj.setName(listOfLookupMaterial.get(0));
-		    blendObj1.setPercentage("30");
-		    blendObj1.setName(listOfLookupMaterial.get(1));
+		    blendObj.setPercentage("95");
+		    blendObj.setName("Other Fabric");
+		    blendObj1.setPercentage("5");
+		    blendObj1.setName("Spandex");
 		    listOfBlend.add(blendObj);
 		    listOfBlend.add(blendObj1);
 			materialObj.setBlendMaterials(listOfBlend);
 
-			
+			materialObj.setAlias(materialValues);
 		} else if (listOfLookupMaterial.size()==3) {
 		}
 		MaterialList.add(materialObj);
