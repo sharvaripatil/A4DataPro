@@ -430,6 +430,8 @@
 		<property name="sportsManBagMapping" ref="sportsManBagMappingId"/>
 		<property name="solidDimensionMapping" ref="solidDimensionMappingId"/>
 		<property name="eveanManufactureMapping" ref="eveanManufactureMappingId"/>
+		<property name="sportUSAMapping" ref="sportUSAMappingId"/>
+		<property name="sportAzxCandMapping" ref="sportAzxCandMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1227,5 +1229,44 @@
       </bean>
       <bean id="eveanManufactPriceingParserId" class="parser.evansManufacturing.EveansManufacturePriceGridParser"></bean>
       <!-- supplier 52841 Evans Manufacturing Canada  configuration end -->
+      
+       <!-- supplier 30250 AZX Sport USA configuration start -->
+     <bean id="sportUSAMappingId" class="com.a4tech.supplier.mapper.SportUSAMapping" autowire="byName">
+       <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj" ref="productDao"/>
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+         <property name="lookupRestServiceObj" ref="lookupRestService"/>
+       <property name="sportsUsaAttributeParser" ref="sportsUsaAttributeParserId" /> 
+       <property name="sportsUsaPriceGridParser" ref="sportsUsaPriceGridParserId" /> 
+       <property name="sportsUsaColorParser" ref="sportsUsaColorParserId" /> 
+       </bean>
+       <bean id="sportsUsaAttributeParserId" name="sportsUsaAttributeParserObj"
+  		class="parser.SportsAzxUsa.SportsUsaAttributeParser" autowire="byName">
+  		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+  		<property name="sportsUsaPriceGridParser" ref="sportsUsaPriceGridParserObj"/>
+  	</bean>
+  	<bean id="sportsUsaPriceGridParserId" name="sportsUsaPriceGridParserObj" class="parser.SportsAzxUsa.SportsUsaPriceGridParser" autowire="byName"/>
+  	<bean id="sportsUsaColorParserId" name="sportsUsaColorParserIdObj" class="parser.SportsAzxUsa.SportsUsaColorParser" autowire="byName">
+  	<!-- <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+    <property name="lookupRestServiceObj" ref="lookupRestService"/> -->
+  	</bean>
+     <!-- supplier 30250 AZX Sport USA configuration end -->  
+     
+     
+     <!-- supplier 30251 AZX Sport Canada configuration start -->
+     <bean id="sportAzxCandMappingId" class="com.a4tech.supplier.mapper.SportAzxCandMapping" autowire="byName">
+       <property name="postServiceImpl" ref="postService"/>
+       <property name="productDaoObj" ref="productDao"/>
+       <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+         <property name="lookupRestServiceObj" ref="lookupRestService"/>
+       <property name="sportsUsaAttributeParser" ref="sportsUsaAttributeParserId" /> 
+       <property name="sportsUsaPriceGridParser" ref="sportsUsaPriceGridParserId" /> 
+       <property name="sportsAzxCanColorParser" ref="sportsAzxCanColorParserId" /> 
+       </bean>
+   <bean id="sportsAzxCanColorParserId" name="sportsAzxCanColorParserObj" class="parser.SportAzxCanada.SportsAzxCanColorParser" autowire="byName">
+  	<!-- <property name="lookupServiceDataObj" ref="lookupServiceData"/>
+    <property name="lookupRestServiceObj" ref="lookupRestService"/> -->
+  	</bean>
+     <!-- supplier 30251 AZX Sport Canada configuration end -->  
 </beans>
 

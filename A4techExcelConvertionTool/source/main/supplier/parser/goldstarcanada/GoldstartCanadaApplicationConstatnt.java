@@ -9,6 +9,64 @@ public class GoldstartCanadaApplicationConstatnt {
 	
     static {
 
+    	COLOR_MAP.put("Navy Blue","Dark Blue");//30251
+    	COLOR_MAP.put("Royal Blue","Bright Blue");
+    	COLOR_MAP.put("Red","Medium Red");
+    	COLOR_MAP.put("Purple","Medium Purple");
+    	COLOR_MAP.put("Forest Green","Dark Green");
+    	COLOR_MAP.put("Black","Medium Black");
+    	COLOR_MAP.put("Gold","Dark Yellow");
+    	COLOR_MAP.put("Copper","Copper Metal");
+    	COLOR_MAP.put("Baby Blue","Light Blue");
+    	COLOR_MAP.put("Orange","Medium Orange");
+    	COLOR_MAP.put("Kelly Green","Bright Green");
+    	COLOR_MAP.put("Athletic Gold","Dark Yellow");
+    	COLOR_MAP.put("White","Medium White");
+    	COLOR_MAP.put("Burgundy Red","Dark Red");
+    	COLOR_MAP.put("Assorted","Assorted");
+    	COLOR_MAP.put("Light Gray","Light Gray");
+    	COLOR_MAP.put("Light Pink","Light Pink");
+    	COLOR_MAP.put("Yellow","Medium Yellow");
+    	COLOR_MAP.put("Dark Gray","Dark Gray");
+    	COLOR_MAP.put("Silver","Silver Metal");
+    	COLOR_MAP.put("Clear","Clear");
+    	COLOR_MAP.put("Frosted White","Medium White");
+    	COLOR_MAP.put("Green","Medium Green");
+    	COLOR_MAP.put("Pink","Medium Pink");
+    	COLOR_MAP.put("Aluminum Silver","ALUMINUM METAL");
+    	COLOR_MAP.put("Platinum Cool Gray","PLATINUM METAL");
+    	COLOR_MAP.put("Raspberry Red","Medium Red");
+    	COLOR_MAP.put("Translucent Purple","Clear Purple");
+    	COLOR_MAP.put("Translucent Red","Bright Red");
+    	COLOR_MAP.put("Translucent Green","Bright Green");
+    	COLOR_MAP.put("Translucent Blue","Bright Blue");
+    	COLOR_MAP.put("Frosted Clear","Clear");
+    	COLOR_MAP.put("Blue","Medium Blue");
+    	COLOR_MAP.put("Translucent","Clear");
+    	COLOR_MAP.put("Metallic Gold","Gold Metal");
+    	COLOR_MAP.put("Metallic Silver","Silver Metal");
+    	COLOR_MAP.put("Neon Green","Bright Green");
+    	COLOR_MAP.put("Neon Pink","Bright Pink");
+    	COLOR_MAP.put("Aqua","Light Blue");
+    	COLOR_MAP.put("Frosted","Clear");
+    	COLOR_MAP.put("Brown","Medium Brown");
+    	COLOR_MAP.put("Royal","Medium Blue");
+    	COLOR_MAP.put("Navy","Dark Blue");
+    	COLOR_MAP.put("Gray","Medium Gray");
+    	COLOR_MAP.put("Cap Black","Medium Black");
+    	COLOR_MAP.put("Black Lanyard","Medium Black");
+    	COLOR_MAP.put("Light Blue","Light Blue");
+    	COLOR_MAP.put("Light Green","Light Green");
+    	COLOR_MAP.put("Gray PMS 420C","Medium Gray");
+    	COLOR_MAP.put("Light Yellow PMS 7401C","Light Yellow");
+    	COLOR_MAP.put("Red PMS 186C","Medium Red");
+    	COLOR_MAP.put("Blue PMS 283C","Medium Blue");
+    	COLOR_MAP.put("Green PMS 580C","Medium Green");
+    	COLOR_MAP.put("Yellow PMS 614C","Medium Yellow");
+    	COLOR_MAP.put("Orange PMS 1575C","Medium Orange");
+    	COLOR_MAP.put("Burgundy","Dark Red");
+
+    	
     	COLOR_MAP.put("Blue","Medium Blue");
     	COLOR_MAP.put("Red","Medium Red");
     	COLOR_MAP.put("Black","Medium Black");

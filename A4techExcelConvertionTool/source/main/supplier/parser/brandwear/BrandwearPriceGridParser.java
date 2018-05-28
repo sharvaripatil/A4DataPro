@@ -5,11 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
+import com.a4tech.product.model.Size;
 import com.a4tech.util.ApplicationConstants;
 
 
@@ -20,11 +22,11 @@ public class BrandwearPriceGridParser {
 	public List<PriceGrid> getPriceGrids(String listOfPrices,
 		    String listOfQuan, String listOfDisc,
 			String currency, String priceInclude, boolean isBasePrice,
-			String isQur, String priceName/*, String criterias,*/
-			/*String sizeValue, List<PriceGrid> existingPriceGrid*/) {
+			String isQur, String priceName, String criterias,
+			String sizeValue, List<PriceGrid> existingPriceGrid) {
 
 		Integer sequence = 1;
-		List<PriceGrid> priceGridsList = new ArrayList<PriceGrid>();
+	//	List<PriceGrid> priceGridsList = new ArrayList<PriceGrid>();
 
 		PriceGrid priceGrid = new PriceGrid();
 		String[] prices = listOfPrices
@@ -53,8 +55,8 @@ public class BrandwearPriceGridParser {
 		if(listOfPrice != null && !listOfPrice.isEmpty()){
 			priceGrid.setPrices(listOfPrice);
 		}
-		priceGridsList.add(priceGrid);
-		return priceGridsList;
+		existingPriceGrid.add(priceGrid);
+		return existingPriceGrid;
 
 	}
 
@@ -103,7 +105,6 @@ public class BrandwearPriceGridParser {
 		
 		PriceGrid priceGrid = new PriceGrid();
 		
-		
 
 		
 		String[] prices = listOfPrices
@@ -122,13 +123,6 @@ public class BrandwearPriceGridParser {
 
 		priceGrid.setCurrency(currency);
 		
-		if(sizeValue.contains("XXL")){
-			sizeValue=sizeValue.replace("XXL", "XL");
-			
-		}
-			priceGrid.setDescription(sizeValue);
-		
-		
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
 		priceGrid.setPriceIncludes(priceInclude);
@@ -137,31 +131,13 @@ public class BrandwearPriceGridParser {
 		
 		List<Object>valueObjList=new ArrayList<>();
 		Object obj= new Object();
-		
-		if(sizeValue.contains("2XL"))
-		{
-			
-			PriceConfigurationObj=new PriceConfiguration();
- 			obj= new Object();	
-		    valueObjList=new ArrayList<>();
-			obj="2XL";
-			PriceConfigurationObj.setCriteria("Size");
-			valueObjList.add(obj);
- 			PriceConfigurationObj.setValue(valueObjList);
-			priceConfigurationList.add(PriceConfigurationObj);
-		}
-		else{
-		String sizearr[]={"S","M","L","XL"};
-		if(sizeValue.contains("XS"))
-		{
-			ArrayList<String> tempList = new ArrayList<String>(Arrays.asList(sizearr));
-		    tempList.add("XS");
-		    sizearr=tempList.toArray(new String[tempList.size()]);
-			
-		}
 	
 
+		if (sizeValue.contains("@") && !sizeValue.contains("One") ) {
+			
 		
+		 String sizearr[]= {"S","M","L","XL"};	
+	
 		for (String sizeName : sizearr) {
 			
 			PriceConfigurationObj=new PriceConfiguration();
@@ -175,7 +151,22 @@ public class BrandwearPriceGridParser {
 			priceConfigurationList.add(PriceConfigurationObj);
 
 		}
+		}
 	
+	else
+		{
+		   sizeValue=sizeValue.replace("@", "");
+			PriceConfigurationObj=new PriceConfiguration();
+ 			obj= new Object();	
+		    valueObjList=new ArrayList<>();
+			obj=sizeValue;
+
+			PriceConfigurationObj.setCriteria("Size");
+			valueObjList.add(obj);
+ 			PriceConfigurationObj.setValue(valueObjList);
+			priceConfigurationList.add(PriceConfigurationObj);
+			
+			
 		}
 		priceGrid.setPriceConfigurations(priceConfigurationList);
 

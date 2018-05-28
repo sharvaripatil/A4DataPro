@@ -49,7 +49,9 @@ import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
 import com.a4tech.supplier.mapper.SimplifiedsourcingMapping;
 import com.a4tech.supplier.mapper.SolidDimensionMapping;
+import com.a4tech.supplier.mapper.SportAzxCandMapping;
 import com.a4tech.supplier.mapper.SportCanadaExcelMapping;
+import com.a4tech.supplier.mapper.SportUSAMapping;
 import com.a4tech.supplier.mapper.SportsManBagMapping;
 import com.a4tech.supplier.mapper.SunGraphixMapping;
 import com.a4tech.supplier.mapper.SunGraphixRevisedMapping;
@@ -118,7 +120,8 @@ public class ExcelFactory {
     private SimplifiedsourcingMapping       simplifiedMapping;
 	private SolidDimensionMapping 			solidDimensionMapping;
     private EveanManufacturingCanadaMapping eveanManufactureMapping;
-    
+    private SportUSAMapping					sportUSAMapping;
+    private SportAzxCandMapping 			sportAzxCandMapping;
 	public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -195,8 +198,8 @@ public class ExcelFactory {
 	      } else if(name.equalsIgnoreCase("bellaCanvas") || name.equals("39590")){
 		      return bellaCanvasMapping;
 
-	      }  else if(name.equalsIgnoreCase("harvest") || name.equals("61670") || name.equals("71685")){
-		      return harvestMapping;
+	      }  else if(name.equalsIgnoreCase("harvest") || name.equals("61670") || name.equals("71685") || name.equals("91584")){
+		      return harvestMapping;//TotesFactory
 
 	      } else if(name.equalsIgnoreCase("towelSpe") || name.equals("91605")){
 	    	  return towelSpecialties;
@@ -224,7 +227,7 @@ public class ExcelFactory {
 		  } else if(name.equalsIgnoreCase("headWearMapping") || name.equals("60282")){
 			  return headWearMapping;
 		  }else if(name.equalsIgnoreCase("sportMapping") || name.equals("30251")){
-			  return sportMapping;
+			  return sportAzxCandMapping;
 		  }  else if(name.equalsIgnoreCase("sunScope") || name.equals("90075")){
 			  return sunScopeMapping;
 		  }  else if(name.equalsIgnoreCase("sunGraphixMapping") || name.equals("90125")){
@@ -239,6 +242,8 @@ public class ExcelFactory {
 			  return solidDimensionMapping;
 		  } else if(name.equals("52841")){
 			  return eveanManufactureMapping;
+		  }else if(name.equals("30250")){
+			  return sportUSAMapping;
 		  }
 		return null;
 	}
@@ -668,6 +673,22 @@ public class ExcelFactory {
 	}
 	public void setEveanManufactureMapping(EveanManufacturingCanadaMapping eveanManufactureMapping) {
 		this.eveanManufactureMapping = eveanManufactureMapping;
+	}
+
+	public SportUSAMapping getSportUSAMapping() {
+		return sportUSAMapping;
+	}
+
+	public void setSportUSAMapping(SportUSAMapping sportUSAMapping) {
+		this.sportUSAMapping = sportUSAMapping;
+	}
+
+	public SportAzxCandMapping getSportAzxCandMapping() {
+		return sportAzxCandMapping;
+	}
+
+	public void setSportAzxCandMapping(SportAzxCandMapping sportAzxCandMapping) {
+		this.sportAzxCandMapping = sportAzxCandMapping;
 	}
 
 }
