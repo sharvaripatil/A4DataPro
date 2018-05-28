@@ -239,13 +239,21 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				case 6: //  colorName
 					String colorName = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(colorName)){
-						if(colorName.contains(ApplicationConstants.COLOR_NAME_NAVY)){
+						colorName = colorName.trim();
+						/*if(colorName.contains(ApplicationConstants.COLOR_NAME_NAVY)){
 							colorName = colorName.replace(ApplicationConstants.COLOR_NAME_NAVY, 
 									                       ApplicationConstants.COLOR_NAME_NAVY_BLUE);
-						}
+						}*/
 						listOfColors.add(colorName);
-						colorIdMap.put(colorName.trim(), colorCustomerOderCode);
-						skuColorVal = colorName.trim();
+						colorIdMap.put(colorName, colorCustomerOderCode);
+						skuColorVal = colorName;
+						String colorNameVal ="";
+						if(colorName.contains("/")){
+							colorNameVal = colorName.replaceAll("/", "-");
+						} else {
+							colorNameVal = colorName;
+						}
+						ProductDataStore.saveColorNames(colorNameVal);
 					}
 					break;
 					
@@ -264,7 +272,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 					if(!StringUtils.isEmpty(sizeValue)){
 						sizeValue = sizeValue.trim();
 						if(sizeValue.equalsIgnoreCase("XXL")){
-							sizeValue = "2XL ";
+							sizeValue = "2XL";
 						} else if(sizeValue.equalsIgnoreCase("XXS")){
 							sizeValue = "2XS";
 						}
