@@ -225,69 +225,70 @@ public class EveanManufactureAttributeParser {
 		  
 		  priceVal = runChargeVal.replaceAll("[^0-9.]", "");
 		  String priceInclude = runChargeVal.split("\\)")[1].trim();
+		  String serviceCharge = "Optional";
 		  if(runChargeVal.contains("additional color/position")){//additional color & additional location
 			  listOfAdditionalColor = getAdditinalColor("Additional Color",listOfAdditionalColor);
 			  listOfAdditionalLocation = getAdditinalLocation("Additional Position",listOfAdditionalLocation);
 			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, currencyType,
-					"Additional Color", "Add. Color Charge", "Other", 1, prieGridList, "", "per unit, per additional color");
+					"Additional Color", "Add. Color Charge", "Other", 1, prieGridList, "", "per unit, per additional color",serviceCharge);
 			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, currencyType,
-					"Additional Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position");
+					"Additional Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position",serviceCharge);
 		  } else if(runChargeVal.contains("second color/position")){//additional color & additional location
 			  listOfAdditionalColor = getAdditinalColor("Second color",listOfAdditionalColor);
 			  listOfAdditionalLocation = getAdditinalLocation("Additional Position",listOfAdditionalLocation);
 			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, currencyType,
-					"Second color", "Add. Color Charge", "Other", 1, prieGridList, "", "per unit, per additional color");
+					"Second color", "Add. Color Charge", "Other", 1, prieGridList, "", "per unit, per additional color",serviceCharge);
 			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, currencyType,
-					"Additional Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position");
+					"Additional Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position",serviceCharge);
 		  } else if(runChargeVal.contains("second laser engraved position")){// imprint method & additional location
 			  listOfImprintMethod = getImprintMethod("Laser Engraved");
 			  listOfAdditionalLocation = getAdditinalLocation("Second Position",listOfAdditionalLocation);
 			  priceVal = runChargeVal.replaceAll("[^0-9.]", "");
 			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V",
 					"Imprint Method:Laser Engraved,Additional Location:Second Position", false, currencyType,
-					"Laser Engraved,Second Position", "Add. Location Charge", "Per Quantity", 1, prieGridList, "", "");
+					"Laser Engraved,Second Position", "Add. Location Charge", "Per Quantity", 1, prieGridList, "", "",serviceCharge);
 		  } else if(runChargeVal.contains("laser imprint")){//imprint method
 			  listOfImprintMethod = getImprintMethod("laser imprint");
 			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Imprint Method", false, currencyType,
-						"laser imprint", "Run Charge", "Per Quantity", 1, prieGridList, "", "per unit, per additional color");
+						"laser imprint", "Run Charge", "Per Quantity", 1, prieGridList, "", "per unit, per additional color",serviceCharge);
 		  } else if(runChargeVal.contains("additional color")){ // additional color
 			  listOfAdditionalColor = getAdditinalColor("Additional Color",listOfAdditionalColor);
 				prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, currencyType,
-						"Additional Color", "Add. Color Charge", "Other", 1, prieGridList, "", "per unit, per additional color");
+						"Additional Color", "Add. Color Charge", "Other", 1, prieGridList, "", "per unit, per additional color",serviceCharge);
 		  } else if(runChargeVal.contains("second position")){// additional location
 			  listOfAdditionalLocation = getAdditinalLocation("Second Position",listOfAdditionalLocation);
 			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, currencyType,
-						"Second Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position");
+						"Second Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position",serviceCharge);
 		} else if(runChargeVal.contains("metallic thread color")){
 			 listOfAdditionalColor = getAdditinalColor("Metallic thread color",listOfAdditionalColor);
 			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, currencyType,
-					"Metallic thread color", "Add. Color Charge", "Other", 1, prieGridList, "", priceInclude);
+					"Metallic thread color", "Add. Color Charge", "Other", 1, prieGridList, "", priceInclude,serviceCharge);
 		} else if (runChargeVal.contains("additional position")
 				|| runChargeVal.contains("additional lasered position")) {// additional
 																			// location
 			 listOfAdditionalLocation = getAdditinalLocation("Additional Position",listOfAdditionalLocation);
 			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, currencyType,
-						"Additional Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position");
+						"Additional Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position",serviceCharge);
 		  } else if(runChargeVal.contains("second color")){ // additional color
 			  listOfAdditionalColor    = getAdditinalColor("Second color",listOfAdditionalColor);
 			prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Colors", false, currencyType,
-					"Second color", "Add. Color Charge", "Other", 1, prieGridList, "", "");
+					"Second color", "Add. Color Charge", "Other", 1, prieGridList, "", "",serviceCharge);
 		  } else if(runChargeVal.contains("position")){
 			  listOfAdditionalLocation = getAdditinalLocation("Position",listOfAdditionalLocation);
 				prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, currencyType,
-						"Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position");
+						"Position", "Add. Location Charge", "Other", 1, prieGridList, "", "per unit, per additional position",serviceCharge);
 		  } else if(runChargeVal.contains("laser engraving")){//imprint method
 			  listOfImprintMethod = getImprintMethod("laser engraving");
 			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Imprint Method", false, currencyType,
-						"laser engraving", "Imprint Method Charge", "Other", 1, prieGridList, "", priceInclude);
+						"laser engraving", "Imprint Method Charge", "Other", 1, prieGridList, "", priceInclude,serviceCharge);
 		  } else if(runChargeVal.contains("second imprint")){// additional location
 			  listOfAdditionalLocation = getAdditinalLocation("second imprint",listOfAdditionalLocation);
 			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Additional Location", false, currencyType,
-						"second imprint", "Add. Location Charge", "Other", 1, prieGridList, "", priceInclude);
+						"second imprint", "Add. Location Charge", "Other", 1, prieGridList, "", priceInclude,serviceCharge);
 		} else if(runChargeVal.contains("laser imprint on clip")){
 			 listOfImprintMethod = getImprintMethod("laser imprint");
 			  prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Imprint Method", false, currencyType,
-						"laser imprint", "Imprint Method Charge", "Other", 1, prieGridList, "", priceInclude);
+						"laser imprint", "Imprint Method Charge", "Other", 1, prieGridList, "", priceInclude,serviceCharge);
 		} else if (runChargeVal.contains("imprint on pen") || runChargeVal.contains("imprint on ball marker")
 				|| runChargeVal.contains("imprint on eraser") || runChargeVal.contains("imprint on cup")
 				|| runChargeVal.contains("imprint on barrel") || runChargeVal.contains("imprint on divot repair")
@@ -295,7 +296,7 @@ public class EveanManufactureAttributeParser {
 			String runChareValue = runChargeVal.split("imprint")[1].trim();
 			listOfImprintLocation = getImprintLocation(runChareValue,listOfImprintLocation);
 			 prieGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Imprint Location", false, currencyType,
-					 runChareValue, "Imprint Location Charge", "Other", 1, prieGridList, "", priceInclude);
+					 runChareValue, "Imprint Location Charge", "Other", 1, prieGridList, "", priceInclude,serviceCharge);
 		  } 
 		  configuration.setAdditionalColors(listOfAdditionalColor);
 		  configuration.setAdditionalLocations(listOfAdditionalLocation);
@@ -352,6 +353,7 @@ public class EveanManufactureAttributeParser {
 				  setupChargeVals = new String[]{setupChargeVal};  
 			  }
 		  }
+		  String serviceCharge = "Optional";
  		  for (String upchargeVal : setupChargeVals) {
 			  if(StringUtils.isEmpty(upchargeVal)){
 				  continue;
@@ -369,11 +371,12 @@ public class EveanManufactureAttributeParser {
 			 if(upchargeVal.contains("imprint")){
 				 if(columnName.equals("setupCharge")){
 					 upchargeType = "Set-up Charge"; 
+					 serviceCharge = "Required";
 				 } else {
 					 upchargeType = "Re-order Charge";
 					 if(!upchargeVal.contains("imprint")){
 						 priceGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", "Imprint Method", false, currencyType,
-								 imprintMethodVal, "Re-order Charge", "Other", 1, priceGridList, "", priceInclude); 
+								 imprintMethodVal, "Re-order Charge", "Per Order", 1, priceGridList, "", priceInclude,serviceCharge); 
 					 }
 				 }
 				  criteriaType = "Imprint Location";
@@ -382,7 +385,8 @@ public class EveanManufactureAttributeParser {
 			} else if (upchargeVal.contains("color/position") || upchargeVal.contains("per position")
 					|| upchargeVal.contains("per color")) {
 				 if(columnName.equals("setupCharge")){
-					 upchargeType = "Set-up Charge";  
+					 upchargeType = "Set-up Charge"; 
+					 serviceCharge = "Required";
 				 } else {
 					 upchargeType = "Re-order Charge";
 				 }				 
@@ -408,6 +412,7 @@ public class EveanManufactureAttributeParser {
 			 } */else if(upchargeVal.contains("additional color")){
 				 if(columnName.equals("setupCharge")){
 					 upchargeType = "Set-up Charge";   
+					 serviceCharge = "Required";
 				 } else {
 					 upchargeType = "Re-order Charge";
 				 }
@@ -416,7 +421,8 @@ public class EveanManufactureAttributeParser {
 				  upchargeName = "Additional Color";
 			 } else if(upchargeVal.contains("second color")){
 				 if(columnName.equals("setupCharge")){
-					 upchargeType = "Set-up Charge";   
+					 upchargeType = "Set-up Charge";  
+					 serviceCharge = "Required";
 				 } else {
 					 upchargeType = "Re-order Charge";
 				 }
@@ -425,7 +431,8 @@ public class EveanManufactureAttributeParser {
 				  upchargeName = "Second color";
 			 } else {
 				 if(columnName.equals("setupCharge")){
-					 upchargeType = "Set-up Charge";   
+					 upchargeType = "Set-up Charge";
+					 serviceCharge = "Required";
 				 } else {
 					 upchargeType = "Re-order Charge";
 				 }
@@ -434,7 +441,7 @@ public class EveanManufactureAttributeParser {
 				  upchargeName = imprintMethodVal;
 			 }
 			 priceGridList = eveanPriceGridParser.getUpchargePriceGrid("1", priceVal, "V", criteriaType, false, currencyType,
-					 upchargeName, upchargeType, "Other", 1, priceGridList, "", priceInclude);
+					 upchargeName, upchargeType, "Per Order", 1, priceGridList, "", priceInclude,serviceCharge);
 		}
 		  configuration.setAdditionalColors(listOfAdditionalColor);
 		  configuration.setAdditionalLocations(listOfAdditionalLocation);
@@ -759,14 +766,15 @@ public class EveanManufactureAttributeParser {
 	   for (String packName : packValues) {
 		packagingObj = new Packaging();
 		packagingObj1 = new Packaging();
+		String serviceCharge = "Optional";
 		if(packName.equalsIgnoreCase("For individual polybagging, add $.10(V) each")){
 			packagingObj.setName("Individual Poly Bag");
 			priceGrids = eveanPriceGridParser.getUpchargePriceGrid("1", ".10", "v", "Packaging", false, currencyType,
-						"Individual Poly Bag", "Packaging Charge", "Per Quantity", 1, priceGrids, "", "");
+						"Individual Poly Bag", "Packaging Charge", "Per Quantity", 1, priceGrids, "", "",serviceCharge);
 		} else if(packName.equalsIgnoreCase("For individual shrink wrapping, add $.10(V) each")){
 			packagingObj.setName("Shrink Wrap");
 			priceGrids = eveanPriceGridParser.getUpchargePriceGrid("1", ".10", "v", "Packaging", false, currencyType,
-						"Shrink Wrap", "Packaging Charge", "Per Quantity", 1, priceGrids, "", "");
+						"Shrink Wrap", "Packaging Charge", "Per Quantity", 1, priceGrids, "", "",serviceCharge);
 		} else if(packName.equalsIgnoreCase("12 pieces per box, 30-40 dozen per case")){
 			packagingObj.setName("12:per box");
 		} else if(packName.contains("Individually polybagged") || packName.contains("individually polybagged")){

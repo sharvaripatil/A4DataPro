@@ -173,7 +173,7 @@ public class EveansManufacturePriceGridParser {
 			String discounts, String upChargeCriterias, boolean qurFlag,
 			String currency, String upChargeValue, String upChargeType,
 			String upchargeUsageType, Integer upChargeSequence,
-			List<PriceGrid> existingPriceGrid,String optionName,String priceInclude) {
+			List<PriceGrid> existingPriceGrid,String optionName,String priceInclude,String serviceCharge) {
 		try{
 			if(CollectionUtils.isEmpty(existingPriceGrid)){
 				existingPriceGrid = new ArrayList<>();
@@ -193,7 +193,7 @@ public class EveansManufacturePriceGridParser {
 		priceGrid.setSequence(upChargeSequence);
 		priceGrid.setUpchargeType(upChargeType);
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
-		priceGrid.setServiceCharge("Optional");
+		priceGrid.setServiceCharge(serviceCharge);
 		priceGrid.setPriceIncludes(priceInclude);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {

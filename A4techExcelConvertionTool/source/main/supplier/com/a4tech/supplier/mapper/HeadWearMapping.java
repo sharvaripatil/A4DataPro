@@ -516,9 +516,9 @@ public class HeadWearMapping implements IExcelParser{
 					       additionalClrRunChrgCode = additionalClrRunCode;
 				      }    	
 				break; 
-				case 69:
+				case 69://IsRecyclable
 					       break;
-				case 70:
+				case 70://IsEnvironmentallyFriendly
 							String IsEnvironmentallyFriendly = cell.getStringCellValue();
 							if (IsEnvironmentallyFriendly.equalsIgnoreCase("true")) {
 								Theme themeObj = new Theme();
@@ -526,17 +526,21 @@ public class HeadWearMapping implements IExcelParser{
 								themeList.add(themeObj);
 							}
 					break;
-				case 71:// not used
+				case 71://  IsNewProd
 					break;
-				case 72:// not used
+				case 72://NotSuitable 
 					break;
-				case 73:// not used
+				case 73:// Exclusive
 					break;
-				case 74:
+				case 74://Hazardous
 					break;
-				case 75:
+				case 75://OfficiallyLicensed
 					break;
-				case 76: // Imprint size1
+				case 76://IsFood
+					break;
+				case 77://IsClothing
+					break;
+				case 78: // Imprint size1
 					 FirstImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FirstImprintsize1) && !FirstImprintsize1.equals("0")){
 						 ImprintSizevalue.append(FirstImprintsize1).append(" ");
@@ -544,7 +548,7 @@ public class HeadWearMapping implements IExcelParser{
 					 }
 					    break;
 					    
-				case 77: //// Imprint size1 unit
+				case 79: //// Imprint size1 unit
 					FirstImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(FirstImprintsize1) && !StringUtils.isEmpty(FirstImprintunit1)
 									&& !FirstImprintunit1.equals("0")) {
@@ -553,7 +557,7 @@ public class HeadWearMapping implements IExcelParser{
 					 }	 
 					   	break;
 					   	
-				case 78:   // Imprint size1 Type
+				case 80:   // Imprint size1 Type
 					FirstImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 							if (!StringUtils.isEmpty(FirstImprintsize1) && !StringUtils.isEmpty(FirstImprinttype1)
@@ -562,7 +566,7 @@ public class HeadWearMapping implements IExcelParser{
 					  ImprintSizevalue.append(FirstImprinttype1).append(" ");
 				   }
 					break;
-				case 79: // // Imprint size2
+				case 81: // // Imprint size2
 					FirstImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FirstImprintsize2)&& !FirstImprintsize2.equals("0")){
 						 ImprintSizevalue.append("x").append(FirstImprintsize2).append(" ");
@@ -570,7 +574,7 @@ public class HeadWearMapping implements IExcelParser{
 
 					  	break;
 					  	
-				case 80:	// Imprint size2 Unit
+				case 82:	// Imprint size2 Unit
 					FirstImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(FirstImprintsize2) && !StringUtils.isEmpty(FirstImprintunit2)
 									&& !FirstImprintunit2.equals("0")) {
@@ -579,7 +583,7 @@ public class HeadWearMapping implements IExcelParser{
 				    }
 					    break;
 					    
-				case 81: // Imprint size2 Type
+				case 83: // Imprint size2 Type
 					FirstImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(FirstImprintsize2) && !StringUtils.isEmpty(FirstImprinttype2)
 									&& !FirstImprinttype2.equals("0")) {
@@ -588,7 +592,7 @@ public class HeadWearMapping implements IExcelParser{
 				    }
 					break;
 					  	
-				case 82:  // Imprint location
+				case 84:  // Imprint location
 					
 					 imprintLocation = cell.getStringCellValue();
 					if(!imprintLocation.isEmpty()){
@@ -597,14 +601,14 @@ public class HeadWearMapping implements IExcelParser{
 						listImprintLocation.add(locationObj);
 					}
 					 break;
-				case 83:  // Second Imprintsize1
+				case 85:  // Second Imprintsize1
 					SecondImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintsize1)&& !SecondImprintsize1.equals("0")){
 					  ImprintSizevalue.append(SecondImprintsize1).append(" ");
 				    }
 					   	break;
 					   	
-				case 84:  // Second Imprintsize1 unit
+				case 86:  // Second Imprintsize1 unit
 					SecondImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(SecondImprintsize1) && !StringUtils.isEmpty(SecondImprintunit1)
 									&& !SecondImprintunit1.equals("0")) {
@@ -612,7 +616,7 @@ public class HeadWearMapping implements IExcelParser{
 					   ImprintSizevalue.append(SecondImprintunit1).append(" ");
 					}
 						break;
-				case 85:  // Second Imprintsize1 type
+				case 87:  // Second Imprintsize1 type
 					SecondImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(SecondImprintsize1) && !StringUtils.isEmpty(SecondImprinttype1)
 									&& !SecondImprinttype1.equals("0")) {
@@ -621,14 +625,14 @@ public class HeadWearMapping implements IExcelParser{
 					}
 					  break;
 					  
-				case 86: // Second Imprintsize2
+				case 88: // Second Imprintsize2
 					SecondImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintsize2)&& !SecondImprintsize2.equals("0")){
 				       ImprintSizevalue.append("x").append(SecondImprintsize2).append(" ");
 				    }
 					break;
 					
-				case 87: //Second Imprintsize2 Unit
+				case 89: //Second Imprintsize2 Unit
 					SecondImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintsize2) && !StringUtils.isEmpty(SecondImprintunit2)&& !SecondImprintunit2.equals("0")){
 					SecondImprintunit2=GoldstarCanadaLookupData.Dimension1Units.get(SecondImprintunit2);
@@ -637,7 +641,7 @@ public class HeadWearMapping implements IExcelParser{
 
 					break;
 					
-				case 88: // Second Imprintsize2 type	
+				case 90: // Second Imprintsize2 type	
 					SecondImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(SecondImprintsize2) && !StringUtils.isEmpty(SecondImprinttype2)
 									&& !SecondImprinttype2.equals("0")) {
@@ -646,7 +650,7 @@ public class HeadWearMapping implements IExcelParser{
 					}					
 					  break;
 					  
-				case 89: // Second Imprint location
+				case 91: // Second Imprint location
 					String imprintLocation2 = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintLocation2)){
 						ImprintLocation locationObj2 = new ImprintLocation();
@@ -654,13 +658,13 @@ public class HeadWearMapping implements IExcelParser{
 						listImprintLocation.add(locationObj2);
 					}
 					break;
-				case 90: // DecorationMethod 
+				case 92: // DecorationMethod 
 					decorationMethod = cell.getStringCellValue();
 							listOfImprintMethods = headWearAttributeParser.getImprintMethodValues(decorationMethod,
 									imprintMethodList);
 					 break; 
 					 
-				case 91: //NoDecoration
+				case 93: //NoDecoration
 					String noDecoration = cell.getStringCellValue();
 				    if(!StringUtils.isEmpty(noDecoration)){
 				    	if(noDecoration.equalsIgnoreCase("True")){
@@ -669,27 +673,27 @@ public class HeadWearMapping implements IExcelParser{
 				    	}
 				    }
 					 break;
-				case 92: //NoDecorationOffered
+				case 94: //NoDecorationOffered
 					// no need to process this column since above column data also same
 					 break;
-				case 93: //NewPictureURL
+				case 95: //NewPictureURL
 					break;
-				case 94:  //NewPictureFile  -- not used
+				case 96:  //NewPictureFile  -- not used
 					break;
-				case 95: //ErasePicture -- not used
+				case 97: //ErasePicture -- not used
 					break;
-				case 96: //NewBlankPictureURL
+				case 98: //NewBlankPictureURL
 					break;
-				case 97: //NewBlankPictureFile -- not used
+				case 99: //NewBlankPictureFile -- not used
 					break;
-				case 98://EraseBlankPicture  -- not used
+				case 100://EraseBlankPicture  -- not used
 					break;
 					 
-				case 99: //PicExists   -- not used
+				case 101: //PicExists   -- not used
 					break;
-				case 100: //NotPictured  -- not used
+				case 102: //NotPictured  -- not used
 					break;
-				case 101: //MadeInCountry
+				case 103: //MadeInCountry
 					
 					String madeInCountry = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(madeInCountry)){
@@ -697,7 +701,7 @@ public class HeadWearMapping implements IExcelParser{
 						productConfigObj.setOrigins(listOfOrigin);
 					}
 					break;
-				case 102:// AssembledInCountry
+				case 104:// AssembledInCountry
 					String AssembledCountry = cell
 					.getStringCellValue();
 			   if (!AssembledCountry.isEmpty()) {
@@ -707,7 +711,7 @@ public class HeadWearMapping implements IExcelParser{
 								+ AssembledCountry);
 		        	}
 					break;
-				case 103: //DecoratedInCountry
+				case 105: //DecoratedInCountry
 					String decoratedInCountry = cell
 					.getStringCellValue();
 			if (!decoratedInCountry.isEmpty()) {
@@ -719,7 +723,7 @@ public class HeadWearMapping implements IExcelParser{
 			}
 					
 					break;
-				case 104: //ComplianceList  -- No data
+				case 106: //ComplianceList  -- No data
 					String complnceValuet=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(complnceValuet)) {
 				    	complianceList.add(complnceValuet);
@@ -727,81 +731,81 @@ public class HeadWearMapping implements IExcelParser{
 					   }
 					break;
 					
-				case 105://ComplianceMemo  -- No data
+				case 107://ComplianceMemo  -- No data
 					String productDataSheet=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(productDataSheet) && !productDataSheet.equals("0")){
 						 productExcelObj.setProductDataSheet(productDataSheet);
 					   }
 					break;
-				case 106: //ProdTimeLo
+				case 108: //ProdTimeLo
 				   prodTimeLo = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 107: //ProdTimeHi
+				case 109: //ProdTimeHi
 					String prodTimeHi = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!prodTimeHi.equals("0")){
 						List<ProductionTime> productionTimeList = headWearAttributeParser.getProductionTime(prodTimeLo, prodTimeHi);
 						productConfigObj.setProductionTime(productionTimeList);
 					}
 					break;
-				case 108://RushProdTimeLo
+				case 110://RushProdTimeLo
 					 rushProdTimeLo  = cell.getStringCellValue();
 					 break; 	 
-				case 109://RushProdTimeH
+				case 111://RushProdTimeH
 					String rushProdTimeH  = cell.getStringCellValue();
 					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO)){
 					  RushTime productRushTime = headWearAttributeParser.getProductRushTime(rushProdTimeLo, rushProdTimeH);
 					  productConfigObj.setRushTime(productRushTime);
 					}
 					break;
-				case 110://Packaging
+				case 112://Packaging
 					String pack  = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(pack)){
 						List<Packaging> listOfPackaging = headWearAttributeParser.getPackageValues(pack);
 						productConfigObj.setPackaging(listOfPackaging);
 					}
 					break;
-				case 111: //CartonL
+				case 113: //CartonL
 					 String cartonL  = CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(cartonL) && !cartonL.equals("0")){
 						 shippingDimensions.append(cartonL).append(",");
 					 }
 					break;
-				case 112://CartonW
+				case 114://CartonW
 					String cartonW  = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(cartonW) &&!cartonW.equals("0")){
 						 shippingDimensions.append(cartonW).append(",");
 					 }
 					break;
-				case 113://CartonH
+				case 115://CartonH
 					String cartonH  = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(cartonH) && !cartonH.equals("0")){
 						 shippingDimensions.append(cartonH);
 					 }
 					break;
-				case 114: //WeightPerCarton
+				case 116: //WeightPerCarton
 					weightPerCarton  =CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 115: //UnitsPerCarton
+				case 117: //UnitsPerCarton
 					unitsPerCarton  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 116: //ShipPointCountry
+				case 118: //ShipPointCountry
 					break;
-				case 117: //ShipPointZip
+				case 119: //ShipPointZip
 					break;
-				case 118: //Comment
+				case 120: //Comment
 					// As Per client feedback ,we have to ignore this column data
 					break;
-				case 119: //Verified
+				case 121: //Verified
 					//since data is already expired date
 					break;
-				case 120: //UpdateInventory
+				case 122: //UpdateInventory
 					break;
-				case 121: //InventoryOnHand
+				case 123: //InventoryOnHand
 					break;
-				case 122: //InventoryOnHandAdd
+				case 124: //InventoryOnHandAdd
 					break;
 					
-				case 123: //InventoryMemo
+				case 125: //InventoryMemo
 				break;
 			}  // end switch		 
 		}//end inner while loop

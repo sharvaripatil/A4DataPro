@@ -544,17 +544,21 @@ public class PelicanGraphicMapping implements IExcelParser{
 								themeList.add(themeObj);
 							}
 					break;
-				case 70:// not used
+				case 70:// IsNewProd
 					break;
-				case 71:// not used
+				case 71://NotSuitable
 					break;
-				case 72:// not used
+				case 72:// Exclusive
 					break;
-				case 73:
+				case 73://Hazardous
 					break;
-				case 74:
+				case 74://OfficiallyLicensed
 					break;
-				case 75: // Imprint size1
+				case 75://IsFood
+					break;
+				case 76://IsClothing
+					break;
+				case 77: // Imprint size1
 					 FirstImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FirstImprintsize1) && !FirstImprintsize1.equals("0")){
 						 ImprintSizevalue.append(FirstImprintsize1).append(" ");
@@ -562,7 +566,7 @@ public class PelicanGraphicMapping implements IExcelParser{
 					 }
 					    break;
 					    
-				case 76: //// Imprint size1 unit
+				case 78: //// Imprint size1 unit
 					FirstImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(FirstImprintsize1) && !StringUtils.isEmpty(FirstImprintunit1)
 									&& !FirstImprintunit1.equals("0")) {
@@ -571,7 +575,7 @@ public class PelicanGraphicMapping implements IExcelParser{
 					 }	 
 					   	break;
 					   	
-				case 77:   // Imprint size1 Type
+				case 79:   // Imprint size1 Type
 					FirstImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 							if (!StringUtils.isEmpty(FirstImprintsize1) && !StringUtils.isEmpty(FirstImprinttype1)
@@ -580,7 +584,7 @@ public class PelicanGraphicMapping implements IExcelParser{
 					  ImprintSizevalue.append(FirstImprinttype1).append(" ");
 				   }
 					break;
-				case 78: // // Imprint size2
+				case 80: // // Imprint size2
 					FirstImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FirstImprintsize2)&& !FirstImprintsize2.equals("0")){
 						 ImprintSizevalue.append("x").append(FirstImprintsize2).append(" ");
@@ -588,7 +592,7 @@ public class PelicanGraphicMapping implements IExcelParser{
 
 					  	break;
 					  	
-				case 79:	// Imprint size2 Unit
+				case 81:	// Imprint size2 Unit
 					FirstImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(FirstImprintsize2) && !StringUtils.isEmpty(FirstImprintunit2)
 									&& !FirstImprintunit2.equals("0")) {
@@ -597,7 +601,7 @@ public class PelicanGraphicMapping implements IExcelParser{
 				    }
 					    break;
 					    
-				case 80: // Imprint size2 Type
+				case 82: // Imprint size2 Type
 					FirstImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(FirstImprintsize2) && !StringUtils.isEmpty(FirstImprinttype2)
 									&& !FirstImprinttype2.equals("0")) {
@@ -606,7 +610,7 @@ public class PelicanGraphicMapping implements IExcelParser{
 				    }
 					break;
 					  	
-				case 81:  // Imprint location
+				case 83:  // Imprint location
 					
 					 imprintLocation = cell.getStringCellValue();
 					if(!imprintLocation.isEmpty()){
@@ -615,14 +619,14 @@ public class PelicanGraphicMapping implements IExcelParser{
 						listImprintLocation.add(locationObj);
 					}
 					 break;
-				case 82:  // Second Imprintsize1
+				case 84:  // Second Imprintsize1
 					SecondImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintsize1)&& !SecondImprintsize1.equals("0")){
 					  ImprintSizevalue.append(SecondImprintsize1).append(" ");
 				    }
 					   	break;
 					   	
-				case 83:  // Second Imprintsize1 unit
+				case 85:  // Second Imprintsize1 unit
 					SecondImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(SecondImprintsize1) && !StringUtils.isEmpty(SecondImprintunit1)
 									&& !SecondImprintunit1.equals("0")) {
@@ -630,7 +634,7 @@ public class PelicanGraphicMapping implements IExcelParser{
 					   ImprintSizevalue.append(SecondImprintunit1).append(" ");
 					}
 						break;
-				case 84:  // Second Imprintsize1 type
+				case 86:  // Second Imprintsize1 type
 					SecondImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(SecondImprintsize1) && !StringUtils.isEmpty(SecondImprinttype1)
 									&& !SecondImprinttype1.equals("0")) {
@@ -639,14 +643,14 @@ public class PelicanGraphicMapping implements IExcelParser{
 					}
 					  break;
 					  
-				case 85: // Second Imprintsize2
+				case 87: // Second Imprintsize2
 					SecondImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintsize2)&& !SecondImprintsize2.equals("0")){
 				       ImprintSizevalue.append("x").append(SecondImprintsize2).append(" ");
 				    }
 					break;
 					
-				case 86: //Second Imprintsize2 Unit
+				case 88: //Second Imprintsize2 Unit
 					SecondImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintsize2) && !StringUtils.isEmpty(SecondImprintunit2)&& !SecondImprintunit2.equals("0")){
 					SecondImprintunit2=GoldstarCanadaLookupData.Dimension1Units.get(SecondImprintunit2);
@@ -655,7 +659,7 @@ public class PelicanGraphicMapping implements IExcelParser{
 
 					break;
 					
-				case 87: // Second Imprintsize2 type	
+				case 89: // Second Imprintsize2 type	
 					SecondImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(SecondImprintsize2) && !StringUtils.isEmpty(SecondImprinttype2)
 									&& !SecondImprinttype2.equals("0")) {
@@ -664,7 +668,7 @@ public class PelicanGraphicMapping implements IExcelParser{
 					}					
 					  break;
 					  
-				case 88: // Second Imprint location
+				case 90: // Second Imprint location
 					String imprintLocation2 = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintLocation2)){
 						ImprintLocation locationObj2 = new ImprintLocation();
@@ -672,13 +676,13 @@ public class PelicanGraphicMapping implements IExcelParser{
 						listImprintLocation.add(locationObj2);
 					}
 					break;
-				case 89: // DecorationMethod 
+				case 91: // DecorationMethod 
 					decorationMethod = cell.getStringCellValue();
 							listOfImprintMethods = pelicanGraphicAttributeParser
 									.getImprintMethodValues(decorationMethod);
 					 break; 
 					 
-				case 90: //NoDecoration
+				case 92: //NoDecoration
 					String noDecoration = cell.getStringCellValue();
 				    if(!StringUtils.isEmpty(noDecoration)){
 				    	if(noDecoration.equalsIgnoreCase("True")){
@@ -687,27 +691,26 @@ public class PelicanGraphicMapping implements IExcelParser{
 				    	}
 				    }
 					 break;
-				case 91: //NoDecorationOffered
+				case 93: //NoDecorationOffered
 					// no need to process this column since above column data also same
 					 break;
-				case 92: //NewPictureURL
+				case 94: //NewPictureURL
 					break;
-				case 93:  //NewPictureFile  -- not used
+				case 95:  //NewPictureFile  -- not used
 					break;
-				case 94: //ErasePicture -- not used
+				case 96: //ErasePicture -- not used
 					break;
-				case 95: //NewBlankPictureURL
+				case 97: //NewBlankPictureURL
 					break;
-				case 96: //NewBlankPictureFile -- not used
+				case 98: //NewBlankPictureFile -- not used
 					break;
-				case 97://EraseBlankPicture  -- not used
+				case 99://EraseBlankPicture  -- not used
 					break;
-					 
-				case 98: //PicExists   -- not used
+				case 100: //PicExists   -- not used
 					break;
-				case 99: //NotPictured  -- not used
+				case 101: //NotPictured  -- not used
 					break;
-				case 100: //MadeInCountry
+				case 102: //MadeInCountry
 					
 					String madeInCountry = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(madeInCountry)){
@@ -716,14 +719,14 @@ public class PelicanGraphicMapping implements IExcelParser{
 						productConfigObj.setOrigins(listOfOrigin);
 					}
 					break;
-				case 101:// AssembledInCountry
+				case 103:// AssembledInCountry
 			     String additionalProductInfo = cell.getStringCellValue();
 			     if(!StringUtils.isEmpty(additionalProductInfo)) {
 								additionalPrdInfo.append("AssembledInCountry:").append(
 										pelicanGraphicAttributeParser.getCountryCodeConvertName(additionalProductInfo)); 
 			       }
 					break;
-				case 102: //DecoratedInCountry
+				case 104: //DecoratedInCountry
 					String additionalImprintInfo = cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(additionalImprintInfo)) {
 						 StringBuilder addImprintInfo = new StringBuilder();
@@ -733,7 +736,7 @@ public class PelicanGraphicMapping implements IExcelParser{
 					   }
 					
 					break;
-				case 103: //ComplianceList  -- No data
+				case 105: //ComplianceList  -- No data
 					String complnceValuet=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(complnceValuet)) {
 				    	complianceList.add(complnceValuet);
@@ -741,16 +744,16 @@ public class PelicanGraphicMapping implements IExcelParser{
 					   }
 					break;
 					
-				case 104://ComplianceMemo  -- No data
+				case 106://ComplianceMemo  -- No data
 					String productDataSheet=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(productDataSheet) && !productDataSheet.equals("0")){
 						 productExcelObj.setProductDataSheet(productDataSheet);
 					   }
 					break;
-				case 105: //ProdTimeLo
+				case 107: //ProdTimeLo
 				   prodTimeLo = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 106: //ProdTimeHi
+				case 108: //ProdTimeHi
 					String prodTimeHi = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!prodTimeHi.equals("0")){
 								List<ProductionTime> productionTimeList = pelicanGraphicAttributeParser
@@ -758,10 +761,10 @@ public class PelicanGraphicMapping implements IExcelParser{
 						productConfigObj.setProductionTime(productionTimeList);
 					}
 					break;
-				case 107://RushProdTimeLo
+				case 109://RushProdTimeLo
 					 rushProdTimeLo  = cell.getStringCellValue();
 					 break; 	 
-				case 108://RushProdTimeH
+				case 110://RushProdTimeH
 					String rushProdTimeH  = cell.getStringCellValue();
 					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO)){
 								RushTime productRushTime = pelicanGraphicAttributeParser
@@ -769,47 +772,47 @@ public class PelicanGraphicMapping implements IExcelParser{
 					  productConfigObj.setRushTime(productRushTime);
 					}
 					break;
-				case 109://Packaging
+				case 111://Packaging
 					String pack  = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(pack)){
 								List<Packaging> listOfPackaging = pelicanGraphicAttributeParser.getPackageValues(pack);
 						productConfigObj.setPackaging(listOfPackaging);
 					}
 					break;
-				case 110: //CartonL
+				case 112: //CartonL
 					 String cartonL  = CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(cartonL) && !cartonL.equals("0")){
 						 shippingDimensions.append(cartonL).append(",");
 					 }
 					break;
-				case 111://CartonW
+				case 113://CartonW
 					String cartonW  = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(cartonW) &&!cartonW.equals("0")){
 						 shippingDimensions.append(cartonW).append(",");
 					 }
 					break;
-				case 112://CartonH
+				case 114://CartonH
 					String cartonH  = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(cartonH) && !cartonH.equals("0")){
 						 shippingDimensions.append(cartonH);
 					 }
 					break;
-				case 113: //WeightPerCarton
+				case 115: //WeightPerCarton
 					weightPerCarton  =CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 114: //UnitsPerCarton
+				case 116: //UnitsPerCarton
 					unitsPerCarton  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 115: //ShipPointCountry
+				case 117: //ShipPointCountry
 					break;
-				case 116: //ShipPointZip
+				case 118: //ShipPointZip
 					String fobVal = cell.getStringCellValue();
 					List<FOBPoint> listOfFobPoint = pelicanGraphicAttributeParser.getFobPoint(fobVal, accessToken, environmentType);
 					if(!CollectionUtils.isEmpty(listOfFobPoint)){
 						productExcelObj.setFobPoints(listOfFobPoint);
 					}
 					break;
-				case 117: //Comment
+				case 119: //Comment
 					String comment = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(comment)){
 						if(StringUtils.isEmpty(additionalPrdInfo.toString())){
@@ -819,17 +822,17 @@ public class PelicanGraphicMapping implements IExcelParser{
 						}
 					}
 					break;
-				case 118: //Verified
+				case 120: //Verified
 					//since data is already expired date
 					break;
-				case 119: //UpdateInventory
+				case 121: //UpdateInventory
 					break;
-				case 120: //InventoryOnHand
+				case 122: //InventoryOnHand
 					break;
-				case 121: //InventoryOnHandAdd
+				case 123: //InventoryOnHandAdd
 					break;
 					
-				case 122: //InventoryMemo
+				case 124: //InventoryMemo
 				break;
 			}  // end switch		 
 		}//end inner while loop
