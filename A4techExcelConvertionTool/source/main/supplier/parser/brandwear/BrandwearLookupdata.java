@@ -75,6 +75,9 @@ public class BrandwearLookupdata {
 		COLOR_MAP.put("Mosaic Grey","Medium Gray");
 		COLOR_MAP.put("Grey Mix","Medium Gray");
 		COLOR_MAP.put("Black/Black","Medium Black");
+		COLOR_MAP.put("Suede","Other");
+		COLOR_MAP.put("Natural","Other");
+		COLOR_MAP.put("Burgundy","Dark Red");
 	
 		
 		

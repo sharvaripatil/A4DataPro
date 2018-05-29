@@ -164,7 +164,7 @@ public class BrandwearProductAttribure {
 			materialValueArr[0]=materialValueArr[0].replace("Bamboo", "Other Fabric");
 			
 		}
-		List<String> listOfLookupMaterial = getMaterialType(materialValueArr[1]
+		List<String> listOfLookupMaterial = getMaterialType(materialValueArr[0]
 				.toUpperCase());
 		//listOfLookupMaterial.remove(0);
 		//listOfLookupMaterial.remove(2);
