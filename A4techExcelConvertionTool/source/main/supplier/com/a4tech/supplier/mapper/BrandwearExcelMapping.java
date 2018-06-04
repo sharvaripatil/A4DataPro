@@ -31,7 +31,6 @@ import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
-import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Volume;
@@ -89,7 +88,6 @@ public class BrandwearExcelMapping implements IExcelParser {
 		List<Color> colorList = new ArrayList<Color>();
 		
 		Size sizeObj=new Size();
-		StringBuilder listOfPrices = new StringBuilder();
 
 		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 
@@ -116,7 +114,7 @@ public class BrandwearExcelMapping implements IExcelParser {
 		StringBuilder listOfPrices5 = new StringBuilder();
 
 
-		CellValue c=null;
+		CellValue pricecellValue=null;
 		FormulaEvaluator formulaEval = workbook.getCreationHelper().createFormulaEvaluator();
 		
 		List<String> listcomplianceCerts = new ArrayList<String>();
@@ -325,85 +323,101 @@ public class BrandwearExcelMapping implements IExcelParser {
 							break;
 							
 						case 22:// 1-49 (A)
-							 c=formulaEval.evaluate(cell);
-							 ListPrice1=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
-							 
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice1=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 }
 							break;
 						case 23: // '50-99 (B)
-							 c=formulaEval.evaluate(cell);
-							 ListPrice2=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
-							
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice2=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 }
 							 break;
 
 						case 24: // 100 + (C)
-							 c=formulaEval.evaluate(cell);
-							 ListPrice3=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
-
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice3=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 }
+							 
 							 listOfPrices1=listOfPrices1.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
 									 append(ListPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice3);
 							
 							break;
 
 						case 25: // 1 - 2XL
-							 c=formulaEval.evaluate(cell);
-							 ListPrice1=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
-
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice1=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 }
 							break;
 
 						case 26: // 50 - 2XL
-							 c=formulaEval.evaluate(cell);
-							 ListPrice2=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
- 						
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice2=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 }
 
 							break;
 
 						case 27: // 100 - 2XL
-							 c=formulaEval.evaluate(cell);
-							 ListPrice3=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
-
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice3=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 }
 							 listOfPrices2=listOfPrices2.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
 									 append(ListPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice3);
 							
 							break;
 
 						case 28: // 1 - 3XL
-							 c=formulaEval.evaluate(cell);
-							 ListPrice1=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
-
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice1=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 }
 
 							break;
 
 						case 29: // 50 - 3XL
-							 c=formulaEval.evaluate(cell);
-							 ListPrice2=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
- 						
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice2=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							
+							 }
 
 
 							break;
 
 						case 30: // 100 - 3XL
-							 c=formulaEval.evaluate(cell);
-							 ListPrice3=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice3=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 }
 							 listOfPrices3=listOfPrices3.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
 									 append(ListPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice3);
 							
 							break;
 
 						case 31: // 1 - 4XL
-							 c=formulaEval.evaluate(cell);
-							 ListPrice1=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
-
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice1=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 }
 
 							break;
 						case 32: // 50 - 4XL
-							 c=formulaEval.evaluate(cell);
-							 ListPrice2=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice2=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
  						
-
+							 }
 							break;
 						case 33: // 100 - 4XL
-							 c=formulaEval.evaluate(cell);
-							 ListPrice3=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice3=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 }
 							 listOfPrices4=listOfPrices4.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
 									 append(ListPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice3);
 							
@@ -411,21 +425,25 @@ public class BrandwearExcelMapping implements IExcelParser {
 
 							break;
 						case 34:// 1 - 5XL
-							 c=formulaEval.evaluate(cell);
-							 ListPrice1=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice1=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
 
-
+							 }
 
 							break;
 						case 35:// 50 - 5XL
-							 c=formulaEval.evaluate(cell);
-							 ListPrice2=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
- 						
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice2=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 }
 
 							break;
 						case 36:// 100 - 5XL
-							 c=formulaEval.evaluate(cell);
-							 ListPrice3=c.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 pricecellValue=formulaEval.evaluate(cell);
+							 if(!pricecellValue.toString().contains("#")) {
+							 ListPrice3=pricecellValue.toString().replaceAll("org.apache.poi.ss.usermodel.CellValue ", "").replaceAll("[^0-9|.x%/ ]", "");
+							 }
 							 listOfPrices5=listOfPrices5.append(ListPrice1).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).
 									 append(ListPrice2).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append(ListPrice3);
 							
@@ -449,7 +467,7 @@ public class BrandwearExcelMapping implements IExcelParser {
 							break;
 						case 38:// Item Keywords-Tags- Hidden Keywords
 							String Keywords = cell.getStringCellValue();
-							Keywords=Keywords.replace("®", "R").replace(" ’", " '");
+							Keywords=Keywords.replace("®", "R").replace("’","'");
 								String KeywordArr[] = Keywords.toLowerCase().split(",");
                              if(!keywordList.contains(Keywords.toLowerCase())){
 								for (String string : KeywordArr) {
@@ -465,7 +483,7 @@ public class BrandwearExcelMapping implements IExcelParser {
 
 						case 39:// Logoing Techniques
 							String imprintMethod = cell.getStringCellValue();
-							imprintMethod=imprintMethod.replace("®", "R").replace(" ’", " '");
+							imprintMethod=imprintMethod.replace("®", "(R)").replace("’","'");
 							if (!StringUtils.isEmpty(imprintMethod)) {
 								ImprintMethodList = productAttributeObj
 										.getImprintMethod(imprintMethod);
