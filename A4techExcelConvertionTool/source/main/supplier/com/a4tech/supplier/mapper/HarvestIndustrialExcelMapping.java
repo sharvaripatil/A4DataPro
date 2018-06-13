@@ -97,6 +97,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 		StringBuilder dimensionUnits = new StringBuilder();
 		StringBuilder dimensionType = new StringBuilder();
 		StringBuilder ImprintSizevalue = new StringBuilder();
+		StringBuilder Priceinclude = new StringBuilder();
 
 		try {
 
@@ -141,6 +142,11 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 			String Screenchargecode="";
 			String Repeatchargecode="";
 			String Additionalcolorcode="";
+			String AddClrRunChg1="";
+			String AddClrRunChg2="";
+			String AddClrRunChg3="";
+			String AddClrRunChg4="";
+			String AddClrRunChg5="";
 
 
 			while (iterator.hasNext()) {
@@ -249,7 +255,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 									dimensionValue = new StringBuilder();
 									dimensionUnits = new StringBuilder();
 									dimensionType = new StringBuilder();
-
+									 Priceinclude = new StringBuilder();
 									priceGrids = new ArrayList<PriceGrid>();
 									exstlist = new ArrayList<Theme>();
 									imprintSizeList = new ArrayList<ImprintSize>();
@@ -356,8 +362,8 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 
 				case 6: // ExpirationDate
-					String ConfDate=cell.getStringCellValue();
-					productExcelObj.setPriceConfirmedThru(ConfDate);
+					/*String ConfDate=cell.getStringCellValue();
+					productExcelObj.setPriceConfirmedThru(ConfDate);*/
 					
 					
 					break;
@@ -645,20 +651,30 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 
 				case 45: // priceIncludeClr
-
+					String Priceincludeclr=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(Priceincludeclr)){
+						
+						Priceinclude=Priceinclude.append(Priceincludeclr);	
+						
+					}
 					break;
 				case 46: // PriceIncludeSide
+					String Priceincludside=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(Priceincludside)){
+						Priceinclude=Priceinclude.append(",").append(Priceincludside);	
 
-				/*
-					  ImprintOption=cell.getStringCellValue();
-					  ImprintOptObj =twintechProductAttributeObj.getImprintOption2
-					  (ImprintOption);
-					  optionList.add(ImprintOptObj);*/
-					
+						
+					}
 
 					break;
 
 				case 47: // PriceIncludeLoc
+					String PriceincludLoc=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(PriceincludLoc)){
+						
+						Priceinclude=Priceinclude.append(",").append(PriceincludLoc);	
+
+					}
 					break;
 				case 48:// SetupChg
 					 Setupcharge=cell.getStringCellValue();
@@ -714,20 +730,27 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 
 					break;
 				case 62:// AddClrRunChg1
+					AddClrRunChg1=cell.getStringCellValue();
 
 					break;
 				case 63:// AddClrRunChg2
+					AddClrRunChg2=cell.getStringCellValue();
+
 
 					break;
 				case 64:// AddClrRunChg3
+					AddClrRunChg3=cell.getStringCellValue();
+
 
 					break;
 				case 65:// AddClrRunChg4
+					AddClrRunChg4=cell.getStringCellValue();
+
 
 					break;
 				case 66:// AddClrRunChg5
-
-					break;
+					AddClrRunChg5=cell.getStringCellValue();
+;
 				case 67:// AddClrRunChg6
 
 					break;
@@ -1010,11 +1033,11 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 
 				case 111: // Packaging
-				/*	String pack = cell.getStringCellValue();
+				String pack = cell.getStringCellValue();
 					List<Packaging> listOfPackaging = harvestProductAttributeObj
 							.getPackageValues(pack);
 					productConfigObj.setPackaging(listOfPackaging);
-*/
+
 					break;
 				case 112:// CartonL
 					cartonL = CommonUtility
@@ -1052,9 +1075,9 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 							.getCellValueStrinOrInt(cell);
 					// List<String>fobLookupList =
 					// lookupServiceDataObj.getFobPoints(FOBLooup);
-					if (FOBValue.contains("30340")) {
+					if (FOBValue.contains("11714")) {
 						fobPintObj
-								.setName("Atlanta, GA 30340");
+								.setName("Bethpage, NY 11714 USA");
 						FobPointsList.add(fobPintObj);
 						productExcelObj.setFobPoints(FobPointsList);
 					}
@@ -1102,7 +1125,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 			 // end inner while loop
 			
 			//String QuoteRequest=Boolean.toString(quoteUponRequest);
-					 priceIncludesValue="1 color 1 side 1 location";
+					 priceIncludesValue=Priceinclude.toString().trim();
 					productExcelObj.setPriceType("L");
 					if (listOfPrices != null
 							&& !listOfPrices.toString().isEmpty()) {
@@ -1129,24 +1152,26 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					priceGrids =  harvestPriceGridObj.getUpchargePriceGrid("1", Setupcharge,
 							Setupchargecode,
 									"Imprint Method", "false", "USD",
-									"Screen printed",
+									decorationMethod,
 									"Set-up Charge", "Per Order",
 									new Integer(1), "Required","",priceGrids);	//setupcharge
 					
-					priceGrids =  harvestPriceGridObj.getUpchargePriceGrid("1", Screencharge,
+				/*	priceGrids =  harvestPriceGridObj.getUpchargePriceGrid("1", Screencharge,
 							Screenchargecode,
 									"Imprint Method", "false", "USD",
-									"Screen printed",
+									decorationMethod,
 									"Screen Charge", "Other",
 									new Integer(1),"Required","", priceGrids);	//screen charge
+					*/
 					
+					if(!Repeatcharge.equalsIgnoreCase("0")){
 					 priceGrids =  harvestPriceGridObj.getUpchargePriceGrid("1", Repeatcharge,
 							 Repeatchargecode,
 							"Imprint Method", "false", "USD",
-							"Screen printed",
+							decorationMethod,
 							"Re-Order Charge", "Per Order",
 							new Integer(1), "Optional","",priceGrids);	//repeat charge
-			
+					}
 			
 					 if(!Additionalcolor.equalsIgnoreCase("0"))
 						{
@@ -1160,21 +1185,36 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 											"Additional Colors",
 											"Add. Color Charge", "Other",
 											new Integer(1),"Optional","per Additional color", priceGrids);	
-						
-						
-							priceGrids = harvestPriceGridObj.getUpchargePriceGrid("1___2___3___4___5___6",
-									"0.85___0.8___0.7___0.65___0.6___0.55",
-									"RRRRRR",
+						}
+					 
+						if(!AddClrRunChg1.equalsIgnoreCase("0"))
+						{
+						if(!AddClrRunChg5.equalsIgnoreCase("0"))
+						{
+							priceGrids = harvestPriceGridObj.getUpchargePriceGrid("1___2___3___4",
+									"AddClrRunChg1___AddClrRunChg2___AddClrRunChg3___AddClrRunChg4",
+									"RRRR",
 									"Additional Colors", "false", "USD",
 									"Additional Colors",
 									"Add. Color Charge", "Other",
 									new Integer(1),"Optional","Per piece, per additional color", priceGrids);	
 						}
-					 
-					 
-
+						else
+						{
+							
+							priceGrids = harvestPriceGridObj.getUpchargePriceGrid("1___2___3___4__5",
+									"AddClrRunChg1___AddClrRunChg2___AddClrRunChg3___AddClrRunChg4__AddClrRunChg5",
+									"RRRR",
+									"Additional Colors", "false", "USD",
+									"Additional Colors",
+									"Add. Color Charge", "Other",
+									new Integer(1),"Optional","Per piece, per additional color", priceGrids);
+						}	
+							
+						}
 					
-
+					 
+	
 				} catch (Exception e) {
 					_LOGGER.error("Error while Processing ProductId and cause :"
 							+ productExcelObj.getExternalProductId()
@@ -1184,9 +1224,9 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 			}
 			workbook.close();
 
-			/*if (!StringUtils.isEmpty(themeValue)) {
+			if (!StringUtils.isEmpty(themeValue)) {
 				productConfigObj.setThemes(themeList);
-			}*/
+			}
 			productConfigObj.setImprintLocation(listImprintLocation);
 			String DimensionRef = null;
 			DimensionRef = dimensionValue.toString();
@@ -1252,7 +1292,8 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 			size = new Size();
 			fobPintObj = new FOBPoint();
 			shipping = new ShippingEstimate();
-			 shapelist = new ArrayList<Shape>();	
+			 shapelist = new ArrayList<Shape>();
+			 Priceinclude = new StringBuilder();
 			productConfigObj = new ProductConfigurations();
 			rushTime = new RushTime();
 			ImprintSizevalue = new StringBuilder();
