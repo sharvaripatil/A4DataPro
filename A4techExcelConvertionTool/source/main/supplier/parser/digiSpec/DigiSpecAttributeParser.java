@@ -14,12 +14,18 @@ import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintColorValue;
+import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
+import com.a4tech.product.model.NumberOfItems;
+import com.a4tech.product.model.Option;
+import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Origin;
+import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -28,13 +34,16 @@ import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.RushTimeValue;
 import com.a4tech.product.model.Samples;
 import com.a4tech.product.model.Shape;
+import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.TradeName;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
+import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
+import com.sun.mail.iap.Literal;
 
 public class DigiSpecAttributeParser {
 	private LookupServiceData lookupServiceData;
@@ -93,12 +102,12 @@ public class DigiSpecAttributeParser {
 			} else if(values.length == ApplicationConstants.CONST_INT_VALUE_THREE){
 				 valObj1 = getValueObj(values[0].trim(), "Length", "in");
 				 valObj2 = getValueObj(values[1].trim(),"width", "in");
-				 if(!StringUtils.isEmpty(values[2].trim())){
+				 listOfValue.add(valObj1);
+			     listOfValue.add(valObj2);
+			     if(!StringUtils.isEmpty(values[2].trim())){
 					 valObj3 = getValueObj(values[2].trim(), "Height", "in");
 					 listOfValue.add(valObj3);
 				 }
-				 listOfValue.add(valObj1);
-			     listOfValue.add(valObj2);
 			}
 			 Values valuesObj = new Values(); 
 			 valuesObj.setValue(listOfValue);
@@ -128,7 +137,7 @@ public class DigiSpecAttributeParser {
     private String getSqureSizeValue(String val){
     	String[] vals = CommonUtility.getValuesOfArray(val, "x");
     	StringBuilder finalVal = new StringBuilder();
-    	if(vals[0].contains("Squre")){
+    	if(vals[0].contains("Square")){
     		String vall = vals[0].replaceAll("[^0-9./ ]", "").trim();
     		finalVal.append(vall).append("x").append(vall).append("x");
     	}
@@ -162,7 +171,7 @@ public class DigiSpecAttributeParser {
   
   public List<String> getProductKeywords(String keyword){
 	  List<String> keys = Arrays.asList(keyword.split(","));
-	  List<String> keywordList = keys.stream().filter(key->!key.isEmpty()).collect(Collectors.toList());
+	  List<String> keywordList = keys.stream().filter(key->!key.isEmpty()).limit(30).collect(Collectors.toList());
 	  return keywordList;
   }
   
@@ -188,6 +197,7 @@ public class DigiSpecAttributeParser {
 	  Color colorObj = null;
 	  String[] colors = CommonUtility.getValuesOfArray(color, ",");
 	  for (String colorName : colors) {
+		  colorName = colorName.trim();
 		if(colorName.isEmpty()){
 			continue;
 		}
@@ -243,7 +253,10 @@ public class DigiSpecAttributeParser {
 					|| upchargeVal.equalsIgnoreCase("Reorder Set Up-FREE")) {
 		    	continue;
 		    }
-			if(upchargeVal.contains("Set Up Charge")){
+			if(upchargeVal.contains("ReorderSet Up Charge")){
+				priceGrid = digiSpecPriceGride.getUpchargePriceGrid("1", "18.75", "V", "Imprint Method", false, "USD", "",
+						"Four Color Process", "Re-Order Charge", "Other", 1, priceGrid, "", "");
+			} else if(upchargeVal.contains("Set Up Charge")){
 				if(upchargeVal.contains("37.50")){
 					priceGrid = digiSpecPriceGride.getUpchargePriceGrid("1", "37.50", "V", "Imprint Method", false, "USD", "",
 							"Four Color Process", "Set-up Charge", "Other", 1, priceGrid, "", "");
@@ -251,9 +264,6 @@ public class DigiSpecAttributeParser {
 					priceGrid = digiSpecPriceGride.getUpchargePriceGrid("1", "56.25", "V", "Imprint Method", false, "USD", "",
 							"Four Color Process", "Set-up Charge", "Other", 1, priceGrid, "", "");
 				}
-			} else if(upchargeVal.contains("ReorderSet Up Charge")){
-				priceGrid = digiSpecPriceGride.getUpchargePriceGrid("1", "18.75", "V", "Imprint Method", false, "USD", "",
-						"Four Color Process", "Re-Order Charge", "Other", 1, priceGrid, "", "");
 			}
 	}
 	  
@@ -264,12 +274,16 @@ public class DigiSpecAttributeParser {
   }
   
   public List<ImprintMethod> getProductImprintMethods(String imprMethodVal,List<ImprintMethod> imprintMethodList){
+	  if(CollectionUtils.isEmpty(imprintMethodList)){
+		  imprintMethodList = new ArrayList<>();
+	  }
 		String existingImprintMethods = imprintMethodList.stream().map(imprMethod -> imprMethod.getAlias())
 				.collect(Collectors.joining(","));
 		String[] imprMethodVals = CommonUtility.getValuesOfArray(imprMethodVal, ",");
 		ImprintMethod imprintMethodObj = null;
 		String imprintMethodGroup = "";
 		for (String imprMethodName : imprMethodVals) {
+			imprMethodName = imprMethodName.trim();
 			if(StringUtils.isEmpty(imprMethodName)){
 				continue;
 			}
@@ -278,6 +292,8 @@ public class DigiSpecAttributeParser {
 				if (imprMethodName.equalsIgnoreCase("Four Color Process")
 						|| imprMethodName.equalsIgnoreCase("Full Color Process")) {
 					imprintMethodGroup = "Full Color";
+				} else if(imprMethodName.equals("Unimprinted")) {
+					imprintMethodGroup = "Unimprinted";
 				} else {
 					imprintMethodGroup = "Other";
 				}
@@ -308,10 +324,11 @@ public class DigiSpecAttributeParser {
 	  return artworkList;
   }
   public ImprintColor getProductImprintColor(String imprcolor){
-	  List<ImprintColorValue> imprintColorValueList = new ArrayList<>();
 	  ImprintColor imprColorObj = new ImprintColor();
+	  List<ImprintColorValue> imprintColorValueList = new ArrayList<>();
 	  ImprintColorValue imprClrValObj = new ImprintColorValue();
 	  imprClrValObj.setName(imprcolor);
+	  imprintColorValueList.add(imprClrValObj);
 	  imprColorObj.setValues(imprintColorValueList);
 	  imprColorObj.setType(ApplicationConstants.CONST_STRING_IMPRNT_COLR);
 	  return imprColorObj;
@@ -333,6 +350,199 @@ public class DigiSpecAttributeParser {
 	  originList.add(originObj);
 	  return originList;
   }
+  public Product getProductPackaging(String packVals,Product product){
+	  ProductConfigurations configuration = product.getProductConfigurations();
+	  List<PriceGrid> priceGrid = product.getPriceGrids();
+	  packVals = packVals.replaceAll("\n", "");
+	  String[] vals = CommonUtility.getValuesOfArray(packVals, ";");
+	  List<String> packagingVals = new ArrayList<>();
+	  for (String packVal : vals) {
+		  packVal = packVal.trim();
+		  if(StringUtils.isEmpty(packVal)){
+			  continue;
+		  }
+		String[] packs = CommonUtility.getValuesOfArray(packVal, ":");
+		String packName = packs[0];
+		
+		if(packName.contains("Bulk")){
+			packName = "Bulk";
+		} else if(packName.equalsIgnoreCase("Poly Bagging")){
+			packName = "Poly Bag";
+		} else {
+		}
+		if(!packName.equals("Bulk")){
+			String priceVal = packs[1].replaceAll("[^0-9.]", "");
+			priceGrid = digiSpecPriceGride.getUpchargePriceGrid("1", priceVal, "V", "Packaging", false, "USD", "",
+					packName, "Packaging Charge", "Per Quantity", 1, priceGrid, "", "");	
+		}
+		packagingVals.add(packName);	
+	}
+	  List<Packaging> packagingList = getPackages(packagingVals);
+	 configuration.setPackaging(packagingList);
+	 product.setProductConfigurations(configuration);
+	 product.setPriceGrids(priceGrid);
+	  return product;
+  }
+  private List<Packaging> getPackages(List<String> packVal){
+	  List<Packaging> packagingList = new ArrayList<>();
+	  Packaging packObj = null;
+	  for (String packName : packVal) {
+		  packObj = new Packaging();
+		  packObj.setName(packName);
+		  packagingList.add(packObj);
+	}
+	  return packagingList;
+  }
+  public Product getProductOptions(String optionVal,Product product){
+	  ProductConfigurations configuration = product.getProductConfigurations();
+	  //configuration.setShippingEstimates(shippingEstimates);
+	  List<PriceGrid> priceGrid = product.getPriceGrids();
+	  List<Option> optionList = null;
+	  String[] optionVals = CommonUtility.getValuesOfArray(optionVal, ";");
+	  for (String val : optionVals) {
+		if(val.contains("Custom Cutting Dies")){
+			optionList = getOptions("Custom Cutting Dies", "Imprint", "Custom Cutting Dies Available", "");
+			priceGrid = digiSpecPriceGride.getUpchargePriceGrid("1", "150","V", "Imprint Option", false, "USD", "",
+					"Custom Cutting Dies Available", "Imprint Option Charge", "Other", 1, priceGrid, "Custom Cutting Dies", "");
+		} else if(val.contains("RUSH Service")){
+			product.setPriceGrids(priceGrid);
+			product = getProductRushTime(val.split(":")[1], product);
+			priceGrid = product.getPriceGrids();
+			configuration = product.getProductConfigurations();
+		} else if(val.contains("Lead-Times")){
+			product.setAdditionalProductInfo(val);
+		} else if(val.contains("REORDER Lead Time")){
+				/*List<ProductionTime> productionTimeList = getProductionTime(val.split("")[1],
+						configuration.getProductionTime());
+				configuration.setProductionTime(productionTimeList);*/
+		}
+	}
+	  configuration.setOptions(optionList);
+	  product.setProductConfigurations(configuration);
+	  product.setPriceGrids(priceGrid);
+	return product;  
+  }
+  private List<Option> getOptions(String optionName,String optionType,String optionValue,String additionalInfo){
+	  ////Option Name = Decorative Edge Options, Option Values = Wave, Swirl, Diamond.
+	  Option optionObj=new Option();
+	  List<OptionValue> valuesList=new ArrayList<OptionValue>();
+	  OptionValue optionValueObj = new OptionValue();;
+	  List<Option> listOfOptins = new ArrayList<>();
+	  optionValueObj.setValue(optionValue);
+	  valuesList.add(optionValueObj);
+	  /*for (String optionVal : optionValues) {
+		  optionValueObj = new OptionValue();
+		  optionValueObj.setValue(optionVal);
+		  valuesList.add(optionValueObj);
+	}*/
+	  optionObj.setName(optionName);
+	  optionObj.setOptionType(optionType);
+	  optionObj.setValues(valuesList);
+	  optionObj.setCanOnlyOrderOne(ApplicationConstants.CONST_BOOLEAN_FALSE);
+	  optionObj.setRequiredForOrder(ApplicationConstants.CONST_BOOLEAN_FALSE);
+	  optionObj.setAdditionalInformation(additionalInfo);
+	  listOfOptins.add(optionObj);
+	  return listOfOptins;
+	  
+  }
+  private Product getProductRushTime(String rushVal,Product product){
+	  List<PriceGrid> priceGrid = product.getPriceGrids();
+	  RushTime rushTime  = product.getProductConfigurations().getRushTime();
+	 List<RushTimeValue> rushTimeValList = null;
+	 rushVal = rushVal.replaceAll(", or", ",");
+	 if(rushTime == null){
+		  rushTime = new RushTime();
+		  rushTimeValList = new ArrayList<>();
+	  } else {
+		  rushTimeValList = rushTime.getRushTimeValues();  
+	  }
+		String existingRushTimeVals = rushTimeValList.stream().map(RushTimeValue::getBusinessDays)
+				.collect(Collectors.joining(","));
+	 String[] rushVals = CommonUtility.getValuesOfArray(rushVal, ",");
+	 RushTimeValue rushTimeValObj = null;
+	 for (String rushTimeVal : rushVals) {// 3-Day $62.50 (V),
+		 rushTimeValObj = new RushTimeValue();
+		 String[] rushValss = CommonUtility.getValuesOfArray(rushTimeVal, "\\$");
+		 String rushValTime = rushValss[0].trim();
+		 if(rushValTime.equalsIgnoreCase("1-Day/24 Hour")){
+			 rushValTime = "1";
+		 } else {
+			 rushValTime = rushValss[0].replaceAll("[^0-9]", "");	 
+		 }
+		 String priceVal = rushValss[1].replaceAll("[^0-9.]", "");
+		 
+		 priceGrid = digiSpecPriceGride.getUpchargePriceGrid("1", priceVal,"V", "Rush Service", false, "USD", "",
+				 rushValTime+" business days", "Rush Service Charge", "Other", 1, priceGrid, "", "");
+		 if(!existingRushTimeVals.contains(rushValTime)){
+			 rushTimeValObj.setBusinessDays(rushValTime);
+			 rushTimeValObj.setDetails("");
+			 rushTimeValList.add(rushTimeValObj);	 
+		 }
+	}
+	rushTime.setRushTimeValues(rushTimeValList);  	  
+	  product.getProductConfigurations().setRushTime(rushTime);
+	  product.setPriceGrids(priceGrid);
+	  return product;
+  }
+  private List<ProductionTime> getProductionTime(String prdTime,List<ProductionTime> productionTimeList){
+	  if(CollectionUtils.isEmpty(productionTimeList)){
+		  productionTimeList = new ArrayList<>();
+	  }
+	  ProductionTime prdTimeObj = new ProductionTime();
+	  prdTime = prdTime.replaceAll("[^0-9]", "");
+	  prdTimeObj.setBusinessDays(prdTime);
+	  productionTimeList.add(prdTimeObj);
+	  return productionTimeList;
+  }
+  public ShippingEstimate getProductShippingEstimation(String shippingVal){
+		ShippingEstimate shippingEstimObj = new ShippingEstimate();
+		String[] shippingValues = CommonUtility.getValuesOfArray(shippingVal, ",");
+		List<NumberOfItems> listOfNumberOfItems = getShippingNumberOfItems(shippingValues[0], "per Case");
+		Dimensions dimensionsObj = getShippingDimension(shippingValues[1]);
+		List<Weight> listOfWeight = getShippingWeight(shippingValues[2], "lbs");
+		shippingEstimObj.setWeight(listOfWeight);
+		shippingEstimObj.setDimensions(dimensionsObj);
+		shippingEstimObj.setNumberOfItems(listOfNumberOfItems);
+		return shippingEstimObj;
+	}
+	
+	private List<NumberOfItems> getShippingNumberOfItems(String value,String unit){
+		List<NumberOfItems> listOfNumberOfItems = new ArrayList<>();
+		NumberOfItems numberOfItemsObj = new NumberOfItems();
+		numberOfItemsObj.setValue(value);
+		numberOfItemsObj.setUnit(unit);
+		listOfNumberOfItems.add(numberOfItemsObj);
+		return listOfNumberOfItems;
+	}
+	private List<Weight> getShippingWeight(String weightVal,String unit){
+		List<Weight> listOfWeight = new ArrayList<>();
+		Weight weightObj = new Weight();
+		weightObj.setUnit("lbs");
+		weightObj.setValue(weightVal);
+		listOfWeight.add(weightObj);
+		return listOfWeight;
+	}
+	private Dimensions getShippingDimension(String dimension){
+		Dimensions dimensionsObj = new Dimensions();//inches LBS
+		dimension = dimension.replaceAll("[^0-9.x]", "");
+		String[] dimensions = CommonUtility.getValuesOfArray(dimension, "x");
+		String unit = "in";// defalut unit
+		dimensionsObj.setLength(dimensions[0]);
+		dimensionsObj.setLengthUnit(unit);
+		dimensionsObj.setWidth(dimensions[1]);
+		dimensionsObj.setWidthUnit(unit);
+		dimensionsObj.setHeight(dimensions[2]);
+		dimensionsObj.setHeightUnit(unit);
+		return dimensionsObj;
+	}
+	public List<ImprintLocation> getProductImprintLocation(String imprLocVal){
+		List<ImprintLocation> imprintLocList = new ArrayList<>();
+		ImprintLocation imprintLocObj = new ImprintLocation();
+		imprintLocObj.setValue(imprLocVal);
+		imprintLocList.add(imprintLocObj);
+		return imprintLocList;
+	}
+	
   public void setLookupServiceData(LookupServiceData lookupServiceData) {
 		this.lookupServiceData = lookupServiceData;
 	}

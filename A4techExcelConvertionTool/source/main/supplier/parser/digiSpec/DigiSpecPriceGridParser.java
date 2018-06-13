@@ -35,6 +35,7 @@ public class DigiSpecPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] listOfQuans = listOfQuan
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		String[] listOfDiscounts = discountCode.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(priceName);
 		priceInclude = CommonUtility.getStringLimitedChars(priceInclude, 100);
@@ -47,7 +48,7 @@ public class DigiSpecPriceGridParser {
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(pricesForNetCost, listOfQuans, discountCode,priceUnitName);
+			listOfPrice = getPrices(pricesForNetCost, listOfQuans, listOfDiscounts,priceUnitName);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
@@ -67,7 +68,7 @@ public class DigiSpecPriceGridParser {
 
 	}
 
-	public List<Price> getPrices(String[] prices, String[] quantity,String discountCode,String priceUnitName) {
+	public List<Price> getPrices(String[] prices, String[] quantity,String[] discountCode,String priceUnitName) {
 		List<Price> listOfPrices = new ArrayList<Price>();
 	try{
 		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length && PriceNumber < quantity.length; 
@@ -87,7 +88,7 @@ public class DigiSpecPriceGridParser {
 			String listPrice = prices[PriceNumber];
 			price.setPrice(listPrice);
 			try {
-				price.setDiscountCode(discountCode);
+				price.setDiscountCode(discountCode[PriceNumber]);
 			}catch(ArrayIndexOutOfBoundsException exce){
 				price.setDiscountCode("R");
 				_LOGGER.error("Invalid Discount code,Set default discount code:R");
@@ -153,6 +154,8 @@ public class DigiSpecPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] upChargeQuantity = quantity
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		String[] upChargeDiscount = discounts
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		priceGrid.setCurrency(currency);
 		if(upChargeValue.contains("|")){
 			upChargeValue = upChargeValue.replaceAll("\\|", ",");
@@ -167,7 +170,7 @@ public class DigiSpecPriceGridParser {
 		priceGrid.setPriceIncludes(priceInclude);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(upChargePrices, upChargeQuantity, discounts,priceUnitName);
+			listOfPrice = getPrices(upChargePrices, upChargeQuantity, upChargeDiscount,priceUnitName);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}

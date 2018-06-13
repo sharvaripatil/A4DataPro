@@ -24,6 +24,7 @@ public static Map<String, String> MATERIAL_MAP = new HashMap<>();
 		COLOR_MAP.put("pink","Medium Pink");
 		COLOR_MAP.put("maroon","Medium Red");
 		COLOR_MAP.put("gray","Medium Gray");
+		COLOR_MAP.put("grey","Medium Gray");
 		COLOR_MAP.put("navy blue","Dark Blue");
 
 		MATERIAL_MAP.put("lo-tac adhesive","Other");
