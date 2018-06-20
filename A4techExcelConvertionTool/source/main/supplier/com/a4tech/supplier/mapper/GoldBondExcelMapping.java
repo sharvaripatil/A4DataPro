@@ -22,6 +22,7 @@ import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.FOBPoint;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.PriceGrid;
@@ -77,6 +78,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 		String multiColorCharge = "";
 		String setUpChargeColumnVal = "";
 		String descriptionForSummary = "";
+		StringBuilder imageValues =  new StringBuilder();
 		while (iterator.hasNext()) {
 			
 			try{
@@ -160,6 +162,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 							    multiColorCharge = "";
 							    setUpChargeColumnVal = "";
 							    descriptionForSummary = "";
+							    imageValues =  new StringBuilder();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -736,7 +739,8 @@ public class GoldBondExcelMapping implements IExcelParser{
 					basePriceInclude = basePriceInclude.replaceAll("®", "").trim();
 					basePriceInclude = CommonUtility.getStringLimitedChars(basePriceInclude, 100);
 					break;
-				/*case 206: // images start
+				case 206: // images start
+					break;
 				case 207:
 				case 208:
 				case 209:	
@@ -770,7 +774,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 					if(!StringUtils.isEmpty(img)){
 						imageValues.append(img).append(",");
 					}
-					break;*/	
+					break;
 				/*case 236: // Itemcolors
 					//Ignore colors are available in previous columns
 					break;*/
@@ -781,10 +785,13 @@ public class GoldBondExcelMapping implements IExcelParser{
 			    	 ImprintColor imprintColorValues = gbAttributeParser.getImprintColors(imprintColors.toString());
 					 productConfiguration.setImprintColors(imprintColorValues);
 			    }
-			    /*if(!StringUtils.isEmpty(imageValues.toString())){
+			    if(!StringUtils.isEmpty(imageValues.toString())){
 			    	List<Image> listOfImages = gbAttributeParser.getImages(imageValues.toString());
 				    productExcelObj.setImages(listOfImages);
-			    }*/
+			    } else{
+			      List<Image> imageList = removePriceGridConfiguration(productExcelObj.getImages());
+			      productExcelObj.setImages(imageList);
+			    }
 			     if(!StringUtils.isEmpty(secondPoleImprint)){////qty,discountCode,Price
 			    	 String priceval = getSecondPoleImprintPriceValues(secondPoleImprint);
 			    	 String[] priceVals = CommonUtility.getValuesOfArray(priceval, ",");
@@ -970,7 +977,15 @@ public class GoldBondExcelMapping implements IExcelParser{
 		imprintMethodList.add(imprintMethod);
 		return imprintMethodList;
 	}*/
-	//private boolean 
+	//private boolean
+	private List<Image> removePriceGridConfiguration(List<Image> imageOldList){
+		List<Image> newImage = new ArrayList<>();
+		for (Image image : imageOldList) {
+			image.setConfigurations(new ArrayList<>());
+			newImage.add(image);
+		}
+		return newImage;
+	}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}

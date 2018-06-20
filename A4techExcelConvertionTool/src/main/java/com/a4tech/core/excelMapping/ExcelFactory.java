@@ -28,6 +28,7 @@ import com.a4tech.supplier.mapper.CbMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 //import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
+import com.a4tech.supplier.mapper.DigiSpecMapping;
 import com.a4tech.supplier.mapper.EdwardsGarmentMapping;
 import com.a4tech.supplier.mapper.EveanManufacturingCanadaMapping;
 import com.a4tech.supplier.mapper.FITSAccessoriesMapping;
@@ -122,7 +123,8 @@ public class ExcelFactory {
     private EveanManufacturingCanadaMapping eveanManufactureMapping;
     private SportUSAMapping					sportUSAMapping;
     private SportAzxCandMapping 			sportAzxCandMapping;
-	public  IExcelParser getExcelParserObject(String name){
+    private DigiSpecMapping                 digiSpecMapping;
+		public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -244,6 +246,8 @@ public class ExcelFactory {
 			  return eveanManufactureMapping;
 		  }else if(name.equals("30250")){
 			  return sportUSAMapping;
+		  } else if(name.equals("49716")){
+			  return digiSpecMapping;
 		  }
 		return null;
 	}
@@ -690,5 +694,14 @@ public class ExcelFactory {
 	public void setSportAzxCandMapping(SportAzxCandMapping sportAzxCandMapping) {
 		this.sportAzxCandMapping = sportAzxCandMapping;
 	}
+	public DigiSpecMapping getDigiSpecMapping() {
+		return digiSpecMapping;
+	}
+
+	public void setDigiSpecMapping(DigiSpecMapping digiSpecMapping) {
+		this.digiSpecMapping = digiSpecMapping;
+	}
+
+
 
 }

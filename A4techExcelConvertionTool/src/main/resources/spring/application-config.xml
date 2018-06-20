@@ -432,6 +432,7 @@
 		<property name="eveanManufactureMapping" ref="eveanManufactureMappingId"/>
 		<property name="sportUSAMapping" ref="sportUSAMappingId"/>
 		<property name="sportAzxCandMapping" ref="sportAzxCandMappingId"/>
+		<property name="digiSpecMapping" ref="digiSpecMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1268,5 +1269,30 @@
     <property name="lookupRestServiceObj" ref="lookupRestService"/> -->
   	</bean>
      <!-- supplier 30251 AZX Sport Canada configuration end -->  
+     
+      <!-- supplier DIGISPEC 49716 configuration start -->
+      <bean id="digiSpecMappingId" class="com.a4tech.supplier.mapper.DigiSpecMapping">
+         <property name="digiSpecDataMapping" ref="digiSpecDataMappingId"/>
+         <property name="digiSpecPricingMapping" ref="digiSpecPricingMappingId"/>
+         
+      </bean>
+      <bean id="digiSpecDataMappingId" class="parser.digiSpec.DigiSpecDataMapping">
+      	 <property name="postServiceImpl" ref="postService"/>
+       	 <property name="productDaoObj" ref="productDao"/>
+       	 <property name="digiAttributeParser" ref="digiSpecAttributeParserId"/>
+      </bean>
+      <bean id="digiSpecPricingMappingId" class="parser.digiSpec.DigiSpecPricingMapping">
+       <property name="postServiceImpl" ref="postService"/>
+       	 <property name="productDaoObj" ref="productDao"/>
+         <property name="digiSpecPriceGridParser" ref="digiSpecPriceGridParserId"/>
+      </bean>
+ 
+      <bean id="digiSpecAttributeParserId" class="parser.digiSpec.DigiSpecAttributeParser">
+       <property name="lookupServiceData" ref="lookupServiceData"/>
+       <property name="digiSpecPriceGride" ref="digiSpecPriceGridParserId"/>
+      </bean>
+      
+      <bean id="digiSpecPriceGridParserId" class="parser.digiSpec.DigiSpecPriceGridParser"></bean>
+       <!-- supplier DIGISPEC 49716 configuration End -->
 </beans>
 
