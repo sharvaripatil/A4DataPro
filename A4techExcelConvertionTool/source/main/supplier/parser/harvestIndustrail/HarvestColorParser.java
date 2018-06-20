@@ -11,6 +11,11 @@ import com.a4tech.util.CommonUtility;
 public class HarvestColorParser {
 
 	public List<Color> getColorCriteria(String colorValue) {
+		if(!colorValue.contains("Clear"))
+		{
+			colorValue=colorValue.concat(",").concat("Clear");	
+		}
+		colorValue=colorValue.replace("/", ",");
 		List<Color> listOfProductColors = new ArrayList<>();
 		List<Combo> combolist = new ArrayList<>();
 
