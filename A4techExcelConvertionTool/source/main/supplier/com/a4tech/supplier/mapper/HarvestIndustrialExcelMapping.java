@@ -98,6 +98,8 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 		StringBuilder dimensionType = new StringBuilder();
 		StringBuilder ImprintSizevalue = new StringBuilder();
 		StringBuilder Priceinclude = new StringBuilder();
+		StringBuilder Addcolorcharge = new StringBuilder();
+
 
 		try {
 
@@ -209,11 +211,11 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 									}
 								
 								
-									//if(!FirstImprintsize1.contains("")){
+									if(!FirstImprintsize1.contains("10")){
 										imprintSizeList=harvestProductAttributeObj.getimprintsize(ImprintSizevalue);
 										 imprintSizeList.removeAll(Collections.singleton(null));
 									productConfigObj.setImprintSize(imprintSizeList);
-									//}
+									}
 									productConfigObj
 											.setProductionTime(listOfProductionTime);
 									productConfigObj.setRushTime(rushTime);
@@ -275,6 +277,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 									shipping = new ShippingEstimate();
 									ImprintSizevalue = new StringBuilder();
 									additionalcolorList = new ArrayList<>();
+									Addcolorcharge = new StringBuilder();
 									productConfigObj = new ProductConfigurations();
 									
 																	}
@@ -292,6 +295,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 								    productConfigObj=existingApiProduct.getProductConfigurations();
 									List<Image> Img = existingApiProduct
 											.getImages();
+									
 									productExcelObj.setImages(Img);
 									
 
@@ -350,11 +354,10 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 						String strTemp = productName.substring(0, 60);
 						int lenTemp = strTemp
 								.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
-						productName = (String) strTemp.subSequence(0,
-								lenTemp);
+						productName = (String) strTemp.subSequence(0,lenTemp);
 					}
 					productExcelObj.setName(productName);
-
+				
 					break;
 
 				case 5:// CatYear
@@ -403,14 +406,12 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 						String summayArr[]=description.split("\\.");
 						if(summayArr[0].length()>130)
 						{
-						 Newsummary=summayArr[0].substring(0, 130);
+						 Newsummary=productName;
 						}else {
 							Newsummary=	summayArr[0];
 						}
 						productExcelObj.setSummary(Newsummary);
 					}
-					
-					
 
 					break;
 
@@ -636,7 +637,6 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 				case 40:
 				case 41:
 				case 42:
-
 				case 43:
 					pricesUnit = CommonUtility
 							.getCellValueStrinOrInt(cell);
@@ -750,7 +750,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 				case 66:// AddClrRunChg5
 					AddClrRunChg5=cell.getStringCellValue();
-;
+					
 				case 67:// AddClrRunChg6
 
 					break;
@@ -1189,10 +1189,13 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					 
 						if(!AddClrRunChg1.equalsIgnoreCase("0"))
 						{
-						if(!AddClrRunChg5.equalsIgnoreCase("0"))
+						if(AddClrRunChg5.equalsIgnoreCase("0"))
 						{
+							Addcolorcharge=Addcolorcharge.append(AddClrRunChg1).append("___").append(AddClrRunChg2).append("___").
+									append(AddClrRunChg3).append("___").append(AddClrRunChg4);
+							
 							priceGrids = harvestPriceGridObj.getUpchargePriceGrid("1___2___3___4",
-									"AddClrRunChg1___AddClrRunChg2___AddClrRunChg3___AddClrRunChg4",
+									Addcolorcharge.toString(),
 									"RRRR",
 									"Additional Colors", "false", "USD",
 									"Additional Colors",
@@ -1201,6 +1204,9 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 						}
 						else
 						{
+							Addcolorcharge=Addcolorcharge.append(AddClrRunChg1).append("___").append(AddClrRunChg2).append("___").
+									append(AddClrRunChg3).append("___").append(AddClrRunChg4).append("___").append(AddClrRunChg5);
+							
 							
 							priceGrids = harvestPriceGridObj.getUpchargePriceGrid("1___2___3___4__5",
 									"AddClrRunChg1___AddClrRunChg2___AddClrRunChg3___AddClrRunChg4__AddClrRunChg5",
@@ -1239,11 +1245,11 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 				productConfigObj.setSizes(size);
 			}
 			
-		//	 if(!FirstImprintsize1.contains("")){
+			if(!FirstImprintsize1.contains("10")){
 				 imprintSizeList=harvestProductAttributeObj.getimprintsize(ImprintSizevalue);
 				 imprintSizeList.removeAll(Collections.singleton(null));
 			productConfigObj.setImprintSize(imprintSizeList);
-		//	}
+		}
 			productConfigObj.setProductionTime(listOfProductionTime);
 			productConfigObj.setRushTime(rushTime);
 
@@ -1272,6 +1278,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					+ numOfProductsFailure.size();
 			productDaoObj.saveErrorLog(asiNumber, batchId);
 
+			Addcolorcharge = new StringBuilder();
 			listOfQuantity = new StringBuilder();
 			listOfPrices = new StringBuilder();
 			pricesPerUnit = new StringBuilder();
