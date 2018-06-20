@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -342,8 +343,13 @@ public class ApparealProductAttributeParser {
 	     additionalLoactionObj.setName(ApplicationConstants.CONST_VALUE_TYPE_OTHER+imprintLocationArr[1].trim());
 	     additionalLoaction.add(additionalLoactionObj);
 	     productConfigObj.setAdditionalLocations(additionalLoaction); 
-	                  }else
-	     {
+	    } else if(imprintValue.contains(",")){
+			ImprintLocationList = Arrays.stream(CommonUtility.getValuesOfArray(imprintValue, ",")).map(str -> {
+				ImprintLocation ImprintLocationObj1 = new ImprintLocation();
+				ImprintLocationObj1.setValue(str);
+				return ImprintLocationObj1;
+			}).collect(Collectors.toList());
+	    } else {
 	      ImprintLocationObj.setValue(imprintValue);
 	      ImprintLocationList.add(ImprintLocationObj);
 	      

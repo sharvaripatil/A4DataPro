@@ -94,7 +94,10 @@ public class GoldbondAttributeParser {
 		    }else if(value.equalsIgnoreCase("$75.00 (G) per color")){
 		    	priceVal = "75";
 		    	discountCode = "G";
-		    }else if(value.equalsIgnoreCase("$50.00 (G) per color, 2-color only (CANNOT BE CLOSE REGISTRATION)")){
+		    } else if(value.equalsIgnoreCase("Free set-up, add $0.10 (G) per color, per position, ea.")){
+		    	priceVal = "0.10";
+		    	discountCode = "G";
+		    } else if(value.equalsIgnoreCase("$50.00 (G) per color, 2-color only (CANNOT BE CLOSE REGISTRATION)")){
 		    	priceVal = "50";
 		    	discountCode = "G";
 		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (close registration not available)")){
@@ -112,8 +115,11 @@ public class GoldbondAttributeParser {
 		    } else {
 		    	
 		    }
-		    existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", priceVal, discountCode, "Additional Colors", false,
-					"USD","", "additional color available", "Set-up Charge", "Per Order", 1, existingPriceGrid,"","");
+		    if(!StringUtils.isEmpty(priceVal)){
+		    	existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", priceVal, discountCode, "Additional Colors", false,
+						"USD","", "additional color available", "Set-up Charge", "Per Order", 1, existingPriceGrid,"","");	
+		    }
+		    
 		    List<AdditionalColor> listOfAdditionalColor = existingConfiguration.getAdditionalColors();
 	    	if(CollectionUtils.isEmpty(listOfAdditionalColor)){
 	    		listOfAdditionalColor = new ArrayList<>();
@@ -260,6 +266,13 @@ public class GoldbondAttributeParser {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Arc", "", "");
+			} else if(sizeVal.contains("Dia") && (sizeVal.contains("Thick"))){
+				if(sizeVal.contains("ia.")){
+					sizeVal = sizeVal.replaceAll("ia.", "").trim();
+				}
+				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
+				valuesObj = getOverAllSizeValObj(sizeVal, "Dia", "Thickness", "");
 			} else if (sizeVal.contains("Dia") || sizeVal.contains("dia")) {
 				if(sizeVal.contains("Approximately")){
 					sizeVal = sizeVal.replaceAll("Approximately", "").trim();
@@ -959,6 +972,9 @@ public class GoldbondAttributeParser {
 		String[] imgVals = CommonUtility.getValuesOfArray(imgVal, ",");
 		int imageRank = 1;
 		for (String imgUrl : imgVals) {
+			if(!CommonUtility.isImageExist(imgUrl)){
+				continue;
+			}
 			if(StringUtils.isEmpty(imgUrl)){
 				continue;
 			}
@@ -980,11 +996,14 @@ public class GoldbondAttributeParser {
 	public Product getImprintMethods(String imprMethodVal,Product existingProduct){
 		ProductConfigurations config = existingProduct.getProductConfigurations();
 		String existingAdditionalImprintInfo = existingProduct.getAdditionalImprintInfo();
+		List<ImprintMethod> listOfImprintMethods = config.getImprintMethods();
+		if(CollectionUtils.isEmpty(listOfImprintMethods)){
+			listOfImprintMethods = new ArrayList<>();
+		}
 		if(StringUtils.isEmpty(existingAdditionalImprintInfo)){
 			existingAdditionalImprintInfo = "";
 		}
 		String additionalImprintInfo = "";
-		List<ImprintMethod> listOfImprintMethods = new ArrayList<>();
 		ImprintMethod imprintMethodObj = null;
 		List<String> tempImprintMethodVals = new ArrayList<>();
 		String imprintMethodVals = GoldBondImprintMethodMapping.getImprintMethodValues(imprMethodVal);
@@ -1249,6 +1268,9 @@ public class GoldbondAttributeParser {
     		String discountCode = CommonUtility.extractValueSpecialCharacter("(", ")", val);
     		String price = val.replaceAll("[^0-9\\.]", "").trim();
     		String imprintMethodVals = imprintMethods.stream().map(ImprintMethod::getAlias).collect(Collectors.joining(","));
+    		if(imprintMethodVals.contains("Unimprinted")){
+    			imprintMethodVals = imprintMethodVals.replaceAll(",Unimprinted", "");
+    		}
     		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1",price, discountCode, "Imprint Method", false,
 					"USD","", imprintMethodVals, "Set-up Charge", "Other", 1, priceGrid,"","");
     	}

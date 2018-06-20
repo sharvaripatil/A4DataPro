@@ -683,8 +683,20 @@ public class GoldBondExcelMapping implements IExcelParser{
 						productConfiguration = productExcelObj.getProductConfigurations();
 					}
 				    break;
+				
+				case 161:
+					String imprintMethodVal1 = cell.getStringCellValue();
+					  if(!StringUtils.isEmpty(imprintMethodVal1)){
+						  if(imprintMethodVal1.equalsIgnoreCase("NO IMPRINT")){
+							  productExcelObj.setProductConfigurations(productConfiguration);
+							  productExcelObj = gbAttributeParser.getImprintMethods(imprintMethodVal1, productExcelObj);
+							  productConfiguration = productExcelObj.getProductConfigurations();  
+						  } else {
+							  imprintColors.append(imprintMethodVal1).append(",");
+						  }
+					  }
+					break;
 				case 160://imprint colors
-				case 161: 
 				case 162:	
 				case 163: 
 				case 164: 	
@@ -789,8 +801,10 @@ public class GoldBondExcelMapping implements IExcelParser{
 			    	List<Image> listOfImages = gbAttributeParser.getImages(imageValues.toString());
 				    productExcelObj.setImages(listOfImages);
 			    } else{
-			      List<Image> imageList = removePriceGridConfiguration(productExcelObj.getImages());
-			      productExcelObj.setImages(imageList);
+			    	if(productExcelObj.getImages() != null){
+			    		List<Image> imageList = removePriceGridConfiguration(productExcelObj.getImages());
+					      productExcelObj.setImages(imageList);			    		
+			    	}
 			    }
 			     if(!StringUtils.isEmpty(secondPoleImprint)){////qty,discountCode,Price
 			    	 String priceval = getSecondPoleImprintPriceValues(secondPoleImprint);
