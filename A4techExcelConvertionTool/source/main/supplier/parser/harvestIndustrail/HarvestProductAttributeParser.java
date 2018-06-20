@@ -167,7 +167,7 @@ public class HarvestProductAttributeParser {
 
 		ImprintMethod imprMethod = new ImprintMethod();
 		List<ImprintMethod> imprintMethodList = new ArrayList<ImprintMethod>();
-		String imprintMethodValueArr[]=imprintMethod.split("or");
+		String imprintMethodValueArr[]=imprintMethod.split(",");
 		
 		for (String imprintMethodValue : imprintMethodValueArr) {
 			
