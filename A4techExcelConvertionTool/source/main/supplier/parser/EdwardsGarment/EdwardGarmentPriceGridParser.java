@@ -28,6 +28,14 @@ public class EdwardGarmentPriceGridParser {
 			//Integer sequence = 1;
 				String tempName=priceName;
 				if(!StringUtils.isEmpty(tempName)){
+					if(tempName.contains("___")){//Size:S___Product Color:BLACK
+						tempName=tempName.replace(":", "");
+						tempName=tempName.replace("Size", "");
+						tempName=tempName.replace("Product Color", "");
+						tempName=tempName.replace("___", ",");
+					}
+					
+					
 					if(tempName.length()>100){
 						tempName=tempName.substring(0,99);
 						/*if(len>60){
@@ -68,7 +76,13 @@ public class EdwardGarmentPriceGridParser {
 			}
 			priceGrid.setPrices(listOfPrice);
 			if (criterias != null && !criterias.isEmpty()) {
-				configuration = getConfigurations(criterias+":"+priceName);//because over here pricename & criteria value is same
+				//configuration = getConfigurations(criterias+":"+priceName);//because over here pricename & criteria value is same
+				
+				if(criterias.contains("___")){
+				configuration = getConfigurations(criterias);//because over here pricename & criteria value is same
+				}else{
+					configuration = getConfigurations(criterias+":"+priceName);
+				}
 			}
 			priceGrid.setPriceConfigurations(configuration);
 			existingPriceGrid.add(priceGrid);
@@ -122,6 +136,11 @@ public class EdwardGarmentPriceGridParser {
 			String[] config = null;
 			PriceConfiguration configs = null;
 			try{
+				//String tempCriteriaValues[]=criterValue.split(",");//criterValue
+				// i have to give here for each for comma value
+				//for (String criterias : tempCriteriaValues) {
+					
+				
 			if (criterias
 					.contains(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID)) {
 				String[] configuraions = criterias
@@ -129,7 +148,7 @@ public class EdwardGarmentPriceGridParser {
 				for (String criteria : configuraions) {
 					PriceConfiguration configuraion = new PriceConfiguration();
 					config = criteria.split(ApplicationConstants.CONST_DELIMITER_COLON);
-					String criteriaValue = LookupData.getCriteriaValue(config[0]);
+					String criteriaValue = config[0];//LookupData.getCriteriaValue(config[0]);
 					configuraion.setCriteria(criteriaValue);
 					if (config[1].contains(ApplicationConstants.CONST_STRING_COMMA_SEP)) {
 						String[] values = config[1].split(ApplicationConstants.CONST_STRING_COMMA_SEP);
@@ -146,11 +165,12 @@ public class EdwardGarmentPriceGridParser {
 						priceConfiguration.add(configs);
 					}
 				}
-
+			//}
 			} else {
 				configs = new PriceConfiguration();
 				config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
 				//String criteriaValue = LookupData.getCriteriaValue(config[0]);
+				//String criteriaValue =config[0];
 				if(config[1].contains(",")){
 					String[] tempArr=config[1].split(",");
 					for (String Value : tempArr) {
@@ -170,9 +190,11 @@ public class EdwardGarmentPriceGridParser {
 				
 				
 			}
+			//}
 			}catch(Exception e){
 				_LOGGER.error("Error while processing PriceGrid PriceConfiguration: "+e.getMessage());
 			}
+			
 			return priceConfiguration;
 		}
 

@@ -6,10 +6,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -48,7 +47,14 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class EdwardsGarmentMapping implements IExcelParser{
+public class EdwardsGarmentMappingRevised implements IExcelParser{
+
+	@Override
+	public String readExcel(String accessToken, Workbook workbook,
+			Integer asiNumber, int batchId, String environmentType) {
+		// TODO Auto-generated method stub
+		return null;
+	}/*
 	
 	private static final Logger _LOGGER = Logger.getLogger(EdwardsGarmentMapping.class);
 	
@@ -108,7 +114,6 @@ public class EdwardsGarmentMapping implements IExcelParser{
 		
 		HashMap<String , HashSet<String>> priceMap=new HashMap<String, HashSet<String>>();
 		HashMap<String , HashSet<String>> availMap=new HashMap<String, HashSet<String>>();
-		HashMap<String , String> sizeKeyValue=new HashMap<String, String>();
 		
 		String stockValue="";
 		int sizeCount=1;
@@ -158,10 +163,13 @@ while (iterator.hasNext()) {
 								}
 							//set sku here
 							 if(!CollectionUtils.isEmpty(skuSet)){
-								 String criteriaTwo="";
-									 criteriaTwo="Standard & Numbered"; 
+								 String criteriaTwo="Standard & Numbered";
+								 if(sizeCount==1){
+									 criteriaTwo="Apparel-Waist/Inseam";
+									 }
+								 
 							List<ProductSkus>	 listProductSkus=edwardsGarmentAttributeParser.getProductSkus(new ArrayList<String>(skuSet),"Product Color",criteriaTwo);
-						    productExcelObj.setProductRelationSkus(listProductSkus);
+							 productExcelObj.setProductRelationSkus(listProductSkus);
 							 }
 							//process colors here
 							 
@@ -186,10 +194,11 @@ while (iterator.hasNext()) {
 									 Apparel apparelObj = new Apparel();
 									 Size sizeObj=new Size();
 									 List<Value> listOfValue = edwardsGarmentAttributeParser.getApparelValuesObj(new ArrayList<String>(setSizes));
-									 String criteriaTwo="";
-									 criteriaTwo="Standard & Numbered"; 
-									 apparelObj.setType("Standard & Numbered");
-									 
+									 if(sizeCount==1){
+										apparelObj.setType("Apparel-Waist/Inseam");
+									 }else{
+										 apparelObj.setType("Standard & Numbered");
+									 }
 									 if(!CollectionUtils.isEmpty(listOfValue)){
 										apparelObj.setValues(listOfValue);
 										sizeObj.setApparel(apparelObj);
@@ -207,9 +216,9 @@ while (iterator.hasNext()) {
 									}
 									
 							// process pring here
-								/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
+								priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 										         listOfQuantity.toString(), priceCode, "USD",
-										         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/
+										         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);
 								 if(!CollectionUtils.isEmpty(priceMap)){
 									 List<Price> listOfPricesArr=new ArrayList<Price>();
 									 priceGrids = new ArrayList<PriceGrid>();
@@ -222,20 +231,9 @@ while (iterator.hasNext()) {
 										  //CommonUtility.getValuesOfArray(listOfsizes.toArray().toString(), ",");
 										   String sizeValue = String.join(",", listOfsizes);
 										   if(!StringUtils.isEmpty(sizeValue) && !sizeValue.equals("0")){
-											   // ihave to work on grid name for this
-											   /*
-											   (String listOfPrices, String listOfQuan, String discountCodes,
-														String currency, String priceInclude, boolean isBasePrice,
-														String qurFlag, String priceName, String criterias,Integer sequence,
-														List<PriceGrid> existingPriceGrid) */
-											   String tempCriteriaValues[]=sizeValue.split(",");//criterValue
-											   for (String criterias : tempCriteriaValues) {
-												   if(criterias.contains("___")){
-													   priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
-																 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
-																 ApplicationConstants.CONST_STRING_FALSE,criterias,criterias,1,priceGrids);
-												   }
-											   }
+										   priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
+													 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
+													 ApplicationConstants.CONST_STRING_FALSE,sizeValue,"Size",1,priceGrids);
 										   }else{
 											  
 											   priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
@@ -262,8 +260,8 @@ while (iterator.hasNext()) {
 							    productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 //	if(Prod_Status = false){
-							 /*	_LOGGER.info("Product Data : "
-										+ mapperObj.writeValueAsString(productExcelObj));*/
+							 	_LOGGER.info("Product Data : "
+										+ mapperObj.writeValueAsString(productExcelObj));
 								
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	if(num ==1){
@@ -293,7 +291,6 @@ while (iterator.hasNext()) {
 						         priceSet=new HashSet<String>();
 						         priceMap=new HashMap<String, HashSet<String>>();
 						         availMap=new HashMap<String, HashSet<String>>();
-						 		 sizeKeyValue=new HashMap<String, String>();
 						         firstValue="";
 						         sizeCount=1;
 						 }
@@ -367,61 +364,65 @@ while (iterator.hasNext()) {
 				    	if(StringUtils.isEmpty(stockValue)){
 				    		stockValue="BBBBB";
 				    	}
-				    	if(!StringUtils.isEmpty(size1) && (!StringUtils.isEmpty(size2)) && !size1.equals("0") && !size2.equals("0")){
+				    	if(!StringUtils.isEmpty(size1) && (!StringUtils.isEmpty(size2))){
 							String tempStr="";
 							size1=size1.trim();
 							size2=size2.trim();
+							 if(checkSize2(size2)){
 								 sizeCount++;
-								 if(size2.equals("T")){
-									 tempStr=size1+size2;
-								 }else{
-									 tempStr=size1+"x"+size2;
-								 }
+								tempStr=size1+size2;
 								tempStr=tempStr.replaceAll(" ","");
 								setSizes.add(tempStr);
 								skuSet.add(tempStr+"_____"+colorValueTemp+"_____"+stockValue);
-								priceMap=getPriceMap(priceMap, listPrice, "Size"+":"+tempStr+"___"+"Product Color"+":"+colorValueTemp);//	//getPriceMap(priceMap, listPrice, tempStr);
+								priceMap=	getPriceMap(priceMap, listPrice, tempStr);
 								 if(!StringUtils.isEmpty(tempStr) && !tempStr.equals("0")){
 								availMap=getAvailMap(availMap,colorValueTemp,tempStr);
 								 }
+								
+							}else if(containsOnlyNumbers(size2)){
+								//if(size1.equals(size2)){
+									size1=size1+"x"+size2;
+									setSizes.add(size1);
+									skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
+									//priceSet.add(size1+"_____"+listPrice);
+									priceMap=	getPriceMap(priceMap, listPrice, size1);
+									 if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
+									availMap=getAvailMap(availMap,colorValueTemp,size1);
+									 }
+								
+							}else{
+								sizeCount++;
+								setSizes.add(size1);
+								skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
+								//priceSet.add(size1+"_____"+listPrice);
+								priceMap=	getPriceMap(priceMap, listPrice, size1);
+								 if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
+								availMap=getAvailMap(availMap,colorValueTemp,size1);
+								 }
+							}
 						}else{
-							if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
-							sizeCount++;
+							if(!StringUtils.isEmpty(size1)){
+								sizeCount++;
 							setSizes.add(size1.trim());
 							skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
-							//priceMap=	getPriceMap(priceMap, listPrice, size1+"#####"+colorValueTemp);
-							priceMap=	getPriceMap(priceMap, listPrice, "Size"+":"+size1+"___"+"Product Color"+":"+colorValueTemp);//
+							priceMap=	getPriceMap(priceMap, listPrice, size1);
 							 if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
 							availMap=getAvailMap(availMap,colorValueTemp,size1);
 							 }
 							//priceSet.add(size1+"_____"+listPrice);
-							}else{
-								if(!StringUtils.isEmpty(size2) && !size2.equals("0")){
-									sizeCount++;
-									setSizes.add(size2.trim());
-									skuSet.add(size2+"_____"+colorValueTemp+"_____"+stockValue);
-									//priceMap=	getPriceMap(priceMap, listPrice, size1+"#####"+colorValueTemp);
-									priceMap=	getPriceMap(priceMap, listPrice, "Size"+":"+size2+"___"+"Product Color"+":"+colorValueTemp);//
-									 if(!StringUtils.isEmpty(size2) && !size2.equals("0")){
-									availMap=getAvailMap(availMap,colorValueTemp,size2);
-									 }
-									//priceSet.add(size1+"_____"+listPrice);
-									}
 							}
 						}
 				    	break;
 				    case  10://Size2
 				    	//size2=CommonUtility.getCellValueStrinOrInt(cell);
-				    	/*if(StringUtils.isEmpty(size2)){
+				    	if(StringUtils.isEmpty(size2)){
 				    	
-				    	}*/
+				    	}
 				    	
 				    	break;
 				    case  11://ProdName
 				    	productName = CommonUtility.getCellValueStrinOrInt(cell);
 				    	if(!StringUtils.isEmpty(productName)){
-				    		productName=productName.replace("EDWARDS", "");
-				    		//EDWARDS
 						int len=productName.length();
 						 if(len>60){
 							String strTemp=productName.substring(0, 60);
@@ -465,32 +466,17 @@ while (iterator.hasNext()) {
 				    case  19://KeyWords
 				    	String keywords = CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(keywords)){
-							 keywords=keywords.replace("EDWARDS", "");
 							 keywords=keywords.replace(" ", ",");
 							 List<String> listOfKeywords = new ArrayList<String>();
 						String tempKeyWrd[]=keywords.split(ApplicationConstants.CONST_DELIMITER_COMMA);
 						listOfKeywords=Arrays.asList(tempKeyWrd);
-						 List<String> listOfKeywords1 = new ArrayList<String>();
-						 for (String string : listOfKeywords) {
-								if((listOfKeywords1.size()<30)){
-									string=string.replace("//", "");//\
-									string=string.replace("\\", "");//\
-									listOfKeywords1.add(string);
-								}else{
-									break;
-								}
-								}
-							
-						productExcelObj.setProductKeywords(listOfKeywords1);
+						productExcelObj.setProductKeywords(listOfKeywords);
 						 }
 				    	break;
 				    case  20://StyleDescription1 // i need to work more on this field
 				    	String description =CommonUtility.getCellValueStrinOrInt(cell);
-				    	if(!StringUtils.isEmpty(description)){
 						//description = CommonUtility.removeSpecialSymbols(description,specialCharacters);
 				    	//description=CommonUtility.removeRestrictSymbols(description);
-				    	description=description.replace("EDWARDS", "");//Edwards
-				    	description=description.replace("Edwards", "");//Edwards
 				    	description = description.replaceAll("\\<.*?\\> ?", "");
 				    	description=removeSpecialChar(description);
 						int length=description.length();
@@ -500,13 +486,10 @@ while (iterator.hasNext()) {
 							description=(String) strTemp.subSequence(0, lenTemp);
 						}
 						productExcelObj.setDescription(description);
-				    	}
 				    	break;
 				    case  21://StyleDescription2
 				    	String summary = CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(summary)){
-						summary=summary.replace("EDWARDS", "");
-						summary=summary.replace("Edwards", "");//Edwards
 						productExcelObj.setSummary(summary);
 						 }
 				    	break;
@@ -530,8 +513,6 @@ while (iterator.hasNext()) {
 				    case  24://ShortDescription
 				    	productName = CommonUtility.getCellValueStrinOrInt(cell);
 				    	if(!StringUtils.isEmpty(productName)){
-				    		productName=productName.replace("EDWARDS", "");
-				    		productName=productName.replace("Edwards", "");//Edwards
 				    		String temp="";
 				    		if(!StringUtils.isEmpty(productExcelObj.getName())){
 				    			temp=productExcelObj.getName();
@@ -612,7 +593,46 @@ while (iterator.hasNext()) {
 				    	break;
 				}  // end inner while loop
 				
-			}
+				
+				if(!StringUtils.isEmpty(size1) && (!StringUtils.isEmpty(size2))){
+					String tempStr="";
+					size1=size1.trim();
+					size2=size2.trim();
+					 if(checkSize2(size2)){
+						tempStr=size1+size2;
+						tempStr=tempStr.replaceAll(" ","");
+						setSizes.add(tempStr);
+					}else if(containsOnlyNumbers(size2)){
+						if(size1.equals(size2)){
+							setSizes.add(size1);
+						}else{
+							tempStr=size1+"-"+size2;
+							tempStr=tempStr.replaceAll(" ","");
+							setSizes.add(tempStr);
+						}
+						
+					}else{
+						setSizes.add(size1);
+					}
+				}else{
+					setSizes.add(size1.trim());
+				}
+				size1="";
+				size2="";
+			}// set  product configuration objects
+		 // end inner while loop
+			
+			//ShippingEstimate // i have to work on this thing as well for empty ship obj
+		 // if any configurations come they will be here
+			productExcelObj.setPriceType("L");
+			// i have to process  pricingover here
+			 	productExcelObj.setPriceGrids(priceGrids);
+			 	materiallist = new ArrayList<Material>();	
+			 	criteriaFlag=false;
+			 	listOfPrices=new StringBuilder();
+			 	listOfQuantity=new StringBuilder();
+			 	pricesPerUnit=new StringBuilder();
+			 	 pricesPerUnit=new StringBuilder();
 			     
 			}catch(Exception e){
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() +"at column+1="+columnIndex);		 
@@ -627,10 +647,12 @@ while (iterator.hasNext()) {
 			}
 		//set sku here
 		 if(!CollectionUtils.isEmpty(skuSet)){
-			 String criteriaTwo="";
-				 criteriaTwo="Standard & Numbered"; 
+			 String criteriaTwo="Standard & Numbered";
+			 if(sizeCount==1){
+				 criteriaTwo="Apparel-Waist/Inseam";
+				 }
 		List<ProductSkus>	 listProductSkus=edwardsGarmentAttributeParser.getProductSkus(new ArrayList<String>(skuSet),"Product Color",criteriaTwo);
-	    productExcelObj.setProductRelationSkus(listProductSkus);
+		 productExcelObj.setProductRelationSkus(listProductSkus);
 		 }
 		//process colors here
 		 
@@ -641,70 +663,58 @@ while (iterator.hasNext()) {
 			if(!CollectionUtils.isEmpty(availMap)){
 				HashMap<String , HashSet<String>> availMapTemp=new HashMap<String, HashSet<String>>();
 				availMapTemp=(HashMap)availMap.clone();
-		boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
-		
-		if(flag){
-		List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availMap);
-		productExcelObj.setAvailability(listOfAvailablity);
-		_LOGGER.info("Availability done for product:"+productExcelObj.getExternalProductId());
-		}else{
-			_LOGGER.info("No Availability detected for product:"+productExcelObj.getExternalProductId());
-		}
-			}
+				boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
+				if(flag){
+				List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availMap);
+				productExcelObj.setAvailability(listOfAvailablity);
+				_LOGGER.info("Availability done for product:"+productExcelObj.getExternalProductId());
+				}else{
+					_LOGGER.info("No Availability detected for product:"+productExcelObj.getExternalProductId());
+				}
+					}
 			 if(!CollectionUtils.isEmpty(setSizes)){
 				 Apparel apparelObj = new Apparel();
 				 Size sizeObj=new Size();
 				 List<Value> listOfValue = edwardsGarmentAttributeParser.getApparelValuesObj(new ArrayList<String>(setSizes));
-				 String criteriaTwo="";
-				 criteriaTwo="Standard & Numbered"; 
-				 apparelObj.setType("Standard & Numbered");
-				 
+				 if(sizeCount==1){
+						apparelObj.setType("Apparel-Waist/Inseam");
+					 }else{
+						 apparelObj.setType("Standard & Numbered");
+					 }
 				 if(!CollectionUtils.isEmpty(listOfValue)){
 					apparelObj.setValues(listOfValue);
 					sizeObj.setApparel(apparelObj);
-				productConfigObj.setSizes(sizeObj);
+					productConfigObj.setSizes(sizeObj);
 				 }
+					
 				}
+			 if(CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
+				 List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+				 ImprintMethod	imprintMethodObj = new ImprintMethod();	
+				imprintMethodObj.setType("UNIMPRINTED");
+				imprintMethodObj.setAlias("UNIMPRINTED");
+				listOfImprintMethod.add(imprintMethodObj);
+				productConfigObj.setImprintMethods(listOfImprintMethod);
+			}
 			
-				if(CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
-					 List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
-					 ImprintMethod	imprintMethodObj = new ImprintMethod();	
-					imprintMethodObj.setType("UNIMPRINTED");
-					imprintMethodObj.setAlias("UNIMPRINTED");
-					listOfImprintMethod.add(imprintMethodObj);
-					productConfigObj.setImprintMethods(listOfImprintMethod);
-				}
-				
 		// process pring here
-			/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
+			priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 					         listOfQuantity.toString(), priceCode, "USD",
-					         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/
+					         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);
 			 if(!CollectionUtils.isEmpty(priceMap)){
 				 List<Price> listOfPricesArr=new ArrayList<Price>();
 				 priceGrids = new ArrayList<PriceGrid>();
 				 PriceGrid priceGrid = new PriceGrid();
 				 for (Entry<String, HashSet<String>> values : priceMap.entrySet()) {
-					 
 					   String priceVal= values.getKey();
 					   HashSet<String> tempSet=values.getValue();
 					   ArrayList<String> listOfsizes=new ArrayList<String>(tempSet);
 					  //CommonUtility.getValuesOfArray(listOfsizes.toArray().toString(), ",");
 					   String sizeValue = String.join(",", listOfsizes);
 					   if(!StringUtils.isEmpty(sizeValue) && !sizeValue.equals("0")){
-						   // ihave to work on grid name for this
-						   /*
-						   (String listOfPrices, String listOfQuan, String discountCodes,
-									String currency, String priceInclude, boolean isBasePrice,
-									String qurFlag, String priceName, String criterias,Integer sequence,
-									List<PriceGrid> existingPriceGrid) */
-						   String tempCriteriaValues[]=sizeValue.split(",");//criterValue
-						   for (String criterias : tempCriteriaValues) {
-							   if(criterias.contains("___")){
-								   priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
-											 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
-											 ApplicationConstants.CONST_STRING_FALSE,criterias,criterias,1,priceGrids);
-							   }
-						   }
+					   priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
+								 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
+								 ApplicationConstants.CONST_STRING_FALSE,sizeValue,"Size",1,priceGrids);
 					   }else{
 						  
 						   priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
@@ -713,7 +723,7 @@ while (iterator.hasNext()) {
 							priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_FALSE);
 							priceGrid.setIsBasePrice(true);
 							priceGrid.setSequence(1);
-							List<Price> listOfPrice = new ArrayList<Price>();
+							List<Price> listOfPrice = null;
 							//if (!priceGrid.getIsQUR()) {
 							listOfPrice = EdwardGarmentPriceGridParser.getSinlgePrices(priceVal, "1", "P",listOfPrice);
 							priceGrid.setPrices(listOfPrice);
@@ -722,17 +732,16 @@ while (iterator.hasNext()) {
 						   
 					   }
 					}
-			}
+			 }
 				 
 				 if(CollectionUtils.isEmpty(priceGrids)){
 						priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur();	
 					}
-			productExcelObj.setPriceType("L");
 		    productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
-		 	//productExcelObj.setPriceType("L");
-		 	/*_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(productExcelObj));*/
+		 	productExcelObj.setPriceType("L");
+		 	_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(productExcelObj));
 		 	//if(Prod_Status = false){
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
@@ -761,7 +770,6 @@ while (iterator.hasNext()) {
 	         priceSet=new HashSet<String>();
 	         priceMap=new HashMap<String, HashSet<String>>();
 	         availMap=new HashMap<String, HashSet<String>>();
-	         sizeKeyValue=new HashMap<String, String>();
 	         firstValue="";
 	         sizeCount=1;
 	         repeatRows.clear();
@@ -830,52 +838,24 @@ public boolean isRepeateColumn(int columnIndex){
 		return postServiceImpl;
 	}
 	
-	 public static boolean containsOnlyNumbers(String size1,String size2) {
+	 public static boolean containsOnlyNumbers(String str) {
 	        
 	        //It can't contain only numbers if it's null or empty...
-	        if (size1 == null || size1.length() == 0)
+	        if (str == null || str.length() == 0)
 	            return false;
 	        
-	        for (int i = 0; i < size1.length(); i++) {
+	        for (int i = 0; i < str.length(); i++) {
 	 
 	            //If we find a non-digit character we return false.
-	            if (!Character.isDigit(size1.charAt(i)))
-	                return false;
-	        }
-	        
-	        
-	        
-	        //It can't contain only numbers if it's null or empty...
-	        if (size2 == null || size2.length() == 0)
-	            return false;
-	        
-	        for (int i = 0; i < size2.length(); i++) {
-	 
-	            //If we find a non-digit character we return false.
-	            if (!Character.isDigit(size2.charAt(i)))
+	            if (!Character.isDigit(str.charAt(i)))
 	                return false;
 	        }
 	        
 	        return true;
 	    }
-	 
-	 public static boolean checkAlphabetic(String size1,String size2) {
-		    for (int i = 0; i != size1.length(); ++i) {
-		        if (!Character.isLetter(size1.charAt(i))) {
-		            return false;
-		        }
-		    }
-		    
-		    for (int i = 0; i != size2.length(); ++i) {
-		        if (!Character.isLetter(size2.charAt(i))) {
-		            return false;
-		        }
-		    }
-		    return true;
-		}
 	 public static boolean checkSize2(String str)
 	 {
-	     String[] words = {"T", "R", "UL","UR","S","L","X"};  
+	     String[] words = {"T", "R", "UL","UR"};  
 	     return (Arrays.asList(words).contains(str));
 	 }
 
@@ -1038,4 +1018,4 @@ public boolean isRepeateColumn(int columnIndex){
 		_LOGGER.info("PriceGrid Processed");
 		return newPriceGrid;
 }
-}
+*/}

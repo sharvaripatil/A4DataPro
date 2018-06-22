@@ -147,7 +147,6 @@ public List<Color> getProductColors(List<String> colorListValue){
 					} else{
 						String colorComboFirstName = EdwardGarmentConstants.getColorGroup(comboColors[1].trim());
 						colorComboFirstName = colorComboFirstName == null?"Other":colorComboFirstName;
-						
 						String colorComboSecondName = EdwardGarmentConstants.getColorGroup(comboColors[2].trim());
 						colorComboSecondName = colorComboSecondName == null?"Other":colorComboSecondName;
 						listOfCombo = getColorsCombo(colorComboFirstName,colorComboSecondName, combosSize);
