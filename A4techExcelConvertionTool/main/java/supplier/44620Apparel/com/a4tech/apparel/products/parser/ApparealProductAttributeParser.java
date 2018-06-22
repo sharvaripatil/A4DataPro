@@ -16,6 +16,7 @@ import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
@@ -435,7 +436,11 @@ public class ApparealProductAttributeParser {
 		ProductConfigurations newConfig = new ProductConfigurations();
 		ProductConfigurations oldConfig = existingProduct.getProductConfigurations();
 		if(!CollectionUtils.isEmpty(existingProduct.getImages())){
-			newProduct.setImages(existingProduct.getImages());
+			List<Image> listOfImages = existingProduct.getImages().stream().map(image ->{
+				image.setConfigurations(new ArrayList<>());
+				return image;
+			}).collect(Collectors.toList());
+			newProduct.setImages(listOfImages);
 		}
 		if(!StringUtils.isEmpty(existingProduct.getSummary())){
 			newProduct.setSummary(existingProduct.getSummary());
