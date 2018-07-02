@@ -39,7 +39,7 @@
 		<constructor-arg>
 			<bean
 				class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory"
-				p:readTimeout="200000" p:connectTimeout="200000" />
+				p:readTimeout="12000000" p:connectTimeout="12000000" />
 		</constructor-arg>
 	</bean>
     <bean id="lookupDataId" class="com.a4tech.util.LookupData">

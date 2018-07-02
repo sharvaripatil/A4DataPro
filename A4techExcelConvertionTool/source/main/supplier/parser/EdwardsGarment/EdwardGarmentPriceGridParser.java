@@ -15,24 +15,31 @@ import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
 public class EdwardGarmentPriceGridParser {
 	private static Logger              _LOGGER       =  Logger.getLogger(TomaxPriceGridParser.class);
     public List<PriceGrid> getPriceGrids(String listOfPrices, String listOfQuan, String discountCodes,
 				String currency, String priceInclude, boolean isBasePrice,
-				String qurFlag, String priceName, String criterias,Integer sequence,
-				List<PriceGrid> existingPriceGrid) 
+				String qurFlag, String priceName,String cri1,String cri2, ArrayList<String> listOfsizes,Integer sequence,
+				List<PriceGrid> existingPriceGrid) // ArrayList<String> listOfsizes //String criterias
 				{
 			try{
 			//Integer sequence = 1;
 				String tempName=priceName;
 				if(!StringUtils.isEmpty(tempName)){
-					if(tempName.contains("___")){//Size:S___Product Color:BLACK
+						String arrValues[]=tempName.split(":");
+						String tempStr=arrValues[1];
+					if(tempName.contains(":")){//Size:S___Product Color:BLACK
 						tempName=tempName.replace(":", "");
 						tempName=tempName.replace("Size", "");
 						tempName=tempName.replace("Product Color", "");
 						tempName=tempName.replace("___", ",");
+					}
+					
+					for (String string : listOfsizes) {
+						tempName=tempName+","+string;
 					}
 					
 					
@@ -75,14 +82,15 @@ public class EdwardGarmentPriceGridParser {
 				listOfPrice = new ArrayList<Price>();
 			}
 			priceGrid.setPrices(listOfPrice);
-			if (criterias != null && !criterias.isEmpty()) {
+			//if (criterias != null && !criterias.isEmpty()) {
+				 if(!CollectionUtils.isEmpty(listOfsizes)){
 				//configuration = getConfigurations(criterias+":"+priceName);//because over here pricename & criteria value is same
 				
-				if(criterias.contains("___")){
-				configuration = getConfigurations(criterias);//because over here pricename & criteria value is same
-				}else{
-					configuration = getConfigurations(criterias+":"+priceName);
-				}
+				//if(criterias.contains("___")){
+				configuration = getConfigurations(priceName,listOfsizes);//because over here pricename & criteria value is same
+				//}//else{
+					//configuration = getConfigurations(criterias+":"+priceName);
+				//}*/
 			}
 			priceGrid.setPriceConfigurations(configuration);
 			existingPriceGrid.add(priceGrid);
@@ -131,7 +139,7 @@ public class EdwardGarmentPriceGridParser {
 			return listOfPrices;
 		}
 		
-		public List<PriceConfiguration> getConfigurations(String criterias) {
+		public List<PriceConfiguration> getConfigurations(String firstCriteria,ArrayList<String> listOfsizes) {
 			List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
 			String[] config = null;
 			PriceConfiguration configs = null;
@@ -139,8 +147,16 @@ public class EdwardGarmentPriceGridParser {
 				//String tempCriteriaValues[]=criterValue.split(",");//criterValue
 				// i have to give here for each for comma value
 				//for (String criterias : tempCriteriaValues) {
-					
 				
+				if(!StringUtils.isEmpty(firstCriteria)){
+					String arrValues[]=firstCriteria.split(":");
+					PriceConfiguration oneConfig = new PriceConfiguration();
+					oneConfig.setCriteria(arrValues[0]);
+					oneConfig.setValue(Arrays.asList((Object) arrValues[1]));
+					priceConfiguration.add(oneConfig);
+				}
+				
+			for (String criterias : listOfsizes) {
 			if (criterias
 					.contains(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID)) {
 				String[] configuraions = criterias
@@ -166,8 +182,13 @@ public class EdwardGarmentPriceGridParser {
 					}
 				}
 			//}
-			} else {
+			}else{
+				
 				configs = new PriceConfiguration();
+				configs.setCriteria("Size");
+				configs.setValue(Arrays.asList((Object) criterias));
+				priceConfiguration.add(configs);
+				/*configs = new PriceConfiguration();
 				config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
 				//String criteriaValue = LookupData.getCriteriaValue(config[0]);
 				//String criteriaValue =config[0];
@@ -178,17 +199,18 @@ public class EdwardGarmentPriceGridParser {
 						configs.setCriteria(config[0]);
 						configs.setValue(Arrays.asList((Object) Value));
 						priceConfiguration.add(configs);
-					}
+					}*/
 					
-				}else{
+				/*}else{
 
 					configs.setCriteria(config[0]);
 					configs.setValue(Arrays.asList((Object) config[1]));
 					priceConfiguration.add(configs);
-				}
+				}*/
 				
 				
 				
+			}
 			}
 			//}
 			}catch(Exception e){
