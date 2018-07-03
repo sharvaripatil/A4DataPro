@@ -433,6 +433,7 @@
 		<property name="sportUSAMapping" ref="sportUSAMappingId"/>
 		<property name="sportAzxCandMapping" ref="sportAzxCandMappingId"/>
 		<property name="digiSpecMapping" ref="digiSpecMappingId"/>
+		<property name="douglasBridgeMapper" ref="douglasMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1294,5 +1295,20 @@
       
       <bean id="digiSpecPriceGridParserId" class="parser.digiSpec.DigiSpecPriceGridParser"></bean>
        <!-- supplier DIGISPEC 49716 configuration End -->
+       
+       <!-- 50710 Douglasbridge configuration start-->
+     <bean id="douglasMappingId" class="com.a4tech.supplier.mapper.DouglasBridgeMapper">
+     	 <property name="postServiceImpl" ref="postService"/>
+     	 <property name="productDaoObj" ref="productDao"/>
+     	 <property name="douglasBridgeAttributeParser" ref="douglasBridgeAttributeParserId"/>
+     	 <property name="douglasBridgePriceGridParser" ref="douglasBridgepriceGridParserId"/>
+     </bean>
+     <bean id="douglasBridgeAttributeParserId" class="parser.DouglasBridge.DouglasBridgeAttributeParser">
+     	<property name="douglasBridgePriceGridParser" ref="douglasBridgepriceGridParserId"/>
+     	<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     </bean>
+     <bean id="douglasBridgepriceGridParserId" class="parser.DouglasBridge.DouglasBridgePriceGridParser"/>
+      <!-- 50710 Douglasbridge configuration end-->
+ 
 </beans>
 
