@@ -1,9 +1,11 @@
 package parser.DouglasBridge;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -410,16 +412,20 @@ public class DouglasBridgeAttributeParser {
 		return additionalColorList;
 	}
 	public List<String> getProductKeywords(String keyword){
-		String[] keywords = CommonUtility.getValuesOfArray(keyword, ApplicationConstants.CONST_STRING_COMMA_SEP);
-		keywords = CommonUtility.removeDuplicateValues(keywords);
+		//String[] keywords = CommonUtility.getValuesOfArray(keyword, ApplicationConstants.CONST_STRING_COMMA_SEP);
+		//Stream<String> keys = Arrays.stream(CommonUtility.getValuesOfArray(keyword, ApplicationConstants.CONST_STRING_COMMA_SEP));
+		List<String> keyWordList = Arrays
+				.stream(CommonUtility.getValuesOfArray(keyword, ApplicationConstants.CONST_STRING_COMMA_SEP))
+				.map(key -> key).distinct().limit(30).collect(Collectors.toList());
+		/*keywords = CommonUtility.removeDuplicateValues(keywords);
 		List<String> productKeyWords = new ArrayList<>();
 		for (String keywordName : keywords) {
 			if(keywordName.contains("®")){
 				keywordName = keywordName.replaceAll("®", "").trim();
 			}
 		   productKeyWords.add(keywordName);	
-		}
-		return productKeyWords;
+		}*/
+		return keyWordList;
 	}
 	public List<FOBPoint> getFobPoint(final String  value,String authToken,String environment){
 		List<FOBPoint> listOfFobPoint = new ArrayList<>();

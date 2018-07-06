@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -21,6 +22,7 @@ import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.FOBPoint;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
@@ -120,6 +122,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 	   Map<String, String>  imprintMethodUpchargeMap = new LinkedHashMap<>();
 	   String xid = null;
 	   StringBuilder themesValues = new StringBuilder();
+	   StringBuilder keywords = new StringBuilder();
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
@@ -159,21 +162,80 @@ public class DouglasBridgeMapper implements IExcelParser{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 7){
 							 System.out.println("Java object converted to JSON String, written to file");
-							   if(CollectionUtils.isEmpty(listOfImprintMethods)){
-								   listOfImprintMethods = douglasBridgeAttributeParser.getImprintMethodValues(listOfImprintMethods, "Printed");
-							   }
+							 
+							 ///////////////////
+							 ProductProcessedList.add(productExcelObj.getExternalProductId());
+								productExcelObj.setPriceType("L");
+								if(CollectionUtils.isEmpty(listOfImprintMethods)){
+									   listOfImprintMethods = douglasBridgeAttributeParser.getImprintMethodValues(listOfImprintMethods, "Unimprinted");
+								   }
+								if(!StringUtils.isEmpty(dimensionValue.toString())){
+									Size productSize = douglasBridgeAttributeParser.getProductSize(dimensionValue.toString(),
+							                dimensionUnits.toString(), dimensionType.toString());
+									productConfigObj.setSizes(productSize);
+								}
+								if(!CollectionUtils.isEmpty(themeList)){
+									productConfigObj.setThemes(themeList);
+								}
+								imprintSizeList=douglasBridgeAttributeParser.getimprintsize(ImprintSizevalue);
+								if(FirstImprintsize1 != "" || FirstImprintsize2 !="" ||
+										SecondImprintsize1 != "" ||	SecondImprintsize2 !=""){
+								productConfigObj.setImprintSize(imprintSizeList);}
+										ShippingEstimate shippingEstimation = douglasBridgeAttributeParser
+												.getShippingEstimateValues(shippingDimensions.toString(), weightPerCarton, unitsPerCarton);
+										productConfigObj.setShippingEstimates(shippingEstimation);
+								if(listOfPrices != null && !listOfPrices.toString().isEmpty()){
+									priceGrids = douglasBridgePriceGridParser.getBasePriceGrids(listOfPrices.toString(), 
+											         listOfQuantity.toString(), priceCode, "USD",
+											         priceIncludesValue, true, quoteUponRequest, productName,"",priceGrids);
+								} else {
+									priceGrids = douglasBridgePriceGridParser.getBasePriceGrids(listOfPrices.toString(), 
+									         listOfQuantity.toString(), priceCode, "USD",
+									         priceIncludesValue, true, "true", productName,"",priceGrids);
+								}
+								    if(!imprintMethodUpchargeMap.isEmpty()){
+								    	priceGrids = douglasBridgeAttributeParser.getImprintMethodUpcharges(imprintMethodUpchargeMap,
+					                            listOfImprintMethods, priceGrids);
+								    }
+										
+										List<AdditionalColor> additionalColorList = null;
+									if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
+										 additionalColorList = douglasBridgeAttributeParser.getAdditionalColor("Additional Color");
+											priceGrids = douglasBridgeAttributeParser.getAdditionalColorUpcharge(additionalClrRunChrgCode,
+													additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge");
+											productConfigObj.setAdditionalColors(additionalColorList);
+									}
+									if(!StringUtils.isEmpty(additionalColorPriceVal) && !additionalColorPriceVal.equals("0")){
+										if(additionalColorList == null){
+											additionalColorList = douglasBridgeAttributeParser.getAdditionalColor("Additional Color");
+											productConfigObj.setAdditionalColors(additionalColorList);
+										}
+										priceGrids = douglasBridgeAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
+												   additionalColorPriceVal, priceGrids,"Add. Color Charge");
+									}
+							   
 							   themeList = douglasBridgeAttributeParser.getProductTheme(themesValues.toString());
 								 if(CollectionUtils.isEmpty(themeList)){// from supplier sheet 
 									 if(!CollectionUtils.isEmpty(productConfigObj.getThemes())){// check existing themes
 										 themeList =  productConfigObj.getThemes();
 									 }
 								 }
+								 List<String> keywordList = douglasBridgeAttributeParser.getProductKeywords(keywords.toString());
+								 productExcelObj.setProductKeywords(keywordList);
 							   productConfigObj.setThemes(themeList);
 							   productExcelObj.setAdditionalProductInfo(additionalPrdInfo.toString());
 							   productConfigObj.setImprintLocation(listImprintLocation);
 							   productConfigObj.setImprintMethods(listOfImprintMethods);
 								productExcelObj.setProductConfigurations(productConfigObj);
 								productExcelObj.setPriceGrids(priceGrids);
+								String name = productExcelObj.getName();
+								if(name.contains("Simply Smashing") && name.contains("Compressed T")){
+									productExcelObj.setName("Simply Smashing Compressed T-Shirt");
+								}
+								if(productExcelObj.getName().equals("Simply Smashing Compressed T-Shirt")){
+									List<Image> imageList = removeImageConfiguration(productExcelObj.getImages());
+									productExcelObj.setImages(imageList);
+								}
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	//ProductProcessedList.add(productExcelObj.getExternalProductId());
 							 	if(num ==1){
@@ -209,6 +271,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 						         additionalPrdInfo = new StringBuilder();
 						         repeatRows.clear();
 						         themesValues = new StringBuilder();
+						         keywords = new StringBuilder();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid.trim());
@@ -302,9 +365,11 @@ public class DouglasBridgeMapper implements IExcelParser{
 				case 13:  // keywords
 					String productKeyword = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(productKeyword)){
-								List<String> productKeyWords = douglasBridgeAttributeParser
+						productKeyword = productKeyword.trim();
+						keywords.append(productKeyword).append(",");
+						/*		List<String> productKeyWords = douglasBridgeAttributeParser
 										.getProductKeywords(productKeyword);
-					 productExcelObj.setProductKeywords(productKeyWords);
+					 productExcelObj.setProductKeywords(productKeyWords);*/
 					}
 					break;
 
@@ -693,8 +758,10 @@ public class DouglasBridgeMapper implements IExcelParser{
 					break;
 				case 92: // DecorationMethod 
 					decorationMethod = cell.getStringCellValue();
-							listOfImprintMethods = douglasBridgeAttributeParser
-									.getImprintMethodValues(decorationMethod);
+					if(!StringUtils.isEmpty(decorationMethod)){
+						listOfImprintMethods = douglasBridgeAttributeParser
+								.getImprintMethodValues(decorationMethod);
+					}
 					 break; 
 					 
 				case 93: //NoDecoration
@@ -864,65 +931,85 @@ public class DouglasBridgeMapper implements IExcelParser{
 			// set  product configuration objects
 			// end inner while loop
 			//it is store xid if once mapping completed 
-			ProductProcessedList.add(productExcelObj.getExternalProductId());
-			productExcelObj.setPriceType("L");
-			if(!StringUtils.isEmpty(dimensionValue.toString())){
-				Size productSize = douglasBridgeAttributeParser.getProductSize(dimensionValue.toString(),
-		                dimensionUnits.toString(), dimensionType.toString());
-				productConfigObj.setSizes(productSize);
-			}
-			if(!CollectionUtils.isEmpty(themeList)){
-				productConfigObj.setThemes(themeList);
-			}
-			imprintSizeList=douglasBridgeAttributeParser.getimprintsize(ImprintSizevalue);
-			if(FirstImprintsize1 != "" || FirstImprintsize2 !="" ||
-					SecondImprintsize1 != "" ||	SecondImprintsize2 !=""){
-			productConfigObj.setImprintSize(imprintSizeList);}
-					ShippingEstimate shippingEstimation = douglasBridgeAttributeParser
-							.getShippingEstimateValues(shippingDimensions.toString(), weightPerCarton, unitsPerCarton);
-					productConfigObj.setShippingEstimates(shippingEstimation);
-			if(listOfPrices != null && !listOfPrices.toString().isEmpty()){
-				priceGrids = douglasBridgePriceGridParser.getBasePriceGrids(listOfPrices.toString(), 
-						         listOfQuantity.toString(), priceCode, "USD",
-						         priceIncludesValue, true, quoteUponRequest, productName,"",priceGrids);
-			} else {
-				priceGrids = douglasBridgePriceGridParser.getBasePriceGrids(listOfPrices.toString(), 
-				         listOfQuantity.toString(), priceCode, "USD",
-				         priceIncludesValue, true, "true", productName,"",priceGrids);
-			}
-			    if(!imprintMethodUpchargeMap.isEmpty()){
-			    	priceGrids = douglasBridgeAttributeParser.getImprintMethodUpcharges(imprintMethodUpchargeMap,
-                            listOfImprintMethods, priceGrids);
-			    }
-					
-					List<AdditionalColor> additionalColorList = null;
-				if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
-					 additionalColorList = douglasBridgeAttributeParser.getAdditionalColor("Additional Color");
-						priceGrids = douglasBridgeAttributeParser.getAdditionalColorUpcharge(additionalClrRunChrgCode,
-								additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge");
-						productConfigObj.setAdditionalColors(additionalColorList);
-				}
-				if(!StringUtils.isEmpty(additionalColorPriceVal) && !additionalColorPriceVal.equals("0")){
-					if(additionalColorList == null){
-						additionalColorList = douglasBridgeAttributeParser.getAdditionalColor("Additional Color");
-						productConfigObj.setAdditionalColors(additionalColorList);
-					}
-					priceGrids = douglasBridgeAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
-							   additionalColorPriceVal, priceGrids,"Add. Color Charge");
-				}
+			
 			}catch(Exception e){
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
 		}
 		}
 		workbook.close();
-		 if(CollectionUtils.isEmpty(listOfImprintMethods)){
-			   listOfImprintMethods = douglasBridgeAttributeParser.getImprintMethodValues(listOfImprintMethods, "Printed");
+		/////////////////////
+		ProductProcessedList.add(productExcelObj.getExternalProductId());
+		productExcelObj.setPriceType("L");
+		if(CollectionUtils.isEmpty(listOfImprintMethods)){
+			   listOfImprintMethods = douglasBridgeAttributeParser.getImprintMethodValues(listOfImprintMethods, "Unimprinted");
 		   }
-		 productExcelObj.setAdditionalProductInfo(additionalPrdInfo.toString());
-		 productConfigObj.setImprintLocation(listImprintLocation);
+		if(!StringUtils.isEmpty(dimensionValue.toString())){
+			Size productSize = douglasBridgeAttributeParser.getProductSize(dimensionValue.toString(),
+	                dimensionUnits.toString(), dimensionType.toString());
+			productConfigObj.setSizes(productSize);
+		}
+		if(!CollectionUtils.isEmpty(themeList)){
+			productConfigObj.setThemes(themeList);
+		}
+		imprintSizeList=douglasBridgeAttributeParser.getimprintsize(ImprintSizevalue);
+		if(FirstImprintsize1 != "" || FirstImprintsize2 !="" ||
+				SecondImprintsize1 != "" ||	SecondImprintsize2 !=""){
+		productConfigObj.setImprintSize(imprintSizeList);}
+				ShippingEstimate shippingEstimation = douglasBridgeAttributeParser
+						.getShippingEstimateValues(shippingDimensions.toString(), weightPerCarton, unitsPerCarton);
+				productConfigObj.setShippingEstimates(shippingEstimation);
+		if(listOfPrices != null && !listOfPrices.toString().isEmpty()){
+			priceGrids = douglasBridgePriceGridParser.getBasePriceGrids(listOfPrices.toString(), 
+					         listOfQuantity.toString(), priceCode, "USD",
+					         priceIncludesValue, true, quoteUponRequest, productName,"",priceGrids);
+		} else {
+			priceGrids = douglasBridgePriceGridParser.getBasePriceGrids(listOfPrices.toString(), 
+			         listOfQuantity.toString(), priceCode, "USD",
+			         priceIncludesValue, true, "true", productName,"",priceGrids);
+		}
+		    if(!imprintMethodUpchargeMap.isEmpty()){
+		    	priceGrids = douglasBridgeAttributeParser.getImprintMethodUpcharges(imprintMethodUpchargeMap,
+                        listOfImprintMethods, priceGrids);
+		    }
+				
+				List<AdditionalColor> additionalColorList = null;
+			if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
+				 additionalColorList = douglasBridgeAttributeParser.getAdditionalColor("Additional Color");
+					priceGrids = douglasBridgeAttributeParser.getAdditionalColorUpcharge(additionalClrRunChrgCode,
+							additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge");
+					productConfigObj.setAdditionalColors(additionalColorList);
+			}
+			if(!StringUtils.isEmpty(additionalColorPriceVal) && !additionalColorPriceVal.equals("0")){
+				if(additionalColorList == null){
+					additionalColorList = douglasBridgeAttributeParser.getAdditionalColor("Additional Color");
+					productConfigObj.setAdditionalColors(additionalColorList);
+				}
+				priceGrids = douglasBridgeAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
+						   additionalColorPriceVal, priceGrids,"Add. Color Charge");
+			}
+		/////////////
+			themeList = douglasBridgeAttributeParser.getProductTheme(themesValues.toString());
+			 if(CollectionUtils.isEmpty(themeList)){// from supplier sheet 
+				 if(!CollectionUtils.isEmpty(productConfigObj.getThemes())){// check existing themes
+					 themeList =  productConfigObj.getThemes();
+				 }
+			 }
+			 List<String> keywordList = douglasBridgeAttributeParser.getProductKeywords(keywords.toString());
+			 productExcelObj.setProductKeywords(keywordList);
+		   productConfigObj.setThemes(themeList);
+		   productExcelObj.setAdditionalProductInfo(additionalPrdInfo.toString());
+		   productConfigObj.setImprintLocation(listImprintLocation);
 		   productConfigObj.setImprintMethods(listOfImprintMethods);
-		 	productExcelObj.setProductConfigurations(productConfigObj);
-		 	productExcelObj.setPriceGrids(priceGrids);
+			productExcelObj.setProductConfigurations(productConfigObj);
+			productExcelObj.setPriceGrids(priceGrids);
+			String name = productExcelObj.getName();
+			if(name.contains("Simply Smashing") && name.contains("Compressed T")){
+				productExcelObj.setName("Simply Smashing Compressed T-Shirt");
+			}
+			if(productExcelObj.getName().equals("Simply Smashing Compressed T-Shirt")){
+				List<Image> imageList = removeImageConfiguration(productExcelObj.getImages());
+				productExcelObj.setImages(imageList);
+			}
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -991,6 +1078,13 @@ public class DouglasBridgeMapper implements IExcelParser{
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
+	}
+	private List<Image> removeImageConfiguration(List<Image> existingImages){
+		existingImages = existingImages.stream().map(image->{
+			image.setConfigurations(new ArrayList<>());
+			return image;
+		}).collect(Collectors.toList());
+		return existingImages;
 	}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
