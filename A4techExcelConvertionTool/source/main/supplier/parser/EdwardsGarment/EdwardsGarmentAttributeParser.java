@@ -116,6 +116,7 @@ public List<Color> getProductColors(List<String> colorListValue){
 		colorName=colorName.replaceAll(" w/","/");
 		colorName=colorName.replaceAll(" with","/");
 		colorName=colorName.replaceAll(" W/","/");
+		colorName=colorName.replaceAll("w/","/");
 		//colorName = colorName.trim();
 		
 		colorObj = new Color();
@@ -130,6 +131,7 @@ public List<Color> getProductColors(List<String> colorListValue){
 			colorGroup=colorGroup.replaceAll("&","/");
 			colorGroup=colorGroup.replaceAll(" w/","/");
 			colorGroup=colorGroup.replaceAll(" W/","/");
+			colorGroup=colorGroup.replaceAll("w/","/");
 			
 			//if (colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)) {
 				if(isComboColor(colorGroup)){
@@ -147,7 +149,6 @@ public List<Color> getProductColors(List<String> colorListValue){
 					} else{
 						String colorComboFirstName = EdwardGarmentConstants.getColorGroup(comboColors[1].trim());
 						colorComboFirstName = colorComboFirstName == null?"Other":colorComboFirstName;
-						
 						String colorComboSecondName = EdwardGarmentConstants.getColorGroup(comboColors[2].trim());
 						colorComboSecondName = colorComboSecondName == null?"Other":colorComboSecondName;
 						listOfCombo = getColorsCombo(colorComboFirstName,colorComboSecondName, combosSize);
