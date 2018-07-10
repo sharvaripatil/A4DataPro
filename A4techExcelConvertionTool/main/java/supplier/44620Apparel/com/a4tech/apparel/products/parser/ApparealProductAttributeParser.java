@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -15,6 +16,7 @@ import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
@@ -342,8 +344,13 @@ public class ApparealProductAttributeParser {
 	     additionalLoactionObj.setName(ApplicationConstants.CONST_VALUE_TYPE_OTHER+imprintLocationArr[1].trim());
 	     additionalLoaction.add(additionalLoactionObj);
 	     productConfigObj.setAdditionalLocations(additionalLoaction); 
-	                  }else
-	     {
+	    } else if(imprintValue.contains(",")){
+			ImprintLocationList = Arrays.stream(CommonUtility.getValuesOfArray(imprintValue, ",")).map(str -> {
+				ImprintLocation ImprintLocationObj1 = new ImprintLocation();
+				ImprintLocationObj1.setValue(str);
+				return ImprintLocationObj1;
+			}).collect(Collectors.toList());
+	    } else {
 	      ImprintLocationObj.setValue(imprintValue);
 	      ImprintLocationList.add(ImprintLocationObj);
 	      
@@ -429,7 +436,11 @@ public class ApparealProductAttributeParser {
 		ProductConfigurations newConfig = new ProductConfigurations();
 		ProductConfigurations oldConfig = existingProduct.getProductConfigurations();
 		if(!CollectionUtils.isEmpty(existingProduct.getImages())){
-			newProduct.setImages(existingProduct.getImages());
+			List<Image> listOfImages = existingProduct.getImages().stream().map(image ->{
+				image.setConfigurations(new ArrayList<>());
+				return image;
+			}).collect(Collectors.toList());
+			newProduct.setImages(listOfImages);
 		}
 		if(!StringUtils.isEmpty(existingProduct.getSummary())){
 			newProduct.setSummary(existingProduct.getSummary());

@@ -1,6 +1,8 @@
 package com.a4tech.util;
 
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -505,4 +507,24 @@ public class CommonUtility {
 	        return false;		
 		}
 	 }*/
+	 /*
+	  * Author      :Venkat
+	  * Description : This method check the images are exist in specific url or not
+	  * Return      : boolean ,if images are exist it returns true other wise it will return false 
+	  */
+	 public static boolean isImageExist(String URLName){
+		    try {
+		      HttpURLConnection.setFollowRedirects(false);
+		      // note : you may also need
+		      //        HttpURLConnection.setInstanceFollowRedirects(false)
+		      HttpURLConnection con =
+		         (HttpURLConnection) new URL(URLName).openConnection();
+		     con.setRequestMethod("HEAD");
+		      return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+		    }
+		    catch (Exception e) {
+		       e.printStackTrace();
+		       return false;
+		    }
+		  }
 }

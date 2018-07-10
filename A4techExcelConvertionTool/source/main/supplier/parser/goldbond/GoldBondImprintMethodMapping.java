@@ -86,6 +86,7 @@ public class GoldBondImprintMethodMapping {
 		IMPRINT_METHOD_MAP.put("UV Screen Printed", "Silkscreen=UV Screen Printed");
 		IMPRINT_METHOD_MAP.put("Screen print on URBANDUFFLE, CT, SW, NSS, LUMA, BOULDER; Full color imprint with protective dome on BHFE", "Other=CT,Other=SW,Other=NSS,Other=LUMA,Other=BOULDER,Full Color =Full color imprint with protective dome on BHFE");
 		IMPRINT_METHOD_MAP.put("Kong: 1-Color screen printed / Multi-color pad printed / Laser Engraving; EZGRIP: Full color imprint with protective dome", "Full Color=EZGRIP: Full color imprint with protective dome,Laser Engraved=Laser Engraving,Silkscreen=screen printed");
+		IMPRINT_METHOD_MAP.put("NO IMPRINT", "Unimprinted=Unimprinted");
 	}
 	
 	public static String getImprintMethodValues(String imprintMethodVal){
