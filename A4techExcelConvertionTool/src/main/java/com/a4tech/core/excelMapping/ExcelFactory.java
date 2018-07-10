@@ -47,6 +47,7 @@ import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PelicanGraphicMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
+import com.a4tech.supplier.mapper.RadiousMapping;
 import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
 import com.a4tech.supplier.mapper.SimplifiedsourcingMapping;
 import com.a4tech.supplier.mapper.SolidDimensionMapping;
@@ -124,6 +125,7 @@ public class ExcelFactory {
     private SportUSAMapping					sportUSAMapping;
     private SportAzxCandMapping 			sportAzxCandMapping;
     private DigiSpecMapping                 digiSpecMapping;
+    private RadiousMapping                  radiMapping;
 		public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -248,6 +250,8 @@ public class ExcelFactory {
 			  return sportUSAMapping;
 		  } else if(name.equals("49716")){
 			  return digiSpecMapping;
+		  }else if(name.equals("49916")){
+			  return radiMapping;
 		  }
 		return null;
 	}
@@ -700,6 +704,14 @@ public class ExcelFactory {
 
 	public void setDigiSpecMapping(DigiSpecMapping digiSpecMapping) {
 		this.digiSpecMapping = digiSpecMapping;
+	}
+
+	public RadiousMapping getRadiMapping() {
+		return radiMapping;
+	}
+
+	public void setRadiMapping(RadiousMapping radiMapping) {
+		this.radiMapping = radiMapping;
 	}
 
 

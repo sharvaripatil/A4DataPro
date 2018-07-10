@@ -433,6 +433,7 @@
 		<property name="sportUSAMapping" ref="sportUSAMappingId"/>
 		<property name="sportAzxCandMapping" ref="sportAzxCandMappingId"/>
 		<property name="digiSpecMapping" ref="digiSpecMappingId"/>
+		<property name="radiMapping" ref="radiMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1294,5 +1295,20 @@
       
       <bean id="digiSpecPriceGridParserId" class="parser.digiSpec.DigiSpecPriceGridParser"></bean>
        <!-- supplier DIGISPEC 49716 configuration End -->
+       
+             <!-- supplier Radious 49916 configuration start -->
+             
+      <bean id="radiMappingId" class="com.a4tech.supplier.mapper.RadiousMapping">
+         	 <property name="postServiceImpl" ref="postService"/>
+       	     <property name="productDaoObj" ref="productDao"/>
+       	     <property name="radiousColorObj" ref="radiousColorObjId"/>
+       	     <property name="radiousAttribute" ref="radiousAttributeId"/>
+       	     
+         
+      </bean>
+          <bean id="radiousColorObjId" class="parser.radious.RadiousColorParser"/>
+          <bean id="radiousAttributeId" class="parser.radious.RadiousAttribute"/>
+    
+       <!-- supplier Radious 49916 configuration End -->
 </beans>
 
