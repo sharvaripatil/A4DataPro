@@ -132,6 +132,7 @@ while (iterator.hasNext()) {
 				 columnIndex = cell.getColumnIndex();
 				 cell2Data =  nextRow.getCell(6);
 				if(columnIndex + 1 == 1){
+					try{
 					//xid = CommonUtility.getCellValueStrinOrInt(cell);//getProductXid(nextRow);
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 						xid = cell.getStringCellValue();
@@ -144,10 +145,15 @@ while (iterator.hasNext()) {
 						}
 					xid=xid.trim();
 					checkXid = true;
+					
+				}catch (Exception e) {
+		    		_LOGGER.error("error");
+				}
 				}else{
 					checkXid = false;
 				}
 				if(checkXid){
+					try{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
@@ -217,7 +223,7 @@ while (iterator.hasNext()) {
 									 for (Entry<String, HashSet<String>> values : priceMap.entrySet()) {
 										 
 										   String priceVal= values.getKey();
-										   String priceValArr[]=priceVal.split("_____");
+										   String priceValArr[]=priceVal.split("_____");//___
 										   priceVal=priceValArr[0];
 										   String firstValueofColor=priceValArr[1];
 										   HashSet<String> tempSet=values.getValue();
@@ -319,7 +325,12 @@ while (iterator.hasNext()) {
 						    	 productConfigObj=productExcelObj.getProductConfigurations();
 						     }
 					 }
+					 
 				//}
+					 
+				}catch (Exception e) {
+		    		_LOGGER.error("Error while posting product"+e.getMessage());
+				}	 
 				}else{
 					if(productXids.contains(xid) && repeatRows.size() != 1){
 						 if(isRepeateColumn(columnIndex+1)){
@@ -327,7 +338,7 @@ while (iterator.hasNext()) {
 						 }
 					}
 				}
-
+				
 				switch (columnIndex + 1) {
 			
 				case 1://xid
@@ -360,6 +371,7 @@ while (iterator.hasNext()) {
 
 				    	break;
 				    case  9://Size1
+				    	try{
 				    	size1=CommonUtility.getCellValueStrinOrInt(cell);
 				    	if(StringUtils.isEmpty(size1)){
 				    		size1="";
@@ -408,7 +420,7 @@ while (iterator.hasNext()) {
 							setSizes.add(size1.trim());
 							skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
 							//priceMap=	getPriceMap(priceMap, listPrice, size1+"#####"+colorValueTemp);
-							priceMap=	getPriceMap(priceMap, listPrice+"___"+"Product Color"+":"+colorValueTemp,size1);//
+							priceMap=	getPriceMap(priceMap, listPrice+"_____"+"Product Color"+":"+colorValueTemp,size1);//
 							 if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
 							availMap=getAvailMap(availMap,colorValueTemp,size1);
 							 }
@@ -427,6 +439,9 @@ while (iterator.hasNext()) {
 									}
 							}
 						}
+				    	}catch (Exception e) {
+				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
+						}
 				    	break;
 				    case  10://Size2
 				    	//size2=CommonUtility.getCellValueStrinOrInt(cell);
@@ -436,6 +451,7 @@ while (iterator.hasNext()) {
 				    	
 				    	break;
 				    case  11://ProdName
+				    	try{
 				    	productName = CommonUtility.getCellValueStrinOrInt(cell);
 				    	if(!StringUtils.isEmpty(productName)){
 				    		productName=productName.replace("EDWARDS", "");
@@ -448,7 +464,9 @@ while (iterator.hasNext()) {
 						}
 						productExcelObj.setName(productName);
 				    	}
-					
+				    	}catch (Exception e) {
+				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
+						}
 				    	break;
 				    case  12://WholesalePrice
 
@@ -464,7 +482,7 @@ while (iterator.hasNext()) {
 
 				    	break;
 				    case  16://Weight
-				    	
+				    	try{
 				    	
 				    	String  shippingWeightValue=CommonUtility.getCellValueStrinOrInt(cell);
 				    	 if(!StringUtils.isEmpty(shippingWeightValue)){
@@ -472,7 +490,9 @@ while (iterator.hasNext()) {
 						 ShipingObj =edwardsGarmentAttributeParser.getShippingEstimates("", "", "", shippingWeightValue, "",ShipingObj);
 						 productConfigObj.setShippingEstimates(ShipingObj);
 				    	 }
-						 
+				    	}catch (Exception e) {
+				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
+						}
 				    	break;
 				    case  17://Height
 
@@ -481,6 +501,7 @@ while (iterator.hasNext()) {
 
 				    	break;
 				    case  19://KeyWords
+				    	try{
 				    	String keywords = CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(keywords)){
 							 keywords=keywords.replace("EDWARDS", "");
@@ -501,8 +522,12 @@ while (iterator.hasNext()) {
 							
 						productExcelObj.setProductKeywords(listOfKeywords1);
 						 }
+				    	}catch (Exception e) {
+				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
+						}
 				    	break;
 				    case  20://StyleDescription1 // i need to work more on this field
+				    	try{
 				    	String description =CommonUtility.getCellValueStrinOrInt(cell);
 				    	if(!StringUtils.isEmpty(description)){
 						//description = CommonUtility.removeSpecialSymbols(description,specialCharacters);
@@ -519,16 +544,24 @@ while (iterator.hasNext()) {
 						}
 						productExcelObj.setDescription(description);
 				    	}
+				    	}catch (Exception e) {
+				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
+						}
 				    	break;
 				    case  21://StyleDescription2
+				    	try{
 				    	String summary = CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(summary)){
 						summary=summary.replace("EDWARDS", "");
 						summary=summary.replace("Edwards", "");//Edwards
 						productExcelObj.setSummary(summary);
 						 }
+				    	}catch (Exception e) {
+				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
+						}
 				    	break;
 				    case  22://ColorDescription
+				    	try{
 						 String colorValue=CommonUtility.getCellValueStrinOrInt(cell);
 							if(!StringUtils.isEmpty(colorValue)){
 								if(colorValue.contains("-")){
@@ -536,7 +569,9 @@ while (iterator.hasNext()) {
 								}
 								colorSet.add(colorValue);
 							}
-						 
+				    	}catch (Exception e) {
+				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
+						}
 				    	break;
 				    case  23://ComponentContent
 				    	String Material=cell.getStringCellValue();
@@ -546,6 +581,7 @@ while (iterator.hasNext()) {
 						}
 				    	break;
 				    case  24://ShortDescription
+				    	try{
 				    	productName = CommonUtility.getCellValueStrinOrInt(cell);
 				    	if(!StringUtils.isEmpty(productName)){
 				    		productName=productName.replace("EDWARDS", "");
@@ -570,6 +606,9 @@ while (iterator.hasNext()) {
 						productExcelObj.setName(productName);
 				    		}
 				    	}
+				    	}catch (Exception e) {
+				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
+						}
 				    	break;
 				    case  25://HTML
 
