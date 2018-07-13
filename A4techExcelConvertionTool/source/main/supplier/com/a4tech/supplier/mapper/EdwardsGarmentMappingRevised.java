@@ -6,10 +6,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -48,7 +47,14 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class EdwardsGarmentMapping implements IExcelParser{
+public class EdwardsGarmentMappingRevised implements IExcelParser{
+
+	@Override
+	public String readExcel(String accessToken, Workbook workbook,
+			Integer asiNumber, int batchId, String environmentType) {
+		// TODO Auto-generated method stub
+		return null;
+	}/*
 	
 	private static final Logger _LOGGER = Logger.getLogger(EdwardsGarmentMapping.class);
 	
@@ -108,7 +114,6 @@ public class EdwardsGarmentMapping implements IExcelParser{
 		
 		HashMap<String , HashSet<String>> priceMap=new HashMap<String, HashSet<String>>();
 		HashMap<String , HashSet<String>> availMap=new HashMap<String, HashSet<String>>();
-		HashMap<String , String> sizeKeyValue=new HashMap<String, String>();
 		
 		String stockValue="";
 		int sizeCount=1;
@@ -132,7 +137,6 @@ while (iterator.hasNext()) {
 				 columnIndex = cell.getColumnIndex();
 				 cell2Data =  nextRow.getCell(6);
 				if(columnIndex + 1 == 1){
-					try{
 					//xid = CommonUtility.getCellValueStrinOrInt(cell);//getProductXid(nextRow);
 					if(cell.getCellType() == Cell.CELL_TYPE_STRING){
 						xid = cell.getStringCellValue();
@@ -145,15 +149,10 @@ while (iterator.hasNext()) {
 						}
 					xid=xid.trim();
 					checkXid = true;
-					
-				}catch (Exception e) {
-		    		_LOGGER.error("error");
-				}
 				}else{
 					checkXid = false;
 				}
 				if(checkXid){
-					try{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
@@ -164,10 +163,13 @@ while (iterator.hasNext()) {
 								}
 							//set sku here
 							 if(!CollectionUtils.isEmpty(skuSet)){
-								 String criteriaTwo="";
-									 criteriaTwo="Standard & Numbered"; 
+								 String criteriaTwo="Standard & Numbered";
+								 if(sizeCount==1){
+									 criteriaTwo="Apparel-Waist/Inseam";
+									 }
+								 
 							List<ProductSkus>	 listProductSkus=edwardsGarmentAttributeParser.getProductSkus(new ArrayList<String>(skuSet),"Product Color",criteriaTwo);
-						    productExcelObj.setProductRelationSkus(listProductSkus);
+							 productExcelObj.setProductRelationSkus(listProductSkus);
 							 }
 							//process colors here
 							 
@@ -192,10 +194,11 @@ while (iterator.hasNext()) {
 									 Apparel apparelObj = new Apparel();
 									 Size sizeObj=new Size();
 									 List<Value> listOfValue = edwardsGarmentAttributeParser.getApparelValuesObj(new ArrayList<String>(setSizes));
-									 String criteriaTwo="";
-									 criteriaTwo="Standard & Numbered"; 
-									 apparelObj.setType("Standard & Numbered");
-									 
+									 if(sizeCount==1){
+										apparelObj.setType("Apparel-Waist/Inseam");
+									 }else{
+										 apparelObj.setType("Standard & Numbered");
+									 }
 									 if(!CollectionUtils.isEmpty(listOfValue)){
 										apparelObj.setValues(listOfValue);
 										sizeObj.setApparel(apparelObj);
@@ -213,9 +216,9 @@ while (iterator.hasNext()) {
 									}
 									
 							// process pring here
-								/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
+								priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 										         listOfQuantity.toString(), priceCode, "USD",
-										         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/
+										         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);
 								 if(!CollectionUtils.isEmpty(priceMap)){
 									 List<Price> listOfPricesArr=new ArrayList<Price>();
 									 priceGrids = new ArrayList<PriceGrid>();
@@ -223,34 +226,14 @@ while (iterator.hasNext()) {
 									 for (Entry<String, HashSet<String>> values : priceMap.entrySet()) {
 										 
 										   String priceVal= values.getKey();
-										   String priceValArr[]=priceVal.split("_____");//___
-										   priceVal=priceValArr[0];
-										   String firstValueofColor=priceValArr[1];
 										   HashSet<String> tempSet=values.getValue();
 										   ArrayList<String> listOfsizes=new ArrayList<String>(tempSet);
 										  //CommonUtility.getValuesOfArray(listOfsizes.toArray().toString(), ",");
 										   String sizeValue = String.join(",", listOfsizes);
 										   if(!StringUtils.isEmpty(sizeValue) && !sizeValue.equals("0")){
-											   // ihave to work on grid name for this
-											   /*
-											   (String listOfPrices, String listOfQuan, String discountCodes,
-														String currency, String priceInclude, boolean isBasePrice,
-														String qurFlag, String priceName, String criterias,Integer sequence,
-														List<PriceGrid> existingPriceGrid) */
-											   String tempCriteriaValues[]=sizeValue.split(",");//criterValue
-											   //for (String criterias : tempCriteriaValues) {
-												   //if(criterias.contains("___")){
-
-											  /* firstValueofColor=firstValueofColor.replace(":", "");
-											   firstValueofColor=firstValueofColor.replace("Size", "");
-											   firstValueofColor=firstValueofColor.replace("Product Color", "");
-											   firstValueofColor=firstValueofColor.replace("___", ",");*/
-													   priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
-																 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
-																 ApplicationConstants.CONST_STRING_FALSE,firstValueofColor,"Product Color","Size",listOfsizes,1,priceGrids);
-													  
-												   //}
-											   //}
+										   priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
+													 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
+													 ApplicationConstants.CONST_STRING_FALSE,sizeValue,"Size",1,priceGrids);
 										   }else{
 											  
 											   priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
@@ -277,8 +260,8 @@ while (iterator.hasNext()) {
 							    productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 //	if(Prod_Status = false){
-							 /*	_LOGGER.info("Product Data : "
-										+ mapperObj.writeValueAsString(productExcelObj));*/
+							 	_LOGGER.info("Product Data : "
+										+ mapperObj.writeValueAsString(productExcelObj));
 								
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	if(num ==1){
@@ -308,7 +291,6 @@ while (iterator.hasNext()) {
 						         priceSet=new HashSet<String>();
 						         priceMap=new HashMap<String, HashSet<String>>();
 						         availMap=new HashMap<String, HashSet<String>>();
-						 		 sizeKeyValue=new HashMap<String, String>();
 						         firstValue="";
 						         sizeCount=1;
 						 }
@@ -325,12 +307,7 @@ while (iterator.hasNext()) {
 						    	 productConfigObj=productExcelObj.getProductConfigurations();
 						     }
 					 }
-					 
 				//}
-					 
-				}catch (Exception e) {
-		    		_LOGGER.error("Error while posting product"+e.getMessage());
-				}	 
 				}else{
 					if(productXids.contains(xid) && repeatRows.size() != 1){
 						 if(isRepeateColumn(columnIndex+1)){
@@ -338,7 +315,7 @@ while (iterator.hasNext()) {
 						 }
 					}
 				}
-				
+
 				switch (columnIndex + 1) {
 			
 				case 1://xid
@@ -371,7 +348,6 @@ while (iterator.hasNext()) {
 
 				    	break;
 				    case  9://Size1
-				    	try{
 				    	size1=CommonUtility.getCellValueStrinOrInt(cell);
 				    	if(StringUtils.isEmpty(size1)){
 				    		size1="";
@@ -382,80 +358,71 @@ while (iterator.hasNext()) {
 				    	}
 				    	size2 =getProductCellData(nextRow,9);
 				    	String colorValueTemp=getProductCellData(nextRow,21);
-				    	if(!StringUtils.isEmpty(colorValueTemp)){
-				    	colorValueTemp=colorValueTemp.replaceAll("&","/");
-				    	colorValueTemp=colorValueTemp.replaceAll(" w/","/");
-				    	colorValueTemp=colorValueTemp.replaceAll(" with","/");
-				    	colorValueTemp=colorValueTemp.replaceAll(" W/","/");
-				    	colorValueTemp=colorValueTemp.replaceAll("w/","/");
-				    	}
 				    	if(StringUtils.isEmpty(colorValueTemp)){
 				    		colorValueTemp="AAAAA";
 				    	}
 				    	if(StringUtils.isEmpty(stockValue)){
 				    		stockValue="BBBBB";
 				    	}
-				    	if(!StringUtils.isEmpty(size1) && (!StringUtils.isEmpty(size2)) && !size1.equals("0") && !size2.equals("0")){
+				    	if(!StringUtils.isEmpty(size1) && (!StringUtils.isEmpty(size2))){
 							String tempStr="";
 							size1=size1.trim();
 							size2=size2.trim();
+							 if(checkSize2(size2)){
 								 sizeCount++;
-								 if(size2.equals("T")){
-									 tempStr=size1+size2;
-								 }else{
-									 tempStr=size1+"x"+size2;
-								 }
+								tempStr=size1+size2;
 								tempStr=tempStr.replaceAll(" ","");
 								setSizes.add(tempStr);
 								skuSet.add(tempStr+"_____"+colorValueTemp+"_____"+stockValue);
-								//priceMap=getPriceMap(priceMap, listPrice, "Size"+":"+tempStr+"___"+"Product Color"+":"+colorValueTemp);//	//getPriceMap(priceMap, listPrice, tempStr);
-								//+"_____"+colorValueTemp
-								priceMap=getPriceMap(priceMap, listPrice+"_____"+"Product Color"+":"+colorValueTemp,tempStr);
+								priceMap=	getPriceMap(priceMap, listPrice, tempStr);
 								 if(!StringUtils.isEmpty(tempStr) && !tempStr.equals("0")){
 								availMap=getAvailMap(availMap,colorValueTemp,tempStr);
 								 }
+								
+							}else if(containsOnlyNumbers(size2)){
+								//if(size1.equals(size2)){
+									size1=size1+"x"+size2;
+									setSizes.add(size1);
+									skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
+									//priceSet.add(size1+"_____"+listPrice);
+									priceMap=	getPriceMap(priceMap, listPrice, size1);
+									 if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
+									availMap=getAvailMap(availMap,colorValueTemp,size1);
+									 }
+								
+							}else{
+								sizeCount++;
+								setSizes.add(size1);
+								skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
+								//priceSet.add(size1+"_____"+listPrice);
+								priceMap=	getPriceMap(priceMap, listPrice, size1);
+								 if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
+								availMap=getAvailMap(availMap,colorValueTemp,size1);
+								 }
+							}
 						}else{
-							if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
-							sizeCount++;
+							if(!StringUtils.isEmpty(size1)){
+								sizeCount++;
 							setSizes.add(size1.trim());
 							skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
-							//priceMap=	getPriceMap(priceMap, listPrice, size1+"#####"+colorValueTemp);
-							priceMap=	getPriceMap(priceMap, listPrice+"_____"+"Product Color"+":"+colorValueTemp,size1);//
+							priceMap=	getPriceMap(priceMap, listPrice, size1);
 							 if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
 							availMap=getAvailMap(availMap,colorValueTemp,size1);
 							 }
 							//priceSet.add(size1+"_____"+listPrice);
-							}else{
-								if(!StringUtils.isEmpty(size2) && !size2.equals("0")){
-									sizeCount++;
-									setSizes.add(size2.trim());
-									skuSet.add(size2+"_____"+colorValueTemp+"_____"+stockValue);
-									//priceMap=	getPriceMap(priceMap, listPrice, size1+"#####"+colorValueTemp);
-									priceMap=	getPriceMap(priceMap, listPrice+"_____"+"Product Color"+":"+colorValueTemp,size2);//
-									 if(!StringUtils.isEmpty(size2) && !size2.equals("0")){
-									availMap=getAvailMap(availMap,colorValueTemp,size2);
-									 }
-									//priceSet.add(size1+"_____"+listPrice);
-									}
 							}
-						}
-				    	}catch (Exception e) {
-				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
 						}
 				    	break;
 				    case  10://Size2
 				    	//size2=CommonUtility.getCellValueStrinOrInt(cell);
-				    	/*if(StringUtils.isEmpty(size2)){
+				    	if(StringUtils.isEmpty(size2)){
 				    	
-				    	}*/
+				    	}
 				    	
 				    	break;
 				    case  11://ProdName
-				    	try{
 				    	productName = CommonUtility.getCellValueStrinOrInt(cell);
 				    	if(!StringUtils.isEmpty(productName)){
-				    		productName=productName.replace("EDWARDS", "");
-				    		//EDWARDS
 						int len=productName.length();
 						 if(len>60){
 							String strTemp=productName.substring(0, 60);
@@ -464,9 +431,7 @@ while (iterator.hasNext()) {
 						}
 						productExcelObj.setName(productName);
 				    	}
-				    	}catch (Exception e) {
-				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
-						}
+					
 				    	break;
 				    case  12://WholesalePrice
 
@@ -482,7 +447,7 @@ while (iterator.hasNext()) {
 
 				    	break;
 				    case  16://Weight
-				    	try{
+				    	
 				    	
 				    	String  shippingWeightValue=CommonUtility.getCellValueStrinOrInt(cell);
 				    	 if(!StringUtils.isEmpty(shippingWeightValue)){
@@ -490,9 +455,7 @@ while (iterator.hasNext()) {
 						 ShipingObj =edwardsGarmentAttributeParser.getShippingEstimates("", "", "", shippingWeightValue, "",ShipingObj);
 						 productConfigObj.setShippingEstimates(ShipingObj);
 				    	 }
-				    	}catch (Exception e) {
-				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
-						}
+						 
 				    	break;
 				    case  17://Height
 
@@ -501,39 +464,19 @@ while (iterator.hasNext()) {
 
 				    	break;
 				    case  19://KeyWords
-				    	try{
 				    	String keywords = CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(keywords)){
-							 keywords=keywords.replace("EDWARDS", "");
 							 keywords=keywords.replace(" ", ",");
 							 List<String> listOfKeywords = new ArrayList<String>();
 						String tempKeyWrd[]=keywords.split(ApplicationConstants.CONST_DELIMITER_COMMA);
 						listOfKeywords=Arrays.asList(tempKeyWrd);
-						 List<String> listOfKeywords1 = new ArrayList<String>();
-						 for (String string : listOfKeywords) {
-								if((listOfKeywords1.size()<30)){
-									string=string.replace("//", "");//\
-									string=string.replace("\\", "");//\
-									listOfKeywords1.add(string);
-								}else{
-									break;
-								}
-								}
-							
-						productExcelObj.setProductKeywords(listOfKeywords1);
+						productExcelObj.setProductKeywords(listOfKeywords);
 						 }
-				    	}catch (Exception e) {
-				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
-						}
 				    	break;
 				    case  20://StyleDescription1 // i need to work more on this field
-				    	try{
 				    	String description =CommonUtility.getCellValueStrinOrInt(cell);
-				    	if(!StringUtils.isEmpty(description)){
 						//description = CommonUtility.removeSpecialSymbols(description,specialCharacters);
 				    	//description=CommonUtility.removeRestrictSymbols(description);
-				    	description=description.replace("EDWARDS", "");//Edwards
-				    	description=description.replace("Edwards", "");//Edwards
 				    	description = description.replaceAll("\\<.*?\\> ?", "");
 				    	description=removeSpecialChar(description);
 						int length=description.length();
@@ -543,25 +486,14 @@ while (iterator.hasNext()) {
 							description=(String) strTemp.subSequence(0, lenTemp);
 						}
 						productExcelObj.setDescription(description);
-				    	}
-				    	}catch (Exception e) {
-				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
-						}
 				    	break;
 				    case  21://StyleDescription2
-				    	try{
 				    	String summary = CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(summary)){
-						summary=summary.replace("EDWARDS", "");
-						summary=summary.replace("Edwards", "");//Edwards
 						productExcelObj.setSummary(summary);
 						 }
-				    	}catch (Exception e) {
-				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
-						}
 				    	break;
 				    case  22://ColorDescription
-				    	try{
 						 String colorValue=CommonUtility.getCellValueStrinOrInt(cell);
 							if(!StringUtils.isEmpty(colorValue)){
 								if(colorValue.contains("-")){
@@ -569,9 +501,7 @@ while (iterator.hasNext()) {
 								}
 								colorSet.add(colorValue);
 							}
-				    	}catch (Exception e) {
-				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
-						}
+						 
 				    	break;
 				    case  23://ComponentContent
 				    	String Material=cell.getStringCellValue();
@@ -581,11 +511,8 @@ while (iterator.hasNext()) {
 						}
 				    	break;
 				    case  24://ShortDescription
-				    	try{
 				    	productName = CommonUtility.getCellValueStrinOrInt(cell);
 				    	if(!StringUtils.isEmpty(productName)){
-				    		productName=productName.replace("EDWARDS", "");
-				    		productName=productName.replace("Edwards", "");//Edwards
 				    		String temp="";
 				    		if(!StringUtils.isEmpty(productExcelObj.getName())){
 				    			temp=productExcelObj.getName();
@@ -606,9 +533,6 @@ while (iterator.hasNext()) {
 						productExcelObj.setName(productName);
 				    		}
 				    	}
-				    	}catch (Exception e) {
-				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
-						}
 				    	break;
 				    case  25://HTML
 
@@ -669,7 +593,46 @@ while (iterator.hasNext()) {
 				    	break;
 				}  // end inner while loop
 				
-			}
+				
+				if(!StringUtils.isEmpty(size1) && (!StringUtils.isEmpty(size2))){
+					String tempStr="";
+					size1=size1.trim();
+					size2=size2.trim();
+					 if(checkSize2(size2)){
+						tempStr=size1+size2;
+						tempStr=tempStr.replaceAll(" ","");
+						setSizes.add(tempStr);
+					}else if(containsOnlyNumbers(size2)){
+						if(size1.equals(size2)){
+							setSizes.add(size1);
+						}else{
+							tempStr=size1+"-"+size2;
+							tempStr=tempStr.replaceAll(" ","");
+							setSizes.add(tempStr);
+						}
+						
+					}else{
+						setSizes.add(size1);
+					}
+				}else{
+					setSizes.add(size1.trim());
+				}
+				size1="";
+				size2="";
+			}// set  product configuration objects
+		 // end inner while loop
+			
+			//ShippingEstimate // i have to work on this thing as well for empty ship obj
+		 // if any configurations come they will be here
+			productExcelObj.setPriceType("L");
+			// i have to process  pricingover here
+			 	productExcelObj.setPriceGrids(priceGrids);
+			 	materiallist = new ArrayList<Material>();	
+			 	criteriaFlag=false;
+			 	listOfPrices=new StringBuilder();
+			 	listOfQuantity=new StringBuilder();
+			 	pricesPerUnit=new StringBuilder();
+			 	 pricesPerUnit=new StringBuilder();
 			     
 			}catch(Exception e){
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() +"at column+1="+columnIndex);		 
@@ -684,10 +647,12 @@ while (iterator.hasNext()) {
 			}
 		//set sku here
 		 if(!CollectionUtils.isEmpty(skuSet)){
-			 String criteriaTwo="";
-				 criteriaTwo="Standard & Numbered"; 
+			 String criteriaTwo="Standard & Numbered";
+			 if(sizeCount==1){
+				 criteriaTwo="Apparel-Waist/Inseam";
+				 }
 		List<ProductSkus>	 listProductSkus=edwardsGarmentAttributeParser.getProductSkus(new ArrayList<String>(skuSet),"Product Color",criteriaTwo);
-	    productExcelObj.setProductRelationSkus(listProductSkus);
+		 productExcelObj.setProductRelationSkus(listProductSkus);
 		 }
 		//process colors here
 		 
@@ -698,111 +663,85 @@ while (iterator.hasNext()) {
 			if(!CollectionUtils.isEmpty(availMap)){
 				HashMap<String , HashSet<String>> availMapTemp=new HashMap<String, HashSet<String>>();
 				availMapTemp=(HashMap)availMap.clone();
-		boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
-		
-		if(flag){
-		List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availMap);
-		productExcelObj.setAvailability(listOfAvailablity);
-		_LOGGER.info("Availability done for product:"+productExcelObj.getExternalProductId());
-		}else{
-			_LOGGER.info("No Availability detected for product:"+productExcelObj.getExternalProductId());
-		}
-			}
+				boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
+				if(flag){
+				List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availMap);
+				productExcelObj.setAvailability(listOfAvailablity);
+				_LOGGER.info("Availability done for product:"+productExcelObj.getExternalProductId());
+				}else{
+					_LOGGER.info("No Availability detected for product:"+productExcelObj.getExternalProductId());
+				}
+					}
 			 if(!CollectionUtils.isEmpty(setSizes)){
 				 Apparel apparelObj = new Apparel();
 				 Size sizeObj=new Size();
 				 List<Value> listOfValue = edwardsGarmentAttributeParser.getApparelValuesObj(new ArrayList<String>(setSizes));
-				 String criteriaTwo="";
-				 criteriaTwo="Standard & Numbered"; 
-				 apparelObj.setType("Standard & Numbered");
-				 
+				 if(sizeCount==1){
+						apparelObj.setType("Apparel-Waist/Inseam");
+					 }else{
+						 apparelObj.setType("Standard & Numbered");
+					 }
 				 if(!CollectionUtils.isEmpty(listOfValue)){
 					apparelObj.setValues(listOfValue);
 					sizeObj.setApparel(apparelObj);
-				productConfigObj.setSizes(sizeObj);
+					productConfigObj.setSizes(sizeObj);
 				 }
+					
 				}
+			 if(CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
+				 List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+				 ImprintMethod	imprintMethodObj = new ImprintMethod();	
+				imprintMethodObj.setType("UNIMPRINTED");
+				imprintMethodObj.setAlias("UNIMPRINTED");
+				listOfImprintMethod.add(imprintMethodObj);
+				productConfigObj.setImprintMethods(listOfImprintMethod);
+			}
 			
-				if(CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
-					 List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
-					 ImprintMethod	imprintMethodObj = new ImprintMethod();	
-					imprintMethodObj.setType("UNIMPRINTED");
-					imprintMethodObj.setAlias("UNIMPRINTED");
-					listOfImprintMethod.add(imprintMethodObj);
-					productConfigObj.setImprintMethods(listOfImprintMethod);
-				}
-				
 		// process pring here
-			/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
+			priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 					         listOfQuantity.toString(), priceCode, "USD",
-					         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/
-				 if(!CollectionUtils.isEmpty(priceMap)){
-					 List<Price> listOfPricesArr=new ArrayList<Price>();
-					 priceGrids = new ArrayList<PriceGrid>();
-					 PriceGrid priceGrid = new PriceGrid();
-					 for (Entry<String, HashSet<String>> values : priceMap.entrySet()) {
-						 
-						   String priceVal= values.getKey();
-						   String priceValArr[]=priceVal.split("_____");
-						   priceVal=priceValArr[0];
-						   String firstValueofColor=priceValArr[1];
-						   HashSet<String> tempSet=values.getValue();
-						   ArrayList<String> listOfsizes=new ArrayList<String>(tempSet);
-						  //CommonUtility.getValuesOfArray(listOfsizes.toArray().toString(), ",");
-						   String sizeValue = String.join(",", listOfsizes);
-						   if(!StringUtils.isEmpty(sizeValue) && !sizeValue.equals("0")){
-							   // ihave to work on grid name for this
-							   /*
-							   (String listOfPrices, String listOfQuan, String discountCodes,
-										String currency, String priceInclude, boolean isBasePrice,
-										String qurFlag, String priceName, String criterias,Integer sequence,
-										List<PriceGrid> existingPriceGrid) */
-							   String tempCriteriaValues[]=sizeValue.split(",");//criterValue
-							   //for (String criterias : tempCriteriaValues) {
-								   //if(criterias.contains("___")){
-
-							  /* firstValueofColor=firstValueofColor.replace(":", "");
-							   firstValueofColor=firstValueofColor.replace("Size", "");
-							   firstValueofColor=firstValueofColor.replace("Product Color", "");
-							   firstValueofColor=firstValueofColor.replace("___", ",");*/
-									   priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
-												 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
-												 ApplicationConstants.CONST_STRING_FALSE,firstValueofColor,"Product Color","Size",listOfsizes,1,priceGrids);
-									  
-								   //}
-							   //}
-						   }else{
-							  
-							   priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
-								priceGrid.setDescription("");
-								priceGrid.setPriceIncludes("");
-								priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_FALSE);
-								priceGrid.setIsBasePrice(true);
-								priceGrid.setSequence(1);
-								List<Price> listOfPrice = new ArrayList<Price>();
-								//if (!priceGrid.getIsQUR()) {
-								listOfPrice = EdwardGarmentPriceGridParser.getSinlgePrices(priceVal, "1", "P",listOfPrice);
-								priceGrid.setPrices(listOfPrice);
-								priceGrid.setPriceConfigurations(new ArrayList<PriceConfiguration>());
-								priceGrids.add(priceGrid);
-							   
-						   }
-						}
-				}
-					 
-					 if(CollectionUtils.isEmpty(priceGrids)){
-							priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur();	
-						}
+					         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);
+			 if(!CollectionUtils.isEmpty(priceMap)){
+				 List<Price> listOfPricesArr=new ArrayList<Price>();
+				 priceGrids = new ArrayList<PriceGrid>();
+				 PriceGrid priceGrid = new PriceGrid();
+				 for (Entry<String, HashSet<String>> values : priceMap.entrySet()) {
+					   String priceVal= values.getKey();
+					   HashSet<String> tempSet=values.getValue();
+					   ArrayList<String> listOfsizes=new ArrayList<String>(tempSet);
+					  //CommonUtility.getValuesOfArray(listOfsizes.toArray().toString(), ",");
+					   String sizeValue = String.join(",", listOfsizes);
+					   if(!StringUtils.isEmpty(sizeValue) && !sizeValue.equals("0")){
+					   priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
+								 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
+								 ApplicationConstants.CONST_STRING_FALSE,sizeValue,"Size",1,priceGrids);
+					   }else{
+						  
+						   priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
+							priceGrid.setDescription("");
+							priceGrid.setPriceIncludes("");
+							priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_FALSE);
+							priceGrid.setIsBasePrice(true);
+							priceGrid.setSequence(1);
+							List<Price> listOfPrice = null;
+							//if (!priceGrid.getIsQUR()) {
+							listOfPrice = EdwardGarmentPriceGridParser.getSinlgePrices(priceVal, "1", "P",listOfPrice);
+							priceGrid.setPrices(listOfPrice);
+							priceGrid.setPriceConfigurations(new ArrayList<PriceConfiguration>());
+							priceGrids.add(priceGrid);
+						   
+					   }
+					}
+			 }
 				 
 				 if(CollectionUtils.isEmpty(priceGrids)){
 						priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur();	
 					}
-			productExcelObj.setPriceType("L");
 		    productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
-		 	//productExcelObj.setPriceType("L");
-		 	/*_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(productExcelObj));*/
+		 	productExcelObj.setPriceType("L");
+		 	_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(productExcelObj));
 		 	//if(Prod_Status = false){
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
@@ -831,7 +770,6 @@ while (iterator.hasNext()) {
 	         priceSet=new HashSet<String>();
 	         priceMap=new HashMap<String, HashSet<String>>();
 	         availMap=new HashMap<String, HashSet<String>>();
-	         sizeKeyValue=new HashMap<String, String>();
 	         firstValue="";
 	         sizeCount=1;
 	         repeatRows.clear();
@@ -900,52 +838,24 @@ public boolean isRepeateColumn(int columnIndex){
 		return postServiceImpl;
 	}
 	
-	 public static boolean containsOnlyNumbers(String size1,String size2) {
+	 public static boolean containsOnlyNumbers(String str) {
 	        
 	        //It can't contain only numbers if it's null or empty...
-	        if (size1 == null || size1.length() == 0)
+	        if (str == null || str.length() == 0)
 	            return false;
 	        
-	        for (int i = 0; i < size1.length(); i++) {
+	        for (int i = 0; i < str.length(); i++) {
 	 
 	            //If we find a non-digit character we return false.
-	            if (!Character.isDigit(size1.charAt(i)))
-	                return false;
-	        }
-	        
-	        
-	        
-	        //It can't contain only numbers if it's null or empty...
-	        if (size2 == null || size2.length() == 0)
-	            return false;
-	        
-	        for (int i = 0; i < size2.length(); i++) {
-	 
-	            //If we find a non-digit character we return false.
-	            if (!Character.isDigit(size2.charAt(i)))
+	            if (!Character.isDigit(str.charAt(i)))
 	                return false;
 	        }
 	        
 	        return true;
 	    }
-	 
-	 public static boolean checkAlphabetic(String size1,String size2) {
-		    for (int i = 0; i != size1.length(); ++i) {
-		        if (!Character.isLetter(size1.charAt(i))) {
-		            return false;
-		        }
-		    }
-		    
-		    for (int i = 0; i != size2.length(); ++i) {
-		        if (!Character.isLetter(size2.charAt(i))) {
-		            return false;
-		        }
-		    }
-		    return true;
-		}
 	 public static boolean checkSize2(String str)
 	 {
-	     String[] words = {"T", "R", "UL","UR","S","L","X"};  
+	     String[] words = {"T", "R", "UL","UR"};  
 	     return (Arrays.asList(words).contains(str));
 	 }
 
@@ -1108,4 +1018,4 @@ public boolean isRepeateColumn(int columnIndex){
 		_LOGGER.info("PriceGrid Processed");
 		return newPriceGrid;
 }
-}
+*/}

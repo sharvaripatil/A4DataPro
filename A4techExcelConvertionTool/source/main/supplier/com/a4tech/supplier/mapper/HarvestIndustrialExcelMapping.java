@@ -292,7 +292,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 									productExcelObj = new Product();
 								} else {
 									productExcelObj = new Product();
-								    productConfigObj=existingApiProduct.getProductConfigurations();
+								//    productConfigObj=existingApiProduct.getProductConfigurations();
 									List<Image> Img = existingApiProduct
 											.getImages();
 									
@@ -313,8 +313,8 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 							    	 List<String>categoriesList=existingApiProduct.getCategories();
 							    	 productExcelObj.setCategories(categoriesList);
 							    	 
-							    	 Summary=existingApiProduct.getSummary();
-							    	 productExcelObj.setSummary(Summary);
+							    	/* Summary=existingApiProduct.getSummary();
+							    	 productExcelObj.setSummary(Summary);*/
 
 							    	 List<Option> optionList = new ArrayList<Option>();
 							    	 productConfigObj.setOptions(optionList);
@@ -401,8 +401,8 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 						productExcelObj
 								.setDescription(productName);
 					}
-					if (StringUtils.isEmpty(Summary) || Summary.contains("null")) {
-						String Newsummary=null;
+			//		if (StringUtils.isEmpty(Summary) || Summary.contains("null")) {
+						String Newsummary="";
 						String summayArr[]=description.split("\\.");
 						if(summayArr[0].length()>130)
 						{
@@ -411,7 +411,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 							Newsummary=	summayArr[0];
 						}
 						productExcelObj.setSummary(Newsummary);
-					}
+				//	}
 
 					break;
 
