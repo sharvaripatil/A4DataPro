@@ -232,10 +232,11 @@ public class DouglasBridgeMapper implements IExcelParser{
 								if(name.contains("Simply Smashing") && name.contains("Compressed T")){
 									productExcelObj.setName("Simply Smashing Compressed T-Shirt");
 								}
-								if(productExcelObj.getName().equals("Simply Smashing Compressed T-Shirt")){
+								if(productExcelObj.getImages() != null){
 									List<Image> imageList = removeImageConfiguration(productExcelObj.getImages());
-									productExcelObj.setImages(imageList);
+									productExcelObj.setImages(imageList);	
 								}
+								
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	//ProductProcessedList.add(productExcelObj.getExternalProductId());
 							 	if(num ==1){
@@ -331,7 +332,8 @@ public class DouglasBridgeMapper implements IExcelParser{
 					
 				case 6://PriceConfirmedThru
 					// priceConfirmedThru = cell.getDateCellValue();
-					 
+					String ConfDate=cell.getStringCellValue();
+				     productExcelObj.setPriceConfirmedThru(ConfDate);
 					break;
 					
 				case 7: //  product status ,discontinued
@@ -1006,9 +1008,9 @@ public class DouglasBridgeMapper implements IExcelParser{
 			if(name.contains("Simply Smashing") && name.contains("Compressed T")){
 				productExcelObj.setName("Simply Smashing Compressed T-Shirt");
 			}
-			if(productExcelObj.getName().equals("Simply Smashing Compressed T-Shirt")){
+			if(productExcelObj.getImages() != null){
 				List<Image> imageList = removeImageConfiguration(productExcelObj.getImages());
-				productExcelObj.setImages(imageList);
+				productExcelObj.setImages(imageList);	
 			}
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
@@ -1080,10 +1082,12 @@ public class DouglasBridgeMapper implements IExcelParser{
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
 	private List<Image> removeImageConfiguration(List<Image> existingImages){
+		List<Image> ima = existingImages;
 		existingImages = existingImages.stream().map(image->{
 			image.setConfigurations(new ArrayList<>());
 			return image;
 		}).collect(Collectors.toList());
+		
 		return existingImages;
 	}
 	public PostServiceImpl getPostServiceImpl() {
