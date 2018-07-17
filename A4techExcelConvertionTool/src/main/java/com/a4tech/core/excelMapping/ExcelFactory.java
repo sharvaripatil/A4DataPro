@@ -29,6 +29,7 @@ import com.a4tech.supplier.mapper.CrystalDExcelMapping;
 //import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
 import com.a4tech.supplier.mapper.DigiSpecMapping;
+import com.a4tech.supplier.mapper.DouglasBridgeMapper;
 import com.a4tech.supplier.mapper.EdwardsGarmentMapping;
 import com.a4tech.supplier.mapper.EveanManufacturingCanadaMapping;
 import com.a4tech.supplier.mapper.FITSAccessoriesMapping;
@@ -125,7 +126,9 @@ public class ExcelFactory {
     private SportUSAMapping					sportUSAMapping;
     private SportAzxCandMapping 			sportAzxCandMapping;
     private DigiSpecMapping                 digiSpecMapping;
-    private RadiousMapping                  radiMapping;
+    private DouglasBridgeMapper             douglasBridgeMapper;
+	 private RadiousMapping                  radiMapping;	
+
 		public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -250,8 +253,10 @@ public class ExcelFactory {
 			  return sportUSAMapping;
 		  } else if(name.equals("49716")){
 			  return digiSpecMapping;
-		  }else if(name.equals("49916")){
+		  } else if(name.equals("49916")){
 			  return radiMapping;
+		  } else if(name.equals("50710")){
+			  return douglasBridgeMapper;
 		  }
 		return null;
 	}
@@ -705,6 +710,9 @@ public class ExcelFactory {
 	public void setDigiSpecMapping(DigiSpecMapping digiSpecMapping) {
 		this.digiSpecMapping = digiSpecMapping;
 	}
+	public void setDouglasBridgeMapper(DouglasBridgeMapper douglasBridgeMapper) {
+		this.douglasBridgeMapper = douglasBridgeMapper;
+	}
 
 	public RadiousMapping getRadiMapping() {
 		return radiMapping;
@@ -713,7 +721,6 @@ public class ExcelFactory {
 	public void setRadiMapping(RadiousMapping radiMapping) {
 		this.radiMapping = radiMapping;
 	}
-
 
 
 }
