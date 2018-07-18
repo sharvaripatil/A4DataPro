@@ -202,7 +202,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 									if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
 										 additionalColorList = douglasBridgeAttributeParser.getAdditionalColor("Additional Color");
 											priceGrids = douglasBridgeAttributeParser.getAdditionalColorUpcharge(additionalClrRunChrgCode,
-													additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge");
+													additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge",listOfQuantity.toString());
 											productConfigObj.setAdditionalColors(additionalColorList);
 									}
 									if(!StringUtils.isEmpty(additionalColorPriceVal) && !additionalColorPriceVal.equals("0")){
@@ -211,7 +211,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 											productConfigObj.setAdditionalColors(additionalColorList);
 										}
 										priceGrids = douglasBridgeAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
-												   additionalColorPriceVal, priceGrids,"Add. Color Charge");
+												   additionalColorPriceVal, priceGrids,"Add. Color Charge","1");
 									}
 							   
 							   themeList = douglasBridgeAttributeParser.getProductTheme(themesValues.toString());
@@ -978,7 +978,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 			if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
 				 additionalColorList = douglasBridgeAttributeParser.getAdditionalColor("Additional Color");
 					priceGrids = douglasBridgeAttributeParser.getAdditionalColorUpcharge(additionalClrRunChrgCode,
-							additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge");
+							additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge",listOfQuantity.toString());
 					productConfigObj.setAdditionalColors(additionalColorList);
 			}
 			if(!StringUtils.isEmpty(additionalColorPriceVal) && !additionalColorPriceVal.equals("0")){
@@ -987,7 +987,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 					productConfigObj.setAdditionalColors(additionalColorList);
 				}
 				priceGrids = douglasBridgeAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
-						   additionalColorPriceVal, priceGrids,"Add. Color Charge");
+						   additionalColorPriceVal, priceGrids,"Add. Color Charge","1");
 			}
 		/////////////
 			themeList = douglasBridgeAttributeParser.getProductTheme(themesValues.toString());
