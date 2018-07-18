@@ -389,9 +389,9 @@ public class DouglasBridgeAttributeParser {
 		}
 		return existingPriceGrid;
 	}
-	public List<PriceGrid> getAdditionalColorUpcharge(String discountCode,String prices,List<PriceGrid> existingPriceGrid,String upchargeType){
+	public List<PriceGrid> getAdditionalColorUpcharge(String discountCode,String prices,List<PriceGrid> existingPriceGrid,String upchargeType,String qty){
 	   String disCountCode = getAdditionalColorDiscountCode(discountCode);
-	   existingPriceGrid = douglasBridgePriceGridParser.getUpchargePriceGrid("1", prices, disCountCode, "Additional Colors", "n",
+	   existingPriceGrid = douglasBridgePriceGridParser.getUpchargePriceGrid(qty, prices, disCountCode, "Additional Colors", "n",
 				"USD", "Additional Color",upchargeType, "Other","Required", 1, existingPriceGrid);
 		return existingPriceGrid;
 	}

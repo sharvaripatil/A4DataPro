@@ -529,7 +529,7 @@ public class ApparealProductAttributeParser {
 	}
 	public List<String> getProductCategories(String categoryVal){
 		List<String> listOfCategories = new ArrayList<>();
-		if(lookupServiceData.isCategory(categoryVal)){
+		if(lookupServiceData.isCategory(categoryVal.trim())){
 			listOfCategories.add(categoryVal);
 		}
 		return listOfCategories;

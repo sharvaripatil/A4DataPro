@@ -262,7 +262,9 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 					   if(!StringUtils.isEmpty(category)){
 						   List<String> listOfCategories = appaAttributeParser.
 						                      getProductCategories(category);
-						   productExcelObj.setCategories(listOfCategories);
+						   if(!CollectionUtils.isEmpty(listOfCategories)){
+							   productExcelObj.setCategories(listOfCategories);   
+						   }
 					   }
 					break;
 					
