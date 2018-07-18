@@ -1,4 +1,4 @@
-package parser.harvestIndustrail;
+package parser.totesFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import com.a4tech.product.model.Weight;
 import com.a4tech.sage.product.util.LookupData;
 import com.a4tech.util.ApplicationConstants;
 
-public class HarvestProductAttributeParser {
+public class TotesProductAttributeParser {
 	private LookupServiceData lookupServiceDataObj;
 	
 	
@@ -303,18 +303,11 @@ public class HarvestProductAttributeParser {
 	}
 	
 	
-       public List<ImprintSize> getimprintsize(StringBuilder firstImprintSize,StringBuilder secondImprintSize) {
-   	    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
-   	    String ImprintSizeValue="";
-    	 for(int i=0;i<=1;i++) 
-    	 {   
-    		 if(i==0){
-    		 ImprintSizeValue=firstImprintSize.toString().replace("null x null","");
-    		 }else if(i==1){
-     		 ImprintSizeValue=secondImprintSize.toString().replace("null x null","");
-    		 }
-
+       public List<ImprintSize> getimprintsize(StringBuilder firstImprintSize) {
+		
+		String ImprintSizeValue=firstImprintSize.toString().replace("null x null","");
 		ImprintSizeValue=ImprintSizeValue.replace("null", "");
+	    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
 	    ImprintSize impsizeobj;
 	    
 		String ImprintsizeArr[]=ImprintSizeValue.split(",");
@@ -324,10 +317,7 @@ public class HarvestProductAttributeParser {
 		   impsizeobj.setValue(Value);
 		   imprintSizeList.add(impsizeobj);
 	      }				
-    	
-    	 
-    	 
-    	 }
+		
 		return imprintSizeList;
 	}
 	
