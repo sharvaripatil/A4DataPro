@@ -58,7 +58,7 @@ public class DouglasBridgeAttributeParser {
 			 newProductConfig.setThemes(oldProductConfig.getThemes());
 				List<Theme> themeList = oldProductConfig.getThemes().stream().map(themeVal ->{
 					themeVal.setName(themeVal.getName());
-					if(themeVal.getName().equals("ECO FRIENDLY")){
+					if(themeVal.getName().equalsIgnoreCase("ECO FRIENDLY")){
 						themeVal.setName("Eco & Environmentally Friendly");
 					}
 					return themeVal;
@@ -412,20 +412,20 @@ public class DouglasBridgeAttributeParser {
 		return additionalColorList;
 	}
 	public List<String> getProductKeywords(String keyword){
-		//String[] keywords = CommonUtility.getValuesOfArray(keyword, ApplicationConstants.CONST_STRING_COMMA_SEP);
+		String[] keywords = CommonUtility.getValuesOfArray(keyword, ApplicationConstants.CONST_STRING_COMMA_SEP);
 		//Stream<String> keys = Arrays.stream(CommonUtility.getValuesOfArray(keyword, ApplicationConstants.CONST_STRING_COMMA_SEP));
-		List<String> keyWordList = Arrays
+		/*List<String> keyWordList = Arrays
 				.stream(CommonUtility.getValuesOfArray(keyword, ApplicationConstants.CONST_STRING_COMMA_SEP))
-				.map(key -> key).distinct().limit(30).collect(Collectors.toList());
-		/*keywords = CommonUtility.removeDuplicateValues(keywords);
+				.map(key -> key).distinct().limit(30).collect(Collectors.toList());*/
+		keywords = CommonUtility.removeDuplicateValues(keywords);
 		List<String> productKeyWords = new ArrayList<>();
 		for (String keywordName : keywords) {
 			if(keywordName.contains("®")){
 				keywordName = keywordName.replaceAll("®", "").trim();
 			}
-		   productKeyWords.add(keywordName);	
-		}*/
-		return keyWordList;
+		   productKeyWords.add(keywordName.trim());	
+		}
+		return productKeyWords;
 	}
 	public List<FOBPoint> getFobPoint(final String  value,String authToken,String environment){
 		List<FOBPoint> listOfFobPoint = new ArrayList<>();

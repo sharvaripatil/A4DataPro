@@ -236,7 +236,15 @@ public class DouglasBridgeMapper implements IExcelParser{
 									List<Image> imageList = removeImageConfiguration(productExcelObj.getImages());
 									productExcelObj.setImages(imageList);	
 								}
-								
+								String desc = productExcelObj.getDescription();
+								if(desc.contains(".")){
+									productExcelObj.setSummary(desc.substring(0, desc.indexOf(".")+1));	
+								} else {
+									productExcelObj.setSummary(desc);
+								}
+								 if(productExcelObj.getSummary().length() > 130){
+									 productExcelObj.setSummary(productExcelObj.getName());
+								 }
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	//ProductProcessedList.add(productExcelObj.getExternalProductId());
 							 	if(num ==1){
@@ -622,7 +630,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 							String IsEnvironmentallyFriendly = cell.getStringCellValue();
 							if (IsEnvironmentallyFriendly.equalsIgnoreCase("true")) {
 								Theme themeObj = new Theme();
-								themeObj.setName("Eco Friendly");
+								themeObj.setName("Eco & Environmentally Friendly");
 								themeList.add(themeObj);
 							}
 					break;
@@ -1012,6 +1020,15 @@ public class DouglasBridgeMapper implements IExcelParser{
 				List<Image> imageList = removeImageConfiguration(productExcelObj.getImages());
 				productExcelObj.setImages(imageList);	
 			}
+			String desc = productExcelObj.getDescription();
+			if(desc.contains(".")){
+				productExcelObj.setSummary(desc.substring(0, desc.indexOf(".")+1));	
+			} else {
+				productExcelObj.setSummary(desc);
+			}
+			 if(productExcelObj.getSummary().length() > 130){
+				 productExcelObj.setSummary(productExcelObj.getName());
+			 }
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
