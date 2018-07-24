@@ -237,13 +237,18 @@ public class DouglasBridgeMapper implements IExcelParser{
 									productExcelObj.setImages(imageList);	
 								}
 								String desc = productExcelObj.getDescription();
-								if(desc.contains(".")){
-									productExcelObj.setSummary(desc.substring(0, desc.indexOf(".")+1));	
-								} else {
-									productExcelObj.setSummary(desc);
-								}
-								 if(productExcelObj.getSummary().length() > 130){
-									 productExcelObj.setSummary(productExcelObj.getName());
+								if(StringUtils.isEmpty(desc)){
+									productExcelObj.setDescription(productExcelObj.getName());
+									productExcelObj.setSummary(productExcelObj.getName());
+								 } else {
+									 if(desc.contains(".")){
+											productExcelObj.setSummary(desc.substring(0, desc.indexOf(".")+1));	
+										} else {
+											productExcelObj.setSummary(desc);
+										}
+										 if(productExcelObj.getSummary().length() > 130){
+											 productExcelObj.setSummary(productExcelObj.getName());
+										 }	 
 								 }
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	//ProductProcessedList.add(productExcelObj.getExternalProductId());
@@ -369,7 +374,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 					String description =CommonUtility.getCellValueStrinOrInt(cell);
 					description = getFinalDescription(description, asiProdNo);
 					productExcelObj.setDescription(description);
-									
+					
 					break;
 				
 				case 13:  // keywords
@@ -1021,13 +1026,18 @@ public class DouglasBridgeMapper implements IExcelParser{
 				productExcelObj.setImages(imageList);	
 			}
 			String desc = productExcelObj.getDescription();
-			if(desc.contains(".")){
-				productExcelObj.setSummary(desc.substring(0, desc.indexOf(".")+1));	
-			} else {
-				productExcelObj.setSummary(desc);
-			}
-			 if(productExcelObj.getSummary().length() > 130){
-				 productExcelObj.setSummary(productExcelObj.getName());
+			if(StringUtils.isEmpty(desc)){
+				productExcelObj.setDescription(productExcelObj.getName());
+				productExcelObj.setSummary(productExcelObj.getName());
+			 } else {
+				 if(desc.contains(".")){
+						productExcelObj.setSummary(desc.substring(0, desc.indexOf(".")+1));	
+					} else {
+						productExcelObj.setSummary(desc);
+					}
+					 if(productExcelObj.getSummary().length() > 130){
+						 productExcelObj.setSummary(productExcelObj.getName());
+					 }	 
 			 }
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
@@ -1080,6 +1090,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 			description = description.replaceAll(asiProdNo, "");
 		}
 		description = description.replaceAll("Velcro", "");
+		description = douglasBridgeAttributeParser.removeLineNames(description);
 		description = CommonUtility.getStringLimitedChars(description, 800);
 	 return description;
 	}
@@ -1089,6 +1100,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 			 productName = productName.replaceAll(asiProdNo, "");
 			}
 		 productName = productName.replaceAll("Velcro", "");
+		 productName = douglasBridgeAttributeParser.removeLineNames(productName);
 		 productName = CommonUtility.getStringLimitedChars(productName, 60);
 		 return productName;
 	}

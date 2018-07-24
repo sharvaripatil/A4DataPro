@@ -44,6 +44,8 @@ public class DouglasBridgeAttributeParser {
 	private LookupServiceData lookupServiceDataObj;
 	private DouglasBridgePriceGridParser douglasBridgePriceGridParser;
 	private static List<String> lookupFobPoints = null;
+	List<String> lineNames = Arrays.asList("Douglasbridge", "MagiCatcher", "Simply Smashing", "Simply Smashing Canada",
+			"Sniftypak");
 	public Product keepExistingProductData(Product existingProduct){
 		ProductConfigurations oldProductConfig = existingProduct.getProductConfigurations();
 		Product newProduct = new Product();
@@ -53,6 +55,9 @@ public class DouglasBridgeAttributeParser {
 		}
 		if(!CollectionUtils.isEmpty(existingProduct.getCategories())){
 			newProduct.setCategories(existingProduct.getCategories());
+		}
+		if(!CollectionUtils.isEmpty(existingProduct.getLineNames())){
+			newProduct.setLineNames(existingProduct.getLineNames());
 		}
 		 if(!CollectionUtils.isEmpty(oldProductConfig.getThemes())){
 			 newProductConfig.setThemes(oldProductConfig.getThemes());
@@ -440,6 +445,12 @@ public class DouglasBridgeAttributeParser {
 			listOfFobPoint.add(fobPointObj);
 		}
 		return listOfFobPoint;
+	}
+	public String removeLineNames(String value){
+		for (String lineName : lineNames) {
+			value = CommonUtility.removeSpecificWord(value, lineName);
+		}
+		return value;
 	}
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;
