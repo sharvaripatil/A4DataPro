@@ -1297,6 +1297,9 @@
       <bean id="digiSpecPriceGridParserId" class="parser.digiSpec.DigiSpecPriceGridParser"></bean>
        <!-- supplier DIGISPEC 49716 configuration End -->
        
+
+        <!-- supplier Radious 49916 configuration start -->
+
        <!-- 50710 Douglasbridge configuration start-->
      <bean id="douglasMappingId" class="com.a4tech.supplier.mapper.DouglasBridgeMapper">
      	 <property name="postServiceImpl" ref="postService"/>
@@ -1311,6 +1314,7 @@
      <bean id="douglasBridgepriceGridParserId" class="parser.DouglasBridge.DouglasBridgePriceGridParser"/>
       <!-- 50710 Douglasbridge configuration end-->
               <!-- supplier Radious 49916 configuration start -->
+
              
       <bean id="radiMappingId" class="com.a4tech.supplier.mapper.RadiousMapping">
          	 <property name="postServiceImpl" ref="postService"/>

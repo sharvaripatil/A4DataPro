@@ -2,6 +2,10 @@ package parser.harvestIndustrail;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import parser.cb.CBlookup;
+import parser.radious.RadiousLookupData;
+
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
 import com.a4tech.util.ApplicationConstants;
@@ -10,7 +14,7 @@ import com.a4tech.util.CommonUtility;
 
 public class HarvestColorParser {
 
-	public List<Color> getColorCriteria(String colorValue) {
+	/*public List<Color> getColorCriteria(String colorValue) {
 		if(!colorValue.contains("Clear"))
 		{
 			colorValue=colorValue.concat(",").concat("Clear");	
@@ -80,6 +84,40 @@ public class HarvestColorParser {
 		}
 		return listOfProductColors;
 	}
+*/
+	
+  public List<Color> getColorCriteria(String colorValue) {
+		
+		List<Color> listOfProductColors = new ArrayList<>();
+		colorValue=colorValue.replace("Natural/", "").replace(" / Natural", "").replace("Natural /", "").replace("/Natural", "");
+		Color colorObj = new Color();
+		
+		
+		colorValue=colorValue.replace("/", ",");
+		
+		String[] colorValues = CommonUtility.getValuesOfArray(colorValue,
+				ApplicationConstants.CONST_DELIMITER_COMMA);
+		
+		for (String colorName : colorValues) {
+			
+			colorObj = new Color();
+			
+			
+			colorObj.setAlias(colorName);
+    		if(HarvestLookupData.COLOR_MAP.containsKey(colorName.trim())){
+    		colorObj.setName(HarvestLookupData.COLOR_MAP.get(colorName.trim()));
+    		}else
+    		{
+    			colorObj.setName("Other");
+    		}
+    		listOfProductColors.add(colorObj);
+	
+		}
+		return listOfProductColors;
+
+    }   
+	
 
 	}
+
 
