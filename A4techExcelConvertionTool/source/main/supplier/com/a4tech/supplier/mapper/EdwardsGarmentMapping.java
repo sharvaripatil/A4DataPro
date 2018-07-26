@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -107,6 +108,7 @@ public class EdwardsGarmentMapping implements IExcelParser{
 		HashSet<String> priceSet= new HashSet();
 		
 		HashMap<String , HashSet<String>> priceMap=new HashMap<String, HashSet<String>>();
+		HashMap<String , HashSet<String>> priceMapTest=new HashMap<String, HashSet<String>>();
 		HashMap<String , HashSet<String>> availMap=new HashMap<String, HashSet<String>>();
 		HashMap<String , String> sizeKeyValue=new HashMap<String, String>();
 		
@@ -216,7 +218,12 @@ while (iterator.hasNext()) {
 								/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
 										         listOfQuantity.toString(), priceCode, "USD",
 										         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/
+									 if(!CollectionUtils.isEmpty(priceMapTest)){
+									TreeMap<String , HashSet<String>> priceMap1=new TreeMap<String, HashSet<String>>(priceMapTest);
+									 }
 								 if(!CollectionUtils.isEmpty(priceMap)){
+									 //HashMap<String , HashSet<String>> priceMap=new HashMap<String, HashSet<String>>();
+									 //priceMap = new TreeMap<String, HashSet<String>>(priceMap);
 									 List<Price> listOfPricesArr=new ArrayList<Price>();
 									 priceGrids = new ArrayList<PriceGrid>();
 									 PriceGrid priceGrid = new PriceGrid();
@@ -411,6 +418,9 @@ while (iterator.hasNext()) {
 								//priceMap=getPriceMap(priceMap, listPrice, "Size"+":"+tempStr+"___"+"Product Color"+":"+colorValueTemp);//	//getPriceMap(priceMap, listPrice, tempStr);
 								//+"_____"+colorValueTemp
 								priceMap=getPriceMap(priceMap, listPrice+"_____"+"Product Color"+":"+colorValueTemp,tempStr);
+								///
+								priceMapTest=getPriceMapTest(priceMapTest, listPrice+"_____"+"Product Color"+":"+colorValueTemp+"_____"+"Size"+":"+tempStr, listPrice);//qwe
+								///
 								 if(!StringUtils.isEmpty(tempStr) && !tempStr.equals("0")){
 								availMap=getAvailMap(availMap,colorValueTemp,tempStr);
 								 }
@@ -421,6 +431,9 @@ while (iterator.hasNext()) {
 							skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
 							//priceMap=	getPriceMap(priceMap, listPrice, size1+"#####"+colorValueTemp);
 							priceMap=	getPriceMap(priceMap, listPrice+"_____"+"Product Color"+":"+colorValueTemp,size1);//
+							///
+							priceMapTest=getPriceMapTest(priceMapTest, listPrice+"_____"+"Product Color"+":"+colorValueTemp+"_____"+"Size"+":"+size1, listPrice);
+							///
 							 if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
 							availMap=getAvailMap(availMap,colorValueTemp,size1);
 							 }
@@ -432,6 +445,10 @@ while (iterator.hasNext()) {
 									skuSet.add(size2+"_____"+colorValueTemp+"_____"+stockValue);
 									//priceMap=	getPriceMap(priceMap, listPrice, size1+"#####"+colorValueTemp);
 									priceMap=	getPriceMap(priceMap, listPrice+"_____"+"Product Color"+":"+colorValueTemp,size2);//
+									//
+									priceMapTest=getPriceMapTest(priceMapTest, listPrice+"_____"+"Product Color"+":"+colorValueTemp+"_____"+"Size"+":"+size1, listPrice);
+									//
+									
 									 if(!StringUtils.isEmpty(size2) && !size2.equals("0")){
 									availMap=getAvailMap(availMap,colorValueTemp,size2);
 									 }
@@ -455,6 +472,7 @@ while (iterator.hasNext()) {
 				    	productName = CommonUtility.getCellValueStrinOrInt(cell);
 				    	if(!StringUtils.isEmpty(productName)){
 				    		productName=productName.replace("EDWARDS", "");
+				    		productName=productName.replace("Edwards", "");//Edwards
 				    		//EDWARDS
 						int len=productName.length();
 						 if(len>60){
@@ -581,7 +599,7 @@ while (iterator.hasNext()) {
 						}
 				    	break;
 				    case  24://ShortDescription
-				    	try{
+				    	try{/*
 				    	productName = CommonUtility.getCellValueStrinOrInt(cell);
 				    	if(!StringUtils.isEmpty(productName)){
 				    		productName=productName.replace("EDWARDS", "");
@@ -606,7 +624,7 @@ while (iterator.hasNext()) {
 						productExcelObj.setName(productName);
 				    		}
 				    	}
-				    	}catch (Exception e) {
+				    	*/}catch (Exception e) {
 				    		_LOGGER.error("Error while case:"+columnIndex+e.getMessage());
 						}
 				    	break;
@@ -1013,6 +1031,28 @@ public boolean isRepeateColumn(int columnIndex){
 			}
 		}
 		return priceMap;
+	}
+	
+	
+	public static HashMap<String, HashSet<String>> getPriceMapTest(HashMap<String , HashSet<String>> password1,String listPrice,String keyListPrice){
+		if(CollectionUtils.isEmpty(password1)){
+			HashSet<String>	priceSet=new HashSet<String>();
+			priceSet.add(listPrice);
+			password1.put(keyListPrice, priceSet);
+		}else{
+			if(password1.containsKey(listPrice)){
+				HashSet<String> priceSetTemp= password1.get(listPrice);
+				priceSetTemp.add(listPrice);
+				password1.put(keyListPrice, priceSetTemp);
+			}else{
+				HashSet<String> priceSetTemp2= new HashSet<String>();
+				//priceSet=new HashSet<String>();
+				priceSetTemp2.add(listPrice);
+				password1.put(keyListPrice, priceSetTemp2);
+				
+			}
+		}
+		return password1;
 	}
 	
 	public static HashMap<String, HashSet<String>> getAvailMap(HashMap<String , HashSet<String>> availMap,String color,String size){
