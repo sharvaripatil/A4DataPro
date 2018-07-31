@@ -107,8 +107,9 @@ public class EdwardsGarmentMapping implements IExcelParser{
 		Set<String> skuSet= new HashSet();
 		HashSet<String> priceSet= new HashSet();
 		
-		HashMap<String , HashSet<String>> priceMap=new HashMap<String, HashSet<String>>();
-		HashMap<String , HashSet<String>> priceMapTest=new HashMap<String, HashSet<String>>();
+		//HashMap<String , HashSet<String>> priceMap=new HashMap<String, HashSet<String>>();
+		//HashMap<String , HashSet<String>> priceMapTest=new HashMap<String, HashSet<String>>();
+		HashMap<String, HashMap<String,HashSet<String>>> priceMapTestMainMap=new HashMap<String, HashMap<String,HashSet<String>>>();
 		HashMap<String , HashSet<String>> availMap=new HashMap<String, HashSet<String>>();
 		HashMap<String , String> sizeKeyValue=new HashMap<String, String>();
 		
@@ -214,50 +215,28 @@ while (iterator.hasNext()) {
 										productConfigObj.setImprintMethods(listOfImprintMethod);
 									}
 									
-							// process pring here
-								/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
-										         listOfQuantity.toString(), priceCode, "USD",
-										         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/
-									 if(!CollectionUtils.isEmpty(priceMapTest)){
-									TreeMap<String , HashSet<String>> priceMap1=new TreeMap<String, HashSet<String>>(priceMapTest);
-									 }
-								 if(!CollectionUtils.isEmpty(priceMap)){
-									 //HashMap<String , HashSet<String>> priceMap=new HashMap<String, HashSet<String>>();
-									 //priceMap = new TreeMap<String, HashSet<String>>(priceMap);
+									// process pring here
+									 TreeMap<String, HashMap<String,HashSet<String>>> priceMapSorted= null;
+									 if(!CollectionUtils.isEmpty(priceMapTestMainMap)){//priceMapTestMainMap
+										 priceMapSorted=new TreeMap<String, HashMap<String,HashSet<String>>>(priceMapTestMainMap);
+										 }
+								
+									 if(!CollectionUtils.isEmpty(priceMapSorted)){
 									 List<Price> listOfPricesArr=new ArrayList<Price>();
 									 priceGrids = new ArrayList<PriceGrid>();
 									 PriceGrid priceGrid = new PriceGrid();
-									 for (Entry<String, HashSet<String>> values : priceMap.entrySet()) {
-										 
+									 for (Entry<String, HashMap<String,HashSet<String>>> values : priceMapSorted.entrySet()) {
 										   String priceVal= values.getKey();
-										   String priceValArr[]=priceVal.split("_____");//___
-										   priceVal=priceValArr[0];
-										   String firstValueofColor=priceValArr[1];
-										   HashSet<String> tempSet=values.getValue();
-										   ArrayList<String> listOfsizes=new ArrayList<String>(tempSet);
-										  //CommonUtility.getValuesOfArray(listOfsizes.toArray().toString(), ",");
+										   HashMap<String,HashSet<String>> tempHashMap=values.getValue();
+										    for (Entry<String,HashSet<String>> valuesTemp : tempHashMap.entrySet()) {
+											   String colorValuee=valuesTemp.getKey();
+											   ArrayList<String> listOfsizes=new ArrayList<String>(valuesTemp.getValue());
 										   String sizeValue = String.join(",", listOfsizes);
 										   if(!StringUtils.isEmpty(sizeValue) && !sizeValue.equals("0")){
-											   // ihave to work on grid name for this
-											   /*
-											   (String listOfPrices, String listOfQuan, String discountCodes,
-														String currency, String priceInclude, boolean isBasePrice,
-														String qurFlag, String priceName, String criterias,Integer sequence,
-														List<PriceGrid> existingPriceGrid) */
-											   String tempCriteriaValues[]=sizeValue.split(",");//criterValue
-											   //for (String criterias : tempCriteriaValues) {
-												   //if(criterias.contains("___")){
-
-											  /* firstValueofColor=firstValueofColor.replace(":", "");
-											   firstValueofColor=firstValueofColor.replace("Size", "");
-											   firstValueofColor=firstValueofColor.replace("Product Color", "");
-											   firstValueofColor=firstValueofColor.replace("___", ",");*/
-													   priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
+											  priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
 																 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
-																 ApplicationConstants.CONST_STRING_FALSE,firstValueofColor,"Product Color","Size",listOfsizes,1,priceGrids);
-													  
-												   //}
-											   //}
+																 ApplicationConstants.CONST_STRING_FALSE,colorValuee,"Product Color","Size",listOfsizes,1,priceGrids);
+													 
 										   }else{
 											  
 											   priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
@@ -273,6 +252,7 @@ while (iterator.hasNext()) {
 												priceGrid.setPriceConfigurations(new ArrayList<PriceConfiguration>());
 												priceGrids.add(priceGrid);
 											   
+										   	}
 										   }
 										}
 								}
@@ -313,7 +293,9 @@ while (iterator.hasNext()) {
 						         setSizes= new HashSet();
 						         skuSet=new HashSet<String>();
 						         priceSet=new HashSet<String>();
-						         priceMap=new HashMap<String, HashSet<String>>();
+						         //priceMap=new HashMap<String, HashSet<String>>();
+						         priceMapSorted=new TreeMap<>();
+						         priceMapTestMainMap=new HashMap<String, HashMap<String,HashSet<String>>>();
 						         availMap=new HashMap<String, HashSet<String>>();
 						 		 sizeKeyValue=new HashMap<String, String>();
 						         firstValue="";
@@ -415,11 +397,7 @@ while (iterator.hasNext()) {
 								tempStr=tempStr.replaceAll(" ","");
 								setSizes.add(tempStr);
 								skuSet.add(tempStr+"_____"+colorValueTemp+"_____"+stockValue);
-								//priceMap=getPriceMap(priceMap, listPrice, "Size"+":"+tempStr+"___"+"Product Color"+":"+colorValueTemp);//	//getPriceMap(priceMap, listPrice, tempStr);
-								//+"_____"+colorValueTemp
-								priceMap=getPriceMap(priceMap, listPrice+"_____"+"Product Color"+":"+colorValueTemp,tempStr);
-								///
-								priceMapTest=getPriceMapTest(priceMapTest, listPrice+"_____"+"Product Color"+":"+colorValueTemp+"_____"+"Size"+":"+tempStr, listPrice);//qwe
+								priceMapTestMainMap=getPriceMapClrSize(priceMapTestMainMap, colorValueTemp,tempStr, listPrice);//qwe
 								///
 								 if(!StringUtils.isEmpty(tempStr) && !tempStr.equals("0")){
 								availMap=getAvailMap(availMap,colorValueTemp,tempStr);
@@ -429,10 +407,7 @@ while (iterator.hasNext()) {
 							sizeCount++;
 							setSizes.add(size1.trim());
 							skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
-							//priceMap=	getPriceMap(priceMap, listPrice, size1+"#####"+colorValueTemp);
-							priceMap=	getPriceMap(priceMap, listPrice+"_____"+"Product Color"+":"+colorValueTemp,size1);//
-							///
-							priceMapTest=getPriceMapTest(priceMapTest, listPrice+"_____"+"Product Color"+":"+colorValueTemp+"_____"+"Size"+":"+size1, listPrice);
+							priceMapTestMainMap=getPriceMapClrSize(priceMapTestMainMap, colorValueTemp,size1, listPrice);//qwe
 							///
 							 if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
 							availMap=getAvailMap(availMap,colorValueTemp,size1);
@@ -443,10 +418,7 @@ while (iterator.hasNext()) {
 									sizeCount++;
 									setSizes.add(size2.trim());
 									skuSet.add(size2+"_____"+colorValueTemp+"_____"+stockValue);
-									//priceMap=	getPriceMap(priceMap, listPrice, size1+"#####"+colorValueTemp);
-									priceMap=	getPriceMap(priceMap, listPrice+"_____"+"Product Color"+":"+colorValueTemp,size2);//
-									//
-									priceMapTest=getPriceMapTest(priceMapTest, listPrice+"_____"+"Product Color"+":"+colorValueTemp+"_____"+"Size"+":"+size1, listPrice);
+									priceMapTestMainMap=getPriceMapClrSize(priceMapTestMainMap, colorValueTemp,size1, listPrice);//qwe
 									//
 									
 									 if(!StringUtils.isEmpty(size2) && !size2.equals("0")){
@@ -750,64 +722,48 @@ while (iterator.hasNext()) {
 					productConfigObj.setImprintMethods(listOfImprintMethod);
 				}
 				
-		// process pring here
-			/*priceGrids = gillStudiosPriceGridParser.getPriceGrids(listOfPrices.toString(), 
-					         listOfQuantity.toString(), priceCode, "USD",
-					         priceIncludesValue, true, quoteUponRequest, basePriceName,tempCriteria,pricesPerUnit.toString(),priceGrids);*/
-				 if(!CollectionUtils.isEmpty(priceMap)){
-					 List<Price> listOfPricesArr=new ArrayList<Price>();
-					 priceGrids = new ArrayList<PriceGrid>();
-					 PriceGrid priceGrid = new PriceGrid();
-					 for (Entry<String, HashSet<String>> values : priceMap.entrySet()) {
-						 
-						   String priceVal= values.getKey();
-						   String priceValArr[]=priceVal.split("_____");
-						   priceVal=priceValArr[0];
-						   String firstValueofColor=priceValArr[1];
-						   HashSet<String> tempSet=values.getValue();
-						   ArrayList<String> listOfsizes=new ArrayList<String>(tempSet);
-						  //CommonUtility.getValuesOfArray(listOfsizes.toArray().toString(), ",");
-						   String sizeValue = String.join(",", listOfsizes);
-						   if(!StringUtils.isEmpty(sizeValue) && !sizeValue.equals("0")){
-							   // ihave to work on grid name for this
-							   /*
-							   (String listOfPrices, String listOfQuan, String discountCodes,
-										String currency, String priceInclude, boolean isBasePrice,
-										String qurFlag, String priceName, String criterias,Integer sequence,
-										List<PriceGrid> existingPriceGrid) */
-							   String tempCriteriaValues[]=sizeValue.split(",");//criterValue
-							   //for (String criterias : tempCriteriaValues) {
-								   //if(criterias.contains("___")){
-
-							  /* firstValueofColor=firstValueofColor.replace(":", "");
-							   firstValueofColor=firstValueofColor.replace("Size", "");
-							   firstValueofColor=firstValueofColor.replace("Product Color", "");
-							   firstValueofColor=firstValueofColor.replace("___", ",");*/
-									   priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
-												 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
-												 ApplicationConstants.CONST_STRING_FALSE,firstValueofColor,"Product Color","Size",listOfsizes,1,priceGrids);
-									  
-								   //}
-							   //}
-						   }else{
-							  
-							   priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
-								priceGrid.setDescription("");
-								priceGrid.setPriceIncludes("");
-								priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_FALSE);
-								priceGrid.setIsBasePrice(true);
-								priceGrid.setSequence(1);
-								List<Price> listOfPrice = new ArrayList<Price>();
-								//if (!priceGrid.getIsQUR()) {
-								listOfPrice = EdwardGarmentPriceGridParser.getSinlgePrices(priceVal, "1", "P",listOfPrice);
-								priceGrid.setPrices(listOfPrice);
-								priceGrid.setPriceConfigurations(new ArrayList<PriceConfiguration>());
-								priceGrids.add(priceGrid);
-							   
-						   }
-						}
-				}
-					 
+				// process pring here
+				 TreeMap<String, HashMap<String,HashSet<String>>> priceMapSorted= null;
+				 if(!CollectionUtils.isEmpty(priceMapTestMainMap)){//priceMapTestMainMap
+					 priceMapSorted=new TreeMap<String, HashMap<String,HashSet<String>>>(priceMapTestMainMap);
+					 }
+			
+				 if(!CollectionUtils.isEmpty(priceMapSorted)){
+				 List<Price> listOfPricesArr=new ArrayList<Price>();
+				 priceGrids = new ArrayList<PriceGrid>();
+				 PriceGrid priceGrid = new PriceGrid();
+				 for (Entry<String, HashMap<String,HashSet<String>>> values : priceMapSorted.entrySet()) {
+					   String priceVal= values.getKey();
+					   HashMap<String,HashSet<String>> tempHashMap=values.getValue();
+					    for (Entry<String,HashSet<String>> valuesTemp : tempHashMap.entrySet()) {
+						   String colorValuee=valuesTemp.getKey();
+						   ArrayList<String> listOfsizes=new ArrayList<String>(valuesTemp.getValue());
+					   String sizeValue = String.join(",", listOfsizes);
+					   if(!StringUtils.isEmpty(sizeValue) && !sizeValue.equals("0")){
+						  priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
+											 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
+											 ApplicationConstants.CONST_STRING_FALSE,colorValuee,"Product Color","Size",listOfsizes,1,priceGrids);
+								 
+					   }else{
+						  
+						   priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
+							priceGrid.setDescription("");
+							priceGrid.setPriceIncludes("");
+							priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_FALSE);
+							priceGrid.setIsBasePrice(true);
+							priceGrid.setSequence(1);
+							List<Price> listOfPrice = new ArrayList<Price>();
+							//if (!priceGrid.getIsQUR()) {
+							listOfPrice = EdwardGarmentPriceGridParser.getSinlgePrices(priceVal, "1", "P",listOfPrice);
+							priceGrid.setPrices(listOfPrice);
+							priceGrid.setPriceConfigurations(new ArrayList<PriceConfiguration>());
+							priceGrids.add(priceGrid);
+						   
+					   	}
+					   }
+					}
+			}
+				 
 					 if(CollectionUtils.isEmpty(priceGrids)){
 							priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur();	
 						}
@@ -847,7 +803,9 @@ while (iterator.hasNext()) {
 	         setSizes= new HashSet();
 	         skuSet=new HashSet<String>();
 	         priceSet=new HashSet<String>();
-	         priceMap=new HashMap<String, HashSet<String>>();
+	         //priceMap=new HashMap<String, HashSet<String>>();
+	         priceMapSorted=new TreeMap<>();
+	         priceMapTestMainMap=new HashMap<String, HashMap<String,HashSet<String>>>();
 	         availMap=new HashMap<String, HashSet<String>>();
 	         sizeKeyValue=new HashMap<String, String>();
 	         firstValue="";
@@ -1034,26 +992,97 @@ public boolean isRepeateColumn(int columnIndex){
 	}
 	
 	
-	public static HashMap<String, HashSet<String>> getPriceMapTest(HashMap<String , HashSet<String>> password1,String listPrice,String keyListPrice){
-		if(CollectionUtils.isEmpty(password1)){
+	public static HashMap<String, HashSet<String>> getPriceMapTest(HashMap<String , HashSet<String>> priceMapTest,String listPrice,String keyListPrice){
+		if(CollectionUtils.isEmpty(priceMapTest)){
 			HashSet<String>	priceSet=new HashSet<String>();
 			priceSet.add(listPrice);
-			password1.put(keyListPrice, priceSet);
+			priceMapTest.put(keyListPrice, priceSet);
 		}else{
-			if(password1.containsKey(listPrice)){
-				HashSet<String> priceSetTemp= password1.get(listPrice);
+			if(priceMapTest.containsKey(keyListPrice)){
+				HashSet<String> priceSetTemp= priceMapTest.get(keyListPrice);
 				priceSetTemp.add(listPrice);
-				password1.put(keyListPrice, priceSetTemp);
+				priceMapTest.put(keyListPrice, priceSetTemp);
 			}else{
 				HashSet<String> priceSetTemp2= new HashSet<String>();
 				//priceSet=new HashSet<String>();
 				priceSetTemp2.add(listPrice);
-				password1.put(keyListPrice, priceSetTemp2);
+				priceMapTest.put(keyListPrice, priceSetTemp2);
 				
 			}
 		}
-		return password1;
+		return priceMapTest;
 	}
+	
+	
+	public static HashMap<String, HashMap<String,HashSet<String>>> getPriceMapClrSize(HashMap<String, HashMap<String,HashSet<String>>> priceMainMap,String color,String size,String keyListPrice){
+		HashMap<String, HashMap<String,HashSet<String>>> priceMainMapClone=new HashMap<String, HashMap<String,HashSet<String>>>();
+		try{
+			keyListPrice=keyListPrice.trim();
+			color=color.trim();
+		if(CollectionUtils.isEmpty(priceMainMap)){
+			final String strColor=color;
+			//strColor=color;
+			priceMainMap=new HashMap<String, HashMap<String,HashSet<String>>>();
+			HashMap<String,HashSet<String>> keySizeColorMap = new HashMap<String, HashSet<String>>(); 
+			HashSet<String> sizeSet=new HashSet<String>();
+			sizeSet.add(size);
+			keySizeColorMap.put(strColor, sizeSet);
+			priceMainMap.put(keyListPrice, keySizeColorMap);
+		}else{
+			if(priceMainMap.containsKey(keyListPrice)){
+				final String strColor1=color;
+				//strColor1=color;
+				HashMap<String,HashSet<String>> tempkeySizeColorMap= priceMainMap.get(keyListPrice);
+				if(tempkeySizeColorMap.containsKey(strColor1)){
+				HashSet<String> tempSizeSet=tempkeySizeColorMap.get(strColor1);
+				
+				tempSizeSet.add(size);
+				tempkeySizeColorMap.put(strColor1, tempSizeSet);
+				//
+				HashMap<String,HashSet<String>> tempkeySizeColorMap1=priceMainMap.get(keyListPrice);
+				tempkeySizeColorMap1.putAll(tempkeySizeColorMap);
+				priceMainMap.put(keyListPrice, tempkeySizeColorMap1);
+				//
+				//priceMainMap.put(keyListPrice, tempkeySizeColorMap);
+				}
+				else{
+					final String strColor2=color;
+					//strColor2=color;
+					HashMap<String,HashSet<String>> keySizeColorMap1 = new HashMap<String, HashSet<String>>(); 
+					HashSet<String> sizeSet1=new HashSet<String>();
+					sizeSet1.add(size);
+					keySizeColorMap1.put(strColor2, sizeSet1);
+					//priceMainMap.put(keyListPrice, keySizeColorMap1);
+					HashMap<String,HashSet<String>> tempkeySizeColorMap1=priceMainMap.get(keyListPrice);
+					tempkeySizeColorMap1.putAll(keySizeColorMap1);
+					priceMainMap.put(keyListPrice, tempkeySizeColorMap1);
+				}
+			}else{
+				if(CollectionUtils.isEmpty(priceMainMap)){
+					priceMainMap=new HashMap<String, HashMap<String,HashSet<String>>>();
+				}
+				final String strColor3=color;
+				//strColor3=color;
+				HashMap<String,HashSet<String>> keySizeColorMap2 = new HashMap<String, HashSet<String>>(); 
+				HashSet<String> sizeSet2=new HashSet<String>();
+				sizeSet2.add(size);
+				keySizeColorMap2.put(strColor3, sizeSet2);
+				//
+				//HashMap<String,HashSet<String>> tempkeySizeColorMap1=priceMainMap.get(keyListPrice);
+				//tempkeySizeColorMap1.putAll(keySizeColorMap2);
+				//priceMainMap.put(keyListPrice, tempkeySizeColorMap1);
+				//
+				priceMainMap.put(keyListPrice, keySizeColorMap2);
+				
+			}
+		}
+		}catch(Exception e){
+			_LOGGER.error("Error While processing pricing map for criteria"+e.getMessage());
+		}
+		priceMainMapClone=(HashMap<String, HashMap<String,HashSet<String>>>)priceMainMap.clone();
+		return priceMainMapClone;
+	}
+	
 	
 	public static HashMap<String, HashSet<String>> getAvailMap(HashMap<String , HashSet<String>> availMap,String color,String size){
 		if(CollectionUtils.isEmpty(availMap)){

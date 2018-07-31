@@ -29,14 +29,14 @@ public class EdwardGarmentPriceGridParser {
 			//Integer sequence = 1;
 				String tempName=priceName;
 				if(!StringUtils.isEmpty(tempName)){
-						String arrValues[]=tempName.split(":");
+					/*	String arrValues[]=tempName.split(":");
 						String tempStr=arrValues[1];
 					if(tempName.contains(":")){//Size:S___Product Color:BLACK
 						tempName=tempName.replace(":", "");
 						tempName=tempName.replace("Size", "");
 						tempName=tempName.replace("Product Color", "");
 						tempName=tempName.replace("___", ",");
-					}
+					}*/
 					
 					for (String string : listOfsizes) {
 						tempName=tempName+","+string;
@@ -87,7 +87,7 @@ public class EdwardGarmentPriceGridParser {
 				//configuration = getConfigurations(criterias+":"+priceName);//because over here pricename & criteria value is same
 				
 				//if(criterias.contains("___")){
-				configuration = getConfigurations(priceName,listOfsizes);//because over here pricename & criteria value is same
+				configuration = getConfigurations(priceName+":"+cri1,listOfsizes);//because over here pricename & criteria value is same
 				//}//else{
 					//configuration = getConfigurations(criterias+":"+priceName);
 				//}*/
@@ -151,11 +151,11 @@ public class EdwardGarmentPriceGridParser {
 				if(!StringUtils.isEmpty(firstCriteria)){
 					String arrValues[]=firstCriteria.split(":");
 					PriceConfiguration oneConfig = new PriceConfiguration();
-					oneConfig.setCriteria(arrValues[0]);
-					oneConfig.setValue(Arrays.asList((Object) arrValues[1]));
+					oneConfig.setCriteria(arrValues[1]);
+					oneConfig.setValue(Arrays.asList((Object) arrValues[0]));
 					priceConfiguration.add(oneConfig);
 				}
-				
+				if(!CollectionUtils.isEmpty(listOfsizes)){
 			for (String criterias : listOfsizes) {
 			if (criterias
 					.contains(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID)) {
@@ -188,28 +188,7 @@ public class EdwardGarmentPriceGridParser {
 				configs.setCriteria("Size");
 				configs.setValue(Arrays.asList((Object) criterias));
 				priceConfiguration.add(configs);
-				/*configs = new PriceConfiguration();
-				config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
-				//String criteriaValue = LookupData.getCriteriaValue(config[0]);
-				//String criteriaValue =config[0];
-				if(config[1].contains(",")){
-					String[] tempArr=config[1].split(",");
-					for (String Value : tempArr) {
-						configs = new PriceConfiguration();
-						configs.setCriteria(config[0]);
-						configs.setValue(Arrays.asList((Object) Value));
-						priceConfiguration.add(configs);
-					}*/
-					
-				/*}else{
-
-					configs.setCriteria(config[0]);
-					configs.setValue(Arrays.asList((Object) config[1]));
-					priceConfiguration.add(configs);
-				}*/
-				
-				
-				
+			}
 			}
 			}
 			//}
