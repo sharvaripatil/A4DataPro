@@ -63,6 +63,7 @@ import com.a4tech.supplier.mapper.TekweldMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.TowelSpecialtiesMapping;
 import com.a4tech.supplier.mapper.TwintechMapping;
+import com.a4tech.supplier.mapper.WBTIndustriesMapper;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 
 public class ExcelFactory {
@@ -127,7 +128,8 @@ public class ExcelFactory {
     private SportAzxCandMapping 			sportAzxCandMapping;
     private DigiSpecMapping                 digiSpecMapping;
     private DouglasBridgeMapper             douglasBridgeMapper;
-	 private RadiousMapping                  radiMapping;	
+	private RadiousMapping                  radiMapping;	
+    private WBTIndustriesMapper	            wbtIndustriesMapper;
 
 		public  IExcelParser getExcelParserObject(String name){
 
@@ -257,6 +259,8 @@ public class ExcelFactory {
 			  return radiMapping;
 		  } else if(name.equals("50710")){
 			  return douglasBridgeMapper;
+		  } else if(name.equals("96640")){
+			  return wbtIndustriesMapper;
 		  }
 		return null;
 	}
@@ -721,6 +725,14 @@ public class ExcelFactory {
 	public void setRadiMapping(RadiousMapping radiMapping) {
 		this.radiMapping = radiMapping;
 	}
+	public WBTIndustriesMapper getWbtIndustriesMapper() {
+		return wbtIndustriesMapper;
+	}
+
+	public void setWbtIndustriesMapper(WBTIndustriesMapper wbtIndustriesMapper) {
+		this.wbtIndustriesMapper = wbtIndustriesMapper;
+	}
+
 
 
 }

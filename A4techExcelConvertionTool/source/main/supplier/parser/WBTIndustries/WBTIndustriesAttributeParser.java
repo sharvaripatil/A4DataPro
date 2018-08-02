@@ -1,4 +1,4 @@
-package parser.DouglasBridge;
+package parser.WBTIndustries;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,39 +40,21 @@ import com.a4tech.sage.product.util.LookupData;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
-public class DouglasBridgeAttributeParser {
+public class WBTIndustriesAttributeParser {
 	private LookupServiceData lookupServiceDataObj;
-	private DouglasBridgePriceGridParser douglasBridgePriceGridParser;
+	private WBTIndustriesPriceGridParser wbtIndustriesPriceGridParser;
 	private static List<String> lookupFobPoints = null;
-	List<String> lineNames = Arrays.asList("Douglasbridge", "MagiCatcher", "Simply Smashing", "Simply Smashing Canada",
-			"Sniftypak");
 	public Product keepExistingProductData(Product existingProduct){
-		ProductConfigurations oldProductConfig = existingProduct.getProductConfigurations();
-		Product newProduct = new Product();
-		ProductConfigurations newProductConfig = new ProductConfigurations();
-		if(!CollectionUtils.isEmpty(existingProduct.getImages())){
-			newProduct.setImages(existingProduct.getImages());
-		}
-		if(!CollectionUtils.isEmpty(existingProduct.getCategories())){
-			newProduct.setCategories(existingProduct.getCategories());
-		}
-		if(!CollectionUtils.isEmpty(existingProduct.getLineNames())){
-			newProduct.setLineNames(existingProduct.getLineNames());
-		}
-		 if(!CollectionUtils.isEmpty(oldProductConfig.getThemes())){
-			 newProductConfig.setThemes(oldProductConfig.getThemes());
-				List<Theme> themeList = oldProductConfig.getThemes().stream().map(themeVal ->{
-					themeVal.setName(themeVal.getName());
-					if(themeVal.getName().equalsIgnoreCase("ECO FRIENDLY")){
-						themeVal.setName("Eco & Environmentally Friendly");
-					}
-					return themeVal;
-				}).collect(Collectors.toList()); 
-				newProductConfig.setThemes(themeList);
-			}
-		newProduct.setProductConfigurations(newProductConfig);
-		return newProduct;
-	}
+		  Product newProduct = new Product();
+		  ProductConfigurations newConfig = new ProductConfigurations();
+		  ProductConfigurations oldConfig = existingProduct.getProductConfigurations();
+		  if(!CollectionUtils.isEmpty(oldConfig.getImprintMethods())){
+			  newConfig.setImprintMethods(oldConfig.getImprintMethods());
+		  }
+		  
+		  newProduct.setProductConfigurations(newConfig);
+		  return newProduct;
+	  }
 	public Size getProductSize(String dimensionValue, String dimensionUnits,
 			String dimensionType) {
          Size sizeObj = new Size();
@@ -114,20 +96,12 @@ public class DouglasBridgeAttributeParser {
 	      }		
 		return imprintSizeList;
 	}
-	public List<Packaging> getPackageValues(String packageValues){
+
+	public List<Packaging> getPackageValues(String packageVal) {
 		List<Packaging> listOfPackage = new ArrayList<Packaging>();
-		Packaging packaging = null;
-			String[] packValues = packageValues.split(ApplicationConstants.CONST_DELIMITER_COMMA);
-			for (String packageVal : packValues) {
-				packaging = new Packaging();
-				if(packageVal.contains("Bulk")){
-					packageVal = "Bulk";
-				} else if(packageVal.equalsIgnoreCase("Individually poly bagged")){
-					packageVal = "Individual Poly Bag";
-				}
-			   packaging.setName(packageVal);
-			   listOfPackage.add(packaging);
-			}
+		Packaging packaging = new Packaging();
+		packaging.setName(packageVal);
+		listOfPackage.add(packaging);
 		return listOfPackage;
 	}
 	public ShippingEstimate getShippingEstimateValues(String shippingDimension, String weight,String numberOfItems){
@@ -208,31 +182,19 @@ public class DouglasBridgeAttributeParser {
 		}
 		return countryName;
 	}
-	public List<ImprintMethod> getImprintMethodValues(String imprintMethodValue){
-		ImprintMethod imprMethod = null;
-		List<ImprintMethod> imprintMethodList = new ArrayList<ImprintMethod>();
-		String[] imprintMethodVals = imprintMethodValue.split(",");
-		for (String imprintMethodName : imprintMethodVals) {
-			imprMethod = new ImprintMethod();
-			String imprintMethodType = "";
-			   if(imprintMethodName.equalsIgnoreCase("Pad printed") || imprintMethodName.equalsIgnoreCase("Pad printing")){
-				   imprintMethodType = "Pad Print";
-			   } else if(imprintMethodName.equalsIgnoreCase("Screen printed")){
-				   imprintMethodType = "Silkscreen";
-			   }
-			   imprMethod.setAlias(imprintMethodName);
-			   imprMethod.setType(imprintMethodType);
-			   imprintMethodList.add(imprMethod);
+	public List<ImprintMethod> getImprintMethodValues(String imprintMethodValue,List<ImprintMethod> existingImprMethodList){
+		ImprintMethod imprMethod = new ImprintMethod();
+		String imprMethodGroup = "";
+		 if(imprintMethodValue.equalsIgnoreCase("Embroidery")){
+			 imprMethodGroup = "Embroidered";
+		 } else {
+			 imprMethodGroup = imprintMethodValue;
+		 }
+			   imprMethod.setAlias(imprintMethodValue);
+			   imprMethod.setType(imprMethodGroup);
+			   existingImprMethodList.add(imprMethod);
+		return existingImprMethodList;
 		}
-		return imprintMethodList;
-		}
-	public List<ImprintMethod> getImprintMethodValues(List<ImprintMethod> imprintMethodList,String imprintMethodVal){
-		ImprintMethod imprintMethod = new ImprintMethod();
-		imprintMethod.setType(imprintMethodVal);
-		imprintMethod.setAlias(imprintMethodVal);
-		imprintMethodList.add(imprintMethod);
-		return imprintMethodList;
-	}
 	public Option getImprintOption2(String ImprintOptionValue) {
 		List<OptionValue> valuesList = new ArrayList<OptionValue>();
 		OptionValue optionValueObj=new OptionValue();
@@ -257,67 +219,33 @@ public class DouglasBridgeAttributeParser {
 	}
 	public List<Color> getProductColor(String color){
 		List<Color> listOfProductColor = new ArrayList<>();
-		Color colorObj = null;
-		String[] colors = CommonUtility.getValuesOfArray(color, ApplicationConstants.CONST_DELIMITER_COMMA);
-		for (String colorName : colors) {
-			colorObj = new Color();
-			colorName = colorName.trim();
-			
-			if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
-				String[] clrs = CommonUtility.getValuesOfArray(color, ApplicationConstants.CONST_DELIMITER_COMMA);
-				if(clrs.length > 3){
-					colorObj.setName("Multi color");
-					colorObj.setAlias("Multi color");
-				} else{
-					colorObj = getColorCombo(colorName,ApplicationConstants.CONST_DELIMITER_FSLASH);					
-				}
-			}else {
-				String colorGroup = DouglasBridgeColorMapping.getColorGroup(colorName);
-				colorObj.setName(colorGroup);
-				colorObj.setAlias(colorName);
-			}
-		   listOfProductColor.add(colorObj);
+		Color colorObj =  new Color();
+		if(color.equalsIgnoreCase("Assorted")){
+			colorObj.setName("Assorted");
+		} else {
+			colorObj.setName("Other");
 		}
+		colorObj.setAlias(color);
+		listOfProductColor.add(colorObj);
 		return listOfProductColor;
 	}
-	private Color getColorCombo(String comboVal,String colorDelimiter){
-		Color colorObj = new Color();
-		List<Combo> listOfComos = new ArrayList<>();
-		Combo comboObj = new Combo();
-		Combo comboObj1 = null;
-		String[] comboColors = CommonUtility.getValuesOfArray(comboVal,colorDelimiter);
-		colorObj.setName(
-				DouglasBridgeColorMapping.getColorGroup(comboColors[ApplicationConstants.CONST_NUMBER_ZERO]));
-		comboObj.setName(
-				DouglasBridgeColorMapping.getColorGroup(comboColors[ApplicationConstants.CONST_INT_VALUE_ONE]));
-		comboObj.setType(ApplicationConstants.CONST_STRING_SECONDARY);
-		listOfComos.add(comboObj);
-		if(comboColors.length == 3){
-			comboObj1 = new Combo();
-			comboObj1.setName(
-					DouglasBridgeColorMapping.getColorGroup(comboColors[ApplicationConstants.CONST_INT_VALUE_TWO]));
-			comboObj1.setType(ApplicationConstants.CONST_STRING_TRIM);
-			listOfComos.add(comboObj1);
-		}
-		colorObj.setAlias(comboVal.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH,
-				ApplicationConstants.CONST_DELIMITER_HYPHEN));
-		colorObj.setCombos(listOfComos);
-		return colorObj;
-	}
-	public List<Theme> getProductTheme(String themeVal){
-		List<Theme> listOfTheme = new ArrayList<>();
-		Theme themeObj = null;
-		String[] themes = CommonUtility.getValuesOfArray(themeVal, ApplicationConstants.CONST_DELIMITER_COMMA);
-		themes = CommonUtility.removeDuplicateValues(themes);
-		for (String themeName : themes) {
-			if(lookupServiceDataObj.isTheme(themeName.toUpperCase())){
-				themeObj = new Theme();
-				themeObj.setName(themeName);
-				listOfTheme.add(themeObj);
+	public List<Theme> getProductThemes(String theme){
+ 	   List<Theme> themeList = new ArrayList<>();
+ 	   Theme themeObj = null;
+ 	   String[] themes = CommonUtility.getValuesOfArray(theme, ",");
+ 	   for (String themeVal : themes) {
+ 		   themeObj = new Theme();
+			   themeVal = themeVal.trim();
+			   	if(themeVal.equalsIgnoreCase("Sport")){
+			   		themeVal = "Sports";
+			   	}
+				if(lookupServiceDataObj.isTheme(themeVal)){
+					themeObj.setName(themeVal);
+					themeList.add(themeObj);
+				}
 			}
-		}
-		return listOfTheme;
-	}
+ 	   return themeList;
+    }
 	public List<ProductionTime> getProductionTime(String startBusinessDay,String endBusinessDay){
 		List<ProductionTime> productionTimeList = new ArrayList<>();
 		ProductionTime productionTime = new ProductionTime();
@@ -352,18 +280,6 @@ public class DouglasBridgeAttributeParser {
 		rushTimeObj.setRushTimeValues(rushTimeValueList);
 		return rushTimeObj;
 	}
-	public RushTime getProductRushTime(RushTime rushTime){
-		if(rushTime == null){
-			 rushTime = new RushTime();
-			 rushTime.setAvailable(ApplicationConstants.CONST_BOOLEAN_TRUE);
-			List<RushTimeValue> rushTimeValueList = new ArrayList<>();
-			RushTimeValue rushtimeValue = new RushTimeValue();
-			rushTimeValueList.add(rushtimeValue);
-			rushTime.setRushTimeValues(rushTimeValueList);	
-		}
-		
-		return rushTime;
-	}
 	public List<PriceGrid> getImprintMethodUpcharges(Map<String, String> upchargeValues,List<ImprintMethod> imprintMethodList,List<PriceGrid> existingPriceGrid){
 		String imprintMethods = imprintMethodList.stream().map(ImprintMethod::getAlias)
 															.collect(Collectors.joining(","));
@@ -373,10 +289,8 @@ public class DouglasBridgeAttributeParser {
 			 String priceVal = upchareVal[0];
 			 String disCount = upchareVal[1];
 			 String upChargeTypeVal = "";
-			 String upchargeUsageType = "Other";
-			 String serviceCharge = "Required";
 			 if(upchargeType.equalsIgnoreCase("setupCharge")){
-				 upChargeTypeVal = "Set-up Charge";upchargeUsageType="Per Order";
+				 upChargeTypeVal = "Set-up Charge";
 			 } else if(upchargeType.equalsIgnoreCase("screenCharge")){
 				 upChargeTypeVal = "Screen Charge";
 			 } else if(upchargeType.equalsIgnoreCase("plateCharge")){
@@ -386,18 +300,17 @@ public class DouglasBridgeAttributeParser {
 			 } else if(upchargeType.equalsIgnoreCase("toolingCharge")){
 				 upChargeTypeVal = "Tooling Charge";
 			 } else if(upchargeType.equalsIgnoreCase("repeateCharge")){
-				 upChargeTypeVal = "Re-order Charge";upchargeUsageType="Per Order";
-				 serviceCharge = "Optional";
+				 
 			 }
-			existingPriceGrid = douglasBridgePriceGridParser.getUpchargePriceGrid("1", priceVal, disCount, "Imprint method", "n",
-					"USD", imprintMethods, upChargeTypeVal, upchargeUsageType,serviceCharge, 1, existingPriceGrid);
+			existingPriceGrid = wbtIndustriesPriceGridParser.getUpchargePriceGrid("1", priceVal, disCount, "Imprint method", "n",
+					"USD", imprintMethods, upChargeTypeVal, "Other", 1, existingPriceGrid);
 		}
 		return existingPriceGrid;
 	}
-	public List<PriceGrid> getAdditionalColorUpcharge(String discountCode,String prices,List<PriceGrid> existingPriceGrid,String upchargeType,String qty){
+	public List<PriceGrid> getAdditionalColorUpcharge(String discountCode,String prices,List<PriceGrid> existingPriceGrid,String upchargeType){
 	   String disCountCode = getAdditionalColorDiscountCode(discountCode);
-	   existingPriceGrid = douglasBridgePriceGridParser.getUpchargePriceGrid(qty, prices, disCountCode, "Additional Colors", "n",
-				"USD", "Additional Color",upchargeType, "Other","Required", 1, existingPriceGrid);
+	   existingPriceGrid = wbtIndustriesPriceGridParser.getUpchargePriceGrid("1", prices, disCountCode, "Additional Colors", "n",
+				"USD", "Additional Color",upchargeType, "Other", 1, existingPriceGrid);
 		return existingPriceGrid;
 	}
 	private String getAdditionalColorDiscountCode(String value){
@@ -417,19 +330,20 @@ public class DouglasBridgeAttributeParser {
 		return additionalColorList;
 	}
 	public List<String> getProductKeywords(String keyword){
-		String[] keywords = CommonUtility.getValuesOfArray(keyword, ApplicationConstants.CONST_STRING_COMMA_SEP);
-		//Stream<String> keys = Arrays.stream(CommonUtility.getValuesOfArray(keyword, ApplicationConstants.CONST_STRING_COMMA_SEP));
-		/*List<String> keyWordList = Arrays
-				.stream(CommonUtility.getValuesOfArray(keyword, ApplicationConstants.CONST_STRING_COMMA_SEP))
-				.map(key -> key).distinct().limit(30).collect(Collectors.toList());*/
-		keywords = CommonUtility.removeDuplicateValues(keywords);
 		List<String> productKeyWords = new ArrayList<>();
+		/*String[] keywords = CommonUtility.getValuesOfArray(keyword, ApplicationConstants.CONST_STRING_COMMA_SEP);
+	    keywords = CommonUtility.removeDuplicateValues(keywords);
 		for (String keywordName : keywords) {
 			if(keywordName.contains("®")){
 				keywordName = keywordName.replaceAll("®", "").trim();
 			}
-		   productKeyWords.add(keywordName.trim());	
-		}
+			if(keywordName.length()<= 30){
+				productKeyWords.add(keywordName);
+			}
+		}*/
+		productKeyWords = Arrays
+				.stream(CommonUtility.getValuesOfArray(keyword, ApplicationConstants.CONST_STRING_COMMA_SEP))
+				.map(key -> key.trim()).collect(Collectors.toList());
 		return productKeyWords;
 	}
 	public List<FOBPoint> getFobPoint(final String  value,String authToken,String environment){
@@ -446,24 +360,19 @@ public class DouglasBridgeAttributeParser {
 		}
 		return listOfFobPoint;
 	}
-	public String removeLineNames(String value){
-		for (String lineName : lineNames) {
-			value = CommonUtility.removeSpecificWord(value, lineName);
-		}
-		return value;
-	}
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;
 	}
 	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
 		this.lookupServiceDataObj = lookupServiceDataObj;
 	}
-	public DouglasBridgePriceGridParser getDouglasBridgePriceGridParser() {
-		return douglasBridgePriceGridParser;
+	public WBTIndustriesPriceGridParser getWbtIndustriesPriceGridParser() {
+		return wbtIndustriesPriceGridParser;
 	}
-	public void setDouglasBridgePriceGridParser(DouglasBridgePriceGridParser douglasBridgePriceGridParser) {
-		this.douglasBridgePriceGridParser = douglasBridgePriceGridParser;
+	public void setWbtIndustriesPriceGridParser(WBTIndustriesPriceGridParser wbtIndustriesPriceGridParser) {
+		this.wbtIndustriesPriceGridParser = wbtIndustriesPriceGridParser;
 	}
+	
 }
 
 

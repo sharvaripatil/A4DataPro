@@ -1,15 +1,18 @@
 package com.a4tech.supplier.mapper;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -22,7 +25,6 @@ import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.FOBPoint;
-import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
@@ -32,7 +34,6 @@ import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
-import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
@@ -40,22 +41,22 @@ import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
-import parser.DouglasBridge.DouglasBridgeAttributeParser;
-import parser.DouglasBridge.DouglasBridgePriceGridParser;
+import parser.WBTIndustries.WBTIndustriesAttributeParser;
+import parser.WBTIndustries.WBTIndustriesPriceGridParser;
 import parser.goldstarcanada.GoldstarCanadaLookupData;
 
 
-public class DouglasBridgeMapper implements IExcelParser{
+public class WBTIndustriesMapper implements IExcelParser{
 	
-	private static final Logger _LOGGER = Logger.getLogger(DouglasBridgeMapper.class);
+	private static final Logger _LOGGER = Logger.getLogger(WBTIndustriesMapper.class);
 	
 	private PostServiceImpl 				postServiceImpl;
 	private ProductDao 						productDaoObj;
-	private DouglasBridgeAttributeParser   douglasBridgeAttributeParser;
-	private DouglasBridgePriceGridParser   douglasBridgePriceGridParser;
-
+    private WBTIndustriesAttributeParser        wbtIndustriesAttributeParser;
+	private WBTIndustriesPriceGridParser        wbtIndustriesPriceGridParser;
+	
 	@Override
-	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
+	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId,String environmentType){
 		
 		List<String> numOfProductsSuccess = new ArrayList<String>();
 		List<String> numOfProductsFailure = new ArrayList<String>();
@@ -87,7 +88,6 @@ public class DouglasBridgeMapper implements IExcelParser{
 			String        additionalColorCode     = "";
 			List<String>  ProductProcessedList   = new ArrayList<>();
 			String asiProdNo = "";
-			List<String> repeatRows = new ArrayList<>();
 		try{ 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 	    Sheet sheet = workbook.getSheetAt(0);
@@ -118,139 +118,40 @@ public class DouglasBridgeMapper implements IExcelParser{
 		String imprintLocation = null;
 		Product existingApiProduct = null;
 		String rushProdTimeLo = "";
-		StringBuilder additionalPrdInfo = new StringBuilder();
 	   Map<String, String>  imprintMethodUpchargeMap = new LinkedHashMap<>();
-	   String xid = null;
-	   StringBuilder themesValues = new StringBuilder();
-	   StringBuilder keywords = new StringBuilder();
+	   List<ImprintMethod> imprintMethodList = new ArrayList<>();
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
-			if (nextRow.getRowNum() < 7)
+			if (nextRow.getRowNum() == 0)
 				continue;
 			// this value is check first column or not becuase first column is skipped if value is not present
-			boolean isFirstColum = true;
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
-			if(xid != null){
-				productXids.add(xid);
-				repeatRows.add(xid);
+			if(productId != null){
+				productXids.add(productId);
 			}
 			boolean checkXid  = false;
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
-				
+				String xid = null;
 				int columnIndex = cell.getColumnIndex();
 				if(columnIndex + 1 == 1){
-					xid = getProductXid(nextRow,false);
-					if(ProductProcessedList.contains(xid)){
-						xid = getProductXid(nextRow,true);
-					}
+					xid = getProductXid(nextRow);
 					checkXid = true;
-					isFirstColum = false;
 				}else{
 					checkXid = false;
-					if(isFirstColum){
-						xid = getProductXid(nextRow,false);
-						if(ProductProcessedList.contains(xid)){
-							xid = getProductXid(nextRow,true);
-						}
-						checkXid = true;
-						isFirstColum = false;
-					}
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 7){
+						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
-							 
-							 ///////////////////
-							 ProductProcessedList.add(productExcelObj.getExternalProductId());
-								productExcelObj.setPriceType("L");
-								if(CollectionUtils.isEmpty(listOfImprintMethods)){
-									   listOfImprintMethods = douglasBridgeAttributeParser.getImprintMethodValues(listOfImprintMethods, "Unimprinted");
-								   }
-								if(!StringUtils.isEmpty(dimensionValue.toString())){
-									Size productSize = douglasBridgeAttributeParser.getProductSize(dimensionValue.toString(),
-							                dimensionUnits.toString(), dimensionType.toString());
-									productConfigObj.setSizes(productSize);
-								}
-								if(!CollectionUtils.isEmpty(themeList)){
-									productConfigObj.setThemes(themeList);
-								}
-								imprintSizeList=douglasBridgeAttributeParser.getimprintsize(ImprintSizevalue);
-								if(FirstImprintsize1 != "" || FirstImprintsize2 !="" ||
-										SecondImprintsize1 != "" ||	SecondImprintsize2 !=""){
-								productConfigObj.setImprintSize(imprintSizeList);}
-										ShippingEstimate shippingEstimation = douglasBridgeAttributeParser
-												.getShippingEstimateValues(shippingDimensions.toString(), weightPerCarton, unitsPerCarton);
-										productConfigObj.setShippingEstimates(shippingEstimation);
-								if(listOfPrices != null && !listOfPrices.toString().isEmpty()){
-									priceGrids = douglasBridgePriceGridParser.getBasePriceGrids(listOfPrices.toString(), 
-											         listOfQuantity.toString(), priceCode, "USD",
-											         priceIncludesValue, true, quoteUponRequest, productName,"",priceGrids);
-								} else {
-									priceGrids = douglasBridgePriceGridParser.getBasePriceGrids(listOfPrices.toString(), 
-									         listOfQuantity.toString(), priceCode, "USD",
-									         priceIncludesValue, true, "true", productName,"",priceGrids);
-								}
-								    if(!imprintMethodUpchargeMap.isEmpty()){
-								    	priceGrids = douglasBridgeAttributeParser.getImprintMethodUpcharges(imprintMethodUpchargeMap,
-					                            listOfImprintMethods, priceGrids);
-								    }
-										
-										List<AdditionalColor> additionalColorList = null;
-									if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
-										 additionalColorList = douglasBridgeAttributeParser.getAdditionalColor("Additional Color");
-											priceGrids = douglasBridgeAttributeParser.getAdditionalColorUpcharge(additionalClrRunChrgCode,
-													additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge",listOfQuantity.toString());
-											productConfigObj.setAdditionalColors(additionalColorList);
-									}
-									if(!StringUtils.isEmpty(additionalColorPriceVal) && !additionalColorPriceVal.equals("0")){
-										if(additionalColorList == null){
-											additionalColorList = douglasBridgeAttributeParser.getAdditionalColor("Additional Color");
-											productConfigObj.setAdditionalColors(additionalColorList);
-										}
-										priceGrids = douglasBridgeAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
-												   additionalColorPriceVal, priceGrids,"Add. Color Charge","1");
-									}
-							   
-							   themeList = douglasBridgeAttributeParser.getProductTheme(themesValues.toString());
-								 if(CollectionUtils.isEmpty(themeList)){// from supplier sheet 
-									 if(!CollectionUtils.isEmpty(productConfigObj.getThemes())){// check existing themes
-										 themeList =  productConfigObj.getThemes();
-									 }
-								 }
-								 List<String> keywordList = douglasBridgeAttributeParser.getProductKeywords(keywords.toString());
-								 productExcelObj.setProductKeywords(keywordList);
-							   productConfigObj.setThemes(themeList);
-							   productExcelObj.setAdditionalProductInfo(additionalPrdInfo.toString());
-							   productConfigObj.setImprintLocation(listImprintLocation);
+							 if(CollectionUtils.isEmpty(listOfImprintMethods)){
+								   listOfImprintMethods = wbtIndustriesAttributeParser.getImprintMethodValues("Unimprinted", imprintMethodList);
+							   }
 							   productConfigObj.setImprintMethods(listOfImprintMethods);
 								productExcelObj.setProductConfigurations(productConfigObj);
 								productExcelObj.setPriceGrids(priceGrids);
-								String name = productExcelObj.getName();
-								if(name.contains("Simply Smashing") && name.contains("Compressed T")){
-									productExcelObj.setName("Simply Smashing Compressed T-Shirt");
-								}
-								if(productExcelObj.getImages() != null){
-									List<Image> imageList = removeImageConfiguration(productExcelObj.getImages());
-									productExcelObj.setImages(imageList);	
-								}
-								String desc = productExcelObj.getDescription();
-								if(StringUtils.isEmpty(desc)){
-									productExcelObj.setDescription(productExcelObj.getName());
-									productExcelObj.setSummary(productExcelObj.getName());
-								 } else {
-									 if(desc.contains(".")){
-											productExcelObj.setSummary(desc.substring(0, desc.indexOf(".")+1));	
-										} else {
-											productExcelObj.setSummary(desc);
-										}
-										 if(productExcelObj.getSummary().length() > 130){
-											 productExcelObj.setSummary(productExcelObj.getName());
-										 }	 
-								 }
-							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
+							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId,environmentType);
 							 	//ProductProcessedList.add(productExcelObj.getExternalProductId());
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -282,37 +183,28 @@ public class DouglasBridgeMapper implements IExcelParser{
 							     additionalColorPriceVal = "";
 						         additionalColorCode     = "";
 						         asiProdNo = "";
-						         additionalPrdInfo = new StringBuilder();
-						         repeatRows.clear();
-						         themesValues = new StringBuilder();
-						         keywords = new StringBuilder();
+						         imprintMethodList = new ArrayList<>();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid.trim());
-						    	repeatRows.add(xid.trim());
 						    }
-						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid, environmentType);
+						    existingApiProduct = postServiceImpl.getProduct(accessToken, xid,environmentType);
 						     if(existingApiProduct == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
+						    	 listOfImprintMethods = wbtIndustriesAttributeParser.getImprintMethodValues("Full Color", imprintMethodList);
+						    	 //productConfigObj.setImprintMethods(listOfImprintMethods);
 						    	 productExcelObj.setExternalProductId(xid);
 						     }else{
 						  	//   productExcelObj=existingApiProduct;
-								//productConfigObj=existingApiProduct.getProductConfigurations();
-						    	 productExcelObj = douglasBridgeAttributeParser.keepExistingProductData(existingApiProduct);
-						    	 productConfigObj=productExcelObj.getProductConfigurations();
+							//	productConfigObj=existingApiProduct.getProductConfigurations();
+						    	 productExcelObj = wbtIndustriesAttributeParser.keepExistingProductData(existingApiProduct);
 						    	 productExcelObj.setExternalProductId(xid);
-						        /*String confthruDate=existingApiProduct.getPriceConfirmedThru();
-						        productExcelObj.setPriceConfirmedThru(confthruDate);*/
+						    	 productConfigObj = productExcelObj.getProductConfigurations();
+						    	 listOfImprintMethods = productConfigObj.getImprintMethods();
 						     }
 							//productExcelObj = new Product();
 					 }
-				} else {
-					if(productXids.contains(xid) && repeatRows.size() != 1){
-						 if(isRepeateColumn(columnIndex+1)){
-							 continue;
-						 }
-					}
 				}
 				
 
@@ -322,10 +214,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 					   productExcelObj.setExternalProductId(xid);
 					
 					 break;
-				case 2: //productId
-					//ignore
-					break;
-				case 3://AsiProdNo
+				case 2://AsiProdNo
 					     asiProdNo=CommonUtility.getCellValueStrinOrInt(cell);
 					     if(asiProdNo.length() > 14){
 					    	 asiProdNo = asiProdNo.replaceAll("-", "");
@@ -334,103 +223,97 @@ public class DouglasBridgeMapper implements IExcelParser{
 					     }
 					     productExcelObj.setAsiProdNo(asiProdNo);		
 					  break;
-				case 4://Name
+				case 3://Name
 					 productName = cell.getStringCellValue();
-					 productName = getFinalProductName(productName, asiProdNo);
+					 productName = CommonUtility.getStringLimitedChars(productName, 60);
 					 productExcelObj.setName(productName);
 						break;
-				case 5://CatYear(Not used)
+				case 4://CatYear(Not used)
 					// CatYear=CommonUtility.getCellValueStrinOrInt(cell);
 				    break;
 					
-				case 6://PriceConfirmedThru
-					// priceConfirmedThru = cell.getDateCellValue();
-					String ConfDate=cell.getStringCellValue();
-				     productExcelObj.setPriceConfirmedThru(ConfDate);
+				case 5://PriceConfirmedThru
+					String expireDate = getPriceConfirmThroughDate(cell);
+					productExcelObj.setPriceConfirmedThru(expireDate);
 					break;
 					
-				case 7: //  product status ,discontinued
+				case 6: //  product status ,discontinued
 					
 					// ProductStatus=cell.getStringCellValue();
 					// Prod_Status=cell.getBooleanCellValue();
 					 break;
 					
-				case 8://catalog1
-					
+				case 7://catalog1
+					//catalog name does not meet ASI standrd,So no need to process catalogs
 					break;
 					
-				case 9: // catalog2
+				case 8: // catalog2
 
 					break;
 					
-				case 10: //Catalogs page number, Page1
+				case 9: //Catalogs page number, Page1
 					// no need to process
 					break;
-				case 11:  
+				case 10:  
 					//Catalogs(Not used),Page2
 					break;
 					
-				case 12:  //Description
+				case 11:  //Description
 					String description =CommonUtility.getCellValueStrinOrInt(cell);
-					description = getFinalDescription(description, asiProdNo);
-					productExcelObj.setDescription(description);
-					
+					productExcelObj.setDescription(description);			
 					break;
 				
-				case 13:  // keywords
+				case 12:  // keywords
 					String productKeyword = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(productKeyword)){
-						productKeyword = productKeyword.trim();
-						keywords.append(productKeyword).append(",");
-						/*		List<String> productKeyWords = douglasBridgeAttributeParser
-										.getProductKeywords(productKeyword);
-					 productExcelObj.setProductKeywords(productKeyWords);*/
+						List<String> productKeyWords = wbtIndustriesAttributeParser.getProductKeywords(productKeyword);
+					 productExcelObj.setProductKeywords(productKeyWords);
 					}
 					break;
 
-				case 14: //Colors
+				case 13: //Colors
 				String colorValue=cell.getStringCellValue();
 				  if(!StringUtils.isEmpty(colorValue)){
-					  List<Color> colorsList = douglasBridgeAttributeParser.getProductColor(colorValue);
+					  List<Color> colorsList = wbtIndustriesAttributeParser.getProductColor(colorValue);
 						productConfigObj.setColors(colorsList);  
 				  }
 					break;
 					
-				case 15: // Themes
+				case 14: // Themes
 					 String themeValue=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(themeValue)){
-						 themesValues.append(themeValue).append(",");
+						 themeList = wbtIndustriesAttributeParser.getProductThemes(themeValue);
 					 }					 
 					break;
 					
-				case 16://size --  value
+				case 15://size --  value
 						String dimensionValue1=CommonUtility.getCellValueStrinOrInt(cell);
 					   if(dimensionValue1 != null && !dimensionValue1.isEmpty()){
 						   dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					   }
 					
 					break;
-				case 17: //size -- Unit
+				case 16: //size -- Unit
 					  String dimensionUnits1 = CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!dimensionUnits1.equals("0")){
 						 dimensionUnits.append(dimensionUnits1.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
 					  break;
 				
-				case 18: //size -- type
+				case 17: //size -- type
 					String dimensionType1 =CommonUtility.getCellValueStrinOrInt(cell);
 					if(!dimensionType1.equals("0")){
 						dimensionType.append(dimensionType1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					break;
 				
-				 case 19: //size
+				 case 18: //size
 					 String dimensionValue2 =CommonUtility.getCellValueStrinOrInt(cell);
 					 if(dimensionValue2 != null && !dimensionValue2.isEmpty()){
 						 dimensionValue.append(dimensionValue2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
 					break;
-				case 20:  //size
+				case 19:  //size
 					String dimensionUnits2 =CommonUtility.getCellValueStrinOrInt(cell);
 					
 					if(!dimensionUnits2.equals("0")){
@@ -438,7 +321,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 					}
 					break;
 					
-				case 21: //size
+				case 20: //size
 					String  dimensionType2 = CommonUtility.getCellValueStrinOrInt(cell);
 
 					if(!dimensionType2.equals("0")){
@@ -446,86 +329,93 @@ public class DouglasBridgeMapper implements IExcelParser{
 					}
 					break;
 					
-				case 22: //size
+				case 21: //size
 					String dimensionValue3  =CommonUtility.getCellValueStrinOrInt(cell);
 					if(dimensionValue3 != null && !dimensionValue3.isEmpty()){
 						dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					break;
-				case 23: //size
+				case 22: //size
 					String dimensionUnits3 = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!dimensionUnits3.equals("0")){
 						 dimensionUnits.append(dimensionUnits3.trim()).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 				   break;
 					
-				case 24: //size
+				case 23: //size
 					String dimensionType3 = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!dimensionType3.equals("0")){
 						dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 				   break;
 				   
-				case 25:  // Quantities
+				case 24:  // Quantities
+				case 25: 
 				case 26: 
 				case 27: 
-				case 28: 
+				case 28:
 				case 29:
-				case 30:
 					String quantity = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(quantity) && !quantity.equals("0")){
 			        	 listOfQuantity.append(quantity).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			         }
 					   	break;
-				case 31:  // prices --list price
+				case 30:  // prices --list price
+				case 31:
 				case 32:
 				case 33:
 				case 34:
 				case 35:
-				case 36:
 					String prices = CommonUtility.getCellValueDouble(cell);
 					 if(!StringUtils.isEmpty(prices)&& !prices.equals("0")){
 			        	 listOfPrices.append(prices).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			         }
 					    break; 
-				case 37: // price code -- discount   
+				case 36: // price code -- discount   
 				priceCode = cell.getStringCellValue();	
 					     break;
-				case 38:       // pricesPerUnit
+				case 37:       // pricesPerUnit
+				case 38:
 				case 39:
 				case 40:
 				case 41:
 				case 42:
-				case 43:
 					String pricesPerUnits = CommonUtility.getCellValueDouble(cell);
 					 if(!StringUtils.isEmpty(pricesPerUnits)){
 			        	 pricesPerUnit.append("1").append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			         }
 					//set default value is "1" in PricesPerUnit
 					      break;
-				case 44:
-					     quoteUponRequest = cell.getStringCellValue();
+				case 43:
+					    if(cell.getBooleanCellValue() == Boolean.TRUE){
+					    	quoteUponRequest = "True";	
+					    } else {
+					    	quoteUponRequest = "False";
+					    }
+					     
 					      break;
-				case 45:  // priceIncludeClr    
-					      priceIncludes.append(cell.getStringCellValue()).append(" ");
+				case 44:  // priceIncludeClr  
+					    String priceInclude = cell.getStringCellValue();
+					    priceInclude = priceInclude.replaceAll("includes", "").trim();
+					      priceIncludes.append(priceInclude).append(" ");
 					     break;
-				case 46: // priceIncludeSide
+				case 45: // priceIncludeSide
 						
 						priceIncludes.append(cell.getStringCellValue()).append(" ");
 						
 						break;
-				case 47: // priceIncludeLoc
+				case 46: // priceIncludeLoc
 						priceIncludes.append(cell.getStringCellValue());
 						priceIncludesValue = CommonUtility.getStringLimitedChars(priceIncludes.toString(), 100);
 						break;
 						
-				case 48:   //Set-up Charge 
+				case 47:   //Set-up Charge 
 					String setupChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!setupChargePrice.equals("0")){
 						imprintMethodUpchargeMap.put("setupCharge", setupChargePrice);
 					}
 				  break;
-				case 49://setup charge code					
+				case 48://setup charge code					
 					String setUpchargeCode = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(setUpchargeCode) && !setUpchargeCode.equals("0")){
 						String priceVal = imprintMethodUpchargeMap.get("setupCharge");
@@ -533,13 +423,13 @@ public class DouglasBridgeMapper implements IExcelParser{
 						imprintMethodUpchargeMap.put("setupCharge", priceVal);
 					}
 				  break;
-				case 50://screen charge
+				case 49://screen charge
 					String screenChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!screenChargePrice.equals("0")){
 						imprintMethodUpchargeMap.put("screenCharge", screenChargePrice);
 					}
 							break;
-				case 51://screen charge code
+				case 50://screen charge code
 					String screenchargeCode = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(screenchargeCode) && !screenchargeCode.equals("0")){
 						String priceVal = imprintMethodUpchargeMap.get("screenCharge");
@@ -547,14 +437,14 @@ public class DouglasBridgeMapper implements IExcelParser{
 						imprintMethodUpchargeMap.put("screenCharge", priceVal);
 					}
 							break;
-				case 52:// plate charge
+				case 51:// plate charge
 					String plateChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!plateChargePrice.equals("0")){
 						imprintMethodUpchargeMap.put("plateCharge", plateChargePrice);
 					}
 
 							break;
-				case 53://plateCharge code
+				case 52://plateCharge code
 					String plateChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(plateChargeCode) && !plateChargeCode.equals("0")){
 						String priceVal = imprintMethodUpchargeMap.get("plateCharge");
@@ -562,13 +452,13 @@ public class DouglasBridgeMapper implements IExcelParser{
 						imprintMethodUpchargeMap.put("plateCharge", priceVal);
 					}
 							break;
-				case 54:// dieCharge
+				case 53:// dieCharge
 					String diaChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!diaChargePrice.equals("0")){
 						imprintMethodUpchargeMap.put("diaCharge", diaChargePrice);
 					}
 							break;
-				case 55:// die Charge code
+				case 54:// die Charge code
 					String diaChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(diaChargeCode) && !diaChargeCode.equals("0")){
 						String priceVal = imprintMethodUpchargeMap.get("diaCharge");
@@ -576,13 +466,13 @@ public class DouglasBridgeMapper implements IExcelParser{
 						imprintMethodUpchargeMap.put("diaCharge", priceVal);
 					}
 							break;
-				case 56://tooling charge
+				case 55://tooling charge
 					String toolingChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!toolingChargePrice.equals("0")){
 						imprintMethodUpchargeMap.put("toolingCharge", toolingChargePrice);
 					}
 							break;
-				case 57:// tooling charge code
+				case 56:// tooling charge code
 					String toolingChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(toolingChargeCode) &&!toolingChargeCode.equals("0")){
 						String priceVal = imprintMethodUpchargeMap.get("toolingCharge");
@@ -590,48 +480,48 @@ public class DouglasBridgeMapper implements IExcelParser{
 						imprintMethodUpchargeMap.put("toolingCharge", priceVal);
 					}
 							break;
-				case 58://repeate charge
-					String repeateChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(repeateChargePrice) && !repeateChargePrice.equals("0")){
+				case 57://repeate charge
+					/*String repeateChargePrice = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!repeateChargePrice.equals("0")){
 						imprintMethodUpchargeMap.put("repeateCharge", repeateChargePrice);
-					}
+					}*/
 					// no need to process this column since there is no vaild data
 							break; 
-				case 59://repeate charge code
-							String repeateChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
-							if(!StringUtils.isEmpty(repeateChargeCode) && !repeateChargeCode.equals("0")){
+				case 58://repeate charge code
+							/*String repeateChargeCode = CommonUtility.getCellValueStrinOrInt(cell);
+							if(!repeateChargeCode.equals("0")){
 								String priceVal = imprintMethodUpchargeMap.get("repeateCharge");
 								priceVal = priceVal+"_"+repeateChargeCode;
 								imprintMethodUpchargeMap.put("repeateCharge", priceVal);
-							}
+							}*/
 					// no need to process this column since there is no vaild data
 						break;
-				case 60: // additioNal color
+				case 59: // additioNal color
 					    additionalColorPriceVal = CommonUtility.getCellValueStrinOrInt(cell);
 						 break;
-				case 61: // additional color code
+				case 60: // additional color code
 					additionalColorCode = cell.getStringCellValue();
 						break;
-				case 62: 	
-				case 63:							
+				case 61: 	
+				case 62:							
+				case 63:	
 				case 64:	
 				case 65:	
-				case 66:	
-				case 67:
+				case 66:
 				  String colorCharge = CommonUtility.getCellValueDouble(cell);
-				  if(!colorCharge.equalsIgnoreCase("0.00") && !colorCharge.equalsIgnoreCase("0.0") &&
+				  if(!colorCharge.equalsIgnoreCase("0.00") || !colorCharge.equalsIgnoreCase("0.0") ||
 						  !colorCharge.equalsIgnoreCase("0"))
 				  additionalClrRunChrgPrice.append(colorCharge).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 					break;
-				case 68:// additional run charge code
+				case 67:// additional run charge code
 				  String additionalClrRunCode = cell.getStringCellValue();
 				      if(!StringUtils.isEmpty(additionalClrRunCode)){
 					       additionalClrRunChrgCode = additionalClrRunCode;
 				      }    	
 				break; 
-				case 69://is recycle
+				case 68://IsRecyclable
 					       break;
-				case 70:
+				case 69://IsEnvironmentallyFriendly
 							String IsEnvironmentallyFriendly = cell.getStringCellValue();
 							if (IsEnvironmentallyFriendly.equalsIgnoreCase("true")) {
 								Theme themeObj = new Theme();
@@ -639,21 +529,21 @@ public class DouglasBridgeMapper implements IExcelParser{
 								themeList.add(themeObj);
 							}
 					break;
-				case 71:// IsNewProd
+				case 70://  IsNewProd
 					break;
-				case 72://NotSuitable
+				case 71://NotSuitable 
 					break;
-				case 73:// Exclusive
+				case 72:// Exclusive
 					break;
-				case 74://Hazardous
+				case 73://Hazardous
 					break;
-				case 75://OfficiallyLicensed
+				case 74://OfficiallyLicensed
 					break;
-				case 76://IsFood
+				case 75://IsFood
 					break;
-				case 77://IsClothing
+				case 76://IsClothing
 					break;
-				case 78: // Imprint size1
+				case 77: // Imprint size1
 					 FirstImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FirstImprintsize1) && !FirstImprintsize1.equals("0")){
 						 ImprintSizevalue.append(FirstImprintsize1).append(" ");
@@ -661,7 +551,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 					 }
 					    break;
 					    
-				case 79: //// Imprint size1 unit
+				case 78: //// Imprint size1 unit
 					FirstImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(FirstImprintsize1) && !StringUtils.isEmpty(FirstImprintunit1)
 									&& !FirstImprintunit1.equals("0")) {
@@ -670,7 +560,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 					 }	 
 					   	break;
 					   	
-				case 80:   // Imprint size1 Type
+				case 79:   // Imprint size1 Type
 					FirstImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 							if (!StringUtils.isEmpty(FirstImprintsize1) && !StringUtils.isEmpty(FirstImprinttype1)
@@ -679,7 +569,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 					  ImprintSizevalue.append(FirstImprinttype1).append(" ");
 				   }
 					break;
-				case 81: // // Imprint size2
+				case 80: // // Imprint size2
 					FirstImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FirstImprintsize2)&& !FirstImprintsize2.equals("0")){
 						 ImprintSizevalue.append("x").append(FirstImprintsize2).append(" ");
@@ -687,7 +577,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 
 					  	break;
 					  	
-				case 82:	// Imprint size2 Unit
+				case 81:	// Imprint size2 Unit
 					FirstImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(FirstImprintsize2) && !StringUtils.isEmpty(FirstImprintunit2)
 									&& !FirstImprintunit2.equals("0")) {
@@ -696,7 +586,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 				    }
 					    break;
 					    
-				case 83: // Imprint size2 Type
+				case 82: // Imprint size2 Type
 					FirstImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(FirstImprintsize2) && !StringUtils.isEmpty(FirstImprinttype2)
 									&& !FirstImprinttype2.equals("0")) {
@@ -705,7 +595,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 				    }
 					break;
 					  	
-				case 84:  // Imprint location
+				case 83:  // Imprint location
 					
 					 imprintLocation = cell.getStringCellValue();
 					if(!imprintLocation.isEmpty()){
@@ -714,14 +604,14 @@ public class DouglasBridgeMapper implements IExcelParser{
 						listImprintLocation.add(locationObj);
 					}
 					 break;
-				case 85:  // Second Imprintsize1
+				case 84:  // Second Imprintsize1
 					SecondImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintsize1)&& !SecondImprintsize1.equals("0")){
 					  ImprintSizevalue.append(SecondImprintsize1).append(" ");
 				    }
 					   	break;
 					   	
-				case 86:  // Second Imprintsize1 unit
+				case 85:  // Second Imprintsize1 unit
 					SecondImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(SecondImprintsize1) && !StringUtils.isEmpty(SecondImprintunit1)
 									&& !SecondImprintunit1.equals("0")) {
@@ -729,7 +619,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 					   ImprintSizevalue.append(SecondImprintunit1).append(" ");
 					}
 						break;
-				case 87:  // Second Imprintsize1 type
+				case 86:  // Second Imprintsize1 type
 					SecondImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(SecondImprintsize1) && !StringUtils.isEmpty(SecondImprinttype1)
 									&& !SecondImprinttype1.equals("0")) {
@@ -738,14 +628,14 @@ public class DouglasBridgeMapper implements IExcelParser{
 					}
 					  break;
 					  
-				case 88: // Second Imprintsize2
+				case 87: // Second Imprintsize2
 					SecondImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintsize2)&& !SecondImprintsize2.equals("0")){
 				       ImprintSizevalue.append("x").append(SecondImprintsize2).append(" ");
 				    }
 					break;
 					
-				case 89: //Second Imprintsize2 Unit
+				case 88: //Second Imprintsize2 Unit
 					SecondImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintsize2) && !StringUtils.isEmpty(SecondImprintunit2)&& !SecondImprintunit2.equals("0")){
 					SecondImprintunit2=GoldstarCanadaLookupData.Dimension1Units.get(SecondImprintunit2);
@@ -754,7 +644,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 
 					break;
 					
-				case 90: // Second Imprintsize2 type	
+				case 89: // Second Imprintsize2 type	
 					SecondImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 							if (!StringUtils.isEmpty(SecondImprintsize2) && !StringUtils.isEmpty(SecondImprinttype2)
 									&& !SecondImprinttype2.equals("0")) {
@@ -763,7 +653,7 @@ public class DouglasBridgeMapper implements IExcelParser{
 					}					
 					  break;
 					  
-				case 91: // Second Imprint location
+				case 90: // Second Imprint location
 					String imprintLocation2 = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintLocation2)){
 						ImprintLocation locationObj2 = new ImprintLocation();
@@ -771,67 +661,71 @@ public class DouglasBridgeMapper implements IExcelParser{
 						listImprintLocation.add(locationObj2);
 					}
 					break;
-				case 92: // DecorationMethod 
+				case 91: // DecorationMethod 
 					decorationMethod = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(decorationMethod)){
-						listOfImprintMethods = douglasBridgeAttributeParser
-								.getImprintMethodValues(decorationMethod);
+						listOfImprintMethods = wbtIndustriesAttributeParser.getImprintMethodValues(decorationMethod,
+								imprintMethodList);
 					}
 					 break; 
 					 
-				case 93: //NoDecoration
+				case 92: //NoDecoration
 					String noDecoration = cell.getStringCellValue();
 				    if(!StringUtils.isEmpty(noDecoration)){
 				    	if(noDecoration.equalsIgnoreCase("True")){
-									listOfImprintMethods = douglasBridgeAttributeParser
-											.getImprintMethodValues(listOfImprintMethods, "Unimprinted");
+									listOfImprintMethods = wbtIndustriesAttributeParser
+											.getImprintMethodValues("Unimprinted", imprintMethodList);
 				    	}
 				    }
 					 break;
-				case 94: //NoDecorationOffered
+				case 93: //NoDecorationOffered
 					// no need to process this column since above column data also same
 					 break;
-				case 95: //NewPictureURL
+				case 94: //NewPictureURL
 					break;
-				case 96:  //NewPictureFile  -- not used
+				case 95:  //NewPictureFile  -- not used
 					break;
-				case 97: //ErasePicture -- not used
+				case 96: //ErasePicture -- not used
 					break;
-				case 98: //NewBlankPictureURL
+				case 97: //NewBlankPictureURL
 					break;
-				case 99: //NewBlankPictureFile -- not used
+				case 98: //NewBlankPictureFile -- not used
 					break;
-				case 100://EraseBlankPicture  -- not used
+				case 99://EraseBlankPicture  -- not used
 					break;
-				case 101: //NotPictured  -- not used
+				case 100: //NotPictured  -- not used
 					break;
-				case 102: //MadeInCountry
+				case 101: //MadeInCountry
 					
 					String madeInCountry = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(madeInCountry)){
-								List<Origin> listOfOrigin = douglasBridgeAttributeParser
-										.getOriginValues(madeInCountry);
+						List<Origin> listOfOrigin = wbtIndustriesAttributeParser.getOriginValues(madeInCountry);
 						productConfigObj.setOrigins(listOfOrigin);
 					}
 					break;
-				case 103:// AssembledInCountry
-			     String   additionalProductInfo = cell.getStringCellValue();
-			     if(!StringUtils.isEmpty(additionalProductInfo)) {
-								additionalPrdInfo.append("AssembledInCountry:").append(
-										douglasBridgeAttributeParser.getCountryCodeConvertName(additionalProductInfo)); 
-			       }
+				case 102:// AssembledInCountry
+					String AssembledCountry = cell
+					.getStringCellValue();
+			   if (!AssembledCountry.isEmpty()) {
+				   AssembledCountry = wbtIndustriesAttributeParser
+						.getCountryCodeConvertName(AssembledCountry);
+				productExcelObj.setAdditionalProductInfo("Assembled country is: "
+								+ AssembledCountry);
+		        	}
 					break;
-				case 104: //DecoratedInCountry
-					String additionalImprintInfo = cell.getStringCellValue();
-					 if(!StringUtils.isEmpty(additionalImprintInfo)) {
-						 StringBuilder addImprintInfo = new StringBuilder();
-								addImprintInfo.append("DecoratedInCountry:").append(
-										douglasBridgeAttributeParser.getCountryCodeConvertName(additionalImprintInfo));
-						 productExcelObj.setAdditionalImprintInfo(addImprintInfo.toString());
-					   }
+				case 103: //DecoratedInCountry
+					String decoratedInCountry = cell
+					.getStringCellValue();
+			if (!decoratedInCountry.isEmpty()) {
+				decoratedInCountry = wbtIndustriesAttributeParser
+						.getCountryCodeConvertName(decoratedInCountry);
+				productExcelObj.setAdditionalImprintInfo("Decorated country is: "
+								+ decoratedInCountry);
+						
+			}
 					
 					break;
-				case 105: //ComplianceList  -- No data
+				case 104: //ComplianceList  -- No data
 					String complnceValuet=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(complnceValuet)) {
 				    	complianceList.add(complnceValuet);
@@ -839,207 +733,148 @@ public class DouglasBridgeMapper implements IExcelParser{
 					   }
 					break;
 					
-				case 106://ComplianceMemo  -- No data
+				case 105://ComplianceMemo  -- No data
 					String productDataSheet=cell.getStringCellValue();
 					 if(!StringUtils.isEmpty(productDataSheet) && !productDataSheet.equals("0")){
 						 productExcelObj.setProductDataSheet(productDataSheet);
 					   }
 					break;
-				case 107: //ProdTimeLo
+				case 106: //ProdTimeLo
 				   prodTimeLo = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 108: //ProdTimeHi
+				case 107: //ProdTimeHi
 					String prodTimeHi = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!prodTimeHi.equals("0")){
-								List<ProductionTime> productionTimeList = douglasBridgeAttributeParser
-										.getProductionTime(prodTimeLo, prodTimeHi);
+						List<ProductionTime> productionTimeList = wbtIndustriesAttributeParser.getProductionTime(prodTimeLo, prodTimeHi);
 						productConfigObj.setProductionTime(productionTimeList);
 					}
 					break;
-				case 109://RushProdTimeLo
-					 rushProdTimeLo  = cell.getStringCellValue();
+				case 108://RushProdTimeLo
+					 //ignore //Available	
 					 break; 	 
-				case 110://RushProdTimeH
-					String rushProdTimeH  = cell.getStringCellValue();
-					if(!rushProdTimeH.equals(ApplicationConstants.CONST_STRING_ZERO)){
-								RushTime productRushTime = douglasBridgeAttributeParser
-										.getProductRushTime(rushProdTimeLo, rushProdTimeH);
-					  productConfigObj.setRushTime(productRushTime);
-					}
+				case 109://RushProdTimeH
+					//rushtime// Call For Pricing
 					break;
-				case 111://Packaging
+				case 110://Packaging
 					String pack  = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(pack)){
-								List<Packaging> listOfPackaging = douglasBridgeAttributeParser.getPackageValues(pack);
+						List<Packaging> listOfPackaging = wbtIndustriesAttributeParser.getPackageValues(pack);
 						productConfigObj.setPackaging(listOfPackaging);
 					}
 					break;
-				case 112: //CartonL
+				case 111: //CartonL
 					 String cartonL  = CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(cartonL) && !cartonL.equals("0")){
 						 shippingDimensions.append(cartonL).append(",");
 					 }
 					break;
-				case 113://CartonW
+				case 112://CartonW
 					String cartonW  = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(cartonW) &&!cartonW.equals("0")){
 						 shippingDimensions.append(cartonW).append(",");
 					 }
 					break;
-				case 114://CartonH
+				case 113://CartonH
 					String cartonH  = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(cartonH) && !cartonH.equals("0")){
 						 shippingDimensions.append(cartonH);
 					 }
 					break;
-				case 115: //WeightPerCarton
+				case 114: //WeightPerCarton
 					weightPerCarton  =CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 116: //UnitsPerCarton
+				case 115: //UnitsPerCarton
 					unitsPerCarton  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 117: //ShipPointCountry
+				case 116: //ShipPointCountry
 					break;
-				case 118: //ShipPointZip
-					String fobVal = cell.getStringCellValue();
-					List<FOBPoint> listOfFobPoint = douglasBridgeAttributeParser.getFobPoint(fobVal, accessToken, environmentType);
-					if(!CollectionUtils.isEmpty(listOfFobPoint)){
+				case 117: //ShipPointZip
+					String fobCode = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(fobCode)){
+								List<FOBPoint> listOfFobPoint = wbtIndustriesAttributeParser.getFobPoint(fobCode,
+										accessToken, environmentType);
 						productExcelObj.setFobPoints(listOfFobPoint);
 					}
+					
 					break;
-				case 119: //Comment
-					String comment = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(comment)){
-						if(productConfigObj.getRushTime() == null){
-									RushTime rushTime = douglasBridgeAttributeParser
-											.getProductRushTime(productConfigObj.getRushTime());
-									productConfigObj.setRushTime(rushTime);
-						}
-						if(comment.contains("Rush quotes available,")){
-							comment = comment.replaceAll("Rush quotes available,", "");
-						}else if(comment.contains("Rush service available,")){
-							comment = comment.replaceAll("Rush service available,", "");
-						}else if(comment.contains("Rush service available.")){
-							comment = comment.replaceAll("Rush service available.", "");
-						}
-						if(StringUtils.isEmpty(additionalPrdInfo.toString())){
-							additionalPrdInfo.append(comment.trim());
-						} else {
-							additionalPrdInfo.append(", ").append(comment.trim());
-						}
-					}
+				case 118: //Comment
+					// As Per client feedback ,we have to ignore this column data
 					break;
-				case 120: //Verified
+				case 119: //Verified
 					//since data is already expired date
 					break;
-				case 121: //UpdateInventory
+				case 120://UpdateInventory
 					break;
-				case 122: //InventoryOnHand
+				case 121: //InventoryOnHand
 					break;
-				case 123: //InventoryOnHandAdd
+				case 122: //InventoryOnHandAdd
 					break;
 					
-				case 124: //InventoryMemo
+				case 123: //InventoryMemo
 				break;
 			}  // end switch		 
 		}//end inner while loop
 			// set  product configuration objects
 			// end inner while loop
 			//it is store xid if once mapping completed 
-			
+			ProductProcessedList.add(productExcelObj.getExternalProductId());
+			productExcelObj.setPriceType("L");
+			if(!StringUtils.isEmpty(dimensionValue.toString())){
+				Size productSize = wbtIndustriesAttributeParser.getProductSize(dimensionValue.toString(),
+		                dimensionUnits.toString(), dimensionType.toString());
+				productConfigObj.setSizes(productSize);
+			}
+			if(!CollectionUtils.isEmpty(themeList)){
+				productConfigObj.setThemes(themeList);
+			}
+			imprintSizeList=wbtIndustriesAttributeParser.getimprintsize(ImprintSizevalue);
+			if(FirstImprintsize1 != "" || FirstImprintsize2 !="" ||
+					SecondImprintsize1 != "" ||	SecondImprintsize2 !=""){
+			productConfigObj.setImprintSize(imprintSizeList);}
+					ShippingEstimate shippingEstimation = wbtIndustriesAttributeParser
+							.getShippingEstimateValues(shippingDimensions.toString(), weightPerCarton, unitsPerCarton);
+					productConfigObj.setShippingEstimates(shippingEstimation);
+			if(listOfPrices != null && !listOfPrices.toString().isEmpty()){
+				priceGrids = wbtIndustriesPriceGridParser.getBasePriceGrids(listOfPrices.toString(), 
+						         listOfQuantity.toString(), priceCode, "USD",
+						         priceIncludesValue, true, quoteUponRequest, productName,"",priceGrids);
+			} else {
+				priceGrids = wbtIndustriesPriceGridParser.getBasePriceGrids(listOfPrices.toString(), 
+				         listOfQuantity.toString(), priceCode, "USD",
+				         priceIncludesValue, true, "true", productName,"",priceGrids);
+			}
+			    if(!imprintMethodUpchargeMap.isEmpty()){
+			    	priceGrids = wbtIndustriesAttributeParser.getImprintMethodUpcharges(imprintMethodUpchargeMap,
+                            listOfImprintMethods, priceGrids);
+			    }
+					
+					List<AdditionalColor> additionalColorList = null;
+				if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
+					 additionalColorList = wbtIndustriesAttributeParser.getAdditionalColor("Additional Color");
+						priceGrids = wbtIndustriesAttributeParser.getAdditionalColorUpcharge(additionalClrRunChrgCode,
+								   additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge");
+						productConfigObj.setAdditionalColors(additionalColorList);
+				}
+				if(!StringUtils.isEmpty(additionalColorPriceVal) && !additionalColorPriceVal.equals("0")){
+					if(additionalColorList == null){
+						additionalColorList = wbtIndustriesAttributeParser.getAdditionalColor("Additional Color");
+						productConfigObj.setAdditionalColors(additionalColorList);
+					}
+					priceGrids = wbtIndustriesAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
+							   additionalColorPriceVal, priceGrids,"Add. Color Charge");
+				}
 			}catch(Exception e){
 			_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage() );		 
 		}
 		}
 		workbook.close();
-		/////////////////////
-		ProductProcessedList.add(productExcelObj.getExternalProductId());
-		productExcelObj.setPriceType("L");
-		if(CollectionUtils.isEmpty(listOfImprintMethods)){
-			   listOfImprintMethods = douglasBridgeAttributeParser.getImprintMethodValues(listOfImprintMethods, "Unimprinted");
+		 if(CollectionUtils.isEmpty(listOfImprintMethods)){
+			   listOfImprintMethods = wbtIndustriesAttributeParser.getImprintMethodValues("Unimprinted", imprintMethodList);
 		   }
-		if(!StringUtils.isEmpty(dimensionValue.toString())){
-			Size productSize = douglasBridgeAttributeParser.getProductSize(dimensionValue.toString(),
-	                dimensionUnits.toString(), dimensionType.toString());
-			productConfigObj.setSizes(productSize);
-		}
-		if(!CollectionUtils.isEmpty(themeList)){
-			productConfigObj.setThemes(themeList);
-		}
-		imprintSizeList=douglasBridgeAttributeParser.getimprintsize(ImprintSizevalue);
-		if(FirstImprintsize1 != "" || FirstImprintsize2 !="" ||
-				SecondImprintsize1 != "" ||	SecondImprintsize2 !=""){
-		productConfigObj.setImprintSize(imprintSizeList);}
-				ShippingEstimate shippingEstimation = douglasBridgeAttributeParser
-						.getShippingEstimateValues(shippingDimensions.toString(), weightPerCarton, unitsPerCarton);
-				productConfigObj.setShippingEstimates(shippingEstimation);
-		if(listOfPrices != null && !listOfPrices.toString().isEmpty()){
-			priceGrids = douglasBridgePriceGridParser.getBasePriceGrids(listOfPrices.toString(), 
-					         listOfQuantity.toString(), priceCode, "USD",
-					         priceIncludesValue, true, quoteUponRequest, productName,"",priceGrids);
-		} else {
-			priceGrids = douglasBridgePriceGridParser.getBasePriceGrids(listOfPrices.toString(), 
-			         listOfQuantity.toString(), priceCode, "USD",
-			         priceIncludesValue, true, "true", productName,"",priceGrids);
-		}
-		    if(!imprintMethodUpchargeMap.isEmpty()){
-		    	priceGrids = douglasBridgeAttributeParser.getImprintMethodUpcharges(imprintMethodUpchargeMap,
-                        listOfImprintMethods, priceGrids);
-		    }
-				
-				List<AdditionalColor> additionalColorList = null;
-			if(!StringUtils.isEmpty(additionalClrRunChrgCode)){
-				 additionalColorList = douglasBridgeAttributeParser.getAdditionalColor("Additional Color");
-					priceGrids = douglasBridgeAttributeParser.getAdditionalColorUpcharge(additionalClrRunChrgCode,
-							additionalClrRunChrgPrice.toString(), priceGrids,"Run Charge",listOfQuantity.toString());
-					productConfigObj.setAdditionalColors(additionalColorList);
-			}
-			if(!StringUtils.isEmpty(additionalColorPriceVal) && !additionalColorPriceVal.equals("0")){
-				if(additionalColorList == null){
-					additionalColorList = douglasBridgeAttributeParser.getAdditionalColor("Additional Color");
-					productConfigObj.setAdditionalColors(additionalColorList);
-				}
-				priceGrids = douglasBridgeAttributeParser.getAdditionalColorUpcharge(additionalColorCode,
-						   additionalColorPriceVal, priceGrids,"Add. Color Charge","1");
-			}
-		/////////////
-			themeList = douglasBridgeAttributeParser.getProductTheme(themesValues.toString());
-			 if(CollectionUtils.isEmpty(themeList)){// from supplier sheet 
-				 if(!CollectionUtils.isEmpty(productConfigObj.getThemes())){// check existing themes
-					 themeList =  productConfigObj.getThemes();
-				 }
-			 }
-			 List<String> keywordList = douglasBridgeAttributeParser.getProductKeywords(keywords.toString());
-			 productExcelObj.setProductKeywords(keywordList);
-		   productConfigObj.setThemes(themeList);
-		   productExcelObj.setAdditionalProductInfo(additionalPrdInfo.toString());
-		   productConfigObj.setImprintLocation(listImprintLocation);
 		   productConfigObj.setImprintMethods(listOfImprintMethods);
-			productExcelObj.setProductConfigurations(productConfigObj);
-			productExcelObj.setPriceGrids(priceGrids);
-			String name = productExcelObj.getName();
-			if(name.contains("Simply Smashing") && name.contains("Compressed T")){
-				productExcelObj.setName("Simply Smashing Compressed T-Shirt");
-			}
-			if(productExcelObj.getImages() != null){
-				List<Image> imageList = removeImageConfiguration(productExcelObj.getImages());
-				productExcelObj.setImages(imageList);	
-			}
-			String desc = productExcelObj.getDescription();
-			if(StringUtils.isEmpty(desc)){
-				productExcelObj.setDescription(productExcelObj.getName());
-				productExcelObj.setSummary(productExcelObj.getName());
-			 } else {
-				 if(desc.contains(".")){
-						productExcelObj.setSummary(desc.substring(0, desc.indexOf(".")+1));	
-					} else {
-						productExcelObj.setSummary(desc);
-					}
-					 if(productExcelObj.getSummary().length() > 130){
-						 productExcelObj.setSummary(productExcelObj.getName());
-					 }	 
-			 }
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
+		 	productExcelObj.setProductConfigurations(productConfigObj);
+		 	productExcelObj.setPriceGrids(priceGrids);
+		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId,environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
@@ -1067,57 +902,27 @@ public class DouglasBridgeMapper implements IExcelParser{
 		}	
 	}
 	
-	private String getProductXid(Row row,boolean isRepeatProduct){
-		Cell xidCell = null;
-		String productXid = "";
-		if(isRepeatProduct){
-			xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_TWO);
+	private String getProductXid(Row row){
+		Cell xidCell = row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
+		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		if (StringUtils.isEmpty(productXid)) {
+			xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
 			productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
-		} else {
-			xidCell = row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
-			productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
-			if (StringUtils.isEmpty(productXid)) {
-				xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_TWO);
-				productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
-			}
 		}
-		
 		return productXid.trim();
 	}
-	private String getFinalDescription(String description, String asiProdNo){
-		if(description.toUpperCase().contains(asiProdNo)){
-			description = CommonUtility.removeSpecificWord(description, asiProdNo);
-			description = description.replaceAll(asiProdNo, "");
-		}
-		description = description.replaceAll("Velcro", "");
-		description = douglasBridgeAttributeParser.removeLineNames(description);
-		description = CommonUtility.getStringLimitedChars(description, 800);
-	 return description;
-	}
-	private String getFinalProductName(String productName,String asiProdNo){
-		 if(productName.toUpperCase().contains(asiProdNo)){
-			 productName = CommonUtility.removeSpecificWord(productName, asiProdNo);
-			 productName = productName.replaceAll(asiProdNo, "");
+	private String getPriceConfirmThroughDate(Cell cell){
+		String expireDate = "";
+		if(HSSFDateUtil.isCellDateFormatted(cell)){
+			Date date = cell.getDateCellValue();
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			 expireDate = df.format(date);
+			if(CommonUtility.isPriceConfirmThroughDate(expireDate)){
 			}
-		 productName = productName.replaceAll("Velcro", "");
-		 productName = douglasBridgeAttributeParser.removeLineNames(productName);
-		 productName = CommonUtility.getStringLimitedChars(productName, 60);
-		 return productName;
-	}
-	public boolean isRepeateColumn(int columnIndex){
-		if(columnIndex != 13 && columnIndex != 15){
-			return ApplicationConstants.CONST_BOOLEAN_TRUE;
+		} else{
+			expireDate = cell.getStringCellValue();
 		}
-		return ApplicationConstants.CONST_BOOLEAN_FALSE;
-	}
-	private List<Image> removeImageConfiguration(List<Image> existingImages){
-		List<Image> ima = existingImages;
-		existingImages = existingImages.stream().map(image->{
-			image.setConfigurations(new ArrayList<>());
-			return image;
-		}).collect(Collectors.toList());
-		
-		return existingImages;
+		return expireDate;
 	}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
@@ -1133,21 +938,21 @@ public class DouglasBridgeMapper implements IExcelParser{
 	public void setProductDaoObj(ProductDao productDaoObj) {
 		this.productDaoObj = productDaoObj;
 	}
-	public DouglasBridgeAttributeParser getDouglasBridgeAttributeParser() {
-		return douglasBridgeAttributeParser;
+	public WBTIndustriesAttributeParser getWbtIndustriesAttributeParser() {
+		return wbtIndustriesAttributeParser;
 	}
 
-	public void setDouglasBridgeAttributeParser(DouglasBridgeAttributeParser douglasBridgeAttributeParser) {
-		this.douglasBridgeAttributeParser = douglasBridgeAttributeParser;
+	public void setWbtIndustriesAttributeParser(WBTIndustriesAttributeParser wbtIndustriesAttributeParser) {
+		this.wbtIndustriesAttributeParser = wbtIndustriesAttributeParser;
 	}
 
-	public DouglasBridgePriceGridParser getDouglasBridgePriceGridParser() {
-		return douglasBridgePriceGridParser;
+	public WBTIndustriesPriceGridParser getWbtIndustriesPriceGridParser() {
+		return wbtIndustriesPriceGridParser;
 	}
 
-	public void setDouglasBridgePriceGridParser(DouglasBridgePriceGridParser douglasBridgePriceGridParser) {
-		this.douglasBridgePriceGridParser = douglasBridgePriceGridParser;
+	public void setWbtIndustriesPriceGridParser(WBTIndustriesPriceGridParser wbtIndustriesPriceGridParser) {
+		this.wbtIndustriesPriceGridParser = wbtIndustriesPriceGridParser;
 	}
 
-
+	
 }
