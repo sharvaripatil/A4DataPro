@@ -1321,11 +1321,14 @@
        	     <property name="productDaoObj" ref="productDao"/>
        	     <property name="radiousColorObj" ref="radiousColorObjId"/>
        	     <property name="radiousAttribute" ref="radiousAttributeId"/>
+       	     <property name="radiousPricegrid" ref="radiousPricegridId"/>
        	     
          
       </bean>
           <bean id="radiousColorObjId" class="parser.radious.RadiousColorParser"/>
           <bean id="radiousAttributeId" class="parser.radious.RadiousAttribute"/>
+           <bean id="radiousPricegridId" class="parser.radious.RadiousPriceGridParser"/>
+          
     
        <!-- supplier Radious 49916 configuration End -->
  

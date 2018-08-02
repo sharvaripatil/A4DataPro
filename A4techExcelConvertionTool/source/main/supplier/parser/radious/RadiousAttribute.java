@@ -2,15 +2,30 @@ package parser.radious;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.jasper.tagplugins.jstl.core.ForEach;
+import org.junit.internal.runners.model.EachTestNotifier;
+import org.springframework.util.StringUtils;
+
+import com.a4tech.lookup.service.LookupServiceData;
+import com.a4tech.lookup.service.restService.LookupRestService;
+import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Dimensions;
+import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.Material;
 import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.ShippingEstimate;
+import com.a4tech.product.model.Size;
+import com.a4tech.product.model.Value;
+import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
 
 public class RadiousAttribute {
 
+	private static LookupServiceData lookupServiceDataObj;
+	private LookupRestService lookupRestServiceObj;
 	
 	public ShippingEstimate getShippingEstimates(String cartonWeight,
 			String cartonWidth, String cartonHeight, String cartonLength, String unitsperCarton) {
@@ -56,11 +71,108 @@ public class RadiousAttribute {
 		return ItemObject;
 
 	}
+
+	public static List<Material> getMaterial(String material) {
+
+		List<Material> listOfMaterial = new ArrayList<Material>();		
+
+		Material materialObj=new Material();
+		material=material.replace("/", "").trim();
+	    String materailArr[]=material.split(",");
+
+	    for (String materialName : materailArr) {
+	  		 String mtrlType = getMaterialType(material.toUpperCase()).toString();
+
+	    	materialObj.setAlias(mtrlType);
+	    	materialObj.setName(materialName);
+		}
+	
+	    listOfMaterial.add(materialObj);
+	    
+		return listOfMaterial;
+	}
+	public static List<String> getMaterialType(String value){
+		List<String> listOfLookupMaterials = lookupServiceDataObj.getMaterialValues();
+		List<String> finalMaterialValues = listOfLookupMaterials.stream()
+				                                  .filter(mtrlName -> value.contains(mtrlName))
+				                                  .collect(Collectors.toList());
+                                                 
+				
+		return finalMaterialValues;	
+	}
 	
 	
 	
-	
-	
-	
+	public static Size getSize(String size) {
+
+		Size sizeObj=new Size();
+		String originalSize=size;
+		size=size.replace("[^0-9()-\"%/ ]","");
+
+		 Dimension dimensionObj=new Dimension();
+		 
+	     List<Values> listOfValues= new ArrayList<>();
+	      Values ValuesObj=new Values();
+	      List<Value> listOfValue= new ArrayList<>();
+	      Value ValueObj=new Value();
+		
+		if(originalSize.contains("x")){
+		String sizeArr[]=size.split("x");
+		
+		for (int i=0;i<sizeArr.length;i++) {
+			
+			    ValueObj=new Value();
+	     		ValueObj.setUnit("in");
+	     		
+	     		if(!StringUtils.isEmpty(sizeArr[0])){
+	     		ValueObj.setValue(sizeArr[0]);
+	   	     	ValueObj.setAttribute("Height");
+	     		}else if(!StringUtils.isEmpty(sizeArr[1])){
+	    	     ValueObj.setValue(sizeArr[1]);
+	    	   	 ValueObj.setAttribute("Length");
+	    	     }else if(!StringUtils.isEmpty(sizeArr[2])){
+		    	 ValueObj.setValue(sizeArr[2]);
+		    	  ValueObj.setAttribute("Width");
+		    	 }
+
+	     		listOfValue.add(ValueObj);
+	   	
+		     	}
+			
+		}
+		 else
+		{
+			    ValueObj=new Value();
+	     		ValueObj.setUnit("ft");
+	     		ValueObj.setValue(size);
+	   	     	ValueObj.setAttribute("Height");
+			
+		}
+		
+	   	ValuesObj.setValue(listOfValue);
+				listOfValues.add(ValuesObj);	
+		 		dimensionObj.setValues(listOfValues);
+		       sizeObj.setDimension(dimensionObj);
+		return sizeObj;
+	}
+
+	public static List<ImprintMethod> getImprintMethod(String imprintMethod) {
+		
+		List<ImprintMethod> listOfImprintMethods = new ArrayList<ImprintMethod>();
+		ImprintMethod imprintMethodObj=new ImprintMethod();
+		
+		
+		imprintMethodObj.setAlias(imprintMethod);
+		
+		
+		//imprintMethodObj.setType(type);
+		
+		
+		
+		
+		listOfImprintMethods.add(imprintMethodObj);
+		
+		return listOfImprintMethods;
+	}	
 	
 }
