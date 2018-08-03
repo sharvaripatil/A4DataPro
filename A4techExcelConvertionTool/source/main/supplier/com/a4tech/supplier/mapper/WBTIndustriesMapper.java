@@ -55,6 +55,7 @@ public class WBTIndustriesMapper implements IExcelParser{
     private WBTIndustriesAttributeParser        wbtIndustriesAttributeParser;
 	private WBTIndustriesPriceGridParser        wbtIndustriesPriceGridParser;
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId,String environmentType){
 		
@@ -146,7 +147,7 @@ public class WBTIndustriesMapper implements IExcelParser{
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
 							 if(CollectionUtils.isEmpty(listOfImprintMethods)){
-								   listOfImprintMethods = wbtIndustriesAttributeParser.getImprintMethodValues("Unimprinted", imprintMethodList);
+								   listOfImprintMethods = wbtIndustriesAttributeParser.getImprintMethodValues("Full Color", imprintMethodList);
 							   }
 							   productConfigObj.setImprintMethods(listOfImprintMethods);
 								productExcelObj.setProductConfigurations(productConfigObj);
@@ -387,12 +388,15 @@ public class WBTIndustriesMapper implements IExcelParser{
 					//set default value is "1" in PricesPerUnit
 					      break;
 				case 43:
-					    if(cell.getBooleanCellValue() == Boolean.TRUE){
-					    	quoteUponRequest = "True";	
-					    } else {
-					    	quoteUponRequest = "False";
-					    }
-					     
+					   if(cell.getCellType() == Cell.CELL_TYPE_STRING){
+						   quoteUponRequest = cell.getStringCellValue();				   
+					   } else {
+						   if(cell.getBooleanCellValue() == Boolean.TRUE){
+						    	quoteUponRequest = "True";	
+						    } else {
+						    	quoteUponRequest = "False";
+						    }   
+					   }
 					      break;
 				case 44:  // priceIncludeClr  
 					    String priceInclude = cell.getStringCellValue();
@@ -869,7 +873,7 @@ public class WBTIndustriesMapper implements IExcelParser{
 		}
 		workbook.close();
 		 if(CollectionUtils.isEmpty(listOfImprintMethods)){
-			   listOfImprintMethods = wbtIndustriesAttributeParser.getImprintMethodValues("Unimprinted", imprintMethodList);
+			   listOfImprintMethods = wbtIndustriesAttributeParser.getImprintMethodValues("Full Color", imprintMethodList);
 		   }
 		   productConfigObj.setImprintMethods(listOfImprintMethods);
 		 	productExcelObj.setProductConfigurations(productConfigObj);

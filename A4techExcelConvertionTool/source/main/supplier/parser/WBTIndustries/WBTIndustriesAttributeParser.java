@@ -288,6 +288,11 @@ public class WBTIndustriesAttributeParser {
 			 String[] upchareVal = values.getValue().split("_");
 			 String priceVal = upchareVal[0];
 			 String disCount = upchareVal[1];
+			 String priceInclude = "";
+			 if(priceVal.contains("per Button")){
+				 priceVal = priceVal.replaceAll("per Button", "").trim();
+				 priceInclude = "per Button";
+			 }
 			 String upChargeTypeVal = "";
 			 if(upchargeType.equalsIgnoreCase("setupCharge")){
 				 upChargeTypeVal = "Set-up Charge";
@@ -303,14 +308,14 @@ public class WBTIndustriesAttributeParser {
 				 
 			 }
 			existingPriceGrid = wbtIndustriesPriceGridParser.getUpchargePriceGrid("1", priceVal, disCount, "Imprint method", "n",
-					"USD", imprintMethods, upChargeTypeVal, "Other", 1, existingPriceGrid);
+					"USD", imprintMethods, upChargeTypeVal, "Other", 1,priceInclude, existingPriceGrid);
 		}
 		return existingPriceGrid;
 	}
 	public List<PriceGrid> getAdditionalColorUpcharge(String discountCode,String prices,List<PriceGrid> existingPriceGrid,String upchargeType){
 	   String disCountCode = getAdditionalColorDiscountCode(discountCode);
 	   existingPriceGrid = wbtIndustriesPriceGridParser.getUpchargePriceGrid("1", prices, disCountCode, "Additional Colors", "n",
-				"USD", "Additional Color",upchargeType, "Other", 1, existingPriceGrid);
+				"USD", "Additional Color",upchargeType, "Other", 1,"", existingPriceGrid);
 		return existingPriceGrid;
 	}
 	private String getAdditionalColorDiscountCode(String value){
