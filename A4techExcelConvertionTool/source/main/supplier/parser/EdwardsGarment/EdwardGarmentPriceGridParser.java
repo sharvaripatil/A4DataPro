@@ -150,10 +150,13 @@ public class EdwardGarmentPriceGridParser {
 				
 				if(!StringUtils.isEmpty(firstCriteria)){
 					String arrValues[]=firstCriteria.split(":");
-					PriceConfiguration oneConfig = new PriceConfiguration();
-					oneConfig.setCriteria(arrValues[1]);
-					oneConfig.setValue(Arrays.asList((Object) arrValues[0]));
-					priceConfiguration.add(oneConfig);
+					String tempAarr[]=arrValues[0].split(",");
+					for (String colorVal : tempAarr) {
+						PriceConfiguration oneConfig = new PriceConfiguration();
+						oneConfig.setCriteria(arrValues[1]);
+						oneConfig.setValue(Arrays.asList((Object) colorVal));
+						priceConfiguration.add(oneConfig);
+					}
 				}
 				if(!CollectionUtils.isEmpty(listOfsizes)){
 			for (String criterias : listOfsizes) {
