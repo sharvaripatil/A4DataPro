@@ -107,7 +107,7 @@ public class RadiousAttribute {
 
 		Size sizeObj=new Size();
 		String originalSize=size;
-		size=size.replace("[^0-9()-\"%/ ]","");
+		size=size.replaceAll("[^0-9\"\'.]","");
 
 		 Dimension dimensionObj=new Dimension();
 		 
@@ -146,7 +146,8 @@ public class RadiousAttribute {
 	     		ValueObj.setUnit("ft");
 	     		ValueObj.setValue(size);
 	   	     	ValueObj.setAttribute("Height");
-			
+	     		listOfValue.add(ValueObj);
+
 		}
 		
 	   	ValuesObj.setValue(listOfValue);
@@ -164,12 +165,14 @@ public class RadiousAttribute {
 		
 		imprintMethodObj.setAlias(imprintMethod);
 		
-		
-		//imprintMethodObj.setType(type);
-		
-		
-		
-		
+		if(imprintMethod.contains("Unprinted"))
+		{
+			imprintMethodObj.setType("Printed");
+
+		}else {
+			imprintMethodObj.setType("Unprinted");
+		}
+
 		listOfImprintMethods.add(imprintMethodObj);
 		
 		return listOfImprintMethods;

@@ -184,6 +184,8 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 									themeList = new ArrayList<Theme>();
 									color = new ArrayList<Color>();									
 									rushTime = new RushTime();
+								    listOfQuantity = new StringBuilder();
+								    listOfPrices = new StringBuilder();
 									productConfigObj = new ProductConfigurations();
 									
 																	}
@@ -804,7 +806,8 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 			color = new ArrayList<Color>();
 			productConfigObj = new ProductConfigurations();
 			rushTime = new RushTime();
-
+		    listOfQuantity = new StringBuilder();
+		    listOfPrices = new StringBuilder();
 			exstlist = new ArrayList<Theme>();
 
 			return finalResult;
