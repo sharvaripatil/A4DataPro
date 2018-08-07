@@ -144,7 +144,7 @@ public class WBTIndustriesPriceGridParser {
 	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
 			String discounts, String upChargeCriterias, String qurFlag,
 			String currency, String upChargeName, String upChargeType,
-			String upchargeUsageType, Integer upChargeSequence,
+			String upchargeUsageType, Integer upChargeSequence,String priceInclude,
 			List<PriceGrid> existingPriceGrid) {
 		try{
 		List<PriceConfiguration> configuration = null;
@@ -165,6 +165,7 @@ public class WBTIndustriesPriceGridParser {
 		priceGrid.setUpchargeType(upChargeType);
 		priceGrid.setServiceCharge("Required");
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
+		priceGrid.setPriceIncludes(priceInclude);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
 			 listOfPrice =
