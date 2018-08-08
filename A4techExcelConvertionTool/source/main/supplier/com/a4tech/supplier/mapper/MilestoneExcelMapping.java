@@ -565,7 +565,13 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					break;
 				case 74:
 					break;
-				case 75: // Imprint size1
+				case 75:
+					break;
+				case 76:
+					break;
+				case 77:
+					break;
+				case 78: // Imprint size1
 					 FirstImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(FirstImprintsize1) || FirstImprintsize1 !=  ""){
 					 ImprintSizevalue=ImprintSizevalue.append(FirstImprintsize1).append(" ");
@@ -573,7 +579,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					 }
 					 break;
 					    
-				case 76: //// Imprint size1 unit
+				case 79: //// Imprint size1 unit
 					FirstImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 					 if(!StringUtils.isEmpty(FirstImprintunit1) || FirstImprintunit1 !=  ""){
@@ -582,7 +588,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					 }	 
 					   	break;
 					   	
-				case 77:   // Imprint size1 Type    
+				case 80:   // Imprint size1 Type    
 					FirstImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 					   if(!StringUtils.isEmpty(FirstImprinttype1) || FirstImprinttype1 !=  ""){
@@ -592,7 +598,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 						break;
 						
 				  
-				case 78: // // Imprint size2
+				case 81: // // Imprint size2
 					FirstImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 					
 					 if(!StringUtils.isEmpty(FirstImprintsize2) || FirstImprintsize2 != "" ){
@@ -600,7 +606,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					 }
 					  	break;
 					  	
-				case 79:	// Imprint size2 Unit
+				case 82:	// Imprint size2 Unit
                      FirstImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 					
 					
@@ -611,7 +617,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 
 					    break;
 					    
-				case 80: // Imprint size2 Type
+				case 83: // Imprint size2 Type
                     FirstImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 					
 				    if(!StringUtils.isEmpty(FirstImprinttype2) || FirstImprinttype2 !=  "" ){
@@ -621,7 +627,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				    }
 					  	break;
 					  	
-				case 81:  // Imprint location
+				case 84:  // Imprint location
 					
 
 					 imprintLocation = cell.getStringCellValue();
@@ -631,7 +637,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 						listImprintLocation.add(locationObj);
 					}
 					 break;
-				case 82:  // Second Imprintsize1
+				case 85:  // Second Imprintsize1
                     SecondImprintsize1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 				    if(!StringUtils.isEmpty(SecondImprintsize1) || SecondImprintsize1 !=  "" ){
@@ -640,7 +646,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 				    }
 					   	break;
 					   	
-				case 83:  // Second Imprintsize1 unit
+				case 86:  // Second Imprintsize1 unit
 					SecondImprintunit1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 				    if(!StringUtils.isEmpty(SecondImprintunit1) || SecondImprintunit1 != "" ){
@@ -650,7 +656,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					}
 						break;
 						
-				case 84:  // Second Imprintsize1 type
+				case 87:  // Second Imprintsize1 type
 					SecondImprinttype1=CommonUtility.getCellValueStrinOrInt(cell);
 					
 				    if(!StringUtils.isEmpty(SecondImprinttype1) || SecondImprinttype1 !=  "" ){
@@ -660,7 +666,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					}
 					  break;
 					  
-				case 85: // Second Imprintsize2
+				case 88: // Second Imprintsize2
 					SecondImprintsize2=CommonUtility.getCellValueStrinOrInt(cell);
 					
 				    if(!StringUtils.isEmpty(SecondImprintsize2) || SecondImprintsize2 !=  "" ){
@@ -670,7 +676,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 
 					break;
 					
-				case 86: //Second Imprintsize2 Unit
+				case 89: //Second Imprintsize2 Unit
 					SecondImprintunit2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprintunit2) || SecondImprintunit2 !=  "" ){
 					SecondImprintunit2=MilestoneLookupData.Dimension1Units.get(SecondImprintunit2);
@@ -679,7 +685,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 
 					break;
 					
-				case 87: // Second Imprintsize2 type
+				case 90: // Second Imprintsize2 type
 					SecondImprinttype2=CommonUtility.getCellValueStrinOrInt(cell);
 				    if(!StringUtils.isEmpty(SecondImprinttype2) || SecondImprinttype2 != "" ){
 					SecondImprinttype2=MilestoneLookupData.Dimension1Type.get(SecondImprinttype2);
@@ -687,7 +693,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					}
 					  break;
 					  
-				case 88: // Second Imprint location
+				case 91:// Second Imprint location
 				String imprintLocation2 = cell.getStringCellValue();
 					if(!imprintLocation2.isEmpty()){
 						ImprintLocation locationObj2 = new ImprintLocation();
@@ -695,7 +701,7 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 						listImprintLocation.add(locationObj2);
 					}
 					break;
-				case 89: // DecorationMethod
+				case 92: // DecorationMethod
 				   decorationMethod = cell.getStringCellValue();
 				   if(!StringUtils.isEmpty(decorationMethod))
 				   {
@@ -705,29 +711,29 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					
 					break; 
 					 
-				case 90: //NoDecoration
+				case 93: //NoDecoration
 				
 				    break;
-				case 91: //NoDecorationOffered
+				case 94: //NoDecorationOffered
 
 				    break;
-			   case 92: //NewPictureURL
+			   case 95: //NewPictureURL
 					break;
-				case 93:  //NewPictureFile  -- not used
+				case 96:  //NewPictureFile  -- not used
 					break;
-				case 94: //ErasePicture -- not used
+				case 97: //ErasePicture -- not used
 					break;
-				case 95: //NewBlankPictureURL
+				case 98: //NewBlankPictureURL
 					break;
-				case 96: //NewBlankPictureFile -- not used
+				case 99: //NewBlankPictureFile -- not used
 					break;
-				case 97://EraseBlankPicture  -- not used
+				case 100://EraseBlankPicture  -- not used
 					break;
-				case 98: //PicExists   -- not used
+				case 101: //PicExists   -- not used
 					break;
-				case 99: //NotPictured  -- not used
+				case 102: //NotPictured  -- not used
 					break;
-				case 100: //MadeInCountry
+				case 103: //MadeInCountry
 					
 					String madeInCountry = cell.getStringCellValue();
 					if(!madeInCountry.isEmpty()){
@@ -736,25 +742,25 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					}
 					break;
 					
-					case 101:// AssembledInCountry
+					case 104:// AssembledInCountry
 				
 					break;
-				case 102: //DecoratedInCountry
+				case 105: //DecoratedInCountry
 					String decoratedInCountry = cell.getStringCellValue();
 					if(!decoratedInCountry.isEmpty()){
 						decoratedInCountry = attrtiParserObj.getCountryCodeConvertName(decoratedInCountry);
  						productExcelObj.setAdditionalProductInfo("Decorated country is: " +decoratedInCountry);
 					}
 					break;
-				case 103: //ComplianceList  -- No data
+				case 106: //ComplianceList  -- No data
 					break;
-				case 104://ComplianceMemo  -- No data
+				case 107://ComplianceMemo  -- No data
 					break;
-				case 105: //ProdTimeLo
+				case 108: //ProdTimeLo
 					   prodTimeLo = CommonUtility.getCellValueStrinOrInt(cell);
 			
 					break;
-				case 106: //ProdTimeHi
+				case 109: //ProdTimeHi
 					String prodTimeHi = CommonUtility.getCellValueStrinOrInt(cell);
 					ProductionTime productionTime = new ProductionTime();
 				
@@ -773,40 +779,40 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					}
 					break;
 					
-			     case 107://RushProdTimeLo
+			     case 110://RushProdTimeLo
 					 break; 	 
-				case 108://RushProdTimeH
+				case 111://RushProdTimeH
 					break;
 					
-				case 109://Packaging
+				case 112://Packaging
 				
 					String pack  = cell.getStringCellValue();
 					List<Packaging> listOfPackaging = attrtiParserObj.getPackageValues(pack);
 					productConfigObj.setPackaging(listOfPackaging);
 					break;
 					
-				case 110: //CartonL
+				case 113: //CartonL
 					cartonL  = CommonUtility.getCellValueStrinOrInt(cell);
 					
 					break;
-				case 111://CartonW
+				case 114://CartonW
 					cartonW  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
 	
-				case 112://CartonH
+				case 115://CartonH
 					cartonH  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 113: //WeightPerCarton
+				case 116: //WeightPerCarton
 					weightPerCarton  =CommonUtility.getCellValueStrinOrInt(cell);
 					break;
-				case 114: //UnitsPerCarton
+				case 117: //UnitsPerCarton
 					unitsPerCarton  = CommonUtility.getCellValueStrinOrInt(cell);
 					break;
 					
-		    	case 115: //ShipPointCountry
+		    	case 118: //ShipPointCountry
 					break;
 					
-				case 116: //ShipPointZip
+				case 119: //ShipPointZip
 					String FOBValue=CommonUtility.getCellValueStrinOrInt(cell);
 					String FOBLooup=null;
 					List<String>fobLookupList = lookupServiceDataObj.getFobPoints(FOBLooup,environmentType);
@@ -819,11 +825,11 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					
 					break;
 					
-				case 117: //Comment
+				case 120: //Comment
 					
 					break;
 					
-				case 118: //Verified
+				case 121: //Verified
 				   String verified=cell.getStringCellValue();
 					if(verified.equalsIgnoreCase("True")){
 					String priceConfimedThruString="2017-12-31T00:00:00";
@@ -831,16 +837,16 @@ private static final Logger _LOGGER = Logger.getLogger(MilestoneExcelMapping.cla
 					}
 					break;
 			
-			    case 119: //UpdateInventory
+			    case 122: //UpdateInventory
 					
 					break;
-				case 120: //InventoryOnHand
+				case 123: //InventoryOnHand
 					
 					break;
-				case 121: //InventoryOnHandAdd
+				case 124: //InventoryOnHandAdd
 					
 					break;
-				case 122: //InventoryMemo
+				case 125: //InventoryMemo
 					
 				    break;
 			

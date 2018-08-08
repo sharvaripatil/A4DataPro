@@ -70,6 +70,9 @@ public class WBTIndustriesAttributeParser {
 		Values valuesObj = new Values();
 		Value valueObj = null;
 		for (int dimensionIndex = 0; dimensionIndex < dimensionValueArr.length; dimensionIndex++) {
+			if(StringUtils.isEmpty(dimensionValueArr[dimensionIndex])){
+				continue;
+			}
 			valueObj = new Value();
 			valueObj.setValue(dimensionValueArr[dimensionIndex]);
 			valueObj.setUnit(LookupData.Dimension1Units.get(dimensionUnitsArr[dimensionIndex]));
