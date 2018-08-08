@@ -2,11 +2,7 @@ package parser.radious;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import parser.harvestIndustrail.HarvestLookupData;
-
 import com.a4tech.product.model.Color;
-import com.a4tech.product.model.Combo;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -25,14 +21,14 @@ public class RadiousColorParser {
 		for (String colorName : colorValues) {
 			
 			colorObj = new Color();
-			if(RadiousLookupData.COLOR_MAP.containsKey(colorName)) {
-				colorObj.setName(colorName);
+			if(RadiousLookupData.COLOR_MAP.containsKey(colorName.trim())) {
+				colorObj.setName(RadiousLookupData.getCOLOR_MAP().get(colorName.trim()));
 			}else
 			{
 				colorObj.setName("Other");
 
 			}
-			colorObj.setAlias(colorName);
+			colorObj.setAlias(colorName.trim());
 
 			listOfProductColors.add(colorObj);
 		}
