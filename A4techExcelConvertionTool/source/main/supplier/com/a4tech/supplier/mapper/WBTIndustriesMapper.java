@@ -289,7 +289,7 @@ public class WBTIndustriesMapper implements IExcelParser{
 					
 				case 15://size --  value
 						String dimensionValue1=CommonUtility.getCellValueStrinOrInt(cell);
-					   if(dimensionValue1 != null && !dimensionValue1.isEmpty()){
+					   if(dimensionValue1 != null){
 						   dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					   }
 					
@@ -310,7 +310,7 @@ public class WBTIndustriesMapper implements IExcelParser{
 				
 				 case 18: //size
 					 String dimensionValue2 =CommonUtility.getCellValueStrinOrInt(cell);
-					 if(dimensionValue2 != null && !dimensionValue2.isEmpty()){
+					 if(dimensionValue2 != null ){
 						 dimensionValue.append(dimensionValue2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
 					break;
@@ -332,7 +332,7 @@ public class WBTIndustriesMapper implements IExcelParser{
 					
 				case 21: //size
 					String dimensionValue3  =CommonUtility.getCellValueStrinOrInt(cell);
-					if(dimensionValue3 != null && !dimensionValue3.isEmpty()){
+					if(dimensionValue3 != null){
 						dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					break;
