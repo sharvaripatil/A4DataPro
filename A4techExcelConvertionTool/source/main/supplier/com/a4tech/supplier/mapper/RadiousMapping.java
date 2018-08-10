@@ -231,12 +231,22 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 				case 3:// productname
 					productName = cell.getStringCellValue();
+					if(productName.length() > 60)
+					{
+						productName=productName.substring(0, 60);
+					}
 					productExcelObj.setName(productName);
 					break;
 					
 				case 8:// productdescription
 					String description = cell.getStringCellValue();
-					description=description.replace("<p>", "").replace("</p>", "");
+					description=description.replace("<p>", "").replace("</p>", "")
+					.replace("&","'").replace("#","'").replace("3","'").replace("9","'")
+					.replace(";","'");
+					if(description.length() > 800)
+					{
+						productName=productName.substring(0, 800);
+					}
 					productExcelObj.setDescription(description);
 				
 					break;
@@ -266,16 +276,16 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 
 					break;
 				case 26: // Material
-			       	  /*String material=cell.getStringCellValue();
+			       	 String material=cell.getStringCellValue();
 					  if (!StringUtils.isEmpty(material)){
 					    listOfMaterial=RadiousAttribute.getMaterial(material);
 						productConfigObj.setMaterials(listOfMaterial);  
-					  }*/
+					  }
 					break;
 				
 				case 28://IMPRINT
 					String imprintMethod=cell.getStringCellValue();
-					if (!StringUtils.isEmpty(size)){
+					if (!StringUtils.isEmpty(imprintMethod)){
 						listOfImprintMethods=RadiousAttribute.getImprintMethod(imprintMethod);
 						productConfigObj.setImprintMethods(listOfImprintMethods);
 					}
@@ -301,26 +311,39 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 				
 				case 39://Carton Weight
-					cartonWeight=CommonUtility.getCellValueStrinOrDecimal(cell);
-					
+					String cartonWeight1=CommonUtility.getCellValueStrinOrDecimal(cell);
+					if((!StringUtils.isEmpty(cartonWeight1)) && !cartonWeight1.equalsIgnoreCase("0"))
+					{
+						cartonWeight=cartonWeight1;
+						
+					}
 					break;
 				case 40://Carton Width
-					cartonWidth=CommonUtility.getCellValueStrinOrDecimal(cell);
-
+					String cartonWidth1=CommonUtility.getCellValueStrinOrDecimal(cell);
+					if((!StringUtils.isEmpty(cartonWidth1))&& !cartonWidth1.equalsIgnoreCase("0")) {
+						cartonWidth=cartonWidth1;
+				      }
 					
 					break;
 				case 41://Carton Height
-					cartonHeight=CommonUtility.getCellValueStrinOrDecimal(cell);
+					String cartonHeight1=CommonUtility.getCellValueStrinOrDecimal(cell);
+					if((!StringUtils.isEmpty(cartonHeight1)) && !cartonHeight1.equalsIgnoreCase("0")){
+						cartonHeight=cartonHeight1;
 
-				
+					}
 					break;
 				case 42://Carton Length
-					cartonLength=CommonUtility.getCellValueStrinOrDecimal(cell);
-
+					String cartonLength1=CommonUtility.getCellValueStrinOrDecimal(cell);
+					if((!StringUtils.isEmpty(cartonLength1)) && !cartonLength1.equalsIgnoreCase("0") ){
+						cartonLength=cartonLength1;
+					}
 					
 					break;
 				case 43://Units Per Carton
-					unitsperCarton=CommonUtility.getCellValueStrinOrDecimal(cell);
+					String unitsperCarton1=CommonUtility.getCellValueStrinOrDecimal(cell);
+					if((!StringUtils.isEmpty(unitsperCarton1)) && !unitsperCarton1.equalsIgnoreCase("0")){
+						unitsperCarton=unitsperCarton1;
+					}
 					shipingEstObj = radiousAttribute.getShippingEstimates(cartonWeight, cartonWidth,cartonHeight,cartonLength,
 					unitsperCarton);
 					productConfigObj.setShippingEstimates(shipingEstObj);
@@ -330,11 +353,13 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 				case 48: // ProductionTime_1
 				String prodTime= CommonUtility.getCellValueStrinOrInt(cell);
 				if (!StringUtils.isEmpty(prodTime)){
-				String prodTimeIndays=prodTime.replace("(Qty: 1-25)","").replace("Bus. Days", "").replace("Call", "");
+				String prodTimeIndays=prodTime.replace("(Qty: 1-25)","").replace("Bus. Days", "").replace("Bus. Day", "").replace("Call", "");
 		       	ProductionTime productionTime = new ProductionTime();
 		       	productionTime.setBusinessDays(prodTimeIndays);
 		       	productionTime.setDetails(prodTime);
 				listOfProductionTime.add(productionTime);
+				productConfigObj.setProductionTime(listOfProductionTime);
+
 				}
 					break;
 			
@@ -775,7 +800,6 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 			productConfigObj.setImprintLocation(listImprintLocation);
 
 			
-			productConfigObj.setProductionTime(listOfProductionTime);
 			productConfigObj.setRushTime(rushTime);
 
 			
