@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -83,7 +82,7 @@ public class EdwardsGarmentMapping implements IExcelParser{
 		  StringBuilder pricesPerUnit = new StringBuilder();
 		
 			List<Material> materiallist = new ArrayList<Material>();	
-			Set<String> setImages= new HashSet();
+			Set<String> setImages= new HashSet<String>();
 			
 			 String xid = null;
 			 
@@ -106,11 +105,8 @@ public class EdwardsGarmentMapping implements IExcelParser{
 		Set<String> setSizes= new HashSet();
 		Set<String> skuSet= new HashSet();
 		HashSet<String> priceSet= new HashSet();
-		
-		//HashMap<String , HashSet<String>> priceMap=new HashMap<String, HashSet<String>>();
-		//HashMap<String , HashSet<String>> priceMapTest=new HashMap<String, HashSet<String>>();
-		HashMap<String, HashMap<String,HashSet<String>>> priceMapTestMainMap=new HashMap<String, HashMap<String,HashSet<String>>>();
-		HashMap<String , HashSet<String>> availMap=new HashMap<String, HashSet<String>>();
+		HashMap<String,HashSet<String>>	priceMapTestMainMap=new HashMap<String,HashSet<String>>();
+		HashMap<String , HashSet<String>> availSizeClrMap=new HashMap<String, HashSet<String>>();
 		HashMap<String , String> sizeKeyValue=new HashMap<String, String>();
 		
 		String stockValue="";
@@ -178,18 +174,20 @@ while (iterator.hasNext()) {
 									List<Color> colorList=edwardsGarmentAttributeParser.getProductColors(new ArrayList<String>(colorSet));
 									productConfigObj.setColors(colorList);
 								}
-								if(!CollectionUtils.isEmpty(availMap)){
+								if(!CollectionUtils.isEmpty(availSizeClrMap)){
 									HashMap<String , HashSet<String>> availMapTemp=new HashMap<String, HashSet<String>>();
-									availMapTemp=(HashMap)availMap.clone();
-							boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
+									availMapTemp=(HashMap)availSizeClrMap.clone();
+							//boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
+									boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
 							
 							if(flag){
-							List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availMap);
+							List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availSizeClrMap);
 							productExcelObj.setAvailability(listOfAvailablity);
 							_LOGGER.info("Availability done for product:"+productExcelObj.getExternalProductId());
 							}else{
 								_LOGGER.info("No Availability detected for product:"+productExcelObj.getExternalProductId());
 							}
+							availMapTemp=new HashMap<String, HashSet<String>>();
 								}
 								 if(!CollectionUtils.isEmpty(setSizes)){
 									 Apparel apparelObj = new Apparel();
@@ -216,34 +214,34 @@ while (iterator.hasNext()) {
 									}
 									
 									// process pring here
-									 TreeMap<String, HashMap<String,HashSet<String>>> priceMapSorted= null;
+									 TreeMap<String,HashSet<String>> priceMapSorted= null;
 									 if(!CollectionUtils.isEmpty(priceMapTestMainMap)){//priceMapTestMainMap
-										 priceMapSorted=new TreeMap<String, HashMap<String,HashSet<String>>>(priceMapTestMainMap);
+										 priceMapSorted=new TreeMap<String,HashSet<String>>(priceMapTestMainMap);
 										 }
-								
 									 if(!CollectionUtils.isEmpty(priceMapSorted)){
 									 List<Price> listOfPricesArr=new ArrayList<Price>();
 									 priceGrids = new ArrayList<PriceGrid>();
 									 PriceGrid priceGrid = new PriceGrid();
-									 for (Entry<String, HashMap<String,HashSet<String>>> values : priceMapSorted.entrySet()) {
+									 for (Entry<String,HashSet<String>> values : priceMapSorted.entrySet()) {
 										   String priceVal= values.getKey();
-										   HashMap<String,HashSet<String>> tempHashMap=values.getValue();
+										  HashSet<String>tempHashSet=values.getValue();
 										   String sizeValue="";
 										   String colorValuee="";
 										   ArrayList<String> listOfsizes=new ArrayList<>();
 										   ArrayList<String> listOfcolor=new ArrayList<>();
 										   HashSet<String> tempSet=new HashSet<String>();
-										    for (Entry<String,HashSet<String>> valuesTemp : tempHashMap.entrySet()) {
-											    //colorValuee=valuesTemp.getKey();
-											    listOfcolor=  getColorValue(listOfcolor,valuesTemp.getKey());
-											    tempSet=getSizesValue(tempSet, valuesTemp.getValue());
-											   //listOfsizes=new ArrayList<String>(valuesTemp.getValue());
-											   
 										 
-										   }
-										    listOfsizes=new ArrayList<String>(tempSet);
+										   Object[] getSizeClrList=  getColorSizeValue(tempHashSet);
+										   HashSet<String> tempSetCL=new HashSet<>();
+										   tempSetCL=(HashSet<String>) getSizeClrList[0];
+										   listOfcolor=new ArrayList<String>(tempSetCL);
+										   
+										   HashSet<String> tempSetSZ=new HashSet<>();
+										   tempSetSZ=(HashSet<String>) getSizeClrList[1];
+										   listOfsizes=new ArrayList<String>(tempSetSZ);
+										   
 										    colorValuee=String.join(",", listOfcolor);
-										    sizeValue= String.join(",", listOfsizes);
+										    sizeValue= String.join(",",  listOfsizes);
 										    if(!StringUtils.isEmpty(sizeValue) && !sizeValue.equals("0")){
 												  priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
 																	 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
@@ -258,7 +256,6 @@ while (iterator.hasNext()) {
 													priceGrid.setIsBasePrice(true);
 													priceGrid.setSequence(1);
 													List<Price> listOfPrice = new ArrayList<Price>();
-													//if (!priceGrid.getIsQUR()) {
 													listOfPrice = EdwardGarmentPriceGridParser.getSinlgePrices(priceVal, "1", "P",listOfPrice);
 													priceGrid.setPrices(listOfPrice);
 													priceGrid.setPriceConfigurations(new ArrayList<PriceConfiguration>());
@@ -306,8 +303,9 @@ while (iterator.hasNext()) {
 						         priceSet=new HashSet<String>();
 						         //priceMap=new HashMap<String, HashSet<String>>();
 						         priceMapSorted=new TreeMap<>();
-						         priceMapTestMainMap=new HashMap<String, HashMap<String,HashSet<String>>>();
-						         availMap=new HashMap<String, HashSet<String>>();
+						         //priceMapTestMainMap=new HashMap<String, HashMap<String,HashSet<String>>>();
+						         priceMapTestMainMap=new HashMap<String, HashSet<String>>();
+						         availSizeClrMap=new HashMap<String, HashSet<String>>();
 						 		 sizeKeyValue=new HashMap<String, String>();
 						         firstValue="";
 						         sizeCount=1;
@@ -381,6 +379,9 @@ while (iterator.hasNext()) {
 				    		listPrice="AAAAA";
 				    	}
 				    	size2 =getProductCellData(nextRow,9);
+				    	if(StringUtils.isEmpty(size2)){
+				    		size2="";
+				    	}
 				    	String colorValueTemp=getProductCellData(nextRow,21);
 				    	if(!StringUtils.isEmpty(colorValueTemp)){
 				    	colorValueTemp=colorValueTemp.replaceAll("&","/");
@@ -395,6 +396,8 @@ while (iterator.hasNext()) {
 				    	if(StringUtils.isEmpty(stockValue)){
 				    		stockValue="BBBBB";
 				    	}
+				    	//  write logic for size over here
+				    	/////////////////////////////////////
 				    	if(!StringUtils.isEmpty(size1) && (!StringUtils.isEmpty(size2)) && !size1.equals("0") && !size2.equals("0")){
 							String tempStr="";
 							size1=size1.trim();
@@ -408,20 +411,22 @@ while (iterator.hasNext()) {
 								tempStr=tempStr.replaceAll(" ","");
 								setSizes.add(tempStr);
 								skuSet.add(tempStr+"_____"+colorValueTemp+"_____"+stockValue);
-								priceMapTestMainMap=getPriceMapClrSize(priceMapTestMainMap, colorValueTemp,tempStr, listPrice);//qwe
+								//priceMapTestMainMap=getPriceMapClrSize(priceMapTestMainMap, colorValueTemp,tempStr, listPrice);//qwe
+								priceMapTestMainMap=getPriceMapClrSize1(priceMapTestMainMap, colorValueTemp,tempStr, listPrice);//qwe
 								///
 								 if(!StringUtils.isEmpty(tempStr) && !tempStr.equals("0")){
-								availMap=getAvailMap(availMap,colorValueTemp,tempStr);
+									 availSizeClrMap=getAvailMap(availSizeClrMap,colorValueTemp,tempStr);
 								 }
 						}else{
 							if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
 							sizeCount++;
 							setSizes.add(size1.trim());
 							skuSet.add(size1+"_____"+colorValueTemp+"_____"+stockValue);
-							priceMapTestMainMap=getPriceMapClrSize(priceMapTestMainMap, colorValueTemp,size1, listPrice);//qwe
+							//priceMapTestMainMap=getPriceMapClrSize(priceMapTestMainMap, colorValueTemp,size1, listPrice);//qwe
+							priceMapTestMainMap=getPriceMapClrSize1(priceMapTestMainMap, colorValueTemp,size1, listPrice);//qwe
 							///
 							 if(!StringUtils.isEmpty(size1) && !size1.equals("0")){
-							availMap=getAvailMap(availMap,colorValueTemp,size1);
+								 availSizeClrMap=getAvailMap(availSizeClrMap,colorValueTemp,size1);
 							 }
 							//priceSet.add(size1+"_____"+listPrice);
 							}else{
@@ -429,11 +434,12 @@ while (iterator.hasNext()) {
 									sizeCount++;
 									setSizes.add(size2.trim());
 									skuSet.add(size2+"_____"+colorValueTemp+"_____"+stockValue);
-									priceMapTestMainMap=getPriceMapClrSize(priceMapTestMainMap, colorValueTemp,size1, listPrice);//qwe
+									//priceMapTestMainMap=getPriceMapClrSize(priceMapTestMainMap, colorValueTemp,size2, listPrice);//qwe
+									priceMapTestMainMap=getPriceMapClrSize1(priceMapTestMainMap, colorValueTemp,size2, listPrice);//qwe
 									//
 									
 									 if(!StringUtils.isEmpty(size2) && !size2.equals("0")){
-									availMap=getAvailMap(availMap,colorValueTemp,size2);
+										 availSizeClrMap=getAvailMap(availSizeClrMap,colorValueTemp,size2);
 									 }
 									//priceSet.add(size1+"_____"+listPrice);
 									}
@@ -696,18 +702,19 @@ while (iterator.hasNext()) {
 				List<Color> colorList=edwardsGarmentAttributeParser.getProductColors(new ArrayList<String>(colorSet));
 				productConfigObj.setColors(colorList);
 			}
-			if(!CollectionUtils.isEmpty(availMap)){
+			if(!CollectionUtils.isEmpty(availSizeClrMap)){//availMap
 				HashMap<String , HashSet<String>> availMapTemp=new HashMap<String, HashSet<String>>();
-				availMapTemp=(HashMap)availMap.clone();
-		boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
-		
+				availMapTemp=(HashMap)availSizeClrMap.clone();
+		//boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
+				boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
 		if(flag){
-		List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availMap);
+		List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availSizeClrMap);
 		productExcelObj.setAvailability(listOfAvailablity);
 		_LOGGER.info("Availability done for product:"+productExcelObj.getExternalProductId());
 		}else{
 			_LOGGER.info("No Availability detected for product:"+productExcelObj.getExternalProductId());
 		}
+		availMapTemp=new HashMap<String, HashSet<String>>();
 			}
 			 if(!CollectionUtils.isEmpty(setSizes)){
 				 Apparel apparelObj = new Apparel();
@@ -734,34 +741,34 @@ while (iterator.hasNext()) {
 				}
 				
 				// process pring here
-				 TreeMap<String, HashMap<String,HashSet<String>>> priceMapSorted= null;
+				
+				 TreeMap<String,HashSet<String>> priceMapSorted= null;
 				 if(!CollectionUtils.isEmpty(priceMapTestMainMap)){//priceMapTestMainMap
-					 priceMapSorted=new TreeMap<String, HashMap<String,HashSet<String>>>(priceMapTestMainMap);
+					 priceMapSorted=new TreeMap<String,HashSet<String>>(priceMapTestMainMap);
 					 }
-			
 				 if(!CollectionUtils.isEmpty(priceMapSorted)){
 				 List<Price> listOfPricesArr=new ArrayList<Price>();
 				 priceGrids = new ArrayList<PriceGrid>();
 				 PriceGrid priceGrid = new PriceGrid();
-				 for (Entry<String, HashMap<String,HashSet<String>>> values : priceMapSorted.entrySet()) {
+				 for (Entry<String,HashSet<String>> values : priceMapSorted.entrySet()) {
 					   String priceVal= values.getKey();
-					   HashMap<String,HashSet<String>> tempHashMap=values.getValue();
+					  HashSet<String>tempHashSet=values.getValue();
 					   String sizeValue="";
 					   String colorValuee="";
 					   ArrayList<String> listOfsizes=new ArrayList<>();
 					   ArrayList<String> listOfcolor=new ArrayList<>();
 					   HashSet<String> tempSet=new HashSet<String>();
-					    for (Entry<String,HashSet<String>> valuesTemp : tempHashMap.entrySet()) {
-						    //colorValuee=valuesTemp.getKey();
-						    listOfcolor=  getColorValue(listOfcolor,valuesTemp.getKey());
-						    tempSet=getSizesValue(tempSet, valuesTemp.getValue());
-						   //listOfsizes=new ArrayList<String>(valuesTemp.getValue());
-						   
-					 
-					   }
-					    listOfsizes=new ArrayList<String>(tempSet);
+					   Object[] getSizeClrList=  getColorSizeValue(tempHashSet);
+					   HashSet<String> tempSetCL=new HashSet<>();
+					   tempSetCL=(HashSet<String>) getSizeClrList[0];
+					   listOfcolor=new ArrayList<String>(tempSetCL);
+					   
+					   HashSet<String> tempSetSZ=new HashSet<>();
+					   tempSetSZ=(HashSet<String>) getSizeClrList[1];
+					   listOfsizes=new ArrayList<String>(tempSetSZ);
+					   
 					    colorValuee=String.join(",", listOfcolor);
-					    sizeValue= String.join(",", listOfsizes);
+					    sizeValue= String.join(",",  listOfsizes);
 					    if(!StringUtils.isEmpty(sizeValue) && !sizeValue.equals("0")){
 							  priceGrids = edwardGarmentPriceGridparser.getPriceGrids(priceVal,"1", "P",
 												 ApplicationConstants.CONST_STRING_CURRENCY_USD,"",ApplicationConstants.CONST_BOOLEAN_TRUE, 
@@ -776,7 +783,6 @@ while (iterator.hasNext()) {
 								priceGrid.setIsBasePrice(true);
 								priceGrid.setSequence(1);
 								List<Price> listOfPrice = new ArrayList<Price>();
-								//if (!priceGrid.getIsQUR()) {
 								listOfPrice = EdwardGarmentPriceGridParser.getSinlgePrices(priceVal, "1", "P",listOfPrice);
 								priceGrid.setPrices(listOfPrice);
 								priceGrid.setPriceConfigurations(new ArrayList<PriceConfiguration>());
@@ -818,13 +824,14 @@ while (iterator.hasNext()) {
 			 priceIncludes = new StringBuilder();
 			 pricesPerUnit=new StringBuilder();
 	         colorSet=new HashSet<String>();
-	         setSizes= new HashSet();
+	         setSizes= new HashSet<String>();
 	         skuSet=new HashSet<String>();
 	         priceSet=new HashSet<String>();
 	         //priceMap=new HashMap<String, HashSet<String>>();
 	         priceMapSorted=new TreeMap<>();
-	         priceMapTestMainMap=new HashMap<String, HashMap<String,HashSet<String>>>();
-	         availMap=new HashMap<String, HashSet<String>>();
+	         //priceMapTestMainMap=new HashMap<String, HashMap<String,HashSet<String>>>();
+	         priceMapTestMainMap=new HashMap<String, HashSet<String>>();
+	         availSizeClrMap=new HashMap<String, HashSet<String>>();
 	         sizeKeyValue=new HashMap<String, String>();
 	         firstValue="";
 	         sizeCount=1;
@@ -988,7 +995,7 @@ public boolean isRepeateColumn(int columnIndex){
 		this.edwardGarmentPriceGridparser = edwardGarmentPriceGridparser;
 	}
 	
-	public static HashMap<String, HashSet<String>> getPriceMap(HashMap<String , HashSet<String>> priceMap,String listPrice,String size){
+	/*public static HashMap<String, HashSet<String>> getPriceMap(HashMap<String , HashSet<String>> priceMap,String listPrice,String size){
 		if(CollectionUtils.isEmpty(priceMap)){
 			HashSet<String>	priceSet=new HashSet<String>();
 			priceSet.add(size);
@@ -1007,9 +1014,9 @@ public boolean isRepeateColumn(int columnIndex){
 			}
 		}
 		return priceMap;
-	}
+	}*/
 	
-	
+	/*
 	public static HashMap<String, HashSet<String>> getPriceMapTest(HashMap<String , HashSet<String>> priceMapTest,String listPrice,String keyListPrice){
 		if(CollectionUtils.isEmpty(priceMapTest)){
 			HashSet<String>	priceSet=new HashSet<String>();
@@ -1029,10 +1036,43 @@ public boolean isRepeateColumn(int columnIndex){
 			}
 		}
 		return priceMapTest;
+	}*/
+	
+	public static HashMap<String, HashSet<String>> getPriceMapClrSize1(HashMap<String, HashSet<String>> priceMainMap,String color,String size,String keyListPrice){
+		try{
+		keyListPrice=keyListPrice.trim();
+		color=color.trim();
+		size=size.trim();
+	if(CollectionUtils.isEmpty(priceMainMap)){
+		//strColor=color;
+		priceMainMap=new HashMap<String, HashSet<String>>();
+		HashSet<String> sizeSet=new HashSet<String>();
+		sizeSet.add(color+"_____"+size);
+		//keySizeColorMap.put(strColor, sizeSet);
+		priceMainMap.put(keyListPrice, sizeSet);
+	}else{
+		if(priceMainMap.containsKey(keyListPrice)){
+			HashSet<String> tempSizeSet= priceMainMap.get(keyListPrice);
+			tempSizeSet.add(color+"_____"+size);
+			priceMainMap.put(keyListPrice, tempSizeSet);
+			
+		}else{
+			HashSet<String> sizeSet=new HashSet<String>();
+			sizeSet.add(color+"_____"+size);
+			priceMainMap.put(keyListPrice, sizeSet);
+			
+		}
+	}
+	}catch(Exception e){
+		_LOGGER.error("Error While processing pricing map for criteria"+e.getMessage());
+	}
+		return priceMainMap;
+	
 	}
 	
 	
-	public static HashMap<String, HashMap<String,HashSet<String>>> getPriceMapClrSize(HashMap<String, HashMap<String,HashSet<String>>> priceMainMap,String color,String size,String keyListPrice){
+	
+	/*public static HashMap<String, HashMap<String,HashSet<String>>> getPriceMapClrSize(HashMap<String, HashMap<String,HashSet<String>>> priceMainMap,String color,String size,String keyListPrice){
 		HashMap<String, HashMap<String,HashSet<String>>> priceMainMapClone=new HashMap<String, HashMap<String,HashSet<String>>>();
 		//if(!StringUtils.isEmpty(size) && !size.equals("0")){
 		try{
@@ -1099,16 +1139,17 @@ public boolean isRepeateColumn(int columnIndex){
 			_LOGGER.error("Error While processing pricing map for criteria"+e.getMessage());
 		}
 		priceMainMapClone=(HashMap<String, HashMap<String,HashSet<String>>>)priceMainMap.clone();
-		/*}
+		}
 		if(CollectionUtils.isEmpty(priceMainMapClone)){
 			return priceMainMap;
-		}*/
+		}
 		return priceMainMapClone;
 	}
 	
-	
+	*/
 	public static HashMap<String, HashSet<String>> getAvailMap(HashMap<String , HashSet<String>> availMap,String color,String size){
 		if(CollectionUtils.isEmpty(availMap)){
+			availMap=new HashMap<String, HashSet<String>>();
 			HashSet<String>	sizeSet=new HashSet<String>();
 			sizeSet.add(size);
 			availMap.put(color, sizeSet);
@@ -1139,7 +1180,7 @@ public boolean isRepeateColumn(int columnIndex){
 		return productXid;
 	}
 	
-	public static HashMap<String,HashSet<String>> getMap(String sizeValue,String colorValue,HashMap<String,HashSet<String>> tempMap){
+	/*public static HashMap<String,HashSet<String>> getMap(String sizeValue,String colorValue,HashMap<String,HashSet<String>> tempMap){
 		
 		HashSet<String> listTemp=new HashSet<String>();
 		if(tempMap.containsKey(colorValue)){
@@ -1155,7 +1196,7 @@ public boolean isRepeateColumn(int columnIndex){
 		}
 		return null;
 		
-	}
+	}*/
 	public static String getProductCellDataPrice(Row row,int cellNo){
 		Cell xidCell =  row.getCell(cellNo);
 		String productXid = CommonUtility.getCellValueStrinOrDecimal(xidCell);
@@ -1201,7 +1242,7 @@ public boolean isRepeateColumn(int columnIndex){
 		return newPriceGrid;
 }
 	
-		public static ArrayList<String> getColorValue(ArrayList<String> listOfcolor,String newValue){
+		/*public static ArrayList<String> getColorValue(ArrayList<String> listOfcolor,String newValue){
 			if(CollectionUtils.isEmpty(listOfcolor)){
 				listOfcolor=new ArrayList<String>();
 				listOfcolor.add(newValue);
@@ -1220,5 +1261,27 @@ public boolean isRepeateColumn(int columnIndex){
 			}
 			return oldSet;
 			
+		}*/
+	
+	public static Object[] getColorSizeValue(HashSet<String> tempHashSet){
+		HashSet<String> colorSet=new HashSet<>();
+		HashSet<String> sizeSet=new HashSet<>();
+		for (String values : tempHashSet) {
+			String arrTemp[]=values.split("_____");
+			colorSet.add(arrTemp[0]);
+			sizeSet.add(arrTemp[1]);
 		}
+		return new Object[]{colorSet,sizeSet};
+	}
+	
+	/*public static HashSet<String> getSizesValue(HashSet<String> oldSet,HashSet<String> newSet){
+		if(CollectionUtils.isEmpty(oldSet)){
+			oldSet=new HashSet<String>();
+			oldSet.addAll(newSet);
+		}else{
+			oldSet.addAll(newSet);
+		}
+		return oldSet;
+		
+	}*/
 }

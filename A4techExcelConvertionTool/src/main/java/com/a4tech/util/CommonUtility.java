@@ -76,6 +76,9 @@ public class CommonUtility {
 		try {
 			if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 				value = cell.getStringCellValue().trim();
+				if(value.contains("\\")){
+					value=value.replace("\\", "");
+				}
 			} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				int numericValue = (int) cell.getNumericCellValue();
 				value = String.valueOf(numericValue).trim();
