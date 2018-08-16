@@ -226,7 +226,12 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 				case 2:// productcode
 					String productCode = cell.getStringCellValue();
+					if(productCode.length() > 14)
+					{
+						productExcelObj.setProductLevelSku(productCode);
+					}else{
 					productExcelObj.setAsiProdNo(productCode);
+					}
 
 					break;
 				case 3:// productname
