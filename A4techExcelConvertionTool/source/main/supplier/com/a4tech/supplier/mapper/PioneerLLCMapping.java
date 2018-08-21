@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 import parser.BagMakers.BagMakerAttributeParser;
 import parser.BagMakers.BagMakersPriceGridParser;
 import parser.PioneerLLC.PioneerLLCAttributeParser;
+import parser.PioneerLLC.PioneerPriceGridParser;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
@@ -65,8 +66,7 @@ public class PioneerLLCMapping implements IExcelParser{
 	private static final Logger _LOGGER = Logger.getLogger(PioneerLLCMapping.class);
 	PostServiceImpl postServiceImpl;
 	ProductDao productDaoObj;
-	BagMakerAttributeParser bagMakerAttributeParser;
-	BagMakersPriceGridParser bagMakersPriceGridParser;
+	PioneerPriceGridParser pioneerPriceGridParser;
 	PioneerLLCAttributeParser  pioneerLLCAttributeParser;
 	@Autowired
 	ObjectMapper mapperObj;
@@ -83,10 +83,10 @@ public class PioneerLLCMapping implements IExcelParser{
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		  
-		  String shippinglen="";
-		  String shippingWid="";
-		  String shippingH="";
-		   String shippingWeightValue="";
+		 // String shippinglen="";
+		  //String shippingWid="";
+		  String shippingValue="";
+		 //  String shippingWeightValue="";
 		  String noOfitem="";
 		  boolean existingFlag=false;
 		  String plateScreenCharge="";
@@ -98,9 +98,11 @@ public class PioneerLLCMapping implements IExcelParser{
 		  String extraLocColorScreenChrg="";
 		  StringBuilder listOfQuantity = new StringBuilder();
 		  StringBuilder listOfPrices = new StringBuilder();
+		  StringBuilder listOfNetPrices = new StringBuilder();
 		  StringBuilder listOfDiscount = new StringBuilder();
 		  String basePricePriceInlcude="";
 		  String tempQuant1="";
+		  String productName ="";
 		  try{
 			  Cell cell2Data = null;
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -178,13 +180,25 @@ public class PioneerLLCMapping implements IExcelParser{
 							 if(nextRow.getRowNum() != 1){
 								 
 								 // Ineed to set pricegrid over here
+								 
+								 if( !StringUtils.isEmpty(listOfPrices.toString())){
+									 priceGrids=new ArrayList<PriceGrid>();
+									 priceGrids = pioneerPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrices.toString(),listOfQuantity.toString(), 
+												"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+												"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+												productName,null,1,priceGrids);
+									 }
+									 
+									 if(CollectionUtils.isEmpty(priceGrids)){
+											priceGrids = pioneerPriceGridParser.getPriceGridsQur();	
+										}
 								   // Add repeatable sets here
-								 productExcelObj=bagMakersPriceGridParser.getPricingData(listOfPrices.toString(), listOfQuantity.toString(), listOfDiscount.toString(), basePricePriceInlcude, 
+								/* productExcelObj=bagMakersPriceGridParser.getPricingData(listOfPrices.toString(), listOfQuantity.toString(), listOfDiscount.toString(), basePricePriceInlcude, 
 											plateScreenCharge, plateScreenChargeCode,
 										    plateReOrderCharge, plateReOrderChargeCode, priceGrids, 
-										    productExcelObj, productConfigObj);
-								 	productExcelObj.setPriceType("L");
-								 	//productExcelObj.setPriceGrids(priceGrids);
+										    productExcelObj, productConfigObj);*/
+								 	productExcelObj.setPriceType("B");
+								 	productExcelObj.setPriceGrids(priceGrids);
 								 	productExcelObj.setProductConfigurations(productConfigObj);
 								 	/* _LOGGER.info("Product Data : "
 												+ mapperObj.writeValueAsString(productExcelObj));
@@ -221,6 +235,10 @@ public class PioneerLLCMapping implements IExcelParser{
 							  	    listOfDiscount = new StringBuilder();
 							  	    basePricePriceInlcude="";
 							  	    tempQuant1="";
+							  	    listOfQuantity = new StringBuilder();
+							        listOfPrices = new StringBuilder();
+								    listOfNetPrices = new StringBuilder();
+								    listOfDiscount = new StringBuilder();
 							  	   
 
 							 }
@@ -254,7 +272,7 @@ public class PioneerLLCMapping implements IExcelParser{
 						}
 						break;
 					case 3://××Product Name (Up to 50 characters)
-						String productName = cell.getStringCellValue();
+						 productName = cell.getStringCellValue();
 						if(!StringUtils.isEmpty(productName)){
 						int len=productName.length();
 						 if(len>60){
@@ -301,42 +319,151 @@ public class PioneerLLCMapping implements IExcelParser{
 						 }
 						break;
 					case 7://Qty 1
+						String	q1=null;
+						q1=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(q1)){
+							listOfQuantity.append(q1.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							
+				         }
 						break;
 					case 8://Net price 1
+						String	netPrice1=null;
+						netPrice1=CommonUtility.getCellValueStrinOrInt(cell);
+						netPrice1=netPrice1.replaceAll(" ","");
+						netPrice1 = netPrice1.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(netPrice1) ){
+							listOfNetPrices.append(netPrice1.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						}
 						break;
 					case 9://Retail Price 1
+						String	listPrice1=null;
+						listPrice1=CommonUtility.getCellValueStrinOrInt(cell);
+						listPrice1=listPrice1.replaceAll(" ","");
+						listPrice1 = listPrice1.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(listPrice1)){
+							listOfPrices.append(listPrice1.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							 }
 						break;
-					case 10://Qty 1
+					case 10://Qty 2
+						String	q2=null;
+						q2=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(q2)){
+							listOfQuantity.append(q2.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							
+				         }
 						break;
-					case 11://Net price 1
+					case 11://Net price 2
+						String	netPrice2=null;
+						netPrice2=CommonUtility.getCellValueStrinOrInt(cell);
+						netPrice2=netPrice2.replaceAll(" ","");
+						netPrice2 = netPrice2.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(netPrice2) ){
+							listOfNetPrices.append(netPrice2.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						}
 						break;
-					case 12://Retail Price 1
+					case 12://Retail Price 2
+						String	listPrice2=null;
+						listPrice2=CommonUtility.getCellValueStrinOrInt(cell);
+						listPrice2=listPrice2.replaceAll(" ","");
+						listPrice2 = listPrice2.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(listPrice2)){
+							listOfPrices.append(listPrice2.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							 }
 						break;
-					case 13://Qty 1
+					case 13://Qty 3
+						String	q3=null;
+						q3=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(q3)){
+							listOfQuantity.append(q3.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							
+				         }
 						break;
-					case 14://Net price 1
+					case 14://Net price 3
+						String	netPrice3=null;
+						netPrice3=CommonUtility.getCellValueStrinOrInt(cell);
+						netPrice3=netPrice3.replaceAll(" ","");
+						netPrice3 = netPrice3.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(netPrice3) ){
+							listOfNetPrices.append(netPrice3.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						}
 						break;
-					case 15://Retail Price 1
+					case 15://Retail Price 3
+						String	listPrice3=null;
+						listPrice3=CommonUtility.getCellValueStrinOrInt(cell);
+						listPrice3=listPrice3.replaceAll(" ","");
+						listPrice3 = listPrice3.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(listPrice3)){
+							listOfPrices.append(listPrice3.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							 }
 						break;
-					case 16://Qty 1
+					case 16://Qty 4
+						String	q4=null;
+						q4=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(q4)){
+							listOfQuantity.append(q4.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							
+				         }
 						break;
-					case 17://Net price 1
+					case 17://Net price 4
+						String	netPrice4=null;
+						netPrice4=CommonUtility.getCellValueStrinOrInt(cell);
+						netPrice4=netPrice4.replaceAll(" ","");
+						netPrice4 = netPrice4.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(netPrice4) ){
+							listOfNetPrices.append(netPrice4.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						}
 						break;
-					case 18://Retail Price 1
+					case 18://Retail Price 4
+						String	listPrice4=null;
+						listPrice4=CommonUtility.getCellValueStrinOrInt(cell);
+						listPrice4=listPrice4.replaceAll(" ","");
+						listPrice4 = listPrice4.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(listPrice4)){
+							listOfPrices.append(listPrice4.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							 }
 						break;
-					case 19://Qty 1
+					case 19://Qty 5
+						String	q5=null;
+						q5=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(q5)){
+							listOfQuantity.append(q5.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							
+				         }
 						break;
-					case 20://Net price 1
+					case 20://Net price 5
+						String	netPrice5=null;
+						netPrice5=CommonUtility.getCellValueStrinOrInt(cell);
+						netPrice5=netPrice5.replaceAll(" ","");
+						netPrice5 = netPrice5.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(netPrice5) ){
+							listOfNetPrices.append(netPrice5.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						}
 						break;
-					case 21://Retail Price 1
+					case 21://Retail Price 5
+						String	listPrice5=null;
+						listPrice5=CommonUtility.getCellValueStrinOrInt(cell);
+						listPrice5=listPrice5.replaceAll(" ","");
+						listPrice5 = listPrice5.replaceAll("\\(.*\\)", "");
+						if(!StringUtils.isEmpty(listPrice5)){
+							listOfPrices.append(listPrice5.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+							 }
 						break;
 					case 22://Product Colors
 						
 						
-						
+						String colorValue=CommonUtility.getCellValueStrinOrInt(cell);
+						 if(!StringUtils.isEmpty(colorValue)){
+							 List<Color> colors =pioneerLLCAttributeParser.getProductColors(colorValue);
+							 productConfigObj.setColors(colors);
+						 }
 						
 						break;
 					case 23://Materials
+						String materials=cell.getStringCellValue();
+						if(!StringUtils.isEmpty(materials)){
+						List<Material> listOfMaterialList = pioneerLLCAttributeParser.getMaterialList(materials);
+						productConfigObj.setMaterials(listOfMaterialList);
+						 }
 						break;
 					case 24://Sizes
 						break;
@@ -412,8 +539,14 @@ public class PioneerLLCMapping implements IExcelParser{
 					case 29://Set Up Charges
 						break;
 					case 30://Carton
+						
+						shippingValue=cell.getStringCellValue();
 						break;
 					case 31://Gross Weight
+						String shippingWeightValue = cell.getStringCellValue();
+						ShippingEstimate shipobj = pioneerLLCAttributeParser.getShippingEstimates(shippingValue,shippingWeightValue );
+						productConfigObj.setShippingEstimates(shipobj);
+						
 						break;	
 					}
 				} // end inner while loop
@@ -480,6 +613,10 @@ public class PioneerLLCMapping implements IExcelParser{
  	    listOfQuantity = new StringBuilder();
   	    listOfPrices = new StringBuilder();
   	    listOfDiscount = new StringBuilder();
+  	    listOfQuantity = new StringBuilder();
+  	    listOfPrices = new StringBuilder();
+	    listOfNetPrices = new StringBuilder();
+	    listOfDiscount = new StringBuilder();
   	   basePricePriceInlcude="";
   	   tempQuant1="";
        return finalResult;
