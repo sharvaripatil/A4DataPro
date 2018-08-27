@@ -46,6 +46,7 @@ import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
 import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PelicanGraphicMapping;
+import com.a4tech.supplier.mapper.PioneerLLCMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.RadiousMapping;
@@ -128,7 +129,7 @@ public class ExcelFactory {
     private DigiSpecMapping                 digiSpecMapping;
     private DouglasBridgeMapper             douglasBridgeMapper;
 	 private RadiousMapping                  radiMapping;	
-
+	 private PioneerLLCMapping pioneerLLCMapping;
 		public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -257,6 +258,9 @@ public class ExcelFactory {
 			  return radiMapping;
 		  } else if(name.equals("50710")){
 			  return douglasBridgeMapper;
+		  //pioneerLLCMapping
+		} else if(name.equals("76771")){
+			  return pioneerLLCMapping;
 		  }
 		return null;
 	}
@@ -720,6 +724,14 @@ public class ExcelFactory {
 
 	public void setRadiMapping(RadiousMapping radiMapping) {
 		this.radiMapping = radiMapping;
+	}
+
+	public PioneerLLCMapping getPioneerLLCMapping() {
+		return pioneerLLCMapping;
+	}
+
+	public void setPioneerLLCMapping(PioneerLLCMapping pioneerLLCMapping) {
+		this.pioneerLLCMapping = pioneerLLCMapping;
 	}
 
 

@@ -17,23 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import parser.BagMakers.BagMakerAttributeParser;
-import parser.BagMakers.BagMakersPriceGridParser;
 import parser.PioneerLLC.PioneerLLCAttributeParser;
 import parser.PioneerLLC.PioneerPriceGridParser;
+import parser.PioneerLLC.PioneerPriceGridParserr;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.kuku.criteria.parser.KukuPriceGridParser;
-import com.a4tech.product.kuku.criteria.parser.PersonlizationParser;
-import com.a4tech.product.kuku.criteria.parser.ProductColorParser;
-import com.a4tech.product.kuku.criteria.parser.ProductImprintMethodParser;
-import com.a4tech.product.kuku.criteria.parser.ProductMaterialParser;
-import com.a4tech.product.kuku.criteria.parser.ProductPackagingParser;
-import com.a4tech.product.kuku.criteria.parser.ProductShippingEstimationParser;
-import com.a4tech.product.kuku.criteria.parser.ProductSizeParser;
-import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
+
 import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Color;
@@ -66,7 +57,7 @@ public class PioneerLLCMapping implements IExcelParser{
 	private static final Logger _LOGGER = Logger.getLogger(PioneerLLCMapping.class);
 	PostServiceImpl postServiceImpl;
 	ProductDao productDaoObj;
-	PioneerPriceGridParser pioneerPriceGridParser;
+	PioneerPriceGridParserr pioneerPriceGridParserr;
 	PioneerLLCAttributeParser  pioneerLLCAttributeParser;
 	@Autowired
 	ObjectMapper mapperObj;
@@ -103,6 +94,7 @@ public class PioneerLLCMapping implements IExcelParser{
 		  String basePricePriceInlcude="";
 		  String tempQuant1="";
 		  String productName ="";
+		  String imprintMethodValue="";
 		  try{
 			  Cell cell2Data = null;
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -183,14 +175,19 @@ public class PioneerLLCMapping implements IExcelParser{
 								 
 								 if( !StringUtils.isEmpty(listOfPrices.toString())){
 									 priceGrids=new ArrayList<PriceGrid>();
-									 priceGrids = pioneerPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrices.toString(),listOfQuantity.toString(), 
+									 /*priceGrids = pioneerPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrices.toString(),listOfQuantity.toString(), 
 												"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
 												"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 												productName,null,1,priceGrids);
+									*/ 
+									 priceGrids = pioneerPriceGridParserr.getPriceGrids(listOfPrices.toString(),listOfNetPrices.toString(),listOfQuantity.toString(), 
+											 "R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+												ApplicationConstants.CONST_STRING_EMPTY,ApplicationConstants.CONST_BOOLEAN_TRUE, 
+												ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids);
 									 }
-									 
+								
 									 if(CollectionUtils.isEmpty(priceGrids)){
-											priceGrids = pioneerPriceGridParser.getPriceGridsQur();	
+											priceGrids = pioneerPriceGridParserr.getPriceGridsQur();	
 										}
 								   // Add repeatable sets here
 								/* productExcelObj=bagMakersPriceGridParser.getPricingData(listOfPrices.toString(), listOfQuantity.toString(), listOfDiscount.toString(), basePricePriceInlcude, 
@@ -203,10 +200,8 @@ public class PioneerLLCMapping implements IExcelParser{
 								 	/* _LOGGER.info("Product Data : "
 												+ mapperObj.writeValueAsString(productExcelObj));
 								 	*/
-								 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
-								 		productExcelObj.setAvailability(new ArrayList<Availability>());
-								 	}*/
-								 	productExcelObj.setMakeActiveDate("2018-01-01T00:00:00");//priceConfirmedThru
+								 	
+								 	
 								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
@@ -252,7 +247,7 @@ public class PioneerLLCMapping implements IExcelParser{
 								    	 productExcelObj = new Product();
 								    	 existingFlag=false;
 								     }else{//need to confirm what existing data client wnts
-								    	    productExcelObj=bagMakerAttributeParser.getExistingProductData(existingApiProduct, existingApiProduct.getProductConfigurations());
+								    	    productExcelObj=pioneerLLCAttributeParser.getExistingProductData(existingApiProduct, existingApiProduct.getProductConfigurations());
 											productConfigObj=productExcelObj.getProductConfigurations();
 											existingFlag=true;
 										   // priceGrids = productExcelObj.getPriceGrids();
@@ -466,6 +461,8 @@ public class PioneerLLCMapping implements IExcelParser{
 						 }
 						break;
 					case 24://Sizes
+						
+						
 						break;
 					case 25://Production Time (# of business days)
 						
@@ -512,9 +509,7 @@ public class PioneerLLCMapping implements IExcelParser{
 						break;
 						
 					case 27://Imprint Method
-						
-						
-						String imprintMethodValue=CommonUtility.getCellValueStrinOrInt(cell);
+						 imprintMethodValue=CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(imprintMethodValue)){
 							 if(!imprintMethodValue.equals("None"))
 								{
@@ -537,6 +532,15 @@ public class PioneerLLCMapping implements IExcelParser{
 						}
 						break;
 					case 29://Set Up Charges
+						/*String imprintMethodValueUpchrg=CommonUtility.getCellValueStrinOrInt(cell);
+						if(!StringUtils.isEmpty(imprintMethodValue)&& !StringUtils.isEmpty(imprintMethodValueUpchrg)){
+							if(!imprintMethodValue.equals("None")){
+							priceGrids = pioneerPriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,imprintMethodValueUpchrg, ApplicationConstants.CONST_STRING_DISCOUNT_CODE_Z,
+									"Imprint Method"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "",imprintMethodValue, 
+									"Imprint Method Charge", ApplicationConstants.CONST_VALUE_TYPE_OTHER,"Required", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+							}
+							}*/
+						
 						break;
 					case 30://Carton
 						
@@ -568,13 +572,33 @@ public class PioneerLLCMapping implements IExcelParser{
 	 // same goes here as well
 	 // Ineed to set pricegrid over here
      // Add repeatable sets here
-		productExcelObj=bagMakersPriceGridParser.getPricingData(listOfPrices.toString(), listOfQuantity.toString(), listOfDiscount.toString(),basePricePriceInlcude,  
-																plateScreenCharge, plateScreenChargeCode,
-															    plateReOrderCharge, plateReOrderChargeCode, priceGrids, 
-															    productExcelObj, productConfigObj);
-		
-	 	productExcelObj.setPriceType("L");
-	 	//productExcelObj.setPriceGrids(priceGrids);
+	
+	
+	
+	
+	 if( !StringUtils.isEmpty(listOfPrices.toString())){
+		 priceGrids=new ArrayList<PriceGrid>();
+		 /*priceGrids = pioneerPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrices.toString(),listOfQuantity.toString(), 
+					"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+					"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
+					productName,null,1,priceGrids);
+		*/ 
+		 priceGrids = pioneerPriceGridParserr.getPriceGrids(listOfPrices.toString(),listOfNetPrices.toString(),listOfQuantity.toString(), 
+				 "R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+					ApplicationConstants.CONST_STRING_EMPTY,ApplicationConstants.CONST_BOOLEAN_TRUE, 
+					ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids);
+		 }
+	
+		 if(CollectionUtils.isEmpty(priceGrids)){
+				priceGrids = pioneerPriceGridParserr.getPriceGridsQur();	
+			}
+	   // Add repeatable sets here
+	/* productExcelObj=bagMakersPriceGridParser.getPricingData(listOfPrices.toString(), listOfQuantity.toString(), listOfDiscount.toString(), basePricePriceInlcude, 
+				plateScreenCharge, plateScreenChargeCode,
+			    plateReOrderCharge, plateReOrderChargeCode, priceGrids, 
+			    productExcelObj, productConfigObj);*/
+	 	productExcelObj.setPriceType("B");
+	 	productExcelObj.setPriceGrids(priceGrids);
 	 	productExcelObj.setProductConfigurations(productConfigObj);
 	 	/* _LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));
@@ -687,26 +711,6 @@ public class PioneerLLCMapping implements IExcelParser{
 	}
 
 
-	public BagMakerAttributeParser getBagMakerAttributeParser() {
-		return bagMakerAttributeParser;
-	}
-
-
-	public void setBagMakerAttributeParser(
-			BagMakerAttributeParser bagMakerAttributeParser) {
-		this.bagMakerAttributeParser = bagMakerAttributeParser;
-	}
-
-
-	public BagMakersPriceGridParser getBagMakersPriceGridParser() {
-		return bagMakersPriceGridParser;
-	}
-
-
-	public void setBagMakersPriceGridParser(
-			BagMakersPriceGridParser bagMakersPriceGridParser) {
-		this.bagMakersPriceGridParser = bagMakersPriceGridParser;
-	}
 	public  static String getQuantValue(String value){
 		String temp[]=value.split("-");
 		return temp[0];
@@ -723,5 +727,30 @@ public class PioneerLLCMapping implements IExcelParser{
 			PioneerLLCAttributeParser pioneerLLCAttributeParser) {
 		this.pioneerLLCAttributeParser = pioneerLLCAttributeParser;
 	}
+
+
+	public PioneerPriceGridParserr getPioneerPriceGridParserr() {
+		return pioneerPriceGridParserr;
+	}
+
+
+	public void setPioneerPriceGridParserr(
+			PioneerPriceGridParserr pioneerPriceGridParserr) {
+		this.pioneerPriceGridParserr = pioneerPriceGridParserr;
+	}
+
+
+	
+
+
+	/*public PioneerPriceGridParser getPioneerPriceGridParser() {
+		return pioneerPriceGridParser;
+	}
+
+
+	public void setPioneerPriceGridParser(
+			PioneerPriceGridParser pioneerPriceGridParser) {
+		this.pioneerPriceGridParser = pioneerPriceGridParser;
+	}*/
 
 }
