@@ -128,8 +128,8 @@ public class ExcelFactory {
     private SportAzxCandMapping 			sportAzxCandMapping;
     private DigiSpecMapping                 digiSpecMapping;
     private DouglasBridgeMapper             douglasBridgeMapper;
-	 private RadiousMapping                  radiMapping;	
-	 private PioneerLLCMapping pioneerLLCMapping;
+	 private RadiousMapping                 radiMapping;	
+	 private PioneerLLCMapping 				pioneerLLCMapping;
 		public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){

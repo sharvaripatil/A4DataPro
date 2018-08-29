@@ -17,6 +17,7 @@ import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.BlendMaterial;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.Image;
@@ -116,7 +117,12 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		//Images
 		List<Image> images=existingProduct.getImages();
 		if(!CollectionUtils.isEmpty(images)){
-			newProduct.setImages(images);
+			List<Image> imagesTemp=new ArrayList<Image>();
+			for (Image image : images) {
+				image.setConfigurations(new ArrayList<>());
+				imagesTemp.add(image);
+			}
+			newProduct.setImages(imagesTemp);
 		}
 		//themes
 				List<Theme>	themes=existingProductConfig.getThemes();
@@ -183,6 +189,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			if(!StringUtils.isEmpty(shippingitemValue)){
 			shippingitemValue=shippingitemValue.replace("sets", "");
 			shippingitemValue=shippingitemValue.replace("pcs", "");
+			shippingitemValue=shippingitemValue.replace("bags", "");
 			
 			itemObj.setUnit("per Carton");
 			itemObj.setValue(shippingitemValue);
@@ -222,7 +229,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 				shippingDimVal=shippingDimVal.replace("cm", "");
 				unitVal="cm";
 			}
-			String shipDimenArr[] = shippingDimVal.split("*");
+			String shipDimenArr[] = shippingDimVal.split("\\*");
 			List<Dimensions> dimenlist = new ArrayList<Dimensions>();
 			Dimensions dimensionObj = new Dimensions();
 			for (int i = 0; i <= shipDimenArr.length - 1; i++) {
@@ -384,18 +391,25 @@ public List<Color> getProductColors(String color){
 	List<Color> listOfColors = new ArrayList<>();
 	try{
 	Color colorObj = null;
-	color=color.replaceAll("\\|",",");
-	color=color.replaceAll("-","/");
-	color=color.replaceAll("+","/");
+	if(color.contains("|")){
+		color=color.replaceAll("\\|",",");
+	}
+	else if(color.contains("-")){
+		
+		color=color.replaceAll("-","/");
+	}else if(color.contains("+")){
+		color=color.replaceAll("\\+","/");
+	}
+	
 	String[] colors =getValuesOfArray(color, ",");
 	for (String colorName : colors) {
 		if(StringUtils.isEmpty(colorName)){
 			continue;
 		}
-		colorName=colorName.replaceAll("&","/");
-		colorName=colorName.replaceAll(" w/","/");
-		colorName=colorName.replaceAll(" W/","/");
-		//colorName = colorName.trim();
+		//colorName=colorName.replaceAll("&","/");
+		//colorName=colorName.replaceAll(" w/","/");
+		//colorName=colorName.replaceAll(" W/","/");
+		colorName = colorName.trim();
 		
 		colorObj = new Color();
 		String colorGroup = PioneerLLCConstants.getColorGroup(colorName.trim());
@@ -416,10 +430,10 @@ public List<Color> getProductColors(String color){
 			if(colorGroup==null){
 				colorGroup=colorName;
 			}
-			colorGroup=colorGroup.replaceAll("&","/");
-			colorGroup=colorGroup.replaceAll(" w/","/");
-			colorGroup=colorGroup.replaceAll(" W/","/");
-			colorGroup=colorGroup.replaceAll(" ","");
+			//colorGroup=colorGroup.replaceAll("&","/");
+			//colorGroup=colorGroup.replaceAll(" w/","/");
+			//colorGroup=colorGroup.replaceAll(" W/","/");
+			//colorGroup=colorGroup.replaceAll(" ","");
 			
 				if(isComboColor(colorGroup)){
 					List<Combo> listOfCombo = null;
@@ -525,31 +539,33 @@ public static String[] getValuesOfArray(String data,String delimiter){
 	   return null;
    }
 
-public ProductConfigurations getSizes(String sizeValue,ProductConfigurations existingConfig) {
+public Product getSizes(String sizeValue,Product productExcelObj) {
 	Size sizeObj = new Size();
 	String sizeGroup="dimension";
 	String unitValue="in";
 	String attriValue="Length";
-	
-	
-	//1.75 DIA x 4.5
+	ProductConfigurations existingConfig=new ProductConfigurations();
+	existingConfig=productExcelObj.getProductConfigurations();
 	boolean flag=false;
 	try{
-		if(sizeValue.contains("     ")){
-			sizeValue=sizeValue.replaceAll("     ", "_____");
-		}
-		if(sizeValue.contains("_____")){
-			String strArr[]=sizeValue.split("_____");
+		
+		if(sizeValue.contains("  ")){
+			//sizeValue=sizeValue.replaceAll("     ", "_____");
+//		}
+//		if(sizeValue.contains("_____")){
+			String desc=productExcelObj.getDescription();
+			desc=desc+" "+sizeValue;
+			productExcelObj.setDescription(desc);
+			String strArr[]=sizeValue.split("  ");
 			
 			String strTemp=strArr[0];
-			if(strTemp.contains(":")){
+		//	if(strTemp.contains(":")){
 			String strAAR[]=strTemp.split(":");
 			
 			sizeValue=strAAR[1].trim();
-			}else{
-				sizeValue=strArr[0].trim();
-			}
-			
+//			}else{
+//				sizeValue=strArr[0].trim();
+//			}
 		}
 		if(sizeValue.equals("customized")){
 			OtherSize otherSize = new OtherSize();
@@ -560,9 +576,10 @@ public ProductConfigurations getSizes(String sizeValue,ProductConfigurations exi
 			otherSize.setValues(listOfVal);
 			sizeObj.setOther(otherSize);
 			existingConfig.setSizes(sizeObj);
+			productExcelObj.setProductConfigurations(existingConfig);
+			return productExcelObj;
 		}
-		//String DimenArr[] = {sizeValue} ;
-		//else{
+		
 			Dimension dimensionObj = new Dimension();
 			List<Values> valuesList = new ArrayList<Values>();
 			List<Value> valuelist = null;
@@ -575,79 +592,76 @@ public ProductConfigurations getSizes(String sizeValue,ProductConfigurations exi
 				sizeValue = sizeValue.replace(".", "");
 				sizeValue=sizeValue.replaceAll("Φ","");
 				//String valuesArr[]=sizeValue.split(",");
-				String valuesArr[]=sizeValue.split("*");
+				String valuesArr[]=sizeValue.split("\\*");
+				int tempCount=1;
+				valuelist = new ArrayList<Value>(); 
 				for (String tempValue : valuesArr) {
 					valuesObj = new Values();
 					tempValue=tempValue.toUpperCase();
-					if(tempValue.contains("FT LONG") || tempValue.contains("FEET LONG")){
-						
-						tempValue=tempValue.substring(0, (tempValue.indexOf("F")));
-						tempValue=tempValue.trim();
-						
-						tempValue=tempValue+" FEE";
-						//tempValue=tempValue.replace("FEET IN LENGTH", "FEE");
-					}
-				if(tempValue.contains("FEET IN")){
-					tempValue=tempValue.replace("FEET IN LENGTH", "FEE");
-				}
-				if(tempValue.contains("IN LENGTH")){
-					tempValue=tempValue.replace("IN LENGTH", "L");
-				}
-				if(tempValue.contains("FT")){
-					tempValue=tempValue.replace("FT", "FEE");
-				}
 				tempValue=removeSpecialChar(tempValue,1);
-				//String DimenArr[]=tempValue.split("X");
-				String DimenArr[]=tempValue.split("*");
-			valuelist = new ArrayList<Value>(); 
-			int tempCount=0;
-			for (String value : DimenArr) {
-				value=value.toUpperCase();
+			
+			
+			tempValue=tempValue.toUpperCase();
 				valObj = new Value();
+				tempValue=tempValue.replaceAll(":","");
 				String tempAttri="";
 				if(tempCount==1){
-					tempAttri="W";
+					String tempStr=getAttriVaalue(tempValue);
+					if(!tempStr.equals("Z")){
+						tempValue=tempValue.replace(tempStr, "");
+						tempAttri=tempStr;
+					}else{
+						tempAttri="L";
+					}
 					tempCount++;
 				}else if(tempCount==2){
-					tempAttri="H";
-				}else{
-					 tempAttri=getAttriTypeValue(value);
-				}
-				
-				if(tempAttri.contains("-DEFAULT")){
-					tempAttri=tempAttri.replace("-DEFAULT", "");
+					String tempStr=getAttriVaalue(tempValue);
+					if(!tempStr.equals("Z")){
+						tempValue=tempValue.replace(tempStr, "");
+						tempAttri=tempStr;
+					}else{
+						tempAttri="W";
+					}
+					tempCount++;
+				}else if(tempCount==3){
+					String tempStr=getAttriVaalue(tempValue);
+					if(!tempStr.equals("Z")){
+						tempValue=tempValue.replace(tempStr, "");
+						tempAttri=tempStr;
+					}else{
+						tempAttri="H";
+					}
 					tempCount++;
 				}
 				attriValue=getAttriValue(tempAttri);
-				value=removeSpecialChar(value, 2);
-				String tempUnitValue=getUNitTypeValue(value);
+				tempValue=removeSpecialChar(tempValue, 2);
+				String tempUnitValue=getUNitTypeValue(tempValue);
 				unitValue=getUnitValue(tempUnitValue);
-				value=removeSpecialChar(value, 3);
+				tempValue=removeSpecialChar(tempValue, 3);
 				valObj.setAttribute(attriValue);
-				valObj.setValue(value.trim());
+				valObj.setValue(tempValue.trim());
 				valObj.setUnit(unitValue);
 				valuelist.add(valObj);
-			}	
-			valuesObj.setValue(valuelist);
-			valuesList.add(valuesObj);
+			
 			
 		}
-			
-			///////////////
-		
+				valuesObj.setValue(valuelist);
+				valuesList.add(valuesObj);
 		dimensionObj.setValues(valuesList);
 		sizeObj.setDimension(dimensionObj);
 	//}
-	//}
-		existingConfig.setSizes(sizeObj);
+				existingConfig.setSizes(sizeObj);
+				productExcelObj.setProductConfigurations(existingConfig);
+				
 	}
 	catch(Exception e)
 	{
 		_LOGGER.error("Error while processing Size :"+e.getMessage());
 		existingConfig.setSizes(sizeObj);
-		return existingConfig;
+		productExcelObj.setProductConfigurations(existingConfig);
+		return productExcelObj;
 	}
-	return existingConfig;
+	return productExcelObj;
 }
 
 public static String getAttriTypeValue(String sizeDim){
@@ -688,6 +702,27 @@ if(sizeUnits.containsKey(UnitVal)){
 return "INC";
 }
 
+
+public static String getAttriVaalue(String str){
+
+if(str.contains("L")){
+	return "L";
+}
+	
+if(str.contains("W")){
+	return "W";
+}
+if(str.contains("T")){
+	return "T";
+}
+if(str.contains("D")){
+	return "D";
+}
+if(str.contains("H")){
+	return "H";
+}	
+return  "Z";
+}
 public static String removeSpecialChar(String tempValue,int number){
 	if(number==1){
 	tempValue=tempValue.replaceAll("(CABLE|LENGTH|CLEAR|CASE|ONE|SIDE|EARPHONE|INCLUDE|HOOK|WHITE|BOX|DELUXE|BULK|MEASURE|WITH|CARABINER|ITEM|SINGLE|EAR|INCLUDE)", "");

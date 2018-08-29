@@ -2,7 +2,6 @@ package com.a4tech.supplier.mapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -18,34 +17,22 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import parser.PioneerLLC.PioneerLLCAttributeParser;
-import parser.PioneerLLC.PioneerPriceGridParser;
 import parser.PioneerLLC.PioneerPriceGridParserr;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
-
-import com.a4tech.product.model.AdditionalColor;
-import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimensions;
-import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
-import com.a4tech.product.model.Option;
 import com.a4tech.product.model.Origin;
-import com.a4tech.product.model.Packaging;
-import com.a4tech.product.model.Personalization;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
-import com.a4tech.product.model.RushTime;
-import com.a4tech.product.model.RushTimeValue;
 import com.a4tech.product.model.ShippingEstimate;
-import com.a4tech.product.model.Size;
-import com.a4tech.product.model.Theme;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -64,29 +51,16 @@ public class PioneerLLCMapping implements IExcelParser{
 	
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber,int batchId, String environmentType){
 		int columnIndex = 0;
-		List<String> numOfProductsSuccess = new ArrayList<String>();
-		List<String> numOfProductsFailure = new ArrayList<String>();
-		String finalResult = null;
-		
+		  List<String> numOfProductsSuccess = new ArrayList<String>();
+		  List<String> numOfProductsFailure = new ArrayList<String>();
+		  String finalResult = null;
 		  Set<String>  listOfProductXids = new HashSet<String>();
 		  Product productExcelObj = new Product();  
 		  Product existingApiProduct = null;
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
-		  
-		 // String shippinglen="";
-		  //String shippingWid="";
 		  String shippingValue="";
-		 //  String shippingWeightValue="";
-		  String noOfitem="";
 		  boolean existingFlag=false;
-		  String plateScreenCharge="";
-		  String plateScreenChargeCode="";
-		  String plateReOrderCharge="";
-		  String plateReOrderChargeCode="";
-		  String extraColorRucnChrg="";
-		  String extraLocRunChrg="";
-		  String extraLocColorScreenChrg="";
 		  StringBuilder listOfQuantity = new StringBuilder();
 		  StringBuilder listOfPrices = new StringBuilder();
 		  StringBuilder listOfNetPrices = new StringBuilder();
@@ -95,6 +69,10 @@ public class PioneerLLCMapping implements IExcelParser{
 		  String tempQuant1="";
 		  String productName ="";
 		  String imprintMethodValue="";
+		  Set<String>  productXids = new HashSet<String>();
+		  List<String> repeatRows = new ArrayList<>();
+		  ShippingEstimate ShipingObj=new ShippingEstimate();
+	      Dimensions dimensionObj=new Dimensions();
 		  try{
 			  Cell cell2Data = null;
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -102,13 +80,7 @@ public class PioneerLLCMapping implements IExcelParser{
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
 	
-		Set<String>  productXids = new HashSet<String>();
-		 List<String> repeatRows = new ArrayList<>();
-		 ShippingEstimate ShipingObj=new ShippingEstimate();
-		 Dimensions dimensionObj=new Dimensions();
-		 String setUpchrgesVal="";
-		 String repeatUpchrgesVal="";
-		 String priceInlcudeFinal="";
+		
 		 String xid = null;
 		while (iterator.hasNext()) {
 			try{
@@ -125,27 +97,7 @@ public class PioneerLLCMapping implements IExcelParser{
 			 boolean checkXid  = false;
 			
 			 while (cellIterator.hasNext()) {
-					/*Cell cell = cellIterator.next();
-					  columnIndex = cell.getColumnIndex();
-					if(columnIndex + 1 == 1){
-						xid = getProductXid(nextRow);//CommonUtility.getCellValueStrinOrInt(cell);//
-						checkXid = true;
-					}else{
-						checkXid = false;
-					}*/
 				
-					
-				 /*columnIndex = cell.getColumnIndex();
-				 if (columnIndex == 1) {
-						xid = getProductXid(nextRow);
-						checkXid = true;
-					} else {
-						checkXid = false;
-					}
-				if(columnIndex + 1 == 1){
-					xid = getProductXid(nextRow);
-					checkXid = true;
-				}*/
 				 Cell cell = cellIterator.next();
 				 columnIndex = cell.getColumnIndex();
 				 cell2Data = nextRow.getCell(2);
@@ -156,9 +108,7 @@ public class PioneerLLCMapping implements IExcelParser{
 				        xid = String.valueOf((int) cell
 				          .getNumericCellValue());
 				       } else {
-				        /*ProdNo = CommonUtility
-				          .getCellValueStrinOrInt(cell2Data);
-				        ProdNo = ProdNo.substring(0, 14);*/
+				        
 				        xid =  CommonUtility
 						          .getCellValueStrinOrInt(cell2Data);
 				       }
@@ -194,6 +144,14 @@ public class PioneerLLCMapping implements IExcelParser{
 											plateScreenCharge, plateScreenChargeCode,
 										    plateReOrderCharge, plateReOrderChargeCode, priceGrids, 
 										    productExcelObj, productConfigObj);*/
+									 if(CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
+										 List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+										 ImprintMethod	imprintMethodObj = new ImprintMethod();	
+										imprintMethodObj.setType("UNIMPRINTED");
+										imprintMethodObj.setAlias("UNIMPRINTED");
+										listOfImprintMethod.add(imprintMethodObj);
+										productConfigObj.setImprintMethods(listOfImprintMethod);
+									}
 								 	productExcelObj.setPriceType("B");
 								 	productExcelObj.setPriceGrids(priceGrids);
 								 	productExcelObj.setProductConfigurations(productConfigObj);
@@ -213,29 +171,29 @@ public class PioneerLLCMapping implements IExcelParser{
 								 	_LOGGER.info("list size of success>>>>>>>"+numOfProductsSuccess.size());
 								 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 									//reset all list and objects over here
-									priceGrids = new ArrayList<PriceGrid>();
-									productConfigObj = new ProductConfigurations();
-									 ShipingObj=new ShippingEstimate();
-									 dimensionObj=new Dimensions();
-									 setUpchrgesVal="";
-									 plateScreenCharge="";
-							  		 plateScreenChargeCode="";
-							  		 plateReOrderCharge="";
-							  		 plateReOrderChargeCode="";
-							  		 extraColorRucnChrg="";
-							  	     extraLocRunChrg="";
-							  	     extraLocColorScreenChrg="";
-							  	    listOfQuantity = new StringBuilder();
-							  	    listOfPrices = new StringBuilder();
-							  	    listOfDiscount = new StringBuilder();
-							  	    basePricePriceInlcude="";
-							  	    tempQuant1="";
-							  	    listOfQuantity = new StringBuilder();
-							        listOfPrices = new StringBuilder();
-								    listOfNetPrices = new StringBuilder();
-								    listOfDiscount = new StringBuilder();
-							  	   
-
+								       //numOfProductsSuccess = new ArrayList<String>();
+									   //numOfProductsFailure = new ArrayList<String>();
+									   //finalResult = "";
+									   listOfProductXids = new HashSet<String>();
+									   productExcelObj = new Product();  
+									   existingApiProduct = null;
+									   productConfigObj=new ProductConfigurations();
+									   priceGrids = new ArrayList<PriceGrid>();
+									   shippingValue="";
+									   existingFlag=false;
+									   listOfQuantity = new StringBuilder();
+									   listOfPrices = new StringBuilder();
+									   listOfNetPrices = new StringBuilder();
+									   listOfDiscount = new StringBuilder();
+									   basePricePriceInlcude="";
+									   tempQuant1="";
+									   productName ="";
+									   imprintMethodValue="";
+									   productXids = new HashSet<String>();
+									   repeatRows = new ArrayList<>();
+									   ShipingObj=new ShippingEstimate();
+								       dimensionObj=new Dimensions();
+								    
 							 }
 							    if(!listOfProductXids.contains(xid)){
 							    	listOfProductXids.add(xid);
@@ -259,6 +217,7 @@ public class PioneerLLCMapping implements IExcelParser{
 					
 					switch (columnIndex + 1) {
 					case 1://XID
+						productExcelObj.setExternalProductId(xid);
 						break;
 					case 2://××Prod # (up to 14 characters)
 						String productNo = CommonUtility.getCellValueStrinOrInt(cell);
@@ -323,7 +282,7 @@ public class PioneerLLCMapping implements IExcelParser{
 						break;
 					case 8://Net price 1
 						String	netPrice1=null;
-						netPrice1=CommonUtility.getCellValueStrinOrInt(cell);
+						netPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
 						netPrice1=netPrice1.replaceAll(" ","");
 						netPrice1 = netPrice1.replaceAll("\\(.*\\)", "");
 						if(!StringUtils.isEmpty(netPrice1) ){
@@ -332,7 +291,7 @@ public class PioneerLLCMapping implements IExcelParser{
 						break;
 					case 9://Retail Price 1
 						String	listPrice1=null;
-						listPrice1=CommonUtility.getCellValueStrinOrInt(cell);
+						listPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
 						listPrice1=listPrice1.replaceAll(" ","");
 						listPrice1 = listPrice1.replaceAll("\\(.*\\)", "");
 						if(!StringUtils.isEmpty(listPrice1)){
@@ -349,7 +308,7 @@ public class PioneerLLCMapping implements IExcelParser{
 						break;
 					case 11://Net price 2
 						String	netPrice2=null;
-						netPrice2=CommonUtility.getCellValueStrinOrInt(cell);
+						netPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
 						netPrice2=netPrice2.replaceAll(" ","");
 						netPrice2 = netPrice2.replaceAll("\\(.*\\)", "");
 						if(!StringUtils.isEmpty(netPrice2) ){
@@ -358,7 +317,7 @@ public class PioneerLLCMapping implements IExcelParser{
 						break;
 					case 12://Retail Price 2
 						String	listPrice2=null;
-						listPrice2=CommonUtility.getCellValueStrinOrInt(cell);
+						listPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
 						listPrice2=listPrice2.replaceAll(" ","");
 						listPrice2 = listPrice2.replaceAll("\\(.*\\)", "");
 						if(!StringUtils.isEmpty(listPrice2)){
@@ -375,7 +334,7 @@ public class PioneerLLCMapping implements IExcelParser{
 						break;
 					case 14://Net price 3
 						String	netPrice3=null;
-						netPrice3=CommonUtility.getCellValueStrinOrInt(cell);
+						netPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
 						netPrice3=netPrice3.replaceAll(" ","");
 						netPrice3 = netPrice3.replaceAll("\\(.*\\)", "");
 						if(!StringUtils.isEmpty(netPrice3) ){
@@ -384,7 +343,7 @@ public class PioneerLLCMapping implements IExcelParser{
 						break;
 					case 15://Retail Price 3
 						String	listPrice3=null;
-						listPrice3=CommonUtility.getCellValueStrinOrInt(cell);
+						listPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
 						listPrice3=listPrice3.replaceAll(" ","");
 						listPrice3 = listPrice3.replaceAll("\\(.*\\)", "");
 						if(!StringUtils.isEmpty(listPrice3)){
@@ -401,7 +360,7 @@ public class PioneerLLCMapping implements IExcelParser{
 						break;
 					case 17://Net price 4
 						String	netPrice4=null;
-						netPrice4=CommonUtility.getCellValueStrinOrInt(cell);
+						netPrice4=CommonUtility.getCellValueStrinOrDecimal(cell);
 						netPrice4=netPrice4.replaceAll(" ","");
 						netPrice4 = netPrice4.replaceAll("\\(.*\\)", "");
 						if(!StringUtils.isEmpty(netPrice4) ){
@@ -410,7 +369,7 @@ public class PioneerLLCMapping implements IExcelParser{
 						break;
 					case 18://Retail Price 4
 						String	listPrice4=null;
-						listPrice4=CommonUtility.getCellValueStrinOrInt(cell);
+						listPrice4=CommonUtility.getCellValueStrinOrDecimal(cell);
 						listPrice4=listPrice4.replaceAll(" ","");
 						listPrice4 = listPrice4.replaceAll("\\(.*\\)", "");
 						if(!StringUtils.isEmpty(listPrice4)){
@@ -427,7 +386,7 @@ public class PioneerLLCMapping implements IExcelParser{
 						break;
 					case 20://Net price 5
 						String	netPrice5=null;
-						netPrice5=CommonUtility.getCellValueStrinOrInt(cell);
+						netPrice5=CommonUtility.getCellValueStrinOrDecimal(cell);
 						netPrice5=netPrice5.replaceAll(" ","");
 						netPrice5 = netPrice5.replaceAll("\\(.*\\)", "");
 						if(!StringUtils.isEmpty(netPrice5) ){
@@ -436,7 +395,7 @@ public class PioneerLLCMapping implements IExcelParser{
 						break;
 					case 21://Retail Price 5
 						String	listPrice5=null;
-						listPrice5=CommonUtility.getCellValueStrinOrInt(cell);
+						listPrice5=CommonUtility.getCellValueStrinOrDecimal(cell);
 						listPrice5=listPrice5.replaceAll(" ","");
 						listPrice5 = listPrice5.replaceAll("\\(.*\\)", "");
 						if(!StringUtils.isEmpty(listPrice5)){
@@ -462,7 +421,12 @@ public class PioneerLLCMapping implements IExcelParser{
 						break;
 					case 24://Sizes
 						
+						String sizes=cell.getStringCellValue();
+						if(!StringUtils.isEmpty(sizes)){
+							productExcelObj = pioneerLLCAttributeParser.getSizes(sizes, productExcelObj);
+							productConfigObj=productExcelObj.getProductConfigurations();
 						
+						 }
 						break;
 					case 25://Production Time (# of business days)
 						
@@ -597,6 +561,14 @@ public class PioneerLLCMapping implements IExcelParser{
 				plateScreenCharge, plateScreenChargeCode,
 			    plateReOrderCharge, plateReOrderChargeCode, priceGrids, 
 			    productExcelObj, productConfigObj);*/
+		 if(CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
+			 List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
+			 ImprintMethod	imprintMethodObj = new ImprintMethod();	
+			imprintMethodObj.setType("UNIMPRINTED");
+			imprintMethodObj.setAlias("UNIMPRINTED");
+			listOfImprintMethod.add(imprintMethodObj);
+			productConfigObj.setImprintMethods(listOfImprintMethod);
+		}
 	 	productExcelObj.setPriceType("B");
 	 	productExcelObj.setPriceGrids(priceGrids);
 	 	productExcelObj.setProductConfigurations(productConfigObj);
@@ -606,7 +578,7 @@ public class PioneerLLCMapping implements IExcelParser{
 	 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 	 		productExcelObj.setAvailability(new ArrayList<Availability>());
 	 	}*/
-	 	productExcelObj.setMakeActiveDate("2018-01-01T00:00:00");
+	 	//productExcelObj.setMakeActiveDate("2018-01-01T00:00:00");
 	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 	 	if(num ==1){
 	 		numOfProductsSuccess.add("1");
@@ -622,27 +594,28 @@ public class PioneerLLCMapping implements IExcelParser{
        productDaoObj.saveErrorLog(asiNumber,batchId);
 
    	//reset all list and objects over here
-		priceGrids = new ArrayList<PriceGrid>();
-		productConfigObj = new ProductConfigurations();
-		ShipingObj=new ShippingEstimate();
-		dimensionObj=new Dimensions();
-		setUpchrgesVal="";
-		plateScreenCharge="";
- 		 plateScreenChargeCode="";
- 		 plateReOrderCharge="";
- 		 plateReOrderChargeCode="";
- 		 extraColorRucnChrg="";
- 	     extraLocRunChrg="";
- 	     extraLocColorScreenChrg="";
- 	    listOfQuantity = new StringBuilder();
-  	    listOfPrices = new StringBuilder();
-  	    listOfDiscount = new StringBuilder();
-  	    listOfQuantity = new StringBuilder();
-  	    listOfPrices = new StringBuilder();
-	    listOfNetPrices = new StringBuilder();
-	    listOfDiscount = new StringBuilder();
-  	   basePricePriceInlcude="";
-  	   tempQuant1="";
+       //numOfProductsSuccess = new ArrayList<String>();
+	   //numOfProductsFailure = new ArrayList<String>();
+	   //finalResult = "";
+	   listOfProductXids = new HashSet<String>();
+	   productExcelObj = new Product();  
+	   existingApiProduct = null;
+	   productConfigObj=new ProductConfigurations();
+	   priceGrids = new ArrayList<PriceGrid>();
+	   shippingValue="";
+	   existingFlag=false;
+	   listOfQuantity = new StringBuilder();
+	   listOfPrices = new StringBuilder();
+	   listOfNetPrices = new StringBuilder();
+	   listOfDiscount = new StringBuilder();
+	   basePricePriceInlcude="";
+	   tempQuant1="";
+	   productName ="";
+	   imprintMethodValue="";
+	   productXids = new HashSet<String>();
+	   repeatRows = new ArrayList<>();
+	   ShipingObj=new ShippingEstimate();
+       dimensionObj=new Dimensions();
        return finalResult;
 	}catch(Exception e){
 		_LOGGER.error("Error while Processing excel sheet ,Error message: "+e.getMessage()+"for column"+columnIndex+1);

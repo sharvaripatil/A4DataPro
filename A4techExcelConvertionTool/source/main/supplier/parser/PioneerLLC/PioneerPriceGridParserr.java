@@ -70,8 +70,8 @@ public class PioneerPriceGridParserr {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
 		try{
-		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length && PriceNumber < quantity.length
-				      && PriceNumber < discount.length(); PriceNumber++, sequenceNum++) {
+		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length && PriceNumber < quantity.length;
+				       PriceNumber++, sequenceNum++) {//&& PriceNumber < discount.length();
 
 			Price price = new Price();
 			PriceUnit priceUnit = new PriceUnit();
