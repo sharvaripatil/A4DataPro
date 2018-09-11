@@ -34,6 +34,7 @@ import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
+import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
@@ -119,6 +120,7 @@ public class WBTIndustriesMapper implements IExcelParser{
 		String imprintLocation = null;
 		Product existingApiProduct = null;
 		String rushProdTimeLo = "";
+		String dimensionType2 = "";
 	   Map<String, String>  imprintMethodUpchargeMap = new LinkedHashMap<>();
 	   List<ImprintMethod> imprintMethodList = new ArrayList<>();
 		while (iterator.hasNext()) {
@@ -288,9 +290,21 @@ public class WBTIndustriesMapper implements IExcelParser{
 					break;
 					
 				case 15://size --  value
-						String dimensionValue1=CommonUtility.getCellValueStrinOrInt(cell);
-					   if(dimensionValue1 != null){
+						String dimensionValue1=CommonUtility.getCellValueDouble(cell);
+						boolean isSecondDimensionValue = false;
+						String secondVal = "";
+					   if(dimensionValue1 != null && !dimensionValue1.equals("0.0")){
+						   if(dimensionValue1.contains("-")){
+							   String[] dimeVals = dimensionValue1.split("-");
+							   dimensionValue1 = dimeVals[0];
+							   secondVal = dimeVals[1].trim();
+							   isSecondDimensionValue = true;
+						   }
 						   dimensionValue.append(dimensionValue1).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
+						   if(isSecondDimensionValue == true){
+							   dimensionValue.append(secondVal).append(ApplicationConstants.CONST_DIMENSION_SPLITTER); 
+							   isSecondDimensionValue = false;
+						   }
 					   }
 					
 					break;
@@ -309,8 +323,8 @@ public class WBTIndustriesMapper implements IExcelParser{
 					break;
 				
 				 case 18: //size
-					 String dimensionValue2 =CommonUtility.getCellValueStrinOrInt(cell);
-					 if(dimensionValue2 != null ){
+					 String dimensionValue2 =CommonUtility.getCellValueDouble(cell);
+					 if(!StringUtils.isEmpty(dimensionValue2) && !dimensionValue2.equals("0.0")){
 						 dimensionValue.append(dimensionValue2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					 }
 					break;
@@ -323,7 +337,7 @@ public class WBTIndustriesMapper implements IExcelParser{
 					break;
 					
 				case 20: //size
-					String  dimensionType2 = CommonUtility.getCellValueStrinOrInt(cell);
+					dimensionType2 = CommonUtility.getCellValueStrinOrInt(cell);
 
 					if(!dimensionType2.equals("0")){
 						dimensionType.append(dimensionType2).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
@@ -331,8 +345,8 @@ public class WBTIndustriesMapper implements IExcelParser{
 					break;
 					
 				case 21: //size
-					String dimensionValue3  =CommonUtility.getCellValueStrinOrInt(cell);
-					if(dimensionValue3 != null){
+					String dimensionValue3  =CommonUtility.getCellValueDouble(cell);
+					if(dimensionValue3 != null &&!dimensionValue3.equals("0") && !dimensionValue3.equals("0.0")){
 						dimensionValue.append(dimensionValue3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 					break;
@@ -345,7 +359,7 @@ public class WBTIndustriesMapper implements IExcelParser{
 					
 				case 23: //size
 					String dimensionType3 = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!dimensionType3.equals("0")){
+					if(!dimensionType3.equals(dimensionType2) && !dimensionType3.equals("0")){
 						dimensionType.append(dimensionType3).append(ApplicationConstants.CONST_DIMENSION_SPLITTER);
 					}
 				   break;
@@ -754,7 +768,11 @@ public class WBTIndustriesMapper implements IExcelParser{
 					}
 					break;
 				case 108://RushProdTimeLo
-					 //ignore //Available	
+					 String rushTime = cell.getStringCellValue();
+					 if(rushTime.equals("Available")){
+						 RushTime rushTimeObj = wbtIndustriesAttributeParser.getProductRushTime("RushServiceAvailable");
+						 productConfigObj.setRushTime(rushTimeObj);
+					 }
 					 break; 	 
 				case 109://RushProdTimeH
 					//rushtime// Call For Pricing

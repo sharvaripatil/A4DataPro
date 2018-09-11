@@ -69,7 +69,8 @@ public class WBTIndustriesAttributeParser {
 		List<Values> valueslist = new ArrayList<Values>();
 		Values valuesObj = new Values();
 		Value valueObj = null;
-		for (int dimensionIndex = 0; dimensionIndex < dimensionValueArr.length; dimensionIndex++) {
+		for (int dimensionIndex = 0; dimensionIndex < dimensionValueArr.length
+				&& dimensionIndex < dimensionTypeArr.length; dimensionIndex++) {
 			if(StringUtils.isEmpty(dimensionValueArr[dimensionIndex])){
 				continue;
 			}
@@ -283,6 +284,12 @@ public class WBTIndustriesAttributeParser {
 		rushTimeObj.setRushTimeValues(rushTimeValueList);
 		return rushTimeObj;
 	}
+	public RushTime getProductRushTime(String rushServiceAvailable){
+		RushTime rushTimeObj = new RushTime();
+		rushTimeObj.setAvailable(ApplicationConstants.CONST_BOOLEAN_TRUE);
+		rushTimeObj.setRushTimeValues(new ArrayList<>());
+		return rushTimeObj;
+	}
 	public List<PriceGrid> getImprintMethodUpcharges(Map<String, String> upchargeValues,List<ImprintMethod> imprintMethodList,List<PriceGrid> existingPriceGrid){
 		String imprintMethods = imprintMethodList.stream().map(ImprintMethod::getAlias)
 															.collect(Collectors.joining(","));
@@ -297,8 +304,13 @@ public class WBTIndustriesAttributeParser {
 				 priceInclude = "per Button";
 			 }
 			 String upChargeTypeVal = "";
+			 String upchargeUsageType = "Other";
 			 if(upchargeType.equalsIgnoreCase("setupCharge")){
 				 upChargeTypeVal = "Set-up Charge";
+				 //
+				 if(StringUtils.isEmpty(priceInclude)){
+					 upchargeUsageType = "Per Order";
+				 }
 			 } else if(upchargeType.equalsIgnoreCase("screenCharge")){
 				 upChargeTypeVal = "Screen Charge";
 			 } else if(upchargeType.equalsIgnoreCase("plateCharge")){
@@ -311,7 +323,7 @@ public class WBTIndustriesAttributeParser {
 				 
 			 }
 			existingPriceGrid = wbtIndustriesPriceGridParser.getUpchargePriceGrid("1", priceVal, disCount, "Imprint method", "n",
-					"USD", imprintMethods, upChargeTypeVal, "Other", 1,priceInclude, existingPriceGrid);
+					"USD", imprintMethods, upChargeTypeVal, upchargeUsageType, 1,priceInclude, existingPriceGrid);
 		}
 		return existingPriceGrid;
 	}

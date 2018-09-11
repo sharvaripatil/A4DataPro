@@ -22,6 +22,7 @@ import com.a4tech.supplier.mapper.BagMakersMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
 import com.a4tech.supplier.mapper.BayStateMapping;
 import com.a4tech.supplier.mapper.BellaCanvas;
+import com.a4tech.supplier.mapper.BloominPromotionsMapper;
 import com.a4tech.supplier.mapper.BlueGenerationMapping;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
 import com.a4tech.supplier.mapper.CbMapping;
@@ -130,7 +131,7 @@ public class ExcelFactory {
     private DouglasBridgeMapper             douglasBridgeMapper;
 	private RadiousMapping                  radiMapping;	
     private WBTIndustriesMapper	            wbtIndustriesMapper;
-
+    private BloominPromotionsMapper         bloominPromotion;
 		public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -261,10 +262,16 @@ public class ExcelFactory {
 			  return douglasBridgeMapper;
 		  } else if(name.equals("96640")){
 			  return wbtIndustriesMapper;
+		  } else if(name.equals("40646")){
+			  return bloominPromotion;
 		  }
 		return null;
 	}
 	
+	public void setBloominPromotion(BloominPromotionsMapper bloominPromotion) {
+			this.bloominPromotion = bloominPromotion;
+		}
+
 	public InternationlMerchMapping getMerchMapping() {
 		return merchMapping;
 	}
