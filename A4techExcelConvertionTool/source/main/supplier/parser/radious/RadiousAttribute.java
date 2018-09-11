@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.jasper.tagplugins.jstl.core.ForEach;
-import org.junit.internal.runners.model.EachTestNotifier;
+
 import org.springframework.util.StringUtils;
 
 import com.a4tech.lookup.service.LookupServiceData;
@@ -20,7 +19,7 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Weight;
-import com.a4tech.util.ApplicationConstants;
+
 
 public class RadiousAttribute {
 
@@ -37,24 +36,31 @@ public class RadiousAttribute {
 
 		List<Object> shipingEstObj1 = new ArrayList<Object>();
 		    NumberOfItems itemObj = new NumberOfItems();
+		    if(!StringUtils.isEmpty(unitsperCarton)){
 			itemObj.setUnit("Carton");
-			itemObj.setValue(cartonHeight);
+			itemObj.setValue(unitsperCarton);
 			shipingEstObj1.add(itemObj);
 			ItemObject.setNumberOfItems(listOfNumberOfItems);
+		    }
 	
 	
 		List<Weight> listOfWeight = new ArrayList<Weight>();
+	    if(!StringUtils.isEmpty(cartonWeight)){
+
 			Weight weightObj = new Weight();
 			weightObj.setUnit("lbs");
 			weightObj.setValue(cartonWeight);
 			listOfWeight.add(weightObj);
 			ItemObject.setWeight(listOfWeight);
-			
+	    }
 	
 		
 			List<Dimensions> dimenlist = new ArrayList<Dimensions>();
 			Dimensions dimensionObj = new Dimensions();
 		 
+			
+		    if(!StringUtils.isEmpty(cartonLength)){
+
 	        dimensionObj.setHeight(cartonHeight);
 			dimensionObj.setHeightUnit("in");
 					
@@ -66,6 +72,7 @@ public class RadiousAttribute {
 
 			dimenlist.add(dimensionObj);
 			ItemObject.setDimensions(dimensionObj);
+		    }
 			
 		
 		return ItemObject;
@@ -81,33 +88,25 @@ public class RadiousAttribute {
 	    String materailArr[]=material.split(",");
 
 	    for (String materialName : materailArr) {
-	  		 String mtrlType = getMaterialType(material.toUpperCase()).toString();
 
-	    	materialObj.setAlias(mtrlType);
-	    	materialObj.setName(materialName);
+	    	
+	    	
+	    	materialObj.setAlias(materialName);
+	    	materialObj.setName("Other");
 		}
 	
 	    listOfMaterial.add(materialObj);
 	    
 		return listOfMaterial;
 	}
-	public static List<String> getMaterialType(String value){
-		List<String> listOfLookupMaterials = lookupServiceDataObj.getMaterialValues();
-		List<String> finalMaterialValues = listOfLookupMaterials.stream()
-				                                  .filter(mtrlName -> value.contains(mtrlName))
-				                                  .collect(Collectors.toList());
-                                                 
-				
-		return finalMaterialValues;	
-	}
-	
+
 	
 	
 	public static Size getSize(String size) {
 
 		Size sizeObj=new Size();
 		String originalSize=size;
-		size=size.replaceAll("[^0-9\"\'.]","");
+		size=size.replaceAll("[^0-9\"\'.]","").replace("\"", "").replace("\'", "");
 
 		 Dimension dimensionObj=new Dimension();
 		 
@@ -164,13 +163,14 @@ public class RadiousAttribute {
 		
 		
 		imprintMethodObj.setAlias(imprintMethod);
-		
+
 		if(imprintMethod.contains("Unprinted"))
 		{
-			imprintMethodObj.setType("Printed");
+
+			imprintMethodObj.setType("Unimprinted");
 
 		}else {
-			imprintMethodObj.setType("Unprinted");
+			imprintMethodObj.setType("Printed");
 		}
 
 		listOfImprintMethods.add(imprintMethodObj);
