@@ -124,14 +124,23 @@ public class PioneerLLCMapping implements IExcelParser{
 								 // Ineed to set pricegrid over here
 								 
 								 if( !StringUtils.isEmpty(listOfPrices.toString())){
-									 priceGrids=new ArrayList<PriceGrid>();
+									 //priceGrids=new ArrayList<PriceGrid>();
 									 /*priceGrids = pioneerPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrices.toString(),listOfQuantity.toString(), 
 												"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
 												"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 												productName,null,1,priceGrids);
 									*/ 
+									 String disc="R";
+									 StringBuilder sb = new StringBuilder();
+									 String arrLen[]=listOfPrices.toString().split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+									 int len=arrLen.length;
+									 for (int i = 0; i <len; i++) {
+										//disc=ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID+"R";
+										 sb.append("R"+ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+									}
+									 //System.out.println(sb.toString().split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).length);
 									 priceGrids = pioneerPriceGridParserr.getPriceGrids(listOfPrices.toString(),listOfNetPrices.toString(),listOfQuantity.toString(), 
-											 "R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+											 sb.toString(),ApplicationConstants.CONST_STRING_CURRENCY_USD,
 												ApplicationConstants.CONST_STRING_EMPTY,ApplicationConstants.CONST_BOOLEAN_TRUE, 
 												ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids);
 									 }
@@ -152,7 +161,7 @@ public class PioneerLLCMapping implements IExcelParser{
 										listOfImprintMethod.add(imprintMethodObj);
 										productConfigObj.setImprintMethods(listOfImprintMethod);
 									}
-								 	productExcelObj.setPriceType("B");
+								 	productExcelObj.setPriceType("L");
 								 	productExcelObj.setPriceGrids(priceGrids);
 								 	productExcelObj.setProductConfigurations(productConfigObj);
 								 	/* _LOGGER.info("Product Data : "
@@ -166,6 +175,7 @@ public class PioneerLLCMapping implements IExcelParser{
 								 	}else if(num == 0) {
 								 		numOfProductsFailure.add("0");
 								 	}else{
+								 		
 								 		
 								 	}
 								 	_LOGGER.info("list size of success>>>>>>>"+numOfProductsSuccess.size());
@@ -219,13 +229,13 @@ public class PioneerLLCMapping implements IExcelParser{
 					case 1://XID
 						productExcelObj.setExternalProductId(xid);
 						break;
-					case 2://××Prod # (up to 14 characters)
+					case 2://Ã—Ã—Prod # (up to 14 characters)
 						String productNo = CommonUtility.getCellValueStrinOrInt(cell);
 						if(!StringUtils.isEmpty(productNo)){
 						  productExcelObj.setAsiProdNo(productNo);
 						}
 						break;
-					case 3://××Product Name (Up to 50 characters)
+					case 3://Ã—Ã—Product Name (Up to 50 characters)
 						 productName = cell.getStringCellValue();
 						if(!StringUtils.isEmpty(productName)){
 						int len=productName.length();
@@ -241,28 +251,41 @@ public class PioneerLLCMapping implements IExcelParser{
 					case 4://Keywords
 						String keywords = CommonUtility.getCellValueStrinOrInt(cell);
 						if(!StringUtils.isEmpty(keywords)){
-						List<String> productKeywords = CommonUtility.getStringAsList(keywords,
+							List<String> productKeywords =new ArrayList<String>();
+						 productKeywords = CommonUtility.getStringAsList(keywords,
                                 ApplicationConstants.CONST_DELIMITER_COMMA);
-						productExcelObj.setProductKeywords(productKeywords);
-						/*List<String> productKeywordsTemp=new ArrayList<String>();
-						for (String keyword : productKeywords) {
-							if(keyword.length()<=30){
-								productKeywordsTemp.add(keyword);
+						List<String> productKeywordsTemp =new ArrayList<String>();
+						for (String string : productKeywords) {
+							string = CommonUtility.removeSpecialSymbols(string.trim(), ApplicationConstants.CHARACTERS_NUMBERS_PATTERN);
+							if(productKeywordsTemp.size()<30){
+								if(string.length()<=30){
+							productKeywordsTemp.add(string);
+								}
 							}
-						}*/
+						  }
+						//System.out.println(productKeywordsTemp.size());
+						productExcelObj.setProductKeywords(productKeywordsTemp);				
 						
 						}
 						break;
 					case 5://Summary
 						String summary = CommonUtility.getCellValueStrinOrInt(cell);
 						 if(!StringUtils.isEmpty(summary)){
+							 summary=summary.replace("tank", "");
+							 summary=summary.replace("velcro", "");
+							 summary=summary.replace("Iring", "");
+							 summary=CommonUtility.removeRestrictSymbols(summary);
 							 productExcelObj.setSummary(CommonUtility.getStringLimitedChars(summary, 130));
 						 }
 						break;
-					case 6://××Description (Up to 450 characters.)
+					case 6://Ã—Ã—Description (Up to 450 characters.)
 						String description =CommonUtility.getCellValueStrinOrInt(cell);
+						description=CommonUtility.removeRestrictSymbols(description);
 						//description = CommonUtility.removeSpecialSymbols(description,specialCharacters);
 						 if(!StringUtils.isEmpty(description)){
+							 description=description.replace("tank", "");
+							 description=description.replace("velcro", "");
+							 description=description.replace("Iring", "");
 						int length=description.length();
 						 if(length>800){
 							String strTemp=description.substring(0, 800);
@@ -496,14 +519,14 @@ public class PioneerLLCMapping implements IExcelParser{
 						}
 						break;
 					case 29://Set Up Charges
-						/*String imprintMethodValueUpchrg=CommonUtility.getCellValueStrinOrInt(cell);
+						String imprintMethodValueUpchrg=CommonUtility.getCellValueStrinOrInt(cell);
 						if(!StringUtils.isEmpty(imprintMethodValue)&& !StringUtils.isEmpty(imprintMethodValueUpchrg)){
 							if(!imprintMethodValue.equals("None")){
-							priceGrids = pioneerPriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,imprintMethodValueUpchrg, ApplicationConstants.CONST_STRING_DISCOUNT_CODE_Z,
-									"Imprint Method"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "",imprintMethodValue, 
+							priceGrids = pioneerPriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,imprintMethodValueUpchrg, "R",
+									"Imprint Method"+":"+imprintMethodValue,ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "",imprintMethodValue, 
 									"Imprint Method Charge", ApplicationConstants.CONST_VALUE_TYPE_OTHER,"Required", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
 							}
-							}*/
+							}
 						
 						break;
 					case 30://Carton
@@ -541,14 +564,23 @@ public class PioneerLLCMapping implements IExcelParser{
 	
 	
 	 if( !StringUtils.isEmpty(listOfPrices.toString())){
-		 priceGrids=new ArrayList<PriceGrid>();
+		 //priceGrids=new ArrayList<PriceGrid>();
 		 /*priceGrids = pioneerPriceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrices.toString(),listOfQuantity.toString(), 
 					"R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
 					"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 					productName,null,1,priceGrids);
 		*/ 
+		 String disc="R";
+		 StringBuilder sb = new StringBuilder();
+		 String arrLen[]=listOfPrices.toString().split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		 int len=arrLen.length;
+		 for (int i = 0; i <len; i++) {
+			//disc=ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID+"R";
+			 sb.append("R"+ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		}
+		 //System.out.println(sb.toString().split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).length);
 		 priceGrids = pioneerPriceGridParserr.getPriceGrids(listOfPrices.toString(),listOfNetPrices.toString(),listOfQuantity.toString(), 
-				 "R",ApplicationConstants.CONST_STRING_CURRENCY_USD,
+				 sb.toString(),ApplicationConstants.CONST_STRING_CURRENCY_USD,
 					ApplicationConstants.CONST_STRING_EMPTY,ApplicationConstants.CONST_BOOLEAN_TRUE, 
 					ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids);
 		 }
@@ -569,9 +601,14 @@ public class PioneerLLCMapping implements IExcelParser{
 			listOfImprintMethod.add(imprintMethodObj);
 			productConfigObj.setImprintMethods(listOfImprintMethod);
 		}
-	 	productExcelObj.setPriceType("B");
+	 	productExcelObj.setPriceType("L");
 	 	productExcelObj.setPriceGrids(priceGrids);
 	 	productExcelObj.setProductConfigurations(productConfigObj);
+	 	/* _LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(productExcelObj));
+	 	*/
+	 	
+	 	
 	 	/* _LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));
 	 	*/

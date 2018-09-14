@@ -83,10 +83,10 @@ public class PioneerPriceGridParserr {
 				price.setQty(ApplicationConstants.CONST_NUMBER_ZERO);
 			}
 			price.setPrice(prices[PriceNumber]);
-			if(flag.equals("Y")){
-			price.setNetCost(netPrice[PriceNumber]);
-			}
-			//price.setDiscountCode(temp[PriceNumber]);
+//			if(flag.equals("Y")){
+//			price.setNetCost(netPrice[PriceNumber]);
+//			}
+			price.setDiscountCode(temp[PriceNumber]);
 			priceUnit
 					.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
 			price.setPriceUnit(priceUnit);
@@ -133,7 +133,7 @@ public class PioneerPriceGridParserr {
 			configs = new PriceConfiguration();
 			config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
 			String criteriaValue = LookupData.getCriteriaValue(config[0]);
-			configs.setCriteria(criteriaValue);
+			configs.setCriteria(config[0]);
 			configs.setValue(Arrays.asList((Object) config[1]));
 			priceConfiguration.add(configs);
 		}
@@ -181,7 +181,7 @@ public class PioneerPriceGridParserr {
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(upChargePrices,upChargePrices, upChargeQuantity, ApplicationConstants.CONST_STRING_DISCOUNT_CODE_Z, flag);
+			listOfPrice = getPrices(upChargePrices,upChargePrices, upChargeQuantity, "R", flag);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}

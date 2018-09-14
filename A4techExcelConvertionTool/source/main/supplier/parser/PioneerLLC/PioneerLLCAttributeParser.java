@@ -190,7 +190,8 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			shippingitemValue=shippingitemValue.replace("sets", "");
 			shippingitemValue=shippingitemValue.replace("pcs", "");
 			shippingitemValue=shippingitemValue.replace("bags", "");
-			
+			shippingitemValue=shippingitemValue.replace("strips", "");
+			shippingitemValue=shippingitemValue.replace("pairs", "");
 			itemObj.setUnit("per Carton");
 			itemObj.setValue(shippingitemValue);
 			listOfNumberOfItems.add(itemObj);
