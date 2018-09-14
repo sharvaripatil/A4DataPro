@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.util.StringUtil;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.excel.service.IExcelParser;
@@ -118,6 +119,8 @@ public class BloominPromotionsMapper implements IExcelParser {
 											priceGrids);
 									List<Image> listOfImages = bloominPromotionAttributeParser.getImages(imageList);
 									productExcelObj.setImages(listOfImages);
+									String summary = getSummary(productExcelObj.getDescription(), productExcelObj.getName());
+									productExcelObj.setSummary(summary);
 									productExcelObj.setProductConfigurations(productConfigObj);
 									productExcelObj.setPriceGrids(priceGrids);
 									int num = postServiceImpl.postProduct(accessToken, productExcelObj, asiNumber,
@@ -202,6 +205,9 @@ public class BloominPromotionsMapper implements IExcelParser {
 							if(!StringUtils.isEmpty(description)){
 								if (description.contains("<BR>")) {
 									description = description.replaceAll("<BR>", ",");
+								}
+								if (description.toUpperCase().contains(asiPrdNo)) {
+									description = CommonUtility.removeSpecificWord(description, asiPrdNo);
 								}
 								productExcelObj.setDescription(CommonUtility.getStringLimitedChars(description, 800));
 							}
@@ -366,6 +372,8 @@ public class BloominPromotionsMapper implements IExcelParser {
 			priceGrids = bloominPromotionPriceGridParser.getBasePriceGrids(listOfPrices.toString(),
 					listOfQuantity.toString(), listOfDiscount.toString(), "USD", "", true, "False", "", "",
 					priceGrids);
+			String summary = getSummary(productExcelObj.getDescription(), productExcelObj.getName());
+			productExcelObj.setSummary(summary);
 			productExcelObj.setProductConfigurations(productConfigObj);
 			productExcelObj.setPriceGrids(priceGrids);
 			int num = postServiceImpl.postProduct(accessToken, productExcelObj, asiNumber, batchId, environmentType);
@@ -425,6 +433,24 @@ public class BloominPromotionsMapper implements IExcelParser {
 			prdNo = prdNo.replaceAll("GIC/RIC-Earth/Recycle Symbol", "GIC/RIC-ERS");
 		}
 		return prdNo;
+	}
+
+	private String getSummary(String desc, String name) {
+		String summary = "";
+		if (!StringUtils.isEmpty(desc)) {
+			if (desc.contains(".")) {
+				summary = desc.substring(0, desc.indexOf(".") + 1);
+			} else {
+				summary = desc;
+			}
+			if (summary.length() > 130) {
+				summary = name;
+			}
+		} else {
+			summary = name;
+		}
+
+		return summary;
 	}
 
 	public PostServiceImpl getPostServiceImpl() {
