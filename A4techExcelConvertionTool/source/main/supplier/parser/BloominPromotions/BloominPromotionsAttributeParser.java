@@ -1,9 +1,9 @@
 package parser.BloominPromotions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.util.CollectionUtils;
@@ -37,7 +37,6 @@ import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Weight;
-import com.a4tech.sage.product.util.LookupData;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -433,7 +432,7 @@ public class BloominPromotionsAttributeParser {
 			imageRank++;
 		return listOfImages;
 	}
-	public List<Image> getImages(List<String> imagelist){
+	public List<Image> getImages(Set<String> imagelist){
 		List<Image> listOfImages = new ArrayList<>();
 		Image imageObj  = null;
 		int imageRank = 1;

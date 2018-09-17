@@ -68,7 +68,7 @@ public class BloominPromotionsMapper implements IExcelParser {
 			StringBuilder keywords = new StringBuilder();
 			StringBuilder setupCharge = new StringBuilder();
 			String asiPrdNo = "";
-			List<String> imageList = new ArrayList<>();
+			Set<String> imageList = new HashSet<>();
 			while (iterator.hasNext()) {
 				try {
 					Row nextRow = iterator.next();
@@ -143,7 +143,7 @@ public class BloominPromotionsMapper implements IExcelParser {
 									listOfDiscount = new StringBuilder();
 									asiPrdNo = "";
 									setupCharge = new StringBuilder();
-									imageList = new ArrayList<>();
+									imageList = new HashSet<>();
 								}
 								if (!productXids.contains(xid)) {
 									productXids.add(xid.trim());
@@ -191,14 +191,14 @@ public class BloominPromotionsMapper implements IExcelParser {
 							break;
 						case 5:// name
 							String prdName = cell.getStringCellValue();
-							if (prdName.toUpperCase().contains(asiPrdNo)) {
+							if (prdName.toUpperCase().contains(asiPrdNo) || prdName.toUpperCase().contains(asiPrdNo.toUpperCase())) {
 								prdName = CommonUtility.removeSpecificWord(prdName, asiPrdNo);
 								if (prdName.contains("()")) {
 									prdName = prdName.replaceAll("[()]", "").trim();
 								}
 								prdName = prdName.replaceAll(asiPrdNo, "");
 							}
-							productExcelObj.setName(prdName);
+							productExcelObj.setName(CommonUtility.getStringLimitedChars(prdName, 60));
 							break;
 						case 10:// description
 							String description = cell.getStringCellValue();
@@ -232,7 +232,7 @@ public class BloominPromotionsMapper implements IExcelParser {
 							String size = CommonUtility.getCellValueDouble(cell);
 							if (!StringUtils.isEmpty(size)) {
 								Size sizeObj = null;
-								if (size.equals("various")) {
+								if (size.equalsIgnoreCase("various") || size.equalsIgnoreCase("varies")) {
 									sizeObj = bloominPromotionAttributeParser.getProductSizeAsOther(size);
 								} else {
 									sizeObj = bloominPromotionAttributeParser.getProductSize(size);
