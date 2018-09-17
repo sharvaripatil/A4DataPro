@@ -304,40 +304,44 @@ public class CommonUtility {
 	 */
 	public static String removeRestrictSymbols(String value){
 		try{
-		value=value.replaceAll("±", "");
-		//value=value.replaceAll("í", "single quote");
+		value=value.replaceAll("¬±", "");
+		//value=value.replaceAll("‚Äô", "single quote");
 		//value=value.replaceAll("`", "single quote");
-		//value=value.replaceAll("ë", "single quote");
-		//value=value.replaceAll("ì", "double quote");
-		value=value.replaceAll("î", "\"");
-		value=value.replaceAll("Ñ", "");
-		value=value.replaceAll("ñ", "dash");
-		value=value.replaceAll("Æ", "(R)");
-		value=value.replaceAll("ô", "(TM)");
-		value=value.replaceAll("∞", " the word degrees");
-		value=value.replaceAll("◊", "x");
-		value=value.replaceAll("ø", "");
-		value=value.replaceAll("ï", "");
-		value=value.replaceAll("Ö", "Three periods");
-		value=value.replaceAll("Ä", "");
+		//value=value.replaceAll("‚Äò", "single quote");
+		//value=value.replaceAll("‚Äú", "double quote");
+		value=value.replaceAll("‚Äù", "\"");
+		value=value.replaceAll("‚Äû", "");
+		value=value.replaceAll("‚Äì", "dash");
+		value=value.replaceAll("¬Æ", "(R)");
+		value=value.replaceAll("‚Ñ¢", "(TM)");
+		value=value.replaceAll("¬∞", " the word degrees");
+		value=value.replaceAll("√ó", "x");
+		value=value.replaceAll("¬ø", "");
+		value=value.replaceAll("‚Ä¢", "");
+		value=value.replaceAll("‚Ä¶", "Three periods");
+		value=value.replaceAll("‚Ç¨", "");
 		value=value.replaceAll("\\|", ",");
-		value=value.replaceAll("Ω", "1/2");
-		value=value.replaceAll("æ", "3/4");
-		value=value.replaceAll("º", "1/4");
+		value=value.replaceAll("¬Ω", "1/2");
+		value=value.replaceAll("¬æ", "3/4");
+		value=value.replaceAll("¬º", "1/4");
 		value = value.replaceAll("\\[", "");
 		value = value.replaceAll("\\]", "");
 		//value=value.replaceAll("<", "");
 		//value=value.replaceAll(">", "");
 		value=value.replaceAll("", "");
-		value=value.replaceAll("ó", "");
-		value=value.replaceAll("°", "");
-		value=value.replaceAll("Ò", "");
+		value=value.replaceAll("‚Äî", "");
+		value=value.replaceAll("¬°", "");
+		value=value.replaceAll("√±", "");
 		value=value.replaceAll("~", "");
-		value=value.replaceAll("Ü", "");
+		value=value.replaceAll("‚Ä†", "");
 		value=value.replaceAll("\\?", "");
-		value=value.replaceAll("¢", "");
-		value=value.replaceAll("‚", "");
-		//‚
+		value=value.replaceAll("¬¢", "");
+		value=value.replaceAll("√¢", "");
+		value=value.replaceAll("Ôºà", "");
+		value=value.replaceAll("Ôºâ", "");
+		value=value.replace("\\?","");
+		value=value.replace("„ÄÇ","");
+		//√¢
 		}catch(Exception e){
 			_LOGGER.error("Error while removing symbol"+e.getLocalizedMessage());
 		}
