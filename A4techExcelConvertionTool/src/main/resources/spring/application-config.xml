@@ -435,6 +435,8 @@
 		<property name="digiSpecMapping" ref="digiSpecMappingId"/>
 		<property name="douglasBridgeMapper" ref="douglasMappingId"/>
 		<property name="radiMapping" ref="radiMappingId"/>
+		<property name="wbtIndustriesMapper" ref="wbtIndustriesMappingId"/>
+		<property name="bloominPromotion" ref="bloominPromotionsMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1321,13 +1323,42 @@
        	     <property name="productDaoObj" ref="productDao"/>
        	     <property name="radiousColorObj" ref="radiousColorObjId"/>
        	     <property name="radiousAttribute" ref="radiousAttributeId"/>
+       	     <property name="radiousPricegrid" ref="radiousPricegridId"/>
        	     
          
       </bean>
           <bean id="radiousColorObjId" class="parser.radious.RadiousColorParser"/>
           <bean id="radiousAttributeId" class="parser.radious.RadiousAttribute"/>
+           <bean id="radiousPricegridId" class="parser.radious.RadiousPriceGridParser"/>
+          
     
        <!-- supplier Radious 49916 configuration End -->
- 
+ <!-- WBT Industries configuration start-->
+     <bean id="wbtIndustriesMappingId" class="com.a4tech.supplier.mapper.WBTIndustriesMapper">
+     	 <property name="postServiceImpl" ref="postService"/>
+     	 <property name="productDaoObj" ref="productDao"/>
+     	 <property name="wbtIndustriesAttributeParser" ref="wbtIndustriesAttributeParserId"/>
+     	 <property name="wbtIndustriesPriceGridParser" ref="wbtIndustriespriceGridParserId"/>
+     </bean>
+     <bean id="wbtIndustriesAttributeParserId" class="parser.WBTIndustries.WBTIndustriesAttributeParser">
+     	<property name="wbtIndustriesPriceGridParser" ref="wbtIndustriespriceGridParserId"/>
+     	<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     </bean>
+     <bean id="wbtIndustriespriceGridParserId" class="parser.WBTIndustries.WBTIndustriesPriceGridParser"/>
+      <!-- WBT Industries configuration end-->
+      
+      <!-- Bloomin Promotions configuration start-->
+     <bean id="bloominPromotionsMappingId" class="com.a4tech.supplier.mapper.BloominPromotionsMapper">
+     	 <property name="postServiceImpl" ref="postService"/>
+     	 <property name="productDaoObj" ref="productDao"/>
+     	 <property name="bloominPromotionAttributeParser" ref="bloominPromotionsAttributeParserId"/>
+     	 <property name="bloominPromotionPriceGridParser" ref="bloominPromotionspriceGridParserId"/>
+     </bean>
+     <bean id="bloominPromotionsAttributeParserId" class="parser.BloominPromotions.BloominPromotionsAttributeParser">
+     	<property name="bloominPromationPriceGridParser" ref="bloominPromotionspriceGridParserId"/>
+     	<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+     </bean>
+     <bean id="bloominPromotionspriceGridParserId" class="parser.BloominPromotions.BloominPromotionsPriceGridParser"/>
+      <!-- Bloomin Promotions configuration end-->
 </beans>
 

@@ -149,17 +149,12 @@ public class Product {
     private String taxCode;
     @JsonProperty("ProductType")
 	private String productType;
-    
-    
-    //MakeActiveDate
     @JsonProperty("MakeActiveDate")
 	private String makeActiveDate;
-    
-    
-	
-	//EndDate
 	 @JsonProperty("EndDate")
-		private String endDate;
+	 private String endDate;
+	 @JsonProperty("Prop65")
+	 private List<Prop65> prop65;
 	
 	public Inventory getInventory() {
 		return inventory;
@@ -582,6 +577,14 @@ public class Product {
 	public void setMakeActiveDate(String makeActiveDate) {
 		this.makeActiveDate = makeActiveDate;
 	}
-	
+	public List<Prop65> getProp65() {
+		return prop65;
+	}
+
+	public void setProp65(List<Prop65> prop65) {
+		this.prop65 = prop65;
+	}
+
+
 
 }

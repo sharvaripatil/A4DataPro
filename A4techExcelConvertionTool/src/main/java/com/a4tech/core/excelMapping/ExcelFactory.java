@@ -22,6 +22,7 @@ import com.a4tech.supplier.mapper.BagMakersMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
 import com.a4tech.supplier.mapper.BayStateMapping;
 import com.a4tech.supplier.mapper.BellaCanvas;
+import com.a4tech.supplier.mapper.BloominPromotionsMapper;
 import com.a4tech.supplier.mapper.BlueGenerationMapping;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
 import com.a4tech.supplier.mapper.CbMapping;
@@ -63,6 +64,7 @@ import com.a4tech.supplier.mapper.TekweldMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.TowelSpecialtiesMapping;
 import com.a4tech.supplier.mapper.TwintechMapping;
+import com.a4tech.supplier.mapper.WBTIndustriesMapper;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 
 public class ExcelFactory {
@@ -127,8 +129,9 @@ public class ExcelFactory {
     private SportAzxCandMapping 			sportAzxCandMapping;
     private DigiSpecMapping                 digiSpecMapping;
     private DouglasBridgeMapper             douglasBridgeMapper;
-	 private RadiousMapping                  radiMapping;	
-
+	private RadiousMapping                  radiMapping;	
+    private WBTIndustriesMapper	            wbtIndustriesMapper;
+    private BloominPromotionsMapper         bloominPromotion;
 		public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -257,10 +260,18 @@ public class ExcelFactory {
 			  return radiMapping;
 		  } else if(name.equals("50710")){
 			  return douglasBridgeMapper;
+		  } else if(name.equals("96640")){
+			  return wbtIndustriesMapper;
+		  } else if(name.equals("40646")){
+			  return bloominPromotion;
 		  }
 		return null;
 	}
 	
+	public void setBloominPromotion(BloominPromotionsMapper bloominPromotion) {
+			this.bloominPromotion = bloominPromotion;
+		}
+
 	public InternationlMerchMapping getMerchMapping() {
 		return merchMapping;
 	}
@@ -721,6 +732,14 @@ public class ExcelFactory {
 	public void setRadiMapping(RadiousMapping radiMapping) {
 		this.radiMapping = radiMapping;
 	}
+	public WBTIndustriesMapper getWbtIndustriesMapper() {
+		return wbtIndustriesMapper;
+	}
+
+	public void setWbtIndustriesMapper(WBTIndustriesMapper wbtIndustriesMapper) {
+		this.wbtIndustriesMapper = wbtIndustriesMapper;
+	}
+
 
 
 }
