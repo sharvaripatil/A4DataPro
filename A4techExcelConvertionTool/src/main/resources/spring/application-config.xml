@@ -437,6 +437,7 @@
 		<property name="radiMapping" ref="radiMappingId"/>
 		<property name="wbtIndustriesMapper" ref="wbtIndustriesMappingId"/>
 		<property name="bloominPromotion" ref="bloominPromotionsMappingId"/>
+				<property name="pioneerLLCMapping" ref="pioneerLLCMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1360,5 +1361,19 @@
      </bean>
      <bean id="bloominPromotionspriceGridParserId" class="parser.BloominPromotions.BloominPromotionsPriceGridParser"/>
       <!-- Bloomin Promotions configuration end-->
+      
+      <!-- supplier 76771 pioneerLLC configuration start -->
+     <bean id="pioneerLLCMappingId" class="com.a4tech.supplier.mapper.PioneerLLCMapping" autowire="byName">
+     <property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="pioneerLLCAttributeParser" ref="pioneerLLCAttributeParserId" /> 
+     <property name="pioneerPriceGridParserr" ref="pioneerPriceGridParserrId" /> 
+     </bean>
+     <bean id="pioneerLLCAttributeParserId" name="pioneerLLCAttributeParseObj"
+		class="parser.PioneerLLC.PioneerLLCAttributeParser" autowire="byName">
+		<property name="lookupServiceData" ref="lookupServiceData"/>
+	</bean>
+	<bean id="pioneerPriceGridParserrId" name="pioneerPriceGridParserrObj" class="parser.PioneerLLC.PioneerPriceGridParserr" autowire="byName"/>
+     <!--supplier 76771 pioneerLLC configuration end  -->
 </beans>
 

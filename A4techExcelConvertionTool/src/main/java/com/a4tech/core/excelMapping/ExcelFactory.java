@@ -47,6 +47,7 @@ import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
 import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PelicanGraphicMapping;
+import com.a4tech.supplier.mapper.PioneerLLCMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.RadiousMapping;
@@ -132,6 +133,7 @@ public class ExcelFactory {
 	private RadiousMapping                  radiMapping;	
     private WBTIndustriesMapper	            wbtIndustriesMapper;
     private BloominPromotionsMapper         bloominPromotion;
+     private PioneerLLCMapping 				pioneerLLCMapping;
 		public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -264,6 +266,8 @@ public class ExcelFactory {
 			  return wbtIndustriesMapper;
 		  } else if(name.equals("40646")){
 			  return bloominPromotion;
+		  } else if(name.equals("76771")){
+			  return pioneerLLCMapping;
 		  }
 		return null;
 	}
@@ -739,7 +743,13 @@ public class ExcelFactory {
 	public void setWbtIndustriesMapper(WBTIndustriesMapper wbtIndustriesMapper) {
 		this.wbtIndustriesMapper = wbtIndustriesMapper;
 	}
+	public PioneerLLCMapping getPioneerLLCMapping() {
+		return pioneerLLCMapping;
+	}
 
+	public void setPioneerLLCMapping(PioneerLLCMapping pioneerLLCMapping) {
+		this.pioneerLLCMapping = pioneerLLCMapping;
+	}
 
 
 }
