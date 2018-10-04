@@ -1,4 +1,4 @@
-package parser.WBTIndustries;
+package parser.BloominPromotions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,11 +14,11 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
-public class WBTIndustriesPriceGridParser {
+public class BloominPromotionsPriceGridParser {
 
 	private Logger              _LOGGER              = Logger.getLogger(getClass());
 	public List<PriceGrid> getBasePriceGrids(String listOfPrices,
-		    String listOfQuan, String discountCodes,
+		    String listOfQuan, String discountCode,
 			String currency, String priceInclude, boolean isBasePrice,
 			String qurFlag, String priceName, String criterias,
 			List<PriceGrid> existingPriceGrid) {
@@ -30,6 +30,8 @@ public class WBTIndustriesPriceGridParser {
 		String[] prices = listOfPrices
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] quantity = listOfQuan
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		String[] discountCodes = discountCode
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		
 		priceGrid.setCurrency(currency);
@@ -59,22 +61,21 @@ public class WBTIndustriesPriceGridParser {
 
 	}
 
-	public List<Price> getPrices(String[] prices, String[] quantity, String discount) {
+	public List<Price> getPrices(String[] prices, String[] quantity, String[] discount) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
-		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length
-				&& PriceNumber < quantity.length; PriceNumber++, sequenceNum++) {
+		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length; PriceNumber++, sequenceNum++) {
 
 			Price price = new Price();
 			PriceUnit priceUnit = new PriceUnit();
 			price.setSequence(sequenceNum);
 			try {
 				price.setQty(Integer.valueOf(quantity[PriceNumber]));
-			} catch (NumberFormatException nfe) {
-				price.setQty(ApplicationConstants.CONST_NUMBER_ZERO);
+			} catch (NumberFormatException | ArrayIndexOutOfBoundsException nfe) {
+				price.setQty(Integer.valueOf(quantity[0]));
 			}
 			price.setPrice(prices[PriceNumber]);
-			price.setDiscountCode(discount);
+			price.setDiscountCode(discount[PriceNumber]);
 			priceUnit
 					.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
 			price.setPriceUnit(priceUnit);
@@ -144,7 +145,7 @@ public class WBTIndustriesPriceGridParser {
 	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
 			String discounts, String upChargeCriterias, String qurFlag,
 			String currency, String upChargeName, String upChargeType,
-			String upchargeUsageType, Integer upChargeSequence,String priceInclude,
+			String upchargeUsageType,String serviceCharge, Integer upChargeSequence,
 			List<PriceGrid> existingPriceGrid) {
 		try{
 		List<PriceConfiguration> configuration = null;
@@ -153,7 +154,8 @@ public class WBTIndustriesPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] upChargeQuantity = quantity
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		String upChargeDiscount = discounts;
+		String[] upChargeDiscount = discounts
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);;
 
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(upChargeName);
@@ -163,9 +165,8 @@ public class WBTIndustriesPriceGridParser {
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);
 		priceGrid.setUpchargeType(upChargeType);
-		priceGrid.setServiceCharge("Required");
+		priceGrid.setServiceCharge(serviceCharge);
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
-		priceGrid.setPriceIncludes(priceInclude);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
 			 listOfPrice =

@@ -22,6 +22,7 @@ import com.a4tech.supplier.mapper.BagMakersMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
 import com.a4tech.supplier.mapper.BayStateMapping;
 import com.a4tech.supplier.mapper.BellaCanvas;
+import com.a4tech.supplier.mapper.BloominPromotionsMapper;
 import com.a4tech.supplier.mapper.BlueGenerationMapping;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
 import com.a4tech.supplier.mapper.CbMapping;
@@ -46,6 +47,7 @@ import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
 import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PelicanGraphicMapping;
+import com.a4tech.supplier.mapper.PioneerLLCMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
 import com.a4tech.supplier.mapper.RadiousMapping;
@@ -132,8 +134,10 @@ public class ExcelFactory {
 	private RadiousMapping                  radiMapping;	
     private WBTIndustriesMapper	            wbtIndustriesMapper;
     private ZenithExport                    zenithMapping;
+    private BloominPromotionsMapper         bloominPromotion;
+     private PioneerLLCMapping 				pioneerLLCMapping;
 
-		public  IExcelParser getExcelParserObject(String name){
+     public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -265,10 +269,18 @@ public class ExcelFactory {
 			  return wbtIndustriesMapper;
 		  }else if(name.equals("79840")){
 			  return zenithMapping;
+		  } else if(name.equals("40646")){
+			  return bloominPromotion;
+		  } else if(name.equals("76771")){
+			  return pioneerLLCMapping;
 		  }
 		return null;
 	}
 	
+	public void setBloominPromotion(BloominPromotionsMapper bloominPromotion) {
+			this.bloominPromotion = bloominPromotion;
+		}
+
 	public InternationlMerchMapping getMerchMapping() {
 		return merchMapping;
 	}
@@ -736,6 +748,9 @@ public class ExcelFactory {
 	public void setWbtIndustriesMapper(WBTIndustriesMapper wbtIndustriesMapper) {
 		this.wbtIndustriesMapper = wbtIndustriesMapper;
 	}
+	public PioneerLLCMapping getPioneerLLCMapping() {
+		return pioneerLLCMapping;
+	}
 
 	public ZenithExport getZenithMapping() {
 		return zenithMapping;
@@ -745,6 +760,9 @@ public class ExcelFactory {
 		this.zenithMapping = zenithMapping;
 	}
 
+	public void setPioneerLLCMapping(PioneerLLCMapping pioneerLLCMapping) {
+		this.pioneerLLCMapping = pioneerLLCMapping;
+	}
 
 
 }

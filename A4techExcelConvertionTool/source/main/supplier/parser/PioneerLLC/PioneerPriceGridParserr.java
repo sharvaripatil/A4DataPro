@@ -1,33 +1,40 @@
-package parser.WBTIndustries;
+package parser.PioneerLLC;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
 import com.a4tech.util.ApplicationConstants;
-import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
-public class WBTIndustriesPriceGridParser {
+public class PioneerPriceGridParserr {
 
 	private Logger              _LOGGER              = Logger.getLogger(getClass());
-	public List<PriceGrid> getBasePriceGrids(String listOfPrices,
+	public List<PriceGrid> getPriceGrids(String listOfPrices,String netPrices,
 		    String listOfQuan, String discountCodes,
 			String currency, String priceInclude, boolean isBasePrice,
 			String qurFlag, String priceName, String criterias,
-			List<PriceGrid> existingPriceGrid) {
-		_LOGGER.info("Enter Price Grid Parser class");
+			List<PriceGrid> existingPriceGrid) 
+			{
 		try{
+			if(CollectionUtils.isEmpty(existingPriceGrid)){
+				existingPriceGrid=new ArrayList<PriceGrid>();
+			}
+			String flag="Y";
 		Integer sequence = 1;
-	//	List<PriceConfiguration> configuration = null;
+		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
 		String[] prices = listOfPrices
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		String[] netPrice = netPrices
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] quantity = listOfQuan
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -36,21 +43,21 @@ public class WBTIndustriesPriceGridParser {
 		priceGrid.setDescription(priceName);
 		priceGrid.setPriceIncludes(priceInclude);
 		priceGrid
-				.setIsQUR(qurFlag.equalsIgnoreCase("False") ? ApplicationConstants.CONST_BOOLEAN_FALSE
+				.setIsQUR(qurFlag.equalsIgnoreCase(ApplicationConstants.CONST_STRING_FALSE) ? ApplicationConstants.CONST_BOOLEAN_FALSE
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(prices, quantity, discountCodes);
+			listOfPrice = getPrices(prices,netPrice, quantity, discountCodes,flag);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
 		priceGrid.setPrices(listOfPrice);
-//		if (criterias != null && !criterias.isEmpty()) {
-//			configuration = getConfigurations(criterias);
-//		}
-//		priceGrid.setPriceConfigurations(configuration);
+		if (criterias != null && !criterias.isEmpty()) {
+			configuration = getConfigurations(criterias);
+		}
+		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
@@ -59,14 +66,16 @@ public class WBTIndustriesPriceGridParser {
 
 	}
 
-	public List<Price> getPrices(String[] prices, String[] quantity, String discount) {
+	public List<Price> getPrices(String[] prices,String[] netPrice,  String[] quantity, String discount,String flag) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
-		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length
-				&& PriceNumber < quantity.length; PriceNumber++, sequenceNum++) {
+		try{
+		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length && PriceNumber < quantity.length;
+				       PriceNumber++, sequenceNum++) {//&& PriceNumber < discount.length();
 
 			Price price = new Price();
 			PriceUnit priceUnit = new PriceUnit();
+			String temp[]=discount.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			price.setSequence(sequenceNum);
 			try {
 				price.setQty(Integer.valueOf(quantity[PriceNumber]));
@@ -74,16 +83,23 @@ public class WBTIndustriesPriceGridParser {
 				price.setQty(ApplicationConstants.CONST_NUMBER_ZERO);
 			}
 			price.setPrice(prices[PriceNumber]);
-			price.setDiscountCode(discount);
+//			if(flag.equals("Y")){
+//			price.setNetCost(netPrice[PriceNumber]);
+//			}
+			price.setDiscountCode(temp[PriceNumber]);
 			priceUnit
 					.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
 			price.setPriceUnit(priceUnit);
-			listOfPrices.add(price);
+			listOfPrices.add(price); 
+		}
+		}
+		catch (Exception e) {
+			_LOGGER.error("Error while processing PriceGrid Prices: "+e.getMessage());
 		}
 		return listOfPrices;
 	}
 
-	public List<PriceConfiguration> getConfigurations(String criterias,String UpchargeName) {
+	public List<PriceConfiguration> getConfigurations(String criterias) {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
 		String[] config = null;
 		PriceConfiguration configs = null;
@@ -107,76 +123,72 @@ public class WBTIndustriesPriceGridParser {
 					}
 				} else {
 					configs = new PriceConfiguration();
-					config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
-					//String criteriaValue = LookupData.getCriteriaValue(config[0]);
 					configs.setCriteria(criteriaValue);
 					configs.setValue(Arrays.asList((Object) config[1]));
 					priceConfiguration.add(configs);
-					
 				}
 			}
 
 		} else {
-			if(UpchargeName.contains(",")){
-				String[] upchargeNames = CommonUtility.getValuesOfArray(UpchargeName, ",");
-				for (String upchargeNameVal : upchargeNames) {
-					configs = new PriceConfiguration();
-					configs.setCriteria(criterias);
-					configs.setValue(Arrays.asList((Object) upchargeNameVal));
-					priceConfiguration.add(configs);
-
-				}
-			} else {
-				configs = new PriceConfiguration();
-				configs.setCriteria(criterias);
-				configs.setValue(Arrays.asList((Object) UpchargeName));
-				priceConfiguration.add(configs);
-			}
-			
-			
+			configs = new PriceConfiguration();
+			config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
+			String criteriaValue = LookupData.getCriteriaValue(config[0]);
+			configs.setCriteria(config[0]);
+			configs.setValue(Arrays.asList((Object) config[1]));
+			priceConfiguration.add(configs);
 		}
 		}catch(Exception e){
-			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
+			_LOGGER.error("Error while processing PriceGrid PriceConfiguration: "+e.getMessage());
 		}
 		return priceConfiguration;
 	}
 
 	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
 			String discounts, String upChargeCriterias, String qurFlag,
-			String currency, String upChargeName, String upChargeType,
-			String upchargeUsageType, Integer upChargeSequence,String priceInclude,
+			String currency,String priceIncludeUp, String upChargeName, String upChargeType,
+			String upchargeUsageType,String upServicechrg, Integer upChargeSequence,
 			List<PriceGrid> existingPriceGrid) {
 		try{
+			if(CollectionUtils.isEmpty(existingPriceGrid)){
+				existingPriceGrid=new ArrayList<PriceGrid>();
+			}
+			String flag="N";
 		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
 		String[] upChargePrices = prices
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] upChargeQuantity = quantity
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		String upChargeDiscount = discounts;
+		String[] upChargeDiscount = discounts
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 
 		priceGrid.setCurrency(currency);
+		if(!StringUtils.isEmpty(priceIncludeUp)){
+			priceGrid.setPriceIncludes(priceIncludeUp);
+		}
+		else{
+			priceGrid.setPriceIncludes(ApplicationConstants.CONST_STRING_EMPTY);
+		}
+		
 		priceGrid.setDescription(upChargeName);
+		priceGrid.setServiceCharge(upServicechrg);
 		priceGrid
-				.setIsQUR((qurFlag.equalsIgnoreCase("Y")) ? ApplicationConstants.CONST_BOOLEAN_TRUE
+				.setIsQUR((qurFlag.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_Y)) ? ApplicationConstants.CONST_BOOLEAN_TRUE
 						: ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);
 		priceGrid.setUpchargeType(upChargeType);
-		priceGrid.setServiceCharge("Required");
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
-		priceGrid.setPriceIncludes(priceInclude);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			 listOfPrice =
-			 getPrices(upChargePrices,upChargeQuantity,upChargeDiscount);
+			listOfPrice = getPrices(upChargePrices,upChargePrices, upChargeQuantity, "R", flag);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
 
 		priceGrid.setPrices(listOfPrice);
 		if (upChargeCriterias != null && !upChargeCriterias.isEmpty()) {
-			configuration = getConfigurations(upChargeCriterias,upChargeName);
+			configuration = getConfigurations(upChargeCriterias);
 		}
 		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
@@ -185,5 +197,30 @@ public class WBTIndustriesPriceGridParser {
 		}
 		return existingPriceGrid;
 	}
+	
+	public List<PriceGrid> getPriceGridsQur( ) 
+	{
+		List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
+		try{
+			Integer sequence = 1;
+			//List<PriceConfiguration> configuration = null;
+			PriceGrid priceGrid = new PriceGrid();
+			priceGrid.setIsBasePrice(true);
+			priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
+			priceGrid.setDescription(ApplicationConstants.CONST_STRING_EMPTY);
+			priceGrid.setPriceIncludes(ApplicationConstants.CONST_STRING_EMPTY);
+			priceGrid.setSequence(sequence);
+			priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
+			List<Price>	listOfPrice = new ArrayList<Price>();
+			priceGrid.setPrices(listOfPrice);
+			//priceGrid.setPriceConfigurations(configuration);
+			newPriceGrid.add(priceGrid);
+	}catch(Exception e){
+		_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
+	}
+		_LOGGER.info("PriceGrid Processed");
+		return newPriceGrid;
+}
+
 
 }

@@ -61,8 +61,8 @@ public class PostServiceImpl implements PostService {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("AuthToken", authTokens);
 			headers.add("Content-Type", "application/json ; charset=utf-8");
-			_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(product));
+			/*_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(product));*/
 			HttpEntity<Product> requestEntity = new HttpEntity<Product>(
 					product, headers);
 			ResponseEntity<ExternalAPIResponse> response = restTemplate
