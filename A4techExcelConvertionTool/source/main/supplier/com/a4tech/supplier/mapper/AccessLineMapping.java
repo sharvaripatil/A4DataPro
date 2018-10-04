@@ -16,10 +16,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import parser.AccessLine.AccessLineAttributeParser;
+import parser.primeline.PrimeLineConstants;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.FOBPoint;
+import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.Price;
@@ -63,6 +65,9 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 		  ShippingEstimate	shippingEstObj=new ShippingEstimate();
 		  StringBuilder listOfPrices = new StringBuilder();
 		  StringBuilder listOfQuantity = new StringBuilder();
+		  StringBuilder listOfNetPrices = new StringBuilder();
+		  StringBuilder listOfDiscount = new StringBuilder();
+		  String basePricePriceInlcude="";
 		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -112,6 +117,16 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 										productName,null,1,priceGrids);
 							 }*/
 							 
+							 /*String listOfPrices,String netPrices,
+							    String listOfQuan, String discountCodes,
+								String currency, String priceInclude, boolean isBasePrice,
+								String qurFlag, String priceName, String criterias,
+								List<PriceGrid> existingPriceGrid*/
+								
+							 priceGrids = pioneerPriceGridParserr.getPriceGrids(listOfPrices.toString(),listOfNetPrices.toString(),listOfQuantity.toString(), 
+									 listOfDiscount.toString(),ApplicationConstants.CONST_STRING_CURRENCY_USD,
+									 basePricePriceInlcude,ApplicationConstants.CONST_BOOLEAN_TRUE, 
+										ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids);
 							 if(CollectionUtils.isEmpty(priceGrids)){
 									//priceGrids = AccessLineAttributeParser.getPriceGridsQur();	
 								}
@@ -185,6 +200,9 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					 if(!StringUtils.isEmpty(descripton)){
 						 descripton=CommonUtility.getStringLimitedChars(descripton, 800);
 						 descripton=CommonUtility.removeRestrictSymbols(descripton);
+						 descripton=descripton.replace("•", "");
+						 descripton=descripton.replace("\n", "");
+						 
 						 productExcelObj.setDescription(descripton);
 						
 						/* String nameTemp=productExcelObj.getName();
@@ -257,28 +275,109 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 				case 31://300
 					break;
 				case 32://300
+					String	netPrice1=null;
+					netPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
+					netPrice1=netPrice1.replaceAll(" ","");
+					netPrice1 = netPrice1.replaceAll("\\(.*\\)", "");
+					if(!StringUtils.isEmpty(netPrice1) ){
+						listOfNetPrices.append(netPrice1.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					}
 					break;
 				case 33://500
+					String	netPrice2=null;
+					netPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
+					netPrice2=netPrice2.replaceAll(" ","");
+					netPrice2 = netPrice2.replaceAll("\\(.*\\)", "");
+					if(!StringUtils.isEmpty(netPrice2) ){
+						listOfNetPrices.append(netPrice2.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					}
 					break;
 				case 34://1000
+					String	netPrice3=null;
+					netPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
+					netPrice3=netPrice3.replaceAll(" ","");
+					netPrice3 = netPrice3.replaceAll("\\(.*\\)", "");
+					if(!StringUtils.isEmpty(netPrice3) ){
+						listOfNetPrices.append(netPrice3.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					}
 					break;
 				case 35://2500
+					String	netPrice4=null;
+					netPrice4=CommonUtility.getCellValueStrinOrDecimal(cell);
+					netPrice4=netPrice4.replaceAll(" ","");
+					netPrice4 = netPrice4.replaceAll("\\(.*\\)", "");
+					if(!StringUtils.isEmpty(netPrice4) ){
+						listOfNetPrices.append(netPrice4.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					}
 					break;
 				case 36://5000
+					String	netPrice5=null;
+					netPrice5=CommonUtility.getCellValueStrinOrDecimal(cell);
+					netPrice5=netPrice5.replaceAll(" ","");
+					netPrice5 = netPrice5.replaceAll("\\(.*\\)", "");
+					if(!StringUtils.isEmpty(netPrice5) ){
+						listOfNetPrices.append(netPrice5.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+					}
 					break;
 				case 37://
 					break;
 				case 38://300
+					String	listPrice1=null;
+					listPrice1=CommonUtility.getCellValueStrinOrDecimal(cell);
+					listPrice1=listPrice1.replaceAll(" ","");
+					listPrice1 = listPrice1.replaceAll("\\(.*\\)", "");
+					if(!StringUtils.isEmpty(listPrice1)){
+						listOfPrices.append(listPrice1.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						 }
 					break;
 				case 39://500
+					String	listPrice2=null;
+					listPrice2=CommonUtility.getCellValueStrinOrDecimal(cell);
+					listPrice2=listPrice2.replaceAll(" ","");
+					listPrice2 = listPrice2.replaceAll("\\(.*\\)", "");
+					if(!StringUtils.isEmpty(listPrice2)){
+						listOfPrices.append(listPrice2.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						 }
 					break;
 				case 40://1000
+					String	listPrice3=null;
+					listPrice3=CommonUtility.getCellValueStrinOrDecimal(cell);
+					listPrice3=listPrice3.replaceAll(" ","");
+					listPrice3 = listPrice3.replaceAll("\\(.*\\)", "");
+					if(!StringUtils.isEmpty(listPrice3)){
+						listOfPrices.append(listPrice3.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						 }
 					break;
 				case 41://2500
+					String	listPrice4=null;
+					listPrice4=CommonUtility.getCellValueStrinOrDecimal(cell);
+					listPrice4=listPrice4.replaceAll(" ","");
+					listPrice4 = listPrice4.replaceAll("\\(.*\\)", "");
+					if(!StringUtils.isEmpty(listPrice4)){
+						listOfPrices.append(listPrice4.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						 }
 					break;
 				case 42://5000
+					String	listPrice5=null;
+					listPrice5=CommonUtility.getCellValueStrinOrDecimal(cell);
+					listPrice5=listPrice5.replaceAll(" ","");
+					listPrice5 = listPrice5.replaceAll("\\(.*\\)", "");
+					if(!StringUtils.isEmpty(listPrice5)){
+						listOfPrices.append(listPrice5.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						 }
 					break;
 				case 43://Code
+					
+					String	discountCode=null;
+					discountCode=CommonUtility.getCellValueStrinOrDecimal(cell);
+					if(!StringUtils.isEmpty(discountCode) && !discountCode.toUpperCase().equals("NULL")){
+						listOfDiscount=PrimeLineConstants.DISCOUNTCODE_MAP.get(discountCode.trim());
+						if(StringUtils.isEmpty(listOfDiscount)){
+							listOfDiscount.append("Z___Z___Z___Z___Z"); 
+						}
+						}else{
+							listOfDiscount.append("Z___Z___Z___Z___Z"); 
+			         }
 					break;
 				case 44://Set-Up Charge:
 					break;
@@ -316,8 +415,20 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					}
 					break;
 				case 47://Imprint Method
+					String impmtdValue=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(impmtdValue) && !impmtdValue.equals("0") && !impmtdValue.equals("n/a")){
+						 productConfigObj= AccessLineAttributeParser.getImprintMethod(impmtdValue,productConfigObj);
+						// productConfigObj.setImprintMethods(listOfImprintMethod);
+						productExcelObj.setProductConfigurations(productConfigObj);
+					    }
 					break;
 				case 48://Price Includes
+					basePricePriceInlcude=CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(basePricePriceInlcude)){
+						basePricePriceInlcude=basePricePriceInlcude.replace("Price includes","");
+					}else{
+						basePricePriceInlcude="";
+					}
 					break;
 				case 49://Rush Service
 					break;
@@ -332,6 +443,15 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 				case 54://PMS Matching
 					break;
 				case 55://Absolute Minimum
+					
+					String imprintMethodValueUpchrg=CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(imprintMethodValue)&& !StringUtils.isEmpty(imprintMethodValueUpchrg)){
+						if(!imprintMethodValue.equals("None")){
+						priceGrids = pioneerPriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,imprintMethodValueUpchrg, "R",
+								"Less than Minimum"+":"+"Can order less than minimum",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Can order less than minimum", 
+								"Less than Minimum Charge", ApplicationConstants.CONST_VALUE_TYPE_OTHER,"Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+						}
+						}
 					break;
 				case 56://Packaging
 					String packaging=cell.getStringCellValue();
