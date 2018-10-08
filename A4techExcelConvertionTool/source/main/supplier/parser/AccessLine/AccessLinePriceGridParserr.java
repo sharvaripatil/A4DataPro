@@ -17,8 +17,8 @@ import com.a4tech.util.LookupData;
 
 public class AccessLinePriceGridParserr {
 
-	private Logger              _LOGGER              = Logger.getLogger(getClass());
-	public List<PriceGrid> getPriceGrids(String listOfPrices,String netPrices,
+	private static Logger              _LOGGER              = Logger.getLogger(AccessLinePriceGridParserr.class);
+	public static List<PriceGrid> getPriceGrids(String listOfPrices,String netPrices,
 		    String listOfQuan, String discountCodes,
 			String currency, String priceInclude, boolean isBasePrice,
 			String qurFlag, String priceName, String criterias,
@@ -66,7 +66,7 @@ public class AccessLinePriceGridParserr {
 
 	}
 
-	public List<Price> getPrices(String[] prices,String[] netPrice,  String[] quantity, String discount,String flag) {
+	public static List<Price> getPrices(String[] prices,String[] netPrice,  String[] quantity, String discount,String flag) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
 		try{
@@ -99,7 +99,7 @@ public class AccessLinePriceGridParserr {
 		return listOfPrices;
 	}
 
-	public List<PriceConfiguration> getConfigurations(String criterias) {
+	public static List<PriceConfiguration> getConfigurations(String criterias) {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
 		String[] config = null;
 		PriceConfiguration configs = null;
@@ -143,7 +143,7 @@ public class AccessLinePriceGridParserr {
 		return priceConfiguration;
 	}
 
-	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
+	public static  List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
 			String discounts, String upChargeCriterias, String qurFlag,
 			String currency,String priceIncludeUp, String upChargeName, String upChargeType,
 			String upchargeUsageType,String upServicechrg, Integer upChargeSequence,

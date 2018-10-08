@@ -16,12 +16,15 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import parser.AccessLine.AccessLineAttributeParser;
+import parser.AccessLine.AccessLineConstants;
+import parser.AccessLine.AccessLinePriceGridParserr;
 import parser.primeline.PrimeLineConstants;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.Price;
@@ -30,6 +33,8 @@ import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
+import com.a4tech.product.model.RushTime;
+import com.a4tech.product.model.RushTimeValue;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
@@ -65,11 +70,12 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 		  ShippingEstimate	shippingEstObj=new ShippingEstimate();
 		  StringBuilder listOfPrices = new StringBuilder();
 		  StringBuilder listOfQuantity = new StringBuilder();
+		  
 		  StringBuilder listOfNetPrices = new StringBuilder();
 		  StringBuilder listOfDiscount = new StringBuilder();
 		  String basePricePriceInlcude="";
 		try{
-			 
+			 listOfQuantity.append("300").append("___").append("500").append("___").append("1000").append("___").append("2500").append("___").append("5000");
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 	    Sheet sheet = workbook.getSheetAt(1);
 		Iterator<Row> iterator = sheet.iterator();
@@ -123,7 +129,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 								String qurFlag, String priceName, String criterias,
 								List<PriceGrid> existingPriceGrid*/
 								
-							 priceGrids = pioneerPriceGridParserr.getPriceGrids(listOfPrices.toString(),listOfNetPrices.toString(),listOfQuantity.toString(), 
+							 priceGrids = AccessLinePriceGridParserr.getPriceGrids(listOfPrices.toString(),listOfNetPrices.toString(),listOfQuantity.toString(), 
 									 listOfDiscount.toString(),ApplicationConstants.CONST_STRING_CURRENCY_USD,
 									 basePricePriceInlcude,ApplicationConstants.CONST_BOOLEAN_TRUE, 
 										ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids);
@@ -281,6 +287,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					netPrice1 = netPrice1.replaceAll("\\(.*\\)", "");
 					if(!StringUtils.isEmpty(netPrice1) ){
 						listOfNetPrices.append(netPrice1.trim()).append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+						
 					}
 					break;
 				case 33://500
@@ -371,7 +378,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					String	discountCode=null;
 					discountCode=CommonUtility.getCellValueStrinOrDecimal(cell);
 					if(!StringUtils.isEmpty(discountCode) && !discountCode.toUpperCase().equals("NULL")){
-						listOfDiscount=PrimeLineConstants.DISCOUNTCODE_MAP.get(discountCode.trim());
+						listOfDiscount=AccessLineConstants.ACDISCOUNTCODE_MAP.get(discountCode.trim());
 						if(StringUtils.isEmpty(listOfDiscount)){
 							listOfDiscount.append("Z___Z___Z___Z___Z"); 
 						}
@@ -431,12 +438,77 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					}
 					break;
 				case 49://Rush Service
+					
+					String rushService=CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(rushService)){
+						if(rushService.contains(".")){
+						}else{
+							
+						}
+						rushService=rushService.substring(0,rushService.indexOf("."));
+							
+							String arr[]=rushService.split(";");
+							String rushVall=arr[0];
+							String rushChargeArr[]=arr[1].split("//");
+							String rushChargVal=rushChargeArr[0];
+							rushChargVal=rushChargVal.replace("Add", "");
+							rushChargVal=rushChargVal.trim();
+							String rushCode=rushChargeArr[1];
+							
+							
+							RushTime rushTimeObj=new RushTime();
+							List<RushTimeValue> rushTimeValues=new ArrayList<RushTimeValue>();
+							RushTimeValue rushTimeValue=new RushTimeValue();
+							rushTimeValue.setBusinessDays("2");
+							rushTimeValue.setDetails(ApplicationConstants.CONST_STRING_EMPTY);
+							rushTimeValues.add(rushTimeValue);
+							rushTimeObj.setAvailable(ApplicationConstants.CONST_BOOLEAN_TRUE);
+							rushTimeObj.setRushTimeValues(rushTimeValues);
+							productConfigObj.setRushTime(rushTimeObj);
+							
+							
+							/*String quantity, String prices,
+							String discounts, 
+							String upChargeCriterias, String qurFlag,
+							String currency,String priceIncludeUp, String upChargeName, String upChargeType,
+							String upchargeUsageType,String upServicechrg, Integer upChargeSequence,
+							List<PriceGrid> existingPriceGrid) {*/
+							
+						priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(
+								ApplicationConstants.CONST_STRING_VALUE_ONE,rushChargVal,rushCode,
+								"Rush Service"+":"+"2 business days",ApplicationConstants.CONST_CHAR_N,  
+								ApplicationConstants.CONST_STRING_CURRENCY_USD, "","2 business days", 
+								"Rush Service Charge", ApplicationConstants.CONST_VALUE_TYPE_OTHER,"Optional", 
+								ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+						
+						}
 					break;
 				case 50://Additional color/position
 					break;
 				case 51://Item Size
 					break;
 				case 52://Imprint Area
+					String imprintSize = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(imprintSize)){
+						imprintSize=imprintSize.toLowerCase();
+						
+						imprintSize=imprintSize.replace(" //", ",");
+						String impsizArr[]=imprintSize.split(",");
+						for (String imsizVal : impsizArr) {
+							imsizVal=imsizVal.replace("barrel", "");
+							imsizVal=imsizVal.replace("clip", "");
+							imsizVal=imsizVal.replace("behind", "");
+							imsizVal=imsizVal.replace("below", "");
+							imsizVal=imsizVal.replace("on", "");
+							imsizVal=imsizVal.trim();
+							ImprintSize imprintSizeObj = new ImprintSize();
+							List<ImprintSize> listImprintSize=new ArrayList<ImprintSize>();
+							imprintSizeObj.setValue(imprintSize);
+							listImprintSize.add(imprintSizeObj);
+							productConfigObj.setImprintSize(listImprintSize);
+						}
+					}
+					
 					break;
 				case 53://Paper / Email Proofs:
 					break;
@@ -444,10 +516,16 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					break;
 				case 55://Absolute Minimum
 					
-					String imprintMethodValueUpchrg=CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(imprintMethodValue)&& !StringUtils.isEmpty(imprintMethodValueUpchrg)){
-						if(!imprintMethodValue.equals("None")){
-						priceGrids = pioneerPriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,imprintMethodValueUpchrg, "R",
+					String absoluteminCharge=CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(absoluteminCharge)){
+						if(absoluteminCharge.contains("$")){
+							absoluteminCharge=absoluteminCharge.substring(absoluteminCharge.indexOf("$")+1, absoluteminCharge.length()-1);
+							
+							String arr[]=absoluteminCharge.split("//");
+							String abslCharge=arr[0];
+							String absCode=arr[1];
+							productExcelObj.setCanOrderLessThanMinimum(true);
+						priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,abslCharge,absCode,
 								"Less than Minimum"+":"+"Can order less than minimum",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Can order less than minimum", 
 								"Less than Minimum Charge", ApplicationConstants.CONST_VALUE_TYPE_OTHER,"Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
 						}
