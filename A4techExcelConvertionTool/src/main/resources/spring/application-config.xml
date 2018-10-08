@@ -436,8 +436,9 @@
 		<property name="douglasBridgeMapper" ref="douglasMappingId"/>
 		<property name="radiMapping" ref="radiMappingId"/>
 		<property name="wbtIndustriesMapper" ref="wbtIndustriesMappingId"/>
+		<property name="zenithMapping" ref="zenithMappingId"/>
 		<property name="bloominPromotion" ref="bloominPromotionsMappingId"/>
-				<property name="pioneerLLCMapping" ref="pioneerLLCMappingId"/>
+		<property name="pioneerLLCMapping" ref="pioneerLLCMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1347,6 +1348,26 @@
      </bean>
      <bean id="wbtIndustriespriceGridParserId" class="parser.WBTIndustries.WBTIndustriesPriceGridParser"/>
       <!-- WBT Industries configuration end-->
+      
+      <!-- ZenithExport configuration start-->
+      
+     <bean id="zenithMappingId" class="com.a4tech.supplier.mapper.ZenithExport">
+         <property name="postServiceImpl" ref="postService"/>
+     	 <property name="productDaoObj" ref="productDao"/>
+     	 <property name="zenithtAttributeParser" ref="zenithtAttributeParserId"/>
+     	 <property name="zenithPriceGridParser" ref="zenithPriceGridParserId"/>
+     	 
+      </bean>
+           
+        <bean id="zenithtAttributeParserId" class="parser.zenith.ZenithProductAttributeParser"/>
+      
+       <bean id="zenithPriceGridParserId" class="parser.zenith.ZenithPriceGridParser"/>
+      
+      
+      <!-- ZenithExport configuration end-->
+      
+     
+      
       
       <!-- Bloomin Promotions configuration start-->
      <bean id="bloominPromotionsMappingId" class="com.a4tech.supplier.mapper.BloominPromotionsMapper">
