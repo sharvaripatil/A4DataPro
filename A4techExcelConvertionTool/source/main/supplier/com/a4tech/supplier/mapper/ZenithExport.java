@@ -21,6 +21,7 @@ import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
@@ -196,9 +197,14 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 									productExcelObj = new Product();
 									
 									List<Image> Img = existingApiProduct.getImages();
+									if(!StringUtils.isEmpty(Img)){
+									 List<Configurations>confList=Img.get(0).getConfigurations();
+										if (!StringUtils.isEmpty(confList)){	
+											confList.remove(0);
+										}
+								}
 									productExcelObj.setImages(Img);
 									
-
 							    	 themeList=productConfigObj.getThemes();
 							    	 productConfigObj.setThemes(exstlist);
 							    	 
@@ -266,7 +272,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 					
 				case 61:// Price1
-					String Price1=cell.getStringCellValue();
+					String Price1=CommonUtility.getCellValueStrinOrDecimal(cell);
 					if (!StringUtils.isEmpty(Price1)){			
 			           	listOfPrices.append(Price1);
 
@@ -274,7 +280,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 					
 				case 62:// QtyBreak1
-					String Qty1=cell.getStringCellValue();
+					String Qty1=CommonUtility.getCellValueStrinOrInt(cell);
 					if (!StringUtils.isEmpty(Qty1)){			
 			        	listOfQuantity.append(Qty1);
 
@@ -282,7 +288,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 					
 				case 63:// Price2
-					String Price2=cell.getStringCellValue();
+					String Price2=CommonUtility.getCellValueStrinOrDecimal(cell);
 					if (!StringUtils.isEmpty(Price2)){			
 			           	listOfPrices.append(Price2);
 
@@ -290,7 +296,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 					
 				case 64:// QtyBreak2
-					String Qty2=cell.getStringCellValue();
+					String Qty2=CommonUtility.getCellValueStrinOrInt(cell);
 					if (!StringUtils.isEmpty(Qty2)){			
 			        	listOfQuantity.append(Qty2);
 
@@ -298,14 +304,14 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 					
 				case 65:// Price3
-					String Price3=cell.getStringCellValue();
+					String Price3=CommonUtility.getCellValueStrinOrDecimal(cell);
 					if (!StringUtils.isEmpty(Price3)){			
 			           	listOfPrices.append(Price3);						
 					}
 					break;
 					
 				case 66:// QtyBreak3
-					String Qty3=cell.getStringCellValue();
+					String Qty3=CommonUtility.getCellValueStrinOrInt(cell);
 					if (!StringUtils.isEmpty(Qty3)){			
 			        	listOfQuantity.append(Qty3);
 
@@ -381,7 +387,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					break;
 					
 				case 103:// Field_10
-					String packging=cell.getCellFormula();
+					String packging=cell.getStringCellValue();
 					if (!StringUtils.isEmpty(packging)) {
 						listOfPackaging=zenithtAttributeParser.getPackaging(packging);
 						productConfigObj.setPackaging(listOfPackaging);
@@ -396,7 +402,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 				case 105:// Field_12
 					String sizeCapacity=cell.getStringCellValue();
 					if (!StringUtils.isEmpty(sizeCapacity)) {
-					sizeObj=zenithtAttributeParser.getSize(sizeDimension,sizeCapacity);
+				//	sizeObj=zenithtAttributeParser.getSize(sizeDimension,sizeCapacity);
 					}
 					productConfigObj.setSizes(sizeObj);
 					break;
@@ -500,12 +506,12 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 			
 			 // end inner while loop
 			
-					productExcelObj.setPriceType("L");
+				productExcelObj.setPriceType("L");
 					
 	
 				priceGrids = zenithPriceGridParser.getPriceGrids(
 								listOfPrices.toString(),
-								listOfQuantity.toString(), "Z", "USD",
+								listOfQuantity.toString(), "R", "USD",
 								"", true, "false",
 								productName, "", priceGrids);
 					

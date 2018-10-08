@@ -39,20 +39,21 @@ public class ZenithProductAttributeParser {
 	}
 
 	
-	public Size getSize(String sizeDimension, String sizeCapacity) {
+	/*public Size getSize(String sizeDimension, String sizeCapacity) {
 		
 		Size sizeObj=new Size();
+		sizeDimension=sizeDimension.replaceAll("[^0-9.%/ ]","");
+		sizeCapacity=sizeCapacity.replace("oz", "");		
           
 		if(!StringUtils.isEmpty(sizeCapacity))
 		{
 			Capacity capacityObj=new Capacity();
-			sizeCapacity=sizeCapacity.replace("oz", "");		
-			
-		}
+			capacityObj.setValues(values);
+					}
 	
 		return sizeObj;
 	}
-	
+	*/
 	
 	
 	
