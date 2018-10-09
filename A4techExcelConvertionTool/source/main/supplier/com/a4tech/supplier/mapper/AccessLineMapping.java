@@ -22,6 +22,9 @@ import parser.primeline.PrimeLineConstants;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
+import com.a4tech.product.model.AdditionalColor;
+import com.a4tech.product.model.AdditionalLocation;
+import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
@@ -484,6 +487,105 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 						}
 					break;
 				case 50://Additional color/position
+					
+					String colorValue=CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(basePricePriceInlcude)){
+						
+						if(colorValue.toLowerCase().contains("second")){
+					List<AdditionalColor> additionalColorList = new ArrayList<>();
+					AdditionalColor additionalColorObj = new AdditionalColor();
+					additionalColorObj.setName("Second Color");
+					additionalColorList.add(additionalColorObj);
+					
+					String addClrArr[]=colorValue.split("+");
+					String addClrInVal=addClrArr[0];
+					addClrInVal=addClrInVal.toUpperCase();
+					addClrInVal=addClrInVal.replace("SECOND","");
+					addClrInVal=addClrInVal.replace("COLOR","");
+					addClrInVal=addClrInVal.replace("RUNNING","");
+					addClrInVal=addClrInVal.replace("CHARGE","");
+					addClrInVal=addClrInVal.replace(":","");
+					addClrInVal=addClrInVal.trim();
+					String tempArr[]=addClrInVal.split("//");
+					String addClrrunVal=tempArr[0];
+					String discAddclrrunVal=tempArr[1];
+					
+					String addClrInsetVal=addClrArr[1];
+					addClrInsetVal=addClrInsetVal.toUpperCase();
+					addClrInsetVal=addClrInsetVal.replace("SET","");
+					addClrInsetVal=addClrInsetVal.replace("UP","");
+					//addClrInsetVal=addClrInsetVal.replace("RUNNING","");
+					addClrInsetVal=addClrInsetVal.replace("CHARGE","");
+					//addClrInsetVal=addClrInsetVal.replace(":","");
+					addClrInsetVal=addClrInsetVal.trim();
+					String tempArr1[]=addClrInVal.split("//");
+					String addClrsetupVal=tempArr1[0];
+					String discAddclsetupVal=tempArr1[1];
+					
+					priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,addClrrunVal,discAddclrrunVal,
+							"Additional Colors"+":"+"Second color",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Second color", 
+							"Run Charge", "Per Quantity","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+				
+					priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,addClrsetupVal,discAddclsetupVal,
+							"Additional Colors"+":"+"Second color",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Second color", 
+							"Set-up Charge", "Per Order","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+				
+						}else{
+							String addClrArr[]=colorValue.split("+");
+							String addClrInVal=addClrArr[0];
+							addClrInVal=addClrInVal.toUpperCase();
+							addClrInVal=addClrInVal.replace("SECOND","");
+							addClrInVal=addClrInVal.replace("COLOR","");
+							addClrInVal=addClrInVal.replace("RUNNING","");
+							addClrInVal=addClrInVal.replace("CHARGE","");
+							addClrInVal=addClrInVal.replace(":","");
+							addClrInVal=addClrInVal.trim();
+							String tempArr[]=addClrInVal.split("//");
+							String addClrrunVal=tempArr[0];
+							String discAddclrrunVal=tempArr[1];
+							
+							String addClrInsetVal=addClrArr[1];
+							addClrInsetVal=addClrInsetVal.toUpperCase();
+							addClrInsetVal=addClrInsetVal.replace("SET","");
+							addClrInsetVal=addClrInsetVal.replace("UP","");
+							//addClrInsetVal=addClrInsetVal.replace("RUNNING","");
+							addClrInsetVal=addClrInsetVal.replace("CHARGE","");
+							//addClrInsetVal=addClrInsetVal.replace(":","");
+							addClrInsetVal=addClrInsetVal.trim();
+							String tempArr1[]=addClrInVal.split("//");
+							String addClrsetupVal=tempArr1[0];
+							String discAddclsetupVal=tempArr1[1];
+							
+								List<AdditionalLocation> listOfOpLoc=new ArrayList<AdditionalLocation>();
+								AdditionalLocation opLocation = new AdditionalLocation();
+								opLocation.setName("Additional Location");
+								listOfOpLoc.add(opLocation);
+								
+								List<AdditionalColor> additionalColorList = new ArrayList<>();
+								AdditionalColor additionalColorObj = new AdditionalColor();
+								additionalColorObj.setName("Additional Color");
+								additionalColorList.add(additionalColorObj);
+								
+								priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,addClrrunVal,discAddclrrunVal,
+										"Additional Colors"+":"+"Additional Color",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Additional Color", 
+										"Run Charge", "Per Quantity","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+							
+								priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,addClrrunVal,discAddclrrunVal,
+										"Additional Location"+":"+"Additional Location",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Additional Location", 
+										"Run Charge", "Per Quantity","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+							
+								priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,addClrsetupVal,discAddclsetupVal,
+										"Additional Colors"+":"+"Additional Color",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Additional Color", 
+										"Set-up Charge", "Per Order","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+					
+								
+								priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,addClrsetupVal,discAddclsetupVal,
+										"Additional Location"+":"+"Additional Location",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Additional Location", 
+										"Set-up Charge", "Per Order","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+					
+							
+						}
+					}
 					break;
 				case 51://Item Size
 					break;
@@ -511,6 +613,42 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					
 					break;
 				case 53://Paper / Email Proofs:
+					
+					//artwork and other upcharges.
+					//Paper Proof:15 (V)       Logo Set-up:82.50 (V) Copy set-up:32.50 (V)
+					String artWork= cell.getStringCellValue();
+					if(!StringUtils.isEmpty(artWork)){
+						try{
+					List<Artwork> artworkList=new ArrayList<Artwork>();
+					Artwork artObj1=new Artwork();
+					artObj1.setValue("PAPER PROOF");
+					artObj1.setComments("First Proof at no charge, extra proof incur an added charge");
+					artworkList.add(artObj1);
+					Artwork artObj2=new Artwork();
+					artObj2.setValue("VIRTUAL PROOF");
+					artObj2.setComments("First Proof at no charge, extra proof incur an added charge");
+					artworkList.add(artObj2);
+					productConfigObj.setArtwork(artworkList);
+					
+					
+					
+					/*String quantity, String prices,
+					String discounts, 
+					String upChargeCriterias, String qurFlag,
+					String currency,String priceIncludeUp, String upChargeName, String upChargeType,
+					String upchargeUsageType,String upServicechrg, Integer upChargeSequence,
+					List<PriceGrid> existingPriceGrid) {*/
+					
+				priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(
+						ApplicationConstants.CONST_STRING_VALUE_ONE,"6.0","V",
+						"Artwork & Proofs"+":"+"Virtual Proof"+"___"+"Artwork & Proofs"+":"+"Paper Proof",ApplicationConstants.CONST_CHAR_N,  
+						ApplicationConstants.CONST_STRING_CURRENCY_USD, "Per extra proof.","Paper Proof,Virtual Proof", 
+						"Proof Charge", "Per Order","Optional", 
+						ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+						}catch(Exception e){
+							_LOGGER.error("Error while processing artWork: "+e.getMessage());
+						}
+				}
 					break;
 				case 54://PMS Matching
 					break;

@@ -38,6 +38,8 @@ public class AccessLinePriceGridParserr {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] quantity = listOfQuan
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		String[] dicCodes = discountCodes
+				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(priceName);
@@ -49,7 +51,7 @@ public class AccessLinePriceGridParserr {
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(prices,netPrice, quantity, discountCodes,flag);
+			listOfPrice = getPrices(prices,netPrice, quantity, dicCodes,flag);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
@@ -66,7 +68,7 @@ public class AccessLinePriceGridParserr {
 
 	}
 
-	public static List<Price> getPrices(String[] prices,String[] netPrice,  String[] quantity, String discount,String flag) {
+	public static List<Price> getPrices(String[] prices,String[] netPrice,  String[] quantity, String discount[],String flag) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
 		try{
@@ -75,7 +77,7 @@ public class AccessLinePriceGridParserr {
 
 			Price price = new Price();
 			PriceUnit priceUnit = new PriceUnit();
-			String temp[]=discount.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+			///String temp[]=discount.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			price.setSequence(sequenceNum);
 			try {
 				price.setQty(Integer.valueOf(quantity[PriceNumber]));
@@ -86,7 +88,7 @@ public class AccessLinePriceGridParserr {
 //			if(flag.equals("Y")){
 //			price.setNetCost(netPrice[PriceNumber]);
 //			}
-			price.setDiscountCode(temp[PriceNumber]);
+			price.setDiscountCode(discount[PriceNumber]);
 			priceUnit
 					.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
 			price.setPriceUnit(priceUnit);
@@ -111,19 +113,19 @@ public class AccessLinePriceGridParserr {
 			for (String criteria : configuraions) {
 				PriceConfiguration configuraion = new PriceConfiguration();
 				config = criteria.split(ApplicationConstants.CONST_DELIMITER_COLON);
-				String criteriaValue = LookupData.getCriteriaValue(config[0]);
-				configuraion.setCriteria(criteriaValue);
+				//String criteriaValue = LookupData.getCriteriaValue(config[0]);
+				configuraion.setCriteria(config[0]);
 				if (config[1].contains(ApplicationConstants.CONST_STRING_COMMA_SEP)) {
 					String[] values = config[1].split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 					for (String Value : values) {
 						configs = new PriceConfiguration();
-						configs.setCriteria(criteriaValue);
+						configs.setCriteria(config[0]);
 						configs.setValue(Arrays.asList((Object) Value));
 						priceConfiguration.add(configs);
 					}
 				} else {
 					configs = new PriceConfiguration();
-					configs.setCriteria(criteriaValue);
+					configs.setCriteria(config[0]);
 					configs.setValue(Arrays.asList((Object) config[1]));
 					priceConfiguration.add(configs);
 				}
@@ -132,7 +134,7 @@ public class AccessLinePriceGridParserr {
 		} else {
 			configs = new PriceConfiguration();
 			config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
-			String criteriaValue = LookupData.getCriteriaValue(config[0]);
+			//String criteriaValue = LookupData.getCriteriaValue(config[0]);
 			configs.setCriteria(config[0]);
 			configs.setValue(Arrays.asList((Object) config[1]));
 			priceConfiguration.add(configs);
@@ -181,7 +183,7 @@ public class AccessLinePriceGridParserr {
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(upChargePrices,upChargePrices, upChargeQuantity, "R", flag);
+			listOfPrice = getPrices(upChargePrices,upChargePrices, upChargeQuantity, upChargeDiscount, flag);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
