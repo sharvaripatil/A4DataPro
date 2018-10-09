@@ -503,7 +503,8 @@ public class GoldbondAttributeParser {
 			productionTimeObj.setBusinessDays("3");
 			 productionTimeObj.setDetails("standard");
 		} else if(value.equalsIgnoreCase("1-Color: 5-7 Days; 4-Color: 10 Days") || 
-				value.equalsIgnoreCase("1-Color: 5-7 busienss days; 4-Color: 10 business days")){
+				value.equalsIgnoreCase("1-Color: 5-7 busienss days; 4-Color: 10 business days") ||
+				value.equalsIgnoreCase("1-Color: 7-10 business days; 4-Color: 10 business days")){
 			/*productionTimeObj.setBusinessDays("5-7");
 			 productionTimeObj.setDetails("1-Color: 5-7 Days");
 			 listOfProductionTime.add(productionTimeObj);*/
@@ -544,6 +545,11 @@ public class GoldbondAttributeParser {
 			 productionTimeObj.setDetails(value);
 		} else if(value.contains("Embroidered bags ship 10-14 business days after art approval")){
 			productionTimeObj.setBusinessDays("10-14");
+			value = value.replaceAll("business days", "");
+			value = value.replaceAll("  ", " ");
+			 productionTimeObj.setDetails(value);
+		} else if(value.contains("Embroidered bags ship 14-21 business days after art approval")) {
+			productionTimeObj.setBusinessDays("14-21");
 			value = value.replaceAll("business days", "");
 			value = value.replaceAll("  ", " ");
 			 productionTimeObj.setDetails(value);
@@ -1046,6 +1052,9 @@ public class GoldbondAttributeParser {
 				}
 				if(imprMethodVal.contains(";")){
 					imprMethodVal = imprMethodVal.replaceAll(";", ",");
+				}
+				if(imprMethodVal.contains("|")){
+					imprMethodVal = imprMethodVal.replaceAll("\\|", ",");
 				}
 				String[] imprMetodVals = CommonUtility.getValuesOfArray(imprMethodVal, ",");
 				String imprintMethodType = "";

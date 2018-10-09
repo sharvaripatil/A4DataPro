@@ -111,7 +111,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 								 List<Color> listOfColor = gbAttributeParser.getProductColors(listOfColors.toString());
 								    productConfiguration.setColors(listOfColor); 
 							 }
-						        productExcelObj.setComplianceCerts(Arrays.asList("PROP 65"));
+						       // productExcelObj.setComplianceCerts(Arrays.asList("PROP 65"));
 									if (!StringUtils.isEmpty(setUpChargeColumnVal)
 											&& !setUpChargeColumnVal.equals("N/A")
 											&& !setUpChargeColumnVal.contains("Free")
@@ -676,7 +676,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 					// there is no data
 				    break;
 				case 159://Materials
-					String material = cell.getStringCellValue();
+					String material = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(material)){
 						productExcelObj.setProductConfigurations(productConfiguration);
 						productExcelObj = gbAttributeParser.getProductMaterial(material, productExcelObj);
