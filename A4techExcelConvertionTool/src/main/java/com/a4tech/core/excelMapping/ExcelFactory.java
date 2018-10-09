@@ -67,6 +67,7 @@ import com.a4tech.supplier.mapper.TowelSpecialtiesMapping;
 import com.a4tech.supplier.mapper.TwintechMapping;
 import com.a4tech.supplier.mapper.WBTIndustriesMapper;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
+import com.a4tech.supplier.mapper.ZenithExport;
 
 public class ExcelFactory {
 	private AdspecProductsExcelMapping 		adspecMapping;
@@ -132,9 +133,11 @@ public class ExcelFactory {
     private DouglasBridgeMapper             douglasBridgeMapper;
 	private RadiousMapping                  radiMapping;	
     private WBTIndustriesMapper	            wbtIndustriesMapper;
+    private ZenithExport                    zenithMapping;
     private BloominPromotionsMapper         bloominPromotion;
      private PioneerLLCMapping 				pioneerLLCMapping;
-		public  IExcelParser getExcelParserObject(String name){
+
+     public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -264,6 +267,8 @@ public class ExcelFactory {
 			  return douglasBridgeMapper;
 		  } else if(name.equals("96640")){
 			  return wbtIndustriesMapper;
+		  }else if(name.equals("79840")){
+			  return zenithMapping;
 		  } else if(name.equals("40646")){
 			  return bloominPromotion;
 		  } else if(name.equals("76771")){
@@ -745,6 +750,14 @@ public class ExcelFactory {
 	}
 	public PioneerLLCMapping getPioneerLLCMapping() {
 		return pioneerLLCMapping;
+	}
+
+	public ZenithExport getZenithMapping() {
+		return zenithMapping;
+	}
+
+	public void setZenithMapping(ZenithExport zenithMapping) {
+		this.zenithMapping = zenithMapping;
 	}
 
 	public void setPioneerLLCMapping(PioneerLLCMapping pioneerLLCMapping) {
