@@ -132,14 +132,24 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 								String qurFlag, String priceName, String criterias,
 								List<PriceGrid> existingPriceGrid*/
 								
-							 priceGrids = AccessLinePriceGridParserr.getPriceGrids(listOfPrices.toString(),listOfNetPrices.toString(),listOfQuantity.toString(), 
+							 if( !StringUtils.isEmpty(listOfPrices.toString())){
+							 priceGrids = AccessLinePriceGridParserr.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), 
 									 listOfDiscount.toString(),ApplicationConstants.CONST_STRING_CURRENCY_USD,
 									 basePricePriceInlcude,ApplicationConstants.CONST_BOOLEAN_TRUE, 
-										ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids);
+										ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids,"Y");
+							 productExcelObj.setPriceType("L");
+							 }else if( !StringUtils.isEmpty(listOfNetPrices.toString())){
+								 priceGrids = AccessLinePriceGridParserr.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), 
+										 listOfDiscount.toString(),ApplicationConstants.CONST_STRING_CURRENCY_USD,
+										 basePricePriceInlcude,ApplicationConstants.CONST_BOOLEAN_TRUE, 
+											ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids,"N");
+								 productExcelObj.setPriceType("N");
+							 }
+							 
 							 if(CollectionUtils.isEmpty(priceGrids)){
-									//priceGrids = AccessLineAttributeParser.getPriceGridsQur();	
+									priceGrids = AccessLinePriceGridParserr.getPriceGridsQur();	
 								}
-							 	productExcelObj.setPriceType("L");
+							 	
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 /*_LOGGER.info("Product Data : "

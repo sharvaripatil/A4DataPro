@@ -18,24 +18,24 @@ import com.a4tech.util.LookupData;
 public class AccessLinePriceGridParserr {
 
 	private static Logger              _LOGGER              = Logger.getLogger(AccessLinePriceGridParserr.class);
-	public static List<PriceGrid> getPriceGrids(String listOfPrices,String netPrices,
+	public static List<PriceGrid> getPriceGrids(String listOfPrices,
 		    String listOfQuan, String discountCodes,
 			String currency, String priceInclude, boolean isBasePrice,
 			String qurFlag, String priceName, String criterias,
-			List<PriceGrid> existingPriceGrid) 
+			List<PriceGrid> existingPriceGrid,String flag) 
 			{
 		try{
 			if(CollectionUtils.isEmpty(existingPriceGrid)){
 				existingPriceGrid=new ArrayList<PriceGrid>();
 			}
-			String flag="Y";
+			
 		Integer sequence = 1;
 		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
 		String[] prices = listOfPrices
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		String[] netPrice = netPrices
-				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
+		//String[] netPrice = netPrices
+			//	.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] quantity = listOfQuan
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] dicCodes = discountCodes
@@ -51,7 +51,7 @@ public class AccessLinePriceGridParserr {
 		priceGrid.setSequence(sequence);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(prices,netPrice, quantity, dicCodes,flag);
+			listOfPrice = getPrices(prices, quantity, dicCodes,flag);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
@@ -68,7 +68,7 @@ public class AccessLinePriceGridParserr {
 
 	}
 
-	public static List<Price> getPrices(String[] prices,String[] netPrice,  String[] quantity, String discount[],String flag) {
+	public static List<Price> getPrices(String[] prices,  String[] quantity, String discount[],String flag) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
 		try{
@@ -84,10 +84,12 @@ public class AccessLinePriceGridParserr {
 			} catch (NumberFormatException nfe) {
 				price.setQty(ApplicationConstants.CONST_NUMBER_ZERO);
 			}
-			price.setPrice(prices[PriceNumber]);
-//			if(flag.equals("Y")){
-//			price.setNetCost(netPrice[PriceNumber]);
-//			}
+			
+			if(flag.equals("Y")){
+			price.setNetCost(prices[PriceNumber]);
+		   }else{
+			   price.setPrice(prices[PriceNumber]);
+		   }
 			price.setDiscountCode(discount[PriceNumber]);
 			priceUnit
 					.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
@@ -183,7 +185,7 @@ public class AccessLinePriceGridParserr {
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(upChargePrices,upChargePrices, upChargeQuantity, upChargeDiscount, flag);
+			listOfPrice = getPrices(upChargePrices, upChargeQuantity, upChargeDiscount, flag);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}
@@ -200,7 +202,7 @@ public class AccessLinePriceGridParserr {
 		return existingPriceGrid;
 	}
 	
-	public List<PriceGrid> getPriceGridsQur( ) 
+	public static List<PriceGrid> getPriceGridsQur( ) 
 	{
 		List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
 		try{
