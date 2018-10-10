@@ -856,7 +856,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 		 }
 		 String desc = finalDescriptionValue(productDescription.toString(),asiPrdNo);
 		 productExcelObj.setDescription(desc);
-		 productExcelObj.setComplianceCerts(Arrays.asList("PROP 65"));
+		 //productExcelObj.setComplianceCerts(Arrays.asList("PROP 65"));
 		 if (!StringUtils.isEmpty(setUpChargeColumnVal)
 					&& !setUpChargeColumnVal.equals("N/A")
 					&& !setUpChargeColumnVal.contains("Free")
