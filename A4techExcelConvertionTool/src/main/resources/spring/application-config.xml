@@ -439,6 +439,9 @@
 		<property name="zenithMapping" ref="zenithMappingId"/>
 		<property name="bloominPromotion" ref="bloominPromotionsMappingId"/>
 		<property name="pioneerLLCMapping" ref="pioneerLLCMappingId"/>
+		<property name="zenithImprintMapping" ref="zenithImprintMappingId"/>
+		
+		
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1396,5 +1399,17 @@
 	</bean>
 	<bean id="pioneerPriceGridParserrId" name="pioneerPriceGridParserrObj" class="parser.PioneerLLC.PioneerPriceGridParserr" autowire="byName"/>
      <!--supplier 76771 pioneerLLC configuration end  -->
+     
+       <!-- ZenithimrpintExport configuration start-->
+     
+        <bean id="zenithImprintMappingId" class="com.a4tech.supplier.mapper.ZenithimprintExport">
+     
+     
+     
+     </bean>
+     
+       <!-- ZenithimrpintExport configuration end-->
+     
+     
 </beans>
 
