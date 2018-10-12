@@ -323,7 +323,8 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				    if(productDescription.contains(productNo.trim())){
 				    	productDescription = productDescription.replaceAll(productNo, "");
 				    }
-					productExcelObj.setDescription(productDescription.trim());
+							productExcelObj.setDescription(
+									CommonUtility.getStringLimitedChars(productDescription.trim(), 800));
 					 
 					break;
 					

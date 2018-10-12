@@ -124,6 +124,11 @@ public class CommonUtility {
 		value = cell.getStringCellValue();
 		}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
 			value = String.valueOf(BigDecimal.valueOf(cell.getNumericCellValue()));
+			if(value.contains("+")){
+				BigDecimal bd = new BigDecimal(value.toString());
+				long lonVal = bd.longValue();
+				value = String.valueOf(lonVal);
+		       }
 		}
 	}catch(Exception e){
 		_LOGGER.error("Cell value convert into String/decimal: "+e.getMessage());

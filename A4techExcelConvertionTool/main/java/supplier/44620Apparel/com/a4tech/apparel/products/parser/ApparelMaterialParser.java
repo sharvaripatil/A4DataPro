@@ -1,9 +1,11 @@
 package com.a4tech.apparel.products.parser;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.lookup.service.LookupServiceData;
@@ -34,30 +36,38 @@ public class ApparelMaterialParser {
 		List<String> listOfLookupMaterial = getMaterialType(originalMaterialvalue.toUpperCase());
 		if(!listOfLookupMaterial.isEmpty()){
 			int numOfMaterials = listOfLookupMaterial.size();
-			  if(numOfMaterials == ApplicationConstants.CONST_INT_VALUE_ONE){ // this condition used to single material value(E.X 100% smooth knit polyester)
-				  materialObj = getMaterialValue(listOfLookupMaterial.toString(), originalMaterialvalue);
-				  listOfMaterial.add(materialObj);
-			  }else if(numOfMaterials == ApplicationConstants.CONST_INT_VALUE_TWO){
-				   materialObj = getMaterialValue(listOfLookupMaterial.toString(), originalMaterialvalue, // this condition used to two material value(E.X 100% polyester fleece, 300gsm or 8.85 oz./yd2 )
-						                                  ApplicationConstants.CONST_STRING_COMBO_TEXT);
-				   listOfMaterial.add(materialObj);
-			  }else if(isBlendMaterial(originalMaterialvalue)){  // this condition for blend material
+			if(!originalMaterialvalue.contains("/yd") && isBlendMaterial(originalMaterialvalue)){   // this condition for blend material
 				 String[] values = CommonUtility.getValuesOfArray(originalMaterialvalue,ApplicationConstants.CONST_DELIMITER_FSLASH);
 		    	 BlendMaterial blentMaterialObj = null;
 		    	 List<BlendMaterial> listOfBlendMaterial = new ArrayList<>();
 				     if(values.length == ApplicationConstants.CONST_INT_VALUE_TWO){
 				    	 for (String materialValue : values) {
 				    		 blentMaterialObj = new BlendMaterial();
-				    		 String mtrlType = getMaterialType(materialValue.toUpperCase()).toString();
+				    		 if(materialValue.contains("blend")){
+				    			 materialValue = materialValue.replaceAll("blend", "");
+				    			}
+				    		 if(materialValue.contains("Blend")){
+				    			 materialValue = materialValue.replaceAll("Blend", "");
+				    			}
+				    		 List<String> matlTypeList = getMaterialType(materialValue.toUpperCase());
+				    		 String mtrlType = "";
+				    		 if(!CollectionUtils.isEmpty(matlTypeList)){
+				    			 mtrlType = matlTypeList.get(0);
+				    		 }  else {
+				    			 mtrlType = "Other Fabric";  
+				    		 }
 				    		 if(materialValue.contains(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)){
 								  String percentage = materialValue.split(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)[0];
+								  percentage = percentage.replaceAll("[^0-9]", "");
 								  blentMaterialObj.setName(mtrlType);
-								  blentMaterialObj.setPercentage(percentage);
+								  blentMaterialObj.setPercentage(percentage.trim());
 								  listOfBlendMaterial.add(blentMaterialObj);
 							  }
-				    		 materialObj.setBlendMaterials(listOfBlendMaterial);
-				    		 listOfMaterial.add(materialObj);
 				    	 }
+				    	 materialObj.setName("Blend");
+				    	 materialObj.setAlias(originalMaterialvalue);
+				    	 materialObj.setBlendMaterials(listOfBlendMaterial);
+			    		 listOfMaterial.add(materialObj);
 				     }else{ // this condition for combo and blend values
 				    	 Combo comboObj = new Combo();
 				    	 for (String materialValue : values) {
@@ -70,7 +80,7 @@ public class ApparelMaterialParser {
 								  }else{
 									blentMaterialObj.setName(ApplicationConstants.CONST_STRING_OTHER_FABRIC);  
 								  }
-								  blentMaterialObj.setPercentage(percentage);
+								  blentMaterialObj.setPercentage(percentage.trim());
 								  listOfBlendMaterial.add(blentMaterialObj);
 							  }else{
 								  materialObj.setName(mtrlType);
@@ -82,6 +92,13 @@ public class ApparelMaterialParser {
 				    	 materialObj.setCombo(comboObj);
 				    	 listOfMaterial.add(materialObj);
 				     }	        
+			  } else if(numOfMaterials == ApplicationConstants.CONST_INT_VALUE_ONE){ // this condition used to single material value(E.X 100% smooth knit polyester)
+				  materialObj = getMaterialValue(listOfLookupMaterial.toString(), originalMaterialvalue);
+				  listOfMaterial.add(materialObj);
+			  }else if(numOfMaterials == ApplicationConstants.CONST_INT_VALUE_TWO){
+				   materialObj = getMaterialValue(listOfLookupMaterial.toString(), originalMaterialvalue, // this condition used to two material value(E.X 100% polyester fleece, 300gsm or 8.85 oz./yd2 )
+						                                  ApplicationConstants.CONST_STRING_COMBO_TEXT);
+				   listOfMaterial.add(materialObj);
 			  }
 		}else{ // used for Material is not available in lookup, then it goes in Others
 			materialObj = getMaterialValue(ApplicationConstants.CONST_VALUE_TYPE_OTHER, originalMaterialvalue);
@@ -97,6 +114,7 @@ public class ApparelMaterialParser {
 	 * @return List             
 	 */
 	public List<String> getMaterialType(String value){
+		
 		List<String> listOfLookupMaterials = lookupServiceData.getMaterialValues();
 		List<String> finalMaterialValues = listOfLookupMaterials.stream()
 				                                  .filter(mtrlName -> value.contains(mtrlName))
@@ -158,14 +176,18 @@ public class ApparelMaterialParser {
 	 * @return boolean
 	 */
 	public boolean isBlendMaterial(String data){
+		boolean isBlend = false;
 		if(data.contains(ApplicationConstants.CONST_DELIMITER_FSLASH) && 
 				              data.contains(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)){
-			return true;
+			isBlend = true;
 		}else if(data.split(ApplicationConstants.CONST_DELIMITER_FSLASH).length == 
 				                    ApplicationConstants.CONST_INT_VALUE_THREE){
-			return true;
+			isBlend = true;
 		}
-		return false;
+		if(isBlend){
+			
+		}
+		return isBlend;
 	}
 	public LookupServiceData getLookupServiceData() {
 		return lookupServiceData;

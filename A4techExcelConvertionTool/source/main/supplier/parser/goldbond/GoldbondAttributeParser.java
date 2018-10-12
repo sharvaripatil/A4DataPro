@@ -1256,7 +1256,8 @@ public class GoldbondAttributeParser {
     		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "60.00", "G", "Imprint Method", false,
 					"USD","", "Direct Imprint", "Set-up Charge", "Other", 1, priceGrid,"","");
     	} else if(val.equalsIgnoreCase("<b>One Color or Faux Etching (two-sided standard):</b> $50.00 (G)<br><b>Multi-Color (one-sided):</b> $50.00 (G) per color<br><b>Laser (one-sided standard):</b> $50.00 (G) per location")
-    			|| val.equalsIgnoreCase("<b>One Color or Faux Etching (two-sided standard):</b> $50.00 (G)<br><b>Laser (one-sided standard):</b> $50.00 (G) per location")){
+    			|| val.equalsIgnoreCase("<b>One Color or Faux Etching (two-sided standard):</b> $50.00 (G)<br><b>Laser (one-sided standard):</b> $50.00 (G) per location")
+    			|| val.equalsIgnoreCase("<b>Set-Up Charge:</b> One Color (two-sided standard): $50.00 (G)<br><b>Laser (one-sided standard):</b> $50.00 (G) per location")){
     		//<b>One Color or Faux Etching (two-sided standard):</b> $50.00 (G)<br><b>Multi-Color (one-sided):
     		//</b> $50.00 (G) per color<br><b>Laser (one-sided standard):</b> $50.00 (G) per location
     		String imprintMethodVals = imprintMethods.stream().map(ImprintMethod::getAlias).collect(Collectors.joining(","));
