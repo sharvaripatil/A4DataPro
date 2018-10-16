@@ -66,6 +66,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 		List<FOBPoint> listOfFob= new ArrayList<>();
 		List<Color> listOfColor= new ArrayList<>();
 		List<Material> listOfMaterial= new ArrayList<>();
+		List<a> listOfAddColor= new ArrayList<>();
 
 
 		Product productExcelObj = new Product();
@@ -242,9 +243,11 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 					
 				case 8:// max colors
 					String addColor=cell.getStringCellValue();
-					if (!StringUtils.isEmpty(addColor)){			
-                        
-				//		productConfigObj.setAdditionalColors();
+					if (!StringUtils.isEmpty(addColor)){
+						
+						
+						
+         	productConfigObj.setAdditionalColors();
 					}
 					break;
 					
