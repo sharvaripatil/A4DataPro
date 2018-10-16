@@ -4,6 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -19,6 +22,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.jdbc.Work;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.core.errors.ErrorMessage;
@@ -31,6 +35,7 @@ import com.a4tech.product.dao.entity.FtpServerFileEntity;
 import com.a4tech.product.dao.entity.ProductEntity;
 import com.a4tech.product.dao.entity.ProductionSupplierLoginDetails;
 import com.a4tech.product.dao.entity.SupplierColumnsEntity;
+import com.a4tech.product.dao.entity.SupplierDetailsBean;
 import com.a4tech.product.dao.entity.SupplierLoginDetails;
 import com.a4tech.product.service.IProductDao;
 import com.a4tech.util.ApplicationConstants;
@@ -305,7 +310,7 @@ public class ProductDao implements IProductDao{
 		  return null;
 	}
 	@Override
-	public BaseSupplierLoginDetails getSupplierLoginDetailsBase(String asiNumber,String type){
+	/*public BaseSupplierLoginDetails getSupplierLoginDetailsBase(String asiNumber,String type){
 		  Session session = null;
 		 // Transaction transaction = null;
 		  try{
@@ -335,6 +340,87 @@ public class ProductDao implements IProductDao{
 			  }
 		  }
 		  return null;
+	}*/
+	public SupplierDetailsBean getSupplierLoginDetailsBase(String asiNumber,String type){
+		  Session session = null;
+		  String details="";
+		 // Transaction transaction = null;
+		  SupplierDetailsBean supp=new SupplierDetailsBean();
+		  try{
+			  session = sessionFactory.openSession();
+			//  transaction = session.beginTransaction();
+			  BaseSupplierLoginDetails data = null ;
+			  if(type.equals("Sand")){
+				  /*Criteria criteria = session.createCriteria(SupplierLoginDetails.class);
+		            criteria.add(Restrictions.eq("asiNumber", asiNumber));
+		             data =  (SupplierLoginDetails) criteria.setMaxResults(1).uniqueResult();  */
+				  
+				  try{
+						/*	Transaction tx  = null;
+						Class.forName("com.mysql.jdbc.Driver");
+						Connection con=(Connection) DriverManager.getConnection(  
+						"jdbc:mysql://localhost:3306/shipdetail","root","root");  */
+							//tx =  session.beginTransaction();
+						
+							 session = sessionFactory.openSession();
+							 session.doWork(
+									 new Work() {
+									 @Override
+									public void execute(java.sql.Connection connection)
+											throws SQLException {
+										 /*String query = "select material, sum(materialqt) as TotalMaterialTonnes from shipdetail.material group by material;";
+									      Statement st =  connection.createStatement();
+									      ResultSet rs = st.executeQuery(query);
+									      */
+										 String query = "select * from supplier_login_details where ASI_NUMBER ='"+asiNumber+"';";
+										 PreparedStatement stmt=connection.prepareStatement(query);  
+										 ResultSet rs=stmt.executeQuery();
+										 //SupplierDetailsBean supp=new SupplierDetailsBean();
+									      while (rs.next())
+									      {
+									    	  //matobj=new Material();
+									    	  supp.setAsiNumber(rs.getString(2));
+									    	  supp.setUserName(rs.getString(3));
+									    	  supp.setPassword(rs.getString(4));
+									    	  //int wt=rs.getInt("vehicletype");
+									    	  
+									      }
+									      rs.close();
+									      stmt.close();
+										
+									}
+									 }
+									 );
+							 session.clear();
+						        
+				  }finally{
+			    		if(session !=null){
+			    			try{
+			    				session.close();
+			    			}catch(Exception ex){
+			    				//System.out.println(ex.getMessage());
+			    			}	
+			    		}
+			    	}
+			  } else {
+				  /*Criteria criteria = session.createCriteria(ProductionSupplierLoginDetails.class);
+		            criteria.add(Restrictions.eq("asiNumber", asiNumber));
+		             data =  (ProductionSupplierLoginDetails) criteria.setMaxResults(1).uniqueResult();*/
+			  }
+			  
+	            return supp;
+		  }catch(Exception exce){
+			  _LOGGER.error("unable to fetch supplier login details::"+exce.getCause());
+		  }finally{
+			  if(session != null){
+				  try{
+					  session.close();
+				  }catch(Exception exce){
+					  _LOGGER.error("unable to close session connection: "+exce.getCause());
+				  }
+			  }
+		  }
+		  return supp;
 	}
 	@Override
 	public void saveSupplierCridentials(FtpLoginBean ftpLoginBean){

@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.a4tech.core.excelMapping.ExcelFactory;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.entity.BaseSupplierLoginDetails;
+import com.a4tech.product.dao.entity.SupplierDetailsBean;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.service.ILoginService;
 import com.a4tech.product.service.IMailService;
@@ -111,14 +112,14 @@ public class FilesParsing {
 	}
 	
 	public String getAccessToken(String asiNumber,String environmentType){
-		BaseSupplierLoginDetails loginDetails = productDao.getSupplierLoginDetailsBase(asiNumber,environmentType);
-		   if(loginDetails != null){
-			   String accessToken = loginService.doLogin(loginDetails.getAsiNumber(),
-						loginDetails.getUserName(), loginDetails.getPassword(), environmentType);
+		SupplierDetailsBean detailsloginDetails = productDao.getSupplierLoginDetailsBase(asiNumber,environmentType);
+		  // if(loginDetails != null){
+			   String accessToken = loginService.doLogin(detailsloginDetails.getAsiNumber(),
+					   detailsloginDetails.getUserName(), detailsloginDetails.getPassword(), environmentType);
 			   return accessToken;
-		   } else {
+		  /* } else {
 			   return null;
-		   }
+		   }*/
 	}
     private String getAsiNumberFile(String fileName){//Sand_123_fileName
     	String[] names = fileName.split(ApplicationConstants.CONST_DELIMITER_UNDER_SCORE);
