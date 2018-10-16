@@ -85,8 +85,30 @@ private Logger _LOGGER = Logger.getLogger(FtpServiceImpl.class);
 	         output = new FileOutputStream("D:\\A4 ESPUpdate\\FtpFiles" + "/" + ftpFile.getName());
 	         //get the file from the remote system
 	         ftpClient.retrieveFile(ftpFile.getName(), output);   
+	         ////delete code
+	         String path="\\"+ftpFile.getName();
+	         System.out.println(path);
+	         boolean deleted = ftpClient.deleteFile(path);
+	         if (deleted) {
+	             System.out.println("The file was deleted successfully.");
+	         } else {
+	             System.out.println("Could not delete the  file, it may not exist.");
+	         }
+	         
+	         ///delete code
 		}
 		//listDirectory(fClient, "/", "", 0);
+		
+		////delete code
+		/*for(File file:  ftpClient. dir.listFiles()) 
+		    if (!file.isDirectory()) 
+		        file.delete();*/
+		
+		 //String fileToDelete = "/repository/video/cool.mp4";
+		 
+        
+		
+		//////
 		ftpServerDisconnect();
 		File[] listOfFiles = getAllFiles();
 		_LOGGER.info("Ftp files Count::"+listOfFiles.length);

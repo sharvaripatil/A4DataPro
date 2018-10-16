@@ -191,7 +191,7 @@ public class MailServiceImpl implements IMailService{
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false);
 		      helper.setFrom(senderMailName);
 		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
-		    		  "amey.more@a4technology.com"};
+		    		  "amey.more@a4technology.com","azam.rizvi@a4technology.com"};
 			helper.setTo(toAddress); 
 		    helper.setSubject(subject);
 		      if(StringUtils.isEmpty(fileNames)){

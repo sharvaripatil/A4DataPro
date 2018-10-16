@@ -93,12 +93,20 @@ public class FilesParsing {
 				 processFileStatusMail(asiNumber, "ProcessEnd", batchId);
 			 }	
 			_LOGGER.info(fileName +":"+ "file parsing completed");
+		
+			/// code to delete file
+			file.delete();
+			//
            }catch (Exception exce) {
 			_LOGGER.error("Unable to process supplier file: "+fileName);
 			mailService.fileProcessFail(fileName);
 		}
 	 }// end for llop
-		
+		try{
+			FileUtils.cleanDirectory(); 
+		}catch(Exception e){
+			
+		}
 	}
 
 	public boolean isFileProcess(String fileName, String asiNumber) {
