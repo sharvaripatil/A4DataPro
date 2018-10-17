@@ -74,7 +74,8 @@ private Logger _LOGGER = Logger.getLogger(FtpServiceImpl.class);
 			}
 			ftpClient.enterLocalPassiveMode();
 		FTPFile[] allFiles = ftpClient.listFiles();//C:\A4ESPUpdate\UploadFiles
-		
+		int fileCount=allFiles.length;
+		System.out.print("file count is "+fileCount);
 		for(FTPFile ftpFile : allFiles) {
 			if(!ftpFile.isFile()){
 				continue;
@@ -112,7 +113,8 @@ private Logger _LOGGER = Logger.getLogger(FtpServiceImpl.class);
 		ftpServerDisconnect();
 		File[] listOfFiles = getAllFiles();
 		_LOGGER.info("Ftp files Count::"+listOfFiles.length);
-		if(listOfFiles.length == 0){
+		//if(listOfFiles.length == 0){
+		if(fileCount==0 || listOfFiles.length == 0){
 			mailService.numberOfFileProcess("There Is No Files In FTP Server", "");
 		} else {
 			StringBuilder fileNames = new StringBuilder();

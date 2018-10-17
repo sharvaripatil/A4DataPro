@@ -103,7 +103,10 @@ public class FilesParsing {
 		}
 	 }// end for llop
 		try{
-			FileUtils.cleanDirectory(); 
+			//FileUtils.cleanDirectory(); 
+			for(File file: listOfFiles) 
+			    if (!file.isDirectory()) 
+			        file.delete();
 		}catch(Exception e){
 			
 		}
