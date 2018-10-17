@@ -437,7 +437,8 @@
 		<property name="radiMapping" ref="radiMappingId"/>
 		<property name="wbtIndustriesMapper" ref="wbtIndustriesMappingId"/>
 		<property name="bloominPromotion" ref="bloominPromotionsMappingId"/>
-				<property name="pioneerLLCMapping" ref="pioneerLLCMappingId"/>
+		<property name="pioneerLLCMapping" ref="pioneerLLCMappingId"/>
+		<property name="accessLineMapping" ref="accessLineMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1375,5 +1376,19 @@
 	</bean>
 	<bean id="pioneerPriceGridParserrId" name="pioneerPriceGridParserrObj" class="parser.PioneerLLC.PioneerPriceGridParserr" autowire="byName"/>
      <!--supplier 76771 pioneerLLC configuration end  -->
+     
+     <!-- supplier AccesLine configuration start -->
+     <bean id="accessLineMappingId" class="com.a4tech.supplier.mapper.AccessLineMapping" autowire="byName">
+     <property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="accessLineAttributeParser" ref="accessLineAttributeParserId" /> 
+     <property name="accessLinePriceGridParserr" ref="accessLinePriceGridParserrId" /> 
+     </bean>
+     <bean id="accessLineAttributeParserId" name="accessLineAttributeParserObj"
+		class="parser.AccessLine.AccessLineAttributeParser" autowire="byName">
+		<property name="lookupServiceData" ref="lookupServiceData"/>
+	</bean>
+	<bean id="accessLinePriceGridParserrId" name="accessLinePriceGridParserrIdObj" class="parser.AccessLine.AccessLinePriceGridParserr" autowire="byName"/>
+     <!--supplier AccesLine configuration end  -->
 </beans>
 

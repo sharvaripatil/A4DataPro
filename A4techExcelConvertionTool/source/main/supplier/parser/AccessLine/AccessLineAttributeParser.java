@@ -10,11 +10,16 @@ import org.springframework.util.StringUtils;
 import parser.sunGraphix.SunGraphixAttributeParser;
 
 import com.a4tech.lookup.service.LookupServiceData;
+import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimensions;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.Material;
 import com.a4tech.product.model.NumberOfItems;
+import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
@@ -22,7 +27,37 @@ import com.a4tech.util.ApplicationConstants;
 public class AccessLineAttributeParser {
 	private static final Logger _LOGGER = Logger.getLogger(AccessLineAttributeParser.class);
 	private static LookupServiceData lookupServiceData;
-	
+public Product getExistingProductData(Product existingProduct , ProductConfigurations existingProductConfig){
+		
+		ProductConfigurations newProductConfigurations=new ProductConfigurations();
+		Product newProduct=new Product();
+		
+		try{
+			//categories
+			List<String> listCategories=new ArrayList<String>();
+			listCategories=existingProduct.getCategories();
+			if(!CollectionUtils.isEmpty(listCategories)){
+				newProduct.setCategories(listCategories);
+			}
+		//Images
+		List<Image> images=existingProduct.getImages();
+		if(!CollectionUtils.isEmpty(images)){
+			newProduct.setImages(images);
+		}
+		//keywords
+		List<String> productKeywords=existingProduct.getProductKeywords();
+		if(!CollectionUtils.isEmpty(productKeywords)){
+			newProduct.setProductKeywords(productKeywords);
+		}
+		
+		newProduct.setProductConfigurations(newProductConfigurations);
+		}catch(Exception e){
+			_LOGGER.error("Error while processing Existing Product Data " +e.getMessage());
+		}
+		 _LOGGER.info("Completed processing Existing Data");
+		return newProduct;
+		
+	}
 	public static ShippingEstimate getShippingEstimates( String shippingValue,String sdimVAl,ShippingEstimate shippingEstObj,String str,String sdimType) {
 	//ShippingEstimate shipingObj = new ShippingEstimate();
 	if(str.equals("NOI")){

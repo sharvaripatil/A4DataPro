@@ -17,6 +17,7 @@ import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
 import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
+import com.a4tech.supplier.mapper.AccessLineMapping;
 import com.a4tech.supplier.mapper.AlfaMapping;
 import com.a4tech.supplier.mapper.BagMakersMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
@@ -134,6 +135,8 @@ public class ExcelFactory {
     private WBTIndustriesMapper	            wbtIndustriesMapper;
     private BloominPromotionsMapper         bloominPromotion;
      private PioneerLLCMapping 				pioneerLLCMapping;
+     private AccessLineMapping				accessLineMapping;
+     
 		public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
@@ -268,10 +271,12 @@ public class ExcelFactory {
 			  return bloominPromotion;
 		  } else if(name.equals("76771")){
 			  return pioneerLLCMapping;
+		  } else if(name.equals("30458")){
+			  return accessLineMapping;
 		  }
 		return null;
 	}
-	
+
 	public void setBloominPromotion(BloominPromotionsMapper bloominPromotion) {
 			this.bloominPromotion = bloominPromotion;
 		}
@@ -751,5 +756,12 @@ public class ExcelFactory {
 		this.pioneerLLCMapping = pioneerLLCMapping;
 	}
 
+	public AccessLineMapping getAccessLineMapping() {
+			return accessLineMapping;
+		}
+
+		public void setAccessLineMapping(AccessLineMapping accessLineMapping) {
+			this.accessLineMapping = accessLineMapping;
+		}
 
 }

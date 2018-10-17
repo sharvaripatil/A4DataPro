@@ -21,6 +21,7 @@ import parser.AccessLine.AccessLinePriceGridParserr;
 import parser.primeline.PrimeLineConstants;
 
 import com.a4tech.core.errors.ErrorMessageList;
+import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.AdditionalLocation;
@@ -44,7 +45,7 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class AccessLineMapping {
+public class AccessLineMapping implements IExcelParser{
 private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 	
 	private PostServiceImpl postServiceImpl;
@@ -52,6 +53,8 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 	@Autowired
 	ObjectMapper mapperObj;
 	
+	AccessLineAttributeParser  accessLineAttributeParser;
+	AccessLinePriceGridParserr accessLinePriceGridParserr;
 	//TomaxUsaAttributeParser tomaxUsaAttributeParser;
 	//TomaxProductTabParser tomaxProductTabParser;
 	
@@ -80,7 +83,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 		try{
 			 listOfQuantity.append("300").append("___").append("500").append("___").append("1000").append("___").append("2500").append("___").append("5000");
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-	    Sheet sheet = workbook.getSheetAt(1);
+	    Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
 		
@@ -109,7 +112,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
 			    columnIndex = cell.getColumnIndex();
-				if(columnIndex + 1 == 1){
+				if(columnIndex + 1 == 2){
 					xid = getProductXid(nextRow);//CommonUtility.getCellValueStrinOrInt(cell);//
 					checkXid = true;
 				}else{
@@ -186,8 +189,8 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
-						    	// productExcelObj = tomaxUsaAttributeParser.getExistingProductData(existingApiProduct, existingApiProduct.getProductConfigurations());
-						    	 productConfigObj=productExcelObj.getProductConfigurations();
+						    	 productExcelObj = accessLineAttributeParser.getExistingProductData(existingApiProduct, existingApiProduct.getProductConfigurations());
+						    	 //productConfigObj=productExcelObj.getProductConfigurations();
 								
 						     }
 					 }
@@ -203,6 +206,12 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 				case 1://Existing Xids
 					break;
 				case 2://Access Line Item No. 
+					
+					productExcelObj.setExternalProductId(xid);
+					//String productNo = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(xid)){
+					  productExcelObj.setAsiProdNo(xid);
+					}
 					break;
 				case 3://Description
 					 productName=CommonUtility.getCellValueStrinOrInt(cell);
@@ -857,10 +866,10 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 	
 
 	public String getProductXid(Row row){
-		Cell xidCell =  row.getCell(0);
+		Cell xidCell =  row.getCell(1);
 		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
 		if(StringUtils.isEmpty(productXid) || productXid.trim().equalsIgnoreCase("#N/A")){
-		     xidCell = row.getCell(1);
+		     xidCell = row.getCell(2);
 		     productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
 		}
 		return productXid;
@@ -944,4 +953,31 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 	public void setMapperObj(ObjectMapper mapperObj) {
 		this.mapperObj = mapperObj;
 	}
+
+
+
+	public AccessLineAttributeParser getAccessLineAttributeParser() {
+		return accessLineAttributeParser;
+	}
+
+
+
+	public void setAccessLineAttributeParser(
+			AccessLineAttributeParser accessLineAttributeParser) {
+		this.accessLineAttributeParser = accessLineAttributeParser;
+	}
+
+
+
+	public AccessLinePriceGridParserr getAccessLinePriceGridParserr() {
+		return accessLinePriceGridParserr;
+	}
+
+
+
+	public void setAccessLinePriceGridParserr(
+			AccessLinePriceGridParserr accessLinePriceGridParserr) {
+		this.accessLinePriceGridParserr = accessLinePriceGridParserr;
+	}
+	
 }
