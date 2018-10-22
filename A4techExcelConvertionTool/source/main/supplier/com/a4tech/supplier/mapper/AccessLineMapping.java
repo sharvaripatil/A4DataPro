@@ -44,7 +44,7 @@ import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.a4tech.product.model.Color;
 public class AccessLineMapping implements IExcelParser{
 private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 	
@@ -159,7 +159,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 										+ mapperObj.writeValueAsString(productExcelObj));*/
 							 
 						if(!StringUtils.isEmpty(productExcelObj.getExternalProductId())){
-							 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
+							 int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
 							 	}else if(num == 0){
@@ -244,6 +244,12 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					
 					break;
 				case 6://Colors
+					String colorName=CommonUtility.getCellValueStrinOrInt(cell);
+					 if(!StringUtils.isEmpty(colorName)){
+
+						 
+						 List<Color> categories= parser.AccessLine.ColorParser.getColorCriteria(colorName);
+					 }
 					break;
 				case 7://Category
 					String Category = cell.getStringCellValue();
@@ -830,7 +836,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 			 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
+		 	int num = 0;//postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
 		 	}else if(num == 0){
