@@ -16,7 +16,7 @@ import org.springframework.util.StringUtils;
 
 import parser.zenith.ZenithPriceGridParser;
 import parser.zenith.ZenithProductAttributeParser;
-
+import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
@@ -38,7 +38,7 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.CommonUtility;
-
+import parser.zenith.ZenithImprintattributeParser;
 public class ZenithimprintExport implements IExcelParser {
 
 private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMapping.class);
@@ -46,7 +46,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
 	private LookupServiceData lookupServiceDataObj;
-	private ZenithProductAttributeParser zenithtAttributeParser;
+	private ZenithImprintattributeParser zenithtAttributeParser;
 	private ZenithPriceGridParser zenithPriceGridParser;  
 
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
@@ -66,7 +66,7 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 		List<FOBPoint> listOfFob= new ArrayList<>();
 		List<Color> listOfColor= new ArrayList<>();
 		List<Material> listOfMaterial= new ArrayList<>();
-		List<a> listOfAddColor= new ArrayList<>();
+		List<AdditionalColor> listOfAddColor= new ArrayList<>();
 
 
 		Product productExcelObj = new Product();
@@ -244,10 +244,8 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 				case 8:// max colors
 					String addColor=cell.getStringCellValue();
 					if (!StringUtils.isEmpty(addColor)){
-						
-						
-						
-         	productConfigObj.setAdditionalColors();
+						listOfAddColor=ZenithImprintattributeParser.getaddColor(addColor);
+                     	productConfigObj.setAdditionalColors(listOfAddColor);
 					}
 					break;
 					
@@ -425,13 +423,15 @@ private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMap
 	}
 
 
-	public ZenithProductAttributeParser getZenithtAttributeParser() {
+
+
+	public ZenithImprintattributeParser getZenithtAttributeParser() {
 		return zenithtAttributeParser;
 	}
 
 
 	public void setZenithtAttributeParser(
-			ZenithProductAttributeParser zenithtAttributeParser) {
+			ZenithImprintattributeParser zenithtAttributeParser) {
 		this.zenithtAttributeParser = zenithtAttributeParser;
 	}
 
