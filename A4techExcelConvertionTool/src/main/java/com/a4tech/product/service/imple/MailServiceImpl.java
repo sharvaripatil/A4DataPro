@@ -37,7 +37,7 @@ public class MailServiceImpl implements IMailService{
 		      helper.setFrom(senderMailName);
 		      //helper.setTo("venkateswarlu.nidamanuri@a4technology.com");
 		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
-		    		  "amey.more@a4technology.com","azam.rizvi@a4technology.com"};
+		    		  "amey.more@a4technology.com"};
 		      helper.setTo(toAddress);
 		     // helper.setCc(ApplicationConstants.SUPPLIER_EMAIL_ID_MAP.get(supplierId));
 		      helper.setSubject(supplierId +" "+ "Supplier Error Report");
@@ -88,9 +88,9 @@ public class MailServiceImpl implements IMailService{
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false);
 		      helper.setFrom(senderMailName);
 		      String[] bccmails = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
-		    		  "amey.more@a4technology.com","azam.rizvi@a4technology.com"};
+		    		  "amey.more@a4technology.com"};
 			/*String[] ccAddress = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
-					"amey.more@a4technology.com","azam.rizvi@a4technology.com" };*/
+					"amey.more@a4technology.com" };*/
 			//helper.setTo(toAddress); 
     //         helper.setTo("SPullins@asicentral.com");
 			helper.setBcc(bccmails);
@@ -117,7 +117,7 @@ public class MailServiceImpl implements IMailService{
 		      /*String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
 		    		  "azam.rizvi@a4technology.com","amey.more@a4technology.com"};*/
 		      String[] bccmails = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
-				"amey.more@a4technology.com","azam.rizvi@a4technology.com"};
+				"amey.more@a4technology.com"};
 		     // helper.setTo(toAddress);
       //        helper.setTo("SPullins@asicentral.com");
 		      helper.setBcc(bccmails);
@@ -191,7 +191,7 @@ public class MailServiceImpl implements IMailService{
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false);
 		      helper.setFrom(senderMailName);
 		      String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
-		    		  "amey.more@a4technology.com","azam.rizvi@a4technology.com"};
+		    		  "amey.more@a4technology.com"};
 			helper.setTo(toAddress); 
 		    helper.setSubject(subject);
 		      if(StringUtils.isEmpty(fileNames)){
