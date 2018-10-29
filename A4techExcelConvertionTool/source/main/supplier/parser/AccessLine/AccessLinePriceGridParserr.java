@@ -68,7 +68,7 @@ public class AccessLinePriceGridParserr {
 
 	}
 
-	public static List<Price> getPrices(String[] prices,  String[] quantity, String discount[],String flag) {
+	public static List<Price> getPrices(String[] prices,  String[] quantity, String discount[],String priceType) {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
 		try{
@@ -85,7 +85,7 @@ public class AccessLinePriceGridParserr {
 				price.setQty(ApplicationConstants.CONST_NUMBER_ZERO);
 			}
 			
-			if(flag.equals("Y")){
+			if(priceType.equals("N")){
 			price.setNetCost(prices[PriceNumber]);
 		   }else{
 			   price.setPrice(prices[PriceNumber]);
@@ -151,12 +151,12 @@ public class AccessLinePriceGridParserr {
 			String discounts, String upChargeCriterias, String qurFlag,
 			String currency,String priceIncludeUp, String upChargeName, String upChargeType,
 			String upchargeUsageType,String upServicechrg, Integer upChargeSequence,
-			List<PriceGrid> existingPriceGrid) {
+			List<PriceGrid> existingPriceGrid,String priceType) {
 		try{
 			if(CollectionUtils.isEmpty(existingPriceGrid)){
 				existingPriceGrid=new ArrayList<PriceGrid>();
 			}
-			String flag="N";
+			//String flag="N";
 		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
 		String[] upChargePrices = prices
@@ -185,7 +185,7 @@ public class AccessLinePriceGridParserr {
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
-			listOfPrice = getPrices(upChargePrices, upChargeQuantity, upChargeDiscount, flag);
+			listOfPrice = getPrices(upChargePrices, upChargeQuantity, upChargeDiscount, priceType);
 		} else {
 			listOfPrice = new ArrayList<Price>();
 		}

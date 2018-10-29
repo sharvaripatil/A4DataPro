@@ -20,13 +20,14 @@ public class AccessLineConstants {
 	static {
 		dsic1.append("C___C___C___C___D");
 		dsic2.append("C___C___C___C___C");
-		dsic2.append("R___R___R___R___R");
+		
 		dsic3.append("C___C___C___C___C");
 		dsic4.append("C___C___C___C___C");
 		dsic5.append("C___C___C___C___C");
 		dsic6.append("A___A___B___C___C");
 		dsic7.append("A___A___A___B___C");
 		dsic8.append("G___G___G___G___G");
+		dsic9.append("R___R___R___R___R");
 		
 		ACDISCOUNTCODE_MAP.put("5R",dsic9);
 		ACDISCOUNTCODE_MAP.put("4CD",dsic1);

@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import parser.AccessLine.AccessLineAttributeParser;
 import parser.AccessLine.AccessLineConstants;
 import parser.AccessLine.AccessLinePriceGridParserr;
+import parser.AccessLine.ColorParser;
 import parser.primeline.PrimeLineConstants;
 
 import com.a4tech.core.errors.ErrorMessageList;
@@ -26,6 +27,7 @@ import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Artwork;
+import com.a4tech.product.model.Color;
 import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
@@ -80,6 +82,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 		  StringBuilder listOfNetPrices = new StringBuilder();
 		  StringBuilder listOfDiscount = new StringBuilder();
 		  String basePricePriceInlcude="";
+		  String priceTypee="L";
 		try{
 			 listOfQuantity.append("300").append("___").append("500").append("___").append("1000").append("___").append("2500").append("___").append("5000");
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
@@ -112,6 +115,22 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 			while (cellIterator.hasNext()) {
 				Cell cell = cellIterator.next();
 			    columnIndex = cell.getColumnIndex();
+			    
+			    /////////my code
+			    Cell  cellDataNet = nextRow.getCell(32);
+			    String strNet=CommonUtility.getCellValueStrinOrDecimal(cellDataNet);
+			    Cell  cellDataList = nextRow.getCell(38);
+			    String strList=CommonUtility.getCellValueStrinOrDecimal(cellDataList);
+			    if(!StringUtils.isEmpty(strList)){
+			    	priceTypee="L";
+			    	
+			    }else if(!StringUtils.isEmpty(strNet)){
+			    	priceTypee="N";
+			    }else{
+			    	priceTypee="L";
+			    }
+			    
+			    ///////my code
 				if(columnIndex + 1 == 2){
 					xid = getProductXid(nextRow);//CommonUtility.getCellValueStrinOrInt(cell);//
 					checkXid = true;
@@ -139,14 +158,14 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 							 priceGrids = AccessLinePriceGridParserr.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), 
 									 listOfDiscount.toString(),ApplicationConstants.CONST_STRING_CURRENCY_USD,
 									 basePricePriceInlcude,ApplicationConstants.CONST_BOOLEAN_TRUE, 
-										ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids,"Y");
+										ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids,priceTypee);
 							 productExcelObj.setPriceType("L");
 							 }else if( !StringUtils.isEmpty(listOfNetPrices.toString())){
-								 priceGrids = AccessLinePriceGridParserr.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), 
+								 priceGrids = AccessLinePriceGridParserr.getPriceGrids(listOfNetPrices.toString(),listOfQuantity.toString(), 
 										 listOfDiscount.toString(),ApplicationConstants.CONST_STRING_CURRENCY_USD,
 										 basePricePriceInlcude,ApplicationConstants.CONST_BOOLEAN_TRUE, 
-											ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids,"N");
-								 productExcelObj.setPriceType("N");
+											ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids,priceTypee);
+								 productExcelObj.setPriceType(priceTypee);
 							 }
 							 
 							 if(CollectionUtils.isEmpty(priceGrids)){
@@ -175,7 +194,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 								productConfigObj = new ProductConfigurations();	
 								repeatRows.clear();
 								listOfPrices = new StringBuilder();
-							    listOfQuantity = new StringBuilder();
+							   // listOfQuantity = new StringBuilder();
 							    shippingEstObj=new ShippingEstimate();
 
 						 }
@@ -227,16 +246,17 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					String descripton=CommonUtility.getCellValueStrinOrInt(cell);
 					 if(!StringUtils.isEmpty(descripton)){
 						 descripton=CommonUtility.getStringLimitedChars(descripton, 800);
+						 
 						 descripton=CommonUtility.removeRestrictSymbols(descripton);
 						 descripton=descripton.replace("•", "");
 						 descripton=descripton.replace("\n", "");
-						 
+						 productExcelObj.setSummary(CommonUtility.getStringLimitedChars(descripton, 130));
 						 productExcelObj.setDescription(descripton);
 						
 						/* String nameTemp=productExcelObj.getName();
 							 if(StringUtils.isEmpty(nameTemp)){
 								 productName=CommonUtility.getStringLimitedChars(descripton, 60);
-								 productExcelObj.setName(productName);
+								 productExcelObj.setNa me(productName);
 							 }*/
 							}else{
 								productExcelObj.setDescription(productName);
@@ -244,6 +264,13 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					
 					break;
 				case 6://Colors
+					String colorValuee = cell.getStringCellValue();
+					
+					if(!StringUtils.isEmpty(colorValuee)){
+					   List<Color> colorsList = ColorParser.getColorCriteria(colorValuee);
+					   productConfigObj.setColors(colorsList);
+					//   productExcelObj.setCategories(categories);
+					}
 					break;
 				case 7://Category
 					String Category = cell.getStringCellValue();
@@ -251,7 +278,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					if(!StringUtils.isEmpty(Category)){
 					   List<String> categories = CommonUtility.getStringAsList(Category,
 							   										ApplicationConstants.CONST_DELIMITER_COMMA);
-					   productExcelObj.setCategories(categories);
+					   //productExcelObj.setCategories(categories);
 					}
 					break;
 				case 8://
@@ -463,15 +490,19 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					
 					String rushService=CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(rushService)){
+						try{
 						if(rushService.contains(".")){
 						}else{
 							
 						}
-						rushService=rushService.substring(0,rushService.indexOf("."));
+						int first = rushService.indexOf(".");
+						int second = rushService.indexOf(".", first + 1);
+						//rushService=rushService.substring(0,rushService.indexOf("."));
+						rushService=rushService.substring(0,second);
 							
 							String arr[]=rushService.split(";");
 							String rushVall=arr[0];
-							String rushChargeArr[]=arr[1].split("//");
+							String rushChargeArr[]=arr[1].split("/");
 							String rushChargVal=rushChargeArr[0];
 							rushChargVal=rushChargVal.replace("Add", "");
 							rushChargVal=rushChargVal.trim();
@@ -501,22 +532,26 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 								"Rush Service"+":"+"2 business days",ApplicationConstants.CONST_CHAR_N,  
 								ApplicationConstants.CONST_STRING_CURRENCY_USD, "","2 business days", 
 								"Rush Service Charge", ApplicationConstants.CONST_VALUE_TYPE_OTHER,"Optional", 
-								ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
-						
+								ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids,priceTypee);
+						}catch (Exception e) {
+							// TODO: handle exception
+							_LOGGER.error(e.getLocalizedMessage());
 						}
+						}
+					
 					break;
 				case 50://Additional color/position
 					
 					String colorValue=CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(basePricePriceInlcude)){
-						
+					if(!StringUtils.isEmpty(colorValue)){
+						try{
 						if(colorValue.toLowerCase().contains("second")){
 					List<AdditionalColor> additionalColorList = new ArrayList<>();
 					AdditionalColor additionalColorObj = new AdditionalColor();
 					additionalColorObj.setName("Second Color");
 					additionalColorList.add(additionalColorObj);
-					
-					String addClrArr[]=colorValue.split("+");
+					productConfigObj.setAdditionalColors(additionalColorList);
+					String addClrArr[]=colorValue.split("\\+");
 					String addClrInVal=addClrArr[0];
 					addClrInVal=addClrInVal.toUpperCase();
 					addClrInVal=addClrInVal.replace("SECOND","");
@@ -525,7 +560,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					addClrInVal=addClrInVal.replace("CHARGE","");
 					addClrInVal=addClrInVal.replace(":","");
 					addClrInVal=addClrInVal.trim();
-					String tempArr[]=addClrInVal.split("//");
+					String tempArr[]=addClrInVal.split("/");
 					String addClrrunVal=tempArr[0];
 					String discAddclrrunVal=tempArr[1];
 					
@@ -537,17 +572,17 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					addClrInsetVal=addClrInsetVal.replace("CHARGE","");
 					//addClrInsetVal=addClrInsetVal.replace(":","");
 					addClrInsetVal=addClrInsetVal.trim();
-					String tempArr1[]=addClrInVal.split("//");
+					String tempArr1[]=addClrInVal.split("/");
 					String addClrsetupVal=tempArr1[0];
 					String discAddclsetupVal=tempArr1[1];
 					
 					priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,addClrrunVal,discAddclrrunVal,
 							"Additional Colors"+":"+"Second color",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Second color", 
-							"Run Charge", "Per Quantity","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+							"Run Charge", "Per Quantity","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids,priceTypee);
 				
 					priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,addClrsetupVal,discAddclsetupVal,
 							"Additional Colors"+":"+"Second color",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Second color", 
-							"Set-up Charge", "Per Order","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+							"Set-up Charge", "Per Order","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids,priceTypee);
 				
 						}else{
 							String addClrArr[]=colorValue.split("+");
@@ -559,7 +594,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 							addClrInVal=addClrInVal.replace("CHARGE","");
 							addClrInVal=addClrInVal.replace(":","");
 							addClrInVal=addClrInVal.trim();
-							String tempArr[]=addClrInVal.split("//");
+							String tempArr[]=addClrInVal.split("/");
 							String addClrrunVal=tempArr[0];
 							String discAddclrrunVal=tempArr[1];
 							
@@ -571,7 +606,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 							addClrInsetVal=addClrInsetVal.replace("CHARGE","");
 							//addClrInsetVal=addClrInsetVal.replace(":","");
 							addClrInsetVal=addClrInsetVal.trim();
-							String tempArr1[]=addClrInVal.split("//");
+							String tempArr1[]=addClrInVal.split("/");
 							String addClrsetupVal=tempArr1[0];
 							String discAddclsetupVal=tempArr1[1];
 							
@@ -579,31 +614,35 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 								AdditionalLocation opLocation = new AdditionalLocation();
 								opLocation.setName("Additional Location");
 								listOfOpLoc.add(opLocation);
-								
+								productConfigObj.setAdditionalLocations(listOfOpLoc);
 								List<AdditionalColor> additionalColorList = new ArrayList<>();
 								AdditionalColor additionalColorObj = new AdditionalColor();
 								additionalColorObj.setName("Additional Color");
 								additionalColorList.add(additionalColorObj);
-								
+								productConfigObj.setAdditionalColors(additionalColorList);
 								priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,addClrrunVal,discAddclrrunVal,
 										"Additional Colors"+":"+"Additional Color",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Additional Color", 
-										"Run Charge", "Per Quantity","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+										"Run Charge", "Per Quantity","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids,priceTypee);
 							
 								priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,addClrrunVal,discAddclrrunVal,
 										"Additional Location"+":"+"Additional Location",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Additional Location", 
-										"Run Charge", "Per Quantity","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+										"Run Charge", "Per Quantity","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids,priceTypee);
 							
 								priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,addClrsetupVal,discAddclsetupVal,
 										"Additional Colors"+":"+"Additional Color",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Additional Color", 
-										"Set-up Charge", "Per Order","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+										"Set-up Charge", "Per Order","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids,priceTypee);
 					
 								
 								priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,addClrsetupVal,discAddclsetupVal,
 										"Additional Location"+":"+"Additional Location",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Additional Location", 
-										"Set-up Charge", "Per Order","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+										"Set-up Charge", "Per Order","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids,priceTypee);
 					
 							
 						}
+						
+					}catch(Exception e){
+						_LOGGER.error(e.getLocalizedMessage());
+					}
 					}
 					break;
 				case 51://Item Size
@@ -663,7 +702,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 						"Artwork & Proofs"+":"+"Virtual Proof"+"___"+"Artwork & Proofs"+":"+"Paper Proof",ApplicationConstants.CONST_CHAR_N,  
 						ApplicationConstants.CONST_STRING_CURRENCY_USD, "Per extra proof.","Paper Proof,Virtual Proof", 
 						"Proof Charge", "Per Order","Optional", 
-						ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+						ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids,priceTypee);
 						}catch(Exception e){
 							_LOGGER.error("Error while processing artWork: "+e.getMessage());
 						}
@@ -678,13 +717,13 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 						if(absoluteminCharge.contains("$")){
 							absoluteminCharge=absoluteminCharge.substring(absoluteminCharge.indexOf("$")+1, absoluteminCharge.length()-1);
 							
-							String arr[]=absoluteminCharge.split("//");
+							String arr[]=absoluteminCharge.split("/");
 							String abslCharge=arr[0];
 							String absCode=arr[1];
 							productExcelObj.setCanOrderLessThanMinimum(true);
 						priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,abslCharge,absCode,
 								"Less than Minimum"+":"+"Can order less than minimum",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Can order less than minimum", 
-								"Less than Minimum Charge", ApplicationConstants.CONST_VALUE_TYPE_OTHER,"Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids);
+								"Less than Minimum Charge", ApplicationConstants.CONST_VALUE_TYPE_OTHER,"Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids,priceTypee);
 						}
 						}
 					break;
@@ -822,20 +861,41 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 						"",ApplicationConstants.CONST_BOOLEAN_TRUE, ApplicationConstants.CONST_STRING_FALSE, 
 						productName,null,1,priceGrids);
 			 }*/
+		if( !StringUtils.isEmpty(listOfPrices.toString())){
+			 priceGrids = AccessLinePriceGridParserr.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), 
+					 listOfDiscount.toString(),ApplicationConstants.CONST_STRING_CURRENCY_USD,
+					 basePricePriceInlcude,ApplicationConstants.CONST_BOOLEAN_TRUE, 
+						ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids,priceTypee);
+			 productExcelObj.setPriceType(priceTypee);
+			 }else if( !StringUtils.isEmpty(listOfNetPrices.toString())){
+				 priceGrids = AccessLinePriceGridParserr.getPriceGrids(listOfPrices.toString(),listOfQuantity.toString(), 
+						 listOfDiscount.toString(),ApplicationConstants.CONST_STRING_CURRENCY_USD,
+						 basePricePriceInlcude,ApplicationConstants.CONST_BOOLEAN_TRUE, 
+							ApplicationConstants.CONST_STRING_FALSE, productName,null,priceGrids,priceTypee);
+				 productExcelObj.setPriceType(priceTypee);
+			 }
+			 
 			 if(CollectionUtils.isEmpty(priceGrids)){
-					//priceGrids = tomaxPriceGridParser.getPriceGridsQur();	
+					priceGrids = AccessLinePriceGridParserr.getPriceGridsQur();	
 				}
-			 	productExcelObj.setPriceType("L");
+			 	
 			 	productExcelObj.setPriceGrids(priceGrids);
 			 	productExcelObj.setProductConfigurations(productConfigObj);
-		 	_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(productExcelObj));
-		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
-		 	if(num ==1){
-		 		numOfProductsSuccess.add("1");
-		 	}else if(num == 0){
-		 		numOfProductsFailure.add("0");
-		 	}
+			 /*_LOGGER.info("Product Data : "
+						+ mapperObj.writeValueAsString(productExcelObj));*/
+			 
+		if(!StringUtils.isEmpty(productExcelObj.getExternalProductId())){
+			 int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
+			 	if(num ==1){
+			 		numOfProductsSuccess.add("1");
+			 	}else if(num == 0){
+			 		numOfProductsFailure.add("0");
+			 	}else{
+			 		
+			 	}
+		}
+			 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
+			 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
@@ -843,7 +903,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 		priceGrids = new ArrayList<PriceGrid>();
 		productConfigObj = new ProductConfigurations();
 		listOfPrices = new StringBuilder();
-	    listOfQuantity = new StringBuilder();
+	    //listOfQuantity = new StringBuilder();
 	    shippingEstObj=new ShippingEstimate();
 		repeatRows.clear();
 		return finalResult;
