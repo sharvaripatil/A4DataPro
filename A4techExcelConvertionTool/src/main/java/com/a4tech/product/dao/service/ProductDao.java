@@ -372,6 +372,7 @@ public class ProductDao implements IProductDao{
 									      Statement st =  connection.createStatement();
 									      ResultSet rs = st.executeQuery(query);
 									      */
+										// String query = "select * from supplier_login_details where ASI_NUMBER ='"+asiNumber+"';";
 										 String query = "select * from supplier_login_details where ASI_NUMBER ='"+asiNumber+"';";
 										 PreparedStatement stmt=connection.prepareStatement(query);  
 										 ResultSet rs=stmt.executeQuery();

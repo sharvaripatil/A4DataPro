@@ -122,5 +122,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/Sharvari/Desktop/sqljdbc4-2.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/prolib"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
