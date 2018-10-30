@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import com.a4tech.core.errors.ErrorMessage;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.core.model.ExternalAPIResponse;
+import com.a4tech.product.dao.entity.ErrorEntity;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.service.PostService;
@@ -40,8 +41,17 @@ public class PostServiceImpl implements PostService {
 	private Environment environment;*/
 	@Override
 	public int postProduct(String authTokens, Product product,int asiNumber ,int batchId, String environmentType) throws IOException {
-
+        String sheetName = "";
+        String xid = product.getExternalProductId();
 		try {
+			_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(product));
+			if(environmentType.contains(":")){
+				String[] sheetNameAndEnvType = CommonUtility.getValuesOfArray(environmentType, ":");
+				environmentType = sheetNameAndEnvType[0];
+				sheetName = sheetNameAndEnvType[1];	
+				xid = xid+":"+sheetName;
+			}
 			if(environmentType.equals("Sand")){
 				postApiURL = "https://sandbox-productservice.asicentral.com/api/v4/product/";
 			} else{
@@ -51,8 +61,8 @@ public class PostServiceImpl implements PostService {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("AuthToken", authTokens);
 			headers.add("Content-Type", "application/json ; charset=utf-8");
-			_LOGGER.info("Product Data : "
-					+ mapperObj.writeValueAsString(product));
+			/*_LOGGER.info("Product Data : "
+					+ mapperObj.writeValueAsString(product));*/
 			HttpEntity<Product> requestEntity = new HttpEntity<Product>(
 					product, headers);
 			ResponseEntity<ExternalAPIResponse> response = restTemplate
@@ -66,8 +76,16 @@ public class PostServiceImpl implements PostService {
 				_LOGGER.info("ASI Error Response Msg :" + response);
 				ErrorMessageList apiResponse = mapperObj.readValue(response,
 						ErrorMessageList.class);
-				productDao.save(apiResponse.getErrors(),
-						product.getExternalProductId(), asiNumber, batchId);
+				
+				productDao.save(apiResponse.getErrors(),xid, asiNumber, batchId);
+				boolean isFailProduct = isFailProduct(apiResponse.getErrors());
+				if(isFailProduct){
+					return 5;
+				}
+				/*List<ErrorMessage> errors = apiResponse.getErrors();
+				if(errors.contains("Your product could not be saved")){
+					return 5;
+				}*/
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				_LOGGER.error("unable to connect External API System:"
@@ -101,8 +119,7 @@ public class PostServiceImpl implements PostService {
 						ErrorMessageList.class);
 				}
 				
-				productDao.save(apiResponse.getErrors(),
-						product.getExternalProductId(), asiNumber, batchId);
+				productDao.save(apiResponse.getErrors(),xid, asiNumber, batchId);
 				_LOGGER.info("Error JSON:" + apiResponse);
 
 			} catch (JsonParseException | JsonMappingException e) {
@@ -120,8 +137,7 @@ public class PostServiceImpl implements PostService {
 				_LOGGER.info("internal server msg received from ExternalAPI ");
 				ErrorMessageList errorMsgList = CommonUtility
 						.responseconvertErrorMessageList(serverErrorMsg);
-				productDao.save(errorMsgList.getErrors(),
-						product.getExternalProductId(), asiNumber, batchId);
+				productDao.save(errorMsgList.getErrors(),xid, asiNumber, batchId);
 				return 0;
 			} else if (hce.getCause() != null) {
 				String errorMsg = hce.getCause().toString();
@@ -130,8 +146,7 @@ public class PostServiceImpl implements PostService {
 						|| errorMsg.contains("java.net.SocketTimeoutException")) {
 					ErrorMessageList errorMsgList = CommonUtility
 							.responseconvertErrorMessageList(errorMsg);
-					productDao.save(errorMsgList.getErrors(),
-							product.getExternalProductId(), asiNumber, batchId);
+					productDao.save(errorMsgList.getErrors(),xid, asiNumber, batchId);
 					return 0;
 				}
 			} else {
@@ -168,9 +183,14 @@ public class PostServiceImpl implements PostService {
 	return null;
   }
 	
-	public int deleteProduct(String authTokens, String productId,int asiNumber ,int batchId) throws IOException {
+	public int deleteProduct(String authTokens, String productId,int asiNumber ,int batchId,String environmentType) throws IOException {
 
-		try {String deleteProductUrl="https://sandbox-productservice.asicentral.com/api/v4/product/";
+		try {
+			String deleteProductUrl="https://sandbox-productservice.asicentral.com/api/v4/product/";
+			
+			if(environmentType.equals("Prod")){
+				deleteProductUrl="https://productservice.asicentral.com/api/v4/product/";
+			}
 			//productId="3558-55093AWDD";
 			 HttpHeaders headers = new HttpHeaders();
 			 headers.add("Accept",  "application/json");
@@ -247,7 +267,19 @@ public class PostServiceImpl implements PostService {
 		}
 
 	}
-
+ private boolean isFailProduct(List<ErrorMessage> errors){
+	 for (ErrorMessage errorMessage : errors) {
+			if(errorMessage.getReason() == null){
+				continue;
+			}
+				String tempMessage=errorMessage.getMessage();
+			if (tempMessage.contains("Your product could not be saved")
+					|| tempMessage.toLowerCase().contains("internal server error")) {
+					return true;
+				}
+		}
+	 return false;
+ }
 	public RestTemplate getRestTemplate() {
 		return restTemplate;
 	}

@@ -7,12 +7,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -86,61 +84,17 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 		 List<String> availabilityProcessed = new ArrayList<>();
 		 List<String> basePriceProcessed = new ArrayList<>();
 		 List<String> upchargePriceProcessed = new ArrayList<>();
+		 List<String> additionalPrdInfo = new ArrayList<>();
+		 StringBuilder additionalInfo = new StringBuilder();
+		 Set<StringBuilder> availiabilityVals = new HashSet<>();
+		 String tempImprintMethod = "";
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
 			if(nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO){
 				continue;
 			}
-			if(nextRow.getRowNum() == 1){//white
-				  Cell cell =	nextRow.getCell(5);
-				  
-				  CellStyle style = cell.getCellStyle();
-				 org.apache.poi.ss.usermodel.Color color5 = style.getFillForegroundColorColor();
-				org.apache.poi.ss.usermodel.Color color1 = style.getFillBackgroundColorColor();//color;
-				System.out.println("color: "+color1);
-				Short sho = style.getFillBackgroundColor();//short
-				System.out.println("color: "+sho);
-					continue;
-				}
-	         if(nextRow.getRowNum() == 2){//yellow
-		 Cell cell = nextRow.getCell(5);
-		 CellStyle style = cell.getCellStyle();
-		 org.apache.poi.ss.usermodel.Color color5 = style.getFillForegroundColorColor();
-			org.apache.poi.ss.usermodel.Color color1 = style.getFillBackgroundColorColor();//color;
-		Short shh	= style.getFillForegroundColor();
-			org.apache.poi.ss.usermodel.Color color2  = style.getFillForegroundColorColor();
-			System.out.println("color: "+color1);
-			Short sho = style.getFillBackgroundColor();//short
-			System.out.println("color: "+sho);
-					continue;
-				}
-	         if(nextRow.getRowNum() < 13){
-	        	 continue;
-	         }
-	         if(nextRow.getRowNum() == 13){//white
-				  Cell cell =	nextRow.getCell(5);
-				  
-				  CellStyle style = cell.getCellStyle();
-				 org.apache.poi.ss.usermodel.Color color5 = style.getFillForegroundColorColor();
-				org.apache.poi.ss.usermodel.Color color1 = style.getFillBackgroundColorColor();//color;
-				System.out.println("color: "+color1);
-				Short sho = style.getFillBackgroundColor();//short
-				System.out.println("color: "+sho);
-					continue;
-				}
-	         if(nextRow.getRowNum() == 16){//yellow
-		 Cell cell = nextRow.getCell(5);
-		 CellStyle style = cell.getCellStyle();
-		 org.apache.poi.ss.usermodel.Color color5 = style.getFillForegroundColorColor();
-			org.apache.poi.ss.usermodel.Color color1 = style.getFillBackgroundColorColor();//color;
-		Short shh	= style.getFillForegroundColor();
-			org.apache.poi.ss.usermodel.Color color2  = style.getFillForegroundColorColor();
-			System.out.println("color: "+color1);
-			Short sho = style.getFillBackgroundColor();//short
-			System.out.println("color: "+sho);
-					continue;
-				}
+			
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
 			if(xid != null){
 				productXids.add(xid);
@@ -171,6 +125,7 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
+							 productExcelObj.setAdditionalProductInfo(additionalInfo.toString().trim());
 							   productConfigObj.setImprintSize(listOfImprintSize);
 							   productConfigObj.setProductionTime(listOfProductionTime);
 							   ShippingEstimate shippingEstmationValues = towelSpecAttributeParser
@@ -184,8 +139,8 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 									/*List<Availability> productAvailability = towelSpecAttributeParser
 											.getProductAvailablity(productionTimeListChildList,
 													imprintMethodParentList);*/
+									List<Availability> productAvailability = new ArrayList<>();
 									if(!CollectionUtils.isEmpty(listOfAvailVariations)){
-										List<Availability> productAvailability = new ArrayList<>();
 										Availability  availabilityObj = new Availability();
 										availabilityObj.setAvailableVariations(listOfAvailVariations);
 										//availabilityObj.setParentCriteria(ApplicationConstants.CONST_STRING_PRODUCT_COLOR);
@@ -193,8 +148,14 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 										availabilityObj.setParentCriteria("Imprint Method");
 										availabilityObj.setChildCriteria("Production Time");
 										productAvailability.add(availabilityObj);
-										productExcelObj.setAvailability(productAvailability);
 									}
+									
+									if(repeatRows.size() >= 2){
+										Availability availabilityObj = towelSpecAttributeParser
+												.getProductAvailiability(availiabilityVals);
+										productAvailability.add(availabilityObj);
+									}
+									productExcelObj.setAvailability(productAvailability);
 								if(repeatRows.size() == 1){
 									// remove sinagle base price configuration
 									priceGrids = removeBasePriceConfig(priceGrids);
@@ -237,6 +198,9 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 								availabilityProcessed = new ArrayList<>();
 								basePriceProcessed = new ArrayList<>();
 								upchargePriceProcessed = new ArrayList<>();
+								additionalPrdInfo = new ArrayList<>();
+								additionalInfo = new StringBuilder();
+								 availiabilityVals = new HashSet<>();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -275,14 +239,16 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 					  break;
 				case 3:// desc
 					String desc = cell.getStringCellValue();
-					desc = desc.replaceAll("ô", "");
-					if(desc.contains("asiPrdNo")){
+					desc = desc.replaceAll("‚Ñ¢", "");
+					if(desc.contains(asiPrdNo)){
 						desc = desc.replaceAll(asiPrdNo, "");
 					}
 					if(StringUtils.isEmpty(productExcelObj.getName())){
 						productExcelObj.setName(CommonUtility.getStringLimitedChars(desc, 60));// if product name is not provided ,it is used as prdName
+						productExcelObj.setSummary(CommonUtility.getStringLimitedChars(desc, 130));
 					}
 					if(!StringUtils.isEmpty(desc)){
+						desc = finalDescriptionValue(desc);
 						productExcelObj.setDescription(desc);
 					}
 				    break;
@@ -305,6 +271,7 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 				case 18:
 				case 19:
 				case 20:
+				case 21:
 					String qty = TowelSpecQtyAndColorMapping.getPriceQty(columnIndex+1);
 					String price = getPriceValue(cell);
 					if(!StringUtils.isEmpty(price) && !price.equalsIgnoreCase("CALL") && !price.equals("-")){
@@ -313,7 +280,7 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 						listOfDiscounts.add("C"); // default discount value for this supplier
 					}
 					break;
-				case 21://Production Time
+				case 22://Production Time
 					String productionTime = cell.getStringCellValue(); 
 					if(!StringUtils.isEmpty(productionTime)){
 						childVal = getProductionTime(productionTime);
@@ -322,19 +289,25 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 								//productConfigObj.setProductionTime(listOfProductionTime);
 					}
 					break;
-				case 22: //Imprint Methods
+				case 23: //Imprint Methods
 					String imprintMethodName = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintMethodName)){
+						tempImprintMethod = imprintMethodName;
 								 listOfImprintMethod = towelSpecAttributeParser
 										.getImprintMethods(imprintMethodName,listOfImprintMethod);
-								if(imprintMethodName.contains("(")){
-									// no need to replace character
-								} else if(imprintMethodName.contains("/")){
+								 if(imprintMethodName.contains("(") || imprintMethodName.equalsIgnoreCase("Screenprinted/2 colors") 
+											|| imprintMethodName.equalsIgnoreCase("Screenprinted/1 color")
+											|| imprintMethodName.equalsIgnoreCase("Screenprinted Towel/Blank Mesh Bag") 
+											|| imprintMethodName.equalsIgnoreCase("Screenprinted Towel/ColorFusion Bag")
+											|| imprintMethodName.equalsIgnoreCase("Screenprinted/multi- color")
+											|| imprintMethodName.equalsIgnoreCase("ColorFusion front/1-color screenprint on back")){
+										// no need to replace character
+									} else if(imprintMethodName.contains("/")){
 									imprintMethodName = imprintMethodName.replaceAll("/", ",");
 								} else {
 									
 								}
-								if (imprintMethodName.contains("Blank")){
+								if (imprintMethodName.contains("Blank") && !imprintMethodName.equalsIgnoreCase("Screenprinted Blanket & Tote")){
 									imprintMethodName = "Unimprinted";
 								}
 						imprintMethodNameUpcharge = imprintMethodName; 
@@ -342,12 +315,12 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 					}
 					
 					break;
-				case 23:// setup charges
-					String setUpCharge = cell.getStringCellValue();
+				case 24:// setup charges
+					String setUpCharge = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(setUpCharge) && !setUpCharge.equalsIgnoreCase("Call") && !setUpCharge.equalsIgnoreCase("CALL")){//
 					  if(!upchargePriceProcessed.contains(setUpCharge)){
 						//imprintInclude = row	
-							Cell imprintIncludeCell = nextRow.getCell(24);
+							Cell imprintIncludeCell = nextRow.getCell(25);
 								imprintInclude = CommonUtility
 										.getStringLimitedChars(imprintIncludeCell.getStringCellValue(), 100);
 						productExcelObj.setProductConfigurations(productConfigObj);
@@ -365,83 +338,94 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 					}
 				}
 					break;
-				case 25://imprint include
-					
+				case 26://imprint include
+					String priceInclude = cell.getStringCellValue();// this is for editior reference as for client feedback
+					productExcelObj.setDistributorOnlyComments("Price includes:"+priceInclude);
 					break;
-              case 26: //Imprint size
+              case 27: //Imprint size
             	  String imprintSize = cell.getStringCellValue();
             	  if(!StringUtils.isEmpty(imprintSize)){
+            		  StringBuilder availableVals = new StringBuilder();
             		  listOfImprintSize = towelSpecAttributeParser.getImprintSizes(imprintSize,listOfImprintSize);
             		 // productConfigObj.setImprintSize(listOfImprintSize);
+            		  availableVals.append(tempImprintMethod).append("##").append(imprintSize);
+            		  availiabilityVals.add(availableVals);
             	  }
 					break;
-              case 27: // additinal Info
-            	  String additionalInfo = cell.getStringCellValue();
-            	  productExcelObj.setAdditionalProductInfo(additionalInfo);
+              case 28: // additinal Info
+            	  String additionalInfo1 = cell.getStringCellValue();
+            	  if(!StringUtils.isEmpty(additionalInfo1)){
+            		  if(!additionalPrdInfo.contains(additionalInfo1)){
+            			  additionalPrdInfo.add(additionalInfo1);
+            			  additionalInfo1 = additionalInfo1.replaceAll("\\<.*?\\> ?", "");
+                    	  additionalInfo1 = additionalInfo1.replaceAll("‚Äù", "\"");  
+                    	  additionalInfo.append(additionalInfo1).append(" ");
+            		  }
+            		  
+                     //productExcelObj.setAdditionalProductInfo(additionalInfo);  
+            	  }
 					break;
-              case 28:
+              case 29:
             	  break;
-              case 29://shipping size
+              case 30://shipping size
             	  String shiDimention = cell.getStringCellValue();
             	  if(!StringUtils.isEmpty(shiDimention)){
             		  shippingValues.append("shippingDimention:").append(shiDimention);
             	  }
 					break;
-              case 30://shipping weight
+              case 31://shipping weight
             	  String shiWe = CommonUtility.getCellValueDouble(cell);
             	  if(!StringUtils.isEmpty(shiWe)){
             		  shippingValues.append(",").append("shippingWt:").append(shiWe);
             	  }
             	  break;
-              case 31:// shipping qty
+              case 32:// shipping qty
             	  String shiQty = CommonUtility.getCellValueStrinOrInt(cell);
             	  if(!StringUtils.isEmpty(shiQty)){
             		  shippingValues.append(",").append("shippingQty:").append(shiQty);
             	  }
             	  break;
-              case 32:
+              case 33:
             	  break;
-              case 33: // itemWeight
+              case 34: // itemWeight
             	  String itemWeight = CommonUtility.getCellValueDouble(cell);
             	  if(!StringUtils.isEmpty(itemWeight)){
 					  Volume volume = towelSpecAttributeParser.getItemWeightvolume(itemWeight);
             		  productConfigObj.setItemWeight(volume);
             	  }
             	  break;
-              case 34://ignore
-              case 35:
+              case 35://ignore
               case 36:
               case 37:
-              case 38://ignore
+              case 38:
+              case 39://ignore
             	  break;
-              case 39://sku
+              case 40://sku
             	  String sku = cell.getStringCellValue();
             	  if(!StringUtils.isEmpty(sku)){
             		  productExcelObj.setProductLevelSku(sku);
             	  }
             	  break;
-              case 40://name
+              case 41://name
             	  String prdName = cell.getStringCellValue();
             	  if(!StringUtils.isEmpty(prdName)){
+            		  prdName = prdName.replaceAll("‚Ñ¢", "");
             		  prdName = getProductName(prdName,asiPrdNo);
                 	  productExcelObj.setName(prdName);  
+                	  productExcelObj.setSummary(prdName);
             	  }
             	  break;
-              case 41:// ignore
-              case 42:
+              case 42:// ignore
               case 43:
               case 44:
               case 45:
-              case 46: //ignore
+              case 46:
+              case 47: //ignore
             	  break;
-              case 47: // colors
+              case 48: // colors
             	  String colorName = cell.getStringCellValue();
             	  if(!StringUtils.isEmpty(colorName)){
-            		  String colorGroup = "";
-            		  if(colorName.equalsIgnoreCase("Navy")){
-            			  colorGroup = "Dark Blue";
-            		  }
-            		  List<Color> listOfColor = towelSpecAttributeParser.getProductColor(colorName, colorGroup);
+            		  List<Color> listOfColor = towelSpecAttributeParser.getProductColor(colorName);
             		  productConfigObj.setColors(listOfColor);
             	  }
             	  break;
@@ -512,7 +496,7 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 			    listOfDiscounts = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			    repeatRows.add(xid);
 			}catch(Exception e){
-				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getMessage()+"at column number(increament by 1):"+columnIndex);		 
+				_LOGGER.error("Error while Processing ProductId and cause :"+productExcelObj.getExternalProductId() +" "+e.getCause()+"at column number(increament by 1):"+columnIndex);		 
 				ErrorMessageList apiResponse = CommonUtility.responseconvertErrorMessageList("Product Data issue in Supplier Sheet: "
 				+e.getMessage()+" at column number(increament by 1)"+columnIndex);
 				productDaoObj.save(apiResponse.getErrors(),
@@ -522,6 +506,7 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 		workbook.close();
 		productConfigObj.setImprintSize(listOfImprintSize);
 		   productConfigObj.setProductionTime(listOfProductionTime);
+		   productExcelObj.setAdditionalProductInfo(additionalInfo.toString().trim());
 		   ShippingEstimate shippingEstmationValues = towelSpecAttributeParser
 					.getShippingEstimation(shippingValues.toString());
 			productConfigObj.setShippingEstimates(shippingEstmationValues);
@@ -533,8 +518,8 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 		/*	List<Availability> productAvailability = towelSpecAttributeParser
 					.getProductAvailablity(productionTimeListChildList,
 							imprintMethodParentList);*/
+			List<Availability> productAvailability = new ArrayList<>();
 			if(!CollectionUtils.isEmpty(listOfAvailVariations)){
-				List<Availability> productAvailability = new ArrayList<>();
 				Availability  availabilityObj = new Availability();
 				availabilityObj.setAvailableVariations(listOfAvailVariations);
 				//availabilityObj.setParentCriteria(ApplicationConstants.CONST_STRING_PRODUCT_COLOR);
@@ -542,8 +527,14 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 				availabilityObj.setParentCriteria("Imprint Method");
 				availabilityObj.setChildCriteria("Production Time");
 				productAvailability.add(availabilityObj);
-				productExcelObj.setAvailability(productAvailability);
 			}
+			
+			if(repeatRows.size() >= 2){
+				Availability availabilityObj = towelSpecAttributeParser
+						.getProductAvailiability(availiabilityVals);
+				productAvailability.add(availabilityObj);
+			}
+			productExcelObj.setAvailability(productAvailability);
 			//productExcelObj.setAvailability(productAvailability);
 			if(repeatRows.size() == 1){
 				// remove sinagle base price configuration
@@ -597,22 +588,22 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 	}
 		public boolean isRepeateColumn(int columnIndex){
 		if (!(columnIndex >= 5 && columnIndex <= 20) && columnIndex != 21 && columnIndex != 22 && columnIndex != 23
-				&& columnIndex != 25 && columnIndex != 26) {
+				&& columnIndex != 24 && columnIndex != 25 && columnIndex != 26 && columnIndex != 27) {
 				return ApplicationConstants.CONST_BOOLEAN_TRUE;
 			}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
 		private String getProductName(String prdName,String asiPrdNo){
-			prdName = prdName.replaceAll("‚Ñ","a,");//Ä
-			prdName = prdName.replaceAll("Ä","");
-			prdName = prdName.replaceAll("‚","");//¬
-			prdName = prdName.replaceAll("¬","");
+			prdName = prdName.replaceAll("√¢‚Äû","a,");//‚Ç¨
+			prdName = prdName.replaceAll("‚Ç¨","");
+			prdName = prdName.replaceAll("√¢","");//√Ç
+			prdName = prdName.replaceAll("√Ç","");
 			prdName = prdName.replaceAll("\\?","");
-      	  prdName = prdName.replaceAll("Æ","");//Æ
-      	  if(prdName.contains("¢,")){
-      		  prdName = prdName.replaceAll("¢,","");
+      	  prdName = prdName.replaceAll("¬Æ","");//¬Æ
+      	  if(prdName.contains("¬¢,")){
+      		  prdName = prdName.replaceAll("¬¢,","");
       	  } else{
-      		  prdName = prdName.replaceAll("¢","");
+      		  prdName = prdName.replaceAll("¬¢","");
       	  }
       	  if((prdName.substring(0, 1).matches("[^A-Za-z0-9]"))){
       		  prdName = prdName.substring(1).trim();
@@ -656,6 +647,7 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 		} else { //Days
 			prdTime = prdTime.replaceAll("[^0-9- ]", "");
 		}
+	   prdTime = prdTime.replaceAll(" ", "");
 		prdTime = prdTime.trim();
 		return prdTime;
    }
@@ -669,6 +661,26 @@ public class TowelSpecialtiesMapping implements IExcelParser{
 	   }
 	   
 	   return price;
+   }
+   private String finalDescriptionValue(String desc){
+	   desc = desc.replaceAll("velcro", "");
+	   desc = desc.replaceAll("\\<.*?\\>?", "");
+	   desc = desc.replaceAll(">", "");
+	   desc = desc.replaceAll("\\‚Ä¢", ".");
+	   desc = desc.replaceAll("‚Äù", "\"");//Àù
+	   desc = desc.replaceAll("‚Äô", "\'");
+	   desc = desc.replaceAll("\\..", ".");
+	   desc = desc.replaceAll(">", "");
+	   desc = desc.replaceAll("\\?", "");//
+	   desc = desc.replaceAll("‚Äì", "-");
+	   desc = desc.replaceAll("‚Äò", "'");
+	   desc = desc.replaceAll("Àù", "\"");
+	   desc = desc.replaceAll(",", ",");
+	   desc = desc.replace(".", ". ");
+	   desc = org.apache.commons.lang3.StringUtils.normalizeSpace(desc);
+	   desc = desc.replace(". . ", ". ");
+	   desc = CommonUtility.getStringLimitedChars(desc, 800);	   
+	   return desc;
    }
 	public void setPostServiceImpl(PostServiceImpl postServiceImpl) {
 		this.postServiceImpl = postServiceImpl;

@@ -85,8 +85,10 @@ public class BestDealProductsExcelMapping implements IExcelParser{
 				Cell cell = cellIterator.next();
 				
 				int columnIndex = cell.getColumnIndex();
-				if(columnIndex  == 4){
-					xid = CommonUtility.getCellValueStrinOrInt(cell);
+				if(columnIndex  == 0){
+					Cell xidCell = nextRow.getCell(1);
+				     xid = CommonUtility.getCellValueStrinOrInt(xidCell);
+					//xid = CommonUtility.getCellValueStrinOrInt(cell);
 					checkXid = true;
 				}else{
 					checkXid = false;
@@ -118,109 +120,97 @@ public class BestDealProductsExcelMapping implements IExcelParser{
 						    	productXids.add(xid);
 						    }
 						    productExcelObj = new Product();
-     						 productExcelObj = postServiceImpl.getProduct(accessToken, xid, environmentType);
-						     if(productExcelObj == null){
+						    // all are new products ,no need to cal GET call(EXCIT-865)
+     						// productExcelObj = postServiceImpl.getProduct(accessToken, xid, environmentType);
+						    /* if(productExcelObj == null){
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
-						    	 productConfigObj=productExcelObj.getProductConfigurations();
-						     }
+						    	 productConfigObj= new ProductConfigurations();
+						     }*/
 							
 					 }
 				}
 				
-				switch (columnIndex) {
-				case 4://xid
+				switch (columnIndex+1) {
+				case 1://xid
 					  productExcelObj.setExternalProductId(xid);
 					 break;
-				case 5://Name
+				case 2://prdNumber
+					String asiPrdNo = CommonUtility.getCellValueStrinOrInt(cell);
+					productExcelObj.setAsiProdNo(asiPrdNo);
+					  break;
+				case 3:
+					//Name
 					String prdName = cell.getStringCellValue().trim();
 					basePriceName = prdName;
-					productExcelObj.setName(prdName);
-					  break;
-				case 6://summery
+					productExcelObj.setName(CommonUtility.getStringLimitedChars(prdName, 60));
+				    break;
+				case 4:
+					//summery
 					String summary = cell.getStringCellValue();
 					productExcelObj.setSummary(summary);	
-				    break;
-				case 7://description
+					  break;
+				case 5:
+					//description
 					 String desc = cell.getStringCellValue();
 					 productExcelObj.setDescription(desc.trim());
-					  break;
-				case 8://keywords
-					  String keyWords = cell.getStringCellValue();
+					break;
+					
+				case 6: //  keywords
+					 String keyWords = cell.getStringCellValue();
 					  if(!StringUtils.isEmpty(keyWords)){
 						  List<String> listOfKeywords = productAttributeParser.getProductKeywords(keyWords);
 						  productExcelObj.setProductKeywords(listOfKeywords);
 					  }
 					break;
+				case 7://price for
 					
-				case 9: //  ignore
-					
-					break;
-					
-				case 10: //  quantity
-				case 13:
-				case 16:
-				case 19: 
-				case 22: 
-				case 25: 
-				case 28:
-				case 31: 
+				case 8: //  quantity
+				case 11:
+				case 14:
+				case 17:// end  
 					String priceQty = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(priceQty)){
 						listOfQuantity.add(priceQty);
 					}
 					break;
 					
-				case 11: // price
-				case 14:
-				case 17:
-				case 20:
-				case 23:
-				case 26:
-				case 29:
-				case 32:
+				case 9: // price
+				case 12:
+				case 15:
+				case 18://end
+				
 					String listPrice = CommonUtility.getCellValueDouble(cell);
 					if(!StringUtils.isEmpty(listPrice)){
 						listOfPrices.add(listPrice);
 					}
 					break;
 					
-				case 12: // dis code
-				case 15:
-				case 18:
-				case 21:
-				case 24:
-				case 27:
-				case 30:
-				case 33:
+				case 10: // dis code
+				case 13:
+				case 16:
+				case 19://end
+				
 					String discount = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(discount)){
 						listOfDiscount.add(discount);
 					}
 					break;
-				case 34: // ignore
-					
-					
-					break;
-				case 35://ignore
-					break;
-					
-				case 36:// ignore
-					break;
-					
-				case 37:
+				case 20: //100 char priceinclude
 					priceInclude = cell.getStringCellValue();
-					 break;
-				case 38:
+					
+					break;
+				case 21://color
 					String color =cell.getStringCellValue();
 					if(!StringUtils.isEmpty(color)){
 						List<Color> listOfColor = productAttributeParser.getProductColor(color.trim());
 						productConfigObj.setColors(listOfColor);
 					}
 					break;
-				case 39:
-				String shapeValue=cell.getStringCellValue();
+					
+				case 22:// shapes
+					String shapeValue=cell.getStringCellValue();
 					if(!StringUtils.isEmpty(shapeValue)){
 					   List<Shape>	listOfShape = productAttributeParser.getProductShapes(shapeValue);
 					   if(listOfShape!= null){
@@ -228,51 +218,46 @@ public class BestDealProductsExcelMapping implements IExcelParser{
 					   }
 					}
 					break;
-				case 40: // size
-				String sizeValue=cell.getStringCellValue();
-				   if(!StringUtils.isEmpty(sizeValue)){
-					   Size size = productAttributeParser.getProductSize(sizeValue);
-					   productConfigObj.setSizes(size);
-				   }
-					break;
-				case 41: // material
-				String materialValue=cell.getStringCellValue();
-				if(!StringUtils.isEmpty(materialValue)){
-					List<Material> listOfMaterial = productAttributeParser.getProductMaterial(materialValue);
-					productConfigObj.setMaterials(listOfMaterial);
-				}
-					break;
-				case 42: // trade Names ignore
+					
+				case 23://materials
+					String materialValue=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(materialValue)){
+						List<Material> listOfMaterial = productAttributeParser.getProductMaterial(materialValue);
+						productConfigObj.setMaterials(listOfMaterial);
+					}
+					
+					 break;
+				case 24://tradeName
 					String tradeNames = cell.getStringCellValue();
 					/*if(!StringUtils.isEmpty(tradeNames)){
 						List<TradeName> listOfTradeNames = productAttributeParser.getProductTradeName(tradeNames);
 						productConfigObj.setTradeNames(listOfTradeNames);
 					}*/
 					break;
-				case 43: //origin
-					  String country = cell.getStringCellValue();
-					     if(!StringUtils.isEmpty(country)){
-					    	 List<Origin> listOfOrigin = productAttributeParser.getProductOrigin(country);
-					    	 if(listOfOrigin != null){
-					    		 productConfigObj.setOrigins(listOfOrigin);
-					    	 } 
-					     }
+				case 25://origin
+					String country = cell.getStringCellValue();
+				     if(!StringUtils.isEmpty(country)){
+				    	 List<Origin> listOfOrigin = productAttributeParser.getProductOrigin(country);
+				    	 if(listOfOrigin != null){
+				    		 productConfigObj.setOrigins(listOfOrigin);
+				    	 } 
+				     }
 					break;
-				case 44: // production Time
-					     String prdTime = CommonUtility.getCellValueStrinOrInt(cell);
-					     if(!StringUtils.isEmpty(prdTime)){
-					    	 List<ProductionTime> listOfPrdTime = productAttributeParser.getProductionTime(prdTime);
-					    	 productConfigObj.setProductionTime(listOfPrdTime);
-					     }
+				case 26: // size //ProductionTime
+					String prdTime = CommonUtility.getCellValueStrinOrInt(cell);
+				     if(!StringUtils.isEmpty(prdTime)){
+				    	 List<ProductionTime> listOfPrdTime = productAttributeParser.getProductionTime(prdTime);
+				    	 productConfigObj.setProductionTime(listOfPrdTime);
+				     }
 					break;
-				case 45:// rush service
+				case 27: // RushService
 					String rushValue = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(rushValue)){
 						productExcelObj = productAttributeParser.getProductRushTimeAndUpCharge
 								                                 (productExcelObj, rushValue,productConfigObj,priceGrids);
 					}
 					break;
-				case 46: // imprint method
+				case 28: // imprint Method
 					String imprintValue = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintValue)){
 						List<ImprintMethod> listOfImprMethod = productAttributeParser.getProductImprintMethods
@@ -280,25 +265,26 @@ public class BestDealProductsExcelMapping implements IExcelParser{
 						productConfigObj.setImprintMethods(listOfImprMethod);
 					}
 					break;
-				case 47: // price include same as case 34
+				case 29: //imprint charges
+					  //same as column 20
 					break;
-				case 48: // Safety Warnings
-					  // there is no data for this column
+				case 30: // warning
+					     //there is no data
 					break;
-				case 49: // product options
-					// there is no data for this column
+				case 31:// option
+					//there is no data
 					break;
-				case 50: // Product Notes
+				case 32: // notes
 					String values = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(values)){
 						productExcelObj = productAttributeParser.getproductLineNameShippingFob
 																			(values, productExcelObj,productConfigObj);
 					}
 					break;
-				case 51: //imprint Options
-					    // there is no data for this column
+				case 33: //imprint options
+					//there is no data
 					break;
-				case 52: // imprint notes
+				case 34: // notes
 					String imprintSize = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintSize)){
 						productExcelObj = productAttributeParser.getImprintSizeAndAddlocation(imprintSize, productExcelObj);
@@ -307,17 +293,14 @@ public class BestDealProductsExcelMapping implements IExcelParser{
 						productExcelObj.setPriceGrids(priceGrids);
 					}
 					break;
-				case 53: //Price Notes
+				case 35: //price notes
 					String priceNotes = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(priceNotes)){
 						productExcelObj.setCanOrderLessThanMinimum(ApplicationConstants.CONST_BOOLEAN_TRUE);
 						priceGrids = productAttributeParser.getLessThanMiniUpCharge(priceNotes, 
 								                                           productExcelObj.getPriceGrids());
 					}
-					
 					break;
-								
-							
 			}  // end inner while loop
 					 
 		}

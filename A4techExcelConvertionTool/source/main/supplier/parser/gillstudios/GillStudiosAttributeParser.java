@@ -67,7 +67,21 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		//themes
 		List<Theme>	themes=existingProductConfig.getThemes();
 		if(!CollectionUtils.isEmpty(themes)){
-			newProductConfigurations.setThemes(themes);
+			List<Theme>	themesTemp=new ArrayList<Theme>();
+			for (Theme theme : themes) {
+				Theme themeObj=new Theme();
+				String tempValue=theme.getName();
+				tempValue=tempValue.trim();
+				if(tempValue.toUpperCase().contains("ECO") || tempValue.toUpperCase().contains("FRIENDLY")){
+				String	themeName="ECO & ENVIRONMENTALLY FRIENDLY";
+				themeObj.setName(themeName);
+				themesTemp.add(themeObj);
+				}else{
+					themeObj.setName(tempValue);
+					themesTemp.add(themeObj);
+				}
+			}
+			newProductConfigurations.setThemes(themesTemp);
 		}
 		//catalogs
 		List<Catalog>	catlogsList=existingProduct.getCatalogs();
@@ -231,6 +245,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 	public List<ImprintSize> getimprintsize(StringBuilder firstImprintSize) {
 			String tempStr[]=firstImprintSize.toString().split("___");
 			 List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
+			 List<String> dupList =new ArrayList<String>();
 		for (String impValue : tempStr) {
 			String ImprintSizeValue=impValue.replace("null xnull","");
 			ImprintSizeValue=ImprintSizeValue.replace("null", "");
@@ -239,10 +254,12 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		    if(!StringUtils.isEmpty(ImprintSizeValue)){
 			String ImprintsizeArr[]=ImprintSizeValue.split(",");
 		   for (String Value : ImprintsizeArr) {
+			   if(!dupList.contains(Value)){
 			   impsizeobj=new ImprintSize();
 			   impsizeobj.setValue(Value);
-			   imprintSizeList.add(impsizeobj);
-		      }
+			   imprintSizeList.add(impsizeobj); 
+		   }
+		   dupList.add(Value);}
 		    }
 		}
 			return imprintSizeList;
@@ -276,7 +293,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			if(colorGroup!=null){
 			if(colorGroup.toUpperCase().contains("COMBO")){
 				colorGroup=colorGroup.replaceAll(":","");
-				colorGroup=colorGroup.replace("Combo","/");
+				colorGroup=colorGroup.replace("COMBO","/");
 				colorName=colorGroup;
 			}
 			}
@@ -320,12 +337,13 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 						String[] comboColors = CommonUtility.getValuesOfArray(colorGroup,
 								ApplicationConstants.CONST_DELIMITER_FSLASH);
 						String mainColorGroup = GillStudiosConstatnt.getColorGroup(comboColors[0].trim());
+						String alias = colorName.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH, "-");
 						if(mainColorGroup != null){
 							colorObj.setName(mainColorGroup);
-							colorObj.setAlias(colorName);
+							colorObj.setAlias(alias);
 						} else {
 							colorObj.setName(ApplicationConstants.CONST_VALUE_TYPE_OTHER);
-							colorObj.setAlias(colorName);
+							colorObj.setAlias(alias);
 						}
 					}
 				/*} else {
@@ -336,11 +354,12 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 					colorObj.setAlias(colorName);
 				}*/
 			} else {
+				String alias = colorName.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH, "-");
 				if (colorGroup == null) {
 					colorGroup = ApplicationConstants.CONST_VALUE_TYPE_OTHER;
 					}
 				colorObj.setName(colorGroup);
-				colorObj.setAlias(colorName);
+				colorObj.setAlias(alias);
 			}
 			listOfColors.add(colorObj);
 		}
@@ -486,6 +505,9 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		for (String themeName : themes) {
 			if(lookupServiceDataObj.isTheme(themeName.toUpperCase().trim())){
 				themeObj = new Theme();
+				if(themeName.toUpperCase().contains("ECO")){
+					themeName="ECO & ENVIRONMENTALLY FRIENDLY";
+				}
 				themeObj.setName(themeName);
 				listOfTheme.add(themeObj);
 			}

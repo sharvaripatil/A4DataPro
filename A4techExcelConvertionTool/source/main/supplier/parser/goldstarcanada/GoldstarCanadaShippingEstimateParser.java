@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.NumberOfItems;
+import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
@@ -53,6 +54,16 @@ public class GoldstarCanadaShippingEstimateParser {
 		}
 		
 		return shippingEstimate;
+	}
+
+	public List<Packaging> getpackging(String pack) {
+		 List<Packaging>PackagingList= new ArrayList<Packaging>();
+		 Packaging packgeObj=new Packaging();
+		 
+		 packgeObj.setName(pack);
+		 PackagingList.add(packgeObj);
+		 
+		return PackagingList;
 	}
 
 }

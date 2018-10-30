@@ -39,6 +39,7 @@ import com.a4tech.product.dao.entity.SupplierDetailsBean;
 import com.a4tech.product.dao.entity.SupplierLoginDetails;
 import com.a4tech.product.service.IProductDao;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 
 
 public class ProductDao implements IProductDao{
@@ -117,7 +118,6 @@ public class ProductDao implements IProductDao{
 				}		
 			}
 		}
-		
 		return batchId;
 	}
 	@Override
@@ -128,6 +128,12 @@ public class ProductDao implements IProductDao{
 		ErrorEntity errorEntity = null;
 		ProductEntity productEntity = new ProductEntity();
 		boolean flag=false;
+		String sheetName="";
+		if(productNo.contains(":")){
+			String[] prdNoAndSheetName = CommonUtility.getValuesOfArray(productNo, ":");
+			productNo = prdNoAndSheetName[0];
+			sheetName = prdNoAndSheetName[1];	
+		}
 		for (ErrorMessage errorMessage : errors) {
 			if(errorMessage.getReason() == null){
 				continue;
@@ -142,9 +148,17 @@ public class ProductDao implements IProductDao{
 				productEntity.addErrorEntity(errorEntity);	  
 		}
 		if(flag){
-			productNo=productNo+"-Failed: ";
+			if(StringUtils.isEmpty(sheetName)){
+				productNo=productNo+"-Failed: ";	
+			} else {
+				productNo=productNo+" , SheetName:"+sheetName+" - "+"-Failed: ";
+			}
 		}else{
-			productNo=productNo+"-Saved Successfully: ";
+			if(StringUtils.isEmpty(sheetName)){
+				productNo=productNo+"-Saved Successfully: ";	
+			} else {
+				productNo=productNo+" , SheetName:"+sheetName+"-Saved Successfully: ";
+			}
 		}
 		productEntity.setSupplierAsiNumber(asiNumber);
 		productEntity.setProductNo(productNo);
@@ -466,8 +480,8 @@ public class ProductDao implements IProductDao{
 		  }	
 	}
 	@Override
-	public boolean isASINumberAvailable(String asiNumber) {
-		SupplierLoginDetails supplierLoginDetails = getSupplierLoginDetails(asiNumber);
+	public boolean isASINumberAvailable(String asiNumber,String environmetType) {
+		BaseSupplierLoginDetails supplierLoginDetails = getSupplierLoginDetailsBase(asiNumber,environmetType);
 		if(supplierLoginDetails == null){
 			return true;
 		}

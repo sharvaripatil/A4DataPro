@@ -1,6 +1,8 @@
 package com.a4tech.util;
 
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -74,6 +76,9 @@ public class CommonUtility {
 		try {
 			if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 				value = cell.getStringCellValue().trim();
+				if(value.contains("\\")){
+					value=value.replace("\\", "");
+				}
 			} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				int numericValue = (int) cell.getNumericCellValue();
 				value = String.valueOf(numericValue).trim();
@@ -88,8 +93,25 @@ public class CommonUtility {
 			}
 			
 		} catch (Exception e) {
-			_LOGGER.error("Cell value convert into String/Int format: "
-					+ e.getMessage());
+			/*_LOGGER.error("Cell value convert into String/Int format: "
+					+ e.getMessage());*/
+		}
+
+		return value;
+	}
+	
+	public static String getCellValueStrinOrLong(Cell cell) {
+		String value = ApplicationConstants.CONST_STRING_EMPTY;
+		try {
+			if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+				value = cell.getStringCellValue().trim();
+			} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+				long numericValue = (long) cell.getNumericCellValue();
+				value = String.valueOf(numericValue).trim();
+			}
+		} catch (Exception e) {
+			/*_LOGGER.error("Cell value convert into String/Int format: "
+					+ e.getMessage());*/
 		}
 
 		return value;
@@ -281,35 +303,48 @@ public class CommonUtility {
 	 * chars are replace as per feedback provided by michael
 	 */
 	public static String removeRestrictSymbols(String value){
-		value=value.replaceAll("±", "");
-		value=value.replaceAll("í", "single quote");
-		value=value.replaceAll("`", "single quote");
-		value=value.replaceAll("ë", "single quote");
-		value=value.replaceAll("ì", "double quote");
-		value=value.replaceAll("î", "double quote");
-		value=value.replaceAll("ñ", "dash");
-		value=value.replaceAll("Æ", "(R)");
-		value=value.replaceAll("ô", "(TM)");
-		value=value.replaceAll("∞", " the word degrees");
-		value=value.replaceAll("◊", "x");
-		value=value.replaceAll("ø", "");
-		value=value.replaceAll("ï", "");
-		value=value.replaceAll("Ö", "Three periods");
-		value=value.replaceAll("Ä", "");
+		try{
+		value=value.replaceAll("¬±", "");
+		//value=value.replaceAll("‚Äô", "single quote");
+		//value=value.replaceAll("`", "single quote");
+		//value=value.replaceAll("‚Äò", "single quote");
+		//value=value.replaceAll("‚Äú", "double quote");
+		value=value.replaceAll("‚Äù", "\"");
+		value=value.replaceAll("‚Äû", "");
+		value=value.replaceAll("‚Äì", "dash");
+		value=value.replaceAll("¬Æ", "(R)");
+		value=value.replaceAll("‚Ñ¢", "(TM)");
+		value=value.replaceAll("¬∞", " the word degrees");
+		value=value.replaceAll("√ó", "x");
+		value=value.replaceAll("¬ø", "");
+		value=value.replaceAll("‚Ä¢", "");
+		value=value.replaceAll("‚Ä¶", "Three periods");
+		value=value.replaceAll("‚Ç¨", "");
 		value=value.replaceAll("\\|", ",");
-		value=value.replaceAll("Ω", "1/2");
-		value=value.replaceAll("æ", "3/4");
-		value=value.replaceAll("º", "1/4");
+		value=value.replaceAll("¬Ω", "1/2");
+		value=value.replaceAll("¬æ", "3/4");
+		value=value.replaceAll("¬º", "1/4");
 		value = value.replaceAll("\\[", "");
 		value = value.replaceAll("\\]", "");
-		value=value.replaceAll("<", "");
-		value=value.replaceAll(">", "");
+		//value=value.replaceAll("<", "");
+		//value=value.replaceAll(">", "");
 		value=value.replaceAll("", "");
-		value=value.replaceAll("ó", "");
-		value=value.replaceAll("°", "");
-		value=value.replaceAll("Ò", "");
+		value=value.replaceAll("‚Äî", "");
+		value=value.replaceAll("¬°", "");
+		value=value.replaceAll("√±", "");
 		value=value.replaceAll("~", "");
-		value=value.replaceAll("Ü", "");
+		value=value.replaceAll("‚Ä†", "");
+		value=value.replaceAll("\\?", "");
+		value=value.replaceAll("¬¢", "");
+		value=value.replaceAll("√¢", "");
+		value=value.replaceAll("Ôºà", "");
+		value=value.replaceAll("Ôºâ", "");
+		value=value.replace("\\?","");
+		value=value.replace("„ÄÇ","");
+		//√¢
+		}catch(Exception e){
+			_LOGGER.error("Error while removing symbol"+e.getLocalizedMessage());
+		}
 		return value;
 	}
   
@@ -347,6 +382,7 @@ public class CommonUtility {
      * 
      */
 	public static String convertProductionTimeWeekIntoDays(String productionTime) {
+		productionTime = productionTime.replaceAll("[^0-9- ]", "").trim();
 		if (productionTime.contains("-")) {
 			String[] productionTimes = productionTime.split("-");
 			int productionStartTime = Integer.parseInt(productionTimes[0]) * ApplicationConstants.CONST_INT_VALUE_FIVE;
@@ -478,4 +514,24 @@ public class CommonUtility {
 	        return false;		
 		}
 	 }*/
+	 /*
+	  * Author      :Venkat
+	  * Description : This method check the images are exist in specific url or not
+	  * Return      : boolean ,if images are exist it returns true other wise it will return false 
+	  */
+	 public static boolean isImageExist(String URLName){
+		    try {
+		      HttpURLConnection.setFollowRedirects(false);
+		      // note : you may also need
+		      //        HttpURLConnection.setInstanceFollowRedirects(false)
+		      HttpURLConnection con =
+		         (HttpURLConnection) new URL(URLName).openConnection();
+		     con.setRequestMethod("HEAD");
+		      return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+		    }
+		    catch (Exception e) {
+		       e.printStackTrace();
+		       return false;
+		    }
+		  }
 }

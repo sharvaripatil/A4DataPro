@@ -22,41 +22,51 @@ import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
+import com.a4tech.product.model.Volume;
 import com.a4tech.product.model.Weight;
+import com.a4tech.util.CommonUtility;
 
 public class BrandwearProductAttribure {
 	private LookupServiceData lookupServiceDataObj;
 	private LookupRestService lookupRestServiceObj;
 
-	public ShippingEstimate getshippingWeight(String shippingWeight) {
+	public Volume getitemWeight(String itemWeight) {
 
-		String ShippingUnit=shippingWeight;
-		ShippingEstimate shippingObj = new ShippingEstimate();
+		String ShippingUnit=itemWeight;
+		Volume ItemWeightObj = new Volume();
+		 List<Values> listOfValues = new ArrayList<Values>();
+		 Values valuesObj=new Values();
+		 List<Value> listOfValue = new ArrayList<Value>();
+		 Value valueObj=new Value();
 
-		List<Weight> WeightList = new ArrayList<Weight>();
-		Weight objWeight = new Weight();
-		shippingWeight=shippingWeight.replaceAll("[^0-9/ ]", "").replace("/", "");
+
+		 itemWeight=itemWeight.replaceAll("[^0-9./ ]", "").replace("/", "").replace(" .", "");
 		//shippingWeight = shippingWeight.replaceAll("oz. / Item", "").replaceAll("1 lb. / Item", "").replaceAll("oz /Item", "").replaceAll("oz/ Item", "");
-		objWeight.setValue(shippingWeight);
+		 valueObj.setValue(itemWeight);
 		if(ShippingUnit.contains("oz"))
 		{
-			objWeight.setUnit("oz");
+			valueObj.setUnit("oz");
 
 		}else
 		{
-			objWeight.setUnit("lbs");
+			valueObj.setUnit("lbs");
 
 		}
-		WeightList.add(objWeight);
-		shippingObj.setWeight(WeightList);
-		return shippingObj;
+		
+		listOfValue.add(valueObj);
+		valuesObj.setValue(listOfValue);
+		
+		listOfValues.add(valuesObj);
+		
+		ItemWeightObj.setValues(listOfValues);
+		return ItemWeightObj;
 	}
 
 	
 	public List<Color> getColorValue(String colorValue) {
 		//if(colorValue.contains("&"))
 		//{
- 			colorValue=colorValue.replace("&", ",").replace("/", ",");	
+ 			colorValue=colorValue.replace("&", ",").replace("/", ",").replace("CUSTOM COLORS AVAILABLE","");	
 		//}
 		
 		List<Color> colorList = new ArrayList<Color>();
@@ -101,10 +111,14 @@ public class BrandwearProductAttribure {
 	
 	public List<ImprintMethod> getImprintMethod(String imprintMethod) {
  		ImprintMethod imprMethod = new ImprintMethod();
+ 		imprintMethod=imprintMethod/*.replace("®","").replace("3M Hi-Visibility Reflective,","")*/.
+ 				replace("Call for details. ", "");
 		List<ImprintMethod> imprintMethodList = new ArrayList<ImprintMethod>();
 		String imprintMethodValueArr[]=imprintMethod.split(",");
 		
 		for (String imprintMethodValue : imprintMethodValueArr) {
+			
+			if(!imprintMethodValue.equalsIgnoreCase("")){	
 			
 			imprMethod = new ImprintMethod();
 	  if(imprintMethodValue.contains("print"))
@@ -127,9 +141,13 @@ public class BrandwearProductAttribure {
 	  {
 		  imprMethod.setType("Other");
 	  }
+	  if(imprintMethodValue.length() > 60) {
+	  imprintMethodValue=imprintMethodValue.substring(0, 60);
+	  }
 	  imprMethod.setAlias(imprintMethodValue);	
 	  imprintMethodList.add(imprMethod);
 
+		}
 		}
 		return imprintMethodList;
 	}
@@ -138,20 +156,20 @@ public class BrandwearProductAttribure {
 	public List<Material> getMaterial(String materialValues) {
 		List<Material> MaterialList = new ArrayList<Material>();
  		Material materialObj = new Material();
-		String materialValueArr[] = materialValues.split("--");
-		if(materialValueArr[1].contains("Bamboo"))
+		String materialValueArr[] = materialValues.split(",");
+		if(materialValueArr[0].contains("Bamboo"))
 		{
-			materialValueArr[1]=materialValueArr[1].replace("Rayon Bamboo", "Other Fabric");
+			materialValueArr[0]=materialValueArr[0].replace("Rayon Bamboo", "Other Fabric");
 
-			materialValueArr[1]=materialValueArr[1].replace("Bamboo", "Other Fabric");
+			materialValueArr[0]=materialValueArr[0].replace("Bamboo", "Other Fabric");
 			
 		}
-		List<String> listOfLookupMaterial = getMaterialType(materialValueArr[1]
+		List<String> listOfLookupMaterial = getMaterialType(materialValueArr[0]
 				.toUpperCase());
 		//listOfLookupMaterial.remove(0);
 		//listOfLookupMaterial.remove(2);
 
-		if (StringUtils.isEmpty(materialValueArr[0])) {
+    	if (StringUtils.isEmpty(materialValueArr[0])) {
 			materialObj.setAlias(materialValueArr[1]);
 		} else {
 			materialObj.setAlias(materialValueArr[0]);
@@ -164,15 +182,15 @@ public class BrandwearProductAttribure {
 
 			materialObj.setName("Blend");
 		    List<BlendMaterial> listOfBlend= new ArrayList<>();
-		    blendObj.setPercentage("87");
-		    blendObj.setName(listOfLookupMaterial.get(0));
-		    blendObj1.setPercentage("13");
-		    blendObj1.setName(listOfLookupMaterial.get(1));
+		    blendObj.setPercentage("95");
+		    blendObj.setName("Other Fabric");
+		    blendObj1.setPercentage("5");
+		    blendObj1.setName("Spandex");
 		    listOfBlend.add(blendObj);
 		    listOfBlend.add(blendObj1);
 			materialObj.setBlendMaterials(listOfBlend);
 
-			
+			materialObj.setAlias(materialValues);
 		} else if (listOfLookupMaterial.size()==3) {
 		}
 		MaterialList.add(materialObj);
@@ -189,19 +207,47 @@ public class BrandwearProductAttribure {
 	}
 
 	
+	
 	public Size getSizeValue(String sizeValue, String genderName) {
-		sizeValue=sizeValue.replace("XXL", "2XL").replace("&", "-");
       Size sizeObj=new Size();
     Apparel appObj=new Apparel();
-    List<Value> otherList = new ArrayList<Value>();
-    Value valueObj=new Value();
+    List<Value> listOfValue = new ArrayList<Value>();
     Value ValueObj=new Value();
+    
+    if(sizeValue.contains("XS"))
+    {
+    	sizeValue="";
+    	sizeValue=sizeValue.concat("XS").concat(",").concat("S").concat(",").concat("M").concat(",").concat("L").concat(",")
+    			.concat("XL");
+    }
+    else if(sizeValue.contains("S"))
+    {
+    	sizeValue="";
+    	sizeValue=sizeValue.concat("S").concat(",").concat("M").concat(",").concat("L").concat(",").concat("XL");
+    }
+    
+    sizeValue=sizeValue.concat(",").concat("2XL").concat(",").concat("3XL").concat(",").concat("4XL").
+    		concat(",").concat("5XL");
   
-    OtherSize otherSize=new OtherSize(); 
-    ValueObj.setValue(sizeValue);
-    otherList.add(ValueObj);
-    otherSize.setValues(otherList);
-    sizeObj.setOther(otherSize);
+   String sizearr []=sizeValue.split(",");
+    
+	for (String value : sizearr) {
+		 ValueObj = new Value();
+	     sizeObj.setApparel(appObj);
+		 appObj.setType("Standard & Numbered");
+		ValueObj.setValue(value);
+		listOfValue.add(ValueObj);
+		}
+		 appObj.setValues(listOfValue);
+	     sizeObj.setApparel(appObj);
+    
+    
+    
+    
+    
+    
+    
+    
     
 /*    if(genderName.equalsIgnoreCase("Unisex"))
     {

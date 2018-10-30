@@ -11,8 +11,8 @@ public class CutterBuckPriceGridParser {
 
 	public List<PriceGrid> getPriceGrids(String listPrice, String netCost,
 			Integer listOfQuan, String currency, String priceInclude, boolean isBasePrice,
-			String isQur, String priceName, String criterias/*,
-			List<PriceGrid> existingPriceGrid*/) {
+			String isQur, String priceName, String criterias,
+			List<PriceGrid> existingPriceGrid) {
 		
 		
 		Integer sequence = 1;

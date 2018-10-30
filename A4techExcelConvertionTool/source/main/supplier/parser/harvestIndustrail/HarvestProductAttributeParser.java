@@ -128,7 +128,16 @@ public class HarvestProductAttributeParser {
 			originValue = ApplicationConstants.CONST_STRING_COUNTRY_NAME_USA;
 		}else if(originValue.equalsIgnoreCase("CN")){
 			originValue = ApplicationConstants.CONST_STRING_COUNTRY_NAME_CHINA;
-		}else{
+		}else if(originValue.equalsIgnoreCase("in")){
+			originValue = "INDIA";
+
+		}
+		else if(originValue.equalsIgnoreCase("PK")){
+			originValue = "PAKISTAN";
+
+		}else
+		{
+			
 		}
 		origin.setName(originValue);
 		listOfOrigin.add(origin);
@@ -158,7 +167,7 @@ public class HarvestProductAttributeParser {
 
 		ImprintMethod imprMethod = new ImprintMethod();
 		List<ImprintMethod> imprintMethodList = new ArrayList<ImprintMethod>();
-		String imprintMethodValueArr[]=imprintMethod.split("or");
+		String imprintMethodValueArr[]=imprintMethod.split(",");
 		
 		for (String imprintMethodValue : imprintMethodValueArr) {
 			
@@ -294,11 +303,18 @@ public class HarvestProductAttributeParser {
 	}
 	
 	
-       public List<ImprintSize> getimprintsize(StringBuilder firstImprintSize) {
-		
-		String ImprintSizeValue=firstImprintSize.toString().replace("null x null","");
+       public List<ImprintSize> getimprintsize(StringBuilder firstImprintSize,StringBuilder secondImprintSize) {
+   	    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
+   	    String ImprintSizeValue="";
+    	 for(int i=0;i<=1;i++) 
+    	 {   
+    		 if(i==0){
+    		 ImprintSizeValue=firstImprintSize.toString().replace("null x null","");
+    		 }else if(i==1){
+     		 ImprintSizeValue=secondImprintSize.toString().replace("null x null","");
+    		 }
+
 		ImprintSizeValue=ImprintSizeValue.replace("null", "");
-	    List<ImprintSize> imprintSizeList =new ArrayList<ImprintSize>();
 	    ImprintSize impsizeobj;
 	    
 		String ImprintsizeArr[]=ImprintSizeValue.split(",");
@@ -308,7 +324,10 @@ public class HarvestProductAttributeParser {
 		   impsizeobj.setValue(Value);
 		   imprintSizeList.add(impsizeobj);
 	      }				
-		
+    	
+    	 
+    	 
+    	 }
 		return imprintSizeList;
 	}
 	

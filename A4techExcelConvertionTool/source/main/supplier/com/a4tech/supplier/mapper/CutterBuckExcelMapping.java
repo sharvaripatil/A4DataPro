@@ -59,9 +59,7 @@ public class CutterBuckExcelMapping implements IExcelParser{
 		List<Material> listOfMaterial = new ArrayList<>();
 		List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		ProductConfigurations productConfigObj = new ProductConfigurations();
-
-
-		Product existingApiProduct = null;
+    	Product existingApiProduct = null;
 		Product productExcelObj = new Product();
 		String productName = null;
 		String finalResult = null;
@@ -263,9 +261,9 @@ public class CutterBuckExcelMapping implements IExcelParser{
 						}
 				
 					productExcelObj.setPriceType("B");
-					 
+			 
 					priceGrids = cutterBuckPriceObj.getPriceGrids(ListPrice,NetCost, 
-					         1, "USD", "", true, "N", productName,""/*,priceGrids*/);	
+					         1, "USD", "", true, "N", productName,"",priceGrids);	
 					
 					
 			      

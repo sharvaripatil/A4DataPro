@@ -86,7 +86,7 @@ public class BagMakersMapping implements IExcelParser{
 		  String basePricePriceInlcude="";
 		  String tempQuant1="";
 		  try{
-			 
+			  Cell cell2Data = null;
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
 	    Sheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> iterator = sheet.iterator();
@@ -115,14 +115,48 @@ public class BagMakersMapping implements IExcelParser{
 			 boolean checkXid  = false;
 			
 			 while (cellIterator.hasNext()) {
-					Cell cell = cellIterator.next();
+					/*Cell cell = cellIterator.next();
 					  columnIndex = cell.getColumnIndex();
 					if(columnIndex + 1 == 1){
 						xid = getProductXid(nextRow);//CommonUtility.getCellValueStrinOrInt(cell);//
 						checkXid = true;
 					}else{
 						checkXid = false;
+					}*/
+				
+					
+				 /*columnIndex = cell.getColumnIndex();
+				 if (columnIndex == 1) {
+						xid = getProductXid(nextRow);
+						checkXid = true;
+					} else {
+						checkXid = false;
 					}
+				if(columnIndex + 1 == 1){
+					xid = getProductXid(nextRow);
+					checkXid = true;
+				}*/
+				 Cell cell = cellIterator.next();
+				 columnIndex = cell.getColumnIndex();
+				 cell2Data = nextRow.getCell(2);
+				 if (columnIndex + 1 == 1) {
+				       if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+				        xid = cell.getStringCellValue();
+				       } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+				        xid = String.valueOf((int) cell
+				          .getNumericCellValue());
+				       } else {
+				        /*ProdNo = CommonUtility
+				          .getCellValueStrinOrInt(cell2Data);
+				        ProdNo = ProdNo.substring(0, 14);*/
+				        xid =  CommonUtility
+						          .getCellValueStrinOrInt(cell2Data);
+				       }
+				       checkXid = true;
+				       _LOGGER.info("XID is:"+xid);
+				      } else {
+				       checkXid = false;
+				      }
 					if(checkXid){
 						 if(!productXids.contains(xid)){
 							 if(nextRow.getRowNum() != 1){
@@ -142,6 +176,7 @@ public class BagMakersMapping implements IExcelParser{
 								 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 								 		productExcelObj.setAvailability(new ArrayList<Availability>());
 								 	}*/
+								 	productExcelObj.setMakeActiveDate("2018-01-01T00:00:00");//priceConfirmedThru
 								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
@@ -196,6 +231,7 @@ public class BagMakersMapping implements IExcelParser{
 					switch (columnIndex + 1) {
 					case 1://XID
 						productExcelObj.setExternalProductId(xid);
+						 _LOGGER.info("XID is:"+xid);
 						break;
 					
 					case  2: //Catalogpage
@@ -215,8 +251,21 @@ public class BagMakersMapping implements IExcelParser{
 						break;
 					case  3://Item #
 						String asiProdNo=CommonUtility.getCellValueStrinOrDecimal(cell);
+						// i have to work over here tomorrow
+						// some problem in xid fetchiing ....
+						if(!StringUtils.isEmpty(xid)){
+							productExcelObj.setExternalProductId(xid);
+							 _LOGGER.info("XID is:"+xid);
+						}
 						if(!StringUtils.isEmpty(asiProdNo)){
+							
+							String temp=productExcelObj.getExternalProductId();
+							if(StringUtils.isEmpty(temp)){
+								productExcelObj.setExternalProductId(asiProdNo);
+							}
+							if(asiProdNo.length()<=14){
 							productExcelObj.setAsiProdNo(asiProdNo);
+							}
 						}
 						break;
 					case  4://Name (Items in Red are new for 2017)
@@ -253,6 +302,7 @@ public class BagMakersMapping implements IExcelParser{
 					case  8://Description
 						String description =CommonUtility.getCellValueStrinOrInt(cell);
 						//description = CommonUtility.removeSpecialSymbols(description,specialCharacters);
+						if(!StringUtils.isEmpty(description)){
 						int length=description.length();
 						 if(length>800){
 							String strTemp=description.substring(0, 800);
@@ -261,6 +311,13 @@ public class BagMakersMapping implements IExcelParser{
 						}
 						description=CommonUtility.removeRestrictSymbols(description);
 						productExcelObj.setDescription(description);
+						if(StringUtils.isEmpty(productExcelObj.getName())){
+						String strTemp=description.substring(0, 60);
+						int lenTemp= strTemp.lastIndexOf(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
+						String	productNameTemp=(String) strTemp.subSequence(0, lenTemp);
+						productExcelObj.setName(productNameTemp);
+						}
+						}
 						break;
 					case  9://Dimensions
 						String dimension =CommonUtility.getCellValueStrinOrInt(cell);
@@ -281,13 +338,13 @@ public class BagMakersMapping implements IExcelParser{
 						
 						break;
 					case  11://Imprint Area
-						String imprintSize =CommonUtility.getCellValueStrinOrInt(cell);
+						/*String imprintSize =CommonUtility.getCellValueStrinOrInt(cell);
 						if(!StringUtils.isEmpty(imprintSize)){
 							List<ImprintSize> listOfImprintSize=new ArrayList<ImprintSize>();
 							 listOfImprintSize = bagMakerAttributeParser.getImprintSize(imprintSize,listOfImprintSize);
 							productConfigObj.setImprintSize(listOfImprintSize);
 						
-						}
+						}*/
 						break;
 					case  12://Colors (Items in Red are new for 2017)
 						String colorValue=CommonUtility.getCellValueStrinOrInt(cell);
@@ -734,6 +791,7 @@ public class BagMakersMapping implements IExcelParser{
 	 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 	 		productExcelObj.setAvailability(new ArrayList<Availability>());
 	 	}*/
+	 	productExcelObj.setMakeActiveDate("2018-01-01T00:00:00");
 	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 	 	if(num ==1){
 	 		numOfProductsSuccess.add("1");

@@ -20,5 +20,8 @@ public interface IProductDao {
 	public void 		saveSupplierCridentials(FtpLoginBean ftpLoginBean);
 	public boolean 		isASINumberAvailable(String asiNumber);
 	public SupplierDetailsBean getSupplierLoginDetailsBase(String asiNumber,String type);
+	public boolean 		isASINumberAvailable(String asiNumber,String environmentType);
+	public BaseSupplierLoginDetails getSupplierLoginDetailsBase(String asiNumber,String type);
 	public int         getSupplierColumnsCount(String asiNumber);
+	
 }

@@ -91,6 +91,12 @@ public class GoldbondAttributeParser {
 		    } else if(value.equalsIgnoreCase("$15.00 (A) per color")){
 		    	priceVal = "15";
 		    	discountCode = "A";
+		    }else if(value.equalsIgnoreCase("$75.00 (G) per color")){
+		    	priceVal = "75";
+		    	discountCode = "G";
+		    } else if(value.equalsIgnoreCase("Free set-up, add $0.10 (G) per color, per position, ea.")){
+		    	priceVal = "0.10";
+		    	discountCode = "G";
 		    } else if(value.equalsIgnoreCase("$50.00 (G) per color, 2-color only (CANNOT BE CLOSE REGISTRATION)")){
 		    	priceVal = "50";
 		    	discountCode = "G";
@@ -103,11 +109,17 @@ public class GoldbondAttributeParser {
 		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (up to 2 colors), applies to repeat orders")){
 		    	priceVal = "50";
 		    	discountCode = "G";
+		    } else if(value.equalsIgnoreCase("$50.00 (G) per color (CANNOT BE CLOSE REGISTRATION)")) {
+		    	priceVal = "50";
+		    	discountCode = "G";
 		    } else {
 		    	
 		    }
-		    existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", priceVal, discountCode, "Additional Colors", false,
-					"USD","", "additional color available", "Set-up Charge", "Per Order", 1, existingPriceGrid,"","");
+		    if(!StringUtils.isEmpty(priceVal)){
+		    	existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", priceVal, discountCode, "Additional Colors", false,
+						"USD","", "additional color available", "Set-up Charge", "Per Order", 1, existingPriceGrid,"","");	
+		    }
+		    
 		    List<AdditionalColor> listOfAdditionalColor = existingConfiguration.getAdditionalColors();
 	    	if(CollectionUtils.isEmpty(listOfAdditionalColor)){
 	    		listOfAdditionalColor = new ArrayList<>();
@@ -188,7 +200,11 @@ public class GoldbondAttributeParser {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Length", "Depth");
-			} else if (sizeVal.contains("H") && sizeVal.contains("W") && sizeVal.contains("D")) {
+			} else if (sizeVal.contains("H") && sizeVal.contains("Thick")) {
+				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Thickness", "");
+			}
+			else if (sizeVal.contains("H") && sizeVal.contains("W") && sizeVal.contains("D")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "Depth");
@@ -196,7 +212,7 @@ public class GoldbondAttributeParser {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "Depth");
-			} else if(sizeVal.contains("L") && sizeVal.contains("W") && sizeVal.contains("H")){
+			} else if(sizeVal.contains("L") && sizeVal.contains("W") && (sizeVal.contains("H") || sizeVal.contains("h"))){
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				if(sizeVal.split("x")[0].contains("L")){//4-3/4" L x 4" W x 2-1/8" H
@@ -250,6 +266,13 @@ public class GoldbondAttributeParser {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Arc", "", "");
+			} else if(sizeVal.contains("Dia") && (sizeVal.contains("Thick"))){
+				if(sizeVal.contains("ia.")){
+					sizeVal = sizeVal.replaceAll("ia.", "").trim();
+				}
+				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
+				valuesObj = getOverAllSizeValObj(sizeVal, "Dia", "Thickness", "");
 			} else if (sizeVal.contains("Dia") || sizeVal.contains("dia")) {
 				if(sizeVal.contains("Approximately")){
 					sizeVal = sizeVal.replaceAll("Approximately", "").trim();
@@ -263,6 +286,7 @@ public class GoldbondAttributeParser {
 			} else if (sizeVal.contains("H")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
+				sizeVal= sizeVal.replaceAll("  ", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "", "");
 			} else if (sizeVal.contains("L") || sizeVal.contains("to")) {
 				if(sizeVal.equalsIgnoreCase("5-3/4\" L (excluding gauge)")){
@@ -409,8 +433,10 @@ public class GoldbondAttributeParser {
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Additional Location", false,
 					"USD","", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
 		} else if(value.contains("$50.00 (G) plus $0.30 (G)")){
-			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1___1", "50.0___0.30", "G___G", "Additional Location", false,
+			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "50.0", "G", "Additional Location", false,
 					"USD","", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
+			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Additional Location", false,
+					"USD","", "Reverse Side Imprint", "Run Charge", "Other", 1, existingPriceGrid,"","");
 		} else if(value.equalsIgnoreCase("$0.30 (G) per cube location, ea.")){
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Additional Location", false,
 					"USD", "","Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
@@ -423,8 +449,10 @@ public class GoldbondAttributeParser {
 			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.80", "G", "Additional Location", false,
 					"USD","", "Reverse Side Imprint", "Run Charge", "Other", 1, existingPriceGrid,"","");
 		}else if(value.equalsIgnoreCase("$50.00 (G) per location plus add $0.30 (G) ea./location")){
-			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1___1", "50.0___0.30", "G___G", "Additional Location", false,
+			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "50.0", "G", "Additional Location", false,
 					"USD","", "Reverse Side Imprint", "Add. Location Charge", "Other", 1, existingPriceGrid,"","");
+			existingPriceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "0.30", "G", "Additional Location", false,
+					"USD","", "Reverse Side Imprint", "Run Charge", "Other", 1, existingPriceGrid,"","");
 		} else {
 			
 		}
@@ -509,7 +537,25 @@ public class GoldbondAttributeParser {
 			value = value.replaceAll("business days", "");
 			value = value.replaceAll("  ", " ");
 			 productionTimeObj.setDetails(value);
-		} else if(value.equalsIgnoreCase("3 Day Standard<br>Next Day Optional<br>Orders in by 12:00 pm EST<br>Gold Rush rules apply")
+		} else if(value.contains("Embroidered bags ship 7-10 business days after art approval")){
+			productionTimeObj.setBusinessDays("7-10");
+			value = value.replaceAll("business days", "");
+			value = value.replaceAll("  ", " ");
+			 productionTimeObj.setDetails(value);
+		} else if(value.contains("Embroidered bags ship 10-14 business days after art approval")){
+			productionTimeObj.setBusinessDays("10-14");
+			value = value.replaceAll("business days", "");
+			value = value.replaceAll("  ", " ");
+			 productionTimeObj.setDetails(value);
+		} else if(value.equals("10-14 Business day after art approval, 7-10 business days blank")){
+			ProductionTime prdTime = new ProductionTime();
+			prdTime.setBusinessDays("10-14");
+			prdTime.setDetails("after art approval");
+			listOfProductionTime.add(prdTime);
+			productionTimeObj.setBusinessDays("7-10");
+			 productionTimeObj.setDetails("");
+		}
+		else if(value.equalsIgnoreCase("3 Day Standard<br>Next Day Optional<br>Orders in by 12:00 pm EST<br>Gold Rush rules apply")
 				|| value.equalsIgnoreCase("3 business days standard<br>Next Day Optional<br>Orders in by 12:00 pm EST<br>Gold Rush rules apply")){
 			productionTimeObj.setBusinessDays("3");
 			 productionTimeObj.setDetails("Standard");
@@ -926,6 +972,9 @@ public class GoldbondAttributeParser {
 		String[] imgVals = CommonUtility.getValuesOfArray(imgVal, ",");
 		int imageRank = 1;
 		for (String imgUrl : imgVals) {
+			if(!CommonUtility.isImageExist(imgUrl)){
+				continue;
+			}
 			if(StringUtils.isEmpty(imgUrl)){
 				continue;
 			}
@@ -947,11 +996,14 @@ public class GoldbondAttributeParser {
 	public Product getImprintMethods(String imprMethodVal,Product existingProduct){
 		ProductConfigurations config = existingProduct.getProductConfigurations();
 		String existingAdditionalImprintInfo = existingProduct.getAdditionalImprintInfo();
+		List<ImprintMethod> listOfImprintMethods = config.getImprintMethods();
+		if(CollectionUtils.isEmpty(listOfImprintMethods)){
+			listOfImprintMethods = new ArrayList<>();
+		}
 		if(StringUtils.isEmpty(existingAdditionalImprintInfo)){
 			existingAdditionalImprintInfo = "";
 		}
 		String additionalImprintInfo = "";
-		List<ImprintMethod> listOfImprintMethods = new ArrayList<>();
 		ImprintMethod imprintMethodObj = null;
 		List<String> tempImprintMethodVals = new ArrayList<>();
 		String imprintMethodVals = GoldBondImprintMethodMapping.getImprintMethodValues(imprMethodVal);
@@ -1146,6 +1198,7 @@ public class GoldbondAttributeParser {
     		productOptions = new ArrayList<>();
     	}
     	if(CollectionUtils.isEmpty(imprintMethods)){
+    		imprintMethods = new ArrayList<>();
     		ImprintMethod imprintMethod = new ImprintMethod();
     		imprintMethod.setType("Unimprinted");
     		imprintMethod.setAlias("Unimprinted");
@@ -1158,8 +1211,18 @@ public class GoldbondAttributeParser {
 					"Set-up Charge", "Other", 1, priceGrid, "DST", "");
     		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "300.00", "G", "Imprint Option", false, "USD", "", "Non-Sized DST",
 					"Set-up Charge", "Other", 1, priceGrid, "Non-DST", "");
-    	} else if(val.contains("vector EPS")){
+    	} else if(val.equalsIgnoreCase("Sized DST: Free; Non-Sized DST: $200.00 (G)")){
+    		productOptions = getOptions("Non-DST", "Non-Sized DST", "Imprint", productOptions);
+    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "200.00", "G", "Imprint Option", false, "USD", "", "Non-Sized DST",
+					"Set-up Charge", "Other", 1, priceGrid, "Non-DST", "");
+    	} else if(val.equalsIgnoreCase("Sized DST: Free; Non DST: $185.00 (G)")){
+    		productOptions = getOptions("Non-DST", "Non-Sized DST", "Imprint", productOptions);
+    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "185.00", "G", "Imprint Option", false, "USD", "", "Non-Sized DST",
+					"Set-up Charge", "Other", 1, priceGrid, "Non-DST", "");
+    	}
+    	else if(val.contains("vector EPS")){
     		//$70.00 (G) with vector EPS file; $145.00 (G) without vector EPS file
+    		//Per Copy: $70.00 (G) with vector EPS file; $145.00 (G) without vector EPS file
     		productOptions = getOptions("Vector EPS File", "Vector EPS File", "Imprint,requiredOrder", productOptions);
     		productOptions = getOptions("Without Vector EPS File", "Without Vector EPS File", "Imprint,requiredOrder", productOptions);
     		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "75.00", "G", "Imprint Option", false, "USD", "", "Vector EPS File",
@@ -1190,12 +1253,24 @@ public class GoldbondAttributeParser {
     		String imprintMethodVals = imprintMethods.stream().map(ImprintMethod::getAlias).collect(Collectors.joining(","));
     		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1", "50.00", "G", "Imprint Method", false,
 					"USD","", imprintMethodVals, "Set-up Charge", "Other", 1, priceGrid,"","");
-    	} else {
+    	} else if(val.equalsIgnoreCase("$80.00 (G) plus $15.00 (G) ea")){
+    		String imprintMethodVals = imprintMethods.stream().map(ImprintMethod::getAlias).collect(Collectors.joining(","));
+    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1","80.00", "G", "Imprint Method", false,
+					"USD","", imprintMethodVals, "Set-up Charge", "Other", 1, priceGrid,"","");
+    	} else if(val.equalsIgnoreCase("$75.00 (G) includes outer sleeve and labels on inner box. Art must remain the same on all labels for inner boxes or additional set ups will apply")){
+    		String imprintMethodVals = imprintMethods.stream().map(ImprintMethod::getAlias).collect(Collectors.joining(","));
+    		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1","70.00", "G", "Imprint Method", false,
+					"USD","Includes outer sleeve and labels on inner box. Art must remain the same on all labels for inner boxes or additional set ups will apply", imprintMethodVals, "Set-up Charge", "Other", 1, priceGrid,"","");
+    	}
+    	else {
     		//Screen printed (standard) / Faux Etching (optional)
     		// it is collecting all imprint method values
     		String discountCode = CommonUtility.extractValueSpecialCharacter("(", ")", val);
     		String price = val.replaceAll("[^0-9\\.]", "").trim();
     		String imprintMethodVals = imprintMethods.stream().map(ImprintMethod::getAlias).collect(Collectors.joining(","));
+    		if(imprintMethodVals.contains("Unimprinted")){
+    			imprintMethodVals = imprintMethodVals.replaceAll(",Unimprinted", "");
+    		}
     		priceGrid = gbPriceGridParser.getUpchargePriceGrid("1",price, discountCode, "Imprint Method", false,
 					"USD","", imprintMethodVals, "Set-up Charge", "Other", 1, priceGrid,"","");
     	}

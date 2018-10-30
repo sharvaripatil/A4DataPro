@@ -5,41 +5,55 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.product.model.AdditionalColor;
+import com.a4tech.product.model.AdditionalLocation;
+import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.AvailableVariations;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.Dimension;
+import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintColorValue;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
+import com.a4tech.product.model.NumberOfItems;
 import com.a4tech.product.model.Option;
 import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.RushTimeValue;
+import com.a4tech.product.model.Shape;
+import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
+import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
 public class MerchAttributeParser {
+	public static List<String> listOfXidForBasePriceGrid  = Arrays.asList("1920-4883523",
+			"1920-4883314", "1920-4883278", "1920-4883282", "1920-6645277", "1920-4883297", "1920-4883300",
+			"1920-4883305", "1920-4883308", "1920-550517749", "1920-550517737", "1920-4883358", "1920-4883319",
+			"1920-4883347", "1920-4883583", "1920-4883234", "1920-550042661", "1920-4883396", "1920-4883411",
+			"1920-4883206", "1920-4883422", "1920-4883426", "1920-4883429", "1920-5643964", "1920-4883231",
+			"1920-4883213", "1920-4883222", "1920-4883239", "1920-4883247", "1920-4883255", "1920-4883258",
+			"1920-550042656", "1920-550517755", "1920-550517762");
 	private MerchPriceGridParser merchPriceGridParser;
  	public Product keepExistingProductData(Product existingProduct){
 		//Please keep the Categories,Images and Themes for existing products.
@@ -60,68 +74,123 @@ public class MerchAttributeParser {
 		newProduct.setProductConfigurations(newConfiguration);
 		return newProduct;
 	}
-	
-   public Size getProductSize(String val){
+ 	public Values getProductSizeValue(String sizeVal){
+ 		Values valuesObj = new Values();
+ 			if (sizeVal.contains("CUBE") || sizeVal.contains("Cube") || sizeVal.contains("cube")) {
+ 				String value = sizeVal.replaceAll("[^0-9/ ]", "");
+ 				value = value + "x" + value + "x" + value;
+ 				valuesObj = getOverAllSizeValObj(value, "Length", "Width", "Height");
+ 			} else if (sizeVal.contains("globe")) {
+ 				sizeVal = sizeVal.replaceAll("[^0-9/ ]", "");
+ 				valuesObj = getOverAllSizeValObj(sizeVal, "Circumference", "", "");
+ 			} else if(sizeVal.contains("adjustable strap")){
+ 			} else if(sizeVal.contains("handles") || sizeVal.contains("handle") ||
+ 					sizeVal.contains("Strap") || sizeVal.contains("strap")){
+ 				String value = sizeVal.replaceAll("[^0-9/ ]", "");
+ 				valuesObj = getOverAllSizeValObj(value, "Length", "", "");
+ 			} else if(sizeVal.equalsIgnoreCase("Closed: 14\" L, Open: 23\" L, 37\" Span")){
+ 				sizeVal = "23X37";
+ 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
+ 			} else if(sizeVal.equalsIgnoreCase("Closed: 39 1/2\" L, Open: 57\" Span")){
+ 				sizeVal = "39X57";
+ 				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
+ 			} else if(sizeVal.contains("Span") || sizeVal.contains("span")){
+ 				if(sizeVal.contains(",")){//33" L, 47" Span
+ 					sizeVal  = sizeVal.replaceAll("[^0-9/, ]", "");
+ 					String[] ss = CommonUtility.getValuesOfArray(sizeVal, ",");
+ 					String finalSize = ss[0] + "x"+ss[1];
+ 					valuesObj = getOverAllSizeValObj(finalSize, "Length", "Width", "");
+ 				} else {
+ 					String value = sizeVal.replaceAll("[^0-9/ ]", "");
+ 					valuesObj = getOverAllSizeValObj(value, "Width", "", "");
+ 				}
+ 			} else if (sizeVal.contains("L") || sizeVal.contains("H") || sizeVal.contains("W")
+ 					|| sizeVal.contains("D") || sizeVal.contains("SQ") || sizeVal.contains("DIA") 
+ 					|| sizeVal.contains("Dia") || sizeVal.contains("dia")) {
+ 				sizeVal = getFinalSizeValue(sizeVal);
+ 				sizeVal = sizeVal.substring(0, sizeVal.length() - 1);// trim last character i.e :
+                 String[] sss = CommonUtility.getValuesOfArray(sizeVal, ":");
+                if(sss.length == 2){
+             	   String finalSize = sss[0];
+             	   valuesObj = getOverAllSizeValObj(finalSize, sss[1], "", "");
+                } else if(sss.length == 4){
+             	   String finalSize = sss[0] + "x"+sss[2];
+ 					valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], "");
+                } else if(sss.length == 6){
+             	   String finalSize = sss[0] + "x"+sss[2]+ "x"+sss[4];
+ 					valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], sss[5]);
+                }
+ 			}
+ 		return valuesObj;
+    }
+   public Size getProductSize(List<String> sizeList){
 	   Size sizeObj = new Size();
 	   Values valuesObj = null;
 	   Dimension dimentionObj = new Dimension();
 	   List<Values> listOfValues = new ArrayList<>();
-	   val = val.replaceAll(";", ",");
-	   String[] vals = null;
-	   if(val.contains("Closed:")){
-		   vals = new String[]{val};
-	   } else {
-		   vals = CommonUtility.getValuesOfArray(val, ",");
-	   }
-		for (String sizeVal : vals) {
-			valuesObj = new Values();
-			if (sizeVal.contains("CUBE") || sizeVal.contains("Cube") || sizeVal.contains("cube")) {
-				String value = sizeVal.replaceAll("[^0-9/ ]", "");
-				value = value + "x" + value + "x" + value;
-				valuesObj = getOverAllSizeValObj(value, "Length", "Width", "Height");
-			} else if (sizeVal.contains("globe")) {
-				sizeVal = sizeVal.replaceAll("[^0-9/ ]", "");
-				valuesObj = getOverAllSizeValObj(sizeVal, "Circumference", "", "");
-			} else if(sizeVal.contains("adjustable strap")){
-				continue;
-			} else if(sizeVal.contains("handles") || sizeVal.contains("handle") ||
-					sizeVal.contains("Strap") || sizeVal.contains("strap")){
-				String value = sizeVal.replaceAll("[^0-9/ ]", "");
-				valuesObj = getOverAllSizeValObj(value, "Length", "", "");
-			} else if(sizeVal.equalsIgnoreCase("Closed: 14\" L, Open: 23\" L, 37\" Span")){
-				sizeVal = "23X37";
-				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
-			} else if(sizeVal.equalsIgnoreCase("Closed: 39 1/2\" L, Open: 57\" Span")){
-				sizeVal = "39X57";
-				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
-			} else if(sizeVal.contains("Span") || sizeVal.contains("span")){
-				if(sizeVal.contains(",")){//33" L, 47" Span
-					sizeVal  = sizeVal.replaceAll("[^0-9/, ]", "");
-					String[] ss = CommonUtility.getValuesOfArray(sizeVal, ",");
-					String finalSize = ss[0] + "x"+ss[1];
-					valuesObj = getOverAllSizeValObj(finalSize, "Length", "Width", "");
-				} else {
+	   for (String val : sizeList) {
+		   		   val = val.replaceAll(";", ",");
+		   String[] vals = null;
+		   if(val.contains("Closed:")){
+			   vals = new String[]{val};
+		   } else {
+			   vals = CommonUtility.getValuesOfArray(val, ",");
+		   }
+			for (String sizeVal : vals) {
+				valuesObj = new Values();
+				if (sizeVal.contains("CUBE") || sizeVal.contains("Cube") || sizeVal.contains("cube")) {
 					String value = sizeVal.replaceAll("[^0-9/ ]", "");
-					valuesObj = getOverAllSizeValObj(value, "Width", "", "");
+					value = value + "x" + value + "x" + value;
+					valuesObj = getOverAllSizeValObj(value, "Length", "Width", "Height");
+				} else if (sizeVal.contains("globe")) {
+					sizeVal = sizeVal.replaceAll("[^0-9/ ]", "");
+					valuesObj = getOverAllSizeValObj(sizeVal, "Circumference", "", "");
+				} else if(sizeVal.contains("adjustable strap")){
+					continue;
+				} else if(sizeVal.contains("handles") || sizeVal.contains("handle") ||
+						sizeVal.contains("Strap") || sizeVal.contains("strap")){
+					String value = sizeVal.replaceAll("[^0-9/ ]", "");
+					valuesObj = getOverAllSizeValObj(value, "Length", "", "");
+				} else if(sizeVal.equalsIgnoreCase("Closed: 14\" L, Open: 23\" L, 37\" Span")){
+					sizeVal = "23X37";
+					valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
+				} else if(sizeVal.equalsIgnoreCase("Closed: 39 1/2\" L, Open: 57\" Span")){
+					sizeVal = "39X57";
+					valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Width", "");
+				} else if(sizeVal.contains("Span") || sizeVal.contains("span")){
+					if(sizeVal.contains(",")){//33" L, 47" Span
+						sizeVal  = sizeVal.replaceAll("[^0-9/, ]", "");
+						String[] ss = CommonUtility.getValuesOfArray(sizeVal, ",");
+						String finalSize = ss[0] + "x"+ss[1];
+						valuesObj = getOverAllSizeValObj(finalSize, "Length", "Width", "");
+					} else {
+						String value = sizeVal.replaceAll("[^0-9/ ]", "");
+						valuesObj = getOverAllSizeValObj(value, "Width", "", "");
+					}
+				} else if (sizeVal.contains("L") || sizeVal.contains("H") || sizeVal.contains("W")
+						|| sizeVal.contains("D") || sizeVal.contains("SQ") || sizeVal.contains("DIA") 
+						|| sizeVal.contains("Dia") || sizeVal.contains("dia")) {
+					sizeVal = getFinalSizeValue(sizeVal);
+					String lastChar = sizeVal.substring(sizeVal.length() - 1);
+					if(lastChar.equals(":")){
+						sizeVal = sizeVal.substring(0, sizeVal.length() - 1);// trim last character i.e :
+					}
+	                String[] sss = CommonUtility.getValuesOfArray(sizeVal, ":");
+	               if(sss.length == 2){
+	            	   String finalSize = sss[0];
+	            	   valuesObj = getOverAllSizeValObj(finalSize, sss[1], "", "");
+	               } else if(sss.length == 4){
+	            	   String finalSize = sss[0] + "x"+sss[2];
+						valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], "");
+	               } else if(sss.length == 6){
+	            	   String finalSize = sss[0] + "x"+sss[2]+ "x"+sss[4];
+						valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], sss[5]);
+	               }
 				}
-			} else if (sizeVal.contains("L") || sizeVal.contains("H") || sizeVal.contains("W")
-					|| sizeVal.contains("D") || sizeVal.contains("SQ") || sizeVal.contains("DIA") 
-					|| sizeVal.contains("Dia") || sizeVal.contains("dia")) {
-				sizeVal = getFinalSizeValue(sizeVal);
-               String[] sss = CommonUtility.getValuesOfArray(sizeVal, ":");
-               if(sss.length == 2){
-            	   String finalSize = sss[0];
-            	   valuesObj = getOverAllSizeValObj(finalSize, sss[1], "", "");
-               } else if(sss.length == 4){
-            	   String finalSize = sss[0] + "x"+sss[2];
-					valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], "");
-               } else if(sss.length == 6){
-            	   String finalSize = sss[0] + "x"+sss[2]+ "x"+sss[4];
-					valuesObj = getOverAllSizeValObj(finalSize, sss[1], sss[3], sss[3]);
-               }
+				listOfValues.add(valuesObj);
 			}
-			listOfValues.add(valuesObj);
-		}
+	}
+	   
 	   
 	   dimentionObj.setValues(listOfValues);
 		sizeObj.setDimension(dimentionObj);
@@ -129,7 +198,8 @@ public class MerchAttributeParser {
    }
    
    private String getFinalSizeValue(String val){
-	   val = val.replaceAll("[^0-9/,DWLDSQDiadiaxX ]", "");
+	   val = removeWordsFromSize(val);
+	   val = val.replaceAll("[^0-9/,DWLHSQDiadiaxXDIA ]", "");
 	   String[] sizes = null;
 	   StringBuilder sizess = new StringBuilder();
 	   if(val.contains("SQ")){
@@ -141,15 +211,48 @@ public class MerchAttributeParser {
 			   sizes = CommonUtility.getValuesOfArray(val, "X");
 		   }
 		   for (String size : sizes) {
-			String sizeVal =  size.replaceAll("[^0-9/ ]", "");
+			String sizeVal =  size.replaceAll("[^0-9/ ]", "").trim();
 			String sizeUnit = size.replaceAll("[^a-zA-Z]", "").trim();
+			String temp = sizeUnit; 
+			if(StringUtils.isEmpty(sizeUnit)){
+				sizeUnit = "L";// default value assign
+			}
+			if(sizeUnit.equalsIgnoreCase("aDia")){
+				sizeUnit = "Dia";
+			} else if(sizeUnit.equals("LL")){
+				sizeUnit = "L";
+			} else{
+				
+			}
 			sizeUnit = LookupData.getSizeUnit(sizeUnit);
+			if(sizeUnit == null){
+				if(!temp.equalsIgnoreCase("dia")){
+					temp = temp.replaceAll("[^LHWD]", "").trim();// HERE trim all unnecessary characters
+					if(StringUtils.isEmpty(temp)){
+						temp = "L";
+					}
+					sizeUnit = LookupData.getSizeUnit(temp);
+				}
+			}
 			String ss = sizeVal+":"+sizeUnit;
-			sizess.append(ss).append("x");
+			sizess.append(ss).append(":");
 		}   
 	   }  
 	   return sizess.toString();
    }
+   private String removeWordsFromSize(String size){
+	   if(size.contains("Holder")){
+		   size = size.replaceAll("Holder", "");
+	   } else if(size.contains("box")){
+		   size = size.replaceAll("Holder", "");
+	   } else if(size.contains("expanded")){
+		   size = size.replaceAll("expanded", "");
+	   } else if(size.contains("Tray")){
+		   size = size.replaceAll("Tray", "");
+	   }
+	   return size;
+   }
+   
    private StringBuilder getSizeSqure(String sizeVal){
 	   StringBuilder finlSize = new StringBuilder();
 	   if(sizeVal.contains("x")){//7/8" SQ x 3 3/4" L
@@ -166,11 +269,11 @@ public class MerchAttributeParser {
 		   }
 		   s1  = s1.replaceAll("[^0-9/ ]", "");
 		   squreVal  = squreVal.replaceAll("[^0-9/ ]", "");
-		   finlSize.append(squreVal).append(":").append(unit1).append(squreVal).append(":").append(unit2)
-			.append(s1).append(":").append(unit3);
+		   finlSize.append(squreVal).append(":").append(unit1).append(":").append(squreVal).append(":").append(unit2)
+			.append(":").append(s1).append(":").append(unit3);
 		} else{//7/8 SQ
 			sizeVal  = sizeVal.replaceAll("[^0-9/ ]", "");
-			finlSize.append(sizeVal).append(":").append("Length").append(sizeVal).append(":").append("Width");
+			finlSize.append(sizeVal).append(":").append("Length").append(":").append(sizeVal).append(":").append("Width");
 		}	   
 	   return finlSize;
    }
@@ -213,39 +316,45 @@ public class MerchAttributeParser {
 		valueObj.setValue(value);
 		return valueObj;
 	}
-  public List<ImprintSize> getProductImprintSize(String imprSize){
-	  imprSize = imprSize.replaceAll("or", ",");
-	  imprSize = imprSize.replaceAll(";", ",");
+  public List<ImprintSize> getProductImprintSize(List<String> imprSizeList){
 	  List<ImprintSize> imprintSizeList = new ArrayList<>();
 	  ImprintSize imprintSizeObj = null;
-	  String[] imprSizes = CommonUtility.getValuesOfArray(imprSize, ",");
-	  for (String imprSizeName : imprSizes) {
-		  imprintSizeObj = new ImprintSize();
-		  imprintSizeObj.setValue(imprSizeName);
-		  imprintSizeList.add(imprintSizeObj);
+	  for (String imprSize : imprSizeList) {
+		  imprSize = imprSize.replaceAll("or", ",");
+		  imprSize = imprSize.replaceAll(";", ",");
+		  String[] imprSizes = CommonUtility.getValuesOfArray(imprSize, ",");
+		  for (String imprSizeName : imprSizes) {
+			  imprSizeName = removeSpecialCharsImprintSize(imprSizeName);
+			  imprintSizeObj = new ImprintSize();
+			  imprintSizeObj.setValue(imprSizeName);
+			  imprintSizeList.add(imprintSizeObj);
+		}
 	}
 	  return imprintSizeList;
   }
-  public List<Color> getProductColor(String color){
+  public List<Color> getProductColor(List<String> colorsList){
 	  List<Color> colorList = new ArrayList<>();
 	  Color colorObj = null;
-	  String[] colors = CommonUtility.getValuesOfArray(color, ",");
-	  for (String colorName : colors) {
-		colorObj = new Color();
-		String colorGroup = MerchColorMapping.getColorGroup(colorName);
-		if(colorGroup!= null){
-			colorObj.setName(colorGroup);
-			colorObj.setAlias(colorName);
-		} else {
-			if(colorName.contains("-")){
-				colorObj = getColorCombo(colorName);
-			} else {
-				colorObj.setName("Other");
+	  for (String colorVal : colorsList) {
+		  String[] colors = CommonUtility.getValuesOfArray(colorVal, ",");
+		  for (String colorName : colors) {
+			colorObj = new Color();
+			String colorGroup = MerchColorMapping.getColorGroup(colorName);
+			if(colorGroup!= null){
+				colorObj.setName(colorGroup);
 				colorObj.setAlias(colorName);
+			} else {
+				if(colorName.contains("-")){
+					colorObj = getColorCombo(colorName);
+				} else {
+					colorObj.setName("Other");
+					colorObj.setAlias(colorName);
+				}
 			}
+			colorList.add(colorObj);
 		}
-		colorList.add(colorObj);
 	}
+	  
 	  return colorList;
   }
   
@@ -418,13 +527,13 @@ public class MerchAttributeParser {
 	 if(packVal.equalsIgnoreCase("Bulk. Packaging Options: White Gift Box $0.70(G). Brown Mailer Box $1.20(G)")){
 		 packagingList = getPackageValues("Bulk,White Gift Box,Brown Mailer Box");
 		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "0.70", "G", "Packaging", false, "USD",
-					"", "White Gift Box", "Packaging Charge", "Other", 1, priceGrids, "", "");
+					"", "White Gift Box", "Packaging Charge", "Per Quantity", 1, priceGrids, "", "");
 		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "1.20", "G", "Packaging", false, "USD",
-					"", "Brown Mailer Box", "Packaging Charge", "Other", 1, priceGrids, "", "");
+					"", "Brown Mailer Box", "Packaging Charge", "Per Quantity", 1, priceGrids, "", "");
 	 } else if(packVal.equalsIgnoreCase("Bulk. Packaging Options: Brown Mailer Box $1.20(G)")){
 		 packagingList = getPackageValues("Bulk,Brown Mailer Box");
 		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "1.20", "G", "Packaging", false, "USD",
-					"", "Brown Mailer Box", "Packaging Charge", "Other", 1, priceGrids, "", "");
+					"", "Brown Mailer Box", "Packaging Charge", "Per Quantity", 1, priceGrids, "", "");
 	 } else {
 		 packagingList = getPackageValues(packVal);
 	 }
@@ -458,7 +567,7 @@ public class MerchAttributeParser {
 		String existingImprintMethods = imprintMethodList.stream().map(ImprintMethod::getAlias)
 				.collect(Collectors.joining(","));
 		if(prdTimeVal.equalsIgnoreCase("Blank: 2 business days; Embroidery: 7-10 business days")){
-			List<String> imprMethods = Arrays.asList("Embroidery,Unimprinted");
+			List<String> imprMethods = Arrays.asList("Embroidery","Unimprinted");
 			ImprintMethod imprMethObj = null;
 			for (String imprintMethodName : imprMethods) {
 				if(!existingImprintMethods.contains(imprintMethodName)){
@@ -477,7 +586,7 @@ public class MerchAttributeParser {
 			imprAndPrdTimeAvailMap.put("Embroidery", "7-10 business days");
 			List<Availability> availabilityList = getProductAvailablity(imprAndPrdTimeAvailMap);
 			existingProdcut.setAvailability(availabilityList);
-			prdTimeVal = "2 business days;7-10 business days";
+			prdTimeVal = "Blank: 2 business days; Embroidery: 7-10 business days";
 		}
 	  List<ProductionTime> productionTimeList = new ArrayList<>();
 	  ProductionTime prdTimeObj = null;
@@ -485,9 +594,13 @@ public class MerchAttributeParser {
 	  String[] prodTimes = CommonUtility.getValuesOfArray(prdTimeVal,",");
 	  for (String prdTime : prodTimes) {
 		  prdTimeObj = new ProductionTime();
+		  String details = "";
+		  if(prdTime.contains(":")){
+			   details = prdTime.split(":")[0].trim();
+		  }
 		  prdTime = prdTime.replaceAll("[^0-9-]", "").trim();
 		  prdTimeObj.setBusinessDays(prdTime);
-		  prdTimeObj.setDetails("");
+		  prdTimeObj.setDetails(details);
 		  productionTimeList.add(prdTimeObj);
 	}
 	  configuration.setProductionTime(productionTimeList);
@@ -550,7 +663,7 @@ public class MerchAttributeParser {
 				listOfRushTimeValue.add(rushTimeValueObj);
 				if(!StringUtils.isEmpty(priceVal)){
 				priceGrid = merchPriceGridParser.getUpchargePriceGrid("1", priceVal, "G", "Rush Service", false, "USD",
-						"", rushTime + " business days", "Rush Service Charge", "Other", 1, priceGrid, "", "");
+						"", rushTime + " business days", "Rush Service Charge", "Per Order", 1, priceGrid, "", "");
 				}
 		}
 			rushTimeObj.setRushTimeValues(listOfRushTimeValue);
@@ -559,29 +672,318 @@ public class MerchAttributeParser {
 			existingProduct.setPriceGrids(priceGrid);
 	 return existingProduct; 
  }
- public Product getUpchargeImprintMethdoColumns(String val,Product existingProduct,String upchargeType){
-	 String imprintMethodVals = existingProduct.getDeliveryOption();
+ public Product getUpchargeImprintMethdoColumns(String val,Product existingProduct,String upchargeType,String priceInclude){
 	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
 	 String[] vals = CommonUtility.getValuesOfArray(val, ",");
-	 String priceInclude = "";
+	 ProductConfigurations config = existingProduct.getProductConfigurations();
+	 List<ImprintMethod> imprintMethodList = config.getImprintMethods();
+	 String screenAlias = getImprintMethodAliasName(imprintMethodList, "Silkscreen");
+	 if(StringUtils.isEmpty(screenAlias)){
+		 imprintMethodList = getImprintMethod("Screen", "Silkscreen", imprintMethodList);
+		 screenAlias = "Screen";
+	 }
+	 //String priceInclude = "";
 	 for (String priceVal : vals) {
-		 priceInclude = "";
 		    if(priceVal.equalsIgnoreCase("$85.00 (G) 1-color wrap")){
 		    	 priceVal = "85.00";priceInclude = "1-color wrap";
-		    } else if(priceVal.equalsIgnoreCase("")){
+		    } else if(priceVal.equalsIgnoreCase("")){// future purpse
 		    	
-		    } else if(priceVal.equalsIgnoreCase("")){
+		    } else if(priceVal.equalsIgnoreCase("")){//future purpose
 		    	
 		    } else {
 		    	priceVal = priceVal.replaceAll("[^0-9.]", "");
 		    }
-		    if(!StringUtils.isEmpty(imprintMethodVals)){
+		    if(!StringUtils.isEmpty(screenAlias)){
 		    	priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", priceVal, "G", "Imprint Method", false, "USD", priceInclude,
-						imprintMethodVals, upchargeType, "Other", 1, priceGrids, "", "");	
+		    			screenAlias, upchargeType, "Other", 1, priceGrids, "", "");	
 		    }
+		    //priceInclude = "";
 	}
+	 config.setImprintMethods(imprintMethodList);
+	 existingProduct.setProductConfigurations(config);
+	 existingProduct.setPriceGrids(priceGrids);
 	 return existingProduct;
  }
+ public Product getUpchargeAdditionalColorAndLocation(String val,Product existingProduct){
+	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
+	 ProductConfigurations config = existingProduct.getProductConfigurations();
+	 List<ImprintMethod> imprintMethodList = config.getImprintMethods();
+	 List<AdditionalColor> additionalColorList = config.getAdditionalColors();
+	 List<AdditionalLocation> additionalLocationList = config.getAdditionalLocations();
+	 if(CollectionUtils.isEmpty(additionalColorList)){
+		 additionalColorList = getAdditionalColor("Additional Color");
+	 }
+	 if(CollectionUtils.isEmpty(additionalLocationList)){
+		 additionalLocationList = getAdditionalLocation("Additional Location");
+	 }
+	 if(val.equalsIgnoreCase("Laser $.38(G); Screen $.25(G) per unit + setup")){
+		 String laserEngravedAlias = getImprintMethodAliasName(imprintMethodList, "Laser Engraved");
+		 String silkscreenAlias = getImprintMethodAliasName(imprintMethodList, "Silkscreen");
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "0.38", "G", "Imprint Method", false, "USD", "per unit + setup",
+				 laserEngravedAlias, "Run Charge", "Per Quantity", 1, priceGrids, "", "");
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "0.25", "G", "Imprint Method", false, "USD", "per unit + setup",
+				 silkscreenAlias, "Run Charge", "Per Quantity", 1, priceGrids, "", "");
+	 } else {//$9.00 (G) + setup(remaining values like that)
+		 String addLocVals = additionalLocationList.stream().map(AdditionalLocation::getName).collect(Collectors.joining(","));
+		 String addColorVals = additionalColorList.stream().map(AdditionalColor::getName).collect(Collectors.joining(","));
+		 val = val.replaceAll("[^0-9.]", "").trim();
+		/* if(val.contains("per unit")){//$4.50(G) per unit + setup
+			 val = val.replaceAll("[^0-9.]", "").trim();priceInclude="per unit + setup";
+		 } else {//$9.00 (G) + setup
+			 val = val.replaceAll("[^0-9.]", "").trim();priceInclude="setup";
+		 }*/
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", val, "G", "Additional Location", false, "USD", "per unit + setup",
+				 addLocVals, "Add. Location Charge", "Other", 1, priceGrids, "", "");
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", val, "G", "Additional Colors", false, "USD", "per unit + setup",
+				 addColorVals, "Add. Color Charge", "Other", 1, priceGrids, "", "");
+	 }
+	 config.setAdditionalColors(additionalColorList);
+	 config.setAdditionalLocations(additionalLocationList);
+	 existingProduct.setProductConfigurations(config);
+	 existingProduct.setPriceGrids(priceGrids);
+	 return existingProduct;
+ }
+ private String getImprintMethodAliasName(List<ImprintMethod> imprList,String imprintMethodType){
+	 for (ImprintMethod imprintMethod : imprList) {
+		if(imprintMethod.getType().equalsIgnoreCase(imprintMethodType)){
+			return imprintMethod.getAlias();
+		}
+	}
+	 return "";
+ }
+ private List<AdditionalColor> getAdditionalColor(String addClrVal){
+	 List<AdditionalColor> additionnalColorList = new ArrayList<>();
+	 AdditionalColor addColorObj = new AdditionalColor();
+	 addColorObj.setName(addClrVal);
+	 additionnalColorList.add(addColorObj);
+	 return additionnalColorList;
+ }
+ private List<AdditionalLocation> getAdditionalLocation(String addLocVal){
+	 List<AdditionalLocation> additionalLocationList = new ArrayList<>();
+	 AdditionalLocation addLocObj = new AdditionalLocation();
+	 addLocObj.setName(addLocVal);
+	 additionalLocationList.add(addLocObj);
+	 return additionalLocationList;
+ }
+ public Product getUpchargeBasedOnScreenReOrderSetup(String val,Product existingProduct){
+	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
+	 ProductConfigurations config = existingProduct.getProductConfigurations();
+	 List<ImprintMethod> imprintMethodList = config.getImprintMethods();
+	 String imprintMethodAlias = "";
+	 if(val.equalsIgnoreCase("Laser-NC, Screen-$37.50 (G)")){
+		 //Laser-NC, Screen-$37.50 (G)" the upcharges should be based on the Silkscreen Imprint Method. 
+		 imprintMethodAlias = getImprintMethodAliasName(imprintMethodList, "Silkscreen");
+		 if(StringUtils.isEmpty(imprintMethodAlias)){
+			 imprintMethodList = getImprintMethod("Screen", "Silkscreen", imprintMethodList);
+			 imprintMethodAlias = "Screen";
+		 }
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "37.50", "G", "Imprint Method", false, "USD", "",
+				 imprintMethodAlias, "Re-Order Charge", "Other", 1, priceGrids, "", "");
+	 } else if(val.equalsIgnoreCase("Laser-NC, Insert-$37.50 (G)")){
+		 //the upcharges should be based on whatever Imprint Method that exists that's not Laser Engraved. 
+		 //If no other imprint methods currently exist please create one using "Printed=Insert".
+		 imprintMethodAlias = imprintMethodList.stream()
+					.filter(imprMethod -> !imprMethod.getType().equals("Laser Engraved")).map(ImprintMethod::getAlias)
+					.collect(Collectors.joining(","));
+			if(StringUtils.isEmpty(imprintMethodAlias)){
+				 imprintMethodList = getImprintMethod("Insert", "Printed", imprintMethodList);
+				 imprintMethodAlias = "Insert";
+			}
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "37.50", "G", "Imprint Method", false, "USD", "",
+				 imprintMethodAlias, "Re-Order Charge", "Other", 1, priceGrids, "", "");
+	 } else {//$31.25 (G)
+		 val = val.replaceAll("[^0-9.]", "").trim();
+		 imprintMethodAlias = imprintMethodList.stream().map(ImprintMethod::getAlias).collect(Collectors.joining(","));
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", val, "G", "Imprint Method", false, "USD", "",
+				 imprintMethodAlias, "Re-Order Charge", "Other", 1, priceGrids, "", "");
+	 }
+	 config.setImprintMethods(imprintMethodList);
+	 existingProduct.setProductConfigurations(config);
+	 existingProduct.setPriceGrids(priceGrids);
+	return  existingProduct;
+ }
+ private List<ImprintMethod> getImprintMethod(String alias,String type,List<ImprintMethod> existingImprintMethod){
+	 ImprintMethod imprintMethodObj = new ImprintMethod();
+	 if(CollectionUtils.isEmpty(existingImprintMethod)){
+		 existingImprintMethod = new ArrayList<>();
+	 }
+	 imprintMethodObj.setType(type);
+	 imprintMethodObj.setAlias(alias);
+	 existingImprintMethod.add(imprintMethodObj);
+	 return existingImprintMethod;
+ }
+ public Product getUpchargeBasedOnLessThanMin(String val,Product existingProduct){
+	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
+	 existingProduct.setCanOrderLessThanMinimum(true);
+	 if(val.equalsIgnoreCase("$37.50 (G) + $5.25 (G) per unit")){
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1","37.50", "G", "Less than Minimum", false, "USD", "",
+				 "Can order less than minimum", "Less than Minimum Charge", "Per Order", 1, priceGrids, "", "");
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1","5.25", "G", "Less than Minimum", false, "USD", "Per unit",
+				 "Can order less than minimum", "Less than Minimum Charge", "Per Quantity", 1, priceGrids, "", "");
+	 } else{
+		 val = val.replaceAll("[^0-9.]", "").trim();
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", val, "G", "Less than Minimum", false, "USD", "",
+				 "Can order less than minimum", "Less than Minimum Charge", "Per Order", 1, priceGrids, "", "");
+	 }
+	 existingProduct.setPriceGrids(priceGrids);
+	return existingProduct;
+ }
+ public Product getUpchargeBasedOnLogoModification(String priceVal,Product existingProduct){// it is used to artwork 
+	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
+	 ProductConfigurations config = existingProduct.getProductConfigurations();
+	 List<Artwork> artworkList = getArtWork("Art Services","Logo Modification");
+	 priceVal = priceVal.replaceAll("[^0-9.]", "").trim(); 
+	 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", priceVal, "G", "Artwork & Proofs", false, "USD", "",
+			 "Art Services", "Artwork Charge", "Per Order", 1, priceGrids, "", "");
+	 config.setArtwork(artworkList);
+	 existingProduct.setPriceGrids(priceGrids);
+ return existingProduct;
+ }
+private List<Artwork> getArtWork(String artworkVal,String comment){
+	List<Artwork> artworkList = new ArrayList<>();
+	Artwork artworkObj = new Artwork();
+	artworkObj.setValue(artworkVal);
+	artworkObj.setComments(comment);
+	artworkList.add(artworkObj);
+	return artworkList;
+}
+public Product getUpchargeBasedOnTapeCharge(String val,Product existingProduct){
+	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
+	 List<ImprintMethod> imprintMethodList = existingProduct.getProductConfigurations().getImprintMethods();
+	 String imprMethodVals = imprintMethodList.stream().map(ImprintMethod::getAlias).collect(Collectors.joining(","));
+	 if(imprMethodVals.contains("Embroidery")){
+		 imprMethodVals = "Embroidery";
+	 }
+	 if(val.equalsIgnoreCase("$150.00(G) + $3.75(G) per unit 8K stitches, 6 colors")){
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "150.00", "G", "Imprint Method", false, "USD", "",
+				 imprMethodVals, "Tape Charge", "Per Order", 1, priceGrids, "", "");
+		 priceGrids = merchPriceGridParser.getUpchargePriceGrid("1", "3.75", "G", "Imprint Method", false, "USD", "Per unit 8K stitches, 6 colors",
+				 imprMethodVals, "Run Charge", "Other", 1, priceGrids, "", "");
+	 }
+	 existingProduct.setPriceGrids(priceGrids);
+    return existingProduct;
+}
+public ShippingEstimate getProductShippingEstimates(String shippingNoOfItems,String dimensions,String weight) {
+	ShippingEstimate shippingEstimateObj = new ShippingEstimate();
+	List<NumberOfItems> numberOfItems = null;
+	Dimensions dimensionsObj = null;
+	List<Weight> shippingWeight = null;
+	if(!StringUtils.isEmpty(shippingNoOfItems)){
+		numberOfItems = getShippingNumberOfItems(shippingNoOfItems);
+	}
+	if(!StringUtils.isEmpty(dimensions)){
+		dimensionsObj = getShippingDimensions(dimensions);	
+	}
+	if(!StringUtils.isEmpty(weight)){
+		shippingWeight = getShippingWeight(weight);
+	}
+	shippingEstimateObj.setNumberOfItems(numberOfItems);
+	shippingEstimateObj.setWeight(shippingWeight);
+	shippingEstimateObj.setDimensions(dimensionsObj);
+	return shippingEstimateObj;
+}
+
+private List<NumberOfItems> getShippingNumberOfItems(String val) {
+	List<NumberOfItems> listOfNumberOfItems = new ArrayList<>();
+	NumberOfItems numberOfItemsObj = new NumberOfItems();
+	numberOfItemsObj.setValue(val);
+	numberOfItemsObj.setUnit("Per Carton");
+	listOfNumberOfItems.add(numberOfItemsObj);
+	return listOfNumberOfItems;
+}
+
+private List<Weight> getShippingWeight(String val) {
+	List<Weight> listOfShippingWt = new ArrayList<>();
+	Weight weightObj = new Weight();
+	weightObj.setValue(val);
+	weightObj.setUnit("lbs");
+	listOfShippingWt.add(weightObj);
+	return listOfShippingWt;
+}
+
+private Dimensions getShippingDimensions(String val) {//W X H X L
+	String[] vals = val.split("x");
+	Dimensions dimensionsObj = new Dimensions();	
+		dimensionsObj.setLength(vals[2].trim());
+		dimensionsObj.setWidth(vals[0].trim());
+		dimensionsObj.setHeight(vals[1].trim());
+		dimensionsObj.setLengthUnit(ApplicationConstants.CONST_STRING_INCHES);
+		dimensionsObj.setWidthUnit(ApplicationConstants.CONST_STRING_INCHES);
+		dimensionsObj.setHeightUnit(ApplicationConstants.CONST_STRING_INCHES);	
+	return dimensionsObj;
+}
+public Product getBasePriceColumns(String qty,String prices,String discount,String priceName,String priceInclude,Product existingProduct,String imprintMethodType){
+	 List<PriceGrid> priceGrids = existingProduct.getPriceGrids();
+	 ProductConfigurations config = existingProduct.getProductConfigurations();
+	 String criteria = "";
+	 if(!StringUtils.isEmpty(imprintMethodType)){
+		 List<ImprintMethod> imprintMethodList = config.getImprintMethods();
+		 String imprMethodAlias = getImprintMethodAliasName(imprintMethodList, imprintMethodType);
+		 if(StringUtils.isEmpty(imprMethodAlias)){
+			 imprintMethodList = getImprintMethod(imprintMethodType, imprintMethodType, imprintMethodList);
+			 imprMethodAlias = imprintMethodType;
+		 }
+		 if(StringUtils.isEmpty(priceName)){
+			 priceName =  imprintMethodType;
+		 }
+		 criteria = "Imprint Method:"+imprMethodAlias;
+		 config.setImprintMethods(imprintMethodList);
+	 }
+		priceGrids = merchPriceGridParser.getBasePriceGrid(prices, qty, discount, "USD", priceInclude, true, false,
+				priceName,criteria, priceGrids, "", "", "");
+		existingProduct.setProductConfigurations(config);
+		existingProduct.setPriceGrids(priceGrids);
+   return existingProduct;
+}
+public List<ProductNumber> getProductNumbers(Map<String, String> prdNumbers){
+	List<ProductNumber> productNumberList = new ArrayList<>();
+	ProductNumber productNumberObj = null;
+	for (Map.Entry<String,String> numbers : prdNumbers.entrySet()) {
+		String prdNo = numbers.getKey();
+		String colorVal = numbers.getValue();
+		 productNumberObj = new ProductNumber();
+		 productNumberObj.setProductNumber(prdNo);
+			List<Configurations> listOfConfig = new ArrayList<>();
+			Configurations configObj = new Configurations();
+			configObj.setCriteria("Product Color");
+			configObj.setValue(Arrays.asList(colorVal));
+			listOfConfig.add(configObj);
+			productNumberObj.setConfigurations(listOfConfig);
+			productNumberList.add(productNumberObj);
+	}
+	return productNumberList;
+}
+private String removeSpecialCharsImprintSize(String imprSizeName){
+	if(imprSizeName.contains("•")){
+		  imprSizeName = imprSizeName.replaceAll("•", ".");
+	  }
+	  if(imprSizeName.contains("½")){
+		  imprSizeName = imprSizeName.replaceAll("½", "1/2");
+	  }
+	  if(imprSizeName.contains("¼")){
+		  imprSizeName = imprSizeName.replaceAll("¼", "1/4");
+	  }
+	  if(imprSizeName.contains("“")){
+		  imprSizeName = imprSizeName.replaceAll("“", "\"");
+	  }
+	  if(imprSizeName.contains("”")){
+		  imprSizeName = imprSizeName.replaceAll("”", "\"");
+	  }
+	  if(imprSizeName.contains("°")){
+		  imprSizeName = imprSizeName.replaceAll("°", "");
+	  }
+	return imprSizeName;
+}
+public List<Shape> getProductShape(String shapeVal){
+	List<Shape> shapeList = new ArrayList<>();
+	Shape shapeObj = new Shape();
+	shapeObj.setName(shapeVal);
+	shapeList.add(shapeObj);
+	return shapeList;
+}
+public boolean isSpecialBasePriceGrid(String xid){
+	return listOfXidForBasePriceGrid.contains(xid);
+}
   public MerchPriceGridParser getMerchPriceGridParser() {
 		return merchPriceGridParser;
 	}

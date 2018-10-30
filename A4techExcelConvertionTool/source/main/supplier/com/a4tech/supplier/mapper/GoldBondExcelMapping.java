@@ -22,6 +22,7 @@ import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.FOBPoint;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintColor;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.PriceGrid;
@@ -77,6 +78,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 		String multiColorCharge = "";
 		String setUpChargeColumnVal = "";
 		String descriptionForSummary = "";
+		StringBuilder imageValues =  new StringBuilder();
 		while (iterator.hasNext()) {
 			
 			try{
@@ -122,12 +124,19 @@ public class GoldBondExcelMapping implements IExcelParser{
 										//}
 									}
 									if(StringUtils.isEmpty(productExcelObj.getSummary())){
+										descriptionForSummary = CommonUtility.removeSpecificWord(descriptionForSummary, asiPrdNo);
 										productExcelObj.setSummary(
-												CommonUtility.getStringLimitedChars(descriptionForSummary, 130));
+												CommonUtility.getStringLimitedChars(descriptionForSummary.trim(), 130));
 									}
 									if(!StringUtils.isEmpty(productExcelObj.getAdditionalProductInfo())){
 										String additionalPrdInfo = productExcelObj.getAdditionalProductInfo();
-										additionalPrdInfo = CommonUtility.removeSpecificWord(additionalPrdInfo, "Velcro");
+										//additionalPrdInfo = CommonUtility.removeSpecificWord(additionalPrdInfo, "Velcro");
+										if(additionalPrdInfo.contains("Velcro")){
+											additionalPrdInfo = additionalPrdInfo.replaceAll("Velcro", "Hook & Loop");
+										} else {
+											additionalPrdInfo = additionalPrdInfo.replaceAll("velcro", "Hook & Loop");	
+										}
+										additionalPrdInfo = additionalPrdInfo.replaceAll("®", "");
 										productExcelObj.setAdditionalProductInfo(additionalPrdInfo);	
 									}
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
@@ -153,6 +162,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 							    multiColorCharge = "";
 							    setUpChargeColumnVal = "";
 							    descriptionForSummary = "";
+							    imageValues =  new StringBuilder();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -188,7 +198,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 				    break;
 				case 4:// description
 					String prdName = cell.getStringCellValue();
-					prdName = prdName.replaceAll("[^a-zA-Z0-9%/?!\"\\- ]", "");
+					prdName = prdName.replaceAll("[^a-zA-Z0-9%/?!\"\\-. ]", "");
 					if(prdName.toUpperCase().contains(asiPrdNo)){
 						prdName = CommonUtility.removeSpecificWord(prdName, asiPrdNo);
 						prdName = prdName.replaceAll(asiPrdNo, "");
@@ -496,7 +506,8 @@ public class GoldBondExcelMapping implements IExcelParser{
 					break;
 				case 136:
 					String size = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(size)){
+							if (!StringUtils.isEmpty(size) && !size.equals("Various")
+									&& !size.equals("Adjustable to size") && !size.contains("One size fits most")) {
 						if(isSizeValue(size)){
 							Size sizeVals = gbAttributeParser.getProductSize(size);
 							productConfiguration.setSizes(sizeVals);
@@ -559,7 +570,15 @@ public class GoldBondExcelMapping implements IExcelParser{
 								List<Artwork> listOfArtwork = gbAttributeParser
 										.getProductArtwork("PRE-PRODUCTION PROOF");
 						   productConfiguration.setArtwork(listOfArtwork);
-								listOfPriceGrids = gbPriceGridParser.getUpchargePriceGrid("1", proofCharge, "Z", "Artwork & Proofs",
+						   String price = proofCharge;
+						   String disc = "Z";
+						   if(proofCharge.contains("(")){
+							   proofCharge = getPriceAndDiscountCodeValue(proofCharge);
+							   String[] vals = CommonUtility.getValuesOfArray(proofCharge, ":"); 
+							   price = vals[0];
+							   disc = vals[1];
+						   }
+								listOfPriceGrids = gbPriceGridParser.getUpchargePriceGrid("1", price, disc, "Artwork & Proofs",
 										false, "USD","","PRE-PRODUCTION PROOF", "Artwork Charge", "Other", 1,
 										listOfPriceGrids,"","");
 					   }
@@ -664,8 +683,20 @@ public class GoldBondExcelMapping implements IExcelParser{
 						productConfiguration = productExcelObj.getProductConfigurations();
 					}
 				    break;
+				
+				case 161:
+					String imprintMethodVal1 = cell.getStringCellValue();
+					  if(!StringUtils.isEmpty(imprintMethodVal1)){
+						  if(imprintMethodVal1.equalsIgnoreCase("NO IMPRINT")){
+							  productExcelObj.setProductConfigurations(productConfiguration);
+							  productExcelObj = gbAttributeParser.getImprintMethods(imprintMethodVal1, productExcelObj);
+							  productConfiguration = productExcelObj.getProductConfigurations();  
+						  } else {
+							  imprintColors.append(imprintMethodVal1).append(",");
+						  }
+					  }
+					break;
 				case 160://imprint colors
-				case 161: 
 				case 162:	
 				case 163: 
 				case 164: 	
@@ -720,7 +751,8 @@ public class GoldBondExcelMapping implements IExcelParser{
 					basePriceInclude = basePriceInclude.replaceAll("®", "").trim();
 					basePriceInclude = CommonUtility.getStringLimitedChars(basePriceInclude, 100);
 					break;
-				/*case 206: // images start
+				case 206: // images start
+					break;
 				case 207:
 				case 208:
 				case 209:	
@@ -754,7 +786,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 					if(!StringUtils.isEmpty(img)){
 						imageValues.append(img).append(",");
 					}
-					break;*/	
+					break;
 				/*case 236: // Itemcolors
 					//Ignore colors are available in previous columns
 					break;*/
@@ -765,10 +797,15 @@ public class GoldBondExcelMapping implements IExcelParser{
 			    	 ImprintColor imprintColorValues = gbAttributeParser.getImprintColors(imprintColors.toString());
 					 productConfiguration.setImprintColors(imprintColorValues);
 			    }
-			    /*if(!StringUtils.isEmpty(imageValues.toString())){
+			    if(!StringUtils.isEmpty(imageValues.toString())){
 			    	List<Image> listOfImages = gbAttributeParser.getImages(imageValues.toString());
 				    productExcelObj.setImages(listOfImages);
-			    }*/
+			    } else{
+			    	if(productExcelObj.getImages() != null){
+			    		List<Image> imageList = removePriceGridConfiguration(productExcelObj.getImages());
+					      productExcelObj.setImages(imageList);			    		
+			    	}
+			    }
 			     if(!StringUtils.isEmpty(secondPoleImprint)){////qty,discountCode,Price
 			    	 String priceval = getSecondPoleImprintPriceValues(secondPoleImprint);
 			    	 String[] priceVals = CommonUtility.getValuesOfArray(priceval, ",");
@@ -832,12 +869,19 @@ public class GoldBondExcelMapping implements IExcelParser{
 				//}
 			}
 		 if(StringUtils.isEmpty(productExcelObj.getSummary())){
+			 descriptionForSummary = CommonUtility.removeSpecificWord(descriptionForSummary, asiPrdNo);
 			 productExcelObj.setSummary(
-						CommonUtility.getStringLimitedChars(descriptionForSummary, 130));
+						CommonUtility.getStringLimitedChars(descriptionForSummary.trim(), 130));
 			}
 		 if(!StringUtils.isEmpty(productExcelObj.getAdditionalProductInfo())){
 				String additionalPrdInfo = productExcelObj.getAdditionalProductInfo();
-				additionalPrdInfo = CommonUtility.removeSpecificWord(additionalPrdInfo, "Velcro");
+				//additionalPrdInfo = CommonUtility.removeSpecificWord(additionalPrdInfo, "Velcro");
+				if(additionalPrdInfo.contains("Velcro")){
+					additionalPrdInfo = additionalPrdInfo.replaceAll("Velcro", "Hook & Loop");
+				} else {
+					additionalPrdInfo = additionalPrdInfo.replaceAll("velcro", "Hook & Loop");	
+				}
+				additionalPrdInfo = additionalPrdInfo.replaceAll("®", "");
 				productExcelObj.setAdditionalProductInfo(additionalPrdInfo);	
 			}
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
@@ -880,7 +924,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 	}
 	private String finalDescriptionValue(String newDesc,String productNum){
 		if(!StringUtils.isEmpty(newDesc)){
-			newDesc = newDesc.replaceAll("velcro", "");
+			newDesc = newDesc.replaceAll("velcro", "Hook & Loop");
 			if(newDesc.toUpperCase().contains(productNum)){
 				newDesc = CommonUtility.removeSpecificWord(newDesc, productNum);
 				newDesc = newDesc.replaceAll(productNum, "");
@@ -931,6 +975,14 @@ public class GoldBondExcelMapping implements IExcelParser{
 		}
 		return true;
 	}
+	private String getPriceAndDiscountCodeValue(String val){
+		//$15.00 (G)
+		val = val.replaceAll("[^0-9A-Za-z.()]", "");
+		String discountCode = CommonUtility.extractValueSpecialCharacter("(", ")", val);
+		val = val.replaceAll("[^0-9.]", "");
+		val = val+":"+discountCode;
+		return val;
+	}
 	/*private List<ImprintMethod> productImprintMethods(String value){
 		List<ImprintMethod> imprintMethodList = new ArrayList<>();
 		ImprintMethod imprintMethod = new ImprintMethod();
@@ -939,7 +991,15 @@ public class GoldBondExcelMapping implements IExcelParser{
 		imprintMethodList.add(imprintMethod);
 		return imprintMethodList;
 	}*/
-	//private boolean 
+	//private boolean
+	private List<Image> removePriceGridConfiguration(List<Image> imageOldList){
+		List<Image> newImage = new ArrayList<>();
+		for (Image image : imageOldList) {
+			image.setConfigurations(new ArrayList<>());
+			newImage.add(image);
+		}
+		return newImage;
+	}
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}

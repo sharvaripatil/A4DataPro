@@ -166,7 +166,15 @@ public class TowelSpecPriceGridParser {
 				//config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
 				//String criteriaValue = LookupData.getCriteriaValue(config[0]);
 				try {
-					if (!value.equalsIgnoreCase("Screenprinted (1 color) on chair, tote and towel") && value.contains(",")) {
+					if (!value.equalsIgnoreCase("Screenprinted (1 color) on chair, tote and towel") 
+							&& !value.equalsIgnoreCase("Screenprinted, Colors")
+							&&!value.equalsIgnoreCase("Screenprinted, White")
+							&& !value.equalsIgnoreCase("Screenprint (white, 1 color)")
+							&&!value.equalsIgnoreCase("Screenprint (white, multicolor)")
+							&& !value.equalsIgnoreCase("LSSFHM - Decorated (1 color on towel, ColorFusion on bag)")
+							&& !value.equalsIgnoreCase("Screenprinted (1 color, White)")
+							&& !value.equalsIgnoreCase("Screenprinted (multi-color, White)")
+							&& value.contains(",")) {
 						String[] values = value.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 						for (String Value : values) {
 							configs = new PriceConfiguration();

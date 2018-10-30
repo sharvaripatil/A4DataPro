@@ -40,14 +40,20 @@ public class BagMakerAttributeParser {
 	
 	public List<ImprintMethod> getImprintMethods(List<String> listOfImprintMethods){
 		List<ImprintMethod> listOfImprintMethodsNew = new ArrayList<ImprintMethod>();
+		String aliasName="";
 		for (String value : listOfImprintMethods) {
+			aliasName=value;
+			if(value.toLowerCase().contains("screen")){
+				value="Silkscreen";
+			}
+			
 			value=value.trim();
 			ImprintMethod imprintMethodObj =new ImprintMethod();
 			if(objLookUpService.isImprintMethod(value.toUpperCase())){
-				imprintMethodObj.setAlias(value);
+				imprintMethodObj.setAlias(aliasName);
 				imprintMethodObj.setType(value);
 			}else{
-				imprintMethodObj.setAlias(value);
+				imprintMethodObj.setAlias(aliasName);
 				imprintMethodObj.setType("OTHER");
 			}
 			listOfImprintMethodsNew.add(imprintMethodObj);
@@ -169,6 +175,7 @@ public List<Color> getProductColors(String color){
 					String alias = colorGroup.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH, "-");
 					colorObj.setAlias(alias);
 					colorObj.setCombos(listOfCombo);
+					listOfColors.add(colorObj);
 				} else {
 					String[] comboColors = CommonUtility.getValuesOfArray(colorGroup,
 							ApplicationConstants.CONST_DELIMITER_FSLASH);
@@ -180,7 +187,9 @@ public List<Color> getProductColors(String color){
 						colorObj.setName(ApplicationConstants.CONST_VALUE_TYPE_OTHER);
 						colorObj.setAlias(colorName);
 					}
+					listOfColors.add(colorObj);
 				}
+				//listOfColors.add(colorObj);
 			/*} else {
 				if (colorGroup == null) {
 				colorGroup = ApplicationConstants.CONST_VALUE_TYPE_OTHER;
@@ -190,12 +199,27 @@ public List<Color> getProductColors(String color){
 			}*/
 		} else {
 			if (colorGroup == null) {
-				colorGroup = ApplicationConstants.CONST_VALUE_TYPE_OTHER;
-				}
+				List<String> listOfLookupColor = getColorType(colorName.toUpperCase());
+				if(!listOfLookupColor.isEmpty()){
+				//	int numOfMaterials = listOfLookupColor.size();
+				//if(numOfMaterials == 1){ // this condition used to single material value(E.X 100% Cotton)
+						//colorObj = getColorValue(listOfLookupColor.get(0), colorName);//
+					colorObj = getColorValue("MEDIUM "+listOfLookupColor.get(0), colorName);//
+						listOfColors.add(colorObj);
+							//}
+				}else{
+			colorGroup = ApplicationConstants.CONST_VALUE_TYPE_OTHER;
 			colorObj.setName(colorGroup);
 			colorObj.setAlias(colorName);
+			listOfColors.add(colorObj);
+				}
+		}else if(!StringUtils.isEmpty(colorGroup)){
+			colorObj.setName(colorGroup);
+			colorObj.setAlias(colorName);
+			listOfColors.add(colorObj);
 		}
-		listOfColors.add(colorObj);
+		//listOfColors.add(colorObj);
+	}
 	}
 	}catch(Exception e){
 		_LOGGER.error("Error while processing color: "+e.getMessage());
@@ -252,7 +276,10 @@ public Size getSizes(String sizeValue) {
 		sizeValue=sizeValue.replace("H", "");
 		sizeValue=sizeValue.replace("L", "");
 		sizeValue=sizeValue.replace("\"", "");
-		
+		if(sizeValue.contains("6 + 3")){
+		sizeValue=sizeValue.replace("6 + 3", "9");
+		}
+		//6 + 3
 		//if (sizeGroup.equals("dimension")) {
 		Dimension dimensionObj = new Dimension();
 		//String DimenArr[] = sizeValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
@@ -547,6 +574,31 @@ public  List<Option> getOptions(String optionName,String  optionDataValue) {
 				
 		return finalMaterialValues;	
 	}
+	
+	public List<String> getColorType(String value){
+		//List<String> listOfLookUpColors = objLookUpService.getColorValues();
+		List<String> listOfLookUpColors = new ArrayList<String>();
+	/*	List<String> finalColorValues = listOfLookUpColors.stream()
+				                                  .filter(clrName -> value.contains(clrName))
+				                                  .collect(Collectors.toList());*/
+		
+		listOfLookUpColors.add("BLACK");
+		listOfLookUpColors.add("BLUE");
+		listOfLookUpColors.add("BROWN");
+		listOfLookUpColors.add("GRAY");
+		listOfLookUpColors.add("GREEN");
+		listOfLookUpColors.add("ORANGE");
+		listOfLookUpColors.add("PINK");
+		listOfLookUpColors.add("PURPLE");
+		listOfLookUpColors.add("RED");
+		listOfLookUpColors.add("PINK");
+		listOfLookUpColors.add("WHITE");
+		listOfLookUpColors.add("YELLOW");
+		List<String> finalColorValues = listOfLookUpColors.stream()
+                .filter(clrName -> value.toUpperCase().contains(clrName))
+                .collect(Collectors.toList());
+		return finalColorValues;	
+	}
 		
 	public Material getMaterialValue(String name,String alias){
 		Material materialObj = new Material();
@@ -555,7 +607,13 @@ public  List<Option> getOptions(String optionName,String  optionDataValue) {
 		materialObj.setAlias(alias);
 		return materialObj;
 	}
-	
+	public Color getColorValue(String name,String alias){
+		Color colorObj = new Color();
+		name = CommonUtility.removeCurlyBraces(name);
+		colorObj.setName(name);
+		colorObj.setAlias(alias);
+		return colorObj;
+	}
 	
 	public static String[] getValuesOfArray(String data,String delimiter){
 	   if(!StringUtils.isEmpty(data)){

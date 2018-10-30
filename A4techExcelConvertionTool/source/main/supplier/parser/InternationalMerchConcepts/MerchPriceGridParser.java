@@ -43,15 +43,13 @@ public class MerchPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		
 		priceGrid.setCurrency(currency);
-		priceGrid.setDescription(CommonUtility.getStringLimitedChars(priceName.replaceAll("\\*", "X"), 100));
+		priceGrid.setDescription(CommonUtility.getStringLimitedChars(priceName, 100));
 		priceInclude = CommonUtility.getStringLimitedChars(priceInclude, 100);
 		priceGrid.setPriceIncludes(priceInclude);
 		priceGrid.setIsQUR(qurFlag);
 			if (!priceGrid.getIsQUR() && !CommonUtility.isdescending(pricesForNetCost)) {
 				priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
 			}
-				/*.setIsQUR(qurFlag.equals("n") ? ApplicationConstants.CONST_BOOLEAN_FALSE
-						: ApplicationConstants.CONST_BOOLEAN_TRUE);*/
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
 		priceGrid.setProductNumber(productNumber);
@@ -64,8 +62,8 @@ public class MerchPriceGridParser {
 		priceGrid.setPrices(listOfPrice);
 		if (criterias != null && !criterias.isEmpty()) {
 			String[] criteriaVals = criterias.split(":");
-			//configuration = getConfigurations(criteriaVals[0],criteriaVals[1],optionName);
-			configuration = getConfigurations(criterias,priceName,optionName);
+			configuration = getConfigurations(criteriaVals[0],criteriaVals[1],optionName);
+			//configuration = getConfigurations(criterias,priceName,optionName);
 		}
 		if(!CollectionUtils.isEmpty(configuration)){
 			priceGrid.setPriceConfigurations(configuration);
@@ -130,76 +128,34 @@ public class MerchPriceGridParser {
 
 	public List<PriceConfiguration> getConfigurations(String criterias,String value,String optionName) {
 		List<PriceConfiguration> priceConfiguration = new ArrayList<PriceConfiguration>();
-		String[] config = null;
 		PriceConfiguration configs = null;
-		try {
-			if (criterias.contains(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID)) {
-				String[] configuraions = criterias.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-				for (String criteria : configuraions) {
-					PriceConfiguration configuraion = new PriceConfiguration();
-					config = criteria.split(ApplicationConstants.CONST_DELIMITER_COLON);
-					String criteriaValue = LookupData.getCriteriaValue(config[0]);
-					configuraion.setCriteria(criteriaValue);
-					if (config[1].contains(ApplicationConstants.CONST_STRING_COMMA_SEP)) {
-						String[] values = config[1].split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-						for (String Value : values) {
-							configs = new PriceConfiguration();
-							configs.setCriteria(criteriaValue);
-							configs.setValue(Arrays.asList((Object) Value));
-							if (!StringUtils.isEmpty(optionName)) {
-								configs.setOptionName(optionName);
-							}
-							priceConfiguration.add(configs);
-						}
-					} else {
-						configs = new PriceConfiguration();
-						configs.setCriteria(criteriaValue);
-						configs.setValue(Arrays.asList((Object) config[1]));
-						if (!StringUtils.isEmpty(optionName)) {
-							configs.setOptionName(optionName);
-						}
-						priceConfiguration.add(configs);
+		try{
+			if(value.contains(ApplicationConstants.CONST_STRING_COMMA_SEP)){
+				String[] configValues = value.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
+				for (String Value : configValues) {
+					configs = new PriceConfiguration();
+					configs = new PriceConfiguration();
+					configs.setCriteria(criterias);
+					configs.setValue(Arrays.asList((Object) Value));
+					if(!StringUtils.isEmpty(optionName)){
+						configs.setOptionName(optionName);
 					}
+					priceConfiguration.add(configs);
 				}
-
-			} else {
+			}else{
 				configs = new PriceConfiguration();
-				config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
-				String criteriaValue = LookupData.getCriteriaValue(config[0]);
-				try {
-					if (config[1].contains(",")) {
-						String[] values = config[1].split(ApplicationConstants.CONST_STRING_COMMA_SEP);
-						for (String value1 : values) {
-							configs = new PriceConfiguration();
-							configs.setCriteria(criteriaValue);
-							if(value1.contains("*")){
-								value1 = value1.replaceAll("\\*", " X ");
-							}
-							configs.setValue(Arrays.asList((Object) value1));
-							if (!StringUtils.isEmpty(optionName)) {
-								configs.setOptionName(optionName);
-							}
-							priceConfiguration.add(configs);
-						}
-					} else {
-						configs.setCriteria(criteriaValue);
-						configs.setValue(Arrays.asList((Object) config[1]));
-						if (!StringUtils.isEmpty(optionName)) {
-							configs.setOptionName(optionName);
-						}
-						priceConfiguration.add(configs);
-					}
-				} catch (ArrayIndexOutOfBoundsException aie) {
-					_LOGGER.error("Error while processing priceconfiguration" + aie.getMessage());
+				configs.setCriteria(criterias);
+				configs.setValue(Arrays.asList((Object) value));
+				if(!StringUtils.isEmpty(optionName)){
+					configs.setOptionName(optionName);
 				}
-
+				priceConfiguration.add(configs);
 			}
-		} catch (Exception e) {
-			_LOGGER.error("Error while processing PriceGrid: " + e.getMessage());
+		}catch(Exception e){
+			_LOGGER.error("Error while processing Upcharge PriceGrid: "+e.getMessage());
 		}
 		return priceConfiguration;
 	}
-
 	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
 			String discounts, String upChargeCriterias, boolean qurFlag,
 			String currency,String priceInclude,String upChargeValue, String upChargeType,
@@ -221,7 +177,12 @@ public class MerchPriceGridParser {
 		if(upChargeValue.contains("|")){
 			upChargeValue = upChargeValue.replaceAll("\\|", ",");
 		}
-		priceGrid.setDescription(upChargeValue);
+		if(upChargeValue.equals("Art Services")){
+			priceGrid.setDescription("Logo Modification");
+		} else {
+			priceGrid.setDescription(upChargeValue);	
+		}
+		
 		priceGrid.setIsQUR(qurFlag);
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);

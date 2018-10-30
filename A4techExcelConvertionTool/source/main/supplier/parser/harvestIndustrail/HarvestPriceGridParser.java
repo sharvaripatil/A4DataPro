@@ -133,7 +133,7 @@ public class HarvestPriceGridParser {
 	public List<PriceGrid> getUpchargePriceGrid(String quantity, String prices,
 			String discounts, String upChargeCriterias, String qurFlag,
 			String currency, String upChargeName, String upChargeType,
-			String upchargeUsageType, Integer upChargeSequence,
+			String upchargeUsageType, Integer upChargeSequence,String Servicecharge,String PriceInclude,
 			List<PriceGrid> existingPriceGrid) {
 		try{
 		List<PriceConfiguration> configuration = null;
@@ -144,6 +144,7 @@ public class HarvestPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String upChargeDiscount = discounts;
 
+		
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(upChargeName);
 		priceGrid
@@ -152,7 +153,8 @@ public class HarvestPriceGridParser {
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);
 		priceGrid.setUpchargeType(upChargeType);
-		priceGrid.setServiceCharge("Required");
+		priceGrid.setPriceIncludes(PriceInclude);
+		priceGrid.setServiceCharge(Servicecharge);
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
@@ -173,5 +175,7 @@ public class HarvestPriceGridParser {
 		}
 		return existingPriceGrid;
 	}
+
+
 
 }

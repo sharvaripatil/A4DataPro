@@ -10,6 +10,7 @@ import java.util.Calendar;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -58,18 +59,27 @@ public class ConvertCsvToExcel {
 	public  Workbook getWorkBook(MultipartFile mfile){
 	    String fileExtension = CommonUtility.getFileExtension(mfile.getOriginalFilename());
 	    File file = convertMultiPartFileIntoFile(mfile);
+	    ZipSecureFile.setMinInflateRatio(0.001);
+	   /* ZipSecureFile.setMinInflateRatio(0.00000001);
+	    Long somev=4294967295L;
+	    ZipSecureFile.setMaxEntrySize(somev);*/
 	    Workbook workBook = null;
 	    if(ApplicationConstants.CONST_STRING_XLS.equalsIgnoreCase(fileExtension)){
 	    	try(Workbook workbook1 = new HSSFWorkbook(new FileInputStream(file))) {
 				return workbook1;
 			} catch (IOException e) {
 				_LOGGER.error("unable to file convert into excelsheet"+e);
+			} catch(Exception e){
+				_LOGGER.error("unable to file convert into WB: "+e.getCause());
 			}
 	     }else if(ApplicationConstants.CONST_STRING_XLSX.equalsIgnoreCase(fileExtension)){
-	    	try(Workbook workBook2 = new XSSFWorkbook(file)) {
+	    	try( FileInputStream inputStream = new FileInputStream(file);
+	    			Workbook workBook2 = new XSSFWorkbook(inputStream)) {
 	    		return workBook2;
-			} catch (InvalidFormatException | IOException e) {
+			} catch (IOException e) {
 				_LOGGER.error("unable to file convert into excelsheet"+e);
+			} catch(Exception e){
+				_LOGGER.error("unable to file convert into WB: "+e.getCause());
 			}
 	    }else if(ApplicationConstants.CONST_STRING_CSV.equalsIgnoreCase(fileExtension)){
 	    	workBook = getExcel(file);

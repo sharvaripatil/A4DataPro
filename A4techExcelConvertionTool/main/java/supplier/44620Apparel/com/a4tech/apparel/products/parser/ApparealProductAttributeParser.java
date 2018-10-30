@@ -2,10 +2,10 @@ package com.a4tech.apparel.products.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -15,6 +15,8 @@ import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Color;
+import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
@@ -33,27 +35,29 @@ import com.a4tech.product.model.Volume;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
+import parser.evansManufacturing.EveanManufColorAndImprintMethodMapping;
+
 public class ApparealProductAttributeParser {
 	private LookupServiceData lookupServiceData;
 	
-	public List<Color> getProductColors(Set<String> colorNames,Map<String, String> ids){
+	public List<Color> getProductColors1(Set<String> colorNames,Map<String, String> ids){
 		 Color colorObj = null;
-		// Combo comboObj = null;
-		// List<Combo> listOfCombo = null;
-		// String[] colors;
-		 //String aliasName ="";
+		Combo comboObj = null;
+		 List<Combo> listOfCombo = null;
+		 String[] colors;
+		 String aliasName ="";
 		 List<Color> listtOfColor = new ArrayList<>();
 		 for (String colorName : colorNames) {
 			 colorObj = new Color();
-			 //listOfCombo = new ArrayList<>();
+			 listOfCombo = new ArrayList<>();
 			 colorName = colorName.trim();
 			/* if(colorName.contains("Grey")){
 				 colorName = colorName.replaceAll("Grey", "Gray");
 			 }*/
-			 String colorVal = "";
-			 String finalColorGroup = "";
-			 finalColorGroup = ApparelColorMapping.getColorGroup(colorName);
-			 if(finalColorGroup == null){
+			// String colorVal = "";
+			 //String finalColorGroup = "";
+			 //finalColorGroup = ApparelColorMapping.getColorGroup(colorName);
+			 /*if(finalColorGroup == null){
 				 String colorCode = ids.get(colorName);
 					if(colorCode.length() == 2){
 						colorCode = "0"+colorCode;
@@ -77,16 +81,21 @@ public class ApparealProductAttributeParser {
 			ProductDataStore.saveColorNames(colorName);
 			colorObj.setName(finalColorGroup);
 			colorObj.setAlias(colorName);
-			listtOfColor.add(colorObj);
-		    /*if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
-			 colors = colorName.split(ApplicationConstants.CONST_DELIMITER_FSLASH);
+			listtOfColor.add(colorObj);*/
+		    if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH) || 
+		    		colorName.contains("-")){
+		    	if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
+		    		 colors = colorName.split(ApplicationConstants.CONST_DELIMITER_FSLASH);		
+		    	} else {
+		    		 colors = colorName.split("-");
+		    	}
 			 String primaryColor = colors[ApplicationConstants.CONST_NUMBER_ZERO];
 			 String secondaryColor = colors[ApplicationConstants.CONST_INT_VALUE_ONE];
 			int noOfColors = colors.length;
 			comboObj = new Combo();
 			if(noOfColors == ApplicationConstants.CONST_INT_VALUE_TWO){
-				colorObj.setName(primaryColor);
-				comboObj.setName(secondaryColor);
+				colorObj.setName(ApparelColorMapping.getColorGroup(primaryColor.trim()));
+				comboObj.setName(ApparelColorMapping.getColorGroup(secondaryColor));
 				comboObj.setType(ApplicationConstants.CONST_STRING_SECONDARY);
 				aliasName = CommonUtility.appendStrings(primaryColor, secondaryColor,
                         						ApplicationConstants.CONST_DELIMITER_HYPHEN);
@@ -100,12 +109,12 @@ public class ApparealProductAttributeParser {
 				for(int count=1;count <=2;count++){
 					comboObj = new Combo();
 					if(count == ApplicationConstants.CONST_INT_VALUE_ONE){
-						comboObj.setName(secondaryColor);
+						comboObj.setName(ApparelColorMapping.getColorGroup(secondaryColor));
 						comboObj.setType(ApplicationConstants.CONST_STRING_SECONDARY);
 						aliasName = CommonUtility.appendStrings(primaryColor, secondaryColor,
                                                    ApplicationConstants.CONST_DELIMITER_HYPHEN);
 					}else{
-						comboObj.setName(thirdColor);
+						comboObj.setName(ApparelColorMapping.getColorGroup(thirdColor));
 						comboObj.setType(ApplicationConstants.CONST_STRING_TRIM);
 						aliasName = CommonUtility.appendStrings(aliasName, thirdColor,
                                                           ApplicationConstants.CONST_DELIMITER_HYPHEN);
@@ -121,16 +130,68 @@ public class ApparealProductAttributeParser {
 			}
 			  
 		  }else{
-			  colorObj.setName(colorName);
+			  colorObj.setName(ApparelColorMapping.getColorGroup(colorName));
 			  colorObj.setAlias(colorName);
-			  colorObj.setCustomerOrderCode(colorCode);
+			  //colorObj.setCustomerOrderCode(colorCode);
 			  ProductDataStore.saveColorNames(colorName);
-		  }*/
-		
+		  }
+		    listtOfColor.add(colorObj);
 	}
 		return listtOfColor;
 	}
    
+	public List<Color> getProductColors(Set<String> colorNames,Map<String, String> ids){
+		List<Color> listOfProductColor = new ArrayList<>();
+		Color colorObj = null;
+		List<String> processedColorList = new ArrayList<>();
+		for (String colorName : colorNames) {
+			colorName = colorName.trim();
+			if(!processedColorList.contains(colorName)){
+				colorObj = new Color();
+				if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH) || colorName.contains("-")){
+					if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
+						colorObj = getColorCombo(colorName,ApplicationConstants.CONST_DELIMITER_FSLASH);	
+					} else {
+						colorObj = getColorCombo(colorName,"-");
+					}
+					
+				} else {
+					String colorGroup = ApparelColorMapping.getColorGroup(colorName);
+					colorObj.setName(colorGroup);
+					colorObj.setAlias(colorName);
+				}
+			   listOfProductColor.add(colorObj);	
+			   processedColorList.add(colorName);
+			}
+			
+		}
+		return listOfProductColor;
+	}
+	private Color getColorCombo(String comboVal,String delimiter){
+		Color colorObj = new Color();
+		List<Combo> listOfComos = new ArrayList<>();
+		Combo comboObj1 = new Combo();
+		Combo comboObj2 = new Combo();
+		String[] comboColors = CommonUtility.getValuesOfArray(comboVal,delimiter);
+		colorObj.setName(
+				ApparelColorMapping.getColorGroup(comboColors[ApplicationConstants.CONST_NUMBER_ZERO]));
+		comboObj1.setName(
+				ApparelColorMapping.getColorGroup(comboColors[ApplicationConstants.CONST_INT_VALUE_ONE]));
+		comboObj1.setType(ApplicationConstants.CONST_STRING_SECONDARY);
+		colorObj.setAlias(comboVal.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH,
+				ApplicationConstants.CONST_DELIMITER_HYPHEN));
+		if(comboColors.length == 3){
+			comboObj2.setName(
+					ApparelColorMapping.getColorGroup(comboColors[ApplicationConstants.CONST_INT_VALUE_TWO]));
+			comboObj2.setType(ApplicationConstants.CONST_STRING_TRIM);
+			listOfComos.add(comboObj2);
+		} 
+		listOfComos.add(comboObj1);
+		colorObj.setCombos(listOfComos);
+		return colorObj;
+	}
+	
+	
 	public Set<Value> getSizeValues(String sizeValue,Set<Value> existingSizeValues){
 		Value valueObj = new Value();
 		valueObj.setValue(sizeValue);
@@ -283,8 +344,13 @@ public class ApparealProductAttributeParser {
 	     additionalLoactionObj.setName(ApplicationConstants.CONST_VALUE_TYPE_OTHER+imprintLocationArr[1].trim());
 	     additionalLoaction.add(additionalLoactionObj);
 	     productConfigObj.setAdditionalLocations(additionalLoaction); 
-	                  }else
-	     {
+	    } else if(imprintValue.contains(",")){
+			ImprintLocationList = Arrays.stream(CommonUtility.getValuesOfArray(imprintValue, ",")).map(str -> {
+				ImprintLocation ImprintLocationObj1 = new ImprintLocation();
+				ImprintLocationObj1.setValue(str);
+				return ImprintLocationObj1;
+			}).collect(Collectors.toList());
+	    } else {
 	      ImprintLocationObj.setValue(imprintValue);
 	      ImprintLocationList.add(ImprintLocationObj);
 	      
@@ -370,7 +436,11 @@ public class ApparealProductAttributeParser {
 		ProductConfigurations newConfig = new ProductConfigurations();
 		ProductConfigurations oldConfig = existingProduct.getProductConfigurations();
 		if(!CollectionUtils.isEmpty(existingProduct.getImages())){
-			newProduct.setImages(existingProduct.getImages());
+			List<Image> listOfImages = existingProduct.getImages().stream().map(image ->{
+				image.setConfigurations(new ArrayList<>());
+				return image;
+			}).collect(Collectors.toList());
+			newProduct.setImages(listOfImages);
 		}
 		if(!StringUtils.isEmpty(existingProduct.getSummary())){
 			newProduct.setSummary(existingProduct.getSummary());
@@ -459,7 +529,7 @@ public class ApparealProductAttributeParser {
 	}
 	public List<String> getProductCategories(String categoryVal){
 		List<String> listOfCategories = new ArrayList<>();
-		if(lookupServiceData.isCategory(categoryVal)){
+		if(lookupServiceData.isCategory(categoryVal.trim())){
 			listOfCategories.add(categoryVal);
 		}
 		return listOfCategories;

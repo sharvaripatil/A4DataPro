@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.model.ImprintMethod;
+import com.a4tech.product.model.ProductConfigurations;
 
 
 public class GoldstarCanadaImprintMethodParser {
@@ -21,7 +22,11 @@ public class GoldstarCanadaImprintMethodParser {
 		imprintMethod=imprintMethod.replace("4-color process", "Full Color");
 		imprintMethod=imprintMethod.replace("Pad printed", "Pad Print");
 		imprintMethod=imprintMethod.replace("Screen printed", "Silkscreen");
+		imprintMethod=imprintMethod.replace("Full-color digital", "Full Color");
+
 		ImprintMethod imprMethod = new ImprintMethod();
+		ImprintMethod imprMethod1 = new ImprintMethod();
+
 		
 		if(imprintMethod.contains("Laser"))
 		{
@@ -32,7 +37,6 @@ public class GoldstarCanadaImprintMethodParser {
 		}
 
 		else{
-		
 		List<String> finalImprintValues = getImprintValue(imprintMethod.toUpperCase().trim());	
 		for (String innerValue : finalImprintValues) {
 		    	 imprMethod = new ImprintMethod();
@@ -40,6 +44,11 @@ public class GoldstarCanadaImprintMethodParser {
 				 imprMethod.setType(innerValue);
 				 imprintMethodsList.add(imprMethod);  
 		}
+	   if(imprintMethodsList.isEmpty()){
+		 imprMethod1.setAlias("Printed");
+		 imprMethod1.setType("Printed");
+		 imprintMethodsList.add(imprMethod1);
+	   }
 		}
 		return imprintMethodsList;
 	}
@@ -54,6 +63,15 @@ public class GoldstarCanadaImprintMethodParser {
 				
 		return finalImprintValues;	
 	}
+	public  ProductConfigurations addImprintMethod(ProductConfigurations productConfigObj){
+        List<ImprintMethod> imprintMethodList = new ArrayList<>();
+        ImprintMethod imprintMethodObj = new ImprintMethod();
+        imprintMethodObj.setAlias("Unimprinted");
+        imprintMethodObj.setType("Unimprinted");
+        imprintMethodList.add(imprintMethodObj);
+        productConfigObj.setImprintMethods(imprintMethodList);
+       return productConfigObj;
+	} 
 
 	public LookupServiceData getLookupServiceDataObj() {
 		return lookupServiceDataObj;

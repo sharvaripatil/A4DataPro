@@ -150,7 +150,7 @@ public class BestDealPriceGridParser {
 			String discounts, String upChargeCriterias, String qurFlag,
 			String currency, String upChargeValue, String upChargeType,
 			String upchargeUsageType, Integer upChargeSequence,
-			List<PriceGrid> existingPriceGrid) {
+			List<PriceGrid> existingPriceGrid,String priceInclude) {
 		try{
 		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
@@ -170,6 +170,7 @@ public class BestDealPriceGridParser {
 		priceGrid.setUpchargeType(upChargeType);
 		priceGrid.setUpchargeUsageType(upchargeUsageType);
 		priceGrid.setServiceCharge("Optional");
+		priceGrid.setPriceIncludes(priceInclude);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
 			listOfPrice = getPrices(upChargePrices, upChargeQuantity, upChargeDiscounts);

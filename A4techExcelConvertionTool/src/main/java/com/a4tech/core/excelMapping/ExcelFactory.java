@@ -10,7 +10,7 @@ import com.a4tech.bambam.product.mapping.BambamProductExcelMapping;
 import com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping;
 import com.a4tech.dc.product.mapping.DCProductsExcelMapping;
 import com.a4tech.excel.service.IExcelParser;
-import com.a4tech.kl.product.mapping.KlProductsExcelMapping; 
+import com.a4tech.kl.product.mapping.KlProductsExcelMapping;
 import com.a4tech.product.bbi.mapping.BBIProductsExcelMapping;
 import com.a4tech.product.broberry.mapping.BroberryExcelMapping;
 import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
@@ -18,35 +18,57 @@ import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.AlfaMapping;
+import com.a4tech.supplier.mapper.BagMakersMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
 import com.a4tech.supplier.mapper.BayStateMapping;
 import com.a4tech.supplier.mapper.BellaCanvas;
+import com.a4tech.supplier.mapper.BloominPromotionsMapper;
 import com.a4tech.supplier.mapper.BlueGenerationMapping;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
+import com.a4tech.supplier.mapper.CbMapping;
 import com.a4tech.supplier.mapper.CrystalDExcelMapping;
-import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
+//import com.a4tech.supplier.mapper.CutterBuckExcelMapping;
 import com.a4tech.supplier.mapper.DacassoMapping;
+import com.a4tech.supplier.mapper.DigiSpecMapping;
+import com.a4tech.supplier.mapper.DouglasBridgeMapper;
 import com.a4tech.supplier.mapper.EdwardsGarmentMapping;
+import com.a4tech.supplier.mapper.EveanManufacturingCanadaMapping;
 import com.a4tech.supplier.mapper.FITSAccessoriesMapping;
 import com.a4tech.supplier.mapper.GempirepromotionsMapping;
 import com.a4tech.supplier.mapper.GillStudiosMapping;
 import com.a4tech.supplier.mapper.GoldBondExcelMapping;
 import com.a4tech.supplier.mapper.GoldstarCanadaExcelMapping;
 import com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping;
-import com.a4tech.supplier.mapper.HighCaliberLineExcelMapping;
+import com.a4tech.supplier.mapper.HeadWearMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineMappingRevised;
+import com.a4tech.supplier.mapper.InternationlMerchMapping;
 import com.a4tech.supplier.mapper.MaxplusMapping;
-import com.a4tech.supplier.mapper.PSLcadMapping;
-import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
+import com.a4tech.supplier.mapper.PSLcadMapping;
+import com.a4tech.supplier.mapper.PelicanGraphicMapping;
+import com.a4tech.supplier.mapper.PioneerLLCMapping;
+import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
+import com.a4tech.supplier.mapper.ProGolfMapping;
+import com.a4tech.supplier.mapper.RadiousMapping;
+import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
+import com.a4tech.supplier.mapper.SimplifiedsourcingMapping;
+import com.a4tech.supplier.mapper.SolidDimensionMapping;
+import com.a4tech.supplier.mapper.SportAzxCandMapping;
+import com.a4tech.supplier.mapper.SportCanadaExcelMapping;
+import com.a4tech.supplier.mapper.SportUSAMapping;
+import com.a4tech.supplier.mapper.SportsManBagMapping;
+import com.a4tech.supplier.mapper.SunGraphixMapping;
+import com.a4tech.supplier.mapper.SunGraphixRevisedMapping;
+import com.a4tech.supplier.mapper.SunScopeMapping;
+import com.a4tech.supplier.mapper.TekweldMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.TowelSpecialtiesMapping;
-import com.a4tech.supplier.mapper.ProGolfMapping;
-import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
 import com.a4tech.supplier.mapper.TwintechMapping;
+import com.a4tech.supplier.mapper.WBTIndustriesMapper;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
-import com.a4tech.supplier.mapper.BagMakersMapping;
+import com.a4tech.supplier.mapper.ZenithExport;
+import com.a4tech.supplier.mapper.ZenithimprintExport;
 
 public class ExcelFactory {
 	private AdspecProductsExcelMapping 		adspecMapping;
@@ -63,7 +85,7 @@ public class ExcelFactory {
 	private BestDealProductsExcelMapping 	bdProdcutsMapping;
 	private RiversEndExcelMapping 			riversEndExcelMapping;
 	private BambamProductExcelMapping 		bamExcelMapping;
-    private CutterBuckExcelMapping 			cbExcelMapping;
+ //   private CutterBuckExcelMapping 			cbExcelMapping;
     private CrystalDExcelMapping 			cdExcelMapping;
     private GoldstarCanadaExcelMapping 		goldcanadaExcelMapping;
     private MilestoneExcelMapping 			milestoneExcelMapping;
@@ -92,11 +114,33 @@ public class ExcelFactory {
 	private BayStateMapping                 baysStateMapping;
     private MaxplusMapping                  maxplusmapping;
 	private GempirepromotionsMapping        gempiresMapping;
-	private EdwardsGarmentMapping edwardsGarmentMapping;
-	
+	private EdwardsGarmentMapping 			edwardsGarmentMapping;
+	private TekweldMapping 					tekweldMapping;
+    private InternationlMerchMapping        merchMapping;	
+    private HeadWearMapping                 headWearMapping;
+    private SportCanadaExcelMapping         sportMapping;
+    private SunScopeMapping                 sunScopeMapping;
+    //private SunGraphixMapping 				sunGraphixMapping;
+    private SunGraphixRevisedMapping        sunGraphixMapping;
+    private CbMapping                       cbExeMapping;
+    private PelicanGraphicMapping           pelicanGraphicMapping;
+    private SportsManBagMapping             sportsManBagMapping;
+    private SimplifiedsourcingMapping       simplifiedMapping;
+	private SolidDimensionMapping 			solidDimensionMapping;
+    private EveanManufacturingCanadaMapping eveanManufactureMapping;
+    private SportUSAMapping					sportUSAMapping;
+    private SportAzxCandMapping 			sportAzxCandMapping;
+    private DigiSpecMapping                 digiSpecMapping;
+    private DouglasBridgeMapper             douglasBridgeMapper;
+	private RadiousMapping                  radiMapping;	
+    private WBTIndustriesMapper	            wbtIndustriesMapper;
+    private ZenithExport                    zenithMapping;
+    private BloominPromotionsMapper         bloominPromotion;
+    private PioneerLLCMapping 				pioneerLLCMapping;
+    private ZenithimprintExport             zenithImprintMapping;
 
 
-	public  IExcelParser getExcelParserObject(String name){
+     public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -123,7 +167,7 @@ public class ExcelFactory {
 		   }else if(name.equalsIgnoreCase("riversend") || name.equals("82588")){
 			   return riversEndExcelMapping;
 		   }else if(name.equalsIgnoreCase("cbExcel") || name.equals("47965")){
-			   return cbExcelMapping;
+			   return cbExeMapping/*cbExcelMapping*/;//old file
 		   }
 		   else if(name.equalsIgnoreCase("cdExcel") || name.equals("47759")){
 			   return cdExcelMapping;
@@ -131,7 +175,7 @@ public class ExcelFactory {
 		   else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
 			   return bamExcelMapping;
 		   }
-		   else if(name.equalsIgnoreCase("goldCanada") || name.equals("57711")){
+		   else if(name.equalsIgnoreCase("goldCanada") || name.equals("57711") || name.equals("73295") ){
 			   return goldcanadaExcelMapping;
 
 		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
@@ -172,8 +216,8 @@ public class ExcelFactory {
 	      } else if(name.equalsIgnoreCase("bellaCanvas") || name.equals("39590")){
 		      return bellaCanvasMapping;
 
-	      }  else if(name.equalsIgnoreCase("harvest") || name.equals("61670")){
-		      return harvestMapping;
+	      }  else if(name.equalsIgnoreCase("harvest") || name.equals("61670") || name.equals("71685") || name.equals("91584")){
+		      return harvestMapping;//TotesFactory
 
 	      } else if(name.equalsIgnoreCase("towelSpe") || name.equals("91605")){
 	    	  return towelSpecialties;
@@ -194,9 +238,60 @@ public class ExcelFactory {
 		  }else if(name.equalsIgnoreCase("edwardsGarment") || name.equals("51752")){
 			   return edwardsGarmentMapping;
 		  }
+		  else if(name.equalsIgnoreCase("tekweld") || name.equals("90807")){
+			   return tekweldMapping;
+		  } else if(name.equalsIgnoreCase("internationalMerchMapping") || name.equals("62820")){
+			  return merchMapping;
+		  } else if(name.equalsIgnoreCase("headWearMapping") || name.equals("60282")){
+			  return headWearMapping;
+		  }else if(name.equalsIgnoreCase("sportMapping") || name.equals("30251")){
+			  return sportAzxCandMapping;
+		  }  else if(name.equalsIgnoreCase("sunScope") || name.equals("90075")){
+			  return sunScopeMapping;
+		  }  else if(name.equalsIgnoreCase("sunGraphixMapping") || name.equals("90125")){
+			  return sunGraphixMapping;
+		  } else if(name.equalsIgnoreCase("pelicanGraphics") || name.equals("76797")){
+			  return pelicanGraphicMapping;
+		  }else if(name.equalsIgnoreCase("sportsManBag") || name.equals("88877")){
+			  return sportsManBagMapping;
+		  }else if(name.equalsIgnoreCase("simplified") || name.equals("87326")|| name.equals("91597") ){
+			  return simplifiedMapping;
+		  } else if(name.equalsIgnoreCase("solidDimension") || name.equals("88156")){
+			  return solidDimensionMapping;
+		  } else if(name.equals("52841")){
+			  return eveanManufactureMapping;
+		  }else if(name.equals("30250")){
+			  return sportUSAMapping;
+		  } else if(name.equals("49716")){
+			  return digiSpecMapping;
+		  } else if(name.equals("49916")){
+			  return radiMapping;
+		  } else if(name.equals("50710")){
+			  return douglasBridgeMapper;
+		  } else if(name.equals("96640")){
+			  return wbtIndustriesMapper;
+		  }else if(name.equals("79840")){
+			  return zenithImprintMapping;
+		  } else if(name.equals("40646")){
+			  return bloominPromotion;
+		  } else if(name.equals("76771")){
+			  return pioneerLLCMapping;
+		  }
 		return null;
 	}
 	
+	public void setBloominPromotion(BloominPromotionsMapper bloominPromotion) {
+			this.bloominPromotion = bloominPromotion;
+		}
+
+	public InternationlMerchMapping getMerchMapping() {
+		return merchMapping;
+	}
+
+	public void setMerchMapping(InternationlMerchMapping merchMapping) {
+		this.merchMapping = merchMapping;
+	}
+
 	public ESPTemplateMapping getEspTemplateMapping() {
 		return espTemplateMapping;
 	}
@@ -310,13 +405,13 @@ public class ExcelFactory {
 		this.bamExcelMapping = bamExcelMapping;
 	}
 
-	public CutterBuckExcelMapping getCbExcelMapping() {
+/*	public CutterBuckExcelMapping getCbExcelMapping() {
 		return cbExcelMapping;
 	}
 
 	public void setCbExcelMapping(CutterBuckExcelMapping cbExcelMapping) {
 		this.cbExcelMapping = cbExcelMapping;
-	}
+	}*/
 	
 	public CrystalDExcelMapping getCdExcelMapping() {
 		return cdExcelMapping;
@@ -531,5 +626,154 @@ public class ExcelFactory {
 	public void setEdwardsGarmentMapping(EdwardsGarmentMapping edwardsGarmentMapping) {
 		this.edwardsGarmentMapping = edwardsGarmentMapping;
 	}
+
+
+	public TekweldMapping getTekweldMapping() {
+		return tekweldMapping;
+	}
+
+	public void setTekweldMapping(TekweldMapping tekweldMapping) {
+		this.tekweldMapping = tekweldMapping;
+	}
+	public HeadWearMapping getHeadWearMapping() {
+		return headWearMapping;
+	}
+
+	public void setHeadWearMapping(HeadWearMapping headWearMapping) {
+		this.headWearMapping = headWearMapping;
+	}
+
+
+	public SportCanadaExcelMapping getSportMapping() {
+		return sportMapping;
+	}
+
+	public void setSportMapping(SportCanadaExcelMapping sportMapping) {
+		this.sportMapping = sportMapping;
+	}
+
+	public SunScopeMapping getSunScopeMapping() {
+		return sunScopeMapping;
+	}
+	public void setSunScopeMapping(SunScopeMapping sunScopeMapping) {
+		this.sunScopeMapping = sunScopeMapping;
+	}
+
 	
+
+	public SunGraphixRevisedMapping getSunGraphixMapping() {
+		return sunGraphixMapping;
+	}
+
+	public void setSunGraphixMapping(SunGraphixRevisedMapping sunGraphixMapping) {
+		this.sunGraphixMapping = sunGraphixMapping;
+	}
+
+	public CbMapping getCbExeMapping() {
+		return cbExeMapping;
+	}
+
+	public void setCbExeMapping(CbMapping cbExeMapping) {
+		this.cbExeMapping = cbExeMapping;
+	}
+	
+	public PelicanGraphicMapping getPelicanGraphicMapping() {
+		return pelicanGraphicMapping;
+	}
+
+	public void setPelicanGraphicMapping(PelicanGraphicMapping pelicanGraphicMapping) {
+		this.pelicanGraphicMapping = pelicanGraphicMapping;
+	}
+
+	public SimplifiedsourcingMapping getSimplifiedMapping() {
+		return simplifiedMapping;
+	}
+
+	public void setSimplifiedMapping(SimplifiedsourcingMapping simplifiedMapping) {
+		this.simplifiedMapping = simplifiedMapping;
+	}
+
+	public SolidDimensionMapping getSolidDimensionMapping() {
+		return solidDimensionMapping;
+	}
+
+	public void setSolidDimensionMapping(SolidDimensionMapping solidDimensionMapping) {
+		this.solidDimensionMapping = solidDimensionMapping;
+	}
+	public SportsManBagMapping getSportsManBagMapping() {
+		return sportsManBagMapping;
+	}
+
+	public void setSportsManBagMapping(SportsManBagMapping sportsManBagMapping) {
+		this.sportsManBagMapping = sportsManBagMapping;
+	}
+	public void setEveanManufactureMapping(EveanManufacturingCanadaMapping eveanManufactureMapping) {
+		this.eveanManufactureMapping = eveanManufactureMapping;
+	}
+
+	public SportUSAMapping getSportUSAMapping() {
+		return sportUSAMapping;
+	}
+
+	public void setSportUSAMapping(SportUSAMapping sportUSAMapping) {
+		this.sportUSAMapping = sportUSAMapping;
+	}
+
+	public SportAzxCandMapping getSportAzxCandMapping() {
+		return sportAzxCandMapping;
+	}
+
+	public void setSportAzxCandMapping(SportAzxCandMapping sportAzxCandMapping) {
+		this.sportAzxCandMapping = sportAzxCandMapping;
+	}
+	public DigiSpecMapping getDigiSpecMapping() {
+		return digiSpecMapping;
+	}
+
+	public void setDigiSpecMapping(DigiSpecMapping digiSpecMapping) {
+		this.digiSpecMapping = digiSpecMapping;
+	}
+	public void setDouglasBridgeMapper(DouglasBridgeMapper douglasBridgeMapper) {
+		this.douglasBridgeMapper = douglasBridgeMapper;
+	}
+
+	public RadiousMapping getRadiMapping() {
+		return radiMapping;
+	}
+
+	public void setRadiMapping(RadiousMapping radiMapping) {
+		this.radiMapping = radiMapping;
+	}
+	public WBTIndustriesMapper getWbtIndustriesMapper() {
+		return wbtIndustriesMapper;
+	}
+
+	public void setWbtIndustriesMapper(WBTIndustriesMapper wbtIndustriesMapper) {
+		this.wbtIndustriesMapper = wbtIndustriesMapper;
+	}
+	public PioneerLLCMapping getPioneerLLCMapping() {
+		return pioneerLLCMapping;
+	}
+
+	public ZenithExport getZenithMapping() {
+		return zenithMapping;
+	}
+
+	public void setZenithMapping(ZenithExport zenithMapping) {
+		this.zenithMapping = zenithMapping;
+	}
+
+	public void setPioneerLLCMapping(PioneerLLCMapping pioneerLLCMapping) {
+		this.pioneerLLCMapping = pioneerLLCMapping;
+	}
+
+	public ZenithimprintExport getZenithImprintMapping() {
+		return zenithImprintMapping;
+	}
+
+	public void setZenithImprintMapping(ZenithimprintExport zenithImprintMapping) {
+		this.zenithImprintMapping = zenithImprintMapping;
+	}
+
+
 }

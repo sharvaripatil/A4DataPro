@@ -9,18 +9,27 @@ import com.a4tech.util.ApplicationConstants;
 
 public class GoldstarCanadaRushTimeParser {
 	
-	public RushTime getRushTimeValues(String rushTime ,RushTime existingRushTime){
-		existingRushTime.setAvailable(ApplicationConstants.CONST_BOOLEAN_TRUE);
-		List<RushTimeValue> existingRushTimeValues = existingRushTime.getRushTimeValues();
-		if(existingRushTimeValues == null){
-			existingRushTimeValues = new ArrayList<RushTimeValue>();
+	public RushTime getRushTimeValues(String rushProdTimeLo, String rushProdTimeH) {
+		RushTimeValue RushTimeValue = new RushTimeValue();
+		List<RushTimeValue> rushTimeList = new ArrayList<RushTimeValue>();
+		RushTime rushtimeObj=new RushTime();
+		String FinalrushTime="";
+		rushtimeObj.setAvailable(ApplicationConstants.CONST_BOOLEAN_TRUE);
+		if(rushProdTimeLo.equalsIgnoreCase(rushProdTimeH)) {
+			
+			FinalrushTime=rushProdTimeLo;
+			
+		}else {
+		 FinalrushTime=rushProdTimeLo.concat("-").concat(rushProdTimeH);
+
 		}
-		RushTimeValue newRushTimeValue = new RushTimeValue();
-		newRushTimeValue.setBusinessDays(rushTime);
-		newRushTimeValue.setDetails(ApplicationConstants.CONST_STRING_EMPTY);
-		existingRushTimeValues.add(newRushTimeValue);
-		existingRushTime.setRushTimeValues(existingRushTimeValues);
-		return existingRushTime;
+		RushTimeValue.setBusinessDays(FinalrushTime);
+		RushTimeValue.setDetails(ApplicationConstants.CONST_STRING_EMPTY);
+		rushTimeList.add(RushTimeValue);
+		rushtimeObj.setRushTimeValues(rushTimeList);	
+		
+		return rushtimeObj;
 	}
+	
 
 }
