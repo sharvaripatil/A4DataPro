@@ -155,9 +155,9 @@ public class FilesParsing {
     	String subject = "";;
     	String body = "";
     	if(type.equals("ProcessStart")){
-    		subject = supplierNo +" "+ "File Processing Start";
+    		subject = supplierNo +" "+ "File Processing Started";
     		body = "Dear Team,"
-  			      +"\n \n"+supplierNo+" "+ "File processing Start"
+  			      +"\n \n"+supplierNo+" "+ "File processing Started"
   			      +"\n\n You will get separate mail once Process completed"+
   			     "\n\n\n\n"
   	            +"Thanks and Regards,"

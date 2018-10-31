@@ -79,7 +79,7 @@ public class FtpController {
 	@RequestMapping(value="/uploadFile")
 	public ModelAndView processFile(@ModelAttribute("ftpFileUploadBean") FtpFileUploadBean fileUploadBean,Model model){
 		_LOGGER.info("Enter FTP file upload Process controller");
-		String accessToken = "";
+ 		String accessToken = "";
 		String asiNumber = fileUploadBean.getAsiNumber();
 		String environmentType = fileUploadBean.getEnvironmentType();
 		MultipartFile   file= fileUploadBean.getFile();

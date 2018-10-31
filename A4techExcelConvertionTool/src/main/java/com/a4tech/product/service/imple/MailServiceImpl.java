@@ -110,20 +110,42 @@ public class MailServiceImpl implements IMailService{
 	public void fileProcessCompleted(String body, String subject, int batchNo) {
 		String fileName= batchNo+ApplicationConstants.CONST_STRING_DOT_TXT;
 		try {
+			boolean flag=false;
 			  FileSystemResource  file = new FileSystemResource(ApplicationConstants.CONST_STRING_DOWNLOAD_FILE_PATH+ fileName);
+			  String[] bccmails = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
+				"amey.more@a4technology.com"};
 		      MimeMessage mimeMessage = mailSender.createMimeMessage();
 		      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		      helper.setBcc(bccmails);
+		      helper.setSubject(subject);
 		      helper.setFrom(senderMailName);
 		      /*String[] toAddress = {"venkateswarlu.nidamanuri@a4technology.com","sharvari.patil@a4technology.com",
 		    		  "azam.rizvi@a4technology.com","amey.more@a4technology.com"};*/
-		      String[] bccmails = { "venkateswarlu.nidamanuri@a4technology.com", "sharvari.patil@a4technology.com",
-				"amey.more@a4technology.com"};
+		     
 		     // helper.setTo(toAddress);
       //        helper.setTo("SPullins@asicentral.com");
-		      helper.setBcc(bccmails);
-		      helper.setSubject(subject);
-		      helper.setText(body);
-		      helper.addAttachment(file.getFilename(), file);
+		     
+		     
+		      
+		      
+		      if (file.getFile().length() != 0) {
+		    	  flag=true;
+		      }
+		      if(flag){
+		    	       helper.setText(body);
+				       helper.addAttachment(file.getFilename(), file);
+				
+		      }else{
+		    	  helper = new MimeMessageHelper(mimeMessage, false);
+			      helper.setBcc(bccmails);
+			      helper.setSubject(subject);
+			      helper.setFrom(senderMailName);
+		    	  helper.setText("There are no errors present in the given supplier file."
+		    			  + "\n"
+		    	  		+ " All Products are saved successfully and Active.");
+				  
+		      }
+		      //helper.addAttachment(file.getFilename(), file);
 			_LOGGER.info("Sending Email to : "+ Arrays.toString(bccmails));
 			   mailSender.send(mimeMessage);
 		       _LOGGER.info("Process Status Mail Sent Successfully !!!");
@@ -172,7 +194,7 @@ public class MailServiceImpl implements IMailService{
 		    helper.setSubject("Suppliler File Not Processed "+fileName);
 		      helper.setText("Hi Team,"
 		      		+ "\n\n"
-		      		+ fileName + "Supplier file not processed,Please check the log."
+		      		+ fileName + "  Supplier file not processed,Please check the log."
 		      				+ "\n\n\nThanks & Regards,"
 		      				+ "\nA4DataPro Process System");
 			_LOGGER.info("Sending Email to : "+ Arrays.toString(toAddress));
@@ -197,13 +219,13 @@ public class MailServiceImpl implements IMailService{
 		      if(StringUtils.isEmpty(fileNames)){
 		    	  helper.setText("Hi Team,"
 				      		+ "\n\n"
-				      		+ "There is no files in FTP Server"
+				      		+ "There are no supplier files availble on FTP Server for file processing."
 				      		+ "\n\n\nThanks & Regards,"
 				      				+ "\nA4DataPro Process System");
 		      } else {
 		    	  helper.setText("Hi Team,"
 				      		+ "\n\n"
-				      		+ "Following files are processing "
+				      		+ "Following supplier files will be proccessed "
 				      		+ "\n"
 				      		+ fileNames
 				      				+ "\n\n\nThanks & Regards,"
