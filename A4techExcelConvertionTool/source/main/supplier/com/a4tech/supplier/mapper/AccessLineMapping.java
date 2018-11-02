@@ -48,7 +48,7 @@ import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AccessLineMapping implements IExcelParser{
-private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
+private static final Logger _LOGGER = Logger.getLogger(AccessLineMapping.class);
 	
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
@@ -249,7 +249,8 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 						 
 						 descripton=CommonUtility.removeRestrictSymbols(descripton);
 						 descripton=descripton.replace("•", "");
-						 descripton=descripton.replace("\n", "");
+						 descripton=descripton.replace("\n", ". ");
+						 descripton=descripton.concat(".");
 						 productExcelObj.setSummary(CommonUtility.getStringLimitedChars(descripton, 130));
 						 productExcelObj.setDescription(descripton);
 						
@@ -273,13 +274,24 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					}
 					break;
 				case 7://Category
-					String Category = cell.getStringCellValue();
+					/*String Category = cell.getStringCellValue();
 					
 					if(!StringUtils.isEmpty(Category)){
 					   List<String> categories = CommonUtility.getStringAsList(Category,
 							   										ApplicationConstants.CONST_DELIMITER_COMMA);
 					   //productExcelObj.setCategories(categories);
-					}
+					}*/
+					
+					String category = cell.getStringCellValue();
+					   if(!StringUtils.isEmpty(category)){
+						   List<String> listOfCategories = accessLineAttributeParser.
+						                      getProductCategories(category);
+						   if(!CollectionUtils.isEmpty(listOfCategories)){
+							   productExcelObj.setCategories(listOfCategories);   
+						   }else{
+							   System.out.println("Its empty list");
+						   }
+					   }
 					break;
 				case 8://
 					break;
@@ -572,9 +584,9 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					addClrInsetVal=addClrInsetVal.replace("CHARGE","");
 					//addClrInsetVal=addClrInsetVal.replace(":","");
 					addClrInsetVal=addClrInsetVal.trim();
-					String tempArr1[]=addClrInVal.split("/");
-					String addClrsetupVal=tempArr1[0];
-					String discAddclsetupVal=tempArr1[1];
+					String tempArrSetup[]=addClrInsetVal.split("/");
+					String addClrsetupVal=tempArrSetup[0];
+					String discAddclsetupVal=tempArrSetup[1];
 					
 					priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,addClrrunVal,discAddclrrunVal,
 							"Additional Colors"+":"+"Second color",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Second color", 
@@ -651,8 +663,9 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 					String imprintSize = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(imprintSize)){
 						imprintSize=imprintSize.toLowerCase();
-						
-						imprintSize=imprintSize.replace(" //", ",");
+						ImprintSize imprintSizeObj =null;
+						List<ImprintSize> listImprintSize=new ArrayList<ImprintSize>();
+						imprintSize=imprintSize.replace(" /", ",");
 						String impsizArr[]=imprintSize.split(",");
 						for (String imsizVal : impsizArr) {
 							imsizVal=imsizVal.replace("barrel", "");
@@ -661,9 +674,8 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 							imsizVal=imsizVal.replace("below", "");
 							imsizVal=imsizVal.replace("on", "");
 							imsizVal=imsizVal.trim();
-							ImprintSize imprintSizeObj = new ImprintSize();
-							List<ImprintSize> listImprintSize=new ArrayList<ImprintSize>();
-							imprintSizeObj.setValue(imprintSize);
+							imprintSizeObj = new ImprintSize();
+							imprintSizeObj.setValue(imsizVal);
 							listImprintSize.add(imprintSizeObj);
 							productConfigObj.setImprintSize(listImprintSize);
 						}
@@ -701,7 +713,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 						ApplicationConstants.CONST_STRING_VALUE_ONE,"6.0","V",
 						"Artwork & Proofs"+":"+"Virtual Proof"+"___"+"Artwork & Proofs"+":"+"Paper Proof",ApplicationConstants.CONST_CHAR_N,  
 						ApplicationConstants.CONST_STRING_CURRENCY_USD, "Per extra proof.","Paper Proof,Virtual Proof", 
-						"Proof Charge", "Per Order","Optional", 
+						"Proof Charge", "Other","Optional", 
 						ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids,priceTypee);
 						}catch(Exception e){
 							_LOGGER.error("Error while processing artWork: "+e.getMessage());
@@ -722,7 +734,7 @@ private static final Logger _LOGGER = Logger.getLogger(TomaxUsaMapping.class);
 							String absCode=arr[1];
 							productExcelObj.setCanOrderLessThanMinimum(true);
 						priceGrids = AccessLinePriceGridParserr.getUpchargePriceGrid(ApplicationConstants.CONST_STRING_VALUE_ONE,abslCharge,absCode,
-								"Less than Minimum"+":"+"Can order less than minimum",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "","Can order less than minimum", 
+								"Less than Minimum"+":"+"Can order less than minimum",ApplicationConstants.CONST_CHAR_N,  ApplicationConstants.CONST_STRING_CURRENCY_USD, "For Any Quantity Below 300 Pieces","Can order less than minimum", 
 								"Less than Minimum Charge", ApplicationConstants.CONST_VALUE_TYPE_OTHER,"Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids,priceTypee);
 						}
 						}

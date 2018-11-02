@@ -23,6 +23,7 @@ import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Weight;
 import com.a4tech.util.ApplicationConstants;
+import com.a4tech.util.CommonUtility;
 
 public class AccessLineAttributeParser {
 	private static final Logger _LOGGER = Logger.getLogger(AccessLineAttributeParser.class);
@@ -58,6 +59,22 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		return newProduct;
 		
 	}
+
+public List<String> getProductCategories(String categoryVal){
+	List<String> listOfCategories = new ArrayList<>();
+	
+	 List<String> categories = CommonUtility.getStringAsList(categoryVal,
+				ApplicationConstants.CONST_DELIMITER_COMMA);
+	 for (String catValue : categories) {
+		 if(lookupServiceData.isCategory(catValue.trim())){
+				listOfCategories.add(catValue);
+			}else{
+				System.out.println("No categroy match");
+			}
+	}
+	
+	return listOfCategories;
+}
 	public static ShippingEstimate getShippingEstimates( String shippingValue,String sdimVAl,ShippingEstimate shippingEstObj,String str,String sdimType) {
 	//ShippingEstimate shipingObj = new ShippingEstimate();
 	if(str.equals("NOI")){
@@ -117,16 +134,19 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 				if(imprintMethodName.contains("on")){
 					String str[]=imprintMethodName.split("on");
 					imprintMethod=str[0];
-					imprintLocation="on "+str[1];
+					//imprintLocation="on "+str[1];
+					imprintLocation=str[1];
 					//imprintLocation=imprintLocation.substring(imprintLocation.indexOf("on"),imprintLocation.length());
 				}else if(imprintMethodName.contains("behind")){
 					String str[]=imprintMethodName.split("behind");
 					imprintMethod=str[0];
-					imprintLocation="behind "+str[1];
+					//imprintLocation="behind "+str[1];
+					imprintLocation=str[1];
 				}else if(imprintMethodName.contains("below")){
 					String str[]=imprintMethodName.split("below");
 					imprintMethod=str[0];
-					imprintLocation="below "+str[1];
+					//imprintLocation="below "+str[1];
+					imprintLocation=str[1];
 				}
 				
 				
@@ -142,35 +162,47 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 		}
 		
 	
-			if(StringUtils.isEmpty(imprintMethodName)){
-				continue;
+			if(StringUtils.isEmpty(imprintMethod)){
+				if(!StringUtils.isEmpty(data)){
+					imprintMethod=data;
+				}else{
+					continue;	
+				}
+				
 			}
 			imprintMethodObj = new ImprintMethod();
+			imprintMethod=imprintMethod.trim();
 			String alias = "";
-			if(imprintMethodName.contains("Foil")){
-				alias = imprintMethodName.trim().toUpperCase();
+			if(imprintMethod.contains("Foil")){
+				alias = imprintMethod.trim().toUpperCase();
 				//imprintMethodName=imprintMethodName.replace("Foil", "Foil Stamped");
-				imprintMethodName = "Foil Stamped";
-		    } else if(imprintMethodName.contains("Deboss")){
-		    	alias = imprintMethodName.trim().toUpperCase();
+				imprintMethod = "Foil Stamped";
+		    } else if(imprintMethod.contains("Deboss")){
+		    	alias = imprintMethod.trim().toUpperCase();
     		    //imprintMethodName=imprintMethodName.replaceAll("Deboss", "Debossed");
-    		    imprintMethodName = "Debossed";
-	        } else if(imprintMethodName.contains("4C")){
-	        	 alias = imprintMethodName.trim().toUpperCase();
-	        	 imprintMethodName = "Full Color";
+		    	imprintMethod = "Debossed";
+	        } else if(imprintMethod.contains("4C")){
+	        	 alias = imprintMethod.trim().toUpperCase();
+	        	 imprintMethod = "Full Color";
+	        }else if(imprintMethod.contains("Pad")){
+	        	 alias = imprintMethod.trim().toUpperCase();
+	        	 imprintMethod = "Pad Print";
+	        }else if(imprintMethod.contains("Silk")){
+	        	 alias = imprintMethod.trim().toUpperCase();
+	        	 imprintMethod = "Silkscreen";
 	        }
-			imprintMethodName = imprintMethodName.trim().toUpperCase();
-			  if(lookupServiceData.isImprintMethod(imprintMethodName)){
-				  imprintMethodObj.setType(imprintMethodName);
+			imprintMethod = imprintMethod.trim().toUpperCase();
+			  if(lookupServiceData.isImprintMethod(imprintMethod)){
+				  imprintMethodObj.setType(imprintMethod);
 				  if(StringUtils.isEmpty(alias)){
-					  imprintMethodObj.setAlias(imprintMethodName);
+					  imprintMethodObj.setAlias(imprintMethod);
 				  } else{
 					  imprintMethodObj.setAlias(alias);
 				  }
 				  
 			  }else{
 				  imprintMethodObj.setType(ApplicationConstants.CONST_VALUE_TYPE_OTHER);
-				  imprintMethodObj.setAlias(imprintMethodName);
+				  imprintMethodObj.setAlias(imprintMethod);
 			  }
 			  listOfImprintMethod.add(imprintMethodObj);
 			  //productConfigObj.setImprintMethods(listOfImprintMethod);
