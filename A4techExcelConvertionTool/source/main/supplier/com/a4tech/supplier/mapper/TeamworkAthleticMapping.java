@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -23,6 +25,7 @@ import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Apparel;
+import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
@@ -38,6 +41,7 @@ import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 import parser.TeamworkAthletic.TeamworkAthleticAttributeParser;
+import parser.TeamworkAthletic.TeamworkAthleticPriceGridParser;
 
 public class TeamworkAthleticMapping implements IExcelParser{
 	
@@ -46,6 +50,7 @@ public class TeamworkAthleticMapping implements IExcelParser{
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
 	private TeamworkAthleticAttributeParser teamWorkAttParser;
+	private TeamworkAthleticPriceGridParser   teamWorkPriceGridParser;
 	
 	@Override
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
@@ -78,17 +83,23 @@ public class TeamworkAthleticMapping implements IExcelParser{
 		 List<String> keyWords = new ArrayList<>();
 		 List<String> sizeList = new ArrayList<>();
 		 Set<String> colorsList = new HashSet<>();
+		 String colorVal = "";
+		 String sizeVal = "";
+		 String priceVal = "";
+		 boolean isXidRow = false;
+		 List<String> itemWeightList = new LinkedList<>();
+		 int rowXid = 1;
 		while (iterator.hasNext()) {
 			
 			try{
 			Row nextRow = iterator.next();
-			if(nextRow.getRowNum() == ApplicationConstants.CONST_NUMBER_ZERO){
+			if(nextRow.getRowNum() <= 2){
 				continue;
 			}
 			Iterator<Cell> cellIterator = nextRow.cellIterator();
-			if(xid != null){
+			if(xid != null && rowXid == 3){
 				productXids.add(xid);
-				repeatRows.add(xid);
+				//repeatRows.add(xid);
 			}
 			 boolean checkXid  = false;
 			
@@ -96,29 +107,62 @@ public class TeamworkAthleticMapping implements IExcelParser{
 				Cell cell = cellIterator.next();
 				
 				 columnIndex = cell.getColumnIndex();
-				 if (columnIndex == 1) {
-						xid = getProductXid(nextRow);
+				 if (columnIndex == 0) {
+					  if(isXidRow(nextRow)){
+						  xid = getProductXid(nextRow);
+						  isXidRow = true;
+						  break;
+					  }
 						checkXid = true;
 					} else {
 						checkXid = false;
 					}
 				if(columnIndex + 1 == 1){
-					xid = getProductXid(nextRow);
+					if(isXidRow(nextRow)){
+						  xid = getProductXid(nextRow);
+						  isXidRow = true;
+						  break;
+					  }
 					checkXid = true;
 				}/*else{
 					checkXid = false;
 				}*/
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 1){
+						 if(nextRow.getRowNum() != 4){
 							 System.out.println("Java object converted to JSON String, written to file");
 							 
 									productExcelObj.setDescription(
 											CommonUtility.getStringLimitedChars(description.toString(), 800));
 							 	List<String> keyWordsList = teamWorkAttParser.getProductKeywords(keyWords);
 							 	Size sizeObj = teamWorkAttParser.getProductSize(sizeList);
+							 	List<Color> listOfProductColor = teamWorkAttParser.getProductColor(colorsList);
+							 	List<Image> listOfImages = teamWorkAttParser.getImages(images);
+							 	productExcelObj.setImages(listOfImages);
 							 	productExcelObj.setProductKeywords(keyWordsList);
 							 	productConfigObj.setSizes(sizeObj);
+							 	productConfigObj.setColors(listOfProductColor);
+							 	productExcelObj.setPriceType("L");
+                                List<ImprintMethod> imprMethodList = productConfigObj.getImprintMethods();
+                                if(CollectionUtils.isEmpty(imprMethodList)){
+                                	imprMethodList = teamWorkAttParser.getImprintMethodValues("Unimprinted");
+                                	productConfigObj.setImprintMethods(imprMethodList);
+                                }
+                                if(!CollectionUtils.isEmpty(itemWeightList)){
+                                	String itemWtVal = "";
+                                	if(itemWeightList.size() == 1){
+                                		itemWtVal = itemWeightList.get(0);
+                                	} else if(itemWeightList.size() > 1){
+                                		itemWtVal = itemWeightList.get(0);
+                                		itemWeightList.remove(0);
+                                		String remainingItemWeights = itemWeightList.stream().collect(Collectors.joining(","));
+                                		productExcelObj.setAdditionalShippingInfo("Additional Shipping Values:"+remainingItemWeights);
+                                	}
+                                	Volume volume = teamWorkAttParser.getItemWeightvolume(itemWtVal);
+                    				productConfigObj.setItemWeight(volume);
+                                }
+							 	productExcelObj.setProductConfigurations(productConfigObj);
+							 	productExcelObj.setPriceGrids(priceGrids);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);					     		 	
 							 	if(num ==1){
 							 		numOfProductsSuccess.add("1");
@@ -138,10 +182,16 @@ public class TeamworkAthleticMapping implements IExcelParser{
 								keyWords = new ArrayList<>();
 								sizeList = new ArrayList<>();
 								colorsList = new HashSet<>();
+								colorVal = "";
+								sizeVal = "";
+								priceVal = "";
+								itemWeightList =  new LinkedList<>();
+								rowXid = 1;
+								repeatRows.clear();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
-						    	repeatRows.add(xid);
+						    	//repeatRows.add(xid);
 						    }
 						    productExcelObj = new Product();
      						 productExcelObj = postServiceImpl.getProduct(accessToken, xid, environmentType);
@@ -149,14 +199,18 @@ public class TeamworkAthleticMapping implements IExcelParser{
 						    	 _LOGGER.info("Existing Xid is not available,product treated as new product");
 						    	 productExcelObj = new Product();
 						     }else{
-						    	 //productExcelObj = appaAttributeParser.getExistingProductData(productExcelObj);
+						    	 productExcelObj = teamWorkAttParser.keepExistingProductData(productExcelObj);
 						    	 productConfigObj=productExcelObj.getProductConfigurations();
 						    	 productExcelObj.setAvailability(new ArrayList<>());
 						    	 priceGrids = new ArrayList<PriceGrid>();
 						     }
+						     /*if(productXids.size() > 1){
+						    	 isXidRow = true;
+							     break;
+						     }*/
 					 }
 				}else{
-					if(productXids.contains(xid) && repeatRows.size() != 1){
+					if(productXids.contains(xid) && repeatRows.size() != 0){
 						 if(isRepeateColumn(columnIndex+1)){
 							 continue;
 						 }
@@ -165,31 +219,34 @@ public class TeamworkAthleticMapping implements IExcelParser{
 				
 				switch (columnIndex+1) {
 				case 1://XID
+					productExcelObj.setExternalProductId(xid);
 					 break;
 				case 4:// asiPrdNo
 					String asiPrdNo = CommonUtility.getCellValueStrinOrInt(cell);
-					productExcelObj.setAsiProdNo(asiPrdNo);
+					productNo = asiPrdNo;
+					//productExcelObj.setAsiProdNo(asiPrdNo);
 					  break;
 				case 5://name
 					String name = cell.getStringCellValue();
 					  productExcelObj.setName(name);	
 				    break;
 				case 7://color
-					String color = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(color)){
-						colorsList.add(color);
+					 colorVal = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(colorVal)){
+						colorVal = colorVal.replaceAll("/", "-");
+						colorsList.add(colorVal);
 					}
 				    break;
 					
 				case 9://size
-					String size = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(size)){
-						size = teamWorkAttParser.getExactSizeValue(size);
-						sizeList.add(size);
+					 sizeVal = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(sizeVal)){
+						sizeVal = teamWorkAttParser.getExactSizeValue(sizeVal);
+						sizeList.add(sizeVal);
 					}
 					break;
 				case 10://price
-					String priceVal=CommonUtility.getCellValueDouble(cell);
+					 priceVal=CommonUtility.getCellValueDouble(cell);
 					break;
 				case 12: //  images
 					String image = cell.getStringCellValue();
@@ -218,19 +275,36 @@ public class TeamworkAthleticMapping implements IExcelParser{
 				productConfigObj.setShippingEstimates(shippingEstimate);
 				
 					break;
-				case 35://ItemWeight
+				case 37://ItemWeight
 					String itemWeightValue = CommonUtility.getCellValueDouble(cell);
 					if (!StringUtils.isEmpty(itemWeightValue) && !itemWeightValue.equals("0")
 							&& !itemWeightValue.equals("0.0")) {
-				Volume volume = teamWorkAttParser.getItemWeightvolume(itemWeightValue);
-				productConfigObj.setItemWeight(volume);
+						if(!itemWeightList.contains(itemWeightValue)){
+							itemWeightList.add(itemWeightValue);
+						}
+						
 			}
 							
 			}  // end inner while loop
 					 
 		}
-				productExcelObj.setPriceType("N");
-				String qurFlag = "n"; // by default for testing purpose
+			if(!isXidRow){
+				StringBuilder finalCriterai = new StringBuilder();
+				if(!StringUtils.isEmpty(colorVal)){// color & Size combination
+					finalCriterai.append("Size:").append(sizeVal)
+					.append(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID).append("PRCL:")
+					.append(colorVal);	
+				} else { // only size if color is absent
+					finalCriterai.append("Size:").append(sizeVal);
+				}
+				
+		priceGrids = teamWorkPriceGridParser.getBasePriceGrids(priceVal, "1", "P", "USD",
+						"", true, "False", "", finalCriterai.toString(), priceGrids,productNo);	
+		repeatRows.add(xid);
+			}
+				
+			isXidRow = false;  
+			rowXid++;
 				//String basePriceName = "Bronze,Silver,Gold";
 				
 			}catch(Exception e){
@@ -242,6 +316,37 @@ public class TeamworkAthleticMapping implements IExcelParser{
 		}
 		}
 		workbook.close();
+		productExcelObj.setDescription(
+				CommonUtility.getStringLimitedChars(description.toString(), 800));
+ 	List<String> keyWordsList = teamWorkAttParser.getProductKeywords(keyWords);
+ 	Size sizeObj = teamWorkAttParser.getProductSize(sizeList);
+ 	List<Color> listOfProductColor = teamWorkAttParser.getProductColor(colorsList);
+ 	List<Image> listOfImages = teamWorkAttParser.getImages(images);
+ 	productExcelObj.setImages(listOfImages);
+ 	productExcelObj.setProductKeywords(keyWordsList);
+ 	productConfigObj.setSizes(sizeObj);
+ 	productConfigObj.setColors(listOfProductColor);
+ 	productExcelObj.setPriceType("L");
+ 	List<ImprintMethod> imprMethodList = productConfigObj.getImprintMethods();
+    if(CollectionUtils.isEmpty(imprMethodList)){
+    	imprMethodList = teamWorkAttParser.getImprintMethodValues("Unimprinted");
+    	productConfigObj.setImprintMethods(imprMethodList);
+    }
+    if(!CollectionUtils.isEmpty(itemWeightList)){
+    	String itemWtVal = "";
+    	if(itemWeightList.size() == 1){
+    		itemWtVal = itemWeightList.get(0);
+    	} else if(itemWeightList.size() > 1){
+    		itemWtVal = itemWeightList.get(0);
+    		itemWeightList.remove(0);
+    		String remainingItemWeights = itemWeightList.stream().collect(Collectors.joining(","));
+    		productExcelObj.setAdditionalShippingInfo("Additional Shipping Values:"+remainingItemWeights);
+    	}
+    	Volume volume = teamWorkAttParser.getItemWeightvolume(itemWtVal);
+		productConfigObj.setItemWeight(volume);
+    }
+ 	productExcelObj.setProductConfigurations(productConfigObj);
+ 	productExcelObj.setPriceGrids(priceGrids);
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
 		 		numOfProductsSuccess.add("1");
@@ -273,15 +378,23 @@ public class TeamworkAthleticMapping implements IExcelParser{
 	}
 
 	public String getProductXid(Row row){
-		Cell xidCell =  row.getCell(ApplicationConstants.CONST_NUMBER_ZERO);
+		Cell xidCell =  row.getCell(0);
 		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
 		if(StringUtils.isEmpty(productXid) || "N/A".equalsIgnoreCase(productXid)){
-		     xidCell = row.getCell(ApplicationConstants.CONST_INT_VALUE_TWO);
+		     xidCell = row.getCell(3);
 		     productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
 		}
 		return productXid;
 	}
-	
+	private boolean isXidRow(Row row){
+		Cell xidCell =  row.getCell(8);
+		String productXid = CommonUtility.getCellValueStrinOrInt(xidCell);
+		boolean isxidRow = false;
+		if(StringUtils.isEmpty(productXid) || "N/A".equalsIgnoreCase(productXid)){
+			isxidRow = true;
+		}
+		return isxidRow;
+	}
 	public Size getProductSize(List<Value> sizeValues){
 		Size size = new Size();
 		Apparel appareal = new Apparel();
@@ -292,8 +405,7 @@ public class TeamworkAthleticMapping implements IExcelParser{
 	}
 	
 	public boolean isRepeateColumn(int columnIndex){
-		if(columnIndex != 4 && columnIndex != 7 && columnIndex != 9 && columnIndex != 10 
-				                                &&!(columnIndex >= 12 && columnIndex <= 27)){
+		if(columnIndex != 4 && columnIndex != 7 && columnIndex != 9 && columnIndex != 10 & columnIndex !=37 ){
 			return ApplicationConstants.CONST_BOOLEAN_TRUE;
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
@@ -330,6 +442,14 @@ public class TeamworkAthleticMapping implements IExcelParser{
 
 	public void setTeamWorkAttParser(TeamworkAthleticAttributeParser teamWorkAttParser) {
 		this.teamWorkAttParser = teamWorkAttParser;
+	}
+
+	public TeamworkAthleticPriceGridParser getTeamWorkPriceGridParser() {
+		return teamWorkPriceGridParser;
+	}
+
+	public void setTeamWorkPriceGridParser(TeamworkAthleticPriceGridParser teamWorkPriceGridParser) {
+		this.teamWorkPriceGridParser = teamWorkPriceGridParser;
 	}
 
 

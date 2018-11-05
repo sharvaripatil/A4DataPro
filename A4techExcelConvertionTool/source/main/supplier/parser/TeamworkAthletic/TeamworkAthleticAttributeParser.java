@@ -45,7 +45,7 @@ import com.a4tech.util.CommonUtility;
 
 public class TeamworkAthleticAttributeParser {
 	private LookupServiceData lookupServiceDataObj;
-	private TeamworkAthleticPriceGridParser bloominPromationPriceGridParser;
+	private TeamworkAthleticPriceGridParser teamWorkPriceGridParser;
 	private static List<String> lookupFobPoints = null;
 	
 	public Product keepExistingProductData(Product existingProduct){
@@ -204,7 +204,7 @@ public class TeamworkAthleticAttributeParser {
 		Color colorObj = null;
 		for (String colorName : colorsList) {
 			colorObj = new Color();
-			colorName = colorName.replaceAll("/", "-");
+			//colorName = colorName.replaceAll("/", "-");
 			String colorGroup = TeamworkAthleticColorMapping.getColorGroup(colorName);
 			colorObj.setName(colorGroup);
 			colorObj.setAlias(colorName);
@@ -290,14 +290,14 @@ public class TeamworkAthleticAttributeParser {
 				 upChargeTypeVal = "Re-order Charge";upchargeUsageType="Per Order";
 				 serviceCharge = "Optional";
 			 }
-			existingPriceGrid = bloominPromationPriceGridParser.getUpchargePriceGrid("1", priceVal, disCount, "Imprint method", "n",
+			existingPriceGrid = teamWorkPriceGridParser.getUpchargePriceGrid("1", priceVal, disCount, "Imprint method", "n",
 					"USD", imprintMethods, upChargeTypeVal, upchargeUsageType,serviceCharge, 1, existingPriceGrid);
 		}
 		return existingPriceGrid;
 	}
 	public List<PriceGrid> getAdditionalColorUpcharge(String discountCode,String prices,List<PriceGrid> existingPriceGrid,String upchargeType,String qty){
 	   String disCountCode = getAdditionalColorDiscountCode(discountCode);
-	   existingPriceGrid = bloominPromationPriceGridParser.getUpchargePriceGrid(qty, prices, disCountCode, "Additional Colors", "n",
+	   existingPriceGrid = teamWorkPriceGridParser.getUpchargePriceGrid(qty, prices, disCountCode, "Additional Colors", "n",
 				"USD", "Additional Color",upchargeType, "Other","Required", 1, existingPriceGrid);
 		return existingPriceGrid;
 	}
@@ -382,7 +382,7 @@ public class TeamworkAthleticAttributeParser {
 	}
 	public List<PriceGrid> getSetupCharge(String val,List<PriceGrid> priceGrid){
 		String[] vals = CommonUtility.getValuesOfArray(val, ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		priceGrid = bloominPromationPriceGridParser.getUpchargePriceGrid(vals[0], vals[1], vals[2], "Imprint method", "n",
+		priceGrid = teamWorkPriceGridParser.getUpchargePriceGrid(vals[0], vals[1], vals[2], "Imprint method", "n",
 				"USD", "Printed", "Set-up Charge", "Other","Required", 1, priceGrid);
 		
 		return priceGrid;
@@ -486,12 +486,15 @@ public class TeamworkAthleticAttributeParser {
 	public void setLookupServiceDataObj(LookupServiceData lookupServiceDataObj) {
 		this.lookupServiceDataObj = lookupServiceDataObj;
 	}
-	public TeamworkAthleticPriceGridParser getBloominPromationPriceGridParser() {
-		return bloominPromationPriceGridParser;
+
+	public TeamworkAthleticPriceGridParser getTeamWorkPriceGridParser() {
+		return teamWorkPriceGridParser;
 	}
-	public void setBloominPromationPriceGridParser(TeamworkAthleticPriceGridParser bloominPromationPriceGridParser) {
-		this.bloominPromationPriceGridParser = bloominPromationPriceGridParser;
+
+	public void setTeamWorkPriceGridParser(TeamworkAthleticPriceGridParser teamWorkPriceGridParser) {
+		this.teamWorkPriceGridParser = teamWorkPriceGridParser;
 	}
+	
 	
 }
 

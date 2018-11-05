@@ -61,6 +61,7 @@ import com.a4tech.supplier.mapper.SportsManBagMapping;
 import com.a4tech.supplier.mapper.SunGraphixMapping;
 import com.a4tech.supplier.mapper.SunGraphixRevisedMapping;
 import com.a4tech.supplier.mapper.SunScopeMapping;
+import com.a4tech.supplier.mapper.TeamworkAthleticMapping;
 import com.a4tech.supplier.mapper.TekweldMapping;
 import com.a4tech.supplier.mapper.TomaxUsaMapping;
 import com.a4tech.supplier.mapper.TowelSpecialtiesMapping;
@@ -136,8 +137,10 @@ public class ExcelFactory {
     private ZenithExport                    zenithMapping;
     private BloominPromotionsMapper         bloominPromotion;
      private PioneerLLCMapping 				pioneerLLCMapping;
+     private TeamworkAthleticMapping        teamWorkAthleticMapper;
 
-     public  IExcelParser getExcelParserObject(String name){
+    
+	public  IExcelParser getExcelParserObject(String name){
 
 		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
 			   return apparealExcelMapping;
@@ -273,6 +276,8 @@ public class ExcelFactory {
 			  return bloominPromotion;
 		  } else if(name.equals("76771")){
 			  return pioneerLLCMapping;
+		  } else if(name.equals("90673")){
+			  return teamWorkAthleticMapper;
 		  }
 		return null;
 	}
@@ -763,6 +768,9 @@ public class ExcelFactory {
 	public void setPioneerLLCMapping(PioneerLLCMapping pioneerLLCMapping) {
 		this.pioneerLLCMapping = pioneerLLCMapping;
 	}
+	 public void setTeamWorkAthleticMapper(TeamworkAthleticMapping teamWorkAthleticMapper) {
+			this.teamWorkAthleticMapper = teamWorkAthleticMapper;
+		}
 
 
 }

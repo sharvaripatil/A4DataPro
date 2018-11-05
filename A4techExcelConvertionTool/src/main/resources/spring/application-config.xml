@@ -439,6 +439,7 @@
 		<property name="zenithMapping" ref="zenithMappingId"/>
 		<property name="bloominPromotion" ref="bloominPromotionsMappingId"/>
 		<property name="pioneerLLCMapping" ref="pioneerLLCMappingId"/>
+		<property name="teamWorkAthleticMapper" ref="teamWorkMappingId"/>
      </bean>
      
      <bean id="bestDealMappingId" class="com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping">
@@ -1396,5 +1397,20 @@
 	</bean>
 	<bean id="pioneerPriceGridParserrId" name="pioneerPriceGridParserrObj" class="parser.PioneerLLC.PioneerPriceGridParserr" autowire="byName"/>
      <!--supplier 76771 pioneerLLC configuration end  -->
+     
+     <!-- supplier 90673 TeamWork Athletic configuration start -->
+     <bean id="teamWorkMappingId" class="com.a4tech.supplier.mapper.TeamworkAthleticMapping" >
+     <property name="postServiceImpl" ref="postService"/>
+     <property name="productDaoObj" ref="productDao"/>
+     <property name="teamWorkAttParser" ref="teamWorkAttributeParserId" /> 
+     <property name="teamWorkPriceGridParser" ref="teamWorkPriceGridParserrId" /> 
+     </bean>
+     <bean id="teamWorkAttributeParserId"
+		class="parser.TeamworkAthletic.TeamworkAthleticAttributeParser" >
+		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
+		<property name="teamWorkPriceGridParser" ref="teamWorkPriceGridParserrId"></property>
+	</bean>
+	<bean id="teamWorkPriceGridParserrId"  class="parser.TeamworkAthletic.TeamworkAthleticPriceGridParser"/>
+     <!--supplier 90673 TeamWork Athletic configuration end  -->
 </beans>
 

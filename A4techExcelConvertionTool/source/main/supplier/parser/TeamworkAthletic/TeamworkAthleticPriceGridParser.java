@@ -15,17 +15,17 @@ import com.a4tech.util.CommonUtility;
 import com.a4tech.util.LookupData;
 
 public class TeamworkAthleticPriceGridParser {
-
+	
 	private Logger              _LOGGER              = Logger.getLogger(getClass());
 	public List<PriceGrid> getBasePriceGrids(String listOfPrices,
 		    String listOfQuan, String discountCode,
 			String currency, String priceInclude, boolean isBasePrice,
 			String qurFlag, String priceName, String criterias,
-			List<PriceGrid> existingPriceGrid) {
+			List<PriceGrid> existingPriceGrid,String productNo) {
 		_LOGGER.info("Enter Price Grid Parser class");
 		try{
 		Integer sequence = 1;
-	//	List<PriceConfiguration> configuration = null;
+		List<PriceConfiguration> configuration = null;
 		PriceGrid priceGrid = new PriceGrid();
 		String[] prices = listOfPrices
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -42,6 +42,7 @@ public class TeamworkAthleticPriceGridParser {
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
+		priceGrid.setProductNumber(productNo);
 		List<Price> listOfPrice = null;
 		if (!priceGrid.getIsQUR()) {
 			listOfPrice = getPrices(prices, quantity, discountCodes);
@@ -49,10 +50,10 @@ public class TeamworkAthleticPriceGridParser {
 			listOfPrice = new ArrayList<Price>();
 		}
 		priceGrid.setPrices(listOfPrice);
-//		if (criterias != null && !criterias.isEmpty()) {
-//			configuration = getConfigurations(criterias);
-//		}
-//		priceGrid.setPriceConfigurations(configuration);
+	if (criterias != null && !criterias.isEmpty()) {
+			configuration = getConfigurations(criterias,"");
+		}
+		priceGrid.setPriceConfigurations(configuration);
 		existingPriceGrid.add(priceGrid);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing PriceGrid: "+e.getMessage());
@@ -108,7 +109,7 @@ public class TeamworkAthleticPriceGridParser {
 					}
 				} else {
 					configs = new PriceConfiguration();
-					config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
+					//config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
 					//String criteriaValue = LookupData.getCriteriaValue(config[0]);
 					configs.setCriteria(criteriaValue);
 					configs.setValue(Arrays.asList((Object) config[1]));
@@ -118,22 +119,12 @@ public class TeamworkAthleticPriceGridParser {
 			}
 
 		} else {
-			if(UpchargeName.contains(",")){
-				String[] upchargeNames = CommonUtility.getValuesOfArray(UpchargeName, ",");
-				for (String upchargeNameVal : upchargeNames) {
-					configs = new PriceConfiguration();
-					configs.setCriteria(criterias);
-					configs.setValue(Arrays.asList((Object) upchargeNameVal));
-					priceConfiguration.add(configs);
-
-				}
-			} else {
-				configs = new PriceConfiguration();
-				configs.setCriteria(criterias);
-				configs.setValue(Arrays.asList((Object) UpchargeName));
-				priceConfiguration.add(configs);
-			}
-			
+			config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
+			String criteriaValue = LookupData.getCriteriaValue(config[0]);
+			configs = new PriceConfiguration();
+			configs.setCriteria(criteriaValue);
+			configs.setValue(Arrays.asList((Object) config[1]));
+			priceConfiguration.add(configs);
 			
 		}
 		}catch(Exception e){
