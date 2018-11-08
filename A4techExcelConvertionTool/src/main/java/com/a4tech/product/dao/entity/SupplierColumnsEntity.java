@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name="supplier_file_column_count")
+@Table(name="supplier_file_column_count1")
 public class SupplierColumnsEntity {
 
 	@Id

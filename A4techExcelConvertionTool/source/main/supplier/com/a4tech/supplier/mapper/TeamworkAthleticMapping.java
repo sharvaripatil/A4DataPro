@@ -29,6 +29,7 @@ import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
+import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -89,6 +90,7 @@ public class TeamworkAthleticMapping implements IExcelParser{
 		 boolean isXidRow = false;
 		 List<String> itemWeightList = new LinkedList<>();
 		 int rowXid = 1;
+		 Set<String> sizeAndColorList = new HashSet<>();
 		while (iterator.hasNext()) {
 			
 			try{
@@ -131,9 +133,12 @@ public class TeamworkAthleticMapping implements IExcelParser{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 4){
 							 System.out.println("Java object converted to JSON String, written to file");
-							 
-									productExcelObj.setDescription(
-											CommonUtility.getStringLimitedChars(description.toString(), 800));
+							 String descri = description.toString();
+							 if(descri.contains("Velcro")){
+								 descri = descri.replaceAll("Velcro", ""); 
+							 }
+							  descri = CommonUtility.getStringLimitedChars(descri, 800);
+									productExcelObj.setDescription(descri);
 							 	List<String> keyWordsList = teamWorkAttParser.getProductKeywords(keyWords);
 							 	Size sizeObj = teamWorkAttParser.getProductSize(sizeList);
 							 	List<Color> listOfProductColor = teamWorkAttParser.getProductColor(colorsList);
@@ -162,6 +167,9 @@ public class TeamworkAthleticMapping implements IExcelParser{
                     				productConfigObj.setItemWeight(volume);
                                 }
 							 	productExcelObj.setProductConfigurations(productConfigObj);
+							 	if(priceGrids.size() == 1){
+							 		priceGrids = removePriceConfiguration(priceGrids, sizeVal);
+							 	}
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);					     		 	
 							 	if(num ==1){
@@ -186,8 +194,9 @@ public class TeamworkAthleticMapping implements IExcelParser{
 								sizeVal = "";
 								priceVal = "";
 								itemWeightList =  new LinkedList<>();
-								rowXid = 1;
+								//rowXid = 1;
 								repeatRows.clear();
+								sizeAndColorList = new HashSet<>();
 						 }
 						    if(!productXids.contains(xid)){
 						    	productXids.add(xid);
@@ -228,7 +237,9 @@ public class TeamworkAthleticMapping implements IExcelParser{
 					  break;
 				case 5://name
 					String name = cell.getStringCellValue();
-					  productExcelObj.setName(name);	
+					if(!StringUtils.isEmpty(name)){
+						productExcelObj.setName(CommonUtility.getStringLimitedChars(name, 60));
+					}
 				    break;
 				case 7://color
 					 colorVal = cell.getStringCellValue();
@@ -259,7 +270,7 @@ public class TeamworkAthleticMapping implements IExcelParser{
 				case 27: //keyword 
 				case 28://keyword
 					String desc = cell.getStringCellValue();
-					description.append(desc).append(" ");
+					description.append(desc).append(". ");
 					break;
 				case 29:
 				case 30://keyword
@@ -297,10 +308,13 @@ public class TeamworkAthleticMapping implements IExcelParser{
 				} else { // only size if color is absent
 					finalCriterai.append("Size:").append(sizeVal);
 				}
-				
-		priceGrids = teamWorkPriceGridParser.getBasePriceGrids(priceVal, "1", "P", "USD",
-						"", true, "False", "", finalCriterai.toString(), priceGrids,productNo);	
-		repeatRows.add(xid);
+				String finalCriteraiValue = finalCriterai.toString();
+			if(!sizeAndColorList.contains(finalCriteraiValue)){
+				priceGrids = teamWorkPriceGridParser.getBasePriceGrids(priceVal, "1", "P", "USD",
+						"", true, "False", "", finalCriteraiValue, priceGrids,productNo);
+				sizeAndColorList.add(finalCriteraiValue);
+			}
+				repeatRows.add(xid);
 			}
 				
 			isXidRow = false;  
@@ -316,8 +330,12 @@ public class TeamworkAthleticMapping implements IExcelParser{
 		}
 		}
 		workbook.close();
-		productExcelObj.setDescription(
-				CommonUtility.getStringLimitedChars(description.toString(), 800));
+		String descri = description.toString();
+		 if(descri.contains("Velcro")){
+			 descri = descri.replaceAll("Velcro", ""); 
+		 }
+		  descri = CommonUtility.getStringLimitedChars(descri, 800);
+				productExcelObj.setDescription(descri);
  	List<String> keyWordsList = teamWorkAttParser.getProductKeywords(keyWords);
  	Size sizeObj = teamWorkAttParser.getProductSize(sizeList);
  	List<Color> listOfProductColor = teamWorkAttParser.getProductColor(colorsList);
@@ -346,6 +364,9 @@ public class TeamworkAthleticMapping implements IExcelParser{
 		productConfigObj.setItemWeight(volume);
     }
  	productExcelObj.setProductConfigurations(productConfigObj);
+ 	if(priceGrids.size() == 1){
+ 		priceGrids = removePriceConfiguration(priceGrids, sizeVal);
+ 	}
  	productExcelObj.setPriceGrids(priceGrids);
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 		 	if(num ==1){
@@ -410,7 +431,15 @@ public class TeamworkAthleticMapping implements IExcelParser{
 		}
 		return ApplicationConstants.CONST_BOOLEAN_FALSE;
 	}
-	
+	private List<PriceGrid> removePriceConfiguration(List<PriceGrid> pricesList, String sizeVal){
+		List<PriceGrid> newPricesList = new ArrayList<>();
+		for (PriceGrid priceGrid : pricesList) {
+			priceGrid.setPriceConfigurations(new ArrayList<>());
+			priceGrid.setDescription(sizeVal);
+			newPricesList.add(priceGrid);
+		}
+		return newPricesList;
+	}
 	public List<Material> getExistingProductMaterials(Product existingProduct){
 		ProductConfigurations configuration = existingProduct.getProductConfigurations();
 		return configuration.getMaterials();

@@ -5,17 +5,23 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.a4tech.ftp.FilesParsing;
 import com.a4tech.ftp.service.FtpService;
 import com.a4tech.product.service.IMailService;
+
 
 public class FtpServiceImpl implements FtpService{
   private FTPClient 	ftpClient ;
@@ -138,6 +144,32 @@ private Logger _LOGGER = Logger.getLogger(FtpServiceImpl.class);
 		
 		}
 	}
+	/*@Override
+	public void filesMove() {
+        File source = new File("D:\\A4 ESPUpdate\\FtpFiles");
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDate date = currentDate.toLocalDate();
+        String dest = "D:\\A4 ESPUpdate\\FtpFilesBackUp\\"+date;
+        File destination = new File(dest);
+        if(!destination.isDirectory()){
+        	destination.mkdir();
+        }
+        try {
+            FileUtils.copyDirectory(source, destination);
+            _LOGGER.info("All files has been copied successfully");
+        } catch (IOException e) {
+            _LOGGER.error("Unable to Copy file from source folder to destination folder: "+e.getCause());
+        }
+        
+        try {
+			FileUtils.cleanDirectory(source);
+			_LOGGER.info("all files removed form src folder");
+		} catch (IOException e) {
+			_LOGGER.error("unable to remove files from source folder: "+e.getCause());
+		}
+		
+				
+	}*/
 	/* private void listDirectory(FTPClient ftpClient, String parentDir,
 	        String currentDir, int level) throws IOException {
 		OutputStream output = null;
@@ -208,6 +240,7 @@ private Logger _LOGGER = Logger.getLogger(FtpServiceImpl.class);
 	public void setFilesParsing(FilesParsing filesParsing) {
 		this.filesParsing = filesParsing;
 	}
+	
 
 
 }

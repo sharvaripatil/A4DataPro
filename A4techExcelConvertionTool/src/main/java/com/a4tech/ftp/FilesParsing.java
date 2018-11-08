@@ -144,9 +144,9 @@ public class FilesParsing {
     	String body = "";
     	environment = environment.equals("Sand")?"Sandbox":"Production";
     	if(type.equals("ProcessStart")){
-    		subject =environment+" "+ supplierNo +" "+ "File processing has been started";
+    		subject =environment+" "+ supplierNo +" "+ "File processing started";
     		body = "Dear Team,"
-  			      +"\n \n"+supplierNo+" "+ "File processing has been started"
+  			      +"\n \n"+supplierNo+" "+ "File processing started"
   			      +"\n\n You will get separate mail once Processing is completed"+
   			     "\n\n\n\n"
   	            +"Thanks and Regards,"

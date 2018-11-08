@@ -72,6 +72,9 @@ public class TeamworkAthleticAttributeParser {
 		 if(!CollectionUtils.isEmpty(existingProduct.getImages())){
 			 newProduct.setImages(existingProduct.getImages());
 		 }
+		 if(!StringUtils.isEmpty(existingProduct.getSummary())){
+			 newProduct.setSummary(existingProduct.getSummary()); 
+		 }
 		newProduct.setProductConfigurations(newProductConfig);
 		return newProduct;
 	}
