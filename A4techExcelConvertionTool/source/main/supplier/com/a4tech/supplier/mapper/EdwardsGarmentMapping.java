@@ -266,7 +266,7 @@ while (iterator.hasNext()) {
 								}
 									 
 										 if(CollectionUtils.isEmpty(priceGrids)){
-												priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur();	
+												priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur(productName);	
 											}
 								productExcelObj.setPriceType("L");
 							    productExcelObj.setPriceGrids(priceGrids);
@@ -309,6 +309,7 @@ while (iterator.hasNext()) {
 						 		 sizeKeyValue=new HashMap<String, String>();
 						         firstValue="";
 						         sizeCount=1;
+						         productName="";
 						 }
 						 if(!productXids.contains(xid)){
 						    	productXids.add(xid.trim());
@@ -793,7 +794,7 @@ while (iterator.hasNext()) {
 			}
 				 
 					 if(CollectionUtils.isEmpty(priceGrids)){
-							priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur();	
+							priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur(productName);	
 						}
 			productExcelObj.setPriceType("L");
 		    productExcelObj.setPriceGrids(priceGrids);
@@ -835,6 +836,7 @@ while (iterator.hasNext()) {
 	         sizeKeyValue=new HashMap<String, String>();
 	         firstValue="";
 	         sizeCount=1;
+	         productName="";
 	         repeatRows.clear();
 	       return finalResult;
 		}catch(Exception e){
