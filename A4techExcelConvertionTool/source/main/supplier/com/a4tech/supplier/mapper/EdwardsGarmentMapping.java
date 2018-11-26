@@ -374,6 +374,8 @@ while (iterator.hasNext()) {
 				    	size1=CommonUtility.getCellValueStrinOrInt(cell);
 				    	if(StringUtils.isEmpty(size1)){
 				    		size1="";
+				    	}else if(size1.trim().equals("XXS") || size1.trim().contains("XXS")){
+				    		size1="2XS";
 				    	}
 				    	String listPrice=getProductCellDataPrice(nextRow,12);
 				    	if(StringUtils.isEmpty(listPrice)){
@@ -382,6 +384,8 @@ while (iterator.hasNext()) {
 				    	size2 =getProductCellData(nextRow,9);
 				    	if(StringUtils.isEmpty(size2)){
 				    		size2="";
+				    	}else if(size2.trim().equals("XXS") || size2.trim().contains("XXS")){
+				    		size2="2XS";
 				    	}
 				    	String colorValueTemp=getProductCellData(nextRow,21);
 				    	if(!StringUtils.isEmpty(colorValueTemp)){
