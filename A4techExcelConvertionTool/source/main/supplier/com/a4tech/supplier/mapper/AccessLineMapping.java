@@ -266,10 +266,16 @@ private static final Logger _LOGGER = Logger.getLogger(AccessLineMapping.class);
 					break;
 				case 6://Colors
 					String colorValuee = cell.getStringCellValue();
-					
 					if(!StringUtils.isEmpty(colorValuee)){
-					   List<Color> colorsList = ColorParser.getColorCriteria(colorValuee);
-					   productConfigObj.setColors(colorsList);
+						String str=colorValuee.replace("&", "and");
+						String strTemp=str.replace("or", "");
+						
+						if(colorValuee.contains("and") && strTemp.contains("with") ){
+							_LOGGER.info("Color issue for :"+xid);
+						}else{
+						   List<Color> colorsList = ColorParser.getColorCriteria(strTemp);
+						   productConfigObj.setColors(colorsList);	
+						}
 					//   productExcelObj.setCategories(categories);
 					}
 					break;
@@ -556,8 +562,13 @@ private static final Logger _LOGGER = Logger.getLogger(AccessLineMapping.class);
 					
 					String colorValue=CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(colorValue)){
+						if(!colorValue.equals("N/A")){
 						try{
 						if(colorValue.toLowerCase().contains("second")){
+							if(colorValue.contains("Second Color/location")){
+								colorValue=colorValue.replace("Second Color/location", "Second color:");
+							}
+							
 					List<AdditionalColor> additionalColorList = new ArrayList<>();
 					AdditionalColor additionalColorObj = new AdditionalColor();
 					additionalColorObj.setName("Second Color");
@@ -597,7 +608,7 @@ private static final Logger _LOGGER = Logger.getLogger(AccessLineMapping.class);
 							"Set-up Charge", "Per Order","Optional", ApplicationConstants.CONST_INT_VALUE_ONE, priceGrids,priceTypee);
 				
 						}else{
-							String addClrArr[]=colorValue.split("+");
+							String addClrArr[]=colorValue.split("\\+");
 							String addClrInVal=addClrArr[0];
 							addClrInVal=addClrInVal.toUpperCase();
 							addClrInVal=addClrInVal.replace("SECOND","");
@@ -655,6 +666,7 @@ private static final Logger _LOGGER = Logger.getLogger(AccessLineMapping.class);
 					}catch(Exception e){
 						_LOGGER.error(e.getLocalizedMessage());
 					}
+						}
 					}
 					break;
 				case 51://Item Size

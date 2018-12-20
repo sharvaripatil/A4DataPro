@@ -1,6 +1,7 @@
 package parser.AccessLine;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -126,8 +127,11 @@ public List<String> getProductCategories(String categoryVal){
 		//List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
 			String imprintMethod="";
 			String imprintLocation="";
+			HashSet<String> setVal=new HashSet<String>();
+			HashSet<String> setImpMthd=new HashSet<String>();
 			ImprintMethod	imprintMethodObj = null;
-			List<ImprintLocation> values=new ArrayList<ImprintLocation>();
+			List<ImprintLocation> impvaluesList=new ArrayList<ImprintLocation>();
+			boolean impflag=true;
 			String[] imprintMethodValues = data.split(ApplicationConstants.CONST_DELIMITER_COMMA);
 			for (String imprintMethodName : imprintMethodValues) {
 			if(imprintMethodName.contains("on") || imprintMethodName.contains("behind") || imprintMethodName.contains("below")){
@@ -148,11 +152,11 @@ public List<String> getProductCategories(String categoryVal){
 					//imprintLocation="below "+str[1];
 					imprintLocation=str[1];
 				}
-				
-				
-				ImprintLocation locObj=new ImprintLocation();
-				locObj.setValue(imprintLocation);
-				values.add(locObj);
+				//setImpMthd.add(imprintMethod);
+				setVal.add(imprintLocation);
+				//ImprintLocation locObj=new ImprintLocation();
+				//locObj.setValue(imprintLocation);
+				//values.add(locObj);
 				
 			}
 			
@@ -188,9 +192,16 @@ public List<String> getProductCategories(String categoryVal){
 	        	 alias = imprintMethod.trim().toUpperCase();
 	        	 imprintMethod = "Pad Print";
 	        }else if(imprintMethod.contains("Silk")){
+	        	if(impflag){
 	        	 alias = imprintMethod.trim().toUpperCase();
 	        	 imprintMethod = "Silkscreen";
+	        	 impflag=false;
+	        	}else{
+	        		alias="";
+	        		imprintMethod="";
+	        	}
 	        }
+			if(!StringUtils.isEmpty(imprintMethod)){
 			imprintMethod = imprintMethod.trim().toUpperCase();
 			  if(lookupServiceData.isImprintMethod(imprintMethod)){
 				  imprintMethodObj.setType(imprintMethod);
@@ -205,9 +216,22 @@ public List<String> getProductCategories(String categoryVal){
 				  imprintMethodObj.setAlias(imprintMethod);
 			  }
 			  listOfImprintMethod.add(imprintMethodObj);
+			}
 			  //productConfigObj.setImprintMethods(listOfImprintMethod);
 		}
-			prodConfig.setImprintLocation(values);
+			
+			
+			//setVal.add(imprintLocation);
+			//ImprintLocation locObj=new ImprintLocation();
+			//locObj.setValue(imprintLocation);
+			//values.add(locObj);
+			for (String stringImp : setVal) {
+				ImprintLocation locObj=new ImprintLocation();
+				locObj.setValue(stringImp);
+				impvaluesList.add(locObj);
+			}
+			
+			prodConfig.setImprintLocation(impvaluesList);
 			prodConfig.setImprintMethods(listOfImprintMethod);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Size :"+e.getMessage());
