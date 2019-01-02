@@ -266,7 +266,7 @@ while (iterator.hasNext()) {
 								}
 									 
 										 if(CollectionUtils.isEmpty(priceGrids)){
-												priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur();	
+												priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur(productName);	
 											}
 								productExcelObj.setPriceType("L");
 							    productExcelObj.setPriceGrids(priceGrids);
@@ -309,6 +309,7 @@ while (iterator.hasNext()) {
 						 		 sizeKeyValue=new HashMap<String, String>();
 						         firstValue="";
 						         sizeCount=1;
+						         productName="";
 						 }
 						 if(!productXids.contains(xid)){
 						    	productXids.add(xid.trim());
@@ -373,6 +374,8 @@ while (iterator.hasNext()) {
 				    	size1=CommonUtility.getCellValueStrinOrInt(cell);
 				    	if(StringUtils.isEmpty(size1)){
 				    		size1="";
+				    	}else if(size1.trim().equals("XXS") || size1.trim().contains("XXS")){
+				    		size1="2XS";
 				    	}
 				    	String listPrice=getProductCellDataPrice(nextRow,12);
 				    	if(StringUtils.isEmpty(listPrice)){
@@ -381,6 +384,8 @@ while (iterator.hasNext()) {
 				    	size2 =getProductCellData(nextRow,9);
 				    	if(StringUtils.isEmpty(size2)){
 				    		size2="";
+				    	}else if(size2.trim().equals("XXS") || size2.trim().contains("XXS")){
+				    		size2="2XS";
 				    	}
 				    	String colorValueTemp=getProductCellData(nextRow,21);
 				    	if(!StringUtils.isEmpty(colorValueTemp)){
@@ -793,7 +798,7 @@ while (iterator.hasNext()) {
 			}
 				 
 					 if(CollectionUtils.isEmpty(priceGrids)){
-							priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur();	
+							priceGrids = edwardGarmentPriceGridparser.getPriceGridsQur(productName);	
 						}
 			productExcelObj.setPriceType("L");
 		    productExcelObj.setPriceGrids(priceGrids);
@@ -835,6 +840,7 @@ while (iterator.hasNext()) {
 	         sizeKeyValue=new HashMap<String, String>();
 	         firstValue="";
 	         sizeCount=1;
+	         productName="";
 	         repeatRows.clear();
 	       return finalResult;
 		}catch(Exception e){

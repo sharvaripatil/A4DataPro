@@ -15,8 +15,10 @@ import com.a4tech.product.model.BlendMaterial;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Dimensions;
+import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Material;
@@ -27,6 +29,7 @@ import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
+import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Weight;
@@ -85,7 +88,7 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 				return new Product();
 			}
 			
-		/*	//Image
+			//Image
 			List<Image> imagesList=existingProduct.getImages();
 			if(!CollectionUtils.isEmpty(imagesList)){
 				List<Image> newImagesList=new ArrayList<Image>();
@@ -94,14 +97,14 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 					newImagesList.add(image);
 				}
 				newProduct.setImages(imagesList);
-			}*/
+			}
 			
 			//Categories
 			listCategories=existingProduct.getCategories();
 			if(!CollectionUtils.isEmpty(listCategories)){
 				newProduct.setCategories(listCategories);
 			}
-		 
+			//keywords
 			List<String> productKeywords=existingProduct.getProductKeywords();
 			if(!CollectionUtils.isEmpty(productKeywords)){
 				newProduct.setProductKeywords(productKeywords);
@@ -110,6 +113,28 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			if(!CollectionUtils.isEmpty(listCatalog)){
 				newProduct.setCatalogs(listCatalog);
 			}
+			
+			//themes
+			List<Theme>	themes=existingProductConfig.getThemes();
+			if(!CollectionUtils.isEmpty(themes)){
+				List<Theme>	themesTemp=new ArrayList<Theme>();
+				for (Theme theme : themes) {
+					Theme themeObj=new Theme();
+					String tempValue=theme.getName();
+					tempValue=tempValue.trim();
+					if(tempValue.toUpperCase().contains("ECO") || tempValue.toUpperCase().contains("FRIENDLY")){
+					String	themeName="ECO & ENVIRONMENTALLY FRIENDLY";
+					themeObj.setName(themeName);
+					themesTemp.add(themeObj);
+					}else{
+						themeObj.setName(tempValue);
+						themesTemp.add(themeObj);
+					}
+				}
+				newProductConfigurations.setThemes(themesTemp);
+			}
+			
+			
 		newProduct.setProductConfigurations(newProductConfigurations);
 		}catch(Exception e){
 			_LOGGER.error("Error while processing Existing Product Data " +e.getMessage());
@@ -613,6 +638,21 @@ public  List<Option> getOptions(String optionName,String  optionDataValue) {
 		colorObj.setName(name);
 		colorObj.setAlias(alias);
 		return colorObj;
+	}
+	
+	public List<String> getProductCategories(String categoryVal){
+		List<String> listOfCategories = new ArrayList<>();
+		 List<String> categories = CommonUtility.getStringAsList(categoryVal,
+					ApplicationConstants.CONST_DELIMITER_COMMA);
+		 for (String catValue : categories) {
+			 if(objLookUpService.isCategory(catValue.trim())){
+					listOfCategories.add(catValue);
+				}else{
+					System.out.println("No categroy match");
+				}
+		}
+		
+		return listOfCategories;
 	}
 	
 	public static String[] getValuesOfArray(String data,String delimiter){
