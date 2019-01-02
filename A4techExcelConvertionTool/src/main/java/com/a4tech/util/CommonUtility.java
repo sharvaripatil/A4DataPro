@@ -129,6 +129,8 @@ public class CommonUtility {
 				long lonVal = bd.longValue();
 				value = String.valueOf(lonVal);
 		       }
+		} else if(cell.getCellType() == Cell.CELL_TYPE_FORMULA){
+			value = String.valueOf(BigDecimal.valueOf(cell.getNumericCellValue()));
 		}
 	}catch(Exception e){
 		_LOGGER.error("Cell value convert into String/decimal: "+e.getMessage());

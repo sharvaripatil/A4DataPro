@@ -17,6 +17,7 @@ import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
 import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
 import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
+import com.a4tech.supplier.mapper.AccessLineMapping;
 import com.a4tech.supplier.mapper.AlfaMapping;
 import com.a4tech.supplier.mapper.BagMakersMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
@@ -138,7 +139,8 @@ public class ExcelFactory {
     private BloominPromotionsMapper         bloominPromotion;
      private PioneerLLCMapping 				pioneerLLCMapping;
      private TeamworkAthleticMapping        teamWorkAthleticMapper;
-
+	  private AccessLineMapping				accessLineMapping;
+     
     
 	public  IExcelParser getExcelParserObject(String name){
 
@@ -278,6 +280,8 @@ public class ExcelFactory {
 			  return pioneerLLCMapping;
 		  } else if(name.equals("90673")){
 			  return teamWorkAthleticMapper;
+		  } else if(name.equals("30458")){
+			  return accessLineMapping;
 		  }
 		return null;
 	}
@@ -771,6 +775,12 @@ public class ExcelFactory {
 	 public void setTeamWorkAthleticMapper(TeamworkAthleticMapping teamWorkAthleticMapper) {
 			this.teamWorkAthleticMapper = teamWorkAthleticMapper;
 		}
+	public AccessLineMapping getAccessLineMapping() {
+			return accessLineMapping;
+		}
 
+		public void setAccessLineMapping(AccessLineMapping accessLineMapping) {
+			this.accessLineMapping = accessLineMapping;
+		}
 
 }
