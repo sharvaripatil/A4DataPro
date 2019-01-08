@@ -176,7 +176,7 @@ public class BagMakersMapping implements IExcelParser{
 								 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 								 		productExcelObj.setAvailability(new ArrayList<Availability>());
 								 	}*/
-								 	productExcelObj.setMakeActiveDate("2018-01-01T00:00:00");//priceConfirmedThru
+								 	productExcelObj.setMakeActiveDate("2019-01-01T00:00:00");//priceConfirmedThru
 								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
@@ -287,7 +287,16 @@ public class BagMakersMapping implements IExcelParser{
 						
 						break;
 					case  6://Bag Category //ignore
-
+						String category = cell.getStringCellValue();
+						   if(!StringUtils.isEmpty(category)){
+							   List<String> listOfCategories = bagMakerAttributeParser.
+							                      getProductCategories(category);
+							   if(!CollectionUtils.isEmpty(listOfCategories)){
+								   productExcelObj.setCategories(listOfCategories);   
+							   }else{
+								   System.out.println("Its empty list");
+							   }
+						   }
 						break;
 					case  7://Imprint Method
 						String	imprintMethodVal=CommonUtility.getCellValueStrinOrInt(cell);
@@ -791,7 +800,8 @@ public class BagMakersMapping implements IExcelParser{
 	 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 	 		productExcelObj.setAvailability(new ArrayList<Availability>());
 	 	}*/
-	 	productExcelObj.setMakeActiveDate("2018-01-01T00:00:00");
+	 	//productExcelObj.setMakeActiveDate("2019-01-01T00:00:00");//priceConfirmedThru
+	 	productExcelObj.setMakeActiveDate("2019-01-01T00:00:00");
 	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 	 	if(num ==1){
 	 		numOfProductsSuccess.add("1");

@@ -203,7 +203,7 @@ public class EdwardGarmentPriceGridParser {
 		}
 
 		
-		public List<PriceGrid> getPriceGridsQur( ) 
+		public List<PriceGrid> getPriceGridsQur(String productName ) 
 		{
 			List<PriceGrid> newPriceGrid=new ArrayList<PriceGrid>();
 			try{
@@ -212,11 +212,21 @@ public class EdwardGarmentPriceGridParser {
 				PriceGrid priceGrid = new PriceGrid();
 				priceGrid.setIsBasePrice(true);
 				priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_TRUE);
-				priceGrid.setDescription(ApplicationConstants.CONST_STRING_EMPTY);
+				priceGrid.setDescription(productName);
 				priceGrid.setPriceIncludes(ApplicationConstants.CONST_STRING_EMPTY);
 				priceGrid.setSequence(sequence);
 				priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
+				Price priceObj =new Price();
+				priceObj.setSequence(sequence);
+				priceObj.setQty(0);
+				priceObj.setNetCost("0.0");
+				priceObj.setPrice("0.0");
+				PriceUnit priceUnitObj=new PriceUnit();
+				priceUnitObj.setItemsPerUnit("1");
+				priceObj.setPriceUnit(priceUnitObj);
+				
 				List<Price>	listOfPrice = new ArrayList<Price>();
+				listOfPrice.add(priceObj);
 				priceGrid.setPrices(listOfPrice);
 				//priceGrid.setPriceConfigurations(configuration);
 				newPriceGrid.add(priceGrid);
