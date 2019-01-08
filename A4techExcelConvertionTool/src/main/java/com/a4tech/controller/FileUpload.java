@@ -113,7 +113,7 @@ public class FileUpload {
 			if(parserObject != null){ // new implemention
 				//if file upload for Production ,please change the environemnt Type "Sand" to "Prod"
 				finalResult = parserObject.readExcel(accessToken, workbook, 
-                        Integer.valueOf(asiNumber), batchId,"Prod");//here change environment type
+                        Integer.valueOf(asiNumber), batchId,"Sand");//here change environment type
 		    	if (finalResult != null) {
 					parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 				}

@@ -507,7 +507,8 @@ public class GoldBondExcelMapping implements IExcelParser{
 				case 136:
 					String size = cell.getStringCellValue();
 							if (!StringUtils.isEmpty(size) && !size.equals("Various")
-									&& !size.equals("Adjustable to size") && !size.contains("One size fits most")) {
+									&& !size.equals("Adjustable to size") && !size.contains("One size fits most")
+									&& !size.equalsIgnoreCase("Varies based on shoe size")) {
 						if(isSizeValue(size)){
 							Size sizeVals = gbAttributeParser.getProductSize(size);
 							productConfiguration.setSizes(sizeVals);
@@ -685,7 +686,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 				    break;
 				
 				case 161:
-					String imprintMethodVal1 = cell.getStringCellValue();
+					String imprintMethodVal1 = CommonUtility.getCellValueStrinOrInt(cell);
 					  if(!StringUtils.isEmpty(imprintMethodVal1)){
 						  if(imprintMethodVal1.equalsIgnoreCase("NO IMPRINT")){
 							  productExcelObj.setProductConfigurations(productConfiguration);
@@ -730,7 +731,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 				case 192:
 				case 193: 
 				case 194:// end Imprint colors 
-				String imprintColor = cell.getStringCellValue();
+				String imprintColor = CommonUtility.getCellValueStrinOrInt(cell);
 				if(!StringUtils.isEmpty(imprintColor)){
 					imprintColors.append(imprintColor).append(",");
 				}

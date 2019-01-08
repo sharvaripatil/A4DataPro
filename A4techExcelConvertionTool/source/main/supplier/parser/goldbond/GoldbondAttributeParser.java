@@ -262,7 +262,18 @@ public class GoldbondAttributeParser {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Dia", "");
-			}  else if (sizeVal.contains("arc")) {
+			}  else if(sizeVal.contains("L") && sizeVal.contains("D")){
+				if(sizeVal.contains("Straw:")) {
+					sizeVal = sizeVal.replaceAll("Straw:", "");
+				}
+				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				sizeVal= sizeVal.replaceAll("-", " ");
+				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Depth", "");
+			} else if(sizeVal.contains("L") && sizeVal.contains("Dia")){
+				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
+				//sizeVal= sizeVal.replaceAll("-", " ");
+				valuesObj = getOverAllSizeValObj(sizeVal, "Length", "Dia", "");
+			} else if (sizeVal.contains("arc")) {
 				sizeVal = sizeVal.replaceAll(pattern_remove_specialSymbols, "");
 				sizeVal= sizeVal.replaceAll("-", " ");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Arc", "", "");
