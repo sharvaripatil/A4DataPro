@@ -11,11 +11,8 @@ import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.RushTimeValue;
-import com.a4tech.product.model.Sample;
 import com.a4tech.product.model.Samples;
 import com.a4tech.util.ApplicationConstants;
-import com.mysql.fabric.xmlrpc.base.Array;
-import com.sun.jersey.core.impl.provider.entity.XMLJAXBElementProvider.App;
 
 public class KlProductAttributeParser {
   
