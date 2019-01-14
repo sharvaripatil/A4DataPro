@@ -97,7 +97,7 @@ public class FtpController {
 			model.addAttribute("invalidAsiNum", "");
 			return new ModelAndView("fileUpload", "ftpFileUploadBean", new FtpFileUploadBean());
 		}
-		Workbook wb = getWorkBook(file);
+		/*Workbook wb = getWorkBook(file);
 		int noOfColumnsInCurrentFile = getSupplierFileColumnsCount(wb);
 		int noOfColumnsFromDataBase = productDao.getSupplierColumnsCount(asiNumber);
 		//This is checking supplier file columns is same or not
@@ -107,7 +107,7 @@ public class FtpController {
 			ftpFileUploadBean.setAsiNumber(asiNumber);
 			ftpFileUploadBean.setEnvironmentType(environmentType);
 			return new ModelAndView("fileUpload", "ftpFileUploadBean", ftpFileUploadBean);
-		}
+		}*/
 		if (accessToken != null) {
 			if (ApplicationConstants.CONST_STRING_UN_AUTHORIZED.equals(accessToken)) {
 				accessToken = null;
