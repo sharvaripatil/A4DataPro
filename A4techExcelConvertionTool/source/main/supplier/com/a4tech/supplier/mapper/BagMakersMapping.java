@@ -444,12 +444,12 @@ public class BagMakersMapping implements IExcelParser{
 						List<String> productKeywords = CommonUtility.getStringAsList(keywords,
                                 ApplicationConstants.CONST_DELIMITER_COMMA);
 						productExcelObj.setProductKeywords(productKeywords);
-						/*List<String> productKeywordsTemp=new ArrayList<String>();
+						List<String> productKeywordsTemp=new ArrayList<String>();
 						for (String keyword : productKeywords) {
 							if(keyword.length()<=30){
 								productKeywordsTemp.add(keyword);
 							}
-						}*/
+						}
 						
 						}
 						break;
