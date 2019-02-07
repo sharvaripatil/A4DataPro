@@ -302,10 +302,12 @@ public static boolean isComboColor(String colorValue){
 	}
 	
 	public List<Material> getMaterialValue(String material) {
+		 List<Material> materiallist = new ArrayList<Material>();
+		try{
 		  material=material.replace(";","/");
 		  material=material.replace(",","/");
 			
-		  List<Material> materiallist = new ArrayList<Material>();
+		 
 		  Material materialObj = new Material();
 		  List<String> listOfLookupMaterial = getMaterialType(material
 		    .toUpperCase());
@@ -344,11 +346,17 @@ public static boolean isComboColor(String colorValue){
 					  
 		    BlendMaterial blendObj=new BlendMaterial();
 		    BlendMaterial blendObj1=new BlendMaterial();
-		                int PercentageValue1=100-Integer.parseInt(PercentageValue[0]);
+		                //int PercentageValue1=100-Integer.parseInt(PercentageValue[0]);
+		    String str=PercentageValue[0];
+		    str=str.trim();
+		    Integer result = Integer.valueOf(str);	
+		    int aVal=result;
+		    int PercentageValue1=100-aVal;
 		                String PercentageValue2=Integer.toString(PercentageValue1);
 		    materialObj.setName("Blend");
 		       List<BlendMaterial> listOfBlend= new ArrayList<>();
-		       blendObj.setPercentage(PercentageValue[0]);
+		       //blendObj.setPercentage(PercentageValue[0]);
+		       blendObj.setPercentage(String.valueOf(aVal));
 		       blendObj.setName(listOfLookupMaterialBlend1.get(0));
 		       blendObj1.setPercentage(PercentageValue2);
 		       blendObj1.setName(listOfLookupMaterialBlend2.get(0));
@@ -371,7 +379,9 @@ public static boolean isComboColor(String colorValue){
 	    		 materialObj.setAlias(material);
 			    materiallist.add(materialObj); 
 			   }
-		  
+		}catch(Exception e){
+			_LOGGER.error(e.getCause());
+		}
 		  return materiallist;
 		 }
 	
@@ -576,7 +586,6 @@ public static boolean isComboColor(String colorValue){
 		}
 		return flag;
     }
-	
 	
 	public List<Availability> getProductAvailablity(HashMap<String,HashSet<String>> tempMap) {	
 		List<Availability> listOfAvailablity = new ArrayList<>();
