@@ -22,7 +22,6 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 	<import resource="sageMapping.xml" />
-	<import resource="kuku_mapping.xml" />
 	 <!-- <import resource="ftpSchedular.xml"/> -->
 	<context:property-placeholder
 	location="classpath:application.properties,classpath:sandbox-database.properties
@@ -106,7 +105,6 @@
 		<property name="postServiceImpl" ref="postService"></property>
 		<property name="productDaoObj" ref="productDao" />
 	</bean>
-	<bean id="julymapping" class="com.a4tech.JulyData.excelMapping.JulyDataMapping" />
 	<bean id="colorparser"
 		class="com.a4tech.product.USBProducts.criteria.parser.ProductColorParser" />
 	<bean id="imprintMethodParser"
@@ -125,27 +123,6 @@
 	<bean id="gbDataExcelMappingId" class="com.a4tech.core.excelMapping.ExcelMapping">
 		<property name="postServiceImpl" ref="postService" />
 		<property name="productDaoObj" ref="productDao" />
-	</bean>
-	<bean id="dCProductsExcelMappingId" class="com.a4tech.dc.product.mapping.DCProductsExcelMapping">
-		<property name="productDaoObj" ref="productDao" />
-		<property name="postServiceImpl" ref="postService" />
-		<property name="dcPriceGridParser" ref="dcPriceGridParserObj" />
-		<property name="dimensionAndShapeParser" ref="dimensionAndShapeParserId" />
-		<property name="shippingEstimationParser" ref="shippingEstObj" />
-		<property name="originParser" ref="productOriginObj" />
-	</bean>
-	<bean id="espTemplateMappingId"
-		class="com.a4tech.ESPTemplate.product.mapping.ESPTemplateMapping">
-		<property name="postServiceImpl" ref="postService" />
-		<property name="productDaoObj" ref="productDao" />
-		<property name="originParser" ref="originParser" />
-		<property name="rushTimeParser" ref="rushTimeParser" />
-		<property name="productImprintMethodParser" ref="productImprintMethodParser" />
-		<property name="shippingEstimationParser" ref="shippingEstimationParser" />
-		<property name="productMaterialParserObj" ref="ProductMaterialParserObj" />
-		<property name="priceGridParserObj" ref="PriceGridParserObj" />
-		<property name="colorParserObj" ref="colorParserObj" />
-		<property name="sizeParserObj" ref="sizeParserObj" />
 	</bean>
 	<bean id="rfgLineProductExcelMappingId" class="com.a4tech.RFGLine.product.mapping.RFGLineProductExcelMapping">
 	<property name="postServiceImpl" ref="postService" />
@@ -235,30 +212,7 @@
     	<property name="filesParsing" ref="fileParsingId"/>
     </bean>
     <bean id="fTPClientId" class="org.apache.commons.net.ftp.FTPClient"/>
-	<bean id="dcPriceGridParserObj" name="dcPriceGridParserObj"
-		class="com.a4tech.product.DCProducts.parser.DCPriceGridParser"
-		autowire="byName"></bean>
-	<bean id="dimensionAndShapeParserId" name="dimensionAndShapeParserId"
-		class="com.a4tech.product.DCProducts.parser.DimensionAndShapeParser" />
-	<bean id="shippingEstObj" name="shippingEstObj"
-		class="com.a4tech.product.DCProducts.parser.ShippingEstimationParser" />
-	<bean id="productOriginObj" name="productOriginObj"
-		class="com.a4tech.product.DCProducts.parser.ProductOriginParser" />
 
-	<!-- ESPTemplate file-91561 start -->
-
-	<bean id="originParser" class="com.a4tech.product.ESPTemplate.parser.OriginParser" />
-	<bean id="rushTimeParser" class="com.a4tech.product.ESPTemplate.parser.RushTimeParser" />
-	<bean id="productImprintMethodParser"
-		class="com.a4tech.product.ESPTemplate.parser.ProductImprintMethodParser" />
-	<bean id="shippingEstimationParser"
-		class="com.a4tech.product.ESPTemplate.parser.ShippingEstimationParser" />
-	<bean id="colorParserObj" class="com.a4tech.product.ESPTemplate.parser.ColorParser" />
-	<bean id="ProductMaterialParserObj"
-		class="com.a4tech.product.ESPTemplate.parser.ProductMaterialParser" />
-	<bean id="PriceGridParserObj" class="com.a4tech.product.ESPTemplate.parser.PriceGridParser" />
-	<bean id="sizeParserObj" class="com.a4tech.product.ESPTemplate.parser.SizeParser" />
-	<!-- ESPTemplate file-91561 end -->
 	
 	<!-- supplier 64509 configuration start -->
   <bean id="klPriceGridParserId" class="com.a4tech.kl.product.parser.KlPriceGridParser"/>
@@ -288,20 +242,6 @@
         <bean id="attributeObj" class="com.a4tech.RFGLine.products.parser.RFGProductAttributeParser" />
         <bean id="materialParserObj" class="com.a4tech.RFGLine.products.parser.RFGMaterialParser" />
     <!-- supplier 64509 configuration end -->  
-    
-    <!-- supplier 40445 configuration start -->
-   <bean id="bbiProductsExcelMappingId" class="com.a4tech.product.bbi.mapping.BBIProductsExcelMapping">
-     	<property name="postServiceImpl" ref="postService"/>
-     	<property name="productDaoObj"  ref="productDao"/>
-     	<property name="sizeParser" ref="sizeParserBBIId"/>
-     	<property name="imprintMethodParser" ref="imprintMethodParserBBIId"/>
-     	<property name="bbiPriceGridParser" ref="bbiPriceGridParserBBId"/>
-    </bean>
-    <bean id="sizeParserBBIId" class="com.a4tech.product.bbi.criteria.parser.ProductSizeParser"/>
-    <bean id="imprintMethodParserBBIId" class="com.a4tech.product.bbi.criteria.parser.ProductImprintMethodParser"/>
-    <bean id="bbiPriceGridParserBBId" class="com.a4tech.product.bbi.criteria.parser.BBIPriceGridParser"/>
-    <!-- supplier 40445 configuration end -->  
-    
       <!-- supplier 32125 configuration start -->
      <bean id="adspecPriceGridParserId" class="com.a4tech.adspec.product.parser.AdspecPriceGridParser"/>
      <bean id="adspecProductAttributeParserId" class="com.a4tech.adspec.product.parser.AdspecProductAttributeParser">
@@ -349,24 +289,24 @@
      
      <!--supplier 42057 configuration start  -->  
      <bean id="broberryExcelMappingId" name="broberryExcelMapping"
-		class="com.a4tech.product.broberry.mapping.BroberryExcelMapping" autowire="byName">
+		class="com.a4tech.supplier.mapper.BroberryExcelMapping" autowire="byName">
 		<property name="postServiceImpl" ref="postService"></property>
 		<property name="productDaoObj" ref="productDao" />
 		<property name="broberryProductAttributeParser" ref="broberryProductAttributeParserId" /> 
 		<property name="broberryMaterialParserObj" ref="broberryMaterialParserObjId" />
 	</bean>
 	<bean id="broberryProductAttributeParserId" name="broberryProductAttributeParser"
-		class="com.a4tech.product.broberry.parser.BroberryProductAttributeParser" autowire="byName">
+		class="parser.broberry.BroberryProductAttributeParser" autowire="byName">
 		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
 	</bean>
 	<bean id="broberryMaterialParserObjId" name="broberryMaterialParserObj"
-		class="com.a4tech.product.broberry.parser.BroberryProductMaterialParser" autowire="byName">
+		class="parser.broberry.BroberryProductMaterialParser" autowire="byName">
 		<property name="lookupServiceDataObj" ref="lookupServiceData"/>
 		<property name="lookupRestServiceObj" ref="lookupRestService"/>
 	</bean>
 	
 	<bean id="broberrySkuParserObjId" name="broberrySkuParserObj"
-		class="com.a4tech.product.broberry.parser.BroberrySkuParser" autowire="byName">
+		class="parser.broberry.BroberrySkuParser" autowire="byName">
 	</bean>
 
     <!--supplier 42057 configuration end  --> 
@@ -380,13 +320,12 @@
      	<property name="adspecMapping" ref="adspecProductsExcelMappingId"/>
      	<property name="klMapping" ref="klMappingId"/>
      	<property name="sageExcelMapping" ref="sageMappingId" />
-     	<property name="dcProductExcelMapping" ref="dCProductsExcelMappingId" />
-		<property name="kukuProductsExcelMapping" ref="kukuProductsExcelMappingId" />
+     	
+		
 		<property name="rfgLineProductExcelMapping" ref="rfgLineProductExcelMappingId" />
-		<property name="bbiProductsExcelMapping" ref="bbiProductsExcelMappingId"/>
 		<property name="newProductsExcelMapping" ref="newProductsExcelMappingId"/>
 		<property name="apparealExcelMapping" ref="apparelMappingId"/>
-		<property name="espTemplateMapping" ref="espTemplateMappingId"/>
+		
 		<property name="broberryExcelMapping" ref="broberryExcelMappingId"/>
 		<property name="bdProdcutsMapping" ref="bestDealMappingId"/>
 		<property name="riversEndExcelMapping" ref="riversEndExcelMappingId"/>
@@ -459,7 +398,7 @@
      </bean>
     
       <!-- supplier 82588 configuration end --> 
-     <bean id="riversEndExcelMappingId" class="com.a4tech.product.riversend.mapping.RiversEndExcelMapping">
+     <bean id="riversEndExcelMappingId" class="com.a4tech.supplier.mapper.RiversEndExcelMapping">
      <property name="postServiceImpl" ref="postService"/>
      <property name="productDaoObj" ref="productDao"/>
      <property name="riverEndAttributeParser" ref="riverEndAttributeParserId" /> 
@@ -467,9 +406,9 @@
      
      </bean>
      <bean id="riverEndAttributeParserId" name="riverEndAttributeParser"
-		class="com.a4tech.product.riversend.parser.RiverEndAttributeParser" autowire="byName">
+		class="parser.riverend.RiverEndAttributeParser" autowire="byName">
 	</bean>
-	<bean id="riverEndPriceGridParserId" class="com.a4tech.product.riversend.parser.RiverEndPriceGridParser"/>
+	<bean id="riverEndPriceGridParserId" class="parser.riverend.RiverEndPriceGridParser"/>
         <!--supplier 82588 configuration start  -->  
         
     <bean id="bambamProductExcelMappingId" class="com.a4tech.bambam.product.mapping.BambamProductExcelMapping">

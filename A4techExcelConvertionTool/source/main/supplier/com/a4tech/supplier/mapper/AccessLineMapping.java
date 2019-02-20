@@ -19,7 +19,6 @@ import parser.AccessLine.AccessLineAttributeParser;
 import parser.AccessLine.AccessLineConstants;
 import parser.AccessLine.AccessLinePriceGridParserr;
 import parser.AccessLine.ColorParser;
-import parser.primeline.PrimeLineConstants;
 
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
