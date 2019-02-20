@@ -1,11 +1,8 @@
 package com.a4tech.bestDeal.product.parser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 import org.springframework.util.StringUtils;
-
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Color;
@@ -79,21 +76,21 @@ public class BestDealAttributeParser {
 		 //sizeValue = CommonUtility.removeSpecialSymbols(sizeValue,"[-DecanterTumbler]").trim();
 		 sizeValue = sizeValue.replaceAll("[-DecanterTumbler]", ApplicationConstants.CONST_VALUE_TYPE_SPACE);
 	 }
-	 sizeValue = sizeValue.replace("\"", "");
-	 String[] sizes = sizeValue.split("x");
+	 sizeValue = sizeValue.replace(ApplicationConstants.CONST_BK_SLASH, ApplicationConstants.CONST_STRING_EMPTY);
+	 String[] sizes = sizeValue.split(ApplicationConstants.CONST_CHAR_SMALL_X);
 	 Dimension dimensionObj = new Dimension();
 	 List<Values> listOfValues = new ArrayList<>();
 	 List<Value> listOfValue   = new ArrayList<>();
 	 Values valuesObj = new Values();
 	 Value valueObj = null;
 	 for(int sizeNum=0;sizeNum<3;sizeNum++){
-		      if(sizeNum == 0){
+		      if(sizeNum == ApplicationConstants.CONST_NUMBER_ZERO){
 		    	  valueObj = getDimensionValue(sizes[sizeNum], ApplicationConstants.CONST_STRING_INCHES, 
 		    			                                             ApplicationConstants.CONST_STRING_LENGTH);
-		      } else if(sizeNum == 1){
+		      } else if(sizeNum == ApplicationConstants.CONST_INT_VALUE_ONE){
 		    	  valueObj = getDimensionValue(sizes[sizeNum], ApplicationConstants.CONST_STRING_INCHES, 
 		    			                                              ApplicationConstants.CONST_STRING_WIDTH);
-		      } else if(sizeNum == 2){
+		      } else if(sizeNum == ApplicationConstants.CONST_INT_VALUE_TWO){
 		    	  valueObj = getDimensionValue(sizes[sizeNum], ApplicationConstants.CONST_STRING_INCHES, 
 		    			                                             ApplicationConstants.CONST_STRING_HEIGHT);
 		      }
@@ -124,7 +121,7 @@ public class BestDealAttributeParser {
 		 for (int matlIndex =0 ; matlIndex <2;matlIndex++) {
 			      String mtrlName = materils[matlIndex];
 			      String mtrlType = lookupServiceData.getMaterialTypeValue(mtrlName.toUpperCase());
-			      if(matlIndex == 0){
+			      if(matlIndex == ApplicationConstants.CONST_NUMBER_ZERO){
 			    	  mtrlObj.setName(mtrlType);
 			    	  matlAlias.append(mtrlName).append(ApplicationConstants.CONST_DELIMITER_HYPHEN);
 			      }else {
@@ -168,7 +165,7 @@ public class BestDealAttributeParser {
  public Product getProductRushTimeAndUpCharge(Product existingProduct, String rushValue,
 		 										ProductConfigurations existingConfig,List<PriceGrid> existingPriceGrid){
 	 String[] rushVal = rushValue.split(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
-	 String rushTime = rushVal[0];
+	 String rushTime = rushVal[ApplicationConstants.CONST_NUMBER_ZERO];
 	 RushTime rushTimeValue = getProductRushTime(rushTime);
 	 existingConfig.setRushTime(rushTimeValue);
 	 List<PriceGrid> priceGrid = getRushTimeUpchargeGrid(rushTime,rushVal,existingPriceGrid);
@@ -199,7 +196,7 @@ public class BestDealAttributeParser {
 		if(priceVaue != null){
 			 List<PriceGrid> priceGrid = priceGridParser.getUpchargePriceGrid("1", priceVaue, ApplicationConstants.CONST_STRING_DISCOUNT_CODE_Z, 
 					  "Rush Service", "n", ApplicationConstants.CONST_STRING_CURRENCY_USD, 
-					  finalRushTime, "Rush Service Charge", "Per order",1, existingPriceGrid,"");
+					  finalRushTime, "Rush Service Charge", "Per order",ApplicationConstants.CONST_INT_VALUE_ONE, existingPriceGrid,"");
 			 return priceGrid;
 		}
 		return null;
@@ -207,7 +204,7 @@ public class BestDealAttributeParser {
 	
 	private String getRushTimePrice(String[] rushVal){
 		for (String price : rushVal) {
-			   if(price.contains("$")){
+			   if(price.contains(ApplicationConstants.CONST_DOLLAR_SIGN)){
 				   return price;
 			   }
 		}
@@ -307,12 +304,12 @@ public class BestDealAttributeParser {
 		ShippingEstimate shippingEstObj = new ShippingEstimate();
 		List<Weight> listOfWeight = new ArrayList<>();
 		Weight weightObj = new Weight();
-		String[] wtValues = weightValue.split(" ");
+		String[] wtValues = weightValue.split(ApplicationConstants.CONST_VALUE_TYPE_SPACE);
 		for (String weightData : wtValues) {
 			if(StringUtils.isEmpty(weightData)){
 				continue;
 			}
-			 if(!weightData.equalsIgnoreCase("lbs")){
+			 if(!weightData.equalsIgnoreCase(ApplicationConstants.CONST_STRING_SHIPPING_WEIGHT)){
 				 weightValue = weightData;
 			 }
 		}
@@ -379,7 +376,7 @@ public class BestDealAttributeParser {
 	}
 	
 	private List<ImprintSize> getProductImprintSize(String imprSize){
-		String imprintSizeValue = imprSize.split("IMPRINT SIZE:")[1].trim();
+		String imprintSizeValue = imprSize.split("IMPRINT SIZE:")[ApplicationConstants.CONST_INT_VALUE_ONE].trim();
 		List<ImprintSize> listOfImprintSize = new ArrayList<>();
 		ImprintSize imprSizeObj = new ImprintSize();
 		imprSizeObj.setValue(imprintSizeValue);
@@ -401,7 +398,7 @@ public class BestDealAttributeParser {
 			if(name.contains("/Piece")){
 				upChargeUseageType = "Per Quantity";
 			}else{
-				upChargeUseageType = "Other";
+				upChargeUseageType = ApplicationConstants.CONST_VALUE_TYPE_OTHER;
 			}
 			existingPriceGrid = priceGridParser.getUpchargePriceGrid("1", "10", "V",
 					 "Additional Location", "n", "USD", "Additional Engraving Location", "Add. Location Charge",
@@ -411,8 +408,6 @@ public class BestDealAttributeParser {
 	}
 	
 	public List<PriceGrid> getLessThanMiniUpCharge(String name,List<PriceGrid> existingPriceGrid){
-		//Minimum Order Quantity required per item is indicated as the first column quantity break.
-		//There is a $40 net under minimum charge.
 		name = name.replaceAll("[^0-9]", "");
 		existingPriceGrid = priceGridParser.getUpchargePriceGrid("1", name.trim(), "Z",
 				 "Less than Minimum", "n", "USD", "Can order less than minimum", "Less than Minimum Charge",
@@ -426,7 +421,7 @@ public class BestDealAttributeParser {
 	 */
 	private String getFieldName(String value,String splittingValue){//LINE NAME Best Deal Awards
 		String[] names = value.split(splittingValue);
-		   return names[1];
+		   return names[ApplicationConstants.CONST_INT_VALUE_ONE];
 	}
 	
 	public List<TradeName> getProductTradeName(String Tradename){

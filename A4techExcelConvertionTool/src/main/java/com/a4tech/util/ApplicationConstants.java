@@ -151,6 +151,11 @@ public class ApplicationConstants {
 	public static final String  CONST_CHAR_SMALL_X						= "x";
 	public static final String  CONST_SIZE_DELIMITER					= "___";
 	public static final String  CHARACTERS_NUMBERS_PATTERN				= "[^a-zA-Z0-9\\s+]";
+	public static final String  CONST_BK_SLASH			                = "\"";
+	public static final String  CONST_DOLLAR_SIGN		                = "$";
+	public static final String  CONST_SMALL_NSIGN		                = "n";
+
+
 	
 	 public static Map<String, String> COLOR_MAP =new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);//new HashMap<String, String>();
 	 public static Map<String, String> SIZE_MAP =new HashMap<String, String>();

@@ -25,7 +25,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.a4tech.core.excelMapping.ExcelFactory;
 import com.a4tech.core.model.FileBean;
 import com.a4tech.excel.service.IExcelParser;
-import com.a4tech.ftp.model.FtpLoginBean;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.service.ILoginService;
 import com.a4tech.product.service.IMailService;
@@ -80,9 +79,8 @@ public class FileUpload {
 			return ApplicationConstants.CONST_STRING_HOME;
 		}
 		try  {
-			//if file upload for Production ,please change the environemnt Type "Sand" to "Prod"
 			accessToken = loginService.doLogin(fileBean.getAsiNumber().trim(),
-					fileBean.getUserName().trim(), fileBean.getPassword().trim(), "Sand");//here change environment type
+					fileBean.getUserName().trim(), fileBean.getPassword().trim(), "Sand");
 			if (accessToken != null) {
 				if (ApplicationConstants.CONST_STRING_UN_AUTHORIZED.equals(accessToken)) {
 					accessToken = null;
@@ -98,22 +96,12 @@ public class FileUpload {
 				return ApplicationConstants.CONST_STRING_ERROR_PAGE;
 			}
 			int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
-			
-			// this code used to delete all products 
-			/*List<String> xidsList = getAllXids(workbook);
-			finalResult = deleteProducts(xidsList, accessToken, "Sand", Integer.valueOf(asiNumber), batchId);
-			if (finalResult != null) {
-				parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
-			}
-	    	return ApplicationConstants.CONST_REDIRECT_URL;*/
-			
 			request.getSession().setAttribute("batchId",
 					String.valueOf(batchId));
 			IExcelParser parserObject = excelFactory.getExcelParserObject(asiNumber);
-			if(parserObject != null){ // new implemention
-				//if file upload for Production ,please change the environemnt Type "Sand" to "Prod"
+			if(parserObject != null){ 
 				finalResult = parserObject.readExcel(accessToken, workbook, 
-                        Integer.valueOf(asiNumber), batchId,"Sand");//here change environment type
+                        Integer.valueOf(asiNumber), batchId,"Sand");
 		    	if (finalResult != null) {
 					parseFinalData(finalResult, asiNumber, batchId, redirectAttributes);
 				}
@@ -140,12 +128,8 @@ public class FileUpload {
 		return ApplicationConstants.CONST_STRING_SUCCESS;
 	}
 	
-	/*@Author Venkat
-	 *@Param String,String,String,RedirectAttributes
-	 *@Description this method parse data(success and failed)after receiving final result from  
-	 *              excel parser and  send out mail if any products are Failure         
-	 * @Retrun Void
-	 */
+	//@Author Venkat
+	 
 	public void parseFinalData(String result,String asiNumber ,int batchId,
 			                                     RedirectAttributes redirectAttributes){
 		String[] splitFinalResult = result
@@ -156,15 +140,6 @@ public class FileUpload {
 																				noOfProductsSuccess);
 		redirectAttributes.addFlashAttribute(ApplicationConstants.FAILURE_PRODUCTS_COUNT , 
 																				noOfProductsFailure);
-		/*if (!noOfProductsFailure.equals(ApplicationConstants.CONST_STRING_ZERO)) {
-			
-			boolean isMailSendSuccess = mailService.sendMail(asiNumber, batchId);
-			if(isMailSendSuccess){
-				redirectAttributes.addFlashAttribute(ApplicationConstants.CONST_STRING_SUCCESS_MSG ,
-				                                             ApplicationConstants.MAIL_SEND_SUCCESS_MESSAGE);
-			} 
-			
-		}*/
 	}
 	public List<String> getAllXids(Workbook workbook){
 		  List<String> xidsList = new ArrayList<>();
@@ -188,7 +163,6 @@ public class FileUpload {
 				if(columnIndex  == 0){
 					Cell xidCell = nextRow.getCell(0);
 				     xid = CommonUtility.getCellValueStrinOrInt(xidCell);
-					//xid = CommonUtility.getCellValueStrinOrInt(cell);
 				}
 				switch (columnIndex+1) {
 				case 1://xid

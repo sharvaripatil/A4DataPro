@@ -1,9 +1,7 @@
 package com.a4tech.apparel.product.mapping;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -12,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
-
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -20,7 +17,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-
 import com.a4tech.apparel.products.parser.ApparealAvailabilityParser;
 import com.a4tech.apparel.products.parser.ApparealProductAttributeParser;
 import com.a4tech.apparel.products.parser.ApparelMaterialParser;
@@ -28,22 +24,18 @@ import com.a4tech.apparel.products.parser.ApparelPriceGridParser;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.excel.service.IExcelParser;
-import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
-import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.Personalization;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.model.ProductSKUConfiguration;
 import com.a4tech.product.model.ProductSkus;
-import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Volume;
@@ -70,10 +62,9 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 		Set<String>  productXids = new HashSet<String>();
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
-			List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
 		  Set<String> listOfColors = new HashSet<>();
-		  String colorCustomerOderCode ="";
+		  String colorCustomerOderCode =ApplicationConstants.CONST_STRING_EMPTY;
 		  Set<Value> sizeValues = new HashSet<>();
 		  Set<String> productSizeValues = new HashSet<String>(); // This Set used for product Availability
 		  List<String> repeatRows = new ArrayList<>();
@@ -81,7 +72,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
  		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-	    Sheet sheet = workbook.getSheetAt(0);
+	    Sheet sheet = workbook.getSheetAt(ApplicationConstants.CONST_NUMBER_ZERO);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
 		
@@ -90,16 +81,12 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 		String xid = null;
 		int columnIndex=0;
 		 Map<String, String> sizeBasePrice = new LinkedHashMap<>();
-		 StringBuilder sizePrices = new StringBuilder();
-		// String listPrice = "";
-		// String priceQty  = "";
-		 String finalSizes = "";
-		 String sizeValue  = "";
+		 String sizeValue  = ApplicationConstants.CONST_STRING_EMPTY;
 		 Set<String> setSizes = new HashSet<>();
-		 String skuColorVal = "";
-		 String upcCode = "";
+		 String skuColorVal = ApplicationConstants.CONST_STRING_EMPTY;
+		 String upcCode = ApplicationConstants.CONST_STRING_EMPTY;
 		 List<ProductSkus> listProductSkus = new ArrayList<>();
-		 String productNo = "";
+		 String productNo = ApplicationConstants.CONST_STRING_EMPTY;
 		while (iterator.hasNext()) {
 			
 			try{
@@ -118,21 +105,20 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				Cell cell = cellIterator.next();
 				
 				 columnIndex = cell.getColumnIndex();
-				 if (columnIndex == 1) {
+				 if (columnIndex == ApplicationConstants.CONST_INT_VALUE_ONE) {
 						xid = getProductXid(nextRow);
 						checkXid = true;
 					} else {
 						checkXid = false;
 					}
-				if(columnIndex + 1 == 1){
+				if(columnIndex + ApplicationConstants.CONST_INT_VALUE_ONE == ApplicationConstants.CONST_INT_VALUE_ONE){
 					xid = getProductXid(nextRow);
 					checkXid = true;
-				}/*else{
-					checkXid = false;
-				}*/
+				}
+				
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 1){
+						 if(nextRow.getRowNum() != ApplicationConstants.CONST_INT_VALUE_ONE){
 							 System.out.println("Java object converted to JSON String, written to file");
 							 List<Color> listOfColor = appaAttributeParser.getProductColors(listOfColors,colorIdMap);
 							 List<Personalization> listOfPersonalization  = appaAttributeParser.
@@ -153,9 +139,9 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 									productExcelObj = appaAttributeParser.getExistingProductData(productExcelObj,
 											productConfigObj.getImprintMethods());
 							 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
-							 	if(num ==1){
+							 	if(num ==ApplicationConstants.CONST_INT_VALUE_ONE){
 							 		numOfProductsSuccess.add("1");
-							 	}else if(num == 0){
+							 	}else if(num == ApplicationConstants.CONST_NUMBER_ZERO){
 							 		numOfProductsFailure.add("0");
 							 	}else{
 							 		
@@ -169,7 +155,6 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 								listOfColors = new HashSet<>();
 								sizeValues = new HashSet<>();
 								listOfColor = new ArrayList<>();
-								imprintMethodsList = new ArrayList<>();
 								productSizeValues = new HashSet<>();
 								ProductDataStore.clearProductColorSet();
 								repeatRows.clear();
@@ -177,7 +162,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 								sizeBasePrice = new LinkedHashMap<>();
 								setSizes = new HashSet<>(); 
 								listProductSkus = new ArrayList<>();
-								productNo = "";
+								productNo = ApplicationConstants.CONST_STRING_EMPTY;
 								
 						 }
 						    if(!productXids.contains(xid)){
@@ -198,14 +183,14 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 							
 					 }
 				}else{
-					if(productXids.contains(xid) && repeatRows.size() != 1){
+					if(productXids.contains(xid) && repeatRows.size() != ApplicationConstants.CONST_INT_VALUE_ONE){
 						 if(isRepeateColumn(columnIndex+1)){
 							 continue;
 						 }
 					}
 				}
 				
-				switch (columnIndex+1) {
+				switch (columnIndex+ApplicationConstants.CONST_INT_VALUE_ONE) {
 				case 1://not required
 					 break;
 				case 2:// ASI Xid
@@ -217,16 +202,9 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				    break;
 				case 4://Product name
 					String prdName = cell.getStringCellValue();
-					prdName = prdName.replaceAll("[^a-zA-Z0-9 ]", "");
-					/*if(prdName.contains(ApplicationConstants.SQUARE_SYMBOL)){
-						prdName = CommonUtility.removeSpecialSymbols(prdName, 
-								                                      ApplicationConstants.SQUARE_SYMBOL);
-					}
-					if(prdName.contains("®")){
-						prdName = prdName.replaceAll("®", "");
-					}*/
+					prdName = prdName.replaceAll("[^a-zA-Z0-9 ]", ApplicationConstants.CONST_STRING_EMPTY);
 					if(prdName.contains("Olympian")){
-						prdName = prdName.replaceAll("Olympian", "");
+						prdName = prdName.replaceAll("Olympian", ApplicationConstants.CONST_STRING_EMPTY);
 					}
 					productExcelObj.setName(prdName.trim());
 				    break;
@@ -240,15 +218,11 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 					String colorName = cell.getStringCellValue();
 					if(!StringUtils.isEmpty(colorName)){
 						colorName = colorName.trim();
-						/*if(colorName.contains(ApplicationConstants.COLOR_NAME_NAVY)){
-							colorName = colorName.replace(ApplicationConstants.COLOR_NAME_NAVY, 
-									                       ApplicationConstants.COLOR_NAME_NAVY_BLUE);
-						}*/
 						listOfColors.add(colorName);
 						colorIdMap.put(colorName, colorCustomerOderCode);
 						skuColorVal = colorName;
-						String colorNameVal ="";
-						if(colorName.contains("/")){
+						String colorNameVal =ApplicationConstants.CONST_STRING_EMPTY;
+						if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
 							colorNameVal = colorName.replaceAll("/", "-");
 						} else {
 							colorNameVal = colorName;
@@ -287,41 +261,21 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 					break;
 				case 10: // UPC code
 					try{
-					//double upcVal= cell.getNumericCellValue();
-					//BigDecimal bigDecimal = new BigDecimal(upcVal);
-					//long number = bigDecimal.longValue();
 					  String value = CommonUtility.getCellValueStrinOrDecimal(cell);
-					  //value=CommonUtility.convertExponentValueIntoNumber(value);
 					  upcCode = value;
 					}catch(Exception e){
 						
 					}
-					 /*upcCode = CommonUtility.getCellValueStrinOrInt(cell);
-					if(!StringUtils.isEmpty(upcCode)){
-						 upcCode = CommonUtility.convertExponentValueIntoNumber(upcCode);
-						productExcelObj.setUpcCode("");
-					}*/
 					
 					break;
 				case 11:
 				    String  productDescription = cell.getStringCellValue();
-				    productDescription = productDescription.replaceAll("[^a-zA-Z0-9.%,'\\- ]", "");
+				    productDescription = productDescription.replaceAll("[^a-zA-Z0-9.%,'\\- ]", ApplicationConstants.CONST_STRING_EMPTY);
 				    productDescription=productDescription.replace("ozyd2","oz/yd2");
 				    productDescription=productDescription.replace("ozlyd","oz/yd2");//ozlyd
-				    //oz/yd2
-				   /* if(productDescription.contains(ApplicationConstants.SQUARE_SYMBOL)){
-				    	productDescription = CommonUtility.removeSpecialSymbols(productDescription, 
-                                                                    ApplicationConstants.SQUARE_SYMBOL);
-				    }
-				    if(productDescription.contains("²")){
-				    	productDescription = productDescription.replaceAll("²", "");
-				    }
-				    if(productDescription.contains("®")){
-				    	productDescription = productDescription.replaceAll("®", "");
-					}*/
 				    productDescription = productDescription.trim();
 				    if(productDescription.contains(productNo.trim())){
-				    	productDescription = productDescription.replaceAll(productNo, "");
+				    	productDescription = productDescription.replaceAll(productNo, ApplicationConstants.CONST_STRING_EMPTY);
 				    }
 							productExcelObj.setDescription(
 									CommonUtility.getStringLimitedChars(productDescription.trim(), 800));
@@ -357,7 +311,6 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 							if (!StringUtils.isEmpty(imprintMethod)) {
 								productConfigObj = appaAttributeParser
 										.getImprintMethod(imprintMethod,productConfigObj);
-								//productConfigObj.setImprintMethods(imprintMethodsList);
 							}
 					break;
 				case 16:
@@ -373,7 +326,6 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 				if(!StringUtils.isEmpty(productionTimeValue)){
 					productConfigObj = appaAttributeParser.
 							                           getProductionTimeList(productionTimeValue,productConfigObj);
-					//productConfigObj.setProductionTime(listOfPrdTime);
 				}
 					break;
 				case 18:
@@ -412,8 +364,6 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 					 
 		}
 				productExcelObj.setPriceType("N");
-				String qurFlag = "n"; // by default for testing purpose
-				//String basePriceName = "Bronze,Silver,Gold";
 				String tempPrices = listOfPrices.toString() +"%%%"+listOfQuantity.toString();
 				sizeValue = sizeValue.trim();
 				boolean isDuplicate = setSizes.add(sizeValue);
@@ -421,21 +371,13 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 					sizeBasePrice.put(sizeValue, tempPrices);
 				}
 				if(!StringUtils.isEmpty(upcCode)){
-					if(skuColorVal.contains("/")){
-						skuColorVal = skuColorVal.replaceAll("/", "-");
+					if(skuColorVal.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
+						skuColorVal = skuColorVal.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH,ApplicationConstants.CONST_DELIMITER_HYPHEN);
 					}
 					listProductSkus = appaAttributeParser.getProductSkus(skuColorVal, sizeValue, 
 							                                                       upcCode, listProductSkus);
 				}
 			
-				/*if(!finalSizes.contains(sizeValue)){
-					finalSizes = sizeValue +",";
-				}*/
-				/*if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
-					priceGrids = apparelPgParser.getPriceGrids(listOfPrices.toString(), 
-							listOfQuantity.toString(), "P", "USD",
-							         "", true, qurFlag, basePriceName,"",priceGrids);	
-				}*/
 				listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			}catch(Exception e){
@@ -468,9 +410,9 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 		 	productExcelObj = appaAttributeParser.getExistingProductData(productExcelObj,
 					productConfigObj.getImprintMethods());
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
-		 	if(num ==1){
+		 	if(num ==ApplicationConstants.CONST_INT_VALUE_ONE){
 		 		numOfProductsSuccess.add("1");
-		 	}else if(num == 0){
+		 	}else if(num == ApplicationConstants.CONST_NUMBER_ZERO){
 		 		numOfProductsFailure.add("0");
 		 	}else{
 		 		

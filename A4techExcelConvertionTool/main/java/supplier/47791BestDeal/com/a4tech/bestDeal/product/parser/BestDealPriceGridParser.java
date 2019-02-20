@@ -39,7 +39,7 @@ public class BestDealPriceGridParser {
 		priceInclude = CommonUtility.getStringLimitedChars(priceInclude, 100);
 		priceGrid.setPriceIncludes(priceInclude);
 		priceGrid
-				.setIsQUR(qurFlag.equals("n") ? ApplicationConstants.CONST_BOOLEAN_FALSE
+				.setIsQUR(qurFlag.equals(ApplicationConstants.CONST_SMALL_NSIGN) ? ApplicationConstants.CONST_BOOLEAN_FALSE
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);
 		priceGrid.setIsBasePrice(isBasePrice);
 		priceGrid.setSequence(sequence);
@@ -66,7 +66,7 @@ public class BestDealPriceGridParser {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
 	try{
-		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length && PriceNumber < quantity.length; 
+		for (int PriceNumber = ApplicationConstants.CONST_NUMBER_ZERO, sequenceNum = ApplicationConstants.CONST_INT_VALUE_ONE; PriceNumber < prices.length && PriceNumber < quantity.length; 
 				                                                             PriceNumber++, sequenceNum++) {
             if(StringUtils.isEmpty(prices[PriceNumber])){
             	continue;
@@ -81,8 +81,8 @@ public class BestDealPriceGridParser {
 			}
 	         //price.setNetCost(prices[PriceNumber]);
 			String listPrice = prices[PriceNumber];
-			if(listPrice.contains("$")){
-				listPrice = listPrice.replace("$", ApplicationConstants.CONST_STRING_EMPTY).trim();
+			if(listPrice.contains(ApplicationConstants.CONST_DOLLAR_SIGN)){
+				listPrice = listPrice.replace(ApplicationConstants.CONST_DOLLAR_SIGN, ApplicationConstants.CONST_STRING_EMPTY).trim();
 			}
 			price.setPrice(listPrice);
 			price.setDiscountCode(disCodes[PriceNumber]);
@@ -163,7 +163,7 @@ public class BestDealPriceGridParser {
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(upChargeValue);
 		priceGrid
-				.setIsQUR((qurFlag.equalsIgnoreCase("N")) ? ApplicationConstants.CONST_BOOLEAN_FALSE
+				.setIsQUR((qurFlag.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_N)) ? ApplicationConstants.CONST_BOOLEAN_FALSE
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);

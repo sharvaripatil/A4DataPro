@@ -35,7 +35,6 @@ import com.a4tech.product.model.Volume;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
-import parser.evansManufacturing.EveanManufColorAndImprintMethodMapping;
 
 public class ApparealProductAttributeParser {
 	private LookupServiceData lookupServiceData;
@@ -45,45 +44,14 @@ public class ApparealProductAttributeParser {
 		Combo comboObj = null;
 		 List<Combo> listOfCombo = null;
 		 String[] colors;
-		 String aliasName ="";
+		 String aliasName =ApplicationConstants.CONST_STRING_EMPTY;
 		 List<Color> listtOfColor = new ArrayList<>();
 		 for (String colorName : colorNames) {
 			 colorObj = new Color();
 			 listOfCombo = new ArrayList<>();
 			 colorName = colorName.trim();
-			/* if(colorName.contains("Grey")){
-				 colorName = colorName.replaceAll("Grey", "Gray");
-			 }*/
-			// String colorVal = "";
-			 //String finalColorGroup = "";
-			 //finalColorGroup = ApparelColorMapping.getColorGroup(colorName);
-			 /*if(finalColorGroup == null){
-				 String colorCode = ids.get(colorName);
-					if(colorCode.length() == 2){
-						colorCode = "0"+colorCode;
-					} else if(colorCode.length() == 1){
-						colorCode = "00"+colorCode;
-					}
-					if(colorName.contains("/")){
-						colorName = colorName.replaceAll("/", "-");
-					}
-					colorVal = colorName + " " +colorCode;
-					finalColorGroup = ApparelColorMapping.getColorGroup(colorVal);
-					if(finalColorGroup == null){
-						colorVal = colorCode + " " +colorName;
-						finalColorGroup = ApparelColorMapping.getColorGroup(colorVal);
-					}
-					if(StringUtils.isEmpty(finalColorGroup)){
-						finalColorGroup = "Other";
-					}	 
-			 }
-			
-			ProductDataStore.saveColorNames(colorName);
-			colorObj.setName(finalColorGroup);
-			colorObj.setAlias(colorName);
-			listtOfColor.add(colorObj);*/
 		    if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH) || 
-		    		colorName.contains("-")){
+		    		colorName.contains(ApplicationConstants.CONST_DELIMITER_HYPHEN)){
 		    	if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
 		    		 colors = colorName.split(ApplicationConstants.CONST_DELIMITER_FSLASH);		
 		    	} else {
@@ -152,7 +120,7 @@ public class ApparealProductAttributeParser {
 					if(colorName.contains(ApplicationConstants.CONST_DELIMITER_FSLASH)){
 						colorObj = getColorCombo(colorName,ApplicationConstants.CONST_DELIMITER_FSLASH);	
 					} else {
-						colorObj = getColorCombo(colorName,"-");
+						colorObj = getColorCombo(colorName,ApplicationConstants.CONST_DELIMITER_HYPHEN);
 					}
 					
 				} else {
@@ -180,7 +148,7 @@ public class ApparealProductAttributeParser {
 		comboObj1.setType(ApplicationConstants.CONST_STRING_SECONDARY);
 		colorObj.setAlias(comboVal.replaceAll(ApplicationConstants.CONST_DELIMITER_FSLASH,
 				ApplicationConstants.CONST_DELIMITER_HYPHEN));
-		if(comboColors.length == 3){
+		if(comboColors.length == ApplicationConstants.CONST_INT_VALUE_THREE){
 			comboObj2.setName(
 					ApparelColorMapping.getColorGroup(comboColors[ApplicationConstants.CONST_INT_VALUE_TWO]));
 			comboObj2.setType(ApplicationConstants.CONST_STRING_TRIM);
@@ -220,7 +188,6 @@ public class ApparealProductAttributeParser {
 	}
 	
 	public ProductConfigurations getImprintMethod(String data,ProductConfigurations productConfigObj){
-		//List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
 		List<ImprintMethod> listOfImprintMethod = new ArrayList<>();
 		if(!CollectionUtils.isEmpty(productConfigObj.getImprintMethods())){
 			List<ImprintMethod> listOfImprintMethodTemp = productConfigObj.getImprintMethods();
@@ -238,7 +205,7 @@ public class ApparealProductAttributeParser {
 				continue;
 			}
 			imprintMethodObj = new ImprintMethod();
-			String alias = "";
+			String alias = ApplicationConstants.CONST_STRING_EMPTY;
 			if(imprintMethodName.contains("Embroidery")){
 				alias = imprintMethodName.trim().toUpperCase();
 			imprintMethodName=imprintMethodName.replace("Embroidery", "Embroidered");
@@ -328,7 +295,7 @@ public class ApparealProductAttributeParser {
 	     ImprintSizeObj.setValue(imprintSize);
 	     ImprintSizeList.add(ImprintSizeObj);
 	     productConfigObj.setImprintSize(ImprintSizeList);
-	     ImprintLocationObj.setValue(imprintValue.substring(0,imprintValue.indexOf
+	     ImprintLocationObj.setValue(imprintValue.substring(ApplicationConstants.CONST_NUMBER_ZERO,imprintValue.indexOf
 	    		                                          (ApplicationConstants.PARENTHESE_OPEN_SYMBOL)));
 	     ImprintLocationList.add(ImprintLocationObj);
 	     
@@ -344,8 +311,8 @@ public class ApparealProductAttributeParser {
 	     additionalLoactionObj.setName(ApplicationConstants.CONST_VALUE_TYPE_OTHER+imprintLocationArr[1].trim());
 	     additionalLoaction.add(additionalLoactionObj);
 	     productConfigObj.setAdditionalLocations(additionalLoaction); 
-	    } else if(imprintValue.contains(",")){
-			ImprintLocationList = Arrays.stream(CommonUtility.getValuesOfArray(imprintValue, ",")).map(str -> {
+	    } else if(imprintValue.contains(ApplicationConstants.CONST_STRING_COMMA_SEP)){
+			ImprintLocationList = Arrays.stream(CommonUtility.getValuesOfArray(imprintValue, ApplicationConstants.CONST_STRING_COMMA_SEP)).map(str -> {
 				ImprintLocation ImprintLocationObj1 = new ImprintLocation();
 				ImprintLocationObj1.setValue(str);
 				return ImprintLocationObj1;
@@ -362,18 +329,18 @@ public class ApparealProductAttributeParser {
 	}
 	
 	public List<Packaging> getProductPackaging(String packValue){
-		packValue = packValue.replaceAll("\"",ApplicationConstants.CONST_STRING_EMPTY);
+		packValue = packValue.replaceAll(ApplicationConstants.CONST_BK_SLASH,ApplicationConstants.CONST_STRING_EMPTY);
 		packValue = packValue.replaceAll(ApplicationConstants.CONST_STRING_NEWLINECHARS,
 				                                   ApplicationConstants.CONST_STRING_BIG_SPACE);
 		List<Packaging> listOfpackaging = new ArrayList<Packaging>();
 		Packaging pack = null;
     	if(packValue.contains("Decorated"))
 		{
-    		for(int index=1 ;index <=2 ;index++){
+    		for(int index=1 ;index <=ApplicationConstants.CONST_INT_VALUE_TWO ;index++){
     			 pack = new Packaging();
-    			  if(index == 1){
+    			  if(index == ApplicationConstants.CONST_INT_VALUE_ONE){
     				pack = getPackaging("Blank: Individually folded in polybags");  
-    			  }else if(index ==2){
+    			  }else if(index ==ApplicationConstants.CONST_INT_VALUE_TWO){
     				  pack = getPackaging("Decorated: Bulk folded");  
     			  }
     			  listOfpackaging.add(pack);
@@ -458,23 +425,7 @@ public class ApparealProductAttributeParser {
 			newConfig.setTradeNames(oldConfig.getTradeNames());
 		}
 		newProduct.setProductConfigurations(newConfig);
-		
-		/*List<PriceGrid> newPriceGrids = new ArrayList<>();
-		List<PriceGrid> oldPriceGrid = existingProduct.getPriceGrids();
-		if(!CollectionUtils.isEmpty(oldPriceGrid)){
-			for (PriceGrid priceGrid : oldPriceGrid) {
-				   if(priceGrid.getIsBasePrice()){
-					   continue;
-				   } else if(isnewPriceGrid(priceGrid.getPriceConfigurations())){
-					   continue;
-				   } else {
-					   newPriceGrids.add(priceGrid);
-				   }
-			}
-			existingProduct.setPriceGrids(newPriceGrids);
-		} else {
-			return existingProduct;
-		}*/
+
 		return newProduct;
 	}
 	public Product getExistingProductData(Product existingProduct,List<ImprintMethod> existingImprintMethods){
@@ -496,23 +447,8 @@ public class ApparealProductAttributeParser {
 		}
 		return existingProduct;
 	}
-	private boolean isnewPriceGrid(List<PriceConfiguration> priceConfig){
-		 for (PriceConfiguration priceConfiguration : priceConfig) {
-			   if(priceConfiguration.getCriteria().equalsIgnoreCase("Material") ||
-					   priceConfiguration.getCriteria().equalsIgnoreCase("Packaging") ||
-					   priceConfiguration.getCriteria().equalsIgnoreCase("Product Color") ||
-					   priceConfiguration.getCriteria().equalsIgnoreCase("Size") ){
-				   return true;
-			   }
-		}
-		return false;
-		
-	}
-	/* Author      : Venkat
-	 * description : This method is ckecking imprint methods list of value is present in price configuration
-	 *                if value not present in price configuration it return false
-	 * 
-	*/
+	
+	// Author      : Venkat
 	private boolean isImprintMethodUpcharge(List<PriceConfiguration> priceConfig,List<ImprintMethod> imprMethods){
 		 for (PriceConfiguration priceConfiguration : priceConfig) {
 			   if(priceConfiguration.getCriteria().equalsIgnoreCase("Imprint Method")){
@@ -537,7 +473,7 @@ public class ApparealProductAttributeParser {
 	private List<ImprintLocation> getImprintLocations(String value){
 		List<ImprintLocation> listOfImprintLoc = new ArrayList<>();
 		ImprintLocation imprLocObj = null;
-		value = value.replaceAll("\\.", "");
+		value = value.replaceAll("\\.", ApplicationConstants.CONST_STRING_EMPTY);
 		String[] locations = CommonUtility.getValuesOfArray(value, ",");
 		for (String location : locations) {
 			imprLocObj = new ImprintLocation();

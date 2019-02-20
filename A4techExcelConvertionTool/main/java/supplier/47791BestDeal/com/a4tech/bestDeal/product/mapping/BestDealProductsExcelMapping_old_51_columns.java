@@ -58,7 +58,7 @@ public class BestDealProductsExcelMapping_old_51_columns implements IExcelParser
  		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-	    Sheet sheet = workbook.getSheetAt(0);
+	    Sheet sheet = workbook.getSheetAt(ApplicationConstants.CONST_NUMBER_ZERO);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
 		
@@ -85,7 +85,7 @@ public class BestDealProductsExcelMapping_old_51_columns implements IExcelParser
 				Cell cell = cellIterator.next();
 				
 				int columnIndex = cell.getColumnIndex();
-				if(columnIndex  == 4){
+				if(columnIndex  == ApplicationConstants.CONST_INT_VALUE_FOUR){
 					xid = CommonUtility.getCellValueStrinOrInt(cell);
 					checkXid = true;
 				}else{
@@ -93,7 +93,7 @@ public class BestDealProductsExcelMapping_old_51_columns implements IExcelParser
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 1){
+						 if(nextRow.getRowNum() != ApplicationConstants.CONST_INT_VALUE_ONE){
 							 System.out.println("Java object converted to JSON String, written to file");
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
@@ -243,7 +243,7 @@ public class BestDealProductsExcelMapping_old_51_columns implements IExcelParser
 				}
 					break;
 				case 42: // trade Names ignore
-					String tradeNames = cell.getStringCellValue();
+				//	String tradeNames = cell.getStringCellValue();
 					/*if(!StringUtils.isEmpty(tradeNames)){
 						List<TradeName> listOfTradeNames = productAttributeParser.getProductTradeName(tradeNames);
 						productConfigObj.setTradeNames(listOfTradeNames);
@@ -321,7 +321,7 @@ public class BestDealProductsExcelMapping_old_51_columns implements IExcelParser
 			}  // end inner while loop
 					 
 		}
-				productExcelObj.setPriceType("L");
+				productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
 				String qurFlag = "n"; // by default for testing purpose
 				if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
 					priceGrids = priceGridParser.getPriceGrids(listOfPrices.toString(), 

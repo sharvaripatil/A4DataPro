@@ -1,13 +1,10 @@
 package com.a4tech.apparel.products.parser;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.BlendMaterial;
 import com.a4tech.product.model.Combo;
@@ -19,12 +16,7 @@ public class ApparelMaterialParser {
 	private LookupServiceData lookupServiceData;
 	private String specialCharacters = "[™®]";
 	
-	/*@author Venkat
-	 *@param String ,Material value
-	 *@description This method design for parsing material values giving material columns
-	 *                  and handle for combo, bliend materials
-	 *@return List, list of material object 
-	 */
+	//@author Venkat
 	public List<Material> getMaterialList(String originalMaterialvalue){
 		
 		Material materialObj = new Material();
@@ -36,7 +28,7 @@ public class ApparelMaterialParser {
 		List<String> listOfLookupMaterial = getMaterialType(originalMaterialvalue.toUpperCase());
 		if(!listOfLookupMaterial.isEmpty()){
 			int numOfMaterials = listOfLookupMaterial.size();
-			if(!originalMaterialvalue.contains("/yd") && isBlendMaterial(originalMaterialvalue)){   // this condition for blend material
+			if(!originalMaterialvalue.contains("/yd") && isBlendMaterial(originalMaterialvalue)){  
 				 String[] values = CommonUtility.getValuesOfArray(originalMaterialvalue,ApplicationConstants.CONST_DELIMITER_FSLASH);
 		    	 BlendMaterial blentMaterialObj = null;
 		    	 List<BlendMaterial> listOfBlendMaterial = new ArrayList<>();
@@ -44,21 +36,21 @@ public class ApparelMaterialParser {
 				    	 for (String materialValue : values) {
 				    		 blentMaterialObj = new BlendMaterial();
 				    		 if(materialValue.contains("blend")){
-				    			 materialValue = materialValue.replaceAll("blend", "");
+				    			 materialValue = materialValue.replaceAll("blend",ApplicationConstants.CONST_STRING_EMPTY);
 				    			}
 				    		 if(materialValue.contains("Blend")){
-				    			 materialValue = materialValue.replaceAll("Blend", "");
+				    			 materialValue = materialValue.replaceAll("Blend",ApplicationConstants.CONST_STRING_EMPTY);
 				    			}
 				    		 List<String> matlTypeList = getMaterialType(materialValue.toUpperCase());
-				    		 String mtrlType = "";
+				    		 String mtrlType = ApplicationConstants.CONST_STRING_EMPTY;
 				    		 if(!CollectionUtils.isEmpty(matlTypeList)){
-				    			 mtrlType = matlTypeList.get(0);
+				    			 mtrlType = matlTypeList.get(ApplicationConstants.CONST_NUMBER_ZERO);
 				    		 }  else {
 				    			 mtrlType = "Other Fabric";  
 				    		 }
 				    		 if(materialValue.contains(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)){
 								  String percentage = materialValue.split(ApplicationConstants.CONST_DELIMITER_PERCENT_SIGN)[0];
-								  percentage = percentage.replaceAll("[^0-9]", "");
+								  percentage = percentage.replaceAll("[^0-9]", ApplicationConstants.CONST_STRING_EMPTY);
 								  blentMaterialObj.setName(mtrlType);
 								  blentMaterialObj.setPercentage(percentage.trim());
 								  listOfBlendMaterial.add(blentMaterialObj);
@@ -68,7 +60,7 @@ public class ApparelMaterialParser {
 				    	 materialObj.setAlias(originalMaterialvalue);
 				    	 materialObj.setBlendMaterials(listOfBlendMaterial);
 			    		 listOfMaterial.add(materialObj);
-				     }else{ // this condition for combo and blend values
+				     }else{
 				    	 Combo comboObj = new Combo();
 				    	 for (String materialValue : values) {
 				    		 blentMaterialObj = new BlendMaterial();
@@ -92,27 +84,23 @@ public class ApparelMaterialParser {
 				    	 materialObj.setCombo(comboObj);
 				    	 listOfMaterial.add(materialObj);
 				     }	        
-			  } else if(numOfMaterials == ApplicationConstants.CONST_INT_VALUE_ONE){ // this condition used to single material value(E.X 100% smooth knit polyester)
+			  } else if(numOfMaterials == ApplicationConstants.CONST_INT_VALUE_ONE){ 
 				  materialObj = getMaterialValue(listOfLookupMaterial.toString(), originalMaterialvalue);
 				  listOfMaterial.add(materialObj);
 			  }else if(numOfMaterials == ApplicationConstants.CONST_INT_VALUE_TWO){
-				   materialObj = getMaterialValue(listOfLookupMaterial.toString(), originalMaterialvalue, // this condition used to two material value(E.X 100% polyester fleece, 300gsm or 8.85 oz./yd2 )
+				   materialObj = getMaterialValue(listOfLookupMaterial.toString(), originalMaterialvalue, 
 						                                  ApplicationConstants.CONST_STRING_COMBO_TEXT);
 				   listOfMaterial.add(materialObj);
 			  }
-		}else{ // used for Material is not available in lookup, then it goes in Others
+		}else{ 
 			materialObj = getMaterialValue(ApplicationConstants.CONST_VALUE_TYPE_OTHER, originalMaterialvalue);
 			listOfMaterial.add(materialObj);
 		}
 		return listOfMaterial;
 	}
-	/*
-	 * @author Venkat
-	 * @param String ,Material value
-	 * @descrption This method design for filter material value from giving 
-	 *  original material value (100% cotton smooth knit polyester)final result:Cotton,Polyester
-	 * @return List             
-	 */
+	
+	// @author Venkat
+	 
 	public List<String> getMaterialType(String value){
 		
 		List<String> listOfLookupMaterials = lookupServiceData.getMaterialValues();

@@ -35,8 +35,7 @@ public class ApparelPriceGridParser {
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 		String[] listOfQuans = listOfQuan
 				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
-		/*String[] discountCode = discountCodes
-				.split(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);*/
+
 		
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(priceName);
@@ -74,7 +73,7 @@ public class ApparelPriceGridParser {
 
 		List<Price> listOfPrices = new ArrayList<Price>();
 	try{
-		for (int PriceNumber = 0, sequenceNum = 1; PriceNumber < prices.length && PriceNumber < quantity.length; 
+		for (int PriceNumber = ApplicationConstants.CONST_NUMBER_ZERO, sequenceNum = ApplicationConstants.CONST_INT_VALUE_ONE; PriceNumber < prices.length && PriceNumber < quantity.length; 
 				                                                             PriceNumber++, sequenceNum++) {
             if(StringUtils.isEmpty(prices[PriceNumber])){
             	continue;
@@ -88,7 +87,6 @@ public class ApparelPriceGridParser {
 				price.setQty(ApplicationConstants.CONST_NUMBER_ZERO);
 			}
 			price.setNetCost(prices[PriceNumber]);
-			//price.setPrice(prices[PriceNumber]);
 			price.setDiscountCode(disCodes);
 			priceUnit
 					.setItemsPerUnit(ApplicationConstants.CONST_STRING_VALUE_ONE);
@@ -135,12 +133,10 @@ public class ApparelPriceGridParser {
 			configs = new PriceConfiguration();
 			config = criterias.split(ApplicationConstants.CONST_DELIMITER_COLON);
 			try{
-				configs.setCriteria(config[0]);
+				configs.setCriteria(config[ApplicationConstants.CONST_NUMBER_ZERO]);
 			}catch(ArrayIndexOutOfBoundsException aie){
 				_LOGGER.error("Error while processing priceconfiguration" + aie.getMessage());
 			}
-			
-			//configs.setValue(Arrays.asList((Object) config[1]));
 			configs.setValue(Arrays.asList((Object) value));
 			priceConfiguration.add(configs);
 		}
@@ -166,7 +162,7 @@ public class ApparelPriceGridParser {
 		priceGrid.setCurrency(currency);
 		priceGrid.setDescription(upChargeValue);
 		priceGrid
-				.setIsQUR((qurFlag.equalsIgnoreCase("N")) ? ApplicationConstants.CONST_BOOLEAN_FALSE
+				.setIsQUR((qurFlag.equalsIgnoreCase(ApplicationConstants.CONST_CHAR_N)) ? ApplicationConstants.CONST_BOOLEAN_FALSE
 						: ApplicationConstants.CONST_BOOLEAN_TRUE);
 		priceGrid.setIsBasePrice(ApplicationConstants.CONST_BOOLEAN_FALSE);
 		priceGrid.setSequence(upChargeSequence);
@@ -197,19 +193,19 @@ public class ApparelPriceGridParser {
 			String[] quantis = value.split(ApplicationConstants.CONST_DELIMITER_HYPHEN);
 			return quantis[ApplicationConstants.CONST_INT_VALUE_ONE];
 		}
-		return "";
+		return ApplicationConstants.CONST_STRING_EMPTY;
 	}
 	
 	public List<PriceGrid> sizePrices(Map<String, String> sizesData,List<PriceGrid> existingPriceGrid){
-		String price = "";
+		String price = ApplicationConstants.CONST_STRING_EMPTY;
 		int firstSize = 1;
-		String sizeValues = "";
+		String sizeValues = ApplicationConstants.CONST_STRING_EMPTY;
 		if (isSingleBasePrice(sizesData.values())) {
 			Set<String> basePriceName = sizesData.keySet();
 			Collection<String> priceVals = sizesData.values();
-			String finalpriceNames = String.join(",", basePriceName);
+			String finalpriceNames = String.join(ApplicationConstants.CONST_STRING_COMMA_SEP, basePriceName);
 			String priceVal = priceVals.iterator().next();
-			existingPriceGrid = sizePrices("",finalpriceNames, priceVal, existingPriceGrid);
+			existingPriceGrid = sizePrices(ApplicationConstants.CONST_STRING_EMPTY,finalpriceNames, priceVal, existingPriceGrid);
 		} else {
 			for (Map.Entry<String, String> sizeEntry : sizesData.entrySet()) {
 				String key = sizeEntry.getKey();
@@ -219,7 +215,7 @@ public class ApparelPriceGridParser {
 					sizeValues = key;
 				} else {
 					if (price.equalsIgnoreCase(val)) {
-						sizeValues = sizeValues + "," + key;
+						sizeValues = sizeValues + ApplicationConstants.CONST_STRING_COMMA_SEP + key;
 					} else {
 						if (!StringUtils.isEmpty(sizeValues)) {
 							existingPriceGrid = sizePrices(sizeValues, sizeValues,price, existingPriceGrid);
@@ -245,14 +241,14 @@ public class ApparelPriceGridParser {
 		String listOfQuantity = prices[1];
 		existingPriceGrid = getPriceGrids(listOfPrices.toString(), 
 				listOfQuantity.toString(), "P", "USD",
-				         "", true, "n", basePriceName,criteriaValues,existingPriceGrid);
+				         ApplicationConstants.CONST_STRING_EMPTY, true, "n", basePriceName,criteriaValues,existingPriceGrid);
 		return existingPriceGrid;
 	}
 	
 	public List<PriceConfiguration> getBasePriceConfigurations(String criteria) {
 		List<PriceConfiguration> listOfpriceConfiguration = new ArrayList<PriceConfiguration>();
 		PriceConfiguration configuraion = null;
-		String[] criterias = criteria.split(",");
+		String[] criterias = criteria.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 		
 		try{
 			for (String CriteriaVal : criterias) {
@@ -268,10 +264,10 @@ public class ApparelPriceGridParser {
 		return listOfpriceConfiguration;
 	}
 	private boolean isSingleBasePrice(Collection<String> prices){
-		int priceIndex = 1;
-		String firstPrice = "";
+		int priceIndex = ApplicationConstants.CONST_INT_VALUE_ONE;
+		String firstPrice = ApplicationConstants.CONST_STRING_EMPTY;
 		for (String priceVal : prices) {
-			   if(priceIndex == 1){
+			   if(priceIndex == ApplicationConstants.CONST_INT_VALUE_ONE){
 				   firstPrice = priceVal;
 			   }
 			   if(!firstPrice.equalsIgnoreCase(priceVal)){

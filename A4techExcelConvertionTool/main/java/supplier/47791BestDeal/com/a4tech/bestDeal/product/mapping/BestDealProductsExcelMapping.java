@@ -58,7 +58,7 @@ public class BestDealProductsExcelMapping implements IExcelParser{
  		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-	    Sheet sheet = workbook.getSheetAt(0);
+	    Sheet sheet = workbook.getSheetAt(ApplicationConstants.CONST_NUMBER_ZERO);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
 		
@@ -85,8 +85,8 @@ public class BestDealProductsExcelMapping implements IExcelParser{
 				Cell cell = cellIterator.next();
 				
 				int columnIndex = cell.getColumnIndex();
-				if(columnIndex  == 0){
-					Cell xidCell = nextRow.getCell(1);
+				if(columnIndex  == ApplicationConstants.CONST_NUMBER_ZERO){
+					Cell xidCell = nextRow.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
 				     xid = CommonUtility.getCellValueStrinOrInt(xidCell);
 					//xid = CommonUtility.getCellValueStrinOrInt(cell);
 					checkXid = true;
@@ -95,7 +95,7 @@ public class BestDealProductsExcelMapping implements IExcelParser{
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 1){
+						 if(nextRow.getRowNum() != ApplicationConstants.CONST_INT_VALUE_ONE){
 							 System.out.println("Java object converted to JSON String, written to file");
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
@@ -304,7 +304,7 @@ public class BestDealProductsExcelMapping implements IExcelParser{
 			}  // end inner while loop
 					 
 		}
-				productExcelObj.setPriceType("L");
+				productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
 				String qurFlag = "n"; // by default for testing purpose
 				if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
 					priceGrids = priceGridParser.getPriceGrids(listOfPrices.toString(), 
@@ -325,9 +325,9 @@ public class BestDealProductsExcelMapping implements IExcelParser{
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 	
 		 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
-		 	if(num ==1){
+		 	if(num ==ApplicationConstants.CONST_INT_VALUE_ONE){
 		 		numOfProductsSuccess.add("1");
-		 	}else if(num == 0){
+		 	}else if(num == ApplicationConstants.CONST_NUMBER_ZERO){
 		 		numOfProductsFailure.add("0");
 		 	}else{
 		 		

@@ -4,17 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-
-import com.a4tech.bestDeal.product.parser.BestDealAttributeParser;
-import com.a4tech.bestDeal.product.parser.BestDealPriceGridParser;
-import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -25,7 +19,7 @@ public class DeleteProductsMapping {
 	public List<String> getAllXids(Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
 		  List<String> xidsList = new ArrayList<>();
  		try{
-	    Sheet sheet = workbook.getSheetAt(0);
+	    Sheet sheet = workbook.getSheetAt(ApplicationConstants.CONST_NUMBER_ZERO);
 		Iterator<Row> iterator = sheet.iterator();
 		String xid = null;
 		
@@ -41,12 +35,12 @@ public class DeleteProductsMapping {
 				Cell cell = cellIterator.next();
 				
 				int columnIndex = cell.getColumnIndex();
-				if(columnIndex  == 0){
-					Cell xidCell = nextRow.getCell(1);
+				if(columnIndex  ==  ApplicationConstants.CONST_NUMBER_ZERO){
+					Cell xidCell = nextRow.getCell(ApplicationConstants.CONST_INT_VALUE_ONE);
 				     xid = CommonUtility.getCellValueStrinOrInt(xidCell);
 					//xid = CommonUtility.getCellValueStrinOrInt(cell);
 				}
-				switch (columnIndex+1) {
+				switch (columnIndex+ApplicationConstants.CONST_INT_VALUE_ONE) {
 				case 1://xid
 					  xidsList.add(xid);
 					 break;
