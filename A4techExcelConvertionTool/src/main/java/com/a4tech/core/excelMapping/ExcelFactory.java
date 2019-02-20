@@ -3,26 +3,22 @@ package com.a4tech.core.excelMapping;
 
 
 import com.a4tech.ESPTemplate.product.mapping.ESPTemplateMapping;
-import com.a4tech.RFGLine.product.mapping.RFGLineProductExcelMapping;
-import com.a4tech.adspec.product.mapping.AdspecProductsExcelMapping;
-import com.a4tech.apparel.product.mapping.ApparelProductsExcelMapping;
-import com.a4tech.bambam.product.mapping.BambamProductExcelMapping;
-import com.a4tech.bestDeal.product.mapping.BestDealProductsExcelMapping;
 import com.a4tech.dc.product.mapping.DCProductsExcelMapping;
 import com.a4tech.excel.service.IExcelParser;
-import com.a4tech.kl.product.mapping.KlProductsExcelMapping;
 import com.a4tech.product.bbi.mapping.BBIProductsExcelMapping;
 import com.a4tech.product.broberry.mapping.BroberryExcelMapping;
 import com.a4tech.product.kuku.mapping.KukuProductsExcelMapping;
-import com.a4tech.product.newproducts.mapping.NewProductsExcelMapping;
 import com.a4tech.product.riversend.mapping.RiversEndExcelMapping;
-import com.a4tech.sage.product.mapping.SageProductsExcelMapping;
 import com.a4tech.supplier.mapper.AccessLineMapping;
+import com.a4tech.supplier.mapper.AdspecProductsExcelMapping;
 import com.a4tech.supplier.mapper.AlfaMapping;
+import com.a4tech.supplier.mapper.ApparelProductsExcelMapping;
 import com.a4tech.supplier.mapper.BagMakersMapping;
 import com.a4tech.supplier.mapper.BallProMapping;
+import com.a4tech.supplier.mapper.BambamProductExcelMapping;
 import com.a4tech.supplier.mapper.BayStateMapping;
 import com.a4tech.supplier.mapper.BellaCanvas;
+import com.a4tech.supplier.mapper.BestDealProductsExcelMapping;
 import com.a4tech.supplier.mapper.BloominPromotionsMapper;
 import com.a4tech.supplier.mapper.BlueGenerationMapping;
 import com.a4tech.supplier.mapper.BrandwearExcelMapping;
@@ -43,14 +39,17 @@ import com.a4tech.supplier.mapper.HarvestIndustrialExcelMapping;
 import com.a4tech.supplier.mapper.HeadWearMapping;
 import com.a4tech.supplier.mapper.HighCaliberLineMappingRevised;
 import com.a4tech.supplier.mapper.InternationlMerchMapping;
+import com.a4tech.supplier.mapper.KlProductsExcelMapping;
 import com.a4tech.supplier.mapper.MaxplusMapping;
 import com.a4tech.supplier.mapper.MilestoneExcelMapping;
+import com.a4tech.supplier.mapper.NewProductsExcelMapping;
 import com.a4tech.supplier.mapper.PSLMapping;
 import com.a4tech.supplier.mapper.PSLcadMapping;
 import com.a4tech.supplier.mapper.PelicanGraphicMapping;
 import com.a4tech.supplier.mapper.PioneerLLCMapping;
 import com.a4tech.supplier.mapper.PrimeLineExcelMapping;
 import com.a4tech.supplier.mapper.ProGolfMapping;
+import com.a4tech.supplier.mapper.RFGLineProductExcelMapping;
 import com.a4tech.supplier.mapper.RadiousMapping;
 import com.a4tech.supplier.mapper.SageRMKWorldWideMapping;
 import com.a4tech.supplier.mapper.SimplifiedsourcingMapping;
@@ -74,7 +73,6 @@ import com.a4tech.supplier.mapper.ZenithExport;
 public class ExcelFactory {
 	private AdspecProductsExcelMapping 		adspecMapping;
 	private KlProductsExcelMapping 			klMapping;
-	private SageProductsExcelMapping 		sageExcelMapping;
 	private DCProductsExcelMapping 			dcProductExcelMapping;
 	private KukuProductsExcelMapping 		kukuProductsExcelMapping;
 	private RFGLineProductExcelMapping 		rfgLineProductExcelMapping;
@@ -150,8 +148,6 @@ public class ExcelFactory {
 			   return klMapping;
 		   }else if(name.equalsIgnoreCase("Adspec") || name.equals("32125")){
 			   return adspecMapping;
-		   }else if(name.equalsIgnoreCase("sage") || name.equals("55204")){
-			   return sageExcelMapping;
 		   }else if(name.equalsIgnoreCase("dc") || name.equals("55205")){
 			   return dcProductExcelMapping;
 		   }else if(name.equalsIgnoreCase("kuku") || name.equals("65851")){
@@ -317,13 +313,6 @@ public class ExcelFactory {
 	}
 	public void setKlMapping(KlProductsExcelMapping klMapping) {
 		this.klMapping = klMapping;
-	}
-	public SageProductsExcelMapping getSageExcelMapping() {
-		return sageExcelMapping;
-	}
-
-	public void setSageExcelMapping(SageProductsExcelMapping sageExcelMapping) {
-		this.sageExcelMapping = sageExcelMapping;
 	}
 
 	public DCProductsExcelMapping getDcProductExcelMapping() {

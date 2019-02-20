@@ -1,4 +1,4 @@
-package com.a4tech.supplier.mapper;
+package parser.bestdeal;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +16,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
 
+
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Apparel;
@@ -31,16 +32,18 @@ import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.supplier.mapper.BestDealProductsExcelMapping;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
-public class CPSMapping implements IExcelParser{
+public class BestDealProductsExcelMapping_old_51_columns implements IExcelParser{
 	
-	private static final Logger _LOGGER = Logger.getLogger(CPSMapping.class);
+	private static final Logger _LOGGER = Logger.getLogger(BestDealProductsExcelMapping.class);
 	
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;
-	
+	private BestDealAttributeParser productAttributeParser;
+	private BestDealPriceGridParser priceGridParser;
 	
 	@Override
 	public String readExcel(String accessToken,Workbook workbook ,Integer asiNumber ,int batchId, String environmentType){
@@ -52,10 +55,11 @@ public class CPSMapping implements IExcelParser{
 		  Product productExcelObj = new Product();   
 		  ProductConfigurations productConfigObj=new ProductConfigurations();
 		  List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
+		  productAttributeParser.getProductTradeName("BannerBams");
  		try{
 			 
 		_LOGGER.info("Total sheets in excel::"+workbook.getNumberOfSheets());
-	    Sheet sheet = workbook.getSheetAt(0);
+	    Sheet sheet = workbook.getSheetAt(ApplicationConstants.CONST_NUMBER_ZERO);
 		Iterator<Row> iterator = sheet.iterator();
 		_LOGGER.info("Started Processing Product");
 		
@@ -82,7 +86,7 @@ public class CPSMapping implements IExcelParser{
 				Cell cell = cellIterator.next();
 				
 				int columnIndex = cell.getColumnIndex();
-				if(columnIndex  == 4){
+				if(columnIndex  == ApplicationConstants.CONST_INT_VALUE_FOUR){
 					xid = CommonUtility.getCellValueStrinOrInt(cell);
 					checkXid = true;
 				}else{
@@ -90,7 +94,7 @@ public class CPSMapping implements IExcelParser{
 				}
 				if(checkXid){
 					 if(!productXids.contains(xid)){
-						 if(nextRow.getRowNum() != 1){
+						 if(nextRow.getRowNum() != ApplicationConstants.CONST_INT_VALUE_ONE){
 							 System.out.println("Java object converted to JSON String, written to file");
 							 	productExcelObj.setPriceGrids(priceGrids);
 							 	productExcelObj.setProductConfigurations(productConfigObj);
@@ -126,127 +130,204 @@ public class CPSMapping implements IExcelParser{
 					 }
 				}
 				
-				switch (columnIndex+1) {
-				case 1://xid
+				switch (columnIndex) {
+				case 4://xid
 					  productExcelObj.setExternalProductId(xid);
 					 break;
-				case 2:
-					
+				case 5://Name
+					String prdName = cell.getStringCellValue().trim();
+					basePriceName = prdName;
+					productExcelObj.setName(prdName);
 					  break;
-				case 3:
-						
+				case 6://summery
+					String summary = cell.getStringCellValue();
+					productExcelObj.setSummary(summary);	
 				    break;
-				case 4:
+				case 7://description
 					 String desc = cell.getStringCellValue();
 					 productExcelObj.setDescription(desc.trim());
 					  break;
-				case 5:
-					 
+				case 8://keywords
+					  String keyWords = cell.getStringCellValue();
+					  if(!StringUtils.isEmpty(keyWords)){
+						  List<String> listOfKeywords = productAttributeParser.getProductKeywords(keyWords);
+						  productExcelObj.setProductKeywords(listOfKeywords);
+					  }
 					break;
 					
-				case 6: 
+				case 9: //  ignore
+					
 					break;
-				case 7:
-					 break;
-				case 8:
-					  break;
-				case 9:
-				    break;
-				case 10:
-					  break;
-				case 11:
-					break;
-				case 12: 
-					break;
+					
+				case 10: //  quantity
 				case 13:
-					 break;
-				case 14:
-					  break;
-				case 15:
-				    break;
 				case 16:
-					  break;
-				case 17: //Qty
+				case 19: 
+				case 22: 
+				case 25: 
+				case 28:
+				case 31: 
+					String priceQty = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(priceQty)){
+						listOfQuantity.add(priceQty);
+					}
+					break;
+					
+				case 11: // price
+				case 14:
+				case 17:
 				case 20:
 				case 23:
 				case 26:
 				case 29:
-					break;
-
-				case 18: 
-					break;
-				case 19:// Prices
-				case 22:
-				case 25:
-				case 28:
-				case 31:
-					 
-					  break;
-				case 21:
-				    break;
-				case 24: 
-					break;
-				case 27:
-				    break;
-				case 30: 
-					break;
 				case 32:
-					  break;
+					String listPrice = CommonUtility.getCellValueDouble(cell);
+					if(!StringUtils.isEmpty(listPrice)){
+						listOfPrices.add(listPrice);
+					}
+					break;
+					
+				case 12: // dis code
+				case 15:
+				case 18:
+				case 21:
+				case 24:
+				case 27:
+				case 30:
 				case 33:
-					  break;
-				case 34:
+					String discount = CommonUtility.getCellValueStrinOrInt(cell);
+					if(!StringUtils.isEmpty(discount)){
+						listOfDiscount.add(discount);
+					}
 					break;
-				case 35: 
+				case 34: // ignore
+					
+					
 					break;
-				case 36:
-					 break;
+				case 35://ignore
+					break;
+					
+				case 36:// ignore
+					break;
+					
 				case 37:
-					  break;
+					priceInclude = cell.getStringCellValue();
+					 break;
 				case 38:
-				    break;
+					String color =cell.getStringCellValue();
+					if(!StringUtils.isEmpty(color)){
+						List<Color> listOfColor = productAttributeParser.getProductColor(color.trim());
+						productConfigObj.setColors(listOfColor);
+					}
+					break;
 				case 39:
-					  break;
-				case 40:
+				String shapeValue=cell.getStringCellValue();
+					if(!StringUtils.isEmpty(shapeValue)){
+					   List<Shape>	listOfShape = productAttributeParser.getProductShapes(shapeValue);
+					   if(listOfShape!= null){
+						   productConfigObj.setShapes(listOfShape);
+					   }
+					}
 					break;
-	
-				case 41:
+				case 40: // size
+				String sizeValue=cell.getStringCellValue();
+				   if(!StringUtils.isEmpty(sizeValue)){
+					   Size size = productAttributeParser.getProductSize(sizeValue);
+					   productConfigObj.setSizes(size);
+				   }
 					break;
-				case 42: 
+				case 41: // material
+				String materialValue=cell.getStringCellValue();
+				if(!StringUtils.isEmpty(materialValue)){
+					List<Material> listOfMaterial = productAttributeParser.getProductMaterial(materialValue);
+					productConfigObj.setMaterials(listOfMaterial);
+				}
 					break;
-				case 43:
-					 break;
-				case 44:
-					  break;
-				case 45:
-				    break;
-				case 46:
-					  break;
-				case 47:
+				case 42: // trade Names ignore
+				//	String tradeNames = cell.getStringCellValue();
+					/*if(!StringUtils.isEmpty(tradeNames)){
+						List<TradeName> listOfTradeNames = productAttributeParser.getProductTradeName(tradeNames);
+						productConfigObj.setTradeNames(listOfTradeNames);
+					}*/
 					break;
-	
-				case 48: 
+				case 43: //origin
+					  String country = cell.getStringCellValue();
+					     if(!StringUtils.isEmpty(country)){
+					    	 List<Origin> listOfOrigin = productAttributeParser.getProductOrigin(country);
+					    	 if(listOfOrigin != null){
+					    		 productConfigObj.setOrigins(listOfOrigin);
+					    	 } 
+					     }
 					break;
-				case 49:
-					 break;
-				case 50:
-					  break;
-				case 51:
-				    break;
-				case 52:
-					  break;
-				case 53:
-				    break;
-									
+				case 44: // production Time
+					     String prdTime = CommonUtility.getCellValueStrinOrInt(cell);
+					     if(!StringUtils.isEmpty(prdTime)){
+					    	 List<ProductionTime> listOfPrdTime = productAttributeParser.getProductionTime(prdTime);
+					    	 productConfigObj.setProductionTime(listOfPrdTime);
+					     }
+					break;
+				case 45:// rush service
+					String rushValue = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(rushValue)){
+						productExcelObj = productAttributeParser.getProductRushTimeAndUpCharge
+								                                 (productExcelObj, rushValue,productConfigObj,priceGrids);
+					}
+					break;
+				case 46: // imprint method
+					String imprintValue = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(imprintValue)){
+						List<ImprintMethod> listOfImprMethod = productAttributeParser.getProductImprintMethods
+								                                                                  (imprintValue);
+						productConfigObj.setImprintMethods(listOfImprMethod);
+					}
+					break;
+				case 47: // price include same as case 34
+					break;
+				case 48: // Safety Warnings
+					  // there is no data for this column
+					break;
+				case 49: // product options
+					// there is no data for this column
+					break;
+				case 50: // Product Notes
+					String values = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(values)){
+						productExcelObj = productAttributeParser.getproductLineNameShippingFob
+																			(values, productExcelObj,productConfigObj);
+					}
+					break;
+				case 51: //imprint Options
+					    // there is no data for this column
+					break;
+				case 52: // imprint notes
+					String imprintSize = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(imprintSize)){
+						productExcelObj = productAttributeParser.getImprintSizeAndAddlocation(imprintSize, productExcelObj);
+						priceGrids = productAttributeParser.getAdditionalUpchargeGPriceGrid(imprintSize,
+								                                                                  productExcelObj.getPriceGrids());
+						productExcelObj.setPriceGrids(priceGrids);
+					}
+					break;
+				case 53: //Price Notes
+					String priceNotes = cell.getStringCellValue();
+					if(!StringUtils.isEmpty(priceNotes)){
+						productExcelObj.setCanOrderLessThanMinimum(ApplicationConstants.CONST_BOOLEAN_TRUE);
+						priceGrids = productAttributeParser.getLessThanMiniUpCharge(priceNotes, 
+								                                           productExcelObj.getPriceGrids());
+					}
+					
+					break;
+								
 							
 			}  // end inner while loop
 					 
 		}
-				productExcelObj.setPriceType("L");
+				productExcelObj.setPriceType(ApplicationConstants.CONST_PRICE_TYPE_CODE_LIST);
 				String qurFlag = "n"; // by default for testing purpose
 				if( listOfPrices != null && !listOfPrices.toString().isEmpty()){
-					/*priceGrids = priceGridParser.getPriceGrids(listOfPrices.toString(), 
+					priceGrids = priceGridParser.getPriceGrids(listOfPrices.toString(), 
 							listOfQuantity.toString(), listOfDiscount.toString(), "USD",
-							         priceInclude, true, qurFlag, basePriceName,"",priceGrids);*/	
+							         priceInclude, true, qurFlag, basePriceName,"",priceGrids);	
 				}
 				listOfPrices = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 			    listOfQuantity = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
@@ -309,7 +390,19 @@ public class CPSMapping implements IExcelParser{
 		return size;
 	}
 	
+	public boolean isRepeateColumn(int columnIndex){
+		
+		if(columnIndex != 5 && columnIndex != 6 && columnIndex != 8){
+			return ApplicationConstants.CONST_BOOLEAN_TRUE;
+		}
+		return ApplicationConstants.CONST_BOOLEAN_FALSE;
+	}
 	
+	public List<Material> getExistingProductMaterials(Product existingProduct){
+		ProductConfigurations configuration = existingProduct.getProductConfigurations();
+		return configuration.getMaterials();
+	}
+
 	public PostServiceImpl getPostServiceImpl() {
 		return postServiceImpl;
 	}
@@ -324,4 +417,21 @@ public class CPSMapping implements IExcelParser{
 	public void setProductDaoObj(ProductDao productDaoObj) {
 		this.productDaoObj = productDaoObj;
 	}
+	
+	 public BestDealAttributeParser getProductAttributeParser() {
+			return productAttributeParser;
+		}
+
+		public void setProductAttributeParser(
+				BestDealAttributeParser productAttributeParser) {
+			this.productAttributeParser = productAttributeParser;
+		}
+		public BestDealPriceGridParser getPriceGridParser() {
+			return priceGridParser;
+		}
+
+		public void setPriceGridParser(BestDealPriceGridParser priceGridParser) {
+			this.priceGridParser = priceGridParser;
+		}
+
 }

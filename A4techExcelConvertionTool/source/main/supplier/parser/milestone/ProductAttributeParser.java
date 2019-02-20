@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+
+import parser.sageRMKWorldwide.LookupData;
+
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.Dimensions;
 import com.a4tech.product.model.ImprintMethod;
@@ -17,7 +21,6 @@ import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Weight;
-import com.a4tech.sage.product.util.LookupData;
 import com.a4tech.util.ApplicationConstants;
 
 public class ProductAttributeParser {

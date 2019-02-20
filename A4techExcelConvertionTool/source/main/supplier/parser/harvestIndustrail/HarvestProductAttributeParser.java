@@ -3,6 +3,10 @@ package parser.harvestIndustrail;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
+import parser.sageRMKWorldwide.LookupData;
+
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.AvailableVariations;
@@ -19,7 +23,6 @@ import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Weight;
-import com.a4tech.sage.product.util.LookupData;
 import com.a4tech.util.ApplicationConstants;
 
 public class HarvestProductAttributeParser {

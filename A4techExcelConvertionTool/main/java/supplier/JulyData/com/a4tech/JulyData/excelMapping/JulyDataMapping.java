@@ -283,12 +283,12 @@ public class JulyDataMapping {
                         }
                       
                   }
-                  if(numOfSheets ==2){
+       /*           if(numOfSheets ==2){
                 	  productExcelObj.setPriceType("L"); 
                       priceGrids = priceGridParser.getPriceGrids(listOfPrices.toString(),listOfNetPrice.toString(), 
                                            listOfQuantity.toString(), listOfDiscount.toString(), "USD",
                                            priceIncludes, true, "Y", productName,"",priceGrids);   
-                  }
+                  }*/
                   
                   }catch(Exception e){
                   //e.printStackTrace();
