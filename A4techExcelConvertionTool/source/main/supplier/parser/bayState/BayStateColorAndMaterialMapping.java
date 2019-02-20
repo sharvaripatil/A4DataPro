@@ -117,6 +117,65 @@ public static Map<String, String> MATERIAL_MAP =new HashMap<String, String>();
 		COLOR_MAP.put("White Base with Lids in Translucent Colors of Crystal Blue and Lavender","Medium White:Combo:Clear Blue:Secondary:Clear Purple:Trim:Alias:White Base-Crystal Blue-Lavender");
 		COLOR_MAP.put("White Base with 4 Individual Weekly Pill Boxes in Rainbow Translucent Colors plus 1 White Daily Box","Medium White:Combo:Clear Multi Color:Secondary:Alias:White Base-Rainbow Translucent Boxes");		
 		
+		//EXCIT-1225
+		COLOR_MAP.put("Blue","Medium Blue");
+		COLOR_MAP.put("Navy","Dark Blue");
+		COLOR_MAP.put("White","Medium White");
+		COLOR_MAP.put("Red","Medium Red");
+		COLOR_MAP.put("Green","Medium Green");
+		COLOR_MAP.put("Lime","Bright Green");
+		COLOR_MAP.put("Yellow","Medium Yellow");
+		COLOR_MAP.put("Orange","Medium Orange");
+		COLOR_MAP.put("Pink","Medium Pink");
+		COLOR_MAP.put("Purple","Medium Purple");
+		COLOR_MAP.put("Teal","Medium Green");
+		COLOR_MAP.put("Tan","Light Brown");
+		COLOR_MAP.put("Black","Medium Black");
+		COLOR_MAP.put("Burgundy","Dark Red");
+		COLOR_MAP.put("Blue(300c)","Medium Blue");
+		COLOR_MAP.put("Navy Blue(303c)","Dark Blue");
+		COLOR_MAP.put("Burgundy(229c)","Dark Red");
+		COLOR_MAP.put("Green(342c)","Medium Green");
+		COLOR_MAP.put("Lime Green(361c)","Bright Green");
+		COLOR_MAP.put("Orange(165c)","Medium Orange");
+		COLOR_MAP.put("Pink(212c)","Medium Pink");
+		COLOR_MAP.put("Purple(2593c)","Medium Purple");
+		COLOR_MAP.put("Red(186c)","Medium Red");
+		COLOR_MAP.put("Tan(468c)","Light Brown");
+		COLOR_MAP.put("Teal(321c)","Medium Green");
+		COLOR_MAP.put("Yellow(107c)","Medium Yellow");
+		COLOR_MAP.put("Multi color","Multi Color");
+		COLOR_MAP.put("Periwinkle","Light Purple");
+		COLOR_MAP.put("Buff","Light Brown");
+		COLOR_MAP.put("Blue(292u)","Medium Blue");
+		COLOR_MAP.put("Buff(1345u)","DARK WHITE");
+		COLOR_MAP.put("Pink(217u)","Medium Pink");
+		COLOR_MAP.put("Cork","Light Brown");
+		COLOR_MAP.put("Natural","DARK WHITE");
+		COLOR_MAP.put("Navy Blue","Dark Blue");
+		COLOR_MAP.put("Other","Light Brown");
+		COLOR_MAP.put("Stone","Light Gray");
+		COLOR_MAP.put("Brown","Medium Brown");
+		COLOR_MAP.put("Stone White(406u)","Medium White");
+		COLOR_MAP.put("Cork(723u)","Light Brown");
+		COLOR_MAP.put("Orange(149u)","Medium Orange");
+		COLOR_MAP.put("Periwinkle(7452u)","Light Blue");
+		COLOR_MAP.put("Blue(300u)","Medium Blue");
+		COLOR_MAP.put("Navy Blue(282u)","Dark Blue");
+		COLOR_MAP.put("Cream (7500u)","Medium White");
+		COLOR_MAP.put("Gray (429u)","Medium Gray");
+		COLOR_MAP.put("Green(340u)","Medium Green");
+		COLOR_MAP.put("Lime Green(361u)","Bright Green");
+		COLOR_MAP.put("Sage Green(365u)","Medium Green");
+		COLOR_MAP.put("Orange(166u)","Medium Orange");
+		COLOR_MAP.put("Pink(205u)","Medium Pink");
+		COLOR_MAP.put("Purple(268u)","Medium Purple");
+		COLOR_MAP.put("Red(200u)","Medium Red");
+		COLOR_MAP.put("Teal(321u)","Medium Green");
+		COLOR_MAP.put("Yellow(7405u)","Medium Yellow");
+
+		
+		
 	// Material Mapping
 		MATERIAL_MAP.put("Crystal Styrene", "ABS Plastic");
 		MATERIAL_MAP.put("Open Cell Foam", "Foam");

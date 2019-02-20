@@ -20,9 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import parser.EdwardsGarment.EdwardGarmentPriceGridParser;
-import parser.EdwardsGarment.EdwardsGarmentAttributeParser;
-
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
@@ -43,10 +40,13 @@ import com.a4tech.product.model.ProductSkus;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import parser.EdwardsGarment.EdwardGarmentPriceGridParser;
+import parser.EdwardsGarment.EdwardsGarmentAttributeParser;
 
 public class EdwardsGarmentMapping implements IExcelParser{
 	

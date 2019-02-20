@@ -29,7 +29,7 @@ import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.WarrantyInformation;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 

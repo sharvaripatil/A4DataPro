@@ -32,7 +32,7 @@ import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Volume;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 

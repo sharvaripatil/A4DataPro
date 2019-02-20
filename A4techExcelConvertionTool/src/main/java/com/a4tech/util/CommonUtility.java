@@ -528,13 +528,18 @@ public class CommonUtility {
 	  */
 	 public static boolean isImageExist(String URLName){
 		    try {
-		      HttpURLConnection.setFollowRedirects(false);
+		    	
+		    	
+		      //HttpURLConnection.setFollowRedirects(false);
 		      // note : you may also need
-		      //        HttpURLConnection.setInstanceFollowRedirects(false)
+		         //    HttpURLConnection.setInstanceFollowRedirects(false);
 		      HttpURLConnection con =
 		         (HttpURLConnection) new URL(URLName).openConnection();
+		      con.setInstanceFollowRedirects(false);
 		     con.setRequestMethod("HEAD");
-		      return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+		     boolean urlStatus = con.getResponseCode() == HttpURLConnection.HTTP_OK;
+		    //  return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+		     return urlStatus;
 		    }
 		    catch (Exception e) {
 		       e.printStackTrace();

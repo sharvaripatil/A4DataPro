@@ -16,8 +16,7 @@ import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductNumber;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
-import com.a4tech.util.LookupData;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JulyDataMapping {

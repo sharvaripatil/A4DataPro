@@ -36,7 +36,7 @@ import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 

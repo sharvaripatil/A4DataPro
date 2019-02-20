@@ -1,4 +1,4 @@
-package com.a4tech.scheduler;
+package com.a4tech.ftp.scheduler;
 
 import java.io.File;
 import java.io.IOException;

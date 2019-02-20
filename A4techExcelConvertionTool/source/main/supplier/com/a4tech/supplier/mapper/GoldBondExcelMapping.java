@@ -2,7 +2,6 @@ package com.a4tech.supplier.mapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +29,7 @@ import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.Size;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -108,7 +107,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 							 String desc = finalDescriptionValue(productDescription.toString(),asiPrdNo);
 							 productExcelObj.setDescription(desc);
 							 if(!StringUtils.isEmpty(listOfColors.toString())){
-								 List<Color> listOfColor = gbAttributeParser.getProductColors(listOfColors.toString());
+								 List<Color> listOfColor = gbAttributeParser.getProductColors(listOfColors.toString(),asiNumber);
 								    productConfiguration.setColors(listOfColor); 
 							 }
 						       // productExcelObj.setComplianceCerts(Arrays.asList("PROP 65"));
@@ -852,7 +851,7 @@ public class GoldBondExcelMapping implements IExcelParser{
 		}
 		workbook.close();
 		if(!StringUtils.isEmpty(listOfColors.toString())){
-			 List<Color> listOfColor = gbAttributeParser.getProductColors(listOfColors.toString());
+			 List<Color> listOfColor = gbAttributeParser.getProductColors(listOfColors.toString(),asiNumber);
 			    productConfiguration.setColors(listOfColor); 
 		 }
 		 String desc = finalDescriptionValue(productDescription.toString(),asiPrdNo);

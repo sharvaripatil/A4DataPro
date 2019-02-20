@@ -32,6 +32,7 @@ import com.a4tech.product.dao.entity.ProductEntity;
 import com.a4tech.product.dao.entity.ProductionSupplierLoginDetails;
 import com.a4tech.product.dao.entity.SupplierColumnsEntity;
 import com.a4tech.product.dao.entity.SupplierLoginDetails;
+import com.a4tech.product.dao.entity.SupplierProductColors;
 import com.a4tech.product.service.IProductDao;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
@@ -425,6 +426,29 @@ public class ProductDao implements IProductDao{
 		  }
 		return 0;
 	}
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<SupplierProductColors> getSupplierColorsByAsiNumber(Integer asiNumber) {
+		Session session = null;
+		try {
+			session = sessionFactory.openSession();
+			Criteria criteria = session.createCriteria(SupplierProductColors.class);
+			criteria.add(Restrictions.eq("asiNumber", asiNumber));
+			List<SupplierProductColors> colorsList = criteria.list();
+			return colorsList;
+		} catch (Exception ex) {
+			 _LOGGER.error("unable to get supplier product colors from DB based: "+ex.getCause());
+			
+		} finally {
+			if (session != null) {
+				try {
+					session.close();
+				} catch (Exception ex) {
+				}
+			}
+		}
+		return new ArrayList<>();
+	}
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
@@ -439,4 +463,6 @@ public class ProductDao implements IProductDao{
 	public void setErrorFileLocPath(String errorFileLocPath) {
 		this.errorFileLocPath = errorFileLocPath;
 	}
+	
+	
 }

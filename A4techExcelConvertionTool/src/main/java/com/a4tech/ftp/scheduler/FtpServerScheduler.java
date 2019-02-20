@@ -1,4 +1,4 @@
-package com.a4tech.scheduler;
+package com.a4tech.ftp.scheduler;
 
 import org.apache.log4j.Logger;
 import org.quartz.JobExecutionContext;

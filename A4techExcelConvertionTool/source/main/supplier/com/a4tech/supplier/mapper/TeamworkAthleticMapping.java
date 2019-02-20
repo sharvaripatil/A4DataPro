@@ -29,7 +29,6 @@ import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.Material;
-import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
@@ -37,7 +36,7 @@ import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Volume;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 

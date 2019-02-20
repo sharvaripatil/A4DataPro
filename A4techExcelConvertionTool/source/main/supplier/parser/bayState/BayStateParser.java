@@ -55,9 +55,9 @@ public class BayStateParser {
 		  if(!CollectionUtils.isEmpty(existingProduct.getCategories())){
 			  newProduct.setCategories(existingProduct.getCategories());
 		  }
-		  if(!CollectionUtils.isEmpty(existingProduct.getLineNames())){
+		 /* if(!CollectionUtils.isEmpty(existingProduct.getLineNames())){
 			  newProduct.setLineNames(existingProduct.getLineNames());
-		  }
+		  }*/
 		  if(!CollectionUtils.isEmpty(existingProduct.getFobPoints())){
 			  newProduct.setFobPoints(existingProduct.getFobPoints());
 		  }
@@ -75,6 +75,7 @@ public class BayStateParser {
 			  if(StringUtils.isEmpty(colorName)){
 				  continue;
 			  }
+			  colorName = colorName.trim();
 			  colorObj = new Color();
 			  String colorGroup = BayStateColorAndMaterialMapping.getColorGroup(colorName);
 			  if(colorGroup.contains("Combo")){
@@ -162,16 +163,18 @@ public class BayStateParser {
   public ShippingEstimate getProductShipping(String dimensionVal,String weight){
 	  ShippingEstimate shippingEstimateObj = new ShippingEstimate();
 	  Dimensions dimensions = null;
-	  if(!dimensionVal.contains(";")){
+	  if(!dimensionVal.isEmpty() && !dimensionVal.contains(";")){
 		  dimensionVal = dimensionVal.replaceAll("[^0-9x]", "");
 		  dimensions = getShippingDimensions(dimensionVal);
 		  shippingEstimateObj.setDimensions(dimensions);
 	  }
-	  String[] weights = CommonUtility.getValuesOfArray(weight, "/");//150Pcs/6lbs
-	  List<NumberOfItems> listOfNumberOfItems = getShippingNumberofItems(weights[0]);
-	  List<Weight> listOfShippingWt = getShippingWeight(weights[1]);
-	  shippingEstimateObj.setNumberOfItems(listOfNumberOfItems);
-	  shippingEstimateObj.setWeight(listOfShippingWt);
+	  if(!weight.isEmpty()) {
+		  String[] weights = CommonUtility.getValuesOfArray(weight, "/");//150Pcs/6lbs
+		  List<NumberOfItems> listOfNumberOfItems = getShippingNumberofItems(weights[0]);
+		  List<Weight> listOfShippingWt = getShippingWeight(weights[1]);
+		  shippingEstimateObj.setNumberOfItems(listOfNumberOfItems);
+		  shippingEstimateObj.setWeight(listOfShippingWt);
+	  }
 	  return shippingEstimateObj;
   }
   private List<Weight> getShippingWeight(String val){
@@ -390,31 +393,31 @@ private Dimensions getShippingDimensions(String val){
 		} else if(sizeVal.contains("Spatula")){
 			String[] ss = sizeVal.split(";");
 			if(ss[0].contains("Spatula")){
-				sizeVal = ss[0].replaceAll("[^0-9xX/ ]", "");
+				sizeVal = ss[0].replaceAll("[^0-9xX/. ]", "");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Width", "Length", "");
 			} else if(ss[1].contains("Spatula")){
-				sizeVal = ss[1].replaceAll("[^0-9xX/ ]", "");
+				sizeVal = ss[1].replaceAll("[^0-9xX/. ]", "");
 				valuesObj = getOverAllSizeValObj(sizeVal, "Width", "Length", "");
 			}
 		} else if(sizeVal.contains("Pen")){
 			String tempSize = sizeVal.split("Pen:")[1]; 
-			tempSize = tempSize.replaceAll("[^0-9xX/ ]", "");
+			tempSize = tempSize.replaceAll("[^0-9xX/. ]", "");
 			valuesObj = getOverAllSizeValObj(tempSize, "Length", "", "");
 		} else if(sizeVal.contains("Spoon")){
 			String tempSize = sizeVal.split(";")[0]; 
-			tempSize = tempSize.replaceAll("[^0-9xX/ ]", "");
+			tempSize = tempSize.replaceAll("[^0-9xX/. ]", "");
 			valuesObj = getOverAllSizeValObj(tempSize, "Length", "", "");
 		} else if(sizeVal.contains("H") && sizeVal.contains("W")){
-			sizeVal = sizeVal.replaceAll("[^0-9xX/ ]", "");
+			sizeVal = sizeVal.replaceAll("[^0-9xX/. ]", "");
 			valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Width", "Length");
 		} else if(sizeVal.contains("H")){
-			sizeVal = sizeVal.replaceAll("[^0-9xX/ ]", "");
+			sizeVal = sizeVal.replaceAll("[^0-9xX/. ]", "");
 			valuesObj = getOverAllSizeValObj(sizeVal, "Height", "Length", "");
 		} else if(sizeVal.contains("W")){
-			sizeVal = sizeVal.replaceAll("[^0-9xX/ ]", "");
+			sizeVal = sizeVal.replaceAll("[^0-9xX/. ]", "");
 			valuesObj = getOverAllSizeValObj(sizeVal, "Width", "Length", "");
 		} else {
-			sizeVal = sizeVal.replaceAll("[^0-9xX/ ]", "");
+			sizeVal = sizeVal.replaceAll("[^0-9xX/. ]", "");
 			valuesObj = getOverAllSizeValObj(sizeVal, "Length", "", "");
 		}
 		valuesList.add(valuesObj);
@@ -448,13 +451,15 @@ private Dimensions getShippingDimensions(String val){
 			 listOfValue.add(valObj1);
 		     listOfValue.add(valObj2);
 		} else if(values.length == ApplicationConstants.CONST_INT_VALUE_THREE){
-			 valObj1 = getValueObj(values[0].trim(), unit1, "in");
-			 valObj2 = getValueObj(values[1].trim(),unit2, "in");
+			 if(!StringUtils.isEmpty(values[0].trim())){
+				 valObj1 = getValueObj(values[0].trim(), unit1, "in");
+				 listOfValue.add(valObj1);
+			 }
 			 if(!StringUtils.isEmpty(values[2].trim())){
 				 valObj3 = getValueObj(values[2].trim(), unit3, "in");
 				 listOfValue.add(valObj3);
 			 }
-			 listOfValue.add(valObj1);
+			 valObj2 = getValueObj(values[1].trim(),unit2, "in");
 		     listOfValue.add(valObj2);
 		}
 		 Values valuesObj = new Values(); 
@@ -480,11 +485,24 @@ private Dimensions getShippingDimensions(String val){
 	public List<Image> getProductImages(String imgUrl){
 		List<Image> imageList = new ArrayList<>();
 		Image imageObj = new Image();
-		imageObj.setImageURL(imgUrl);
-		imageObj.setRank(ApplicationConstants.CONST_INT_VALUE_ONE);
-		imageObj.setIsPrimary(ApplicationConstants.CONST_BOOLEAN_TRUE);
-        imageObj.setDescription("");
-		imageList.add(imageObj);
+		boolean isProperUrl = false;
+		if(CommonUtility.isImageExist(imgUrl)) {// check original url value
+			isProperUrl = true;
+		}
+		if(isProperUrl == false) {
+			imgUrl = imgUrl.replaceAll("http", "https");
+			if(CommonUtility.isImageExist(imgUrl)) {
+				isProperUrl = true;
+			}
+		}
+		
+		if(isProperUrl) {
+			imageObj.setImageURL(imgUrl);
+			imageObj.setRank(ApplicationConstants.CONST_INT_VALUE_ONE);
+			imageObj.setIsPrimary(ApplicationConstants.CONST_BOOLEAN_TRUE);
+	        imageObj.setDescription("");
+			imageList.add(imageObj);
+		}
 		return imageList;
 	}
 	public List<Option> getProductOptions(String optionvalue,String optionType){

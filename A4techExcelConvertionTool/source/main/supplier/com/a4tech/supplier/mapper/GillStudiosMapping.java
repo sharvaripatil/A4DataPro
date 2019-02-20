@@ -1,7 +1,6 @@
 package com.a4tech.supplier.mapper;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,18 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import parser.gillstudios.GillStudiosAttributeParser;
-import parser.gillstudios.GillStudiosImprintMethodParser;
-import parser.gillstudios.GillStudiosLookupData;
-import parser.gillstudios.GillStudiosPriceGridParser;
-
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.Color;
-import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintLocation;
@@ -51,10 +44,15 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import parser.gillstudios.GillStudiosAttributeParser;
+import parser.gillstudios.GillStudiosImprintMethodParser;
+import parser.gillstudios.GillStudiosLookupData;
+import parser.gillstudios.GillStudiosPriceGridParser;
 
 
 public class GillStudiosMapping implements IExcelParser{

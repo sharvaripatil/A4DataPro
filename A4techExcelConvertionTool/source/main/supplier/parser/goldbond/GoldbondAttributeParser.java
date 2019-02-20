@@ -3,11 +3,14 @@ package parser.goldbond;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.AdditionalLocation;
@@ -44,7 +47,9 @@ public class GoldbondAttributeParser {
 	String pattern_remove_specialSymbols = "[^0-9.xX/\\- ]";
 	private GoldbondPriceGridParser gbPriceGridParser;
 	private LookupServiceData lookupServiceData;
+	private ProductDataStore productDataStore;
 	private static List<String> lookupFobPoints = null;
+	private Logger _LOGGER = Logger.getLogger(GoldbondAttributeParser.class);
 	public Product keepExistingProductData(Product existingProduct){
 		//Please keep the Categories,Images and Themes for existing products.
 		Product newProduct = new Product();
@@ -130,28 +135,34 @@ public class GoldbondAttributeParser {
 		    existingProduct.setPriceGrids(existingPriceGrid);
 		return existingProduct;
 	}
-	public List<Color> getProductColors(String colors){
+	public List<Color> getProductColors(String colors,Integer asiNumber){
 		  String[] allColors = colors.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
 		  allColors = CommonUtility.removeDuplicateValues(allColors);
 		 // List<String> clrs = new ArrayList<>(new HashSet<>(c))
 		  List<Color> listOfColors = new ArrayList<>();
 		  Color colorObj = null;
-		  for (String colorName : allColors) {
-			  colorObj = new Color();
-			     String alias = colorName;
-			     colorName = colorName.replaceAll("\\(.*?\\)", "").trim();
-			     String colorGroup = GoldbondColorAndImprintMethodMapping.getColorGroup(colorName);
-			     if(colorGroup == null){
-			    	 colorGroup = "Other";
-			     }
-			  if(colorGroup.contains("Combo")){
-				  colorObj = getColorCombo(colorGroup, alias, ":");
-			  } else{
-				  colorObj.setName(colorGroup);
-				  colorObj.setAlias(alias);
-			  }
-			  listOfColors.add(colorObj);
-		}
+		  Map<String, String> productColorsMap = productDataStore.getProductColors(asiNumber);
+		  if(!CollectionUtils.isEmpty(productColorsMap)) {
+			  for (String colorName : allColors) {
+				  colorObj = new Color();
+				     String alias = colorName;
+				     colorName = colorName.replaceAll("\\(.*?\\)", "").trim();
+				     String colorGroup = productColorsMap.get(colorName);
+				     if(colorGroup == null){
+				    	 colorGroup = "Other";
+				     }
+				  if(colorGroup.contains("Combo")){
+					  colorObj = getColorCombo(colorGroup, alias, ":");
+				  } else{
+					  colorObj.setName(colorGroup);
+					  colorObj.setAlias(alias);
+				  }
+				  listOfColors.add(colorObj);
+			}
+		  } else {
+			  _LOGGER.error("Product Colors are not available in DB");
+		  }
+		  
 		return listOfColors;
 	}
 	public Size getProductSize(String sizeValues){
@@ -1314,5 +1325,13 @@ public class GoldbondAttributeParser {
 	public void setLookupServiceData(LookupServiceData lookupServiceData) {
 		this.lookupServiceData = lookupServiceData;
 	}	
+	public ProductDataStore getProductDataStore() {
+		return productDataStore;
+	}
+
+	public void setProductDataStore(ProductDataStore productDataStore) {
+		this.productDataStore = productDataStore;
+	}
+
 
 }

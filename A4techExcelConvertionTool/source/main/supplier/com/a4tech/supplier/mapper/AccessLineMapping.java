@@ -15,12 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import parser.AccessLine.AccessLineAttributeParser;
-import parser.AccessLine.AccessLineConstants;
-import parser.AccessLine.AccessLinePriceGridParserr;
-import parser.AccessLine.ColorParser;
-import parser.primeline.PrimeLineConstants;
-
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
@@ -29,7 +23,6 @@ import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.FOBPoint;
-import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Origin;
 import com.a4tech.product.model.Packaging;
@@ -42,10 +35,15 @@ import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.RushTimeValue;
 import com.a4tech.product.model.ShippingEstimate;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import parser.AccessLine.AccessLineAttributeParser;
+import parser.AccessLine.AccessLineConstants;
+import parser.AccessLine.AccessLinePriceGridParserr;
+import parser.AccessLine.ColorParser;
 
 public class AccessLineMapping implements IExcelParser{
 private static final Logger _LOGGER = Logger.getLogger(AccessLineMapping.class);

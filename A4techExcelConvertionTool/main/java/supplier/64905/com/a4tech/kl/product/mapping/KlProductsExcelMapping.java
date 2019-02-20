@@ -22,7 +22,6 @@ import com.a4tech.kl.product.parser.KlSizeParser;
 import com.a4tech.product.criteria.parser.ProductImprintMethodParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
-import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.Inventory;
@@ -38,7 +37,7 @@ import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.Samples;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 

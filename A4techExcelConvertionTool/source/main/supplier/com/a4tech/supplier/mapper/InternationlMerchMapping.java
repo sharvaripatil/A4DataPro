@@ -35,12 +35,11 @@ import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 import parser.InternationalMerchConcepts.MerchAttributeParser;
-import parser.InternationalMerchConcepts.MerchColorMapping;
 
 public class InternationlMerchMapping implements IExcelParser{
 	

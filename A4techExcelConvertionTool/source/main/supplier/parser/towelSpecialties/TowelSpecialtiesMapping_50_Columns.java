@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -25,7 +24,6 @@ import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.AvailableVariations;
-import com.a4tech.product.model.Color;
 import com.a4tech.product.model.ImprintMethod;
 import com.a4tech.product.model.ImprintSize;
 import com.a4tech.product.model.PriceGrid;
@@ -34,13 +32,9 @@ import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Volume;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
-
-import parser.towelSpecialties.TowelSpecAttributeParser;
-import parser.towelSpecialties.TowelSpecPriceGridParser;
-import parser.towelSpecialties.TowelSpecQtyAndColorMapping;
 
 public class TowelSpecialtiesMapping_50_Columns implements IExcelParser{
 	

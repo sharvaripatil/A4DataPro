@@ -1,51 +1,8 @@
 package com.a4tech.supplier.mapper;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-
-import parser.EdwardsGarment.EdwardGarmentPriceGridParser;
-import parser.EdwardsGarment.EdwardsGarmentAttributeParser;
 
 import com.a4tech.excel.service.IExcelParser;
-import com.a4tech.lookup.service.LookupServiceData;
-import com.a4tech.lookup.service.restService.LookupRestService;
-import com.a4tech.product.dao.service.ProductDao;
-import com.a4tech.product.model.Apparel;
-import com.a4tech.product.model.Availability;
-import com.a4tech.product.model.Color;
-import com.a4tech.product.model.Dimension;
-import com.a4tech.product.model.Image;
-import com.a4tech.product.model.ImprintMethod;
-import com.a4tech.product.model.Material;
-import com.a4tech.product.model.Price;
-import com.a4tech.product.model.PriceConfiguration;
-import com.a4tech.product.model.PriceGrid;
-import com.a4tech.product.model.Product;
-import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.model.ProductSkus;
-import com.a4tech.product.model.ShippingEstimate;
-import com.a4tech.product.model.Size;
-import com.a4tech.product.model.Value;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
-import com.a4tech.util.ApplicationConstants;
-import com.a4tech.util.CommonUtility;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class EdwardsGarmentMappingRevised implements IExcelParser{
 

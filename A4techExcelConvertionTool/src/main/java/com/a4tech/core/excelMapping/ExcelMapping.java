@@ -61,8 +61,8 @@ import com.a4tech.product.model.Samples;
 import com.a4tech.product.model.Shape;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
-import com.a4tech.service.loginImpl.LoginServiceImpl;
+import com.a4tech.product.service.imple.LoginServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

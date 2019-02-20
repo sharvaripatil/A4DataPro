@@ -24,15 +24,15 @@
 	 </bean>
 	<!-- cron Job details -->
       <bean id="ftpServerCronJobDetails" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
-      	<property name="jobClass" value="com.a4tech.scheduler.FtpServerScheduler"/>
+      	<property name="jobClass" value="com.a4tech.ftp.scheduler.FtpServerScheduler"/>
       	<property name="durability" value="true"></property>
       </bean>
       <!-- <bean id="ftpServerFailureCronJobDetails" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
-      	<property name="jobClass" value="com.a4tech.scheduler.FtpCheckingSchedular"/>
+      	<property name="jobClass" value="com.a4tech.ftp.scheduler.FtpCheckingSchedular"/>
       	<property name="durability" value="true"></property>
       </bean> -->
       <bean id="fileMovesCronJobDetails" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
-      	<property name="jobClass" value="com.a4tech.scheduler.FilesMoveScheduler"/>
+      	<property name="jobClass" value="com.a4tech.ftp.scheduler.FilesMoveScheduler"/>
       	<property name="durability" value="true"></property>
       </bean>		
     <!-- Scheduler factory bean to glue together jobDetails and triggers to Configure Quartz Scheduler -->
@@ -52,7 +52,7 @@
     	</property>
     </bean>
     
-    <!-- <bean id="ftpServerSchedulerId" class="com.a4tech.scheduler.FtpServerScheduler">
+    <!-- <bean id="ftpServerSchedulerId" class="com.a4tech.ftp.scheduler.FtpServerScheduler">
     		<property name="ftpDownloadFiles" ref="ftpFilesDownloadIds"/>
     </bean> -->
    

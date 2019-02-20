@@ -19,7 +19,7 @@ import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 

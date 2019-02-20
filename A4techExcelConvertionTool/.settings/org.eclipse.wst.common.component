@@ -13,7 +13,6 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/32125"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/64905"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/Sage"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/USBProducts"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/main/java/supplier/JulyData"/>

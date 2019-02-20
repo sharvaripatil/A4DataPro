@@ -233,7 +233,7 @@ public class ExcelFactory {
 			  return fitsAccessoriesMapping;
 		  }else if(name.equalsIgnoreCase("gempiresMapping") || name.equals("55610")){
 			  return gempiresMapping;
-		  } else if(name.equals("38980") || name.equalsIgnoreCase("bayState")){
+		  } else if(name.equals("38980") || name.equals("35730") || name.equalsIgnoreCase("bayState")){
 			  return baysStateMapping;
 		  } else if(name.equalsIgnoreCase("maxplusmapping") || name.equals("69718")){
 			  return maxplusmapping;
