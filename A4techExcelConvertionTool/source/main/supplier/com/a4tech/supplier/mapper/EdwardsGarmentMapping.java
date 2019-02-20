@@ -256,7 +256,7 @@ while (iterator.hasNext()) {
 										   HashSet<String> tempSetSZ=new HashSet<>();
 										   tempSetSZ=(HashSet<String>) getSizeClrList[1];
 										   listOfsizes=new ArrayList<String>(tempSetSZ);
-										   
+										        
 										    colorValuee=String.join(",", listOfcolor);
 										    sizeValue= String.join(",",  listOfsizes);
 										    if(!StringUtils.isEmpty(sizeValue) && !sizeValue.equals("0")){
@@ -266,7 +266,7 @@ while (iterator.hasNext()) {
 														 
 											   }else{
 												  
-												   priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
+												    priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
 													priceGrid.setDescription("");
 													priceGrid.setPriceIncludes("");
 													priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_FALSE);
@@ -920,19 +920,47 @@ public boolean isRepeateColumn(int columnIndex){
 	   }
 	public static String removeSpecialChar(String tempValue){
 		try{
-		tempValue=tempValue.replaceAll("(</p>|<p>| <ul>|&rdquo;|&nbsp;|&ldquo;|<span style=color: #ff0000; font-size: small;>| <ul> |<li>|"
+			//String pattern_remove_specialSymbols = "[^0-9.xX/\\- ]";
+			//tempValue = tempValue.replaceAll("\\(.*\\)", "");
+			//tempValue = tempValue.replaceAll(pattern_remove_specialSymbols, "");
+			
+			tempValue = tempValue.replaceAll("\\<.*?\\>", " ");
+	     /*	tempValue=tempValue.replaceAll("(</p>|<p>| <ul>|<a href=\"{$base_url}product/3530\">| <a href=\"{$base_url}product/2432\">|<a href=\"{$base_url}product/2530\">|<a href=\"{$base_url}product/2534\">|<a href=\"{$base_url}product/2634\">|<a href=\"{$base_url}product/2680\">|<a href=\"{$base_url}product/T002\">|<a href=\"{$base_url}product/T006\">|<a href=\"{$base_url}product/T008\">| <a href=\"{$base_url}product/SD01\">"
+				+ "&rdquo;|&nbsp;|&ldquo;|<span style=color: #ff0000; font-size: small;>| <ul> |<li>|"
 				+ "<span style=color: #ff0000;>|</span style=color: #ff0000;>|<em>|</em>|</strong>|<strong>|</span>|<span>|</li>|</ul>|"
 				+ "<p class=p1>|<hr>|<STRONG>|</STRONG>|<font color=\"b5b8b9\">|</font>|</strong>|<strong>|<i>|</i>|</a>|</a>|"
 				+ "<font color=\"b31b34\">|<BR>|</BR>|<br>|</br>| ¡|ñ|!|<font color=\"ffffff\">|<FONT>|</FONT>|<hr>)", "");
-		tempValue=tempValue.replaceAll("\\(","");
+		*/
+			
+			tempValue=tempValue.replaceAll("\\(","");
 		tempValue=tempValue.replaceAll("\\)","");
 		tempValue=tempValue.replaceAll(">","");
 		tempValue=tempValue.replaceAll("<","");
 		tempValue=tempValue.replaceAll("\\{","");
 		tempValue=tempValue.replaceAll("\\}","");
 		tempValue=tempValue.replaceAll("~","");
+		
+		
 		//tempValue=tempValue.replaceAll("//","");
-		tempValue=tempValue.replace("a href=","");
+		//tempValue=tempValue.replaceAll("a href=","");
+		tempValue=tempValue.replaceAll("&#8482;","™");
+		tempValue=tempValue.replaceAll("&#8220;","“");
+		tempValue=tempValue.replaceAll("&#8221;","\"");
+		tempValue=tempValue.replaceAll("&#8217;","’");
+		tempValue=tempValue.replaceAll("#8530","");
+		tempValue=tempValue.replaceAll("#8532","");
+		tempValue=tempValue.replaceAll("#6530","");
+		tempValue=tempValue.replaceAll("#3530","");
+		tempValue=tempValue.replaceAll("#3530","");
+		tempValue=tempValue.replaceAll("#2432","");
+		tempValue=tempValue.replaceAll("#2530","");
+		tempValue=tempValue.replaceAll("#2534","");
+		tempValue=tempValue.replaceAll("#2634","");
+		tempValue=tempValue.replaceAll("#2680","");
+		tempValue=tempValue.replaceAll("#T002","");
+		tempValue=tempValue.replaceAll("#T006","");
+		tempValue=tempValue.replaceAll("#T008","");
+		tempValue=tempValue.replaceAll("#SD01","");
 		//tempValue=tempValue.replaceAll("{$base_url}","");//{$base_url}
 		}catch(Exception e){
 			_LOGGER.error("error for replacing description  chars"+e.getMessage());

@@ -276,7 +276,7 @@ public class SunGraphixRevisedMapping implements IExcelParser{
 					String lineName = cell.getStringCellValue();
 					if (isLineNameOrTradeName(lineName)) {
 						if (lineName.equalsIgnoreCase("Filofax")) {//
-							List<String> listOfLineNames = Arrays.asList("Filofax (R)");
+							List<String> listOfLineNames = Arrays.asList("Filofax®");
 							productExcelObj.setLineNames(listOfLineNames);
 						}else{
 							List<String> listOfLineNames = Arrays.asList("Letts");
