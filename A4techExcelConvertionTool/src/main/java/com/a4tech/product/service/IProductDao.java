@@ -7,6 +7,7 @@ import com.a4tech.core.model.ExternalAPIResponse;
 import com.a4tech.ftp.model.FtpLoginBean;
 import com.a4tech.product.dao.entity.BaseSupplierLoginDetails;
 import com.a4tech.product.dao.entity.SupplierLoginDetails;
+import com.a4tech.product.dao.entity.SupplierProductColors;
 
 public interface IProductDao {
 	public void 		save(ExternalAPIResponse errors ,String productNo ,Integer asiNumber);
@@ -20,5 +21,7 @@ public interface IProductDao {
 	public boolean 		isASINumberAvailable(String asiNumber,String environmentType);
 	public BaseSupplierLoginDetails getSupplierLoginDetailsBase(String asiNumber,String type);
 	public int         getSupplierColumnsCount(String asiNumber);
+	public List<SupplierProductColors> getSupplierColorsByAsiNumber(Integer asiNumber);
+	
 	
 }

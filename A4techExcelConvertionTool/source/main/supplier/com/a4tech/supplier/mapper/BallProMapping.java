@@ -15,12 +15,6 @@ import parser.ballPro.BallProImprintChargesMapping;
 import parser.ballPro.BallProPricingMapping;
 import parser.ballPro.BallProProductInformationMapping;
 import parser.ballPro.BallProShippingMapping;
-import parser.proGolf.ProGolfImagesMapping;
-import parser.proGolf.ProGolfImprintChargesMapping;
-import parser.proGolf.ProGolfPricingMapping;
-import parser.proGolf.ProGolfProductInformationMapping;
-import parser.proGolf.ProGolfShippingMapping;
-import parser.proGolf.ProGolfVariationMapping;
 
 public class BallProMapping implements IExcelParser{
 	private BallProProductInformationMapping   ballProProductInfoMapping;

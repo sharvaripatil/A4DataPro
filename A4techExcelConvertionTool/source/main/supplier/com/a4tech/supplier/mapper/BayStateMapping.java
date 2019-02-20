@@ -17,7 +17,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.a4tech.core.errors.ErrorMessageList;
@@ -37,13 +36,12 @@ import com.a4tech.product.model.Packaging;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
-import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductSkus;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -95,6 +93,7 @@ public class BayStateMapping implements IExcelParser{
 		 String productNumber = "";
 		 String color = "";
 		 StringBuilder colorsList = new StringBuilder();
+		 String description = "";
 		while (iterator.hasNext()) {
 			try{
 			Row nextRow = iterator.next();
@@ -126,8 +125,17 @@ public class BayStateMapping implements IExcelParser{
 					 if(!productXids.contains(xid)){
 						 if(nextRow.getRowNum() != 1){
 							 System.out.println("Java object converted to JSON String, written to file");
-							     
-						   productExcelObj.setSummary(CommonUtility.getStringLimitedChars(productSummary.toString(), 130));
+							    
+							 if(!StringUtils.isEmpty(productSummary.toString())) {
+								 productExcelObj.setSummary(CommonUtility.getStringLimitedChars(productSummary.toString(), 130));
+							 } else {
+								 if(description.contains(".")) {
+									 productExcelObj.setSummary(description.substring(0, description.indexOf(".")+1));
+								 } else {
+									 productExcelObj.setSummary(description);
+								 }
+							 }
+						  
 						     /*if(priceGrids.size() == 1){
 						    	 priceGrids = removeBasePriceConfig(priceGrids);
 						     }*/
@@ -223,8 +231,11 @@ public class BayStateMapping implements IExcelParser{
 					if(name.contains("|")){
 						name = name.replaceAll("\\|", "");
 					}
-					if(name.contains("™")){
-						name = name.replaceAll("™", "a,");
+					if(name.contains("â„¢")){
+						name = name.replaceAll("â„¢", "a,");
+					}
+					if(name.contains("~")) {
+						name = name.replaceAll("~", "");
 					}
 					name = CommonUtility.removeNonAlphaNumericInBeggingCharacter(name);
 					name = CommonUtility.getStringLimitedChars(name, 60);
@@ -232,7 +243,8 @@ public class BayStateMapping implements IExcelParser{
 				    break;
 				case 4:// description
 					String desc = cell.getStringCellValue();
-					desc = desc.replaceAll(";", ".");
+					desc = getFinalDescription(desc);
+					description = desc;
 					productExcelObj.setDescription(desc);
 				    break;
 				case 5:// Callout(Summary)
@@ -267,7 +279,7 @@ public class BayStateMapping implements IExcelParser{
 				 }
 					break;
 				case 9: // productionTime
-					String prdTime = cell.getStringCellValue();
+					String prdTime = CommonUtility.getCellValueStrinOrInt(cell);
 					if(!StringUtils.isEmpty(prdTime)){
 						List<ProductionTime> listOfProductionTime = bayStateParser.getProductionTime(prdTime);
 						productConfigObj.setProductionTime(listOfProductionTime);
@@ -334,7 +346,7 @@ public class BayStateMapping implements IExcelParser{
 				    break;
 				case 18://AdditionalImprintRunningCharge
 					String addImprintRunnChare = cell.getStringCellValue();
-					if(!StringUtils.isEmpty(addImprintRunnChare) && !addImprintRunnChare.equals("N/A")){
+					if(!StringUtils.isEmpty(maxImprColors) && !StringUtils.isEmpty(addImprintRunnChare) && !addImprintRunnChare.equals("N/A")){
 						addImprintRunnChare = addImprintRunnChare.replaceAll("[^0-9.]", "");
 						String upchargeName = "Additional Color (max x colors):"+maxImprColors;
 								priceGrids = bayStatePriceGridParser.getUpchargePriceGrid("1", addImprintRunnChare, "G",
@@ -500,7 +512,16 @@ public class BayStateMapping implements IExcelParser{
 		}
 		workbook.close();
 		
-		productExcelObj.setSummary(CommonUtility.getStringLimitedChars(productSummary.toString(), 130));
+		 if(!StringUtils.isEmpty(productSummary.toString())) {
+			 productExcelObj.setSummary(CommonUtility.getStringLimitedChars(productSummary.toString(), 130));
+		 } else {
+			 if(description.contains(".")) {
+				 productExcelObj.setSummary(description.substring(0, description.indexOf(".")+1));
+			 } else {
+				 productExcelObj.setSummary(description);
+			 }
+		 }
+	  
 	     /*if(priceGrids.size() == 1){
 	    	 priceGrids = removeBasePriceConfig(priceGrids);
 	     }*/
@@ -520,6 +541,19 @@ public class BayStateMapping implements IExcelParser{
 		 	productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
 		 	productExcelObj.setProductRelationSkus(listProductSkus);
+		 	
+		 	
+		 	String descTemp="";
+		 	descTemp=productExcelObj.getDescription();
+		 	if(descTemp.contains("?")) {
+		 		descTemp = descTemp.replaceAll("\\?", "");
+		 		System.out.println(descTemp);
+		 		productExcelObj.setDescription(descTemp);
+			}
+		 	
+		 	
+		 	
+		 	
 		 		int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber ,batchId, environmentType);
 			 	if(num ==1){
 			 		numOfProductsSuccess.add("1");
@@ -589,6 +623,23 @@ public class BayStateMapping implements IExcelParser{
 			}
 		}
 		return newPricegrid;
+	}
+	private String getFinalDescription(String desc) {
+		desc = desc.replaceAll(";", ".");
+		if(desc.contains("â")) {
+			desc = desc.replaceAll("â", "");
+		}
+		if(desc.contains("€")) {
+			desc = desc.replaceAll("€", "");
+		}
+		
+		/*if(desc.contains("â€")) {
+			desc = desc.replaceAll("â€", "");
+		}*/
+		if(desc.contains("?")) {
+			desc = desc.replaceAll("\\?", "");
+		}
+		return desc;
 	}
 	private boolean islaserEngravedAvaialble(List<ImprintMethod> imprintMethodList,String imprintMethodName){
 		return imprintMethodList.stream().filter(method -> method.getType().equals(imprintMethodName)).findAny()

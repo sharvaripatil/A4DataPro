@@ -28,8 +28,7 @@ import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.service.ILoginService;
 import com.a4tech.product.service.IMailService;
-import com.a4tech.product.service.IProductService;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.a4tech.util.ConvertCsvToExcel;
@@ -39,8 +38,7 @@ import com.a4tech.util.LookupData;
 @RequestMapping({ "/", "/uploadFile.htm" })
 public class FileUpload {
 
-	@Autowired
-	private IProductService               productService;
+	
 	@Autowired
 	private IMailService                  mailService;
 	private String                accessToken = null;
@@ -212,13 +210,7 @@ public class FileUpload {
 		String finalResult = numOfProductsSuccess.size() + ",0";
 		return finalResult;
 	}
-	public IProductService getProductService() {
-		return productService;
-	}
-
-	public void setProductService(IProductService productService) {
-		this.productService = productService;
-	}
+	
 
 	public ProductDao getProductDao() {
 		return productDao;

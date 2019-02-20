@@ -18,10 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import parser.sunGraphix.SunGraphixAttributeParser;
-import parser.sunGraphix.SunGraphixConstants;
-import parser.sunGraphix.SunGraphixPriceGridParser;
-
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
@@ -47,13 +43,16 @@ import com.a4tech.product.model.ProductSkus;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
-import com.a4tech.product.model.TradeName;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
-import com.a4tech.product.service.postImpl.PostServiceImpl;
+import com.a4tech.product.service.imple.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import parser.sunGraphix.SunGraphixAttributeParser;
+import parser.sunGraphix.SunGraphixConstants;
+import parser.sunGraphix.SunGraphixPriceGridParser;
 
 public class SunGraphixRevisedMapping implements IExcelParser{
 	private static final Logger _LOGGER = Logger.getLogger(SunGraphixRevisedMapping.class);
