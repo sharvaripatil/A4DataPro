@@ -1,4 +1,4 @@
-package com.a4tech.product.service.postImpl;
+package com.a4tech.product.service.imple;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;

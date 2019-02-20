@@ -1,4 +1,4 @@
-package com.a4tech.product.service.postImpl;
+package com.a4tech.product.service.imple;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,15 +19,16 @@ import com.a4tech.core.errors.ErrorMessage;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.core.model.ExternalAPIResponse;
 import com.a4tech.product.dao.entity.ErrorEntity;
+import com.a4tech.product.dao.entity.SupplierProductColors;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Product;
-import com.a4tech.product.service.PostService;
+import com.a4tech.product.service.ProductService;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class PostServiceImpl implements PostService {
+public class PostServiceImpl implements ProductService {
 
 	private Logger _LOGGER = Logger.getLogger(getClass());
 	
@@ -280,6 +281,11 @@ public class PostServiceImpl implements PostService {
 		}
 	 return false;
  }
+    @Override
+	public List<SupplierProductColors> getSupplierColorsByAsiNumber(Integer asiNumber) {
+		return productDao.getSupplierColorsByAsiNumber(asiNumber);
+		
+	}
 	public RestTemplate getRestTemplate() {
 		return restTemplate;
 	}
@@ -309,4 +315,5 @@ public class PostServiceImpl implements PostService {
 	public void setGetProductUrl(String getProductUrl) {
 		this.getProductUrl = getProductUrl;
 	}
+	
 }
