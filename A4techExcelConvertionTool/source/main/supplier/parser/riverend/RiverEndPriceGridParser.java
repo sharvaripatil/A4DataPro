@@ -1,4 +1,4 @@
-package com.a4tech.product.riversend.parser;
+package parser.riverend;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +12,6 @@ import com.a4tech.product.model.PriceConfiguration;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.PriceUnit;
 import com.a4tech.util.ApplicationConstants;
-
 
 public class RiverEndPriceGridParser {
 	

@@ -1,4 +1,5 @@
-package com.a4tech.product.broberry.mapping;
+package com.a4tech.supplier.mapper;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,7 +8,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -19,15 +19,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import parser.broberry.BroberryProductAttributeParser;
+import parser.broberry.BroberryProductMaterialParser;
+
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.excel.service.IExcelParser;
-import com.a4tech.product.broberry.parser.BroberryProductAttributeParser;
-import com.a4tech.product.broberry.parser.BroberryProductMaterialParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
-import com.a4tech.product.model.Image;
 import com.a4tech.product.model.Material;
 import com.a4tech.product.model.Price;
 import com.a4tech.product.model.PriceConfiguration;

@@ -60,6 +60,13 @@ public Product getExistingProductData(Product existingProduct , ProductConfigura
 			if(!CollectionUtils.isEmpty(listCategories)){
 				newProduct.setCategories(listCategories);
 			}
+			
+			//
+			List<Image> images=existingProduct.getImages();
+			if(!CollectionUtils.isEmpty(images)){
+				newProduct.setImages(images);
+			}
+			
 			//themes
 			List<Theme>	themes=existingProductConfig.getThemes();
 			if(!CollectionUtils.isEmpty(themes)){
@@ -650,6 +657,11 @@ public List<Material> getMaterialList(String originalMaterialvalue){
 	}
 
 public List<String> getMaterialType(String value){
+	
+	if(value.toLowerCase().contains("faux")){
+		return new ArrayList<String>();
+	}
+	
 	List<String> listOfLookupMaterials = lookupServiceData.getMaterialValues();
 	List<String> finalMaterialValues = listOfLookupMaterials.stream()
 			                                  .filter(mtrlName -> value.contains(mtrlName))

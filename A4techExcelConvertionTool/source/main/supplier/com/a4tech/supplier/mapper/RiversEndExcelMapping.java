@@ -1,8 +1,7 @@
-package com.a4tech.product.riversend.mapping;
+package com.a4tech.supplier.mapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,14 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import parser.riverend.RiverEndAttributeParser;
+import parser.riverend.RiverEndPriceGridParser;
+
 import com.a4tech.core.errors.ErrorMessageList;
-import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.excel.service.IExcelParser;
-import com.a4tech.product.broberry.mapping.BroberryExcelMapping;
-import com.a4tech.product.broberry.mapping.BroberryExcelMapping.OPTION_SIZES;
-import com.a4tech.product.broberry.parser.BroberryProductAttributeParser;
-import com.a4tech.product.broberry.parser.BroberryProductMaterialParser;
-import com.a4tech.product.broberry.parser.BroberrySkuParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
@@ -42,8 +38,6 @@ import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductSkus;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Volume;
-import com.a4tech.product.riversend.parser.RiverEndAttributeParser;
-import com.a4tech.product.riversend.parser.RiverEndPriceGridParser;
 import com.a4tech.product.service.postImpl.PostServiceImpl;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;

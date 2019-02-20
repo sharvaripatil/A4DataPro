@@ -1,11 +1,8 @@
-package com.a4tech.product.broberry.parser;
+package parser.broberry;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-
-
 
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
@@ -15,7 +12,6 @@ import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.model.BlendMaterial;
 import com.a4tech.product.model.Combo;
 import com.a4tech.product.model.Material;
-import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 public class BroberryProductMaterialParser {

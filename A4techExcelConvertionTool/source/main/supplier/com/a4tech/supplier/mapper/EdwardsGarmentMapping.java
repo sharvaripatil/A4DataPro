@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
@@ -174,6 +175,12 @@ while (iterator.hasNext()) {
 									List<Color> colorList=edwardsGarmentAttributeParser.getProductColors(new ArrayList<String>(colorSet));
 									productConfigObj.setColors(colorList);
 								}
+								
+								 TreeMap<String,HashSet<String>> priceMapSorted= null;
+								 if(!CollectionUtils.isEmpty(priceMapTestMainMap)){//priceMapTestMainMap
+									 priceMapSorted=new TreeMap<String,HashSet<String>>(priceMapTestMainMap);
+									 }
+								
 								if(!CollectionUtils.isEmpty(availSizeClrMap)){
 									HashMap<String , HashSet<String>> availMapTemp=new HashMap<String, HashSet<String>>();
 									availMapTemp=(HashMap)availSizeClrMap.clone();
@@ -181,9 +188,19 @@ while (iterator.hasNext()) {
 									boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
 							
 							if(flag){
+								
+								if(!CollectionUtils.isEmpty(priceMapSorted)){
+							boolean checkAvailPriceFlag=checkAvailOnPricing(availSizeClrMap,priceMapSorted);
+							if(checkAvailPriceFlag){
 							List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availSizeClrMap);
 							productExcelObj.setAvailability(listOfAvailablity);
 							_LOGGER.info("Availability done for product:"+productExcelObj.getExternalProductId());
+							}
+								}else{
+									List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availSizeClrMap);
+									productExcelObj.setAvailability(listOfAvailablity);
+									_LOGGER.info("Availability done for product:"+productExcelObj.getExternalProductId());
+								}
 							}else{
 								_LOGGER.info("No Availability detected for product:"+productExcelObj.getExternalProductId());
 							}
@@ -214,10 +231,10 @@ while (iterator.hasNext()) {
 									}
 									
 									// process pring here
-									 TreeMap<String,HashSet<String>> priceMapSorted= null;
+									/* TreeMap<String,HashSet<String>> priceMapSorted= null;
 									 if(!CollectionUtils.isEmpty(priceMapTestMainMap)){//priceMapTestMainMap
 										 priceMapSorted=new TreeMap<String,HashSet<String>>(priceMapTestMainMap);
-										 }
+										 }*/
 									 if(!CollectionUtils.isEmpty(priceMapSorted)){
 									 List<Price> listOfPricesArr=new ArrayList<Price>();
 									 priceGrids = new ArrayList<PriceGrid>();
@@ -239,7 +256,7 @@ while (iterator.hasNext()) {
 										   HashSet<String> tempSetSZ=new HashSet<>();
 										   tempSetSZ=(HashSet<String>) getSizeClrList[1];
 										   listOfsizes=new ArrayList<String>(tempSetSZ);
-										   
+										        
 										    colorValuee=String.join(",", listOfcolor);
 										    sizeValue= String.join(",",  listOfsizes);
 										    if(!StringUtils.isEmpty(sizeValue) && !sizeValue.equals("0")){
@@ -249,7 +266,7 @@ while (iterator.hasNext()) {
 														 
 											   }else{
 												  
-												   priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
+												    priceGrid.setCurrency(ApplicationConstants.CONST_STRING_CURRENCY_USD);
 													priceGrid.setDescription("");
 													priceGrid.setPriceIncludes("");
 													priceGrid.setIsQUR(ApplicationConstants.CONST_BOOLEAN_FALSE);
@@ -518,11 +535,15 @@ while (iterator.hasNext()) {
 						 if(!StringUtils.isEmpty(keywords)){
 							 keywords=keywords.replace("EDWARDS", "");
 							 keywords=keywords.replace(" ", ",");
+							 keywords=keywords.replace("&", "");
+							 keywords=keywords.trim();
 							 List<String> listOfKeywords = new ArrayList<String>();
 						String tempKeyWrd[]=keywords.split(ApplicationConstants.CONST_DELIMITER_COMMA);
 						listOfKeywords=Arrays.asList(tempKeyWrd);
 						 List<String> listOfKeywords1 = new ArrayList<String>();
 						 for (String string : listOfKeywords) {
+							 
+							 if(!StringUtils.isEmpty(string)){
 								if((listOfKeywords1.size()<30)){
 									string=string.replace("//", "");//\
 									string=string.replace("\\", "");//\
@@ -530,6 +551,9 @@ while (iterator.hasNext()) {
 								}else{
 									break;
 								}
+								
+							 }
+								
 								}
 							
 						productExcelObj.setProductKeywords(listOfKeywords1);
@@ -707,15 +731,32 @@ while (iterator.hasNext()) {
 				List<Color> colorList=edwardsGarmentAttributeParser.getProductColors(new ArrayList<String>(colorSet));
 				productConfigObj.setColors(colorList);
 			}
-			if(!CollectionUtils.isEmpty(availSizeClrMap)){//availMap
+			
+			 TreeMap<String,HashSet<String>> priceMapSorted= null;
+			 if(!CollectionUtils.isEmpty(priceMapTestMainMap)){//priceMapTestMainMap
+				 priceMapSorted=new TreeMap<String,HashSet<String>>(priceMapTestMainMap);
+				 }
+			
+			if(!CollectionUtils.isEmpty(availSizeClrMap)){
 				HashMap<String , HashSet<String>> availMapTemp=new HashMap<String, HashSet<String>>();
 				availMapTemp=(HashMap)availSizeClrMap.clone();
 		//boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
 				boolean flag =edwardsGarmentAttributeParser.getAvailibilityStatus(availMapTemp);
+		
 		if(flag){
+			
+			if(!CollectionUtils.isEmpty(priceMapSorted)){
+		boolean checkAvailPriceFlag=checkAvailOnPricing(availSizeClrMap,priceMapSorted);
+		if(checkAvailPriceFlag){
 		List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availSizeClrMap);
 		productExcelObj.setAvailability(listOfAvailablity);
 		_LOGGER.info("Availability done for product:"+productExcelObj.getExternalProductId());
+		}
+			}else{
+				List<Availability> listOfAvailablity =edwardsGarmentAttributeParser.getProductAvailablity(availSizeClrMap);
+				productExcelObj.setAvailability(listOfAvailablity);
+				_LOGGER.info("Availability done for product:"+productExcelObj.getExternalProductId());
+			}
 		}else{
 			_LOGGER.info("No Availability detected for product:"+productExcelObj.getExternalProductId());
 		}
@@ -746,11 +787,10 @@ while (iterator.hasNext()) {
 				}
 				
 				// process pring here
-				
-				 TreeMap<String,HashSet<String>> priceMapSorted= null;
+				/* TreeMap<String,HashSet<String>> priceMapSorted= null;
 				 if(!CollectionUtils.isEmpty(priceMapTestMainMap)){//priceMapTestMainMap
 					 priceMapSorted=new TreeMap<String,HashSet<String>>(priceMapTestMainMap);
-					 }
+					 }*/
 				 if(!CollectionUtils.isEmpty(priceMapSorted)){
 				 List<Price> listOfPricesArr=new ArrayList<Price>();
 				 priceGrids = new ArrayList<PriceGrid>();
@@ -763,6 +803,7 @@ while (iterator.hasNext()) {
 					   ArrayList<String> listOfsizes=new ArrayList<>();
 					   ArrayList<String> listOfcolor=new ArrayList<>();
 					   HashSet<String> tempSet=new HashSet<String>();
+					 
 					   Object[] getSizeClrList=  getColorSizeValue(tempHashSet);
 					   HashSet<String> tempSetCL=new HashSet<>();
 					   tempSetCL=(HashSet<String>) getSizeClrList[0];
@@ -803,6 +844,7 @@ while (iterator.hasNext()) {
 			productExcelObj.setPriceType("L");
 		    productExcelObj.setPriceGrids(priceGrids);
 		 	productExcelObj.setProductConfigurations(productConfigObj);
+		
 		 	//productExcelObj.setPriceType("L");
 		 	/*_LOGGER.info("Product Data : "
 					+ mapperObj.writeValueAsString(productExcelObj));*/
@@ -878,19 +920,47 @@ public boolean isRepeateColumn(int columnIndex){
 	   }
 	public static String removeSpecialChar(String tempValue){
 		try{
-		tempValue=tempValue.replaceAll("(</p>|<p>| <ul>|&rdquo;|&nbsp;|&ldquo;|<span style=color: #ff0000; font-size: small;>| <ul> |<li>|"
+			//String pattern_remove_specialSymbols = "[^0-9.xX/\\- ]";
+			//tempValue = tempValue.replaceAll("\\(.*\\)", "");
+			//tempValue = tempValue.replaceAll(pattern_remove_specialSymbols, "");
+			
+			tempValue = tempValue.replaceAll("\\<.*?\\>", " ");
+	     /*	tempValue=tempValue.replaceAll("(</p>|<p>| <ul>|<a href=\"{$base_url}product/3530\">| <a href=\"{$base_url}product/2432\">|<a href=\"{$base_url}product/2530\">|<a href=\"{$base_url}product/2534\">|<a href=\"{$base_url}product/2634\">|<a href=\"{$base_url}product/2680\">|<a href=\"{$base_url}product/T002\">|<a href=\"{$base_url}product/T006\">|<a href=\"{$base_url}product/T008\">| <a href=\"{$base_url}product/SD01\">"
+				+ "&rdquo;|&nbsp;|&ldquo;|<span style=color: #ff0000; font-size: small;>| <ul> |<li>|"
 				+ "<span style=color: #ff0000;>|</span style=color: #ff0000;>|<em>|</em>|</strong>|<strong>|</span>|<span>|</li>|</ul>|"
 				+ "<p class=p1>|<hr>|<STRONG>|</STRONG>|<font color=\"b5b8b9\">|</font>|</strong>|<strong>|<i>|</i>|</a>|</a>|"
 				+ "<font color=\"b31b34\">|<BR>|</BR>|<br>|</br>| ¡|ñ|!|<font color=\"ffffff\">|<FONT>|</FONT>|<hr>)", "");
-		tempValue=tempValue.replaceAll("\\(","");
+		*/
+			
+			tempValue=tempValue.replaceAll("\\(","");
 		tempValue=tempValue.replaceAll("\\)","");
 		tempValue=tempValue.replaceAll(">","");
 		tempValue=tempValue.replaceAll("<","");
 		tempValue=tempValue.replaceAll("\\{","");
 		tempValue=tempValue.replaceAll("\\}","");
 		tempValue=tempValue.replaceAll("~","");
+		
+		
 		//tempValue=tempValue.replaceAll("//","");
-		tempValue=tempValue.replace("a href=","");
+		//tempValue=tempValue.replaceAll("a href=","");
+		tempValue=tempValue.replaceAll("&#8482;","™");
+		tempValue=tempValue.replaceAll("&#8220;","“");
+		tempValue=tempValue.replaceAll("&#8221;","\"");
+		tempValue=tempValue.replaceAll("&#8217;","’");
+		tempValue=tempValue.replaceAll("#8530","");
+		tempValue=tempValue.replaceAll("#8532","");
+		tempValue=tempValue.replaceAll("#6530","");
+		tempValue=tempValue.replaceAll("#3530","");
+		tempValue=tempValue.replaceAll("#3530","");
+		tempValue=tempValue.replaceAll("#2432","");
+		tempValue=tempValue.replaceAll("#2530","");
+		tempValue=tempValue.replaceAll("#2534","");
+		tempValue=tempValue.replaceAll("#2634","");
+		tempValue=tempValue.replaceAll("#2680","");
+		tempValue=tempValue.replaceAll("#T002","");
+		tempValue=tempValue.replaceAll("#T006","");
+		tempValue=tempValue.replaceAll("#T008","");
+		tempValue=tempValue.replaceAll("#SD01","");
 		//tempValue=tempValue.replaceAll("{$base_url}","");//{$base_url}
 		}catch(Exception e){
 			_LOGGER.error("error for replacing description  chars"+e.getMessage());
@@ -1279,6 +1349,35 @@ public boolean isRepeateColumn(int columnIndex){
 		}
 		return new Object[]{colorSet,sizeSet};
 	}
+	
+	
+public static boolean checkAvailOnPricing(HashMap<String,HashSet<String>> availMap,TreeMap<String,HashSet<String>> priceMapSorted){
+	boolean flag= true;
+	if(!CollectionUtils.isEmpty(priceMapSorted)){
+		return false;
+	}
+	/*
+		
+		
+		try{
+			Set<String> setTemp1= new HashSet<String>();//tempMap.get(0);
+			Set<String> setTemp2= new HashSet<String>();//tempMap.get(1);
+			setTemp1=availMap.keySet();
+			setTemp2=priceMapSorted.keySet();
+			 if(org.apache.commons.collections.CollectionUtils.isEqualCollection(setTemp1, setTemp2)){
+			 return false;
+			 }
+		}catch(Exception e){
+			_LOGGER.error("Error while comparing avail Map");
+		}
+		return flag;*/
+	return flag;
+		
+    
+	}
+	
+	
+	
 	
 	/*public static HashSet<String> getSizesValue(HashSet<String> oldSet,HashSet<String> newSet){
 		if(CollectionUtils.isEmpty(oldSet)){

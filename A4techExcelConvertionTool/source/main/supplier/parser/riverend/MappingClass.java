@@ -1,6 +1,5 @@
-package com.a4tech.product.riversend.parser;
+package parser.riverend;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 

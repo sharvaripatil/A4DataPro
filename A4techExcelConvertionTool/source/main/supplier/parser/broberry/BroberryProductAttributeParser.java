@@ -1,4 +1,4 @@
-package com.a4tech.product.broberry.parser;
+package parser.broberry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
@@ -16,14 +15,13 @@ import org.springframework.util.StringUtils;
 
 import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.lookup.service.LookupServiceData;
-import com.a4tech.lookup.service.restService.LookupRestService;
-import com.a4tech.product.broberry.mapping.BroberryExcelMapping;
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.AvailableVariations;
 import com.a4tech.product.model.Catalog;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
+import com.a4tech.product.model.Configurations;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.ImprintMethod;
@@ -32,18 +30,15 @@ import com.a4tech.product.model.OptionValue;
 import com.a4tech.product.model.PriceGrid;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.model.ProductConfigurations;
+import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductionTime;
+import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.TradeName;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
-import com.a4tech.product.model.Configurations;
-import com.a4tech.product.model.ProductNumber;
-import com.a4tech.product.model.Size;
-import com.a4tech.product.model.Value;
 import com.a4tech.util.ApplicationConstants;
-
 
 public class BroberryProductAttributeParser {
 	private static final Logger _LOGGER = Logger.getLogger(BroberryProductAttributeParser.class);

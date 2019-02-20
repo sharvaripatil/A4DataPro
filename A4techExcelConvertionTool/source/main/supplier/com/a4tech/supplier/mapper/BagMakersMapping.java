@@ -176,7 +176,7 @@ public class BagMakersMapping implements IExcelParser{
 								 	/*if(xidList.contains(productExcelObj.getExternalProductId().trim())){
 								 		productExcelObj.setAvailability(new ArrayList<Availability>());
 								 	}*/
-								 	productExcelObj.setMakeActiveDate("2019-01-01T00:00:00");//priceConfirmedThru
+								 	//productExcelObj.setMakeActiveDate("2019-01-01T00:00:00");//priceConfirmedThru
 								 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 								 	if(num ==1){
 								 		numOfProductsSuccess.add("1");
@@ -443,14 +443,14 @@ public class BagMakersMapping implements IExcelParser{
 						if(!StringUtils.isEmpty(keywords)){
 						List<String> productKeywords = CommonUtility.getStringAsList(keywords,
                                 ApplicationConstants.CONST_DELIMITER_COMMA);
-						productExcelObj.setProductKeywords(productKeywords);
-						/*List<String> productKeywordsTemp=new ArrayList<String>();
+						
+						List<String> productKeywordsTemp=new ArrayList<String>();
 						for (String keyword : productKeywords) {
 							if(keyword.length()<=30){
 								productKeywordsTemp.add(keyword);
 							}
-						}*/
-						
+						}
+						productExcelObj.setProductKeywords(productKeywordsTemp);
 						}
 						break;
 					case  21://Keywords (for Search online)
@@ -495,7 +495,7 @@ public class BagMakersMapping implements IExcelParser{
 						break;
 					case  23://Plate/Screen Charge
 						plateScreenCharge=CommonUtility.getCellValueDouble(cell);
-						if(StringUtils.isEmpty(plateScreenCharge)|| plateScreenCharge.trim().contains("N/A") || plateScreenChargeCode.trim().contains("Free")){
+						if(StringUtils.isEmpty(plateScreenCharge)|| plateScreenCharge.trim().contains("N/A") || plateScreenCharge.trim().contains("Free")){
 							plateScreenCharge="";
 						}
 						
@@ -508,7 +508,7 @@ public class BagMakersMapping implements IExcelParser{
 						break;
 					case  25://REORDER Plate/Screen Charge
 						 plateReOrderCharge=CommonUtility.getCellValueDouble(cell);
-						 if(StringUtils.isEmpty(plateReOrderCharge)|| plateReOrderCharge.trim().contains("N/A") || plateScreenChargeCode.trim().contains("Free")){
+						 if(StringUtils.isEmpty(plateReOrderCharge)|| plateReOrderCharge.trim().contains("N/A") || plateReOrderCharge.trim().contains("Free")){
 							 plateReOrderCharge="";
 							}
 						break;
@@ -687,7 +687,7 @@ public class BagMakersMapping implements IExcelParser{
 						break;
 					case  44://Extra Location Run Charge
 						extraLocRunChrg = CommonUtility.getCellValueDouble(cell);
-						 if(extraLocRunChrg.trim().contains("N/A")){
+						 if(extraLocRunChrg.trim().contains("N/A") || extraLocRunChrg.contains("Included")){
 							 extraLocRunChrg="";
 						 }
 						break;
@@ -711,7 +711,7 @@ public class BagMakersMapping implements IExcelParser{
 						break;
 					case  46://Extra Color/Location Screen/Plate Charge
 						extraLocColorScreenChrg = CommonUtility.getCellValueDouble(cell);
-						 if(extraLocColorScreenChrg.trim().contains("N/A")){
+						 if(extraLocColorScreenChrg.trim().contains("N/A") || extraLocColorScreenChrg.contains("Included")){
 							 extraLocColorScreenChrg="";
 						 }
 						break;
@@ -801,7 +801,7 @@ public class BagMakersMapping implements IExcelParser{
 	 		productExcelObj.setAvailability(new ArrayList<Availability>());
 	 	}*/
 	 	//productExcelObj.setMakeActiveDate("2019-01-01T00:00:00");//priceConfirmedThru
-	 	productExcelObj.setMakeActiveDate("2019-01-01T00:00:00");
+	 	//productExcelObj.setMakeActiveDate("2019-01-01T00:00:00");
 	 	int num = postServiceImpl.postProduct(accessToken, productExcelObj,asiNumber,batchId, environmentType);
 	 	if(num ==1){
 	 		numOfProductsSuccess.add("1");

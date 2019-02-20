@@ -1,10 +1,10 @@
-package com.a4tech.product.broberry.parser;
+package parser.broberry;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Inventory;
@@ -15,8 +15,8 @@ import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.util.ApplicationConstants;
 
-
 public class BroberrySkuParser {
+
 	private static final Logger _LOGGER = Logger.getLogger(BroberrySkuParser.class);
 
 	
@@ -99,4 +99,5 @@ public class BroberrySkuParser {
 	return existingProductSkuList;
 	}
 	
-}	
+
+}

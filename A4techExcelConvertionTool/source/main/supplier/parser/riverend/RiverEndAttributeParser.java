@@ -1,4 +1,4 @@
-package com.a4tech.product.riversend.parser;
+package parser.riverend;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,12 +8,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.dataStore.ProductDataStore;
-import com.a4tech.product.broberry.parser.BroberryProductAttributeParser;
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Combo;
-import com.a4tech.product.model.Dimension;
 import com.a4tech.product.model.Image;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
@@ -23,7 +20,7 @@ import com.a4tech.util.ApplicationConstants;
 
 public class RiverEndAttributeParser {
 
-	private static final Logger _LOGGER = Logger.getLogger(BroberryProductAttributeParser.class);
+	private static final Logger _LOGGER = Logger.getLogger(RiverEndAttributeParser.class);
 	
 	public List<Color> getColorCriteria(Set <String> colorSet) {
 		Color colorObj = null;
