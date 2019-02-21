@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.model.Product;
+import com.a4tech.supplier.service.ISupplierParser;
 
 import parser.ballPro.BallProImagesMapping;
 import parser.ballPro.BallProImprintChargesMapping;
@@ -16,7 +16,7 @@ import parser.ballPro.BallProPricingMapping;
 import parser.ballPro.BallProProductInformationMapping;
 import parser.ballPro.BallProShippingMapping;
 
-public class BallProMapping implements IExcelParser{
+public class BallProMapping implements ISupplierParser{
 	private BallProProductInformationMapping   ballProProductInfoMapping;
 	private BallProImprintChargesMapping       ballProImprintChargesMapping;
 	private BallProPricingMapping 			   ballProProductPricingMapping;

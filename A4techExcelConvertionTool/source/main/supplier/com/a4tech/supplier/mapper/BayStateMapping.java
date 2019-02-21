@@ -19,9 +19,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.core.errors.ErrorMessageList;
-import com.a4tech.dataStore.ProductDataStore;
-import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.core.model.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.Apparel;
@@ -42,13 +40,15 @@ import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.dataStore.SupplierDataStore;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 import parser.bayState.BayStateParser;
 import parser.bayState.BayStatePriceGridParser;
 
-public class BayStateMapping implements IExcelParser{
+public class BayStateMapping implements ISupplierParser{
 	
 	private static final Logger _LOGGER = Logger.getLogger(BayStateMapping.class);
 	
@@ -167,7 +167,7 @@ public class BayStateMapping implements IExcelParser{
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 							 	priceGrids = new ArrayList<PriceGrid>();
 								productConfigObj = new ProductConfigurations();
-								ProductDataStore.clearProductColorSet();
+								SupplierDataStore.clearProductColorSet();
 								repeatRows.clear();
 								listProductSkus = new ArrayList<>();
 								maxImprColors = "";
@@ -562,7 +562,7 @@ public class BayStateMapping implements IExcelParser{
 			 	}else{
 			 		
 			 	}		
-		 	ProductDataStore.clearProductColorSet();
+		 	SupplierDataStore.clearProductColorSet();
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();

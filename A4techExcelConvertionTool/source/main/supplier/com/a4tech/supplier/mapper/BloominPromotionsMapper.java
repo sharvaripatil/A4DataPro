@@ -14,7 +14,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.FOBPoint;
 import com.a4tech.product.model.Image;
@@ -26,13 +25,14 @@ import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 import parser.BloominPromotions.BloominPromotionsAttributeParser;
 import parser.BloominPromotions.BloominPromotionsPriceGridParser;
 
-public class BloominPromotionsMapper implements IExcelParser {
+public class BloominPromotionsMapper implements ISupplierParser {
 
 	private static final Logger _LOGGER = Logger.getLogger(BloominPromotionsMapper.class);
 

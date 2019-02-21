@@ -18,7 +18,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.lookup.service.restService.LookupRestService;
 import com.a4tech.product.dao.service.ProductDao;
@@ -41,6 +40,7 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -49,7 +49,7 @@ import parser.solidDimension.SolidDimensionColorParser;
 import parser.solidDimension.SolidDimensionPriceGridParser;
 import parser.solidDimension.SolidDimesionAttributeParser;
 
-public class SolidDimensionMapping implements IExcelParser{
+public class SolidDimensionMapping implements ISupplierParser{
 
 
 	private static final Logger _LOGGER = Logger.getLogger(SolidDimensionMapping.class);

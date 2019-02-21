@@ -85,10 +85,7 @@
 	</bean>
 	
 	
-	<bean id="gbDataExcelMappingId" class="com.a4tech.core.excelMapping.ExcelMapping">
-		<property name="postServiceImpl" ref="postService" />
-		<property name="productDaoObj" ref="productDao" />
-	</bean>
+	
 	<bean id="rfgLineProductExcelMappingId" class="com.a4tech.supplier.mapper.RFGLineProductExcelMapping">
 	<property name="postServiceImpl" ref="postService" />
 	<property name="shippingParserObj" ref="shippingParserObj" />
@@ -143,11 +140,7 @@
 		<property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory"></property>
 		<property name="errorFileLocPath" value="${error.logfile.location}"></property>
 	</bean>
-	<bean id="ExcelMapping" name="ExcelMapping"
-		class="com.a4tech.core.excelMapping.ExcelMapping">
-		<property name="postServiceImpl" ref="postService" />
-		<property name="productDaoObj" ref="productDao" />
-	</bean>
+	
 	<bean id="messageSource"
 		class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename" value="error" />
@@ -168,7 +161,7 @@
 			</props>
 		</property>
 	</bean>
-	<bean id="productDataStore" class="com.a4tech.dataStore.ProductDataStore"/>
+	<bean id="productDataStore" class="com.a4tech.supplier.dataStore.SupplierDataStore"/>
     <!-- FTP Server details -->
     <bean id="ftpServiceImplId" class="com.a4tech.ftp.service.impl.FtpServiceImpl">
         <property name="ftpClient" ref="fTPClientId"/>
@@ -283,7 +276,7 @@
      	<property name="supplierFactory" ref="supplierFactoryId"/>
      	<property name="convertCsvToExcel" ref="convertCsvToExcelId"/>
      </bean>
-     <bean id="supplierFactoryId" class="com.a4tech.core.excelMapping.SupplierFactory">
+     <bean id="supplierFactoryId" class="com.a4tech.core.supplierMapping.SupplierFactory">
      	<property name="adspecMapping" ref="adspecProductsExcelMappingId"/>
      	<property name="klMapping" ref="klMappingId"/>
 		<property name="rfgLineProductExcelMapping" ref="rfgLineProductExcelMappingId" />

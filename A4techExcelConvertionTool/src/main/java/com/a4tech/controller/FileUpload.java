@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.a4tech.core.excelMapping.SupplierFactory;
 import com.a4tech.core.model.FileBean;
-import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.core.supplierMapping.SupplierFactory;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.service.ILoginService;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.a4tech.util.ConvertCsvToExcel;
@@ -88,7 +88,7 @@ public class FileUpload {
 			}
 			int batchId = productDao.createBatchId(Integer.parseInt(asiNumber));
 			request.getSession().setAttribute("batchId", String.valueOf(batchId));
-			IExcelParser parserObject = supplierFactory.getExcelParserObject(asiNumber);
+			ISupplierParser parserObject = supplierFactory.getExcelParserObject(asiNumber);
 			if (parserObject != null) {
 				finalResult = parserObject.readExcel(accessToken, workbook, Integer.valueOf(asiNumber), batchId,
 						"Sand");

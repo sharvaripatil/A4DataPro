@@ -7,10 +7,10 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.model.Product;
+import com.a4tech.supplier.service.ISupplierParser;
 
-public class EvansManufacturingCanadaMapping implements IExcelParser{
+public class EvansManufacturingCanadaMapping implements ISupplierParser{
 	
 	private static final Logger _LOGGER = Logger.getLogger(EvansManufacturingCanadaMapping.class);
 

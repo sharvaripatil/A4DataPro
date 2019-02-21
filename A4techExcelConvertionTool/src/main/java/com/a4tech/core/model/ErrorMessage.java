@@ -1,4 +1,4 @@
-package com.a4tech.core.errors;
+package com.a4tech.core.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

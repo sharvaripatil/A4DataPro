@@ -18,12 +18,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.a4tech.core.excelMapping.SupplierFactory;
-import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.core.supplierMapping.SupplierFactory;
 import com.a4tech.product.dao.entity.BaseSupplierLoginDetails;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.service.ILoginService;
 import com.a4tech.product.service.IMailService;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.a4tech.util.ConvertCsvToExcel;
@@ -64,7 +64,7 @@ public class FilesParsing {
 			} catch (InterruptedException exce) {
 				_LOGGER.error("Interrupted Sleep method: "+exce.getMessage());
 			}
-			 IExcelParser excelParserImpl = supplierFactory.getExcelParserObject(asiNumber);
+			 ISupplierParser excelParserImpl = supplierFactory.getExcelParserObject(asiNumber);
 			// workBook = convertCsvToExcel.getWorkBook(file);
 			 FileInputStream inputStream;
 			try {

@@ -1,4 +1,4 @@
-package com.a4tech.core.errors;
+package com.a4tech.core.model;
 
 import java.util.List;
 

@@ -14,8 +14,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.a4tech.core.errors.ErrorMessage;
-import com.a4tech.core.errors.ErrorMessageList;
+import com.a4tech.core.model.ErrorMessage;
+import com.a4tech.core.model.ErrorMessageList;
 import com.a4tech.core.model.ExternalAPIResponse;
 import com.a4tech.product.dao.entity.SupplierProductColors;
 import com.a4tech.product.dao.service.ProductDao;

@@ -1,4 +1,4 @@
-package com.a4tech.dataStore;
+package com.a4tech.supplier.dataStore;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +14,7 @@ import com.a4tech.product.dao.entity.SupplierProductColors;
 import com.a4tech.product.model.Product;
 import com.a4tech.product.service.ProductService;
 
-public class ProductDataStore {
+public class SupplierDataStore {
 	public static Map<String, Product> storeProduct = new HashMap<String, Product>();
 	public static Set<String> productColorNames = new HashSet<>();
 	public static Set<String> productSizesBrobery= new HashSet<>();

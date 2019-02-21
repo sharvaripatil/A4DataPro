@@ -14,7 +14,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
@@ -31,6 +30,7 @@ import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -38,7 +38,7 @@ import parser.radious.RadiousAttribute;
 import parser.radious.RadiousColorParser;
 import parser.radious.RadiousPriceGridParser;
 
-public class RadiousMapping implements IExcelParser {
+public class RadiousMapping implements ISupplierParser {
 private static final Logger _LOGGER = Logger.getLogger(HarvestIndustrialExcelMapping.class);
 	
 	private PostServiceImpl postServiceImpl;

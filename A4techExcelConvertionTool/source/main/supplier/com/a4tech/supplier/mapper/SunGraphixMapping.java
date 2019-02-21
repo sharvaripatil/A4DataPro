@@ -17,8 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.core.errors.ErrorMessageList;
-import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.core.model.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.Dimension;
@@ -44,6 +43,7 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,7 +52,7 @@ import parser.sunGraphix.SunGraphixAttributeParser;
 import parser.sunGraphix.SunGraphixConstants;
 import parser.sunGraphix.SunGraphixPriceGridParser;
 
-public class SunGraphixMapping implements IExcelParser{
+public class SunGraphixMapping implements ISupplierParser{
 	private static final Logger _LOGGER = Logger.getLogger(SunGraphixMapping.class);
 	
 	private PostServiceImpl postServiceImpl;

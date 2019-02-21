@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.AdditionalColor;
 import com.a4tech.product.model.AdditionalLocation;
@@ -39,6 +38,7 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
+import com.a4tech.supplier.dataStore.SupplierDataStore;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -47,7 +47,7 @@ public class GoldbondAttributeParser {
 	String pattern_remove_specialSymbols = "[^0-9.xX/\\- ]";
 	private GoldbondPriceGridParser gbPriceGridParser;
 	private LookupServiceData lookupServiceData;
-	private ProductDataStore productDataStore;
+	private SupplierDataStore productDataStore;
 	private static List<String> lookupFobPoints = null;
 	private Logger _LOGGER = Logger.getLogger(GoldbondAttributeParser.class);
 	public Product keepExistingProductData(Product existingProduct){
@@ -1325,11 +1325,11 @@ public class GoldbondAttributeParser {
 	public void setLookupServiceData(LookupServiceData lookupServiceData) {
 		this.lookupServiceData = lookupServiceData;
 	}	
-	public ProductDataStore getProductDataStore() {
+	public SupplierDataStore getProductDataStore() {
 		return productDataStore;
 	}
 
-	public void setProductDataStore(ProductDataStore productDataStore) {
+	public void setProductDataStore(SupplierDataStore productDataStore) {
 		this.productDataStore = productDataStore;
 	}
 

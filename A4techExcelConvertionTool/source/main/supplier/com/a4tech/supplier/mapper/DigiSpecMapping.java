@@ -7,13 +7,13 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.model.Product;
+import com.a4tech.supplier.service.ISupplierParser;
 
 import parser.digiSpec.DigiSpecDataMapping;
 import parser.digiSpec.DigiSpecPricingMapping;
 
-public class DigiSpecMapping implements IExcelParser{
+public class DigiSpecMapping implements ISupplierParser{
 	private DigiSpecDataMapping     digiSpecDataMapping;
 	private DigiSpecPricingMapping  digiSpecPricingMapping;
 	

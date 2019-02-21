@@ -15,8 +15,8 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.core.errors.ErrorMessage;
-import com.a4tech.core.errors.ErrorMessageList;
+import com.a4tech.core.model.ErrorMessage;
+import com.a4tech.core.model.ErrorMessageList;
 
 import parser.proGolf.ProGolfColorMapping;
 

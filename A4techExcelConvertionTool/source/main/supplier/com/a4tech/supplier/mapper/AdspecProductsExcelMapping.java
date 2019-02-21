@@ -18,7 +18,6 @@ import org.springframework.util.StringUtils;
 import parser.adspec.AdspecPriceGridParser;
 import parser.adspec.AdspecProductAttributeParser;
 
-import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Artwork;
 import com.a4tech.product.model.Catalog;
@@ -31,11 +30,12 @@ import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.WarrantyInformation;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 
-public class AdspecProductsExcelMapping implements IExcelParser{
+public class AdspecProductsExcelMapping implements ISupplierParser{
 	
 	private static final Logger _LOGGER = Logger.getLogger(AdspecProductsExcelMapping.class);
 	

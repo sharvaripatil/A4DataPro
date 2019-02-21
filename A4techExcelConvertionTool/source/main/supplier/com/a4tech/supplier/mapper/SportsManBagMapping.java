@@ -15,8 +15,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.core.errors.ErrorMessageList;
-import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.core.model.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
 import com.a4tech.product.model.ImprintMethod;
@@ -27,12 +26,13 @@ import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 import parser.sportsmanBag.SportsManBagAttributeParser;
 import parser.sportsmanBag.SportsManBagPriceGridParser;
-public class SportsManBagMapping implements IExcelParser{
+public class SportsManBagMapping implements ISupplierParser{
 	private PostServiceImpl 					postServiceImpl;
 	private ProductDao 							productDaoObj;
 	private SportsManBagAttributeParser         sportsManAttributeParser;

@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Availability;
@@ -38,6 +37,7 @@ import com.a4tech.product.model.TradeName;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
+import com.a4tech.supplier.dataStore.SupplierDataStore;
 import com.a4tech.util.ApplicationConstants;
 
 public class BroberryProductAttributeParser {
@@ -224,13 +224,13 @@ public Size getProductSize(List<String> sizeValues){
 				}
 				appareal.setType(tempValue);
 				valueObj.setValue(sizeArr[1]);
-				ProductDataStore.saveSizesBrobery(sizeArr[1]);
+				SupplierDataStore.saveSizesBrobery(sizeArr[1]);
 				values.add(valueObj);
 				
 			}else{
 			sizeArr=string.split(ApplicationConstants.CONST_SIZE_DELIMITER);
 			valueObj.setValue(sizeArr[1]);
-			ProductDataStore.saveSizesBrobery(sizeArr[1]);
+			SupplierDataStore.saveSizesBrobery(sizeArr[1]);
 			values.add(valueObj);
 			}
 			count=0;

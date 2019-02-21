@@ -18,9 +18,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.core.errors.ErrorMessageList;
-import com.a4tech.dataStore.ProductDataStore;
-import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.core.model.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Color;
@@ -36,12 +34,14 @@ import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.dataStore.SupplierDataStore;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 import parser.InternationalMerchConcepts.MerchAttributeParser;
 
-public class InternationlMerchMapping implements IExcelParser{
+public class InternationlMerchMapping implements ISupplierParser{
 	
 	private static final Logger _LOGGER = Logger.getLogger(InternationlMerchMapping.class);
 	
@@ -219,7 +219,7 @@ public class InternationlMerchMapping implements IExcelParser{
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
 							 	priceGrids = new ArrayList<PriceGrid>();
 								productConfigObj = new ProductConfigurations();
-								ProductDataStore.clearProductColorSet();
+								SupplierDataStore.clearProductColorSet();
 								repeatRows.clear();
 								listProductSkus = new ArrayList<>();
 								shippingDimention = new StringBuilder();
@@ -1018,7 +1018,7 @@ public class InternationlMerchMapping implements IExcelParser{
 			 	if(num == 5){
 			 		failureXidList.add(productExcelObj.getExternalProductId());
 			 	}
-		 	ProductDataStore.clearProductColorSet();
+		 	SupplierDataStore.clearProductColorSet();
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();

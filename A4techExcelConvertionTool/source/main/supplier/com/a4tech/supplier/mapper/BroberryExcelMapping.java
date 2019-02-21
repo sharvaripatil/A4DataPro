@@ -19,9 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.core.errors.ErrorMessageList;
-import com.a4tech.dataStore.ProductDataStore;
-import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.core.model.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
@@ -34,6 +32,8 @@ import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.dataStore.SupplierDataStore;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,7 +41,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import parser.broberry.BroberryProductAttributeParser;
 import parser.broberry.BroberryProductMaterialParser;
 
-public class BroberryExcelMapping implements IExcelParser{
+public class BroberryExcelMapping implements ISupplierParser{
 	
 	private static final Logger _LOGGER = Logger.getLogger(BroberryExcelMapping.class);
 	
@@ -246,7 +246,7 @@ public class BroberryExcelMapping implements IExcelParser{
 								sizeValuesSet = new HashSet<>();
 								
 						        productKeywords = new ArrayList<String>();
-								ProductDataStore.clearSizesBrobery();
+								SupplierDataStore.clearSizesBrobery();
 								tempMap=new HashMap<String, LinkedList<String>>();
 								 list=new LinkedList<String>();
 								 listTemp=new LinkedList<String>();
@@ -636,7 +636,7 @@ public class BroberryExcelMapping implements IExcelParser{
 		productOptionSet=new HashSet<String>();
 		listOfCategories=new ArrayList<String>();
 		FinalKeyword=new StringBuilder();
-		ProductDataStore.clearSizesBrobery();
+		SupplierDataStore.clearSizesBrobery();
         AdditionalInfo= new StringBuilder();
         tempMap=new HashMap<String, LinkedList<String>>();
         list=new LinkedList<String>();

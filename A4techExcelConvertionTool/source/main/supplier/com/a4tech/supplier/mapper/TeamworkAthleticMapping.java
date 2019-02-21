@@ -20,9 +20,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.core.errors.ErrorMessageList;
-import com.a4tech.dataStore.ProductDataStore;
-import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.core.model.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Color;
@@ -37,13 +35,15 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.dataStore.SupplierDataStore;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
 import parser.TeamworkAthletic.TeamworkAthleticAttributeParser;
 import parser.TeamworkAthletic.TeamworkAthleticPriceGridParser;
 
-public class TeamworkAthleticMapping implements IExcelParser{
+public class TeamworkAthleticMapping implements ISupplierParser{
 	
 	private static final Logger _LOGGER = Logger.getLogger(TeamworkAthleticMapping.class);
 	
@@ -375,7 +375,7 @@ public class TeamworkAthleticMapping implements IExcelParser{
 		 	}else{
 		 		
 		 	}
-		 	ProductDataStore.clearProductColorSet();
+		 	SupplierDataStore.clearProductColorSet();
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();

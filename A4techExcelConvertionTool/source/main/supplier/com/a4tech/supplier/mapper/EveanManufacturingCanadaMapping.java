@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.model.Product;
+import com.a4tech.supplier.service.ISupplierParser;
 
 import parser.evansManufacturing.EveanManufacturePricingMapping;
 import parser.evansManufacturing.EveanManufactureProductInformationMapping;
@@ -16,7 +16,7 @@ import parser.evansManufacturing.EveanManufactureVariationMapping;
 /*
  * EXCIT-700
  */
-public class EveanManufacturingCanadaMapping implements IExcelParser{
+public class EveanManufacturingCanadaMapping implements ISupplierParser{
 	
 	private EveanManufactureProductInformationMapping eveanProductInfoMapping;
 	private EveanManufactureVariationMapping          eveanVariationMapping;

@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.dataStore.ProductDataStore;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.model.AdditionalLocation;
 import com.a4tech.product.model.Color;
@@ -31,6 +30,7 @@ import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.model.Volume;
+import com.a4tech.supplier.dataStore.SupplierDataStore;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -69,7 +69,7 @@ public class ApparealProductAttributeParser {
 				listOfCombo.add(comboObj);
 				colorObj.setAlias(aliasName);
 				colorObj.setCombos(listOfCombo);
-				ProductDataStore.saveColorNames(aliasName);
+				SupplierDataStore.saveColorNames(aliasName);
 			}else if(noOfColors == ApplicationConstants.CONST_INT_VALUE_THREE){
 				String thirdColor = colors[ApplicationConstants.CONST_INT_VALUE_TWO];
 				colorObj.setName(primaryColor);
@@ -90,7 +90,7 @@ public class ApparealProductAttributeParser {
 				}
 				colorObj.setAlias(aliasName);
 				colorObj.setCombos(listOfCombo);
-				ProductDataStore.saveColorNames(aliasName);
+				SupplierDataStore.saveColorNames(aliasName);
 				
 			}else{
 				
@@ -100,7 +100,7 @@ public class ApparealProductAttributeParser {
 			  colorObj.setName(ApparelColorMapping.getColorGroup(colorName));
 			  colorObj.setAlias(colorName);
 			  //colorObj.setCustomerOrderCode(colorCode);
-			  ProductDataStore.saveColorNames(colorName);
+			  SupplierDataStore.saveColorNames(colorName);
 		  }
 		    listtOfColor.add(colorObj);
 	}

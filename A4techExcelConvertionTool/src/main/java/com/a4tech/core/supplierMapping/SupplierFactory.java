@@ -1,6 +1,5 @@
-package com.a4tech.core.excelMapping;
+package com.a4tech.core.supplierMapping;
 
-import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.supplier.mapper.AccessLineMapping;
 import com.a4tech.supplier.mapper.AdspecProductsExcelMapping;
 import com.a4tech.supplier.mapper.AlfaMapping;
@@ -62,6 +61,7 @@ import com.a4tech.supplier.mapper.TwintechMapping;
 import com.a4tech.supplier.mapper.WBTIndustriesMapper;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 import com.a4tech.supplier.mapper.ZenithExport;
+import com.a4tech.supplier.service.ISupplierParser;
 
 public class SupplierFactory {
 	
@@ -129,7 +129,7 @@ public class SupplierFactory {
 	private TeamworkAthleticMapping teamWorkAthleticMapper;
 	private AccessLineMapping accessLineMapping;
 
-	public IExcelParser getExcelParserObject(String asiNumber) {
+	public ISupplierParser getExcelParserObject(String asiNumber) {
 
 		if (asiNumber.equals("44620")) {
 			return apparealExcelMapping;
@@ -146,7 +146,7 @@ public class SupplierFactory {
 		} else if (asiNumber.equals("82588")) {
 			return riversEndExcelMapping;
 		} else if (asiNumber.equals("47965")) {
-			return cbExeMapping/* cbExcelMapping */;// old file
+			return cbExeMapping;/* cbExcelMapping */// old file
 		} else if (asiNumber.equals("47759")) {
 			return cdExcelMapping;
 		} else if (asiNumber.equals("38228")) {

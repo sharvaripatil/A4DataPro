@@ -21,7 +21,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.core.errors.ErrorMessage;
+import com.a4tech.core.model.ErrorMessage;
 import com.a4tech.core.model.ExternalAPIResponse;
 import com.a4tech.ftp.model.FtpLoginBean;
 import com.a4tech.product.dao.entity.BaseSupplierLoginDetails;

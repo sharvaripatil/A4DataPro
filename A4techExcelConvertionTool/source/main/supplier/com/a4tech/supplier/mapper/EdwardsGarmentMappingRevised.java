@@ -2,9 +2,9 @@ package com.a4tech.supplier.mapper;
 
 import org.apache.poi.ss.usermodel.Workbook;
 
-import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.supplier.service.ISupplierParser;
 
-public class EdwardsGarmentMappingRevised implements IExcelParser{
+public class EdwardsGarmentMappingRevised implements ISupplierParser{
 
 	@Override
 	public String readExcel(String accessToken, Workbook workbook,

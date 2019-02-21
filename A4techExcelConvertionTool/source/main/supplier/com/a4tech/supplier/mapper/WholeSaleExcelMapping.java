@@ -16,8 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.core.errors.ErrorMessageList;
-import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.core.model.ErrorMessageList;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Color;
@@ -30,6 +29,7 @@ import com.a4tech.product.model.ProductConfigurations;
 import com.a4tech.product.model.ProductNumber;
 import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,7 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import parser.wholesale.WholeSaleAttributeParser;
 import parser.wholesale.WholeSalePriceGridParser;
 
-public class WholeSaleExcelMapping  implements IExcelParser{
+public class WholeSaleExcelMapping  implements ISupplierParser{
 	private static final Logger _LOGGER = Logger.getLogger(WholeSaleExcelMapping.class);
 	private PostServiceImpl postServiceImpl;
 	private ProductDao productDaoObj;

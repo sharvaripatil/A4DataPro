@@ -14,7 +14,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 //import com.a4tech.product.model.Availability;
@@ -37,6 +36,7 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Theme;
 import com.a4tech.product.model.Values;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -45,7 +45,7 @@ import parser.twintech.TwintechColorParser;
 import parser.twintech.TwintechPriceGridParser;
 import parser.twintech.TwintechProductAttributeParser;
 
-public class TwintechMapping implements IExcelParser {  //EXCIT-752   RO-EL
+public class TwintechMapping implements ISupplierParser {  //EXCIT-752   RO-EL
 
 	private static final Logger _LOGGER = Logger
 			.getLogger(TwintechMapping.class);

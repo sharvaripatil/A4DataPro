@@ -14,8 +14,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.dataStore.ProductDataStore;
-import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.lookup.service.LookupServiceData;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Availability;
@@ -37,6 +35,8 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.dataStore.SupplierDataStore;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -44,7 +44,7 @@ import parser.crystal.CrystalDMaterialParser;
 import parser.crystal.CrystalDPriceGridParser;
 import parser.crystal.CrystalDProductAttributeParser;
 
-public class CrystalDExcelMapping implements IExcelParser {
+public class CrystalDExcelMapping implements ISupplierParser {
 
 	private static final Logger _LOGGER = Logger.getLogger(CrystalDExcelMapping.class);
 	
@@ -215,7 +215,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 							 	}
 							 	_LOGGER.info("list size>>>>>>>"+numOfProductsSuccess.size());
 							 	_LOGGER.info("Failure list size>>>>>>>"+numOfProductsFailure.size());
-						   	  ProductDataStore.clearProductColorSet();
+						   	  SupplierDataStore.clearProductColorSet();
 						    	imprintSizeList =new ArrayList<ImprintSize>();
 						    	FinalImprintSize=new StringBuilder();
 						    	listOfPackaging = new ArrayList<Packaging>();
@@ -659,7 +659,7 @@ public class CrystalDExcelMapping implements IExcelParser {
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();
 	       productDaoObj.saveErrorLog(asiNumber,batchId);
 	        productConfigObj = new ProductConfigurations();
-	        ProductDataStore.clearProductColorSet();
+	        SupplierDataStore.clearProductColorSet();
 	    	imprintSizeList =new ArrayList<ImprintSize>();
 	    	listOfPackaging = new ArrayList<Packaging>();
 	    	itemWeight=new Volume();

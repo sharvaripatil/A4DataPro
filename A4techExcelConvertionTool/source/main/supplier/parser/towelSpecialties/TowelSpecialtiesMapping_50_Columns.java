@@ -18,9 +18,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.core.errors.ErrorMessageList;
-import com.a4tech.dataStore.ProductDataStore;
-import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.core.model.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.AvailableVariations;
@@ -33,10 +31,12 @@ import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.dataStore.SupplierDataStore;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
-public class TowelSpecialtiesMapping_50_Columns implements IExcelParser{
+public class TowelSpecialtiesMapping_50_Columns implements ISupplierParser{
 	
 	private static final Logger _LOGGER = Logger.getLogger(TowelSpecialtiesMapping_50_Columns.class);
 	
@@ -219,7 +219,7 @@ public class TowelSpecialtiesMapping_50_Columns implements IExcelParser{
 							    listOfDiscounts = new StringJoiner(ApplicationConstants.PRICE_SPLITTER_BASE_PRICEGRID);
 								productConfigObj = new ProductConfigurations();
 								shippingValues = new StringBuilder();
-								ProductDataStore.clearProductColorSet();
+								SupplierDataStore.clearProductColorSet();
 								repeatRows.clear();
 								imprintMethodNameUpcharge = "";
 								listOfProductionTime = new ArrayList<>();
@@ -560,7 +560,7 @@ public class TowelSpecialtiesMapping_50_Columns implements IExcelParser{
 			 		
 			 	}		
 		 	}
-		 	ProductDataStore.clearProductColorSet();
+		 	SupplierDataStore.clearProductColorSet();
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();

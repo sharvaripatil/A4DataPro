@@ -2,7 +2,7 @@ package com.a4tech.product.service;
 
 import java.util.List;
 
-import com.a4tech.core.errors.ErrorMessage;
+import com.a4tech.core.model.ErrorMessage;
 import com.a4tech.core.model.ExternalAPIResponse;
 import com.a4tech.ftp.model.FtpLoginBean;
 import com.a4tech.product.dao.entity.BaseSupplierLoginDetails;

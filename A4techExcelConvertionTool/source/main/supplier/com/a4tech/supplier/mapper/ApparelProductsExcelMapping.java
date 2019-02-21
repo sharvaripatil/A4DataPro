@@ -19,9 +19,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.core.errors.ErrorMessageList;
-import com.a4tech.dataStore.ProductDataStore;
-import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.core.model.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Apparel;
 import com.a4tech.product.model.Availability;
@@ -38,6 +36,8 @@ import com.a4tech.product.model.Size;
 import com.a4tech.product.model.Value;
 import com.a4tech.product.model.Volume;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.dataStore.SupplierDataStore;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 
@@ -46,7 +46,7 @@ import parser.apparel.ApparealProductAttributeParser;
 import parser.apparel.ApparelMaterialParser;
 import parser.apparel.ApparelPriceGridParser;
 
-public class ApparelProductsExcelMapping implements IExcelParser{
+public class ApparelProductsExcelMapping implements ISupplierParser{
 	
 	private static final Logger _LOGGER = Logger.getLogger(ApparelProductsExcelMapping.class);
 	
@@ -134,7 +134,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 							 	productExcelObj.setProductConfigurations(productConfigObj);
 							 	productExcelObj.setProductRelationSkus(listProductSkus);
 							 	List<Availability> listOfAvailablity = apparealAvailParser.
-							 			getProductAvailablity(ProductDataStore.getColorNames(), 
+							 			getProductAvailablity(SupplierDataStore.getColorNames(), 
 							 					                              productSizeValues);
 							 	productExcelObj.setAvailability(listOfAvailablity);
 							 	List<Image> listOfImage = getProductImages(productExcelObj.getImages());
@@ -159,7 +159,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 								sizeValues = new HashSet<>();
 								listOfColor = new ArrayList<>();
 								productSizeValues = new HashSet<>();
-								ProductDataStore.clearProductColorSet();
+								SupplierDataStore.clearProductColorSet();
 								repeatRows.clear();
 								colorIdMap.clear();
 								sizeBasePrice = new LinkedHashMap<>();
@@ -230,7 +230,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 						} else {
 							colorNameVal = colorName;
 						}
-						ProductDataStore.saveColorNames(colorNameVal);
+						SupplierDataStore.saveColorNames(colorNameVal);
 					}
 					break;
 					
@@ -403,7 +403,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
          productConfigObj.setSizes(getProductSize(new ArrayList<Value>(sizeValues)));
         productExcelObj.setProductConfigurations(productConfigObj);
         List<Availability> listOfAvailablity = apparealAvailParser.
-        		getProductAvailablity(ProductDataStore.getColorNames(), 
+        		getProductAvailablity(SupplierDataStore.getColorNames(), 
         				productSizeValues);
         	productExcelObj.setAvailability(listOfAvailablity);
 		 	productExcelObj.setPriceGrids(priceGrids);
@@ -420,7 +420,7 @@ public class ApparelProductsExcelMapping implements IExcelParser{
 		 	}else{
 		 		
 		 	}
-		 	ProductDataStore.clearProductColorSet();
+		 	SupplierDataStore.clearProductColorSet();
 		 	_LOGGER.info("list size>>>>>>"+numOfProductsSuccess.size());
 		 	_LOGGER.info("Failure list size>>>>>>"+numOfProductsFailure.size());
 	       finalResult = numOfProductsSuccess.size() + "," + numOfProductsFailure.size();

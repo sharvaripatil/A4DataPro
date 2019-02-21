@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.model.Product;
+import com.a4tech.supplier.service.ISupplierParser;
 
 import parser.proGolf.ProGolfImagesMapping;
 import parser.proGolf.ProGolfImprintChargesMapping;
@@ -17,7 +17,7 @@ import parser.proGolf.ProGolfProductInformationMapping;
 import parser.proGolf.ProGolfShippingMapping;
 import parser.proGolf.ProGolfVariationMapping;
 
-public class ProGolfMapping implements IExcelParser{
+public class ProGolfMapping implements ISupplierParser{
 	private ProGolfProductInformationMapping   prodInfoMapping;
 	private ProGolfImprintChargesMapping       imprintChargesMapping;
 	private ProGolfPricingMapping 		productPricingMapping;

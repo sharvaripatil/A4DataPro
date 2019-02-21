@@ -16,8 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.a4tech.core.errors.ErrorMessageList;
-import com.a4tech.excel.service.IExcelParser;
+import com.a4tech.core.model.ErrorMessageList;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Availability;
 import com.a4tech.product.model.Color;
@@ -28,6 +27,7 @@ import com.a4tech.product.model.ProductionTime;
 import com.a4tech.product.model.RushTime;
 import com.a4tech.product.model.ShippingEstimate;
 import com.a4tech.product.service.imple.PostServiceImpl;
+import com.a4tech.supplier.service.ISupplierParser;
 import com.a4tech.util.ApplicationConstants;
 import com.a4tech.util.CommonUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import parser.highcaliberline.HighCaliberAttributeParser;
 import parser.highcaliberline.HighCaliberPriceGridParser;
 
-public class HighCaliberLineExcelMapping implements IExcelParser{
+public class HighCaliberLineExcelMapping implements ISupplierParser{
 
 	
 	private static final Logger _LOGGER = Logger.getLogger(HighCaliberLineExcelMapping.class);
