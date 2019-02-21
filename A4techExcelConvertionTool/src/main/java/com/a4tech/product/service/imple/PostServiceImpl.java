@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 import com.a4tech.core.errors.ErrorMessage;
 import com.a4tech.core.errors.ErrorMessageList;
 import com.a4tech.core.model.ExternalAPIResponse;
-import com.a4tech.product.dao.entity.ErrorEntity;
 import com.a4tech.product.dao.entity.SupplierProductColors;
 import com.a4tech.product.dao.service.ProductDao;
 import com.a4tech.product.model.Product;

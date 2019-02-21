@@ -80,8 +80,7 @@
 		<!-- <property name="loginService" ref="loginServiceImpl" /> -->
 		<property name="productDao" ref="productDao" />
 		<property name="convertCsvToExcel" ref="convertCsvToExcelId"/>
-		<property name="excelFactory" ref="excelFactoryId"/>
-		<property name="lookupData" ref="lookupDataId"/>
+		<property name="supplierFactory" ref="supplierFactoryId"/>
 		<property name="postServiceImpl" ref="postService" />
 	</bean>
 	
@@ -238,6 +237,7 @@
     
     <!-- supplier 44620 configuration start --> 
      <bean id="apparelMappingId" class="com.a4tech.supplier.mapper.ApparelProductsExcelMapping">
+       <property name="postServiceImpl" ref="postService"/>
      	<property name="productDaoObj" ref="productDao"/>
      	<property name="apparelPgParser" ref="appaPriceGridParserId"/>
      	<property name="apparealMaterialParser" ref="appaMaterialParserId"/>
@@ -280,10 +280,10 @@
      
      <bean id="fileParsingId" class="com.a4tech.ftp.FilesParsing">
      	<property name="productDao" ref="productDao"/>
-     	<property name="excelFactory" ref="excelFactoryId"/>
+     	<property name="supplierFactory" ref="supplierFactoryId"/>
      	<property name="convertCsvToExcel" ref="convertCsvToExcelId"/>
      </bean>
-     <bean id="excelFactoryId" class="com.a4tech.core.excelMapping.ExcelFactory">
+     <bean id="supplierFactoryId" class="com.a4tech.core.excelMapping.SupplierFactory">
      	<property name="adspecMapping" ref="adspecProductsExcelMappingId"/>
      	<property name="klMapping" ref="klMappingId"/>
 		<property name="rfgLineProductExcelMapping" ref="rfgLineProductExcelMappingId" />

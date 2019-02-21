@@ -1,7 +1,5 @@
 package com.a4tech.core.excelMapping;
 
-
-
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.supplier.mapper.AccessLineMapping;
 import com.a4tech.supplier.mapper.AdspecProductsExcelMapping;
@@ -65,209 +63,197 @@ import com.a4tech.supplier.mapper.WBTIndustriesMapper;
 import com.a4tech.supplier.mapper.WholeSaleExcelMapping;
 import com.a4tech.supplier.mapper.ZenithExport;
 
-public class ExcelFactory {
-	private AdspecProductsExcelMapping 		adspecMapping;
-	private KlProductsExcelMapping 			klMapping;
-	private RFGLineProductExcelMapping 		rfgLineProductExcelMapping;
-	private NewProductsExcelMapping 		newProductsExcelMapping;
-	private ApparelProductsExcelMapping 	apparealExcelMapping;
-	private BroberryExcelMapping 			broberryExcelMapping;
-	private BestDealProductsExcelMapping 	bdProdcutsMapping;
-	private RiversEndExcelMapping 			riversEndExcelMapping;
-	private BambamProductExcelMapping 		bamExcelMapping;
- //   private CutterBuckExcelMapping 			cbExcelMapping;
-    private CrystalDExcelMapping 			cdExcelMapping;
-    private GoldstarCanadaExcelMapping 		goldcanadaExcelMapping;
-    private MilestoneExcelMapping 			milestoneExcelMapping;
-	//private HighCaliberLineExcelMapping 	hcLineExcelMapping;
-	private WholeSaleExcelMapping 			wholeSaleExcelMapping;
-	private PrimeLineExcelMapping 			primeLineExcelMapping;
-	private GoldBondExcelMapping  			goldBandExcelMapping;
-	private PSLMapping 						pslMapping;
-	private TomaxUsaMapping 				tomaxUsaMapping;
-	private ProGolfMapping 					proGolfMapping;
-	private DacassoMapping 					dacassoMapping;
-	private SageRMKWorldWideMapping 		sage80289Mapping;
-	private BrandwearExcelMapping 			brandwearExcelMapping;
-	private BallProMapping       			ballProMapping;
-	private PSLcadMapping 					pslcadMapping;
-	private TwintechMapping 				twintechMapping;
-	private AlfaMapping       				alfaMapping;
-	private BellaCanvas                     bellaCanvasMapping;
-	private HarvestIndustrialExcelMapping   harvestMapping;	
+public class SupplierFactory {
+	
+	private AdspecProductsExcelMapping adspecMapping;
+	private KlProductsExcelMapping klMapping;
+	private RFGLineProductExcelMapping rfgLineProductExcelMapping;
+	private NewProductsExcelMapping newProductsExcelMapping;
+	private ApparelProductsExcelMapping apparealExcelMapping;
+	private BroberryExcelMapping broberryExcelMapping;
+	private BestDealProductsExcelMapping bdProdcutsMapping;
+	private RiversEndExcelMapping riversEndExcelMapping;
+	private BambamProductExcelMapping bamExcelMapping;
+	// private CutterBuckExcelMapping cbExcelMapping;
+	private CrystalDExcelMapping cdExcelMapping;
+	private GoldstarCanadaExcelMapping goldcanadaExcelMapping;
+	private MilestoneExcelMapping milestoneExcelMapping;
+	// private HighCaliberLineExcelMapping hcLineExcelMapping;
+	private WholeSaleExcelMapping wholeSaleExcelMapping;
+	private PrimeLineExcelMapping primeLineExcelMapping;
+	private GoldBondExcelMapping goldBandExcelMapping;
+	private PSLMapping pslMapping;
+	private TomaxUsaMapping tomaxUsaMapping;
+	private ProGolfMapping proGolfMapping;
+	private DacassoMapping dacassoMapping;
+	private SageRMKWorldWideMapping sage80289Mapping;
+	private BrandwearExcelMapping brandwearExcelMapping;
+	private BallProMapping ballProMapping;
+	private PSLcadMapping pslcadMapping;
+	private TwintechMapping twintechMapping;
+	private AlfaMapping alfaMapping;
+	private BellaCanvas bellaCanvasMapping;
+	private HarvestIndustrialExcelMapping harvestMapping;
 	private HighCaliberLineMappingRevised hcLineExcelMapping;
-	private TowelSpecialtiesMapping        towelSpecialties;
-	private BagMakersMapping 				bagMakersMapping; 
-	private GillStudiosMapping 				gillStudiosMapping;
-	private BlueGenerationMapping			blueGenerationMapping;
-	private FITSAccessoriesMapping          fitsAccessoriesMapping;
-	private BayStateMapping                 baysStateMapping;
-    private MaxplusMapping                  maxplusmapping;
-	private GempirepromotionsMapping        gempiresMapping;
-	private EdwardsGarmentMapping 			edwardsGarmentMapping;
-	private TekweldMapping 					tekweldMapping;
-    private InternationlMerchMapping        merchMapping;	
-    private HeadWearMapping                 headWearMapping;
-    private SportCanadaExcelMapping         sportMapping;
-    private SunScopeMapping                 sunScopeMapping;
-    //private SunGraphixMapping 				sunGraphixMapping;
-    private SunGraphixRevisedMapping        sunGraphixMapping;
-    private CbMapping                       cbExeMapping;
-    private PelicanGraphicMapping           pelicanGraphicMapping;
-    private SportsManBagMapping             sportsManBagMapping;
-    private SimplifiedsourcingMapping       simplifiedMapping;
-	private SolidDimensionMapping 			solidDimensionMapping;
-    private EveanManufacturingCanadaMapping eveanManufactureMapping;
-    private SportUSAMapping					sportUSAMapping;
-    private SportAzxCandMapping 			sportAzxCandMapping;
-    private DigiSpecMapping                 digiSpecMapping;
-    private DouglasBridgeMapper             douglasBridgeMapper;
-	private RadiousMapping                  radiMapping;	
-    private WBTIndustriesMapper	            wbtIndustriesMapper;
-    private ZenithExport                    zenithMapping;
-    private BloominPromotionsMapper         bloominPromotion;
-     private PioneerLLCMapping 				pioneerLLCMapping;
-     private TeamworkAthleticMapping        teamWorkAthleticMapper;
-	  private AccessLineMapping				accessLineMapping;
-     
-    
-	public  IExcelParser getExcelParserObject(String name){
+	private TowelSpecialtiesMapping towelSpecialties;
+	private BagMakersMapping bagMakersMapping;
+	private GillStudiosMapping gillStudiosMapping;
+	private BlueGenerationMapping blueGenerationMapping;
+	private FITSAccessoriesMapping fitsAccessoriesMapping;
+	private BayStateMapping baysStateMapping;
+	private MaxplusMapping maxplusmapping;
+	private GempirepromotionsMapping gempiresMapping;
+	private EdwardsGarmentMapping edwardsGarmentMapping;
+	private TekweldMapping tekweldMapping;
+	private InternationlMerchMapping merchMapping;
+	private HeadWearMapping headWearMapping;
+	private SportCanadaExcelMapping sportMapping;
+	private SunScopeMapping sunScopeMapping;
+	// private SunGraphixMapping sunGraphixMapping;
+	private SunGraphixRevisedMapping sunGraphixMapping;
+	private CbMapping cbExeMapping;
+	private PelicanGraphicMapping pelicanGraphicMapping;
+	private SportsManBagMapping sportsManBagMapping;
+	private SimplifiedsourcingMapping simplifiedMapping;
+	private SolidDimensionMapping solidDimensionMapping;
+	private EveanManufacturingCanadaMapping eveanManufactureMapping;
+	private SportUSAMapping sportUSAMapping;
+	private SportAzxCandMapping sportAzxCandMapping;
+	private DigiSpecMapping digiSpecMapping;
+	private DouglasBridgeMapper douglasBridgeMapper;
+	private RadiousMapping radiMapping;
+	private WBTIndustriesMapper wbtIndustriesMapper;
+	private ZenithExport zenithMapping;
+	private BloominPromotionsMapper bloominPromotion;
+	private PioneerLLCMapping pioneerLLCMapping;
+	private TeamworkAthleticMapping teamWorkAthleticMapper;
+	private AccessLineMapping accessLineMapping;
 
-		   if(name.equalsIgnoreCase("Apparel") || name.equals("44620")){
-			   return apparealExcelMapping;
-		   }else if(name.equalsIgnoreCase("kl") || name.equals("64905")){
-			   return klMapping;
-		   }else if(name.equalsIgnoreCase("Adspec") || name.equals("32125")){
-			   return adspecMapping;
-		   }else if(name.equalsIgnoreCase("rfg") || name.equals("82283")){
-			   return rfgLineProductExcelMapping;
-		   }else if(name.equalsIgnoreCase("broberry") || name.equals("42057")){
-			   return broberryExcelMapping;  
-		   }else if(name.equalsIgnoreCase("bestDeal") || name.equals("47791")){
-			   return bdProdcutsMapping;
-		   }else if(name.equalsIgnoreCase("riversend") || name.equals("82588")){
-			   return riversEndExcelMapping;
-		   }else if(name.equalsIgnoreCase("cbExcel") || name.equals("47965")){
-			   return cbExeMapping/*cbExcelMapping*/;//old file
-		   }
-		   else if(name.equalsIgnoreCase("cdExcel") || name.equals("47759")){
-			   return cdExcelMapping;
-		   }
-		   else if(name.equalsIgnoreCase("bambam") || name.equals("38228")){
-			   return bamExcelMapping;
-		   }
-		   else if(name.equalsIgnoreCase("goldCanada") || name.equals("57711") || name.equals("73295") ){
-			   return goldcanadaExcelMapping;
+	public IExcelParser getExcelParserObject(String asiNumber) {
 
-		   }else if(name.equalsIgnoreCase("highCaliberLine") || name.equals("43442")){
-			   return hcLineExcelMapping;
-
-		   }else if(name.equalsIgnoreCase("wholeSale") || name.equals("91284")){
-			   return wholeSaleExcelMapping;
-			  
-		   }else if(name.equalsIgnoreCase("goldBond") || name.equals("57653")){
-			   return goldBandExcelMapping;
-		   }else if(name.equalsIgnoreCase("prime") || name.equals("79530")){
-			   return primeLineExcelMapping;
-		   }
-	      else if(name.equalsIgnoreCase("psl") || name.equals("75613")){
-		      return pslMapping;
-	      }else if(name.equalsIgnoreCase("milestone") || name.equals("71173")){
-  			   return milestoneExcelMapping;
-	      } else if(name.equalsIgnoreCase("proGolf") || name.equals("79680")){
- 			   return proGolfMapping;
-	      } else if(name.equalsIgnoreCase("dacasso") || name.equals("48125")){
-	    	  return dacassoMapping;
-	      } else if(name.equalsIgnoreCase("tomaxusa") || name.equals("91435")){
-			   return tomaxUsaMapping;
-		  } else if(name.equalsIgnoreCase("sage80289") || name.equals("80289")){
-			  return sage80289Mapping;
-		  } else if(name.equalsIgnoreCase("brandwear") || name.equals("41545")){
-			   return brandwearExcelMapping;
-		  } else if(name.equals("ballPro") || name.equals("38120")){
-			  return ballProMapping;
-		  }
-	      else if(name.equalsIgnoreCase("pslcad") || name.equals("90345")){
-		      return pslcadMapping;
-	      }
-	      else if(name.equalsIgnoreCase("twintech") || name.equals("83140")){///*"92357"*/
-		      return twintechMapping;
-	      } else if(name.equalsIgnoreCase("alfa") || name.equals("34042")){
-	    	  return alfaMapping;
-	      } else if(name.equalsIgnoreCase("bellaCanvas") || name.equals("39590")){
-		      return bellaCanvasMapping;
-
-	      }  else if(name.equalsIgnoreCase("harvest") || name.equals("61670") || name.equals("71685") || name.equals("91584")){
-		      return harvestMapping;//TotesFactory
-
-	      } else if(name.equalsIgnoreCase("towelSpe") || name.equals("91605")){
-	    	  return towelSpecialties;
-	      }else if(name.equalsIgnoreCase("bagMakersMapping") || name.equals("37940")){
-		      return bagMakersMapping;
-	      }else if(name.equalsIgnoreCase("gillStudios") || name.equals("56950")){
-			   return gillStudiosMapping;
-		  } else if(name.equalsIgnoreCase("blueGeneration") || name.equals("40653")){
-			  return blueGenerationMapping;
-		  } else if(name.equalsIgnoreCase("FITSAccessories ") || name.equals("71107")){
-			  return fitsAccessoriesMapping;
-		  }else if(name.equalsIgnoreCase("gempiresMapping") || name.equals("55610")){
-			  return gempiresMapping;
-		  } else if(name.equals("38980") || name.equals("35730") || name.equalsIgnoreCase("bayState")){
-			  return baysStateMapping;
-		  } else if(name.equalsIgnoreCase("maxplusmapping") || name.equals("69718")){
-			  return maxplusmapping;
-		  }else if(name.equalsIgnoreCase("edwardsGarment") || name.equals("51752")){
-			   return edwardsGarmentMapping;
-		  }
-		  else if(name.equalsIgnoreCase("tekweld") || name.equals("90807")){
-			   return tekweldMapping;
-		  } else if(name.equalsIgnoreCase("internationalMerchMapping") || name.equals("62820")){
-			  return merchMapping;
-		  } else if(name.equalsIgnoreCase("headWearMapping") || name.equals("60282")){
-			  return headWearMapping;
-		  }else if(name.equalsIgnoreCase("sportMapping") || name.equals("30251")){
-			  return sportAzxCandMapping;
-		  }  else if(name.equalsIgnoreCase("sunScope") || name.equals("90075")){
-			  return sunScopeMapping;
-		  }  else if(name.equalsIgnoreCase("sunGraphixMapping") || name.equals("90125")){
-			  return sunGraphixMapping;
-		  } else if(name.equalsIgnoreCase("pelicanGraphics") || name.equals("76797")){
-			  return pelicanGraphicMapping;
-		  }else if(name.equalsIgnoreCase("sportsManBag") || name.equals("88877")){
-			  return sportsManBagMapping;
-		  }else if(name.equalsIgnoreCase("simplified") || name.equals("87326")|| name.equals("91597") ){
-			  return simplifiedMapping;
-		  } else if(name.equalsIgnoreCase("solidDimension") || name.equals("88156")){
-			  return solidDimensionMapping;
-		  } else if(name.equals("52841")){
-			  return eveanManufactureMapping;
-		  }else if(name.equals("30250")){
-			  return sportUSAMapping;
-		  } else if(name.equals("49716")){
-			  return digiSpecMapping;
-		  } else if(name.equals("49916")){
-			  return radiMapping;
-		  } else if(name.equals("50710")){
-			  return douglasBridgeMapper;
-		  } else if(name.equals("96640")){
-			  return wbtIndustriesMapper;
-		  }else if(name.equals("79840")){
-			  return zenithMapping;
-		  } else if(name.equals("40646")){
-			  return bloominPromotion;
-		  } else if(name.equals("76771")){
-			  return pioneerLLCMapping;
-		  } else if(name.equals("90673")){
-			  return teamWorkAthleticMapper;
-		  } else if(name.equals("30458")){
-			  return accessLineMapping;
-		  }
+		if (asiNumber.equals("44620")) {
+			return apparealExcelMapping;
+		} else if (asiNumber.equals("64905")) {
+			return klMapping;
+		} else if (asiNumber.equals("32125")) {
+			return adspecMapping;
+		} else if (asiNumber.equals("82283")) {
+			return rfgLineProductExcelMapping;
+		} else if (asiNumber.equals("42057")) {
+			return broberryExcelMapping;
+		} else if (asiNumber.equals("47791")) {
+			return bdProdcutsMapping;
+		} else if (asiNumber.equals("82588")) {
+			return riversEndExcelMapping;
+		} else if (asiNumber.equals("47965")) {
+			return cbExeMapping/* cbExcelMapping */;// old file
+		} else if (asiNumber.equals("47759")) {
+			return cdExcelMapping;
+		} else if (asiNumber.equals("38228")) {
+			return bamExcelMapping;
+		} else if (asiNumber.equals("73295")) {
+			return goldcanadaExcelMapping;
+		} else if (asiNumber.equals("43442")) {
+			return hcLineExcelMapping;
+		} else if (asiNumber.equals("91284")) {
+			return wholeSaleExcelMapping;
+		} else if (asiNumber.equals("57653")) {
+			return goldBandExcelMapping;
+		} else if (asiNumber.equals("79530")) {
+			return primeLineExcelMapping;
+		} else if (asiNumber.equals("75613")) {
+			return pslMapping;
+		} else if (asiNumber.equals("71173")) {
+			return milestoneExcelMapping;
+		} else if (asiNumber.equals("79680")) {
+			return proGolfMapping;
+		} else if (asiNumber.equals("48125")) {
+			return dacassoMapping;
+		} else if (asiNumber.equals("91435")) {
+			return tomaxUsaMapping;
+		} else if (asiNumber.equals("80289")) {
+			return sage80289Mapping;
+		} else if (asiNumber.equals("41545")) {
+			return brandwearExcelMapping;
+		} else if (asiNumber.equals("38120")) {
+			return ballProMapping;
+		} else if (asiNumber.equals("90345")) {
+			return pslcadMapping;
+		} else if (asiNumber.equals("83140")) {/// *"92357"*/
+			return twintechMapping;
+		} else if (asiNumber.equals("34042")) {
+			return alfaMapping;
+		} else if (asiNumber.equals("39590")) {
+			return bellaCanvasMapping;
+		} else if (asiNumber.equals("61670") || asiNumber.equals("71685") || asiNumber.equals("91584")) {
+			return harvestMapping;// TotesFactory
+		} else if (asiNumber.equals("91605")) {
+			return towelSpecialties;
+		} else if (asiNumber.equals("37940")) {
+			return bagMakersMapping;
+		} else if (asiNumber.equals("56950")) {
+			return gillStudiosMapping;
+		} else if (asiNumber.equals("40653")) {
+			return blueGenerationMapping;
+		} else if (asiNumber.equals("71107")) {
+			return fitsAccessoriesMapping;
+		} else if (asiNumber.equals("55610")) {
+			return gempiresMapping;
+		} else if (asiNumber.equals("38980") || asiNumber.equals("35730")) {
+			return baysStateMapping;
+		} else if (asiNumber.equals("69718")) {
+			return maxplusmapping;
+		} else if (asiNumber.equals("51752")) {
+			return edwardsGarmentMapping;
+		} else if (asiNumber.equals("90807")) {
+			return tekweldMapping;
+		} else if (asiNumber.equals("62820")) {
+			return merchMapping;
+		} else if (asiNumber.equals("60282")) {
+			return headWearMapping;
+		} else if (asiNumber.equals("30251")) {
+			return sportAzxCandMapping;
+		} else if (asiNumber.equals("90075")) {
+			return sunScopeMapping;
+		} else if (asiNumber.equals("90125")) {
+			return sunGraphixMapping;
+		} else if (asiNumber.equals("76797")) {
+			return pelicanGraphicMapping;
+		} else if (asiNumber.equals("88877")) {
+			return sportsManBagMapping;
+		} else if (asiNumber.equals("87326") || asiNumber.equals("91597")) {
+			return simplifiedMapping;
+		} else if (asiNumber.equals("88156")) {
+			return solidDimensionMapping;
+		} else if (asiNumber.equals("52841")) {
+			return eveanManufactureMapping;
+		} else if (asiNumber.equals("30250")) {
+			return sportUSAMapping;
+		} else if (asiNumber.equals("49716")) {
+			return digiSpecMapping;
+		} else if (asiNumber.equals("49916")) {
+			return radiMapping;
+		} else if (asiNumber.equals("50710")) {
+			return douglasBridgeMapper;
+		} else if (asiNumber.equals("96640")) {
+			return wbtIndustriesMapper;
+		} else if (asiNumber.equals("79840")) {
+			return zenithMapping;
+		} else if (asiNumber.equals("40646")) {
+			return bloominPromotion;
+		} else if (asiNumber.equals("76771")) {
+			return pioneerLLCMapping;
+		} else if (asiNumber.equals("90673")) {
+			return teamWorkAthleticMapper;
+		} else if (asiNumber.equals("30458")) {
+			return accessLineMapping;
+		}
 		return null;
 	}
-	
+
 	public void setBloominPromotion(BloominPromotionsMapper bloominPromotion) {
-			this.bloominPromotion = bloominPromotion;
-		}
+		this.bloominPromotion = bloominPromotion;
+	}
 
 	public InternationlMerchMapping getMerchMapping() {
 		return merchMapping;
@@ -280,12 +266,15 @@ public class ExcelFactory {
 	public AdspecProductsExcelMapping getAdspecMapping() {
 		return adspecMapping;
 	}
+
 	public void setAdspecMapping(AdspecProductsExcelMapping adspecMapping) {
 		this.adspecMapping = adspecMapping;
 	}
+
 	public KlProductsExcelMapping getKlMapping() {
 		return klMapping;
 	}
+
 	public void setKlMapping(KlProductsExcelMapping klMapping) {
 		this.klMapping = klMapping;
 	}
@@ -294,8 +283,7 @@ public class ExcelFactory {
 		return rfgLineProductExcelMapping;
 	}
 
-	public void setRfgLineProductExcelMapping(
-			RFGLineProductExcelMapping rfgLineProductExcelMapping) {
+	public void setRfgLineProductExcelMapping(RFGLineProductExcelMapping rfgLineProductExcelMapping) {
 		this.rfgLineProductExcelMapping = rfgLineProductExcelMapping;
 	}
 
@@ -303,8 +291,7 @@ public class ExcelFactory {
 		return newProductsExcelMapping;
 	}
 
-	public void setNewProductsExcelMapping(
-			NewProductsExcelMapping newProductsExcelMapping) {
+	public void setNewProductsExcelMapping(NewProductsExcelMapping newProductsExcelMapping) {
 		this.newProductsExcelMapping = newProductsExcelMapping;
 	}
 
@@ -312,8 +299,7 @@ public class ExcelFactory {
 		return apparealExcelMapping;
 	}
 
-	public void setApparealExcelMapping(
-			ApparelProductsExcelMapping apparealExcelMapping) {
+	public void setApparealExcelMapping(ApparelProductsExcelMapping apparealExcelMapping) {
 		this.apparealExcelMapping = apparealExcelMapping;
 	}
 
@@ -349,14 +335,13 @@ public class ExcelFactory {
 		this.bamExcelMapping = bamExcelMapping;
 	}
 
-/*	public CutterBuckExcelMapping getCbExcelMapping() {
-		return cbExcelMapping;
-	}
+	/*
+	 * public CutterBuckExcelMapping getCbExcelMapping() { return cbExcelMapping; }
+	 * 
+	 * public void setCbExcelMapping(CutterBuckExcelMapping cbExcelMapping) {
+	 * this.cbExcelMapping = cbExcelMapping; }
+	 */
 
-	public void setCbExcelMapping(CutterBuckExcelMapping cbExcelMapping) {
-		this.cbExcelMapping = cbExcelMapping;
-	}*/
-	
 	public CrystalDExcelMapping getCdExcelMapping() {
 		return cdExcelMapping;
 	}
@@ -365,15 +350,14 @@ public class ExcelFactory {
 		this.cdExcelMapping = cdExcelMapping;
 	}
 
-
 	public GoldstarCanadaExcelMapping getGoldcanadaExcelMapping() {
 		return goldcanadaExcelMapping;
 	}
 
-	public void setGoldcanadaExcelMapping(
-			GoldstarCanadaExcelMapping goldcanadaExcelMapping) {
+	public void setGoldcanadaExcelMapping(GoldstarCanadaExcelMapping goldcanadaExcelMapping) {
 		this.goldcanadaExcelMapping = goldcanadaExcelMapping;
 	}
+
 	public HighCaliberLineMappingRevised getHcLineExcelMapping() {
 		return hcLineExcelMapping;
 	}
@@ -382,7 +366,6 @@ public class ExcelFactory {
 		this.hcLineExcelMapping = hcLineExcelMapping;
 
 	}
-
 
 	public WholeSaleExcelMapping getWholeSaleExcelMapping() {
 		return wholeSaleExcelMapping;
@@ -399,7 +382,6 @@ public class ExcelFactory {
 	public void setPrimeLineExcelMapping(PrimeLineExcelMapping primeLineExcelMapping) {
 		this.primeLineExcelMapping = primeLineExcelMapping;
 	}
-
 
 	public MilestoneExcelMapping getMilestoneExcelMapping() {
 		return milestoneExcelMapping;
@@ -424,6 +406,7 @@ public class ExcelFactory {
 	public void setProGolfMapping(ProGolfMapping proGolfMapping) {
 		this.proGolfMapping = proGolfMapping;
 	}
+
 	public PSLMapping getPslMapping() {
 		return pslMapping;
 	}
@@ -431,6 +414,7 @@ public class ExcelFactory {
 	public void setPslMapping(PSLMapping pslMapping) {
 		this.pslMapping = pslMapping;
 	}
+
 	public DacassoMapping getDacassoMapping() {
 		return dacassoMapping;
 	}
@@ -445,13 +429,16 @@ public class ExcelFactory {
 
 	public void setTomaxUsaMapping(TomaxUsaMapping tomaxUsaMapping) {
 		this.tomaxUsaMapping = tomaxUsaMapping;
-	}	
+	}
+
 	public SageRMKWorldWideMapping getSage80289Mapping() {
 		return sage80289Mapping;
 	}
+
 	public void setSage80289Mapping(SageRMKWorldWideMapping sage80289Mapping) {
 		this.sage80289Mapping = sage80289Mapping;
 	}
+
 	public BrandwearExcelMapping getBrandwearExcelMapping() {
 		return brandwearExcelMapping;
 	}
@@ -459,6 +446,7 @@ public class ExcelFactory {
 	public void setBrandwearExcelMapping(BrandwearExcelMapping brandwearExcelMapping) {
 		this.brandwearExcelMapping = brandwearExcelMapping;
 	}
+
 	public BallProMapping getBallProMapping() {
 		return ballProMapping;
 	}
@@ -466,6 +454,7 @@ public class ExcelFactory {
 	public void setBallProMapping(BallProMapping ballProMapping) {
 		this.ballProMapping = ballProMapping;
 	}
+
 	public PSLcadMapping getPslcadMapping() {
 		return pslcadMapping;
 	}
@@ -489,12 +478,15 @@ public class ExcelFactory {
 	public void setBellaCanvasMapping(BellaCanvas bellaCanvasMapping) {
 		this.bellaCanvasMapping = bellaCanvasMapping;
 	}
+
 	public AlfaMapping getAlfaMapping() {
 		return alfaMapping;
 	}
+
 	public void setAlfaMapping(AlfaMapping alfaMapping) {
 		this.alfaMapping = alfaMapping;
 	}
+
 	public TowelSpecialtiesMapping getTowelSpecialties() {
 		return towelSpecialties;
 	}
@@ -502,10 +494,10 @@ public class ExcelFactory {
 	public void setTowelSpecialties(TowelSpecialtiesMapping towelSpecialties) {
 		this.towelSpecialties = towelSpecialties;
 	}
+
 	public BagMakersMapping getBagMakersMapping() {
 		return bagMakersMapping;
 	}
-
 
 	public HarvestIndustrialExcelMapping getHarvestMapping() {
 		return harvestMapping;
@@ -515,17 +507,18 @@ public class ExcelFactory {
 		this.harvestMapping = harvestMapping;
 	}
 
-
 	public void setBagMakersMapping(BagMakersMapping bagMakersMapping) {
 		this.bagMakersMapping = bagMakersMapping;
 	}
-	
+
 	public void setGillStudiosMapping(GillStudiosMapping gillStudiosMapping) {
 		this.gillStudiosMapping = gillStudiosMapping;
-	}	
+	}
+
 	public GillStudiosMapping getGillStudiosMapping() {
 		return gillStudiosMapping;
 	}
+
 	public BlueGenerationMapping getBlueGenerationMapping() {
 		return blueGenerationMapping;
 	}
@@ -533,7 +526,7 @@ public class ExcelFactory {
 	public void setBlueGenerationMapping(BlueGenerationMapping blueGenerationMapping) {
 		this.blueGenerationMapping = blueGenerationMapping;
 	}
-	
+
 	public MaxplusMapping getMaxplusmapping() {
 		return maxplusmapping;
 	}
@@ -541,6 +534,7 @@ public class ExcelFactory {
 	public void setMaxplusmapping(MaxplusMapping maxplusmapping) {
 		this.maxplusmapping = maxplusmapping;
 	}
+
 	public FITSAccessoriesMapping getFitsAccessoriesMapping() {
 		return fitsAccessoriesMapping;
 	}
@@ -548,6 +542,7 @@ public class ExcelFactory {
 	public void setFitsAccessoriesMapping(FITSAccessoriesMapping fitsAccessoriesMapping) {
 		this.fitsAccessoriesMapping = fitsAccessoriesMapping;
 	}
+
 	public GempirepromotionsMapping getGempiresMapping() {
 		return gempiresMapping;
 	}
@@ -559,10 +554,11 @@ public class ExcelFactory {
 	public BayStateMapping getBaysStateMapping() {
 		return baysStateMapping;
 	}
+
 	public void setBaysStateMapping(BayStateMapping baysStateMapping) {
 		this.baysStateMapping = baysStateMapping;
 	}
-	
+
 	public EdwardsGarmentMapping getEdwardsGarmentMapping() {
 		return edwardsGarmentMapping;
 	}
@@ -571,7 +567,6 @@ public class ExcelFactory {
 		this.edwardsGarmentMapping = edwardsGarmentMapping;
 	}
 
-
 	public TekweldMapping getTekweldMapping() {
 		return tekweldMapping;
 	}
@@ -579,6 +574,7 @@ public class ExcelFactory {
 	public void setTekweldMapping(TekweldMapping tekweldMapping) {
 		this.tekweldMapping = tekweldMapping;
 	}
+
 	public HeadWearMapping getHeadWearMapping() {
 		return headWearMapping;
 	}
@@ -586,7 +582,6 @@ public class ExcelFactory {
 	public void setHeadWearMapping(HeadWearMapping headWearMapping) {
 		this.headWearMapping = headWearMapping;
 	}
-
 
 	public SportCanadaExcelMapping getSportMapping() {
 		return sportMapping;
@@ -599,11 +594,10 @@ public class ExcelFactory {
 	public SunScopeMapping getSunScopeMapping() {
 		return sunScopeMapping;
 	}
+
 	public void setSunScopeMapping(SunScopeMapping sunScopeMapping) {
 		this.sunScopeMapping = sunScopeMapping;
 	}
-
-	
 
 	public SunGraphixRevisedMapping getSunGraphixMapping() {
 		return sunGraphixMapping;
@@ -620,7 +614,7 @@ public class ExcelFactory {
 	public void setCbExeMapping(CbMapping cbExeMapping) {
 		this.cbExeMapping = cbExeMapping;
 	}
-	
+
 	public PelicanGraphicMapping getPelicanGraphicMapping() {
 		return pelicanGraphicMapping;
 	}
@@ -644,6 +638,7 @@ public class ExcelFactory {
 	public void setSolidDimensionMapping(SolidDimensionMapping solidDimensionMapping) {
 		this.solidDimensionMapping = solidDimensionMapping;
 	}
+
 	public SportsManBagMapping getSportsManBagMapping() {
 		return sportsManBagMapping;
 	}
@@ -651,6 +646,7 @@ public class ExcelFactory {
 	public void setSportsManBagMapping(SportsManBagMapping sportsManBagMapping) {
 		this.sportsManBagMapping = sportsManBagMapping;
 	}
+
 	public void setEveanManufactureMapping(EveanManufacturingCanadaMapping eveanManufactureMapping) {
 		this.eveanManufactureMapping = eveanManufactureMapping;
 	}
@@ -670,6 +666,7 @@ public class ExcelFactory {
 	public void setSportAzxCandMapping(SportAzxCandMapping sportAzxCandMapping) {
 		this.sportAzxCandMapping = sportAzxCandMapping;
 	}
+
 	public DigiSpecMapping getDigiSpecMapping() {
 		return digiSpecMapping;
 	}
@@ -677,6 +674,7 @@ public class ExcelFactory {
 	public void setDigiSpecMapping(DigiSpecMapping digiSpecMapping) {
 		this.digiSpecMapping = digiSpecMapping;
 	}
+
 	public void setDouglasBridgeMapper(DouglasBridgeMapper douglasBridgeMapper) {
 		this.douglasBridgeMapper = douglasBridgeMapper;
 	}
@@ -688,6 +686,7 @@ public class ExcelFactory {
 	public void setRadiMapping(RadiousMapping radiMapping) {
 		this.radiMapping = radiMapping;
 	}
+
 	public WBTIndustriesMapper getWbtIndustriesMapper() {
 		return wbtIndustriesMapper;
 	}
@@ -695,6 +694,7 @@ public class ExcelFactory {
 	public void setWbtIndustriesMapper(WBTIndustriesMapper wbtIndustriesMapper) {
 		this.wbtIndustriesMapper = wbtIndustriesMapper;
 	}
+
 	public PioneerLLCMapping getPioneerLLCMapping() {
 		return pioneerLLCMapping;
 	}
@@ -710,15 +710,17 @@ public class ExcelFactory {
 	public void setPioneerLLCMapping(PioneerLLCMapping pioneerLLCMapping) {
 		this.pioneerLLCMapping = pioneerLLCMapping;
 	}
-	 public void setTeamWorkAthleticMapper(TeamworkAthleticMapping teamWorkAthleticMapper) {
-			this.teamWorkAthleticMapper = teamWorkAthleticMapper;
-		}
-	public AccessLineMapping getAccessLineMapping() {
-			return accessLineMapping;
-		}
 
-		public void setAccessLineMapping(AccessLineMapping accessLineMapping) {
-			this.accessLineMapping = accessLineMapping;
-		}
+	public void setTeamWorkAthleticMapper(TeamworkAthleticMapping teamWorkAthleticMapper) {
+		this.teamWorkAthleticMapper = teamWorkAthleticMapper;
+	}
+
+	public AccessLineMapping getAccessLineMapping() {
+		return accessLineMapping;
+	}
+
+	public void setAccessLineMapping(AccessLineMapping accessLineMapping) {
+		this.accessLineMapping = accessLineMapping;
+	}
 
 }

@@ -18,7 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.a4tech.core.excelMapping.ExcelFactory;
+import com.a4tech.core.excelMapping.SupplierFactory;
 import com.a4tech.excel.service.IExcelParser;
 import com.a4tech.product.dao.entity.BaseSupplierLoginDetails;
 import com.a4tech.product.dao.service.ProductDao;
@@ -31,7 +31,7 @@ import com.opencsv.CSVReader;
 
 public class FilesParsing {
 	private ProductDao productDao;
-	private ExcelFactory excelFactory;
+	private SupplierFactory supplierFactory;
 	private ConvertCsvToExcel convertCsvToExcel;
 	@Autowired
 	private ILoginService loginService;
@@ -64,7 +64,7 @@ public class FilesParsing {
 			} catch (InterruptedException exce) {
 				_LOGGER.error("Interrupted Sleep method: "+exce.getMessage());
 			}
-			 IExcelParser excelParserImpl = excelFactory.getExcelParserObject(asiNumber);
+			 IExcelParser excelParserImpl = supplierFactory.getExcelParserObject(asiNumber);
 			// workBook = convertCsvToExcel.getWorkBook(file);
 			 FileInputStream inputStream;
 			try {
@@ -257,13 +257,15 @@ private String getEnvironment(String fileName){//Sand_1242_BestDeal.xls
 		this.productDao = productDao;
 	}
 
-	public ExcelFactory getExcelFactory() {
-		return excelFactory;
+	
+	public SupplierFactory getSupplierFactory() {
+		return supplierFactory;
 	}
 
-	public void setExcelFactory(ExcelFactory excelFactory) {
-		this.excelFactory = excelFactory;
+	public void setSupplierFactory(SupplierFactory supplierFactory) {
+		this.supplierFactory = supplierFactory;
 	}
+
 	public ConvertCsvToExcel getConvertCsvToExcel() {
 		return convertCsvToExcel;
 	}
